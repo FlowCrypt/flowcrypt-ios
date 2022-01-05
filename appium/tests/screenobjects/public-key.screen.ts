@@ -1,7 +1,7 @@
 import BaseScreen from './base.screen';
 
 const SELECTORS = {
-  BACK_BTN: '~arrow left c',
+  BACK_BTN: '~aid-back-button',
   PUBLIC_KEY_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Public key"`]',
   PUBLIC_KEY: '~publicKey',
 };
@@ -30,6 +30,10 @@ class PublicKeyScreen extends BaseScreen {
     await publicKeyEl.waitForExist();
     const pubkeyValue = await publicKeyEl.getAttribute('value');
     await expect(pubkeyValue).toContain("-----BEGIN PGP PUBLIC KEY BLOCK-----");
+  }
+
+  clickBackButton = async () => {
+    await this.backButton.click();
   }
 }
 

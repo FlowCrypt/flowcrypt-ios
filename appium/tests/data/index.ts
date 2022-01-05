@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 export const CommonData = {
   account: {
     email: 'e2e.enterprise.test@flowcrypt.com',
@@ -16,7 +18,7 @@ export const CommonData = {
     name: 'Demo'
   },
   recipient: {
-      email: 'robot@flowcrypt.com',
+    email: 'robot@flowcrypt.com',
   },
   bundleId: {
     id: 'com.flowcrypt.as.ios.debug',
@@ -33,6 +35,9 @@ export const CommonData = {
   simpleEmail: {
     subject: 'Test 1',
     message: 'Test email',
+  },
+  longEmail: {
+    message: '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nText'
   },
   keyMismatchEmail: {
     subject: 'Encrypted message with key mismatch',
@@ -64,13 +69,23 @@ export const CommonData = {
   },
   notIntegrityProtected: {
     subject: 'not integrity protected - should show a warning and not decrypt automatically',
-    message: '',
+    message: 'Message is missing integrity checks (MDC). The sender should update their outdated software and resend.',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
-    encryptionBadgeText: 'not encrypted',
-    signatureBadgeText: 'not signed'
+  },
+  keyMismatch: {
+    subject: 'key mismatch unexpectedly produces a modal',
+    message: 'Here are the images for testing compatibility.',
+    senderEmail: 'sunitnandi834@gmail.com',
+    encryptedBadgeText: 'encrypted',
+    signatureBadgeText: 'not signed',
+    firstAttachmentName: 'Screenshot_20180422_125217.png.asc'
   },
   recipientWithoutPublicKey: {
-    email: 'no.publickey@flowcrypt.com'
+    email: 'no.publickey@flowcrypt.com',
+    password: '123456',
+    modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)`,
+    emptyPasswordMessage: 'Tap to add password for recipients who don\'t have encryption set up.',
+    addedPasswordMessage: 'Web portal password added',
   },
   recipientWithExpiredPublicKey: {
     email: 'expired@flowcrypt.com'
@@ -79,26 +94,34 @@ export const CommonData = {
     email: 'revoked@flowcrypt.com'
   },
   errors: {
-    noPublicKey: 'Could not compose message\n' +
-        '\n' +
-        'One or more of your recipients are missing a public key (marked in gray).\n' +
-        '\n' +
-        'Please ask them to share it with you, or ask them to also set up FlowCrypt.',
-    wrongPassPhrase: 'Could not compose message\n' +
-        '\n' +
-        'This pass phrase did not match your signing private key',
-    expiredPublicKey: 'Could not compose message\n' +
-        '\n' +
-        'One or more of your recipients have expired public keys (marked in orange).\n' +
-        '\n' +
-        'Please ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.',
-    revokedPublicKey: 'Could not compose message\n' +
-        '\n' +
-        'One or more of your recipients have revoked public keys (marked in red).\n' +
-        '\n' +
-        'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
+    noPublicKey: 'Error\n' +
+      'Could not compose message\n' +
+      '\n' +
+      'One or more of your recipients are missing a public key (marked in gray).\n' +
+      '\n' +
+      'Please ask them to share it with you, or ask them to also set up FlowCrypt.',
+    wrongPassPhrase: 'Error\n' +
+      'Could not compose message\n' +
+      '\n' +
+      'This pass phrase did not match your signing private key',
+    expiredPublicKey: 'Error\n' +
+      'Could not compose message\n' +
+      '\n' +
+      'One or more of your recipients have expired public keys (marked in orange).\n' +
+      '\n' +
+      'Please ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.',
+    revokedPublicKey: 'Error\n' +
+      'Could not compose message\n' +
+      '\n' +
+      'One or more of your recipients have revoked public keys (marked in red).\n' +
+      '\n' +
+      'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
+  },
+  appPath: {
+    old: path.join(process.cwd(), './FlowCryptOld.app'),
+    new: path.join(process.cwd(), './FlowCrypt.app')
   }
 };

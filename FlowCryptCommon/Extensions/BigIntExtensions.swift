@@ -8,7 +8,7 @@
 
 import Foundation
 
-func modPow<T: BinaryInteger>(n: T, e: T, m: T) -> T {
+public func modPow<T: BinaryInteger>(n: T, e: T, m: T) -> T {
     guard e != 0 else {
         return 1
     }

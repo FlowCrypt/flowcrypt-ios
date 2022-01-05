@@ -4,10 +4,12 @@
 "encrypting_title" = "Encrypting...";
 "processing_title" = "Processing...";
 "sending_title" = "Sending";
+"validating_title" = "Validating";
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
 "ok" = "Ok";
 "cancel" = "Cancel";
+"set" = "Set";
 "open" = "Open";
 "settings" = "Settings";
 "continue" = "Continue";
@@ -77,11 +79,16 @@
 "compose_recipient_revoked" = "One or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.";
 "compose_recipient_expired" = "One or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.";
 "compose_recipient_invalid_email" = "One or more of your recipients have invalid email address (marked in red)";
+"compose_password_placeholder" = "Tap to add password for recipients who don't have encryption set up.";
+"compose_password_set_message" = "Web portal password added";
+"compose_password_modal_title" = "Set web portal password";
+"compose_password_modal_message" = "The recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)";
 "compose_error" = "Could not compose message";
 "compose_reply_successful" = "Reply successfully sent";
 "compose_quote_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
 "compose_forward_successful" = "Message forwarded successfully";
 "compose_encrypted_sent" = "Encrypted message sent";
+"compose_message_sent" = "Message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
 "compose_recipient" = "Add Recipient";
@@ -236,6 +243,7 @@
 // Organisational rules error
 "organisational_rules_parse_error_description" = "Couldn't parse data while getting organisational rules";
 "organisational_rules_email_format_error_description" = "Wrong user email format";
+"organisational_rules_fes_url_error_description" = "Couldn't get active FES url";
 
 "organisational_rules_url_not_valid" = "Please check if key manager url set correctly";
 "organisational_rules_autoimport_or_autogen_with_private_key_manager_error" = "Combination of rules (key_manager_url set but PRV_AUTOIMPORT_OR_AUTOGEN is missing) is not supported on this platform";
@@ -246,8 +254,9 @@
 "organisational_rules_ekm_keys_are_not_decrypted_error" = "Received private keys are not fully decrypted. Please try login flow again";
 "organisational_wrong_email_error" = "Not a valid email %@";
 
-// Email key manager api error
-"emai_keymanager_api_no_google_id_token_error_description" = "There is no Google ID token were found while getting client configuration";
+// Google id token errors
+"id_token_missing_error_description" = "There is no Google ID token was found while getting client configuration";
+"id_token_invalid_error_description" = "There is no valid Google ID token was found while getting client configuration";
 
 // Gmail Service errors
 "gmail_service_failed_to_parse_data_error_message" = "Failed to parse Gmail data";
@@ -281,3 +290,8 @@
 
 // Attachments details
 "no_preview_avalable" = "No preview available";
+
+// ImapError
+"imap_error_no_session" = "Session isn't established";
+"imap_error_provider" = "Provider error %@";
+"imap_error_msg_info" = "Can't parse message without \"%@\"";

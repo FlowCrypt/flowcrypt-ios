@@ -31,11 +31,15 @@ final class RecipientEmailNode: CellNode {
 
     private var onTap: ((Tap) -> Void)?
 
-    init(input: Input) {
+    init(input: Input, index: Int) {
         self.input = input
         super.init()
         titleNode.attributedText = "  ".attributed() + input.recipient.email + "  ".attributed()
         titleNode.backgroundColor = input.recipient.state.backgroundColor
+        if let accessibilityIdentifier = input.recipient.state.accessibilityIdentifier {
+            titleNode.accessibilityIdentifier = "aid-to-\(index)-\(accessibilityIdentifier)"
+        }
+        titleNode.isAccessibilityElement = true
 
         titleNode.cornerRadius = 8
         titleNode.clipsToBounds = true
@@ -53,8 +57,8 @@ final class RecipientEmailNode: CellNode {
                 break
             }
         }
-        imageNode.addTarget(self, action: #selector(handleTap(_:)), forControlEvents: .touchUpInside)
-        titleNode.addTarget(self, action: #selector(handleTap(_:)), forControlEvents: .touchUpInside)
+        imageNode.addTarget(self, action: #selector(handleTap), forControlEvents: .touchUpInside)
+        titleNode.addTarget(self, action: #selector(handleTap), forControlEvents: .touchUpInside)
     }
 
     @objc private func handleTap(_ sender: ASDisplayNode) {

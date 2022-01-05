@@ -13,22 +13,6 @@ import FlowCryptCommon
 
 typealias RecipientState = RecipientEmailsCellNode.Input.State
 
-struct ComposeMessageContext: Equatable {
-    var message: String?
-    var recipients: [ComposeMessageRecipient] = []
-    var subject: String?
-    var attachments: [MessageAttachment] = []
-}
-
-struct ComposeMessageRecipient: Equatable {
-    let email: String
-    var state: RecipientState
-
-    static func == (lhs: ComposeMessageRecipient, rhs: ComposeMessageRecipient) -> Bool {
-        return lhs.email == rhs.email
-    }
-}
-
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
 }
@@ -109,7 +93,11 @@ final class ComposeMessageService {
                 ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
                 : []
 
-        let allRecipientPubs = try await getPubKeys(for: recipients)
+        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
+        let validPubKeys = try validate(
+            recipients: recipientsWithPubKeys,
+            hasMessagePassword: contextToSend.hasMessagePassword
+        )
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
 
@@ -122,36 +110,48 @@ final class ComposeMessageService {
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
-            pubKeys: [myPubKey] + allRecipientPubs,
-            signingPrv: signingPrv
+            pubKeys: [myPubKey] + validPubKeys,
+            signingPrv: signingPrv,
+            password: contextToSend.messagePassword
         )
     }
 
-    private func getPubKeys(for recipients: [ComposeMessageRecipient]) async throws -> [String] {
+    private func isMessagePasswordSupported(for email: String) -> Bool {
+        guard let senderDomain = email.emailParts?.domain else { return false }
+        let senderDomainsWithMessagePasswordSupport = ["flowcrypt.com"]
+        return senderDomainsWithMessagePasswordSupport.contains(senderDomain)
+    }
+
+    private func getRecipientKeys(for recipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
         var recipientsWithKeys: [RecipientWithSortedPubKeys] = []
         for recipient in recipients {
             let armoredPubkeys = contactsService.retrievePubKeys(for: recipient.email).joined(separator: "\n")
             let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
             recipientsWithKeys.append(RecipientWithSortedPubKeys(email: recipient.email, keyDetails: parsed.keyDetails))
         }
-        return try validate(recipients: recipientsWithKeys)
+        return recipientsWithKeys
     }
 
-    private func validate(recipients: [RecipientWithSortedPubKeys]) throws -> [String] {
+    private func validate(recipients: [RecipientWithSortedPubKeys],
+                          hasMessagePassword: Bool) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.first(where: { $0.keyState == keyState }) != nil
         }
+
         logger.logDebug("validate recipients: \(recipients)")
-        logger.logDebug("validate recipient keyStates: \(recipients.map { $0.keyState })")
-        guard !contains(keyState: .empty) else {
+        logger.logDebug("validate recipient keyStates: \(recipients.map(\.keyState))")
+
+        guard hasMessagePassword || !contains(keyState: .empty) else {
             throw MessageValidationError.noPubRecipients
         }
+
         guard !contains(keyState: .expired) else {
             throw MessageValidationError.expiredKeyRecipients
         }
         guard !contains(keyState: .revoked) else {
             throw MessageValidationError.revokedKeyRecipients
         }
+
         return recipients.flatMap(\.activePubKeys).map(\.armored)
     }
 
@@ -191,38 +191,6 @@ final class ComposeMessageService {
             onStateChanged?(.messageSent)
         } catch {
             throw ComposeMessageError.gatewayError(error)
-        }
-    }
-}
-
-extension ComposeMessageService {
-    enum State {
-        case idle
-        case validatingMessage
-        case startComposing
-        case progressChanged(Float)
-        case messageSent
-
-        var message: String? {
-            switch self {
-            case .idle:
-                return nil
-            case .validatingMessage:
-                return "Validating"
-            case .startComposing:
-                return "Encrypting"
-            case .progressChanged:
-                return "Uploading"
-            case .messageSent:
-                return "Message sent"
-            }
-        }
-
-        var progress: Float? {
-            guard case .progressChanged(let progress) = self else {
-                return nil
-            }
-            return progress
         }
     }
 }

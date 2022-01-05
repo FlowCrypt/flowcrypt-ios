@@ -87,7 +87,7 @@ final class MailProvider {
 
     private func resolveService<T>(of type: T.Type) -> T {
         guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
-            fatalError("Email Provider should support this functionality")
+            fatalError("Email Provider should support this functionality. Can't resolve dependency for \(type)")
         }
         return service
     }

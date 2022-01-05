@@ -15,7 +15,8 @@ import FlowCryptCommon
 @MainActor
 final class AttachmentViewController: UIViewController {
 
-    private lazy var webView = WKWebView()
+    private lazy var logger = Logger.nested(Self.self)
+
     private let file: FileType
     private let shouldShowDownloadButton: Bool
 
@@ -24,6 +25,21 @@ final class AttachmentViewController: UIViewController {
         controller: self,
         filesManager: filesManager
     )
+
+    private lazy var webView: WKWebView = {
+        let preferences = WKWebpagePreferences()
+        preferences.allowsContentJavaScript = false
+
+        let configuration = WKWebViewConfiguration()
+        configuration.defaultWebpagePreferences = preferences
+
+        let view = WKWebView(frame: .zero, configuration: configuration)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.navigationDelegate = self
+        view.backgroundColor = .backgroundColor
+        view.allowsLinkPreview = false
+        return view
+    }()
 
     private let errorLabel: UILabel = {
         let label = UILabel()
@@ -35,6 +51,21 @@ final class AttachmentViewController: UIViewController {
         label.font = .systemFont(ofSize: 12)
         return label
     }()
+
+    private var encodedContentRules: String {
+        """
+        [{
+            "trigger": {
+                "url-filter": ".*"
+            },
+            "action": {
+                "type": "block"
+            }
+        }]
+        """
+    }
+
+    private var isNavigated = false
 
     init(
         file: FileType,
@@ -55,16 +86,20 @@ final class AttachmentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        addWebView()
+        setupUI()
         showSpinner()
         title = file.name
-        do {
-            try load()
-        } catch {
-            Logger.logError("error previewing file: \(error)")
-            // todo - exact error should be surfaced to user?
-            errorLabel.isHidden = false
-            hideSpinner()
+
+        Task {
+            do {
+                try await setContentRules()
+                try load()
+            } catch {
+                logger.logError("Preview Failed due to \(error.localizedDescription)")
+                // todo - exact error should be surfaced to user?
+                errorLabel.isHidden = false
+                hideSpinner()
+            }
         }
     }
 
@@ -75,6 +110,7 @@ final class AttachmentViewController: UIViewController {
                 NavigationBarItemsView.Input(
                     image: UIImage(named: "download")?.tinted(.gray),
                     title: "save".localized,
+                    accessibilityId: "aid-save-attachment-to-device",
                     onTap: { [weak self] in self?.downloadAttachment() }
                 )
             ]
@@ -98,22 +134,42 @@ extension AttachmentViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         hideSpinner()
     }
+
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        guard
+            navigationAction.request.url?.scheme == "data",
+            !isNavigated
+        else { return .cancel }
+
+        isNavigated = true
+        return .allow
+    }
 }
 
 private extension AttachmentViewController {
 
+    private func setContentRules() async throws {
+        guard let list = try await WKContentRuleListStore.default().compileContentRuleList(
+            forIdentifier: "blockRules",
+            encodedContentRuleList: encodedContentRules
+        ) else {
+            throw AppErr.general("Could not produce a content rule list")
+        }
+
+        webView.configuration.userContentController.removeAllContentRuleLists()
+        webView.configuration.userContentController.add(list)
+    }
+
     private func load() throws {
+        let encoderTrace = Trace(id: "base64 encoding")
         guard let url = URL(string: "data:\(file.name.mimeType);base64,\(file.data.base64EncodedString())") else {
             throw AppErr.general("Could not produce a data URL to preview this file")
         }
+        logger.logDebug("base64 encoding time is \(encoderTrace.finish())")
         webView.load(URLRequest(url: url))
     }
 
-    private func addWebView() {
-        webView.backgroundColor = .backgroundColor
-        webView.navigationDelegate = self
-        webView.translatesAutoresizingMaskIntoConstraints = false
-
+    private func setupUI() {
         view.addSubview(webView)
         webView.addSubview(errorLabel)
 

@@ -95,10 +95,10 @@ public final class TextFieldNode: ASDisplayNode {
                     self.textField.addTarget(
                         self,
                         action: #selector(self.onEditingChanged),
-                        for: UIControl.Event.editingChanged
+                        for: .editingChanged
                     )
                 } else {
-                    self.textField.removeTarget(self, action: nil, for: UIControl.Event.editingChanged)
+                    self.textField.removeTarget(self, action: nil, for: .editingChanged)
                 }
             }
         }
@@ -108,6 +108,14 @@ public final class TextFieldNode: ASDisplayNode {
         didSet {
             DispatchQueue.main.async {
                 self.textField.keyboardType = self.keyboardType
+            }
+        }
+    }
+    
+    public var autocapitalizationType: UITextAutocapitalizationType = .sentences {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.autocapitalizationType = self.autocapitalizationType
             }
         }
     }
@@ -135,7 +143,7 @@ public final class TextFieldNode: ASDisplayNode {
             self.textField.addTarget(
                 self,
                 action: #selector(self.onEditingChanged),
-                for: UIControl.Event.editingChanged
+                for: .editingChanged
             )
             self.textField.onBackspaceTap = { [weak self] in
                 guard let self = self else { return }

@@ -16,7 +16,7 @@ exports.config = {
     requires: ['tsconfig-paths/register']
   },
   sync: true,
-  logLevel: 'silent',
+  logLevel: 'info',
   deprecationWarnings: true,
   bail: 0,
   waitforTimeout: 15000,
@@ -25,6 +25,12 @@ exports.config = {
   maxInstancesPerCapability: 1,
   reporters: [
     'spec',
+    ['junit', {
+      outputDir: './tmp/test-results',
+      outputFileFormat: function (options) {
+        return `wdio-${options.cid}.xml`
+      }
+    }],
     [video, {
       saveAllVideos: false,       // If true, also saves videos for successful test cases
       videoSlowdownMultiplier: 3, // Higher to get slower videos, lower for faster videos [Value 1-100]

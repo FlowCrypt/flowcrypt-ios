@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import FlowCryptCommon
 
 protocol AttesterApiType {
     func lookup(email: String) async throws -> [KeyDetails]
@@ -37,7 +38,7 @@ final class AttesterApi: AttesterApiType {
         }
         return "https://flowcrypt.com/attester" // live
     }
-    
+
     private func pubUrl(email: String) -> String {
         let normalizedEmail = email
             .lowercased()
@@ -72,7 +73,7 @@ extension AttesterApi {
 
     @discardableResult
     func update(email: String, pubkey: String, token: String?) async throws -> String {
-        let httpMethod: HTTPMetod
+        let httpMethod: HTTPMethod
         let headers: [URLHeader]
         if let value = token {
             httpMethod = .post

@@ -184,7 +184,7 @@ extension SetupImapViewController {
         state = newState
 
         node.reloadSections(
-            IndexSet(arrayLiteral: 3),
+            IndexSet(integer: 3),
             with: .fade
         )
 
@@ -253,6 +253,7 @@ extension SetupImapViewController {
         }
         .then {
             $0.textField.attributedText = self.decorator.stringFor(user: self.user, for: section)
+            $0.textField.autocapitalizationType = .none
             self.setPicker(for: section, and: $0)
         }
     }

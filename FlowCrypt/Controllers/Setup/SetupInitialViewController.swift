@@ -36,7 +36,7 @@ final class SetupInitialViewController: TableNodeViewController {
             case .searchingKeyBackupsInInbox:
                 return 2
             case .error:
-                return 3
+                return 4
             case .noKeyBackupsInInbox:
                 return Parts.allCases.count
             }
@@ -157,10 +157,20 @@ extension SetupInitialViewController {
         }
     }
 
+    private func getIdToken() async throws -> String {
+        let googleService = GoogleUserService(
+            currentUserEmail: user.email,
+            appDelegateGoogleSessionContainer: nil
+        )
+
+        return try await googleService.getCachedOrRefreshedIdToken()
+    }
+
     private func fetchKeysFromEKM() {
         Task {
             do {
-                let result = try await emailKeyManagerApi.getPrivateKeys(currentUserEmail: user.email)
+                let idToken = try await getIdToken()
+                let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 switch result {
                 case .success(keys: let keys):
                     proceedToSetupWithEKMKeys(keys: keys)
@@ -183,7 +193,7 @@ extension SetupInitialViewController {
                 if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
                     return
                 }
-                showAlert(message: error.localizedDescription, onOk: { [weak self] in
+                showAlert(message: error.errorMessage, onOk: { [weak self] in
                     self?.state = .decidingIfEKMshouldBeUsed
                 })
             }
@@ -296,7 +306,7 @@ extension SetupInitialViewController {
             return TextCellNode(
                 input: .init(
                     backgroundColor: .backgroundColor,
-                    title: error.localizedDescription,
+                    title: error.errorMessage,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200)
                 )
@@ -304,6 +314,10 @@ extension SetupInitialViewController {
         case 2:
             return ButtonCellNode(input: .retry) { [weak self] in
                 self?.state = .searchingKeyBackupsInInbox
+            }
+        case 3:
+            return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
+                self?.signOut()
             }
         default:
             return ASCellNode()
@@ -322,6 +336,7 @@ extension SetupInitialViewController {
         let viewController = SetupGenerateKeyViewController(appContext: appContext, user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
+
     private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {
         let viewController = SetupEKMKeyViewController(appContext: appContext, user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)

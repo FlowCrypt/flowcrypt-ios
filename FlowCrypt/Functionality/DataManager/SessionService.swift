@@ -102,7 +102,7 @@ extension SessionService: SessionServiceType {
             }
         }
         let users = encryptedStorage.getAllUsers()
-        if !users.contains(where: { $0.isActive }), let user = users.first(where: { encryptedStorage.doesAnyKeypairExist(for: $0.email ) }) {
+        if !users.contains(where: { $0.isActive }), let user = users.first(where: { encryptedStorage.doesAnyKeypairExist(for: $0.email) }) {
             try switchActiveSession(for: user)
         }
     }

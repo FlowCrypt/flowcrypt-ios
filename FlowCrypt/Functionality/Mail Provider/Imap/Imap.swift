@@ -12,8 +12,14 @@ final class Imap: MailServiceProvider {
     let user: User
     let helper: ImapHelperType
     let messageKindProvider: MessageKindProviderType
-    var imapSess: MCOIMAPSession?
-    var smtpSess: MCOSMTPSession?
+    var imapSess: MCOIMAPSession? {
+        imapSessionProvider.imapSession()
+            .map(MCOIMAPSession.init)
+    }
+    var smtpSess: MCOSMTPSession? {
+        imapSessionProvider.smtpSession()
+            .map(MCOSMTPSession.init)
+    }
 
     typealias ImapIndexSet = MCOIndexSet
     typealias ReqKind = MCOIMAPMessagesRequestKind

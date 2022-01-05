@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  BACK_BTN: '~arrow left c',
+  BACK_BTN: '~aid-back-button',
   KEY: '~Key',
   PUBLIC_KEY: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
   FINGERPRINT_VALUE: '~fingerprintValue',
@@ -70,7 +70,6 @@ class ContactPublicKeyScreen extends BaseScreen {
   }
 
   checkPublicKeyNotEmpty = async () => {
-    await (await this.backButton).waitForDisplayed();
     await (await this.key).waitForDisplayed();
     const pubkeyEl = await this.publicKey;
     await pubkeyEl.waitForExist();
@@ -78,7 +77,6 @@ class ContactPublicKeyScreen extends BaseScreen {
   }
 
   checkPublicKeyDetailsNotEmpty = async () => {
-    await (await this.backButton).waitForDisplayed();
     await (await this.fingerPrintLabel).waitForDisplayed();
     expect(await (await this.fingerPrintValue).getAttribute('value')).toBeTruthy();
     await (await this.createdLabel).waitForDisplayed();
@@ -96,6 +94,11 @@ class ContactPublicKeyScreen extends BaseScreen {
   clickOnFingerPrint = async () => {
     await ElementHelper.waitAndClick(await this.fingerPrintValue);
   }
+
+  clickBackButton = async () => {
+    await ElementHelper.waitAndClick(await this.backButton);
+  }
+
 }
 
 export default new ContactPublicKeyScreen();

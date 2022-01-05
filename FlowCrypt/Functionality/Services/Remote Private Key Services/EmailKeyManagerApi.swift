@@ -7,13 +7,13 @@
 //
 
 import Foundation
+import FlowCryptCommon
 
 protocol EmailKeyManagerApiType {
-    func getPrivateKeys(currentUserEmail: String) async throws -> EmailKeyManagerApiResult
+    func getPrivateKeys(idToken: String) async throws -> EmailKeyManagerApiResult
 }
 
 enum EmailKeyManagerApiError: Error {
-    case noGoogleIdToken
     case noPrivateKeysUrlString
 }
 
@@ -26,7 +26,6 @@ enum EmailKeyManagerApiResult {
 extension EmailKeyManagerApiError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case .noGoogleIdToken: return "emai_keymanager_api_no_google_id_token_error_description".localized
         case .noPrivateKeysUrlString: return ""
         }
     }
@@ -51,18 +50,8 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         self.core = core
     }
 
-    func getPrivateKeys(currentUserEmail: String) async throws -> EmailKeyManagerApiResult {
-        guard let urlString = getPrivateKeysUrlString() else {
-            throw EmailKeyManagerApiError.noPrivateKeysUrlString
-        }
-
-        guard let idToken = GoogleUserService(
-            currentUserEmail: currentUserEmail,
-            appDelegateGoogleSessionContainer: nil // only needed when signing in/out
-        ).idToken else {
-            throw EmailKeyManagerApiError.noGoogleIdToken
-        }
-
+    func getPrivateKeys(idToken: String) async throws -> EmailKeyManagerApiResult {
+        let urlString = try getPrivateKeysUrlString()
         let headers = [
             URLHeader(
                 value: "Bearer \(idToken)",
@@ -83,7 +72,7 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         }
 
         let privateKeysArmored = decryptedPrivateKeysResponse.privateKeys
-            .map { $0.decryptedPrivateKey }
+            .map(\.decryptedPrivateKey)
             .joined(separator: "\n")
             .data()
         let parsedPrivateKeys = try await core.parseKeys(armoredOrBinary: privateKeysArmored)
@@ -97,9 +86,9 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         return .success(keys: parsedPrivateKeys.keyDetails)
     }
 
-    private func getPrivateKeysUrlString() -> String? {
+    private func getPrivateKeysUrlString() throws -> String {
         guard let keyManagerUrlString = clientConfiguration.keyManagerUrlString else {
-            return nil
+            throw EmailKeyManagerApiError.noPrivateKeysUrlString
         }
         return "\(keyManagerUrlString)v1/keys/private"
     }

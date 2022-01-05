@@ -46,8 +46,8 @@ struct BackupViewDecorator: BackupViewDecoratorType {
             subtitle = "\n\n" + "backup_screen_not_found_description".localized
         }
 
-        let titleAttributedString = title.attributed(.bold(20), color: .textColor, alignment: .center)
-        let subtitleAttrinutedString = subtitle.attributed(.medium(14), color: .textColor, alignment: .center)
+        let titleAttributedString = title.attributed(.bold(18), color: .mainTextColor, alignment: .center)
+        let subtitleAttrinutedString = subtitle.attributed(.medium(14), color: .mainTextColor, alignment: .center)
         let result = NSMutableAttributedString(attributedString: titleAttributedString)
         result.append(subtitleAttrinutedString)
 

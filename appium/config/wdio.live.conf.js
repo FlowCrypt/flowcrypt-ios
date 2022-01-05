@@ -14,10 +14,13 @@ config.suites = {
     './tests/specs/live/inbox/*.spec.ts'
   ],
   compose: [
-      './tests/specs/live/composeEmail/*.spec.ts'
+    './tests/specs/live/composeEmail/*.spec.ts'
   ],
   login: [
-      './tests/specs/live/login/*.spec.ts'
+    './tests/specs/live/login/*.spec.ts'
+  ],
+  update: [
+    './tests/specs/live/update/*.spec.ts'
   ]
 };
 
@@ -26,9 +29,10 @@ config.capabilities = [
     platformName: 'iOS',
     iosInstallPause: 5000,
     deviceName: 'iPhone 13',
-    platformVersion: '15.0',
+    platformVersion: '15.2',
     automationName: 'XCUITest',
     app: join(process.cwd(), './FlowCrypt.app'),
+    simpleIsVisibleCheck: true,
     newCommandTimeout: 10000,
     wdaLaunchTimeout: 300000,
     wdaConnectionTimeout: 600000,

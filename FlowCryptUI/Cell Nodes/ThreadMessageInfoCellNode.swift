@@ -184,7 +184,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
         automaticallyManagesSubnodes = true
 
         senderNode.attributedText = input.sender
-        senderNode.accessibilityIdentifier = "messageSenderLabel"
+        senderNode.accessibilityIdentifier = "aid-message-sender-label"
 
         dateNode.attributedText = input.date
 
@@ -206,27 +206,33 @@ public final class ThreadMessageInfoCellNode: CellNode {
         recipientButtonNode.contentSpacing = 4
 
         recipientButtonNode.addTarget(self, action: #selector(onRecipientsNodeTap), forControlEvents: .touchUpInside)
-        recipientButtonNode.accessibilityIdentifier = "messageRecipientButton"
+        recipientButtonNode.accessibilityIdentifier = "aid-message-recipients-tappable-area"
     }
 
     private func setupReplyNode() {
-        setup(buttonNode: replyNode,
-              with: input.replyImage,
-              action: #selector(onReplyNodeTap),
-              accessibilityIdentifier: "replyButton")
+        setup(
+            buttonNode: replyNode,
+            with: input.replyImage,
+            action: #selector(onReplyNodeTap),
+            accessibilityIdentifier: "aid-reply-button"
+        )
     }
 
     private func setupMenuNode() {
-        setup(buttonNode: menuNode,
-              with: input.menuImage,
-              action: #selector(onMenuNodeTap),
-              accessibilityIdentifier: "messageMenuButton")
+        setup(
+            buttonNode: menuNode,
+            with: input.menuImage,
+            action: #selector(onMenuNodeTap),
+            accessibilityIdentifier: "aid-message-menu-button"
+        )
     }
 
-    private func setup(buttonNode node: ASButtonNode,
-                       with image: UIImage?,
-                       action: Selector,
-                       accessibilityIdentifier: String) {
+    private func setup(
+        buttonNode node: ASButtonNode,
+        with image: UIImage?,
+        action: Selector,
+        accessibilityIdentifier: String
+    ) {
         node.setImage(image, for: .normal)
         node.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
         node.addTarget(self, action: action, forControlEvents: .touchUpInside)

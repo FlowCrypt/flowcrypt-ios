@@ -11,7 +11,7 @@ import XCTest
 
 class GeneralConstantsTest: XCTestCase {
     func testGeneralGlobalConstants() {
-        XCTAssert(GeneralConstants.Global.generalError == -1)
+        XCTAssert(URLSession.generalError == -1)
     }
 
     func testGeneralEmailConstants() {

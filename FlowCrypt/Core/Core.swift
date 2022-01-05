@@ -6,39 +6,13 @@ import FlowCryptCommon
 import JavaScriptCore
 
 enum CoreError: LocalizedError, Equatable {
-    case exception(String)
-    case notReady(String)
-    case format(String)
-    case keyMismatch(String)
-    case noMDC(String)
-    case badMDC(String)
-    case needPassphrase(String)
-    case wrongPassphrase(String)
-    // wrong value passed into a function
-    case value(String)
-    
-    init(coreError: CoreRes.Error) {
-        switch coreError.error.type {
-        case "format": self = .format(coreError.error.message)
-        case "key_mismatch": self = .keyMismatch(coreError.error.message)
-        case "no_mdc": self = .noMDC(coreError.error.message)
-        case "bad_mdc": self = .badMDC(coreError.error.message)
-        case "need_passphrase": self = .needPassphrase(coreError.error.message)
-        case "wrong_passphrase": self = .wrongPassphrase(coreError.error.message)
-        default: self = .exception(coreError.error.message + "\n" + (coreError.error.stack ?? "no stack"))
-        }
-    }
-
+    case exception(String) // core threw exception
+    case notReady(String) // core not initialized
+    case value(String) // wrong value passed into or returned by a function
     var errorDescription: String? {
         switch self {
         case .exception(let message),
                 .notReady(let message),
-                .format(let message),
-                .keyMismatch(let message),
-                .noMDC(let message),
-                .badMDC(let message),
-                .needPassphrase(let message),
-                .wrongPassphrase(let message),
                 .value(let message):
             return message
         }
@@ -103,14 +77,35 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     
     // MARK: Files
     public func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) async throws -> CoreRes.DecryptFile {
+        struct DecryptFileRaw: Decodable {
+            let decryptSuccess: DecryptSuccess?
+            let decryptErr: DecryptErr?
+            struct DecryptSuccess: Decodable {
+                let name: String
+            }
+        }
         let json: [String : Any?]? = [
             "keys": try keys.map { try $0.toJsonEncodedDict() },
             "msgPwd": msgPwd
         ]
         let decrypted = try await call("decryptFile", jsonDict: json, data: encrypted)
-        let meta = try decrypted.json.decodeJson(as: CoreRes.DecryptFileMeta.self)
-
-        return CoreRes.DecryptFile(name: meta.name, content: decrypted.data)
+        let decryptFileRes = try decrypted.json.decodeJson(as: DecryptFileRaw.self)
+        if let decryptErr = decryptFileRes.decryptErr {
+            return CoreRes.DecryptFile(
+                decryptSuccess: nil,
+                decryptErr: decryptErr
+            )
+        }
+        if let decryptSuccess = decryptFileRes.decryptSuccess {
+            return CoreRes.DecryptFile(
+                decryptSuccess: CoreRes.DecryptFile.DecryptSuccess(
+                    name: decryptSuccess.name,
+                    data: decrypted.data
+                ),
+                decryptErr: nil
+            )
+        }
+        throw AppErr.unexpected("decryptFile: both decryptErr and decryptSuccess were nil")
     }
     
     public func encryptFile(pubKeys: [String]?, fileData: Data, name: String)  async throws -> CoreRes.EncryptFile {
@@ -127,11 +122,17 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return CoreRes.EncryptFile(encryptedFile: encrypted.data)
     }
 
-    func parseDecryptMsg(encrypted: Data,
-                         keys: [PrvKeyInfo],
-                         msgPwd: String?,
-                         isEmail: Bool,
-                         verificationPubKeys: [String]) async throws -> CoreRes.ParseDecryptMsg {
+    func parseDecryptMsg(
+        encrypted: Data,
+        keys: [PrvKeyInfo],
+        msgPwd: String?,
+        isEmail: Bool,
+        verificationPubKeys: [String]
+    ) async throws -> CoreRes.ParseDecryptMsg {
+        struct ParseDecryptMsgRaw: Decodable {
+            let replyType: ReplyType
+            let text: String
+        }
         let json: [String : Any?]? = [
             "keys": try keys.map { try $0.toJsonEncodedDict() },
             "isEmail": isEmail,
@@ -143,8 +144,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             jsonDict: json,
             data: encrypted
         )
-        let meta = try parsed.json
-            .decodeJson(as: CoreRes.ParseDecryptMsgWithoutBlocks.self)
+        let meta = try parsed.json.decodeJson(as: ParseDecryptMsgRaw.self)
 
         let blocks = parsed.data
             .split(separator: 10) // newline separated block jsons, one json per line
@@ -183,7 +183,8 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": msg.pubKeys,
-            "signingPrv": signingPrv
+            "signingPrv": signingPrv,
+            "pwd": msg.password
         ], data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
@@ -237,7 +238,6 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         guard ready else {
             throw CoreError.exception("Core is not ready yet. Most likeyly startIfNotAlreadyRunning wasn't called first")
         }
-
         let callbackId = NSUUID().uuidString
         jsEndpointListener!.call(withArguments: [
             endpoint,
@@ -247,23 +247,25 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         ])
 
         while callbackResults[callbackId] == nil {
-            await Task.sleep(1_000_000) // 1ms
+            try await Task.sleep(nanoseconds: 1_000_000) // 1ms
         }
 
         guard
             let result = callbackResults.removeValue(forKey: callbackId),
             let resJsonData = result.0.data(using: .utf8)
         else {
-            throw CoreError.format("JavaScript callback response not available")
+            throw CoreError.value("JavaScript callback response not available")
         }
-
         let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
         if let error = error {
-            let errMsg = "------ js err -------\nCore \(endpoint):\n\(error.error.message)\n\(error.error.stack ?? "no stack")\n------- end js err -----"
-            logger.logError(errMsg)
-            throw CoreError(coreError: error)
+            logger.logError("""
+            ------ js err -------
+            Core \(endpoint): \(error.error.message)
+            \(error.error.stack ?? "no stack")
+            ------- end js err -----
+            """)
+            throw CoreError.exception(error.error.message + "\n" + (error.error.stack ?? "no stack"))
         }
-
         return RawRes(json: resJsonData, data: Data(result.1))
     }
 }

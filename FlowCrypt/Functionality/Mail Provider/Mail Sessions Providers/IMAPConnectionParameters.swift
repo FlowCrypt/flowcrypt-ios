@@ -25,7 +25,6 @@ extension IMAPSession {
         }
 
         guard let auth = user.authType, let connection = ConnectionType(rawValue: imap.connectionType) else {
-            assertionFailure("Authentication type should be defined on this step")
             return nil
         }
 
