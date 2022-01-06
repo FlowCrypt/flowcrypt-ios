@@ -108,16 +108,14 @@ extension SetupManuallyImportKeyViewController: ASTableDelegate, ASTableDataSour
                 )
             case .fileImport:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .fileImport),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .fileImport)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     self?.proceedToKeyImportFromFile()
                 }
             case .pasteBoardImport:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .pasteBoard),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .pasteBoard)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     guard let self = self else { return }

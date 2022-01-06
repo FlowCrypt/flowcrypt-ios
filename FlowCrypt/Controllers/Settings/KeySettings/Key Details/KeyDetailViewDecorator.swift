@@ -20,17 +20,9 @@ extension KeyDetailViewController.Parts {
     }
 }
 
-protocol KeyDetailViewDecoratorType {
-    var buttonInsets: UIEdgeInsets { get }
-    var titleInsets: UIEdgeInsets { get }
-
-    func buttonColor(for keyDetailPart: KeyDetailViewController.Parts) -> UIColor
-    func attributedTitle(for keyDetailPart: KeyDetailViewController.Parts) -> NSAttributedString
-}
-
-struct KeyDetailViewDecorator: KeyDetailViewDecoratorType {
+struct KeyDetailViewDecorator {
     let titleInsets = UIEdgeInsets.side(16)
-    let buttonInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
+    let buttonInsets = UIEdgeInsets.buttonInsets
 
     func attributedTitle(for keyDetailPart: KeyDetailViewController.Parts) -> NSAttributedString {
         let title: String

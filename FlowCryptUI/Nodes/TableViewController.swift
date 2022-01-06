@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptCommon
 
 @MainActor
 open class TableNodeViewController: ASDKViewController<TableNode> {
@@ -19,6 +20,11 @@ open class TableNodeViewController: ASDKViewController<TableNode> {
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         node.reloadData()
+    }
+    
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        Logger.nested(Self.self).logDebug("View did load")
     }
 }
 
