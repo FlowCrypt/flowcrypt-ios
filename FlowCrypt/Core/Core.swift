@@ -192,6 +192,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
         let r = try await call("composeEmail", jsonDict: [
             "text": msg.text,
+            "html": msg.html,
             "to": msg.to,
             "cc": msg.cc,
             "bcc": msg.bcc,

@@ -15,6 +15,8 @@ typealias RecipientState = RecipientEmailsCellNode.Input.State
 
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
+    func encryptMsg(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
+    func encryptFile(pubKeys: [String]?, fileData: Data, name: String)  async throws -> CoreRes.EncryptFile
 }
 
 final class ComposeMessageService {
@@ -23,8 +25,16 @@ final class ComposeMessageService {
     private let storage: EncryptedStorageType
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
+    private let enterpriseServer: EnterpriseServerApiType
     private let draftGateway: DraftGateway?
     private lazy var logger: Logger = Logger.nested(Self.self)
+
+    private struct ReplyInfo: Encodable {
+        let sender: String
+        let recipient: [String]
+        let subject: String
+        let token: String
+    }
 
     init(
         clientConfiguration: ClientConfiguration,
@@ -32,7 +42,8 @@ final class ComposeMessageService {
         messageGateway: MessageGateway,
         draftGateway: DraftGateway? = nil,
         contactsService: ContactsServiceType? = nil,
-        core: CoreComposeMessageType & KeyParser = Core.shared
+        core: CoreComposeMessageType & KeyParser = Core.shared,
+        enterpriseServer: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
         self.messageGateway = messageGateway
         self.draftGateway = draftGateway
@@ -42,6 +53,7 @@ final class ComposeMessageService {
             clientConfiguration: clientConfiguration
         )
         self.core = core
+        self.enterpriseServer = enterpriseServer
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
@@ -55,7 +67,8 @@ final class ComposeMessageService {
         contextToSend: ComposeMessageContext,
         email: String,
         includeAttachments: Bool = true,
-        signingPrv: PrvKeyInfo?
+        signingPrv: PrvKeyInfo?,
+        isMessagePasswordSupported: Bool = false
     ) async throws -> SendableMsg {
         onStateChanged?(.validatingMessage)
 
@@ -103,6 +116,7 @@ final class ComposeMessageService {
 
         return SendableMsg(
             text: text,
+            html: text,
             to: recipients.map(\.email),
             cc: [],
             bcc: [],
@@ -114,12 +128,6 @@ final class ComposeMessageService {
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )
-    }
-
-    private func isMessagePasswordSupported(for email: String) -> Bool {
-        guard let senderDomain = email.emailParts?.domain else { return false }
-        let senderDomainsWithMessagePasswordSupport = ["flowcrypt.com"]
-        return senderDomainsWithMessagePasswordSupport.contains(senderDomain)
     }
 
     private func getRecipientKeys(for recipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
@@ -160,7 +168,7 @@ final class ComposeMessageService {
         do {
             let r = try await core.composeEmail(
                 msg: message,
-                fmt: MsgFmt.encryptInline
+                fmt: .encryptInline
             )
             draft = try await draftGateway?.saveDraft(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId), draft: draft)
         } catch {
@@ -172,17 +180,57 @@ final class ComposeMessageService {
     func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
         do {
             onStateChanged?(.startComposing)
-            let r = try await core.composeEmail(
-                msg: message,
-                fmt: MsgFmt.encryptInline
-            )
 
-            try await messageGateway.sendMail(
-                input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
-                progressHandler: { [weak self] progress in
-                    self?.onStateChanged?(.progressChanged(progress))
-                }
-            )
+            if let password = message.password, password.isNotEmpty {
+                let replyToken = try await enterpriseServer.getReplyToken(for: message.from)
+
+                let url = try await prepareAndUploadPwdEncryptedMsg(
+                    message: message,
+                    replyToken: replyToken
+                )
+
+                let encryptedTextFile = try await core.encryptFile(
+                    pubKeys: message.pubKeys,
+                    fileData: message.text.data(),
+                    name: "mail"
+                )
+
+                let html = generatePasswordMessageHtml(sender: message.from, url: url)
+
+                let newMessage = SendableMsg(
+                    text: html,
+                    html: html,
+                    to: message.to,
+                    cc: message.cc,
+                    bcc: message.bcc,
+                    from: message.from,
+                    subject: message.subject,
+                    replyToMimeMsg: message.replyToMimeMsg,
+                    atts: message.atts,
+                    pubKeys: nil,
+                    signingPrv: nil,
+                    password: nil
+                )
+                let formattedMessage = try await core.composeEmail(msg: newMessage, fmt: .plain)
+                try await messageGateway.sendMail(
+                    input: MessageGatewayInput(mime: formattedMessage.mimeEncoded, threadId: threadId),
+                    progressHandler: { [weak self] progress in
+                        self?.onStateChanged?(.progressChanged(progress))
+                    }
+                )
+            } else {
+                let r = try await core.composeEmail(
+                    msg: message,
+                    fmt: MsgFmt.encryptInline
+                )
+
+                try await messageGateway.sendMail(
+                    input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
+                    progressHandler: { [weak self] progress in
+                        self?.onStateChanged?(.progressChanged(progress))
+                    }
+                )
+            }
 
             // cleaning any draft saved/created/fetched during editing
             if let draftId = draft?.identifier {
@@ -192,5 +240,39 @@ final class ComposeMessageService {
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }
+    }
+
+    func generateMsgInfoDiv(for message: SendableMsg, replyToken: String) throws -> String {
+        let replyInfo = ReplyInfo(
+            sender: message.from,
+            recipient: message.to,
+            subject: message.subject,
+            token: replyToken
+        )
+        let replyInfoJsonString = try replyInfo.toJsonData().base64EncodedString()
+        return "\n\n<div style=\"display: none\" class=\"cryptup_reply\" cryptup-data=\"\(replyInfoJsonString)\"></div>"
+    }
+
+    func generatePasswordMessageHtml(sender: String, url: String) -> String {
+        let aStyle = "padding: 2px 6px; background: #2199e8; color: #fff; display: inline-block; text-decoration: none;"
+        return """
+        \(sender) has sent you a password-encrypted email <a href="\(url)" style="\(aStyle)">Click here to Open Message</a>
+        <br><br>
+        Alternatively copy and paste the following link: \(url)
+        """
+    }
+
+    func prepareAndUploadPwdEncryptedMsg(message: SendableMsg, replyToken: String) async throws -> String {
+        let infoDiv = try generateMsgInfoDiv(for: message, replyToken: replyToken)
+        let updatedText = message.text + infoDiv
+
+        let messageWithInfoDiv = message.copy(text: updatedText, pubKeys: [], signingPrv: nil)
+        let formatted = try await core.composeEmail(msg: messageWithInfoDiv, fmt: .plain)
+
+        let formattedMessage = messageWithInfoDiv.copy(text: formatted.mimeEncoded.toStr())
+        let encoded = try await core.encryptMsg(msg: formattedMessage, fmt: .encryptInline)
+
+        let details = MessageUploadDetails(from: message, replyToken: replyToken)
+        return try await enterpriseServer.upload(message: encoded.mimeEncoded, details: details)
     }
 }

@@ -15,3 +15,13 @@ struct MessageUploadDetails: Encodable {
     let cc: [String]
     let bcc: [String]
 }
+
+extension MessageUploadDetails {
+    init(from message: SendableMsg, replyToken: String) {
+        self.associateReplyToken = replyToken
+        self.from = message.from
+        self.to = message.to
+        self.cc = message.cc
+        self.bcc = message.bcc
+    }
+}

@@ -9,7 +9,7 @@ type Obj = { [k: string]: any };
 export namespace NodeRequest {
   type PrvKeyInfo = { private: string; longid: string, passphrase: string | undefined };
   type Attachment = { name: string; type: string; base64: string };
-  interface composeEmailBase { text: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] };
+  interface composeEmailBase { text: string, html?: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] };
   export interface composeEmailPlain extends composeEmailBase { format: 'plain' };
   export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo | undefined };
 
@@ -53,7 +53,7 @@ export class ValidateInput {
 
 
   public static composeEmail = (v: any): NodeRequest.composeEmail => {
-    if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string') && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {
+    if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'html', 'string?') && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string') && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {
       throw new Error('Wrong request structure for NodeRequest.composeEmail, need: text,from,subject,to,cc,bcc,atts (can use empty arr for cc/bcc, and can skip atts)');
     }
     if (!hasProp(v, 'atts', 'Attachment[]?')) {
@@ -62,7 +62,7 @@ export class ValidateInput {
     if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?') && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
       return v as NodeRequest.composeEmailEncrypted;
     }
-    if (!v.pubKeys && v.format === 'plain') {
+    if ((!hasProp(v, 'pubKeys', 'string[]') || !v.pubKeys.length) && v.format === 'plain') {
       return v as NodeRequest.composeEmailPlain;
     }
     throw new Error('Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encrypt-inline OR format:plain allowed');

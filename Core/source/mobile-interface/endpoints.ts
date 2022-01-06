@@ -38,9 +38,7 @@ export class Endpoints {
 
   public encryptMsgWithPwd = async (uncheckedReq: any): Promise<EndpointRes> => {
     const req = ValidateInput.encryptMsgWithPwd(uncheckedReq);
-    const mimeHeaders: RichHeaders = { to: req.to, from: req.from, subject: req.subject, cc: req.cc, bcc: req.bcc };
-    const mime = await Mime.encode({ 'text/plain': req.text }, mimeHeaders);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: [], pwd: req.msgPwd, data: Buf.fromUtfStr(mime), armor: true }) as OpenPGP.EncryptArmorResult;
+    const encrypted = await PgpMsg.encrypt({ pubkeys: [], pwd: req.msgPwd, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
     return fmtRes({}, Buf.fromUtfStr(encrypted.data));
   }
 
@@ -65,7 +63,7 @@ export class Endpoints {
     }
     if (req.format === 'plain') {
       const atts = (req.atts || []).map(({ name, type, base64 }) => new Att({ name, type, data: Buf.fromBase64Str(base64) }));
-      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': req.text }, mimeHeaders, atts)));
+      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': req.text, 'text/html': req.html }, mimeHeaders, atts)));
     } else if (req.format === 'encrypt-inline') {
       const encryptedAtts: Att[] = [];
       for (const att of req.atts || []) {
