@@ -97,14 +97,21 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             throw EnterpriseServerApiError.emailFormat
         }
 
-        let response: ClientConfigurationResponse = try await performRequest(
-            email: email,
-            url: "/api/v1/client-configuration?domain=\(userDomain)",
-            method: .get,
-            withAuthorization: false
-        )
+        do {
+            let response: ClientConfigurationResponse = try await performRequest(
+                email: email,
+                url: "/api/v1/client-configuration?domain=\(userDomain)",
+                method: .get,
+                withAuthorization: false
+            )
 
-        return response.clientConfiguration
+            return response.clientConfiguration
+        } catch EnterpriseServerApiError.noActiveFesUrl {
+            return .empty
+        } catch {
+            throw error
+        }
+
     }
 
     func getReplyToken(for email: String) async throws -> String {
