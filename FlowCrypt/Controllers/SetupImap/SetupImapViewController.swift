@@ -269,8 +269,7 @@ extension SetupImapViewController {
 
     private func buttonNode() -> ButtonCellNode {
         let input = ButtonCellNode.Input(
-            title: decorator.connectButtonTitle,
-            insets: decorator.connectButtonInsets
+            title: decorator.connectButtonTitle
         )
         return ButtonCellNode(input: input) { [weak self] in
             self?.connect()

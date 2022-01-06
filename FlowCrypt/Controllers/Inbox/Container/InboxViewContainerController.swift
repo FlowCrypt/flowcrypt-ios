@@ -149,8 +149,7 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
             if indexPath.row == 1 {
                 return ButtonCellNode(
                     input: ButtonCellNode.Input(
-                        title: self.decorator.retryActionTitle(),
-                        insets: UIEdgeInsets.side(8)
+                        title: self.decorator.retryActionTitle()
                     )
                 ) {
                     self.fetchInboxFolder()

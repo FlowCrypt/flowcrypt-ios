@@ -235,8 +235,7 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                 }
             case .action:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .setPassPhrase),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .setPassPhrase)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     self?.handleButtonAction()

@@ -21,7 +21,6 @@ enum CreatePassphraseWithExistingKeyError: Error {
  * - Here user can enter a pass phrase (will be saved in memory)
  * - After passphrase is set up, user will be redirected to **main flow** (inbox view)
  */
-
 final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewController {
 
     override var parts: [SetupCreatePassphraseAbstractViewController.Parts] {

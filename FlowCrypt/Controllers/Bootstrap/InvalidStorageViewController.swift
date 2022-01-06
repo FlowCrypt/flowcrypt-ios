@@ -116,7 +116,6 @@ extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
                             color: .white,
                             alignment: .center
                         ),
-                        insets: insets,
                         color: .red
                     )
                 ) { [weak self] in

@@ -226,8 +226,7 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                 }
             case .action:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .loadAccount),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .loadAccount)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     self?.handleButtonPressed()

@@ -28,7 +28,6 @@ extension ButtonCellNode.Input {
             title: "retry_title"
                 .localized
                 .attributed(.bold(16), color: .white, alignment: .center),
-            insets: UIEdgeInsets(top: 16, left: 24, bottom: 8, right: 24),
             color: .main
         )
     }
@@ -45,7 +44,6 @@ extension ButtonCellNode.Input {
                     ),
                     alignment: .center
                 ),
-            insets: .side(8),
             color: .backgroundColor
         )
     }
