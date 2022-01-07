@@ -106,7 +106,7 @@ export class Xss {
     let text = html.split(br).join('\n').split(blockStart).filter(v => !!v).join('\n').split(blockEnd).filter(v => !!v).join('\n');
     text = text.replace(/\n{2,}/g, '\n\n');
     // not all tags were removed above. Remove all remaining tags
-    console.log(`>>>> htmlSanitizeAndStripAllTags 3:\n${text}\n`);
+    // console.log(`>>>> htmlSanitizeAndStripAllTags 3:\n${text}\n`);
     text = dereq_html_sanitize(text, {
       allowedTags: ['img', 'span'],
       allowedAttributes: { img: ['src'] },
@@ -117,7 +117,7 @@ export class Xss {
         },
       }
     });
-    console.log(`>>>> htmlSanitizeAndStripAllTags 4:\n${text}\n`);
+    // console.log(`>>>> htmlSanitizeAndStripAllTags 4:\n${text}\n`);
     text = dereq_html_sanitize(text, { allowedTags: [] }); // clean it one more time to replace leftover spans with their text
     text = text.trim();
     if (outputNl !== '\n') {
