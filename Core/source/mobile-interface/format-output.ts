@@ -89,7 +89,6 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
         mixedSignatures = true;
       }
     }
-
     if (block.type === 'decryptedText') {
       msgContentAsHtml += fmtMsgContentBlockAsHtml(Str.asEscapedHtml(block.content.toString()), 'green');
       msgContentAsText += block.content.toString() + '\n';
