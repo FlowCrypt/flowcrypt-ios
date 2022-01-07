@@ -30,4 +30,3 @@ export const setGlobals = () => {
 export const iso2022jpToUtf = (content: Buf) => {
   return dereq_encoding_japanese.convert(content, { to: 'UTF8', from: 'JIS', type: 'string' });
 }
-
