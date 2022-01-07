@@ -31,8 +31,3 @@ export const iso2022jpToUtf = (content: Buf) => {
   return dereq_encoding_japanese.convert(content, { to: 'UTF8', from: 'JIS', type: 'string' });
 }
 
-export const debugPrintArray = (title: string, arr: any[]) => {
-  for(var i = 0; i < arr.length; ++i) {
-    console.log(`>>> ${title} [${i}]:\n${JSON.stringify(arr[i])}\n`);
-  }
-}
