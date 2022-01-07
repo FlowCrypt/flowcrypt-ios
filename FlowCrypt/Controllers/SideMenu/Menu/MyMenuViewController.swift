@@ -5,7 +5,6 @@
 import AsyncDisplayKit
 import ENSwiftSideMenu
 import FlowCryptUI
-import Promises
 
 /**
  * Menu view controller
@@ -14,11 +13,11 @@ import Promises
  * On tap on each folder user should be redirected to `InboxViewController` with selected folder
  * On settings tap user will be redirected to `SettingsViewController`
  */
+@MainActor
 final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private enum Constants {
         static let allMail = "folder_all_mail".localized
         static let inbox = "folder_all_inbox".localized
-        static let cellHeight: CGFloat = 60
     }
 
     private enum Sections: Int, CaseIterable {
@@ -44,14 +43,16 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
         }
     }
 
-    private let foldersProvider: FoldersServiceType
-    private let dataService: DataServiceType
-    private let router: GlobalRouterType
+    private let appContext: AppContext
+    private let foldersService: FoldersServiceType
     private let decorator: MyMenuViewDecoratorType
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
-    private var accounts: [User] { dataService.validAccounts() }
+    private var accounts: [User] {
+        appContext.dataService.getFinishedSetupUsers(exceptUserEmail: currentUser.email)
+    }
+    private let currentUser: User
 
     private let tableNode: ASTableNode
 
@@ -65,15 +66,16 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
     private var isFirstLaunch = true
 
     init(
-        foldersProvider: FoldersServiceType = FoldersService(),
-        dataService: DataServiceType = DataService.shared,
-        globalRouter: GlobalRouterType = GlobalRouter(),
+        appContext: AppContext,
         decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
-        self.foldersProvider = foldersProvider
-        self.dataService = dataService
-        self.router = globalRouter
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("no current user") // todo - dependency-inject
+        }
+        self.currentUser = currentUser
+        self.appContext = appContext
+        self.foldersService = appContext.getFoldersService()
         self.decorator = decorator
         self.tableNode = tableNode
         super.init(node: ASDisplayNode())
@@ -129,7 +131,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
+        return { [weak self] in
             guard let self = self, let section = Sections(rawValue: indexPath.section) else {
                 return ASCellNode()
             }
@@ -137,12 +139,15 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
         }
     }
 
-    func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard let sections = Sections(rawValue: indexPath.section) else { return }
 
         switch (sections, state) {
         case (.header, _):
-            handleHeaderTap()
+            guard let header = tableNode.nodeForRow(at: indexPath) as? TextImageNode else {
+                return
+            }
+            handleTapOn(header: header)
         case (.main, .folders):
             guard let item = folders[safe: indexPath.row] else { return }
             handleFolderTap(with: item)
@@ -169,13 +174,14 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
 extension MyMenuViewController {
     private func fetchFolders() {
         showSpinner()
-        foldersProvider.fetchFolders(isForceReload: false)
-            .then(on: .main) { [weak self] folders in
-                self?.handleNewFolders(with: folders)
+        Task {
+            do {
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: self.currentUser)
+                handleNewFolders(with: folders)
+            } catch {
+                handleError(with: error)
             }
-            .catch { [weak self] error in
-                self?.handleError(with: error)
-            }
+        }
     }
 
     private func handleNewFolders(with folders: [FolderViewModel]) {
@@ -206,7 +212,7 @@ extension MyMenuViewController {
 // MARK: - Account functionality
 extension MyMenuViewController {
     private func addAccount() {
-        let vc = MainNavigationController(rootViewController: SignInViewController())
+        let vc = MainNavigationController(rootViewController: SignInViewController(appContext: appContext))
         present(vc, animated: true, completion: nil)
     }
 
@@ -215,23 +221,11 @@ extension MyMenuViewController {
             return
         }
 
-        router.switchActive(user: account)
-    }
-
-    private func animateImage(_ completion: (() -> Void)?) {
-        guard let header = tableNode.visibleNodes.compactMap({ $0 as? HeaderNode }).first else {
-            return
+        do {
+            try appContext.globalRouter.switchActive(user: account, appContext: appContext)
+        } catch {
+            showAlert(message: error.localizedDescription)
         }
-
-        UIView.animate(
-            withDuration: 0.3,
-            animations: {
-                header.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
-            },
-            completion: { _ in
-                completion?()
-            }
-        )
     }
 }
 
@@ -257,11 +251,11 @@ extension MyMenuViewController {
         switch (section, state) {
         case (.header, _):
             let headerInput = decorator.header(
-                for: dataService.currentUser,
+                for: appContext.dataService.currentUser,
                 image: state.arrowImage
             )
-            return HeaderNode(input: headerInput) { [weak self] in
-                self?.handleHeaderTap()
+            return TextImageNode(input: headerInput) { [weak self] node in
+                self?.handleTapOn(header: node)
             }
         case (.main, .accountAdding):
             return InfoCellNode(input: decorator.nodeForAccount(for: accounts[row]))
@@ -292,7 +286,8 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let viewController = InboxViewController(input)
+            let viewController = InboxViewControllerFactory.make(appContext: appContext, with: input)
+
             if let topController = topController(controllerType: InboxViewController.self),
                topController.path == folder.path {
                 sideMenuController()?.sideMenu?.hideSideMenu()
@@ -305,22 +300,30 @@ extension MyMenuViewController {
                 sideMenuController()?.sideMenu?.hideSideMenu()
                 return
             }
-            sideMenuController()?.setContentViewController(SettingsViewController())
+            sideMenuController()?.setContentViewController(SettingsViewController(appContext: appContext))
         case .logOut:
-            router.signOut()
+            do {
+                try appContext.globalRouter.signOut(appContext: appContext)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 
-    private func handleHeaderTap() {
-        animateImage { [weak self] in
-            guard let self = self else {
-                return
+    private func handleTapOn(header: TextImageNode) {
+        UIView.animate(
+            withDuration: 0.3,
+            animations: {
+                header.imageNode.view.transform = CGAffineTransform(rotationAngle: .pi)
+            },
+            completion: { [weak self] _ in
+                switch self?.state {
+                case .accountAdding: self?.state = .folders
+                case .folders: self?.state = .accountAdding
+                case .none: break
+                }
             }
-            switch self.state {
-            case .accountAdding: self.state = .folders
-            case .folders: self.state = .accountAdding
-            }
-        }
+        )
     }
 
     private func topController<T: UIViewController>(

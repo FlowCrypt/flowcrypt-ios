@@ -8,19 +8,10 @@
 
 import UIKit
 
-protocol BackupViewDecoratorType {
-    var sceneTitle: String { get }
-    var buttonInsets: UIEdgeInsets { get }
 
-    func buttonTitle(for state: BackupViewController.State) -> NSAttributedString
-    func description(for state: BackupViewController.State) -> NSAttributedString
-}
-
-struct BackupViewDecorator: BackupViewDecoratorType {
+struct BackupViewDecorator {
     let sceneTitle: String = "backup_screen_title"
         .localized
-
-    let buttonInsets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
 
     func buttonTitle(for state: BackupViewController.State) -> NSAttributedString {
         (state.hasAnyBackups ? "backup_screen_found_action" : "backup_screen_not_found_action")
@@ -46,8 +37,8 @@ struct BackupViewDecorator: BackupViewDecoratorType {
             subtitle = "\n\n" + "backup_screen_not_found_description".localized
         }
 
-        let titleAttributedString = title.attributed(.bold(20), color: .textColor, alignment: .center)
-        let subtitleAttrinutedString = subtitle.attributed(.medium(14), color: .textColor, alignment: .center)
+        let titleAttributedString = title.attributed(.bold(18), color: .mainTextColor, alignment: .center)
+        let subtitleAttrinutedString = subtitle.attributed(.medium(14), color: .mainTextColor, alignment: .center)
         let result = NSMutableAttributedString(attributedString: titleAttributedString)
         result.append(subtitleAttrinutedString)
 

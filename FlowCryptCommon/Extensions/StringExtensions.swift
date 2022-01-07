@@ -47,7 +47,11 @@ public extension String {
     }
     
     var deletingPathExtension: String {
-        return NSString(string: self).deletingPathExtension as String
+        NSString(string: self).deletingPathExtension as String
+    }
+
+    func capitalizingFirstLetter() -> String {
+        prefix(1).uppercased() + self.lowercased().dropFirst()
     }
 }
 
@@ -59,38 +63,17 @@ public extension NSAttributedString {
     }
 }
 
-public extension Optional where Wrapped == String {
-    var nilIfEmpty: String? {
-        guard let strongSelf = self else {
-            return nil
-        }
-        return strongSelf.isEmpty ? nil : strongSelf
-    }
-}
-
 // MARK: Email parsing
 public extension String {
-    var userAndRecipientDomain: (user: String, domain: String)? {
+    var isValidEmail: Bool {
+        let emailFormat = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
+        return emailPredicate.evaluate(with: self)
+    }
+    
+    var emailParts: (username: String, domain: String)? {
         let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
+        guard parts.count == 2 else { return nil }
         return (String(parts[0]), String(parts[1]))
-    }
-    
-    var userEmail: String? {
-        let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
-        return String(parts[0])
-    }
-    
-    var recipientDomain: String? {
-        let parts = self.split(separator: "@")
-        if parts.count != 2 {
-            return nil
-        }
-        return String(parts[1])
     }
 }

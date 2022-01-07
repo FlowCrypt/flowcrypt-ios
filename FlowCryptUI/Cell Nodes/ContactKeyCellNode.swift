@@ -47,12 +47,18 @@ public final class ContactKeyCellNode: CellNode {
 
         fingerprintTitleNode.attributedText = "Fingerprint:".attributed(.bold(16))
         fingerprintNode.attributedText = input.fingerprint
+        fingerprintNode.accessibilityIdentifier = "fingerprintValue"
 
+            
         createdAtTitleNode.attributedText = "Created:".attributed(.bold(16))
         createdAtNode.attributedText = input.createdAt
+        createdAtNode.accessibilityIdentifier = "createdAtValue"
+
 
         expiresTitleNode.attributedText = "Expires:".attributed(.bold(16))
         expiresNode.attributedText = input.expires
+        expiresNode.accessibilityIdentifier = "expiresValue"
+
 
         borderNode.borderWidth = 1.0
         borderNode.cornerRadius = 8.0

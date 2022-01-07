@@ -6,13 +6,13 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class KeyInfoTests: XCTestCase {
 
-    let user = UserObject(name: "name", email: "email", imap: nil, smtp: nil)
-    
+    let user = UserRealmObject(name: "name", email: "email", imap: nil, smtp: nil)
+
     func testKeyInfoInitWithEmptyPrivateThrowsError() {
         let keyDetail = KeyDetails(
             public: "public",
@@ -31,13 +31,13 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
-        
+
         XCTAssertTrue(thrownError is KeyInfoError)
     }
-    
+
     func testKeyInfoInitNotFullyEcryptedThrowsError() {
         let keyDetail = KeyDetails(
             public: "public",
@@ -56,13 +56,13 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
-        
+
         XCTAssertTrue(thrownError is KeyInfoError)
     }
-    
+
     func testKeyInfoWithEmptyKeyIdsThrowsError() {
         let keyDetail = KeyDetails(
             public: "public",
@@ -79,13 +79,13 @@ class KeyInfoTests: XCTestCase {
         )
 
         var thrownError: Error?
-        XCTAssertThrowsError(try KeyInfo(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
+        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
             thrownError = error
         }
-        
+
         XCTAssertTrue(thrownError is KeyInfoError)
     }
-    
+
     func testKeyInfoInit() throws {
         let keyDetail = KeyDetails(
             public: "public",
@@ -105,8 +105,8 @@ class KeyInfoTests: XCTestCase {
             revoked: false
         )
 
-        let key = try KeyInfo(keyDetail, passphrase: "123", source: .backup, user: user)
-        
+        let key = try KeypairRealmObject(keyDetail, passphrase: "123", source: .backup, user: user)
+
         XCTAssertTrue(key.private == "private")
         XCTAssertTrue(key.public == "public")
         XCTAssertTrue(Array(key.allFingerprints) == ["f1", "f2", "f3"])
@@ -116,8 +116,7 @@ class KeyInfoTests: XCTestCase {
         XCTAssertTrue(key.user == user)
         XCTAssertTrue(key.primaryFingerprint == "f1")
         XCTAssertTrue(key.primaryLongid == "l1")
-        
-        XCTAssertTrue(KeyInfo.primaryKey() == "primaryFingerprint")
+
         XCTAssertTrue(key.account == "email")
     }
 }

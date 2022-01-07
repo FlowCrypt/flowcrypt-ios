@@ -23,14 +23,11 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         }
     }
 
+    private let appContext: AppContext
     private let decorator: SetupViewDecorator
     private let email: String
     private let fetchedKeys: [KeyDetails]
     private let keyMethods: KeyMethodsType
-    private let keysStorage: KeyStorageType
-    private let keyService: KeyServiceType
-    private let router: GlobalRouterType
-    let passPhraseService: PassPhraseServiceType
 
     private var passPhrase: String?
 
@@ -46,23 +43,17 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
     }
 
     init(
+        appContext: AppContext,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         keyMethods: KeyMethodsType = KeyMethods(),
-        keysService: KeyStorageType = KeyDataStorage(),
-        router: GlobalRouterType = GlobalRouter(),
-        keyService: KeyServiceType = KeyService(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService(),
         email: String,
         fetchedKeys: [KeyDetails]
     ) {
+        self.appContext = appContext
         self.fetchedKeys = fetchedKeys.unique()
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.keysStorage = keysService
-        self.router = router
-        self.keyService = keyService
-        self.passPhraseService = passPhraseService
 
         super.init(node: TableNode())
     }
@@ -172,11 +163,18 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                 }
             case .enterPhrase:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .passPhraseContinue),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .passPhraseContinue)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
-                    self?.handleContinueAction()
+                    guard let self = self else { return }
+                    Task {
+                        do {
+                            try await self.handleContinueAction()
+                        } catch {
+                            self.handleCommon(error: error)
+                        }
+                    }
+
                 }
             case .chooseAnother:
                 return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
@@ -209,56 +207,58 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
 // MARK: - Actions
 
 extension SetupManuallyEnterPassPhraseViewController {
-    private func handleContinueAction() {
+    private func handleContinueAction() async throws {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
-
         guard passPhrase.isNotEmpty else {
             showAlert(message: "setup_enter_pass_phrase".localized)
             return
         }
         showSpinner()
-
-        let matchingKeys = keyMethods.filterByPassPhraseMatch(
+        let matchingKeys = try await keyMethods.filterByPassPhraseMatch(
             keys: fetchedKeys,
             passPhrase: passPhrase
         )
-
         guard matchingKeys.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-
-        switch keyService.getPrvKeyDetails() {
-        case let .failure(error):
-            handleCommon(error: error)
-        case let .success(existedKeys):
-            importKeys(with: existedKeys, and: passPhrase)
-        }
+        let keyDetails = try await appContext.keyService.getPrvKeyDetails()
+        try importKeys(with: keyDetails, and: passPhrase)
     }
 
-    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) {
+    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) throws {
         let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
         let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
 
-        keysStorage.addKeys(keyDetails: newKeysToAdd, passPhrase: passPhrase, source: .imported, for: email)
-        keysStorage.updateKeys(keyDetails: keysToUpdate, passPhrase: passPhrase, source: .imported, for: email)
+        try appContext.encryptedStorage.putKeypairs(
+            keyDetails: newKeysToAdd,
+            passPhrase: passPhrase,
+            source: .imported,
+            for: email
+        )
+        try appContext.encryptedStorage.putKeypairs(
+            keyDetails: keysToUpdate,
+            passPhrase: passPhrase,
+            source: .imported,
+            for: email
+        )
 
         if storageMethod == .memory {
-            keysToUpdate
+            try keysToUpdate
                 .map {
-                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
-                    passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
+                    try appContext.passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
                 }
 
-            newKeysToAdd
+            try newKeysToAdd
                 .map {
-                    PassPhrase(value: passPhrase, fingerprints: $0.fingerprints)
+                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
                 }
                 .forEach {
-                    passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
+                    try appContext.passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
                 }
         }
 
@@ -288,11 +288,7 @@ extension SetupManuallyEnterPassPhraseViewController {
         }
     }
 
-    private func handleAnotherKeySelection() {
-        navigationController?.popViewController(animated: true)
-    }
-
     private func moveToMainFlow() {
-        router.proceed()
+        appContext.globalRouter.proceed()
     }
 }

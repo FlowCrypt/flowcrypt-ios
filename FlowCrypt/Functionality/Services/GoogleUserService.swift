@@ -10,21 +10,31 @@ import AppAuth
 import FlowCryptCommon
 import Foundation
 import GTMAppAuth
-import Promises
 import RealmSwift
 
 protocol UserServiceType {
-    func signOut(user email: String)
-    func signIn(in viewController: UIViewController) -> Promise<SessionType>
-    func renewSession() -> Promise<Void>
+    func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType
+    func renewSession() async throws
 }
 
-enum GoogleUserServiceError: Error {
-    case missedAuthorization
-    case invalidUserEndpoint
-    case serviceError(Error)
-    case parsingError(Error)
+enum GoogleUserServiceError: Error, CustomStringConvertible {
+    case cancelledAuthorization
+    case contextError(String)
     case inconsistentState(String)
+    case userNotAllowedAllNeededScopes(missingScopes: [GoogleScope])
+
+    var description: String {
+        switch self {
+        case .cancelledAuthorization:
+            return "Authorization was cancelled"
+        case .contextError(let message):
+            return "Context error: \(message)"
+        case .inconsistentState(let message):
+            return "Inconsistent state error: \(message)"
+        case .userNotAllowedAllNeededScopes(let missingScopes):
+            return "Missing scopes error: \(missingScopes.map(\.title).joined(separator: ", "))"
+        }
+    }
 }
 
 struct GoogleUser: Codable {
@@ -32,119 +42,172 @@ struct GoogleUser: Codable {
     let picture: URL?
 }
 
-protocol GoogleUserServiceType {
-    var authorization: GTMAppAuthFetcherAuthorization? { get }
-    func renewSession() -> Promise<Void>
+struct IdToken: Codable {
+    let exp: Int
 }
 
+extension IdToken {
+    var expiryDuration: Double {
+        Date(timeIntervalSince1970: Double(exp)).timeIntervalSinceNow
+    }
+}
+
+enum IdTokenError: Error, CustomStringConvertible {
+    case missingToken, invalidJWTFormat, invalidBase64EncodedData
+
+    var description: String {
+        switch self {
+        case .missingToken:
+            return "id_token_missing_error_description".localized
+        case .invalidJWTFormat, .invalidBase64EncodedData:
+            return "id_token_invalid_error_description".localized
+        }
+    }
+}
+
+protocol GoogleUserServiceType {
+    var authorization: GTMAppAuthFetcherAuthorization? { get }
+    func renewSession() async throws
+}
+
+// this is here so that we don't have to include AppDelegate in test target
+protocol AppDelegateGoogleSesssionContainer {
+    var googleAuthSession: OIDExternalUserAgentSession? { get set }
+}
+
+// todo - should be refactored to not require currentUserEmail
 final class GoogleUserService: NSObject, GoogleUserServiceType {
+
+    let currentUserEmail: String?
+    var appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer?
+
+    init(
+        currentUserEmail: String?,
+        appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer? = nil
+    ) {
+        self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
+        self.currentUserEmail = currentUserEmail
+    }
+
     private enum Constants {
         static let index = "GTMAppAuthAuthorizerIndex"
+        static let userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo"
     }
+
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
-    var userToken: String? {
-        authorization?.authState
-            .lastTokenResponse?
-            .accessToken
+    private var tokenResponse: OIDTokenResponse? {
+        authorization?.authState.lastTokenResponse
     }
 
-    var idToken: String? {
-        authorization?.authState
-            .lastTokenResponse?
-            .idToken
+    private var idToken: String? {
+        tokenResponse?.idToken
+    }
+
+    var accessToken: String? {
+        tokenResponse?.accessToken
     }
 
     var authorization: GTMAppAuthFetcherAuthorization? {
         getAuthorizationForCurrentUser()
     }
 
-    private var currentUserEmail: String? {
-        DataService.shared.email
-    }
 }
 
 extension GoogleUserService: UserServiceType {
-    private var appDelegate: AppDelegate? {
-        UIApplication.shared.delegate as? AppDelegate
-    }
 
-    func renewSession() -> Promise<Void> {
+    func renewSession() async throws {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
-        Promise<Void> { [weak self] resolve, _ in
-            self?.logger.logInfo("Renew session for google user")
-            resolve(())
-        }
     }
 
-    func signIn(in viewController: UIViewController) -> Promise<SessionType> {
-        Promise(on: .main) { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            let request = self.makeAuthorizationRequest()
-
-            let googleAuthSession = OIDAuthState.authState(
+    @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType {
+        return try await withCheckedThrowingContinuation { continuation in
+            let request = self.makeAuthorizationRequest(scopes: scopes)
+            let googleDelegateSess = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
-            ) { authState, error in
-                if let authState = authState {
-                    let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
-                    guard let email = authorization.userEmail else {
-                        reject(GoogleUserServiceError.inconsistentState("Missed email"))
-                        return
+            ) { [weak self] authState, authError in
+                guard let self = self else { return }
+                guard let authState = authState else {
+                    if let authError = authError {
+                        let error = self.parseSignInError(authError)
+                        return continuation.resume(throwing: error)
+                    } else {
+                        let error = AppErr.unexpected("Shouldn't happen because received nil error and nil authState")
+                        return continuation.resume(throwing: error)
                     }
-
-                    self.saveAuth(state: authState, for: email)
-
-                    guard let token = authState.lastTokenResponse?.accessToken else {
-                        reject(GoogleUserServiceError.inconsistentState("Missed token"))
-                        return
+                }
+                Task<Void, Never> {
+                    do {
+                        return continuation.resume(returning: try await self.handleGoogleAuthStateResult(authState, scopes: scopes))
+                    } catch {
+                        return continuation.resume(throwing: error)
                     }
-
-                    self.fetchGoogleUser(with: authorization) { result in
-                        switch result {
-                        case .success(let user):
-                            resolve(SessionType.google(email, name: user.name, token: token))
-                        case .failure(let error):
-                            self.handleUserInfo(error: error)
-                            reject(error)
-                        }
-                    }
-                } else if let error = error {
-                    reject(error)
-                } else {
-                    fatalError("Shouldn't happe because covered received non nil error and non nil authState")
                 }
             }
-
-            self.appDelegate?.googleAuthSession = googleAuthSession
+            self.appDelegateGoogleSessionContainer?.googleAuthSession = googleDelegateSess
         }
     }
 
     func signOut(user email: String) {
-        appDelegate?.googleAuthSession = nil
-        GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+        DispatchQueue.main.async {
+            self.appDelegateGoogleSessionContainer?.googleAuthSession = nil
+            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+        }
+    }
+
+    private func parseSignInError(_ error: Error) -> Error {
+        guard let underlyingError = (error as NSError).userInfo["NSUnderlyingError"] as? NSError
+        else { return error }
+
+        switch underlyingError.code {
+        case 1:
+            return GoogleUserServiceError.cancelledAuthorization
+        case 2:
+            return GoogleUserServiceError.contextError("A context wasn’t provided.")
+        case 3:
+            return GoogleUserServiceError.contextError("The context was invalid.")
+        default:
+            return error
+        }
+    }
+
+    private func handleGoogleAuthStateResult(_ authState: OIDAuthState, scopes: [GoogleScope]) async throws -> SessionType {
+        let missingScopes = self.checkMissingScopes(authState.scope, from: scopes)
+        if missingScopes.isNotEmpty {
+            throw GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes)
+        }
+        let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
+        guard let email = authorization.userEmail else {
+            throw GoogleUserServiceError.inconsistentState("Missed email")
+        }
+        self.saveAuth(state: authState, for: email)
+        guard let token = authState.lastTokenResponse?.accessToken else {
+            throw GoogleUserServiceError.inconsistentState("Missed token")
+        }
+        let user = try await self.fetchGoogleUser(with: authorization)
+        return SessionType.google(email, name: user.name, token: token)
     }
 }
 
 // MARK: - Convenience
 extension GoogleUserService {
 
-    private func makeAuthorizationRequest() -> OIDAuthorizationRequest {
+    private func makeAuthorizationRequest(scopes: [GoogleScope]) -> OIDAuthorizationRequest {
         OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
-            scopes: GeneralConstants.Gmail.currentScope.map(\.value) + [OIDScopeEmail],
+            scopes: scopes.map(\.value),
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
-            additionalParameters: nil
+            additionalParameters: ["include_granted_scopes": "true"]
         )
     }
 
     // save auth session to keychain
     private func saveAuth(state: OIDAuthState, for email: String) {
         state.stateChangeDelegate = self
-        let authorization: GTMAppAuthFetcherAuthorization = GTMAppAuthFetcherAuthorization(authState: state)
+        let authorization = GTMAppAuthFetcherAuthorization(authState: state)
         GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.index + email)
     }
 
@@ -157,46 +220,83 @@ extension GoogleUserService {
         return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
     }
 
+    // todo - isn't this call supported by Google client library?
     private func fetchGoogleUser(
-        with authorization: GTMAppAuthFetcherAuthorization?,
-        completion: @escaping ((Result<GoogleUser, GoogleUserServiceError>) -> Void)
-    ) {
-        guard let authorization = authorization else {
-            fatalError("authorization should not be nil at this point")
+        with authorization: GTMAppAuthFetcherAuthorization
+    ) async throws -> GoogleUser {
+        guard let url = URL(string: Constants.userInfoUrl) else {
+            throw AppErr.unexpected("URL(Constants.userInfoUrl) nil")
         }
-
-        guard let userInfoEndpoint = URL(string: "https://www.googleapis.com/oauth2/v3/userinfo") else {
-            fatalError("userInfoEndpoint could not be nil because it's hardcoded string url")
-        }
-
         let fetcherService = GTMSessionFetcherService()
         fetcherService.authorizer = authorization
-
-        fetcherService.fetcher(with: userInfoEndpoint)
-            .beginFetch { data, error in
-                if let data = data {
-                    do {
-                        let user = try JSONDecoder().decode(GoogleUser.self, from: data)
-                        completion(.success(user))
-                    } catch {
-                        completion(.failure(.parsingError(error)))
-                    }
-                } else if let error = error {
-                    completion(.failure(.serviceError(error)))
-                } else {
-                    completion(.failure(.inconsistentState("Fetching user")))
-                }
-            }
-    }
-
-    private func handleUserInfo(error: Error) {
-        if (error as NSError).isEqual(OIDOAuthTokenErrorDomain) {
-            logger.logError("Authorization error during token refresh, clearing state. \(error)")
-            if let email = currentUserEmail {
+        do {
+            let data = try await fetcherService.fetcher(with: url).beginFetch()
+            return try JSONDecoder().decode(GoogleUser.self, from: data)
+        } catch {
+            let isTokenErr = (error as NSError).isEqual(OIDOAuthTokenErrorDomain)
+            if isTokenErr, let email = currentUserEmail {
+                self.logger.logError("Authorization error during token refresh, clearing state. \(error)")
+                // removes any authorisation information which was stored in Keychain, the same happens on logout.
+                // if any error happens during token refresh then user will be signed out automatically.
                 GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
             }
-        } else {
-            logger.logError("Authorization error during fetching user info")
+            throw error
+        }
+    }
+
+    private func checkMissingScopes(_ scope: String?, from scopes: [GoogleScope]) -> [GoogleScope] {
+        guard let allowedScopes = scope?.split(separator: " ").map(String.init),
+              allowedScopes.isNotEmpty
+        else { return scopes }
+        return scopes.filter { !allowedScopes.contains($0.value) }
+    }
+}
+
+// MARK: - Tokens
+extension GoogleUserService {
+    func getCachedOrRefreshedIdToken(minExpiryDuration: Double = 0) async throws -> String {
+        guard let idToken = idToken else { throw(IdTokenError.missingToken) }
+
+        let decodedToken = try decode(idToken: idToken)
+
+        guard decodedToken.expiryDuration > minExpiryDuration else {
+            let (_, updatedToken) = try await performTokenRefresh()
+            return updatedToken
+        }
+
+        return idToken
+    }
+
+    private func decode(idToken: String) throws -> IdToken {
+        let components = idToken.components(separatedBy: ".")
+
+        guard components.count == 3 else { throw(IdTokenError.invalidJWTFormat) }
+
+        var decodedString = components[1]
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+
+        while decodedString.utf16.count % 4 != 0 {
+            decodedString += "="
+        }
+
+        guard let decodedData = Data(base64Encoded: decodedString)
+        else { throw(IdTokenError.invalidBase64EncodedData) }
+
+        return try JSONDecoder().decode(IdToken.self, from: decodedData)
+    }
+
+    private func performTokenRefresh() async throws -> (accessToken: String, idToken: String) {
+        return try await withCheckedThrowingContinuation { continuation in
+            authorization?.authState.setNeedsTokenRefresh()
+            authorization?.authState.performAction { accessToken, idToken, error in
+                guard let accessToken = accessToken, let idToken = idToken else {
+                    let tokenError = error ?? AppErr.unexpected("Shouldn't happen because received nil error and nil token")
+                    return continuation.resume(throwing: tokenError)
+                }
+                let result = (accessToken, idToken)
+                return continuation.resume(with: .success(result))
+            }
         }
     }
 }
@@ -207,7 +307,6 @@ extension GoogleUserService: OIDAuthStateChangeDelegate {
         guard let email = currentUserEmail else {
             return
         }
-
         saveAuth(state: state, for: email)
     }
 }

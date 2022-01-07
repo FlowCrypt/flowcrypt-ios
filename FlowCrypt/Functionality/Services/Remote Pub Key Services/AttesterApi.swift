@@ -3,18 +3,13 @@
 //
 
 import Foundation
-import Promises
-
-struct PubkeySearchResult {
-    let email: String
-    let armored: Data?
-}
+import FlowCryptCommon
 
 protocol AttesterApiType {
-    func lookupEmail(email: String) async throws -> [KeyDetails]
-    func updateKey(email: String, pubkey: String, token: String?) -> Promise<String>
-    func replaceKey(email: String, pubkey: String) -> Promise<String>
-    func testWelcome(email: String, pubkey: String) -> Promise<Void>
+    func lookup(email: String) async throws -> [KeyDetails]
+    func update(email: String, pubkey: String, token: String?) async throws -> String
+    func replace(email: String, pubkey: String) async throws -> String
+    func testWelcome(email: String, pubkey: String) async throws
 }
 
 /// Public key server run by us that is shared across customers
@@ -23,10 +18,7 @@ final class AttesterApi: AttesterApiType {
 
     private enum Constants {
         static let lookupEmailRequestTimeout: TimeInterval = 10
-    }
-
-    private enum Endpoint {
-        static let baseURL = "https://flowcrypt.com/attester/"
+        static let apiName = "AttesterApi"
     }
 
     private let core: Core
@@ -34,52 +26,55 @@ final class AttesterApi: AttesterApiType {
 
     init(
         core: Core = .shared,
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
+        clientConfiguration: ClientConfiguration
     ) {
         self.core = core
-        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
+        self.clientConfiguration = clientConfiguration
     }
 
-    private func urlPub(emailOrLongid: String) -> String {
-        let normalizedEmail = emailOrLongid
+    private func constructUrlBase() -> String {
+        guard !Bundle.isDebugBundleWithArgument("--mock-attester-api") else {
+            return "http://127.0.0.1:8001/attester" // mock
+        }
+        return "https://flowcrypt.com/attester" // live
+    }
+
+    private func pubUrl(email: String) -> String {
+        let normalizedEmail = email
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        return "\(Endpoint.baseURL)pub/\(normalizedEmail)"
+        return constructUrlBase() + "/pub/" + normalizedEmail
     }
 }
 
 extension AttesterApi {
-    func lookupEmail(email: String) async throws -> [KeyDetails] {
+    func lookup(email: String) async throws -> [KeyDetails] {
         if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
             return []
         }
-
-        let res = try await URLSession.shared.asyncCall(
-            urlPub(emailOrLongid: email),
-            tolerateStatus: [404],
-            timeout: Constants.lookupEmailRequestTimeout
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: pubUrl(email: email),
+            timeout: Constants.lookupEmailRequestTimeout,
+            tolerateStatus: [404]
         )
-
+        let res = try await ApiCall.call(request)
         if res.status >= 200, res.status <= 299 {
-            let keys = try core.parseKeys(armoredOrBinary: res.data)
-            let pubKeys = keys.keyDetails
-                    .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
-            return pubKeys
+            return try await core.parseKeys(armoredOrBinary: res.data).keyDetails
         }
-
         if res.status == 404 {
             return []
         }
-
-        // programming error because should never happen
-        throw AppErr.unexpected("Status \(res.status) when looking up pubkey for \(email)")
+        throw AppErr.unexpected(
+            "programing error - should have been caught above" +
+            " - unexpected status \(res.status) when looking up pubkey for \(email)"
+        )
     }
 
     @discardableResult
-    func updateKey(email: String, pubkey: String, token: String?) -> Promise<String> {
-        let httpMethod: HTTPMetod
+    func update(email: String, pubkey: String, token: String?) async throws -> String {
+        let httpMethod: HTTPMethod
         let headers: [URLHeader]
-
         if let value = token {
             httpMethod = .post
             headers = [URLHeader(value: "Bearer \(value)", httpHeaderField: "Authorization")]
@@ -87,42 +82,37 @@ extension AttesterApi {
             httpMethod = .put
             headers = []
         }
-
-        let request = URLRequest.urlRequest(
-            with: urlPub(emailOrLongid: email),
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: pubUrl(email: email),
             method: httpMethod,
             body: pubkey.data(),
             headers: headers
         )
-        return Promise { () -> String in
-            let res = try awaitPromise(URLSession.shared.call(request))
-            return res.data.toStr()
-        }
+        let res = try await ApiCall.call(request)
+        return res.data.toStr()
     }
 
     @discardableResult
-    func replaceKey(email: String, pubkey: String) -> Promise<String> {
-        let request = URLRequest.urlRequest(
-            with: urlPub(emailOrLongid: email),
+    func replace(email: String, pubkey: String) async throws -> String {
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: pubUrl(email: email),
             method: .post,
             body: pubkey.data()
         )
-        return Promise { () -> String in
-            let res = try awaitPromise(URLSession.shared.call(request))
-            return res.data.toStr()
-        }
+        let res = try await ApiCall.call(request)
+        return res.data.toStr()
     }
 
-    @discardableResult
-    func testWelcome(email: String, pubkey: String) -> Promise<Void> {
-        let request = URLRequest.urlRequest(
-            with: Endpoint.baseURL + "test/welcome",
+    func testWelcome(email: String, pubkey: String) async throws {
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: constructUrlBase() + "/test/welcome",
             method: .post,
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
             headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
         )
-        return Promise { () -> Void in
-            _ = try awaitPromise(URLSession.shared.call(request)) // will throw on non-200
-        }
+        _ = try await ApiCall.call(request) // will throw on non-200
     }
 }

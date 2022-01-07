@@ -8,6 +8,18 @@
 
 import UIKit
 
+enum CreateKeyError: Error {
+    case weakPassPhrase(_ strength: CoreRes.ZxcvbnStrengthBar)
+    // Missing user email
+    case missedUserEmail
+    // Missing user name
+    case missedUserName
+    // Pass phrases don't match
+    case doesntMatch
+    // silent abort
+    case conformingPassPhraseError
+}
+
 // KeyServiceError
 struct KeyServiceErrorHandler: ErrorHandler {
     func handle(error: Error, for viewController: UIViewController) -> Bool {
@@ -19,6 +31,8 @@ struct KeyServiceErrorHandler: ErrorHandler {
             errorMessage = "keyServiceError_retrieve_parse"
         case .unexpected:
             errorMessage = "keyServiceError_retrieve_unexpected"
+        case .missingCurrentUserEmail:
+            errorMessage = "keyServiceError_missing_current_email"
         default:
             errorMessage = nil
         }

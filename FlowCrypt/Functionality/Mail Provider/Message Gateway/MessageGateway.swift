@@ -1,5 +1,5 @@
 //
-//  MessageSender.swift
+//  MessageGateway.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 04.11.2020.
@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GoogleAPIClientForREST_Gmail
 
 struct MessageGatewayInput {
     let mime: Data
@@ -14,5 +15,10 @@ struct MessageGatewayInput {
 }
 
 protocol MessageGateway {
-    func sendMail(input: MessageGatewayInput) async throws
+    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws
+}
+
+protocol DraftGateway {
+    func saveDraft(input: MessageGatewayInput, draft: GTLRGmail_Draft?) async throws -> GTLRGmail_Draft
+    func deleteDraft(with identifier: String) async
 }

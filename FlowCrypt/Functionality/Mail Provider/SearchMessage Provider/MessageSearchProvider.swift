@@ -6,7 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-
 enum MessageSearchDestinations: CaseIterable {
     case subject, from, to, recipient, content, body
 }

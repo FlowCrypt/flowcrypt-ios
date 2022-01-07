@@ -43,19 +43,21 @@ final class SettingsViewController: TableNodeViewController {
         }
     }
 
+    private let appContext: AppContext
     private let decorator: SettingsViewDecoratorType
-    private let currentUser: User?
     private let clientConfiguration: ClientConfiguration
     private let rows: [SettingsMenuItem]
 
     init(
-        decorator: SettingsViewDecoratorType = SettingsViewDecorator(),
-        currentUser: User? = DataService.shared.currentUser,
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService()
+        appContext: AppContext,
+        decorator: SettingsViewDecoratorType = SettingsViewDecorator()
     ) {
+        self.appContext = appContext
         self.decorator = decorator
-        self.currentUser = currentUser
-        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
+        guard let currentUser = appContext.dataService.currentUser?.email else {
+            fatalError("missing current user") // todo - need more elegant solution
+        }
+        self.clientConfiguration = appContext.clientConfigurationService.getSaved(for: currentUser)
         self.rows = SettingsMenuItem.filtered(with: self.clientConfiguration)
         super.init(node: TableNode())
     }
@@ -93,7 +95,7 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
             let setting = self.rows[indexPath.row]
-            return SettingsCellNode(
+            return TitleCellNode(
                 title: self.decorator.attributedSetting(setting.title),
                 insets: self.decorator.insets
             )
@@ -114,19 +116,23 @@ extension SettingsViewController {
 
         switch setting {
         case .keys:
-            viewController = KeySettingsViewController()
+            viewController = KeySettingsViewController(
+                appContext: appContext
+            )
         case .legal:
             viewController = LegalViewController()
         case .contacts:
-            viewController = ContactsListViewController()
+            viewController = ContactsListViewController(
+                appContext: appContext
+            )
         case .backups:
-            guard let currentUser = currentUser,
+            guard let currentUser = appContext.dataService.currentUser,
                   clientConfiguration.canBackupKeys else {
                 viewController = nil
                 return
             }
             let userId = UserId(email: currentUser.email, name: currentUser.email)
-            viewController = BackupViewController(userId: userId)
+            viewController = BackupViewController(appContext: appContext, userId: userId)
         default:
             viewController = nil
         }

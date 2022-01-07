@@ -4,6 +4,11 @@
 
 import { Buf } from '../core/buf';
 import { randomBytes } from 'crypto';
+import { ConvertStringOptions } from 'encoding-japanese';
+
+declare const dereq_encoding_japanese : {
+  convert: (data: Uint8Array, options: ConvertStringOptions) => string;
+};
 
 export const secureRandomBytes = (length: number): Uint8Array => {
   return randomBytes(length);
@@ -23,8 +28,8 @@ export const setGlobals = () => {
 }
 
 export const iso2022jpToUtf = (content: Buf) => {
-  throw new Error('iso2022jpToUtf not implemented on node');
-};
+  return dereq_encoding_japanese.convert(content, { to: 'UTF8', from: 'JIS', type: 'string' });
+}
 
 export const debugPrintArray = (title: string, arr: any[]) => {
   for(var i = 0; i < arr.length; ++i) {

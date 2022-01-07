@@ -7,117 +7,119 @@
 //
 
 import Foundation
-import Promises
+import MailCore
 
 extension Imap {
-    func finalize<T>(
+
+    func executeVoid(
         _ op: String,
-        _ resolve: @escaping (T) -> Void,
-        _ reject: @escaping (Error) -> Void,
-        retry: @escaping () -> Promise<T>,
-        start: DispatchTime = DispatchTime.now()
-    ) -> (Error?, T?) -> Void {
-        { [weak self] error, res in
-            self?.logger.logError("Error \(String(describing: error))")
-//            log(op, error: error, res: res, start: start)
-            guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
-            if let res = res {
-                resolve(res)
+        _ voidExecutor: @escaping (MCOIMAPSession, @escaping (Error?) -> Void) -> Void
+    ) async throws {
+        guard let imapSess = self.imapSess else {
+            throw ImapError.noSession
+        }
+        do {
+            try await asAsync(imapSess, voidExecutor)
+            // todo - log time
+            return
+        } catch {
+            // todo - log error + time
+            if try await shouldRetryOnce(op, AppErr(error)) == false {
+                throw error
             } else {
-                reject(error ?? AppErr.unexpected("Error is empty, but no result"))
+                do {
+                    try await asAsync(imapSess, voidExecutor)
+                    // todo - log time
+                    return
+                } catch {
+                    // log this error + time
+                    throw error
+                }
             }
         }
     }
 
-    func finalizeVoid(
+    func execute<RES>(
         _ op: String,
-        _ resolve: @escaping (Void) -> Void, // needed for Swift4 Promises compatibility
-        _ reject: @escaping (Error) -> Void,
-        retry: @escaping () -> Promise<Void>
-    ) -> (Error?) -> Void {
-        let start = DispatchTime.now()
-        return { [weak self] error in
-            self?.logger.logError("Error \(String(describing: error))")
-            guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
-
-            if let error = error {
-                reject(error)
+        _ executor: @escaping (MCOIMAPSession, @escaping (Error?, RES?) -> Void) -> Void
+    ) async throws -> RES {
+//        let start = DispatchTime.now()
+        guard let imapSess = self.imapSess else {
+            throw ImapError.noSession
+        }
+        do {
+            let result = try await asAsync(imapSess, executor)
+            // todo - log result + time
+            return result
+        } catch {
+            // todo - log error + time
+            if try await shouldRetryOnce(op, AppErr(error)) == false {
+                throw error
             } else {
-                resolve(())
+                do {
+                    let result = try await asAsync(imapSess, executor)
+                    // todo - log result + time
+                    return result
+                } catch {
+                    // log this error + time
+                    throw error
+                }
             }
         }
     }
 
-    func finalizeAsVoid(
-        _ op: String,
-        _ resolve: @escaping (Void) -> Void, // needed for Swift4 Promises compatibility
-        _ reject: @escaping (Error) -> Void,
-        retry: @escaping () -> Promise<Void>
-    ) -> (Error?, Any?) -> Void {
-        let start = DispatchTime.now()
-        return { [weak self] error, _ in
-            self?.logger.logError("Error \(String(describing: error))")
-            guard self?.notRetrying(op, error, resolve, reject, retry: retry) ?? false else { return }
-            if let error = error {
-                reject(error)
-            } else {
-                resolve(())
+    private func asAsync<RES>(
+        _ imapSess: MCOIMAPSession,
+        _ executor: @escaping (MCOIMAPSession, @escaping (Error?, RES?) -> Void) -> Void
+    ) async throws -> RES {
+        return try await withCheckedThrowingContinuation { continuation in
+            executor(imapSess) { error, value in
+                if let error = error {
+                    return continuation.resume(throwing: error)
+                } else if let value = value {
+                    return continuation.resume(returning: value)
+                } else {
+                    return continuation.resume(throwing: AppErr.cast("Received nil from IMAP operation"))
+                }
             }
         }
     }
 
-    /// must be always called with `guard retryAuthErrorNotNeeded else { return }`
-    func notRetrying<T>(
-        _ op: String,
-        _ err: Error?,
-        _ resolve: @escaping (T) -> Void,
-        _ reject: @escaping (Error) -> Void,
-        retry: @escaping () -> Promise<T>
-    ) -> Bool {
-        if let err = err {
-            let error = AppErr(err)
-            // let debugId = Int.random(in: 1 ... Int.max)
-            // let start = DispatchTime.now()
-
-            switch error {
-            case .authentication:
-                if let operation = lastErr[op], operation == error { return true }
-//                logger.logInfo("it's a retriable auth err, will call renewAccessToken \(op)")
-                lastErr[op] = error
-
-                renewSession()
-                    .then { _ in
-//                        self?.logger.logInfo("forced session refreshes \(op)")
-                        retry().then(resolve).catch(reject)
-                    }
-                    .catch(reject)
-//                logger.logDebug("just set lastErr to \(lastErr[op])")
-
-                return false
-            case .connection:
-                if let operation = lastErr[op], operation == error { return true }
-//                logDebug(13, "(\(debugId)|\(op)) it's a retriable conn err, clear sessions")
-
-                imapSess = nil // the connection has dropped, so it's probably ok to not officially "close" it
-                smtpSess = nil // but maybe there could be a cleaner way to dispose of the connection?
-                lastErr[op] = error
-
-//                logDebug(14, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
-//                log("conn drop for \(op), cleared sessions, will retry \(op)", error: nil, res: nil, start: start)
-                retry().then(resolve).catch(reject)
-//                logDebug(15, "(\(debugId)|\(op)) return=true (need to retry)")
-                return false
-            default:
-//                logDebug(8, "(\(debugId)|\(op)) err not retriable, rejecting ", value: err)
-                reject(error)
-                lastErr[op] = error
-//                logDebug(9, "(\(debugId)|\(op)) just set lastErr to ", value: lastErr[op])
-//                logDebug(12, "(\(debugId)|\(op)) return=true (no need to retry)")
-                return true
+    private func asAsync(
+        _ imapSess: MCOIMAPSession,
+        _ executor: @escaping (MCOIMAPSession, @escaping (Error?) -> Void) -> Void
+    ) async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            executor(imapSess) { error in
+                if let error = error {
+                    return continuation.resume(throwing: error)
+                } else {
+                    return continuation.resume()
+                }
             }
-        } else {
-            lastErr.removeValue(forKey: op)
+        }
+    }
+
+    func shouldRetryOnce(
+        _ op: String,
+        _ appErr: AppErr
+    ) async throws -> Bool {
+        switch appErr {
+        case .authentication:
+            try await renewSession() // todo - log time
             return true
+        case .connection:
+            // the connection has dropped, so it's probably ok to not officially "close" it.
+            // but maybe there could be a cleaner way to dispose of the connection?
+            // imapSess = nil
+            // smtpSess = nil
+            // this is a mess, neads a real refactor. use DI
+            // todo - for now renewing of session disabled, will probably break retries
+//            setupSession()
+//            await connectImap(session: imapSessNotNil)
+            return true
+        default:
+            return false
         }
     }
 }

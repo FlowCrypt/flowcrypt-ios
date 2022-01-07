@@ -20,7 +20,6 @@ final class ViewController: TableNodeViewController {
     }
 
     private lazy var composeButton = ComposeButtonNode { [weak self] in
-        print("Tapped")
     }
 
     init() {
@@ -74,7 +73,7 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
             let element = Elements(rawValue: indexPath.row)!
             switch element {
             case .header:
-                return HeaderNode(input: nil)
+                return TextImageNode(input: nil)
             case .divider:
                 return DividerCellNode(color: .black, height: 10)
             case .menu:

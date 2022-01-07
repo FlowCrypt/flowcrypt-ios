@@ -16,7 +16,7 @@ public final class ButtonCellNode: CellNode {
 
         public init(
             title: NSAttributedString,
-            insets: UIEdgeInsets,
+            insets: UIEdgeInsets = .buttonInsets,
             color: UIColor? = nil
         ) {
             self.title = title
@@ -47,22 +47,10 @@ public final class ButtonCellNode: CellNode {
         self.insets = input.insets
         buttonColor = input.color
         super.init()
-        button.cornerRadius = 5
+        button.cornerRadius = 8
         button.backgroundColor = input.color ?? .main
         button.style.preferredSize.height = 50
         button.setAttributedTitle(input.title, for: .normal)
-    }
-
-    @available(*, deprecated, message: "Deprecated. Use init(input: Input)")
-    public init(title: NSAttributedString, insets: UIEdgeInsets, color: UIColor? = nil, action: (() -> Void)?) {
-        onTap = action
-        self.insets = insets
-        buttonColor = color
-        super.init()
-        button.cornerRadius = 5
-        button.backgroundColor = color ?? .main
-        button.style.preferredSize.height = 50
-        button.setAttributedTitle(title, for: .normal)
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {

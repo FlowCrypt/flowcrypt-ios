@@ -68,10 +68,10 @@ public struct Logger {
         var label: String {
             switch self {
             case .verbose: return "🏷"
-            case .info: return "ℹ️"
             case .debug: return "⚙️"
-            case .error: return "❗️"
-            case .warning: return "🔥"
+            case .info: return "ℹ️"
+            case .warning: return "❗️"
+            case .error: return "🔥"
             }
         }
     }
@@ -92,7 +92,7 @@ public struct Logger {
 
     private func log(
         _ level: Logger.Level,
-        _ message: @autoclosure () -> String,
+        _ message: String,
         file: String = #file,
         function: String = #function,
         line: UInt = #line
@@ -129,7 +129,7 @@ public struct Logger {
 
         messageToPrint.append(" ")
         // "ℹ️[App Start][GlobalRouter-proceed-56][11:25:02] Some message goes here"
-        messageToPrint.append(message())
+        messageToPrint.append(message)
 
         debugPrint(messageToPrint)
     }
@@ -241,8 +241,4 @@ public func print(_ object: Any) {
   #if DEBUG
       Swift.print(object)
   #endif
-}
-
-public func releasePrint(_ object: Any) {
-    Swift.print(object)
 }

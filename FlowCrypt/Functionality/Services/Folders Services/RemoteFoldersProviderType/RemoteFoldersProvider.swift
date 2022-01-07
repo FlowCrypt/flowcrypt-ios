@@ -7,14 +7,7 @@
 //
 
 import Foundation
-import Promises
 
 protocol RemoteFoldersProviderType {
-    func fetchFolders() -> Promise<[Folder]>
-}
-
-struct Folder {
-    let name: String
-    let path: String
-    let image: Data?
+    func fetchFolders() async throws -> [Folder]
 }

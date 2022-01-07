@@ -7,41 +7,47 @@
 //
 
 import Foundation
-import Promises
 import RealmSwift
-import IDZSwiftCommonCrypto
 
 protocol LocalClientConfigurationType {
-    func load() -> RawClientConfiguration?
-    func remove()
-    func save(raw: RawClientConfiguration)
+    func load(for user: String) -> RawClientConfiguration?
+    func remove(for user: String) throws
+    func save(for user: User, raw: RawClientConfiguration) throws
 }
 
-struct LocalClientConfiguration {
-    let cache: EncryptedCacheService<ClientConfigurationObject>
-    init(encryptedStorage: EncryptedStorageType = EncryptedStorage()) {
-        self.cache = EncryptedCacheService(encryptedStorage: encryptedStorage)
+final class LocalClientConfiguration {
+    private let encryptedStorage: EncryptedStorageType
+
+    private var storage: Realm {
+        encryptedStorage.storage
+    }
+
+    init(encryptedStorage: EncryptedStorageType) {
+        self.encryptedStorage = encryptedStorage
     }
 }
 
 extension LocalClientConfiguration: LocalClientConfigurationType {
-    func load() -> RawClientConfiguration? {
-        // (tom) todo - should we not guard here?
-//        guard let user = cache.encryptedStorage.activeUser else {
-//            fatalError("Internal inconsistency, no active user when loading client configuration")
-//        }
-        RawClientConfiguration(cache.getAllForActiveUser()?.first)
+    func load(for userEmail: String) -> RawClientConfiguration? {
+        return storage.objects(ClientConfigurationRealmObject.self).where {
+            $0.userEmail == userEmail
+        }.first.flatMap(RawClientConfiguration.init)
     }
 
-    func remove() {
-        // (tom) todo - should we not guard here?
-        cache.removeAllForActiveUser()
-    }
-
-    func save(raw: RawClientConfiguration) {
-        guard let user = cache.encryptedStorage.activeUser else {
-            fatalError("Internal inconsistency, no active user when saving client configuration")
+    func remove(for userEmail: String) throws {
+        let objects = storage.objects(ClientConfigurationRealmObject.self).where {
+            $0.userEmail == userEmail
         }
-        cache.save(ClientConfigurationObject(raw, user: user))
+
+        try storage.write {
+            storage.delete(objects)
+        }
+    }
+
+    func save(for user: User, raw: RawClientConfiguration) throws {
+        let object = ClientConfigurationRealmObject(configuration: raw, user: user)
+        try storage.write {
+            storage.add(object, update: .modified)
+        }
     }
 }

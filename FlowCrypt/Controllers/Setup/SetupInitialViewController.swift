@@ -19,6 +19,7 @@ import FlowCryptUI
  *      - Create new key - **SetupGenerateKeyViewController**
  */
 final class SetupInitialViewController: TableNodeViewController {
+
     private enum Parts: Int, CaseIterable {
         case title, description, createKey, importKey, anotherAccount
     }
@@ -35,7 +36,7 @@ final class SetupInitialViewController: TableNodeViewController {
             case .searchingKeyBackupsInInbox:
                 return 2
             case .error:
-                return 3
+                return 4
             case .noKeyBackupsInInbox:
                 return Parts.allCases.count
             }
@@ -50,30 +51,28 @@ final class SetupInitialViewController: TableNodeViewController {
         .default
     }
 
-    private let backupService: BackupServiceType
+    private let service: ServiceActor
     private let user: UserId
-    private let router: GlobalRouterType
     private let decorator: SetupViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let emailKeyManagerApi: EmailKeyManagerApiType
+    private let appContext: AppContext
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
+        appContext: AppContext,
         user: UserId,
-        backupService: BackupServiceType = BackupService(),
-        router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
-        emailKeyManagerApi: EmailKeyManagerApiType = EmailKeyManagerApi()
+        emailKeyManagerApi: EmailKeyManagerApiType? = nil
     ) {
+        self.appContext = appContext
         self.user = user
-        self.backupService = backupService
-        self.router = router
+        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.decorator = decorator
-        self.clientConfiguration = clientConfigurationService.getSavedClientConfigurationForCurrentUser()
-        self.emailKeyManagerApi = emailKeyManagerApi
-
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
+        self.emailKeyManagerApi = emailKeyManagerApi ?? EmailKeyManagerApi(clientConfiguration: clientConfiguration)
+        self.clientConfiguration = clientConfiguration
         super.init(node: TableNode())
     }
 
@@ -124,7 +123,7 @@ extension SetupInitialViewController {
 
         Task {
             do {
-                let keys = try await backupService.fetchBackupsFromInbox(for: user)
+                let keys = try await service.fetchBackupsFromInbox(for: user)
                 proceedToSetupWith(keys: keys)
             } catch {
                 handle(error: error)
@@ -132,8 +131,12 @@ extension SetupInitialViewController {
         }
     }
 
-    private func handleOtherAccount() {
-        router.signOut()
+    private func signOut() {
+        do {
+            try appContext.globalRouter.signOut(appContext: appContext)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 
     private func handle(error: Error) {
@@ -149,41 +152,52 @@ extension SetupInitialViewController {
             state = .searchingKeyBackupsInInbox
         case .inconsistentClientConfiguration(let error):
             showAlert(message: error.description) { [weak self] in
-                self?.router.signOut()
+                self?.signOut()
             }
         }
     }
 
+    private func getIdToken() async throws -> String {
+        let googleService = GoogleUserService(
+            currentUserEmail: user.email,
+            appDelegateGoogleSessionContainer: nil
+        )
+
+        return try await googleService.getCachedOrRefreshedIdToken()
+    }
+
     private func fetchKeysFromEKM() {
-        emailKeyManagerApi.getPrivateKeys()
-            .then(on: .main) { [weak self] result in
+        Task {
+            do {
+                let idToken = try await getIdToken()
+                let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 switch result {
                 case .success(keys: let keys):
-                    self?.proceedToSetupWithEKMKeys(keys: keys)
+                    proceedToSetupWithEKMKeys(keys: keys)
                 case .noKeys:
-                    self?.showRetryAlert(
+                    showRetryAlert(
                         message: "organisational_rules_ekm_empty_private_keys_error".localized,
-                        onRetry: {
+                        onRetry: { [weak self] in
                             self?.state = .fetchingKeysFromEKM
                         },
-                        onOk: {
-                            self?.router.signOut()
+                        onOk: { [weak self] in
+                            self?.signOut()
                         }
                     )
                 case .keysAreNotDecrypted:
-                    self?.showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: {
-                        self?.router.signOut()
+                    showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: { [weak self] in
+                        self?.signOut()
                     })
                 }
-            }
-            .catch { [weak self] error in
+            } catch {
                 if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
                     return
                 }
-                self?.showAlert(message: error.localizedDescription, onOk: {
+                showAlert(message: error.errorMessage, onOk: { [weak self] in
                     self?.state = .decidingIfEKMshouldBeUsed
                 })
             }
+        }
     }
 }
 
@@ -231,7 +245,7 @@ extension SetupInitialViewController {
                 )
             )
         default:
-            return TextCellNode(input: .loading(with: CGSize(width: 40, height: 40)))
+            return TextCellNode.loading
         }
     }
 
@@ -257,23 +271,21 @@ extension SetupInitialViewController {
             )
         case .createKey:
             let input = ButtonCellNode.Input(
-                title: self.decorator.buttonTitle(for: .createKey),
-                insets: self.decorator.insets.buttonInsets
+                title: self.decorator.buttonTitle(for: .createKey)
             )
             return ButtonCellNode(input: input) { [weak self] in
                 self?.proceedToCreatingNewKey()
             }
         case .importKey:
             let input = ButtonCellNode.Input(
-                title: self.decorator.buttonTitle(for: .importKey),
-                insets: self.decorator.insets.buttonInsets
+                title: self.decorator.buttonTitle(for: .importKey)
             )
             return ButtonCellNode(input: input) { [weak self] in
                 self?.proceedToKeyImport()
             }
         case .anotherAccount:
             return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
-                self?.handleOtherAccount()
+                self?.signOut()
             }
         }
     }
@@ -292,7 +304,7 @@ extension SetupInitialViewController {
             return TextCellNode(
                 input: .init(
                     backgroundColor: .backgroundColor,
-                    title: error.localizedDescription,
+                    title: error.errorMessage,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200)
                 )
@@ -300,6 +312,10 @@ extension SetupInitialViewController {
         case 2:
             return ButtonCellNode(input: .retry) { [weak self] in
                 self?.state = .searchingKeyBackupsInInbox
+            }
+        case 3:
+            return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
+                self?.signOut()
             }
         default:
             return ASCellNode()
@@ -310,16 +326,17 @@ extension SetupInitialViewController {
 // MARK: - Navigation
 extension SetupInitialViewController {
     private func proceedToKeyImport() {
-        let viewController = SetupManuallyImportKeyViewController()
+        let viewController = SetupManuallyImportKeyViewController(appContext: appContext)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
     private func proceedToCreatingNewKey() {
-        let viewController = SetupGenerateKeyViewController(user: user)
+        let viewController = SetupGenerateKeyViewController(appContext: appContext, user: user)
         navigationController?.pushViewController(viewController, animated: true)
     }
-    private func proceedToSetupWithEKMKeys(keys: [CoreRes.ParseKeys]) {
-        let viewController = SetupEKMKeyViewController(user: user, keys: keys)
+
+    private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {
+        let viewController = SetupEKMKeyViewController(appContext: appContext, user: user, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
@@ -331,8 +348,21 @@ extension SetupInitialViewController {
             state = .noKeyBackupsInInbox
         } else {
             logger.logInfo("\(keys.count) key backups found in inbox")
-            let viewController = SetupBackupsViewController(fetchedEncryptedKeys: keys, user: user)
+            let viewController = SetupBackupsViewController(appContext: appContext, fetchedEncryptedKeys: keys, user: user)
             navigationController?.pushViewController(viewController, animated: true)
         }
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let backupService: BackupServiceType
+
+    init(backupService: BackupServiceType) {
+        self.backupService = backupService
+    }
+
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        return try await backupService.fetchBackupsFromInbox(for: userId)
     }
 }

@@ -18,16 +18,19 @@ final class KeyDetailViewController: TableNodeViewController {
         case description, publicInfo, keyDetails, copy, save, privateInfo
     }
 
-    private let pasteboard: UIPasteboard
     private let key: KeyDetails
-    private let decorator: KeyDetailViewDecoratorType
+    private let parts: [Parts]
+    private let pasteboard: UIPasteboard
+    private let decorator: KeyDetailViewDecorator
 
     init(
         key: KeyDetails,
+        parts: [Parts] = Parts.allCases,
         pasteboard: UIPasteboard = UIPasteboard.general,
-        decorator: KeyDetailViewDecoratorType = KeyDetailViewDecorator()
+        decorator: KeyDetailViewDecorator = KeyDetailViewDecorator()
     ) {
         self.key = key
+        self.parts = parts
         self.pasteboard = pasteboard
         self.decorator = decorator
         super.init(node: TableNode())
@@ -50,7 +53,7 @@ final class KeyDetailViewController: TableNodeViewController {
 
 extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        Parts.allCases.count
+        parts.count
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -70,7 +73,6 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
             } else {
                 let input = ButtonCellNode.Input(
                     title: self.decorator.attributedTitle(for: part),
-                    insets: self.decorator.buttonInsets,
                     color: self.decorator.buttonColor(for: part)
                 )
                 return ButtonCellNode(input: input) { [weak self] in

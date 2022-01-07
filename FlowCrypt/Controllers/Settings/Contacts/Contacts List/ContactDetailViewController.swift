@@ -18,7 +18,7 @@ final class ContactDetailViewController: TableNodeViewController {
     typealias ContactDetailAction = (Action) -> Void
 
     enum Action {
-        case delete(_ recipient: RecipientWithPubKeys)
+        case delete(_ recipient: RecipientWithSortedPubKeys)
     }
 
     private enum Section: Int, CaseIterable {
@@ -27,17 +27,17 @@ final class ContactDetailViewController: TableNodeViewController {
 
     private let decorator: ContactDetailDecoratorType
     private let contactsProvider: LocalContactsProviderType
-    private var recipient: RecipientWithPubKeys
+    private var recipient: RecipientWithSortedPubKeys
     private let action: ContactDetailAction?
 
     init(
+        appContext: AppContext,
         decorator: ContactDetailDecoratorType = ContactDetailDecorator(),
-        contactsProvider: LocalContactsProviderType = LocalContactsProvider(),
-        recipient: RecipientWithPubKeys,
+        recipient: RecipientWithSortedPubKeys,
         action: ContactDetailAction?
     ) {
         self.decorator = decorator
-        self.contactsProvider = contactsProvider
+        self.contactsProvider = LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
         self.recipient = recipient
         self.action = action
         super.init(node: TableNode())
@@ -59,7 +59,7 @@ final class ContactDetailViewController: TableNodeViewController {
     private func setupNavigationBarItems() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                .init(image: UIImage(systemName: "trash"), action: (self, #selector(handleRemoveAction)))
+                .init(image: UIImage(systemName: "trash")) { [weak self] in self?.handleRemoveAction() }
             ]
         )
     }
@@ -91,7 +91,11 @@ extension ContactDetailViewController {
 
         recipient.remove(pubKey: keyToRemove)
         if let fingerprint = keyToRemove.fingerprint, fingerprint.isNotEmpty {
-            contactsProvider.removePubKey(with: fingerprint, for: recipient.email)
+            do {
+                try contactsProvider.removePubKey(with: fingerprint, for: recipient.email)
+            } catch {
+                showToast("contact_detail_remove_public_key_error".localizeWithArguments(error.localizedDescription))
+            }
         }
         node.deleteRows(at: [indexPathToRemove], with: .left)
     }

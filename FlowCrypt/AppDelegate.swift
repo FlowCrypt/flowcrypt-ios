@@ -5,14 +5,17 @@
 
 import AppAuth
 import UIKit
+import GTMAppAuth
+import FlowCryptCommon
 
-class AppDelegate: UIResponder, UIApplicationDelegate {
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssionContainer {
+    var blurViewController: BlurViewController?
     var googleAuthSession: OIDExternalUserAgentSession?
     let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
 
-    func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        let isRunningTests = NSClassFromString("XCTestCase") != nil
-        if isRunningTests {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if application.isRunningTests {
             return true
         }
         GlobalRouter().proceed()
@@ -25,5 +28,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         googleAuthSession = nil
         return true
+    }
+}
+
+extension AppDelegate: BlursTopView {
+    func applicationWillResignActive(_ application: UIApplication) {
+        if !isBlurViewShowing() {
+            coverTopViewWithBlurView()
+        }
+    }
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        if isBlurViewShowing() {
+            removeBlurView()
+        }
     }
 }

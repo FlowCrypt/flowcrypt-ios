@@ -7,8 +7,9 @@
 //
 
 import Foundation
-import Promises
 
 protocol MessageProvider {
-    func fetchMsg(message: Message, folder: String) -> Promise<Data>
+    func fetchMsg(message: Message,
+                  folder: String,
+                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data
 }

@@ -4,21 +4,23 @@
   "description": "TypeScript core for FlowCrypt iOS internal use",
   "dependencies": {
     "sanitize-html": "2.5.2",
+    "encoding-japanese": "^1.0.30",
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
-    "@types/chai": "4.2.22",
-    "@types/node": "^13.13.52",
-    "@types/node-cleanup": "2.1.1",
+    "@types/chai": "4.3.0",
+    "@types/encoding-japanese": "^1.0.18",
+    "@types/node": "^17.0.8",
+    "@types/node-cleanup": "2.1.2",
     "ava": "1.4.1",
-    "babel-loader": "8.2.2",
+    "babel-loader": "8.2.3",
     "babel-preset-env": "1.7.0",
     "chai": "4.3.4",
     "node-cleanup": "2.1.2",
     "request": "2.88.2",
-    "typescript": "4.4.3",
+    "typescript": "4.5.4",
     "webpack": "4.46.0",
-    "webpack-cli": "4.8.0",
+    "webpack-cli": "4.9.1",
     "webpack-node-externals": "3.0.0"
   },
   "scripts": {
@@ -35,7 +37,7 @@
     "_updateCoreLib": "mkdir source/lib && cd source/lib && LIBD='../../../flowcrypt-browser/extension/lib' && cp -r $LIBD/emailjs . && cp $LIBD/openpgp.js . && cp $LIBD/iso-*.js . && cp $LIBD/zxcvbn.js .",
     "donateCore": "rm -rf ../flowcrypt-browser/extension/js/common/core && cp -r source/core ../flowcrypt-browser/extension/js/common/core"
   },
-  "author": "FlowCrypt a.s.",
+  "author": "FlowCrypt a. s.",
   "license": "SEE LICENSE IN <LICENSE>",
   "private": true,
   "homepage": "https://flowcrypt.com"

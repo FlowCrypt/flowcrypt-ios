@@ -123,3 +123,5 @@ fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
     global['openpgp'] = openpgp;
   })();
 `);
+
+fs.copyFileSync(`${bundleWipDir}/bare-encoding-japanese.js`, `${bundleDir}/bare-encoding-japanese.js`);

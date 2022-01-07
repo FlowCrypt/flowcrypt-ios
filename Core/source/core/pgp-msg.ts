@@ -2,18 +2,18 @@
 
 'use strict';
 
-import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key.js';
-import { MsgBlock, MsgBlockType } from './msg-block.js';
-import { Str, Value } from './common.js';
+import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key';
+import { MsgBlock, MsgBlockType } from './msg-block';
+import { Str, Value } from './common';
 
-import { Buf } from './buf.js';
-import { Catch } from '../platform/catch.js';
-import { FcAttLinkData } from './att.js';
-import { MsgBlockParser } from './msg-block-parser.js';
-import { PgpArmor } from './pgp-armor.js';
-import { PgpHash } from './pgp-hash.js';
-import { Store } from '../platform/store.js';
-import { openpgp } from './pgp.js';
+import { Buf } from './buf';
+import { Catch } from '../platform/catch';
+import { FcAttLinkData } from './att';
+import { MsgBlockParser } from './msg-block-parser';
+import { PgpArmor } from './pgp-armor';
+import { PgpHash } from './pgp-hash';
+import { Store } from '../platform/store';
+import { openpgp } from './pgp';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -211,7 +211,7 @@ export class PgpMsg {
       const content = new Buf(await openpgp.stream.readToEnd(decrypted.getLiteralData()!)); // read content second to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined; // evaluate verify results third to prevent stream hang
       if (!prepared.isCleartext && (prepared.message as OpenPGP.message.Message).packets.filterByTag(openpgp.enums.packet.symmetricallyEncrypted).length) {
-        const noMdc = 'Security threat!\n\nMessage is missing integrity checks (MDC). The sender should update their outdated software.\n\nDisplay the message at your own risk.';
+        const noMdc = 'Security threat!\n\nMessage is missing integrity checks (MDC). The sender should update their outdated software and resend.';
         return { success: false, content, error: { type: DecryptErrTypes.noMdc, message: noMdc }, message: prepared.message, longids, isEncrypted };
       }
       return { success: true, content, isEncrypted, filename: decrypted.getFilename() || undefined, signature };

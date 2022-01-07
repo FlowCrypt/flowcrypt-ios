@@ -9,7 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
 
 enum CreatePassphraseWithExistingKeyError: Error {
     // No private key was found
@@ -22,36 +21,25 @@ enum CreatePassphraseWithExistingKeyError: Error {
  * - Here user can enter a pass phrase (will be saved in memory)
  * - After passphrase is set up, user will be redirected to **main flow** (inbox view)
  */
-
 final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewController {
 
     override var parts: [SetupCreatePassphraseAbstractViewController.Parts] {
         SetupCreatePassphraseAbstractViewController.Parts.ekmKeysSetup
     }
-    private let keys: [CoreRes.ParseKeys]
-
-    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
+    private let keys: [KeyDetails]
 
     init(
+        appContext: AppContext,
         user: UserId,
-        keys: [CoreRes.ParseKeys] = [],
-        core: Core = .shared,
-        router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        keys: [KeyDetails] = [],
+        decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.keys = keys
         super.init(
+            appContext: appContext,
             user: user,
             fetchedKeysCount: keys.count,
-            core: core,
-            router: router,
-            decorator: decorator,
-            storage: storage,
-            keyStorage: keyStorage,
-            passPhraseService: passPhraseService
+            decorator: decorator
         )
         self.storageMethod = .memory
     }
@@ -62,7 +50,20 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
     }
 
     override func setupAccount(with passphrase: String) {
-        setupAccountWithKeysFetchedFromEkm(with: passphrase)
+        Task {
+            do {
+                try await setupAccountWithKeysFetchedFromEkm(with: passphrase)
+                hideSpinner()
+                moveToMainFlow()
+            } catch {
+                hideSpinner()
+
+                let isErrorHandled = self.handleCommon(error: error)
+                if !isErrorHandled {
+                    showAlert(error: error, message: "Could not finish setup, please try again")
+                }
+            }
+        }
     }
 
     override func setupUI() {
@@ -75,49 +76,36 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
 
 extension SetupEKMKeyViewController {
 
-    private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) {
-        Promise { [weak self] in
-            guard let self = self else { return }
-            self.showSpinner()
-
-            try awaitPromise(self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
-
-            var allFingerprints: [String] = []
-            try self.keys.forEach { key in
-                try key.keyDetails.forEach { keyDetail in
-                    guard let privateKey = keyDetail.private else {
-                        throw CreatePassphraseWithExistingKeyError.noPrivateKey
-                    }
-                    let encryptedPrv = try self.core.encryptKey(
-                        armoredPrv: privateKey,
-                        passphrase: passPhrase
-                    )
-                    let parsedKey = try self.core.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-                    self.keyStorage.addKeys(keyDetails: parsedKey.keyDetails,
-                                            passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
-                                            source: .ekm,
-                                            for: self.user.email)
-                    allFingerprints.append(contentsOf: parsedKey.keyDetails.flatMap { $0.fingerprints })
-                }
+    private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) async throws {
+        self.showSpinner()
+        try await self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
+        var allFingerprintsOfAllKeys: [[String]] = []
+        for keyDetail in self.keys {
+            guard let privateKey = keyDetail.private else {
+                throw CreatePassphraseWithExistingKeyError.noPrivateKey
             }
-
-            if self.storageMethod == .memory {
-                let passPhrase = PassPhrase(value: passPhrase, fingerprints: allFingerprints.unique())
-                self.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: self.storageMethod)
-            }
+            let encryptedPrv = try await Core.shared.encryptKey(
+                armoredPrv: privateKey,
+                passphrase: passPhrase
+            )
+            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
+            try appContext.encryptedStorage.putKeypairs(
+                keyDetails: parsedKey.keyDetails,
+                passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
+                source: .ekm,
+                for: self.user.email
+            )
+            allFingerprintsOfAllKeys.append(contentsOf: parsedKey.keyDetails.map(\.fingerprints))
         }
-        .then(on: .main) { [weak self] in
-            self?.hideSpinner()
-            self?.moveToMainFlow()
-        }
-        .catch(on: .main) { [weak self] error in
-            guard let self = self else { return }
-            self.hideSpinner()
-
-            let isErrorHandled = self.handleCommon(error: error)
-
-            if !isErrorHandled {
-                self.showAlert(error: error, message: "Could not finish setup, please try again")
+        if self.storageMethod == .memory {
+            for allFingerprintsOfOneKey in allFingerprintsOfAllKeys {
+                try appContext.passPhraseService.savePassPhrase(
+                    with: PassPhrase(
+                        value: passPhrase,
+                        fingerprintsOfAssociatedKey: allFingerprintsOfOneKey
+                    ),
+                    storageMethod: storageMethod
+                )
             }
         }
     }

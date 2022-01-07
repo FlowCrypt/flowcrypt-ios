@@ -9,28 +9,14 @@
 import FlowCryptCommon
 import Foundation
 import MailCore
-import Promises
 
 // MARK: - RemoteFoldersProviderType
 extension Imap: RemoteFoldersProviderType {
-    func fetchFolders() -> Promise<[Folder]> {
-        Promise { [weak self] resolve, reject in
-            self?.imapSess?
-                .fetchAllFoldersOperation()
-                .start { [weak self] error, value in
-                    guard let self = self else { return reject(AppErr.nilSelf) }
-                    guard self.notRetrying("fetchFolders", error, resolve, reject, retry: { self.fetchFolders() }) else {
-                        return
-                    }
-                    if let error = error {
-                        reject(ImapError.providerError(error))
-                        return
-                    }
-
-                    let folders = value?.map(Folder.init) ?? []
-                    resolve(folders)
-            }
-        }
+    func fetchFolders() async throws -> [Folder] {
+        try await execute("fetchFolders", { sess, respond in
+            sess.fetchAllFoldersOperation()
+                .start { error, value in respond(error, value?.map(Folder.init))}
+        })
     }
 }
 
@@ -38,8 +24,8 @@ extension Imap: RemoteFoldersProviderType {
 private extension Folder {
     init(with folder: MCOIMAPFolder) {
         self.init(
-            name: folder.name ?? folder.path,
             path: folder.path,
+            name: folder.name ?? folder.path,
             image: nil
         )
     }

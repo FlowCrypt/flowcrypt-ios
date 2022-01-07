@@ -8,6 +8,7 @@
 
 import Foundation
 import GoogleAPIClientForREST_Gmail
+import UIKit
 
 // TODO - Instead of get properties use some DI mechanism
 // to reuse already initialised services
@@ -15,20 +16,15 @@ import GoogleAPIClientForREST_Gmail
 
 /// Provides with proper mail services based on current auth type
 final class MailProvider {
-    static var shared: MailProvider = MailProvider(
-        currentAuthType: DataService.shared.currentAuthType,
-        services: MailServiceProviderFactory.services()
-    )
 
-    private var currentAuthType: () -> (AuthType?)
+    private var currentAuthType: AuthType // todo - originally was auto-enclosure, testing
+
     private var authType: AuthType {
-        switch currentAuthType() {
+        switch currentAuthType {
         case let .oAuthGmail(token):
             return .oAuthGmail(token)
         case let .password(password):
             return .password(password)
-        default:
-            fatalError("Service can't be resolved. User should be authenticated")
         }
     }
     private let services: [MailServiceProvider]
@@ -65,27 +61,58 @@ final class MailProvider {
         resolveService(of: UsersMailSessionProvider.self)
     }
 
-    private init(
-        currentAuthType: @autoclosure @escaping () -> (AuthType?),
-        services: [MailServiceProvider]
+    var draftGateway: DraftGateway? {
+        resolveOptionalService(of: DraftGateway.self)
+    }
+
+    var draftsProvider: DraftsListProvider? {
+        resolveOptionalService(of: DraftsListProvider.self)
+    }
+
+    var messagesThreadProvider: MessagesThreadProvider? {
+        resolveService(of: MessagesThreadProvider?.self)
+    }
+
+    var threadOperationsProvider: MessagesThreadOperationsProvider? {
+        resolveService(of: MessagesThreadOperationsProvider?.self)
+    }
+
+    init(
+        currentAuthType: AuthType,
+        currentUser: User
     ) {
         self.currentAuthType = currentAuthType
-        self.services = services
+        self.services = MailServiceProviderFactory.services(user: currentUser)
     }
 
     private func resolveService<T>(of type: T.Type) -> T {
         guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
-            fatalError("Email Provider should support this functionality")
+            fatalError("Email Provider should support this functionality. Can't resolve dependency for \(type)")
+        }
+        return service
+    }
+
+    private func resolveOptionalService<T>(of type: T.Type) -> T? {
+        guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
+            return nil
         }
         return service
     }
 }
 
 private struct MailServiceProviderFactory {
-    static func services() -> [MailServiceProvider] {
+    static func services(
+        user: User
+    ) -> [MailServiceProvider] {
         [
-            Imap.shared,
-            GmailService()
+            Imap(user: user),
+            GmailService(
+                currentUserEmail: user.email,
+                gmailUserService: GoogleUserService(
+                    currentUserEmail: user.email,
+                    appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegateGoogleSesssionContainer
+                )
+            )
         ]
     }
 }

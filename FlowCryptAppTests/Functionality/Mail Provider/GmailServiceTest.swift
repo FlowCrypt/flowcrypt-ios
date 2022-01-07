@@ -6,10 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
-import Promises
-import GTMAppAuth
 @testable import FlowCrypt
+import GTMAppAuth
+import XCTest
 
 class GmailServiceTest: XCTestCase {
 
@@ -20,11 +19,15 @@ class GmailServiceTest: XCTestCase {
     override func setUp() {
         userService = GoogleUserServiceMock()
         backupSearchQueryProvider = GmailBackupSearchQueryProviderMock()
-        sut = GmailService(userService: userService, backupSearchQueryProvider: backupSearchQueryProvider)
+        sut = GmailService(
+            currentUserEmail: "user@example.test",
+            gmailUserService: userService,
+            backupSearchQueryProvider: backupSearchQueryProvider
+        )
     }
 
     func testSearchBackupsWhenErrorInQuery() async {
-        backupSearchQueryProvider.makeBackupQueryResult = .failure(.some)
+        backupSearchQueryProvider.makeBackupQueryResult = .failure(MockError())
 
         do {
             _ = try await sut.searchBackups(for: "james.bond@gmail.com")
@@ -41,11 +44,9 @@ class GmailServiceTest: XCTestCase {
 
 // MARK: - Mock
 class GoogleUserServiceMock: GoogleUserServiceType {
-    var authorization: GTMAppAuthFetcherAuthorization? = nil
-    
-    var renewSessionResult: Result<Void, Error> = .success(())
-    func renewSession() -> Promise<Void> {
-        Promise<Void>.resolveAfter(timeout: 1, with: renewSessionResult)
+    var authorization: GTMAppAuthFetcherAuthorization?
+    func renewSession() async throws {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
     }
 }
 

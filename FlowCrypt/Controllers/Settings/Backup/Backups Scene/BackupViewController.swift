@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
-final class BackupViewController: ASDKViewController<TableNode> {
+final class BackupViewController: TableNodeViewController {
     private enum Parts: Int, CaseIterable {
         case info, action
     }
@@ -34,18 +34,20 @@ final class BackupViewController: ASDKViewController<TableNode> {
         }
     }
 
-    private let decorator: BackupViewDecoratorType
-    private let backupProvider: BackupServiceType
+    private let appContext: AppContext
+    private let decorator: BackupViewDecorator
+    private let service: ServiceActor
     private let userId: UserId
     private var state: State = .idle { didSet { updateState() } }
 
     init(
-        decorator: BackupViewDecoratorType = BackupViewDecorator(),
-        backupProvider: BackupServiceType = BackupService(),
+        appContext: AppContext,
+        decorator: BackupViewDecorator = BackupViewDecorator(),
         userId: UserId
     ) {
+        self.appContext = appContext
         self.decorator = decorator
-        self.backupProvider = backupProvider
+        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -77,7 +79,7 @@ extension BackupViewController {
     private func fetchBackups() {
         Task {
             do {
-                let keys = try await backupProvider.fetchBackupsFromInbox(for: userId)
+                let keys = try await service.fetchBackupsFromInbox(for: userId)
                 state = keys.isEmpty
                     ? .noBackups
                     : .backups(keys)
@@ -120,8 +122,7 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
                 )
             case .action:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: self.state),
-                    insets: self.decorator.buttonInsets
+                    title: self.decorator.buttonTitle(for: self.state)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     self?.proceedToBackupOptionsScreen()
@@ -131,7 +132,24 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
     }
 
     private func proceedToBackupOptionsScreen() {
-        let optionsScreen = BackupOptionsViewController(backups: state.backups, userId: userId)
+        let optionsScreen = BackupOptionsViewController(
+            appContext: appContext,
+            backups: state.backups,
+            userId: userId
+        )
         navigationController?.pushViewController(optionsScreen, animated: true)
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    private let backupProvider: BackupServiceType
+
+    init(backupService: BackupServiceType) {
+        self.backupProvider = backupService
+    }
+
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        return try await backupProvider.fetchBackupsFromInbox(for: userId)
     }
 }

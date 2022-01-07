@@ -5,6 +5,7 @@ module.exports = {
   entry: {
     'entrypoint-bare': './build/ts/entrypoint-bare.js',
     'bare-asn1': './node_modules/asn1.js/lib/asn1.js',
+    'bare-encoding-japanese': './node_modules/encoding-japanese/encoding.js'
   },
   output: {
     path: __dirname + '/build/bundles/raw',

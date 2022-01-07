@@ -6,31 +6,36 @@ import FlowCryptCommon
 import MailCore
 
 final class Imap: MailServiceProvider {
+
     let mailServiceProviderType = MailServiceProviderType.imap
 
-    typealias Injection = ImapSessionProvider & DataServiceType
-    static let shared: Imap = Imap()
-
+    let user: User
     let helper: ImapHelperType
     let messageKindProvider: MessageKindProviderType
-    var imapSess: MCOIMAPSession?
-    var smtpSess: MCOSMTPSession?
+    var imapSess: MCOIMAPSession? {
+        imapSessionProvider.imapSession()
+            .map(MCOIMAPSession.init)
+    }
+    var smtpSess: MCOSMTPSession? {
+        imapSessionProvider.smtpSession()
+            .map(MCOSMTPSession.init)
+    }
 
     typealias ImapIndexSet = MCOIndexSet
     typealias ReqKind = MCOIMAPMessagesRequestKind
     typealias Err = MCOErrorCode
 
-    var lastErr: [String: AppErr] = [:]
-    let dataService: Injection
+    let imapSessionProvider: ImapSessionProviderType
 
     lazy var logger = Logger.nested(Self.self)
 
-    private init(
-        dataService: Injection = DataService.shared,
+    init(
+        user: User,
         helper: ImapHelperType = ImapHelper(),
         messageKindProvider: MessageKindProviderType = MessageKindProvider()
     ) {
-        self.dataService = dataService
+        self.user = user
+        self.imapSessionProvider = ImapSessionProvider(user: user)
         self.helper = helper
         self.messageKindProvider = messageKindProvider
     }

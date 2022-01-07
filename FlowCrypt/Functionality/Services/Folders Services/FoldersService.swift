@@ -8,14 +8,13 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 protocol TrashFolderProviderType {
-    func getTrashFolderPath() -> Promise<String?>
+    func getTrashFolderPath() async throws -> String?
 }
 
 protocol FoldersServiceType {
-    func fetchFolders(isForceReload: Bool) -> Promise<[FolderViewModel]>
+    func fetchFolders(isForceReload: Bool, for user: User) async throws -> [FolderViewModel]
 }
 
 final class FoldersService: FoldersServiceType {
@@ -25,50 +24,51 @@ final class FoldersService: FoldersServiceType {
     private let remoteFoldersProvider: RemoteFoldersProviderType
 
     init(
-        localFoldersProvider: LocalFoldersProviderType = LocalFoldersProvider(),
-        remoteFoldersProvider: RemoteFoldersProviderType = MailProvider.shared.remoteFoldersProvider,
+        encryptedStorage: EncryptedStorageType,
+        localFoldersProvider: LocalFoldersProviderType? = nil,
+        remoteFoldersProvider: RemoteFoldersProviderType,
         trashPathStorage: LocalStorageType = LocalStorage()
     ) {
-        self.localFoldersProvider = localFoldersProvider
+        self.localFoldersProvider = localFoldersProvider ?? LocalFoldersProvider(encryptedStorage: encryptedStorage)
         self.remoteFoldersProvider = remoteFoldersProvider
         self.trashPathStorage = trashPathStorage
     }
 
-    func fetchFolders(isForceReload: Bool) -> Promise<[FolderViewModel]> {
+    func fetchFolders(isForceReload: Bool, for user: User) async throws -> [FolderViewModel] {
         if isForceReload {
-            return getAndSaveFolders()
+            return try await getAndSaveFolders(for: user)
         }
-
-        let localFolders = self.localFoldersProvider.fetchFolders()
-
+        let localFolders = self.localFoldersProvider.fetchFolders(for: user.email)
         if localFolders.isEmpty {
-            return getAndSaveFolders()
+            return try await getAndSaveFolders(for: user)
         } else {
-            getAndSaveFolders()
-            return Promise(localFolders)
+            try await getAndSaveFolders(for: user)
+            return localFolders
         }
     }
 
     @discardableResult
-    private func getAndSaveFolders() -> Promise<[FolderViewModel]> {
-        Promise<[FolderViewModel]> { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            // fetch all folders
-            let fetchedFolders = try awaitPromise(self.remoteFoldersProvider.fetchFolders())
-
+    private func getAndSaveFolders(for user: User) async throws -> [FolderViewModel] {
+        // fetch all folders
+        let fetchedFolders = try await self.remoteFoldersProvider.fetchFolders()
+        return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async {
-                // TODO: - Ticket? - instead of removing all folders remove only
-                // those folders which are in DB and not in remoteFolders
-                self.localFoldersProvider.removeFolders()
+                do {
+                    // TODO: - Ticket? - instead of removing all folders remove only
+                    // those folders which are in DB and not in remoteFolders
+                    try self.localFoldersProvider.removeFolders(for: user.email)
 
-                // save to Realm
-                self.localFoldersProvider.save(folders: fetchedFolders)
+                    // save to Realm
+                    try self.localFoldersProvider.save(folders: fetchedFolders, for: user)
 
-                // save trash folder path
-                self.saveTrashFolderPath(with: fetchedFolders.map(\.path))
+                    // save trash folder path
+                    self.saveTrashFolderPath(with: fetchedFolders.map(\.path))
 
-                // return folders
-                resolve(fetchedFolders.map(FolderViewModel.init))
+                    // return folders
+                    continuation.resume(returning: fetchedFolders.map(FolderViewModel.init))
+                } catch {
+                    continuation.resume(throwing: error)
+                }
             }
         }
     }

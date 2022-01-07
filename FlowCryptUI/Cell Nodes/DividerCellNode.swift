@@ -15,16 +15,18 @@ public final class DividerCellNode: CellNode {
     public init(
         inset: UIEdgeInsets = .zero,
         color: UIColor = .lightGray,
-        height: CGFloat = 1
+        height: CGFloat = 0.5
     ) {
         self.inset = inset
         super.init()
         line.style.preferredSize.height = height
         line.backgroundColor = color
-        backgroundColor = color
+        backgroundColor = .clear
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(insets: inset, child: line)
+    public override func layoutSpecThatFits(_ range: ASSizeRange) -> ASLayoutSpec {
+        let expectedWidth = range.max.width - inset.width
+        line.style.preferredSize.width = expectedWidth > 0 ? expectedWidth : range.max.width
+        return ASInsetLayoutSpec(insets: inset, child: line)
     }
 }

@@ -8,61 +8,47 @@
 
 import FlowCryptCommon
 import Foundation
-import Promises
 
 protocol ClientConfigurationServiceType {
-    func fetchClientConfigurationForCurrentUser() -> Promise<ClientConfiguration>
-    func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration
+    func fetch(for user: User) async throws -> ClientConfiguration
+    func getSaved(for user: String) -> ClientConfiguration
 }
 
 final class ClientConfigurationService {
 
     private let server: EnterpriseServerApiType
     private let local: LocalClientConfigurationType
-    private let getCurrentUserEmail: () -> (String?)
 
     init(
         server: EnterpriseServerApiType = EnterpriseServerApi(),
-        local: LocalClientConfigurationType = LocalClientConfiguration(),
-        getCurrentUserEmail: @autoclosure @escaping () -> (String?) =  DataService.shared.currentUser?.email
+        local: LocalClientConfigurationType
     ) {
         self.server = server
         self.local = local
-        self.getCurrentUserEmail = getCurrentUserEmail
     }
 }
 
 // MARK: - OrganisationalRulesServiceType
 extension ClientConfigurationService: ClientConfigurationServiceType {
 
-    func fetchClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
-        guard let currentUserEmail = getCurrentUserEmail() else {
-            return Promise<ClientConfiguration> { _, reject in
-                reject(AppErr.noCurrentUser)
-            }
-        }
-        return Promise<ClientConfiguration> { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let raw = try awaitPromise(
-                self.server.getClientConfiguration(for: currentUserEmail)
-            )
-            self.local.save(raw: raw)
-            resolve(ClientConfiguration(raw: raw))
-        }
-        .recover { [weak self] error -> ClientConfiguration in
-            guard let self = self else { throw AppErr.nilSelf }
-            guard let raw = self.local.load() else {
+    func fetch(for user: User) async throws -> ClientConfiguration {
+        do {
+            let raw = try await server.getClientConfiguration(for: user.email)
+            try local.save(for: user, raw: raw)
+            return ClientConfiguration(raw: raw)
+        } catch {
+            guard let raw = local.load(for: user.email) else {
                 throw error
             }
             return ClientConfiguration(raw: raw)
         }
     }
 
-    func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration {
-        guard let raw = self.local.load() else {
+    func getSaved(for userEmail: String) -> ClientConfiguration {
+        guard let raw = self.local.load(for: userEmail) else {
+            // todo - throw instead
             fatalError("There should not be a user without OrganisationalRules")
         }
-
         return ClientConfiguration(raw: raw)
     }
 }

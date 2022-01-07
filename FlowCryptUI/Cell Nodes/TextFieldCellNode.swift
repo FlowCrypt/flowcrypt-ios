@@ -90,7 +90,7 @@ public final class TextFieldCellNode: CellNode {
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         textField.style.preferredSize = CGSize(
-            width: input.width ?? constrainedSize.max.width,
+            width: input.width ?? (constrainedSize.max.width - input.insets.width),
             height: input.height
         )
         return ASInsetLayoutSpec(insets: input.insets, child: textField)

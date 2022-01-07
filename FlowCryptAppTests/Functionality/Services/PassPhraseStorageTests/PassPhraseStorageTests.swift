@@ -6,25 +6,22 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class PassPhraseStorageTests: XCTestCase {
 
     var sut: PassPhraseService!
     var encryptedStorage: PassPhraseStorageMock!
     var inMemoryStorage: PassPhraseStorageMock!
-    var emailProvider: EmailProviderMock!
 
     override func setUp() {
-        emailProvider = EmailProviderMock()
         encryptedStorage = PassPhraseStorageMock()
         inMemoryStorage = PassPhraseStorageMock()
 
         sut = PassPhraseService(
             encryptedStorage: encryptedStorage,
-            localStorage: inMemoryStorage,
-            emailProvider: emailProvider
+            inMemoryStorage: inMemoryStorage
         )
     }
 
@@ -42,11 +39,11 @@ class PassPhraseStorageTests: XCTestCase {
     func testGetValidPassPhraseFromStorage() {
         let passPhrase1 = PassPhrase(
             value: "some",
-            fingerprints: ["11","12"]
+            fingerprintsOfAssociatedKey: ["11","12"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
-            fingerprints: ["21","22"]
+            fingerprintsOfAssociatedKey: ["21","22"]
         )
 
         encryptedStorage.getPassPhrasesResult = { [passPhrase1] }
@@ -72,7 +69,7 @@ class PassPhraseStorageTests: XCTestCase {
         let savedDate = Date()
         let localPassPhrase = PassPhrase(
             value: "value",
-            fingerprints: ["f1"],
+            fingerprintsOfAssociatedKey: ["f1"],
             date: savedDate
         )
         inMemoryStorage.getPassPhrasesResult = { [localPassPhrase] }
@@ -87,11 +84,11 @@ class PassPhraseStorageTests: XCTestCase {
     func testBothStorageContainsValidPassPhrase() {
         let passPhrase1 = PassPhrase(
             value: "some",
-            fingerprints: ["A123"]
+            fingerprintsOfAssociatedKey: ["A123"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
-            fingerprints: ["A123"]
+            fingerprintsOfAssociatedKey: ["A123"]
         )
         encryptedStorage.getPassPhrasesResult = {
             [passPhrase1, passPhrase2]
@@ -100,7 +97,7 @@ class PassPhraseStorageTests: XCTestCase {
         let savedDate = Date()
         let localPassPhrase = PassPhrase(
             value: "value",
-            fingerprints: ["123444"],
+            fingerprintsOfAssociatedKey: ["123444"],
             date: savedDate
         )
 
@@ -110,8 +107,8 @@ class PassPhraseStorageTests: XCTestCase {
         XCTAssertTrue(result.count == 3)
     }
 
-    func testSavePassPhraseInPersistenStorage() {
-        let passPhraseToSave = PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "123333"])
+    func testSavePassPhraseInPersistenStorage() throws {
+        let passPhraseToSave = PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"])
 
         let expectation = XCTestExpectation()
         expectation.expectedFulfillmentCount = 1
@@ -120,27 +117,26 @@ class PassPhraseStorageTests: XCTestCase {
         // encrypted storage contains pass phrase which should be saved locally
         encryptedStorage.getPassPhrasesResult = {
             [
-                PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "adfnhjfg"])
+                PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "adfnhjfg"])
             ]
         }
 
-
         // encrypted storage should not contains pass phrase which user decide to save locally
         encryptedStorage.isRemovePassPhraseResult = { passPhraseToRemove in
-            if passPhraseToRemove.primaryFingerprint == "fingerprint 1" {
+            if passPhraseToRemove.primaryFingerprintOfAssociatedKey == "fingerprint 1" {
                 expectation.fulfill()
             }
         }
 
-        sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
+        try sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
         XCTAssertFalse(inMemoryStorage.saveResult != nil )
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
 
-    func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() {
-        let passPhraseToSave = PassPhrase(value: "pass", fingerprints: ["fingerprint 1", "123333"])
+    func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() throws {
+        let passPhraseToSave = PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"])
 
         let expectation = XCTestExpectation()
         expectation.isInverted = true
@@ -152,23 +148,22 @@ class PassPhraseStorageTests: XCTestCase {
             expectation.fulfill()
         }
 
-        sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
+        try sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
         XCTAssertFalse(inMemoryStorage.saveResult != nil )
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
-
 }
 
-extension KeyInfo {
+extension KeypairRealmObject {
     // extend with more parameters if needed
     static func mock(
         with publicValue: String,
         account: String = "",
         longid: String
-    ) -> KeyInfo {
-        try! KeyInfo(
+    ) -> KeypairRealmObject {
+        try! KeypairRealmObject(
             KeyDetails(
                 public: publicValue,
                 private: "private",
@@ -186,7 +181,7 @@ extension KeyInfo {
             ),
             passphrase: nil,
             source: .backup,
-            user: UserObject(
+            user: UserRealmObject(
                 name: "name",
                 email: "email@gmail.com",
                 imap: nil,

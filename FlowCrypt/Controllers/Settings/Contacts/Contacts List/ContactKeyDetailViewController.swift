@@ -5,7 +5,7 @@
 //  Created by Roma Sosnovsky on 13/10/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
+
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
@@ -56,16 +56,16 @@ final class ContactKeyDetailViewController: TableNodeViewController {
     private func setupNavigationBarItems() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                .init(image: UIImage(named: "share"), action: (self, #selector(handleSaveAction))),
-                .init(image: UIImage(named: "copy"), action: (self, #selector(handleCopyAction))),
-                .init(image: UIImage(systemName: "trash"), action: (self, #selector(handleRemoveAction)))
+                .init(image: UIImage(named: "share")) { [weak self] in self?.handleSaveAction() },
+                .init(image: UIImage(named: "copy")) { [weak self] in self?.handleCopyAction() },
+                .init(image: UIImage(systemName: "trash")) { [weak self] in self?.handleRemoveAction() }
             ]
         )
     }
 }
 
 extension ContactKeyDetailViewController {
-    @objc private final func handleSaveAction() {
+    private final func handleSaveAction() {
         let vc = UIActivityViewController(
             activityItems: [pubKey.armored],
             applicationActivities: nil
@@ -73,12 +73,12 @@ extension ContactKeyDetailViewController {
         present(vc, animated: true, completion: nil)
     }
 
-    @objc private final func handleCopyAction() {
+    private final func handleCopyAction() {
         UIPasteboard.general.string = pubKey.armored
         showToast("contact_detail_copy".localized)
     }
 
-    @objc private final func handleRemoveAction() {
+    private final func handleRemoveAction() {
         navigationController?.popViewController(animated: true) { [weak self] in
             guard let self = self else { return }
             self.action?(.delete(self.pubKey))

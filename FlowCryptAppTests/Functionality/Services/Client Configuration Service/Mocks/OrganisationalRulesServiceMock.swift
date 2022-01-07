@@ -6,22 +6,23 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
-import Promises
 @testable import FlowCrypt
+import Foundation
 
-class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
+final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
 
-    var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError.some)
-    func fetchClientConfigurationForCurrentUser() -> Promise<ClientConfiguration> {
-        .resolveAfter(timeout: 1, with: fetchOrganisationalRulesForCurrentUserResult)
+    var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError())
+    func fetchForCurrentUser() async throws -> ClientConfiguration {
+        switch fetchOrganisationalRulesForCurrentUserResult {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
+        }
     }
 
-    var fetchOrganisationalRulesForEmail: (String) -> (Result<ClientConfiguration, Error>) = { email in
-        return .failure(MockError.some)
-    }
-    func fetchOrganisationalRules(for email: String) -> Promise<ClientConfiguration> {
-        .resolveAfter(timeout: 1, with: fetchOrganisationalRulesForEmail(email))
+    func fetch(for user: User) async throws -> ClientConfiguration {
+        throw MockError() // ??
     }
 
     var clientConfiguration: RawClientConfiguration!
@@ -29,7 +30,7 @@ class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
     var getSavedOrganisationalRulesForCurrentUserResult: ClientConfiguration {
         ClientConfiguration(raw: clientConfiguration)
     }
-    func getSavedClientConfigurationForCurrentUser() -> ClientConfiguration {
+    func getSaved(for user: String) -> ClientConfiguration {
         getSavedOrganisationalRulesForCurrentUserResult
     }
 }

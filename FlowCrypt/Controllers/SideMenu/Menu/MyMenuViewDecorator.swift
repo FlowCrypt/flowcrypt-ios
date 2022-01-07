@@ -13,7 +13,7 @@ import UIKit
 protocol MyMenuViewDecoratorType {
     var dividerColor: UIColor { get }
     var backgroundColor: UIColor { get }
-    func header(for user: User?, image: UIImage?) -> HeaderNode.Input
+    func header(for user: User?, image: UIImage?) -> TextImageNode.Input
     func nodeForAccount(for user: User) -> InfoCellNode.Input
 }
 
@@ -21,11 +21,12 @@ struct MyMenuViewDecorator: MyMenuViewDecoratorType {
     var dividerColor: UIColor { .dividerColor }
     var backgroundColor: UIColor { .backgroundColor }
 
-    func header(for user: User?, image: UIImage?) -> HeaderNode.Input {
-        HeaderNode.Input(
+    func header(for user: User?, image: UIImage?) -> TextImageNode.Input {
+        TextImageNode.Input(
             title: nameFor(user: user).attributed(.bold(22), color: .white, alignment: .left),
             subtitle: emailFor(user: user).attributed(.medium(18), color: .white, alignment: .left),
-            image: image
+            image: image,
+            backgroundColor: .main
         )
     }
 
@@ -82,7 +83,8 @@ extension InfoCellNode.Input {
         self.init(
             attributedText: viewModel.name
                 .attributed(.regular(17), color: .mainTextColor),
-            image: viewModel.image
+            image: viewModel.image,
+            accessibilityIdentifier: "menuBarItem\(viewModel.name.capitalizingFirstLetter())"
         )
     }
 }

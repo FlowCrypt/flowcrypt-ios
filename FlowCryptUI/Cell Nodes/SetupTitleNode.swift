@@ -14,17 +14,20 @@ public final class SetupTitleNode: CellNode {
         let insets: UIEdgeInsets
         let selectedLineColor: UIColor?
         let backgroundColor: UIColor
+        let accessibilityIdentifier: String?
 
         public init(
             title: NSAttributedString,
             insets: UIEdgeInsets,
             selectedLineColor: UIColor? = nil,
-            backgroundColor: UIColor
+            backgroundColor: UIColor,
+            accessibilityIdentifier: String? = nil
         ) {
             self.title = title
             self.insets = insets
             self.selectedLineColor = selectedLineColor
             self.backgroundColor = backgroundColor
+            self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
     private let input: Input
@@ -35,6 +38,8 @@ public final class SetupTitleNode: CellNode {
         self.input = input
         super.init()
         textNode.attributedText = input.title
+        textNode.isAccessibilityElement = true
+        textNode.accessibilityIdentifier = input.accessibilityIdentifier
         backgroundColor = input.backgroundColor
     }
 

@@ -6,6 +6,7 @@ import ENSwiftSideMenu
 import FlowCryptUI
 import UIKit
 
+@MainActor
 protocol SideMenuViewController {
     func didOpen()
 }
@@ -37,7 +38,6 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
     private enum Constants {
         static let menuOffset: CGFloat = 80
-        static let sideOffset: CGFloat = 100
         static let animationDuration: TimeInterval = 0.3
     }
 
@@ -47,9 +47,8 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
     private var menuViewContoller: SideMenuViewController?
 
-    convenience init() {
-        let menu = MyMenuViewController()
-        let contentViewController = InboxViewContainerController()
+    convenience init(appContext: AppContext, contentViewController: UIViewController) {
+        let menu = MyMenuViewController(appContext: appContext)
         self.init(menuViewController: menu, contentViewController: contentViewController)
         menuViewContoller = menu
         sideMenu = ENSideMenu(sourceView: view, menuViewController: menu, menuPosition: .left).then {
@@ -162,7 +161,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
         case 0:
             navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn"), action: nil, accessibilityIdentifier: "menu")
         default:
-            navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c"), action: nil)
+            navigationButton = .defaultBackButton()
         }
 
         navigationItem.hidesBackButton = true
@@ -183,7 +182,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             sideMenu?.allowPanGesture = false
             sideMenu?.allowLeftSwipe = false
             interactivePopGestureRecognizer?.isEnabled = true
-            navigationButton = NavigationBarActionButton(UIImage(named: "arrow-left-c")) { [weak self] in
+            navigationButton = .defaultBackButton { [weak self] in
                 guard let self = self else { return }
                 if let viewController = self.viewControllers.compactMap({ $0 as? NavigationChildController }).last {
                     viewController.handleBackButtonTap()

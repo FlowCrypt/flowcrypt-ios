@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Promises
 
 struct FetchMessageContext {
     /// Specify specific folder, or in all folders
@@ -30,10 +29,6 @@ struct FetchMessageContext {
 enum MessagesListPagination {
     case byNumber(total: Int?)
     case byNextPage(token: String?)
-}
-
-enum MessagesListProviderError {
-    case provider
 }
 
 protocol MessagesListProvider {

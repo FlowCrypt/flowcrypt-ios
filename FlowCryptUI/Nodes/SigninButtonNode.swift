@@ -47,7 +47,10 @@ public final class SigninButtonNode: CellNode {
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16),
+            insets: .deviceSpecificInsets(
+                top: 16,
+                bottom: 16
+            ),
             child: button
         )
     }

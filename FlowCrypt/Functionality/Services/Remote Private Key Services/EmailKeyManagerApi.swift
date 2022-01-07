@@ -7,21 +7,18 @@
 //
 
 import Foundation
-import Promises
+import FlowCryptCommon
 
 protocol EmailKeyManagerApiType {
-
-    func getPrivateKeysUrlString() -> String?
-    func getPrivateKeys() -> Promise<EmailKeyManagerApiResult>
+    func getPrivateKeys(idToken: String) async throws -> EmailKeyManagerApiResult
 }
 
 enum EmailKeyManagerApiError: Error {
-    case noGoogleIdToken
     case noPrivateKeysUrlString
 }
 
 enum EmailKeyManagerApiResult {
-    case success(keys: [CoreRes.ParseKeys])
+    case success(keys: [KeyDetails])
     case noKeys
     case keysAreNotDecrypted
 }
@@ -29,7 +26,6 @@ enum EmailKeyManagerApiResult {
 extension EmailKeyManagerApiError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case .noGoogleIdToken: return "emai_keymanager_api_no_google_id_token_error_description".localized
         case .noPrivateKeysUrlString: return ""
         }
     }
@@ -37,70 +33,63 @@ extension EmailKeyManagerApiError: LocalizedError {
 
 /// A customer-specific server that provides private keys
 /// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
-class EmailKeyManagerApi: EmailKeyManagerApiType {
+actor EmailKeyManagerApi: EmailKeyManagerApiType {
 
-    private let clientConfigurationService: ClientConfigurationServiceType
+    private enum Constants {
+        static let apiName = "EmailKeyManagerApi"
+    }
+
+    private let clientConfiguration: ClientConfiguration
     private let core: Core
 
     init(
-        clientConfigurationService: ClientConfigurationServiceType = ClientConfigurationService(),
+        clientConfiguration: ClientConfiguration,
         core: Core = .shared
     ) {
-        self.clientConfigurationService = clientConfigurationService
+        self.clientConfiguration = clientConfiguration
         self.core = core
     }
 
-    func getPrivateKeysUrlString() -> String? {
-        guard let keyManagerUrlString = clientConfigurationService.getSavedClientConfigurationForCurrentUser().keyManagerUrlString else {
-            return nil
+    func getPrivateKeys(idToken: String) async throws -> EmailKeyManagerApiResult {
+        let urlString = try getPrivateKeysUrlString()
+        let headers = [
+            URLHeader(
+                value: "Bearer \(idToken)",
+                httpHeaderField: "Authorization"
+            )]
+        let request = ApiCall.Request(
+            apiName: Constants.apiName,
+            url: urlString,
+            method: .get,
+            body: nil,
+            headers: headers
+        )
+        let response = try await ApiCall.call(request)
+        let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
+
+        if decryptedPrivateKeysResponse.privateKeys.isEmpty {
+            return .noKeys
         }
-        return "\(keyManagerUrlString)v1/keys/private"
+
+        let privateKeysArmored = decryptedPrivateKeysResponse.privateKeys
+            .map(\.decryptedPrivateKey)
+            .joined(separator: "\n")
+            .data()
+        let parsedPrivateKeys = try await core.parseKeys(armoredOrBinary: privateKeysArmored)
+        // todo - check that parsedPrivateKeys don't contain public keys
+        let areKeysDecrypted = parsedPrivateKeys.keyDetails
+            .compactMap { $0.isFullyDecrypted }
+        if areKeysDecrypted.contains(false) {
+            return .keysAreNotDecrypted
+        }
+
+        return .success(keys: parsedPrivateKeys.keyDetails)
     }
 
-    func getPrivateKeys() -> Promise<EmailKeyManagerApiResult> {
-        Promise<EmailKeyManagerApiResult> { [weak self] resolve, reject in
-            guard let self = self else { throw AppErr.nilSelf }
-            guard let urlString = self.getPrivateKeysUrlString() else {
-                reject(EmailKeyManagerApiError.noPrivateKeysUrlString)
-                return
-            }
-
-            guard let idToken = GoogleUserService().idToken else {
-                reject(EmailKeyManagerApiError.noGoogleIdToken)
-                return
-            }
-
-            let headers = [
-                URLHeader(
-                    value: "Bearer \(idToken)",
-                    httpHeaderField: "Authorization"
-                )]
-            let request = URLRequest.urlRequest(
-                with: urlString,
-                method: .get,
-                body: nil,
-                headers: headers
-            )
-            let response = try awaitPromise(URLSession.shared.call(request))
-            let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
-
-            if decryptedPrivateKeysResponse.privateKeys.isEmpty {
-                resolve(.noKeys)
-            }
-
-            let privateKeys = decryptedPrivateKeysResponse.privateKeys
-                .map { $0.decryptedPrivateKey.data() }
-            let parsedPrivateKeys = privateKeys
-                .compactMap { try? self.core.parseKeys(armoredOrBinary: $0) }
-            let areKeysDecrypted = parsedPrivateKeys
-                .compactMap { $0.keyDetails.map { $0.isFullyDecrypted } }
-                .flatMap { $0 }
-
-            if areKeysDecrypted.contains(false) {
-                resolve(.keysAreNotDecrypted)
-            }
-
-            resolve(.success(keys: parsedPrivateKeys))
+    private func getPrivateKeysUrlString() throws -> String {
+        guard let keyManagerUrlString = clientConfiguration.keyManagerUrlString else {
+            throw EmailKeyManagerApiError.noPrivateKeysUrlString
         }
+        return "\(keyManagerUrlString)v1/keys/private"
     }
 }

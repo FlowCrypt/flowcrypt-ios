@@ -31,6 +31,7 @@ final public class RecipientEmailsCellNode: CellNode {
         layout.minimumLineSpacing = Constants.minimumLineSpacing
         layout.sectionInset = Constants.sectionInset
         let collectionNode = ASCollectionNode(collectionViewLayout: layout)
+        collectionNode.accessibilityIdentifier = "recipientsList"
         collectionNode.backgroundColor = .clear
         return collectionNode
     }()
@@ -42,6 +43,10 @@ final public class RecipientEmailsCellNode: CellNode {
         super.init()
         collectionNode.dataSource = self
         collectionNode.delegate = self
+
+        DispatchQueue.main.async {
+            self.collectionNode.view.contentInsetAdjustmentBehavior = .never
+        }
 
         automaticallyManagesSubnodes = true
     }
@@ -84,7 +89,11 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
         let width = collectionNode.style.preferredSize.width
         return { [weak self] in
             guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
-            return RecipientEmailNode(input: RecipientEmailNode.Input(recipient: recipient, width: width))
+            
+            return RecipientEmailNode(
+                input: RecipientEmailNode.Input(recipient: recipient, width: width),
+                index: indexPath.row
+            )
                 .onTapAction { [weak self] action in
                     switch action {
                     case .image: self?.onAction?(.imageTap(indexPath))

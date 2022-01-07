@@ -16,8 +16,6 @@ struct SetupImapViewDecorator {
             .attributed(.bold(20), color: .white, alignment: .center)
     }
 
-    let connectButtonInsets = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 10)
-
     private var titleColor: UIColor {
         .colorFor(
             darkStyle: .white,
@@ -149,7 +147,7 @@ struct SetupImapViewDecorator {
         )
     }
 
-    func stringFor(user: UserObject, for section: SetupImapViewController.Section) -> NSAttributedString? {
+    func stringFor(user: User, for section: SetupImapViewController.Section) -> NSAttributedString? {
         switch section {
         case let .account(part):
             switch part {
@@ -165,7 +163,7 @@ struct SetupImapViewDecorator {
         case let .imap(part):
             switch part {
             case .port:
-                guard let port = user.imap?.port, port != UserObject.empty.imap?.port else {
+                guard let port = user.imap?.port, port != User.empty.imap?.port else {
                     return nil
                 }
                 return "\(port)".attributed()
@@ -185,7 +183,7 @@ struct SetupImapViewDecorator {
         case let .smtp(part):
             switch part {
             case .port:
-                guard let port = user.smtp?.port, port != UserObject.empty.smtp?.port else {
+                guard let port = user.smtp?.port, port != User.empty.smtp?.port else {
                     return nil
                 }
                 return "\(port)".attributed()

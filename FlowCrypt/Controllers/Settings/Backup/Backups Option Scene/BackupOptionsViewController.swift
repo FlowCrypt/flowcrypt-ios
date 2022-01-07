@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Combine
 
 enum BackupOption: Int, CaseIterable, Equatable {
     case email, download
@@ -21,7 +20,8 @@ enum BackupOption: Int, CaseIterable, Equatable {
     }
 }
 
-final class BackupOptionsViewController: ASDKViewController<TableNode> {
+@MainActor
+final class BackupOptionsViewController: TableNodeViewController {
     enum Parts: Int, CaseIterable {
         case email, download, action, info
     }
@@ -31,19 +31,20 @@ final class BackupOptionsViewController: ASDKViewController<TableNode> {
     private var selectedOption: BackupOption = .email {
         didSet { handleOptionChange() }
     }
-    private let attester = AttesterApi()
-    private let backupService: BackupServiceType
+    private let service: ServiceActor
     private let userId: UserId
+    private let appContext: AppContext
 
     init(
+        appContext: AppContext,
         decorator: BackupOptionsViewDecoratorType = BackupOptionsViewDecorator(),
-        backupService: BackupServiceType = BackupService(),
         backups: [KeyDetails],
         userId: UserId
     ) {
+        self.appContext = appContext
         self.decorator = decorator
         self.backups = backups
-        self.backupService = backupService
+        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -85,6 +86,7 @@ extension BackupOptionsViewController {
     private func proceedToSelectBackupsScreen() {
         navigationController?.pushViewController(
             BackupSelectKeyViewController(
+                appContext: appContext,
                 selectedOption: selectedOption,
                 backups: backups,
                 userId: userId
@@ -107,7 +109,7 @@ extension BackupOptionsViewController {
 
         Task {
             do {
-                try await backupService.backupToInbox(keys: backups, for: userId)
+                try await service.backupToInbox(keys: backups, for: userId)
                 hideSpinner()
                 navigationController?.popToRootViewController(animated: true)
             } catch {
@@ -117,7 +119,7 @@ extension BackupOptionsViewController {
     }
 
     private func backupAsFile() {
-        backupService.backupAsFile(keys: backups, for: self)
+        service.backupService.backupAsFile(keys: backups, for: self)
     }
 }
 
@@ -148,8 +150,7 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
                 )
             case .action:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonText(for: self.selectedOption),
-                    insets: self.decorator.insets
+                    title: self.decorator.buttonText(for: self.selectedOption)
                 )
 
                 return ButtonCellNode(input: input) { [weak self] in
@@ -174,5 +175,18 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
         case .action: handleButtonTap()
         case .info: break
         }
+    }
+}
+
+// TODO temporary solution for background execution problem
+private actor ServiceActor {
+    let backupService: BackupServiceType
+
+    init(backupService: BackupServiceType) {
+        self.backupService = backupService
+    }
+
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
+        try await backupService.backupToInbox(keys: keys, for: userId)
     }
 }

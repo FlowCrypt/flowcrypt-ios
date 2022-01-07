@@ -7,10 +7,43 @@
 //
 
 import AsyncDisplayKit
+import FlowCryptCommon
 
+@MainActor
 open class TableNodeViewController: ASDKViewController<TableNode> {
+    public override var title: String? {
+        didSet {
+            navigationItem.setAccessibility(id: title)
+        }
+    }
+    
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         node.reloadData()
+    }
+    
+    open override func viewDidLoad() {
+        super.viewDidLoad()
+        Logger.nested(Self.self).logDebug("View did load")
+    }
+}
+
+public extension UINavigationItem {
+    func setAccessibility(id: String?) {
+        let titleLabel = UILabel()
+        titleLabel.attributedText = id?.attributed(
+            .medium(16),
+            color: .white,
+            alignment: .center
+        )
+        titleLabel.sizeToFit()
+        titleView = titleLabel
+        
+        titleLabel.isAccessibilityElement = true
+        titleLabel.accessibilityTraits = .header
+        titleView?.accessibilityIdentifier = "navigationItem\((id ?? "").capitalized)"
+        titleView?.isAccessibilityElement = true
+        titleView?.accessibilityTraits = .header
+        isAccessibilityElement = true
     }
 }

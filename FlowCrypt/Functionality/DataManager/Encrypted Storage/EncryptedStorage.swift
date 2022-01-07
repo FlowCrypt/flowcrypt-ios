@@ -7,19 +7,22 @@
 //
 
 import FlowCryptCommon
-import Foundation
-import Promises
 import RealmSwift
+import UIKit
 
-// swiftlint:disable force_try
-protocol EncryptedStorageType: KeyStorageType {
+protocol EncryptedStorageType {
     var storage: Realm { get }
 
-    func getAllUsers() -> [UserObject]
-    func saveActiveUser(with user: UserObject)
-    var activeUser: UserObject? { get }
-    func doesAnyKeyExist(for email: String) -> Bool
+    var activeUser: User? { get }
+    func getAllUsers() -> [User]
+    func saveActiveUser(with user: User) throws
+    func doesAnyKeypairExist(for email: String) -> Bool
 
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) throws
+    func getKeypairs(by email: String) -> [Keypair]
+
+    func validate() throws
+    func reset() throws
     func cleanup()
 }
 
@@ -34,11 +37,17 @@ final class EncryptedStorage: EncryptedStorageType {
     // new schema should be added as a new case
     private enum EncryptedStorageSchema: CaseIterable {
         case initial
+        case version5
+        case version6
 
         var version: SchemaVersion {
             switch self {
             case .initial:
                 return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 4)
+            case .version5:
+                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 5)
+            case .version6:
+                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 6)
             }
         }
     }
@@ -47,45 +56,27 @@ final class EncryptedStorage: EncryptedStorageType {
         static let encryptedDbFilename = "encrypted.realm"
     }
 
-    private let keychainService: KeyChainServiceType
-
-    private var realmKey: Data {
-        keychainService.getStorageEncryptionKey()
-    }
-
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
-    private let currentSchema: EncryptedStorageSchema = .initial
+    private let currentSchema: EncryptedStorageSchema = .version6
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
-    private var encryptedConfiguration: Realm.Configuration {
-        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        let latestSchemaVersion = currentSchema.version.dbSchemaVersion
-
-        return Realm.Configuration(
-            fileURL: URL(fileURLWithPath: path),
-            encryptionKey: realmKey,
-            schemaVersion: latestSchemaVersion,
-            migrationBlock: { [weak self] migration, oldSchemaVersion in
-                self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
-            }
-        )
-    }
+    private let storageEncryptionKey: Data
 
     var storage: Realm {
         do {
-            Realm.Configuration.defaultConfiguration = encryptedConfiguration
-            let realm = try Realm(configuration: encryptedConfiguration)
+            let configuration = try getConfiguration()
+            Realm.Configuration.defaultConfiguration = configuration
+            let realm = try Realm(configuration: configuration)
             return realm
         } catch {
-//             destroyEncryptedStorage() - todo - give user option to wipe, don't do it automatically
             fatalError("failed to initiate realm: \(error)")
         }
     }
 
-    init(keychainHelper: KeyChainServiceType = KeyChainService()) {
-        self.keychainService = KeyChainService()
+    init(storageEncryptionKey: Data) {
+        self.storageEncryptionKey = storageEncryptionKey
     }
 
     private func getDocumentDirectory() -> String {
@@ -94,12 +85,30 @@ final class EncryptedStorage: EncryptedStorageType {
         }
         return documentDirectory
     }
+
+    private func getConfiguration() throws -> Realm.Configuration {
+        guard !UIApplication.shared.isRunningTests else {
+            return Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
+        }
+
+        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let latestSchemaVersion = currentSchema.version.dbSchemaVersion
+
+        return Realm.Configuration(
+            fileURL: URL(fileURLWithPath: path),
+            encryptionKey: storageEncryptionKey,
+            schemaVersion: latestSchemaVersion,
+            migrationBlock: { [weak self] migration, oldSchemaVersion in
+                self?.performSchemaMigration(migration: migration, from: oldSchemaVersion, to: latestSchemaVersion)
+            }
+        )
+    }
 }
 
 // MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
     func logOutUser(email: String) throws {
-        let users = storage.objects(UserObject.self)
+        let users = storage.objects(UserRealmObject.self)
 
         // in case there is only one user - just delete storage
         if users.count == 1, users.first?.email == email {
@@ -108,11 +117,11 @@ extension EncryptedStorage: LogOutHandler {
             // remove user and keys for this user
             let userToDelete = users
                 .filter { $0.email == email }
-            let keys = storage.objects(KeyInfo.self)
+            let keys = storage.objects(KeypairRealmObject.self)
                 .filter { $0.account == email }
-            let sessions = storage.objects(SessionObject.self)
+            let sessions = storage.objects(SessionRealmObject.self)
                 .filter { $0.email == email }
-            let clientConfigurations = storage.objects(ClientConfigurationObject.self)
+            let clientConfigurations = storage.objects(ClientConfigurationRealmObject.self)
                 .filter { $0.userEmail == email }
 
             try storage.write {
@@ -139,121 +148,125 @@ extension EncryptedStorage {
             return
         }
 
-        supportedSchemas.forEach {
-            switch $0 {
-            case .initial:
-                migrationLogger.logInfo("Schema migration not needed for initial schema")
-//            case .someNewSchema:
-//                performSomeNewSchema(migration: migration)
-            }
+        let schema = supportedSchemas.first(where: { $0.version.dbSchemaVersion > oldSchemaVersion })
+        switch schema {
+        case .initial:
+            migrationLogger.logInfo("Schema migration not needed for initial schema")
+        case .version5:
+            SchemaMigration.Version5(migration: migration).perform()
+        case .version6:
+            SchemaMigration.Version6(migration: migration).perform()
+        default:
+            break
         }
-    }
-
-    private func performSomeNewSchema(migration: Migration) {
-        migrationLogger.logInfo("Start Multiple account migration")
     }
 }
 
 // MARK: - Keys
 extension EncryptedStorage {
-    func addKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-        guard let user = storage.objects(UserObject.self).first(where: { $0.email == email }) else {
-            logger.logError("Can't find user with given email to add keys. User should be already saved")
-            return
-        }
-        try! storage.write {
-            for key in keyDetails {
-                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source, user: user))
-            }
-        }
-    }
-
-    func updateKeys(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) throws {
         guard let user = getUserObject(for: email) else {
             logger.logError("Can't find user with given email to update keys. User should be already saved")
             return
         }
-        try! storage.write {
+
+        try storage.write {
             for key in keyDetails {
-                storage.add(try! KeyInfo(key, passphrase: passPhrase, source: source, user: user), update: .all)
+                let object = try KeypairRealmObject(key, passphrase: passPhrase, source: source, user: user)
+                storage.add(object, update: .all)
             }
         }
     }
 
-    func updateKeys(with primaryFingerprint: String, passphrase: String?) {
-        let keys = keysInfo()
-            .filter { $0.primaryFingerprint == primaryFingerprint }
+    func getKeypairs(by email: String) -> [Keypair] {
+        return storage.objects(KeypairRealmObject.self).where({
+            $0.account == email
+        }).map(Keypair.init)
+    }
 
-        try! storage.write {
+    func doesAnyKeypairExist(for email: String) -> Bool {
+        let keys = storage.objects(KeypairRealmObject.self).where {
+            $0.account == email
+        }
+        return !keys.isEmpty
+    }
+
+    private func getUserObject(for email: String) -> UserRealmObject? {
+        storage.objects(UserRealmObject.self).where {
+            $0.email == email
+        }.first
+    }
+
+    private func updateKeys(with primaryFingerprint: String, passphrase: String?) throws {
+        let keys = storage.objects(KeypairRealmObject.self).where {
+            $0.primaryFingerprint == primaryFingerprint
+        }
+
+        try storage.write {
             keys.map { $0.passphrase = passphrase }
         }
-    }
-
-    func keysInfo() -> [KeyInfo] {
-        let result = storage.objects(KeyInfo.self)
-        return Array(result)
-    }
-
-    func publicKey() -> String? {
-        storage.objects(KeyInfo.self)
-            .map(\.public)
-            .first
-    }
-
-    func doesAnyKeyExist(for email: String) -> Bool {
-        keysInfo()
-            .map(\.account)
-            .map { $0 == email }
-            .contains(true)
-    }
-
-    private func getUserObject(for email: String) -> UserObject? {
-        storage.objects(UserObject.self).first(where: { $0.email == email })
     }
 }
 
 // MARK: - PassPhrase
 extension EncryptedStorage: PassPhraseStorageType {
-    func save(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
+    func save(passPhrase: PassPhrase) throws {
+        try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
     }
 
-    func update(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: passPhrase.value)
+    func update(passPhrase: PassPhrase) throws {
+        try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: passPhrase.value)
     }
 
-    func remove(passPhrase: PassPhrase) {
-        updateKeys(with: passPhrase.primaryFingerprint, passphrase: nil)
+    func remove(passPhrase: PassPhrase) throws {
+        try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
     }
 
     func getPassPhrases() -> [PassPhrase] {
-        keysInfo().compactMap(PassPhrase.init)
+        return storage.objects(KeypairRealmObject.self)
+            .compactMap(PassPhrase.init)
     }
 }
 
 // MARK: - User
 extension EncryptedStorage {
-    var activeUser: UserObject? {
-        getAllUsers().first(where: \.isActive)
+    var activeUser: User? {
+        let users = storage.objects(UserRealmObject.self).where {
+            $0.isActive == true
+        }
+        return users.first.flatMap(User.init)
     }
 
-    func getAllUsers() -> [UserObject] {
-        Array(storage.objects(UserObject.self))
+    func getAllUsers() -> [User] {
+        storage.objects(UserRealmObject.self).map(User.init)
     }
 
-    func saveActiveUser(with user: UserObject) {
-        try! storage.write {
+    func saveActiveUser(with user: User) throws {
+        try storage.write {
             // Mark all users as inactive
-            self.getAllUsers().forEach {
+            storage.objects(UserRealmObject.self).forEach {
                 $0.isActive = false
             }
-            user.isActive = true
-            self.storage.add(user, update: .all)
+
+            let object = UserRealmObject(user)
+            object.isActive = true
+            storage.add(object, update: .all)
         }
     }
 }
 
 extension EncryptedStorage {
+    func validate() throws {
+        let configuration = try getConfiguration()
+        Realm.Configuration.defaultConfiguration = configuration
+        _ = try Realm(configuration: configuration)
+    }
+
+    func reset() throws {
+        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        try FileManager.default.removeItem(atPath: path)
+    }
+
     func cleanup() {
         do {
             try storage.write {

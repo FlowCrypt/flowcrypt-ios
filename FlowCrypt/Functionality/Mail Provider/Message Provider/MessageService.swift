@@ -7,198 +7,325 @@
 //
 
 import Foundation
-import Promises
 import FlowCryptCommon
+import UIKit
 
-// MARK: - MessageAttachment
-struct MessageAttachment: FileType {
-    let name: String
-    let size: Int
-    let data: Data
-    var humanReadableSizeString: String {
-        return ByteCountFormatter().string(fromByteCount: Int64(self.size))
-    }
+// MARK: - MessageFetchState
+enum MessageFetchState {
+    case fetch, download(Float), decrypt
 }
 
 // MARK: - ProcessedMessage
 struct ProcessedMessage {
-    enum MessageType {
-        case error(MsgBlock.DecryptErr.ErrorType), encrypted, plain
+    enum MessageType: Hashable {
+        case error(DecryptErr.ErrorType), encrypted, plain
+    }
+
+    enum MessageSignature: Hashable {
+        case good, goodMixed, unsigned, error(String), missingPubkey(String), partial, bad, pending
+
+        var message: String {
+            switch self {
+            case .good:
+                return "message_signed".localized
+            case .goodMixed:
+                return "message_signature_good_mixed".localized
+            case .unsigned:
+                return "message_not_signed".localized
+            case .error(let message):
+                return "message_signature_verify_error".localizeWithArguments(message)
+            case .missingPubkey(let longid):
+                let message = "message_missing_pubkey".localizeWithArguments(longid)
+                return "message_signature_verify_error".localizeWithArguments(message)
+            case .partial:
+                return "message_signature_partial".localized
+            case .bad:
+                return "message_bad_signature".localized
+            case .pending:
+                return "message_signature_pending".localized
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .good, .goodMixed:
+                return "lock"
+            case .error, .missingPubkey, .partial:
+                return "exclamationmark.triangle"
+            case .unsigned, .bad:
+                return "xmark"
+            case .pending:
+                return "clock"
+            }
+        }
+
+        var color: UIColor {
+            switch self {
+            case .good, .goodMixed:
+                return .main
+            case .error, .missingPubkey, .partial:
+                return .warningColor
+            case .unsigned, .bad:
+                return .errorColor
+            case .pending:
+                return .lightGray
+            }
+        }
     }
 
     let rawMimeData: Data
     let text: String
     let attachments: [MessageAttachment]
     let messageType: MessageType
+    var signature: MessageSignature?
 }
 
 extension ProcessedMessage {
-    // TODO: - Ticket - fix with empty state for MessageViewController
+    // TODO: - Ticket - fix with empty state for ThreadDetailsViewController
     static let empty = ProcessedMessage(
         rawMimeData: Data(),
         text: "loading_title".localized + "...",
         attachments: [],
-        messageType: .plain
+        messageType: .plain,
+        signature: .unsigned
     )
 }
 
 // MARK: - MessageService
 enum MessageServiceError: Error {
-    case missedPassPhrase(_ rawMimeData: Data)
+    case missingPassPhrase(_ rawMimeData: Data)
     case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
-    case keyMismatch(_ rawMimeData: Data)
     // Could not fetch keys
     case emptyKeys
     case unknown
 }
 
 final class MessageService {
-    private enum Constants {
-        static let encryptedAttachmentExtension = "pgp"
-    }
 
     private let messageProvider: MessageProvider
+    private let keyMethods: KeyMethodsType
+    private let contactsService: ContactsServiceType
+    private let core: Core
+    private let logger: Logger
     private let keyService: KeyServiceType
     private let passPhraseService: PassPhraseServiceType
-    private let core: Core
 
     init(
-        messageProvider: MessageProvider = MailProvider.shared.messageProvider,
-        keyService: KeyServiceType = KeyService(),
         core: Core = Core.shared,
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        keyMethods: KeyMethodsType = KeyMethods(),
+        contactsService: ContactsServiceType,
+        keyService: KeyServiceType,
+        messageProvider: MessageProvider,
+        passPhraseService: PassPhraseServiceType
     ) {
-        self.messageProvider = messageProvider
         self.keyService = keyService
-        self.core = core
         self.passPhraseService = passPhraseService
+        self.messageProvider = messageProvider
+        self.core = core
+        self.logger = Logger.nested(in: Self.self, with: "MessageService")
+        self.keyMethods = keyMethods
+        self.contactsService = contactsService
     }
 
-    func validateMessage(rawMimeData: Data, with passPhrase: String) -> Promise<ProcessedMessage> {
-        Promise<ProcessedMessage> { [weak self] resolve, reject in
-            guard let self = self else { return }
-
-            guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
-                return reject(MessageServiceError.emptyKeys)
-            }
-
-            let keysWithFilledPassPhrase = keys.map { $0.copy(with: passPhrase) }
-            let keysToSave = keys.filter { $0.passphrase == passPhrase }
-
-            self.savePassPhrases(value: passPhrase, with: keysToSave)
-
-            let decrypted = try self.core.parseDecryptMsg(
-                encrypted: rawMimeData,
-                keys: keysWithFilledPassPhrase,
-                msgPwd: nil,
-                isEmail: true
-            )
-
-            guard !self.hasWrongPassPhraseError(decrypted) else {
-                return reject(MessageServiceError.wrongPassPhrase(rawMimeData, passPhrase))
-            }
-
-            let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
-            resolve(processedMessage)
+    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
+        let keys = try await keyService.getPrvKeyInfo()
+        guard keys.isNotEmpty else {
+            throw MessageServiceError.emptyKeys
         }
+        let keysWithoutPassPhrases = keys.filter { $0.passphrase == nil }
+        let matchingKeys = try await keyMethods.filterByPassPhraseMatch(
+            keys: keysWithoutPassPhrases,
+            passPhrase: passPhrase
+        )
+        try passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        return matchingKeys.isNotEmpty
     }
 
-    private func savePassPhrases(value passPhrase: String, with privateKeys: [PrvKeyInfo]) {
-        privateKeys
-            .map { PassPhrase(value: passPhrase, fingerprints: $0.fingerprints) }
-            .forEach { self.passPhraseService.savePassPhrase(with: $0, storageMethod: .memory) }
+    func getAndProcessMessage(
+        with input: Message,
+        folder: String,
+        onlyLocalKeys: Bool,
+        progressHandler: ((MessageFetchState) -> Void)?
+    ) async throws -> ProcessedMessage {
+        let rawMimeData = try await messageProvider.fetchMsg(
+            message: input,
+            folder: folder,
+            progressHandler: progressHandler
+        )
+        return try await decryptAndProcessMessage(
+            mime: rawMimeData,
+            sender: input.sender,
+            onlyLocalKeys: onlyLocalKeys
+        )
     }
 
-    func getAndProcessMessage(with input: Message, folder: String) -> Promise<ProcessedMessage> {
-        Promise { [weak self] resolve, reject in
-            guard let self = self else { return }
-
-            let rawMimeData = try awaitPromise(
-                self.messageProvider.fetchMsg(message: input, folder: folder)
-            )
-
-            guard let keys = try? self.keyService.getPrvKeyInfo().get(), keys.isNotEmpty else {
-                return reject(CoreError.notReady("Failed to load keys from storage"))
-            }
-
-            let decrypted = try self.core.parseDecryptMsg(
-                encrypted: rawMimeData,
-                keys: keys,
-                msgPwd: nil,
-                isEmail: true
-            )
-
-            guard !self.hasWrongPassPhraseError(decrypted) else {
-                return reject(MessageServiceError.missedPassPhrase(rawMimeData))
-            }
-
-            let processedMessage = try self.processMessage(rawMimeData: rawMimeData, with: decrypted, keys: keys)
-            switch processedMessage.messageType {
-            case .error(let errorType):
-                switch errorType {
-                case .needPassphrase:
-                    reject(MessageServiceError.missedPassPhrase(rawMimeData))
-                case .keyMismatch:
-                    reject(MessageServiceError.keyMismatch(rawMimeData))
-                default:
-                    reject(MessageServiceError.unknown)
-                }
-            case .plain, .encrypted:
-                resolve(processedMessage)
-            }
+    func decryptAndProcessMessage(
+        mime rawMimeData: Data,
+        sender: String?,
+        onlyLocalKeys: Bool
+    ) async throws -> ProcessedMessage {
+        let keys = try await keyService.getPrvKeyInfo()
+        guard keys.isNotEmpty else {
+            throw MessageServiceError.emptyKeys
         }
+        let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: rawMimeData,
+            keys: keys,
+            msgPwd: nil,
+            isEmail: true,
+            verificationPubKeys: verificationPubKeys
+        )
+        guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
+            throw MessageServiceError.missingPassPhrase(rawMimeData)
+        }
+
+        return try await processMessage(
+            rawMimeData: rawMimeData,
+            sender: sender,
+            with: decrypted,
+            keys: keys
+        )
     }
 
-    private func processMessage(rawMimeData: Data, with decrypted: CoreRes.ParseDecryptMsg, keys: [PrvKeyInfo]) throws -> ProcessedMessage {
-        let decryptErrBlocks = decrypted.blocks
-            .filter { $0.decryptErr != nil }
-
-        let attachments = try decrypted.blocks
-            .filter(\.isAttachmentBlock)
-            .compactMap { block -> MessageAttachment? in
-                guard let attMeta = block.attMeta else { return nil }
-                var name = attMeta.name
-                let size = attMeta.length
-                var data = attMeta.data
-
-                if block.type == .encryptedAtt {
-                    data = (try core.decryptFile(encrypted: data, keys: keys, msgPwd: nil).content)
-                    name = name.deletingPathExtension
-                }
-
-                return MessageAttachment(name: name, size: size, data: data)
-            }
-
+    private func processMessage(
+        rawMimeData: Data,
+        sender: String?,
+        with decrypted: CoreRes.ParseDecryptMsg,
+        keys: [PrvKeyInfo]
+    ) async throws -> ProcessedMessage {
+        let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
+        let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
+        let attachments: [MessageAttachment] = try await getAttachments(
+            blocks: decrypted.blocks,
+            keys: keys
+        )
         let messageType: ProcessedMessage.MessageType
         let text: String
+        let signature: ProcessedMessage.MessageSignature?
 
-        if let decryptErrBlock = decryptErrBlocks.first {
-            let rawMsg = decryptErrBlock.content
+        if let firstBlockParseErr = firstBlockParseErr {
+            // Swift failed to parse one of the MsgBlock returned from TypeScript Core
+            text = "Internal error: could not parse MsgBlock. Please report this error to us.\n\n\(firstBlockParseErr.content)"
+            messageType = .error(.other)
+            signature = nil
+        } else if let decryptErrBlock = firstDecryptErrBlock {
+            // message failed to decrypt or process
             let err = decryptErrBlock.decryptErr?.error
+            let hideContent = err?.type == .badMdc || err?.type == .noMdc
+            let rawMsg = hideContent ? "(content hidden for security)" : decryptErrBlock.content
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
+            signature = nil
         } else {
+            // decrypt / process success
             text = decrypted.text
-            messageType = decrypted.replyType == CoreRes.ReplyType.encrypted ? .encrypted : .plain
+            messageType = decrypted.replyType == ReplyType.encrypted ? .encrypted : .plain
+            signature = await evaluateSignatureVerificationResult(
+                signature: decrypted.blocks.first?.verifyRes
+            )
         }
 
         return ProcessedMessage(
             rawMimeData: rawMimeData,
             text: text,
             attachments: attachments,
-            messageType: messageType
+            messageType: messageType,
+            signature: signature
         )
     }
 
-    private func hasWrongPassPhraseError(_ msg: CoreRes.ParseDecryptMsg) -> Bool {
-        msg.blocks.first(where: { $0.decryptErr?.error.type == .needPassphrase }) != nil
+    private func getAttachments(
+        blocks: [MsgBlock],
+        keys: [PrvKeyInfo]
+    ) async throws -> [MessageAttachment] {
+        let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
+
+        var attachments: [MessageAttachment] = []
+        for block in attachmentBlocks {
+            guard let meta = block.attMeta else { continue }
+            let attachment: MessageAttachment
+            if block.type == .encryptedAtt { // decrypt
+                // todo - this is decrypting attachments too early
+                //   there is no need to decrypt attachments when rendering message,
+                //   since user may never tap them.
+                //   Instead decrypt them when actually tapped.
+                let decrypted = try await core.decryptFile(
+                    encrypted: meta.data,
+                    keys: keys,
+                    msgPwd: nil
+                )
+                if let decryptSuccess = decrypted.decryptSuccess {
+                    attachment = MessageAttachment(
+                        name: decryptSuccess.name,
+                        data: decryptSuccess.data
+                    )
+                } else if let decryptErr = decrypted.decryptErr {
+                    // todo - once above todo is done and we are decrypting
+                    //   at the time of tapping an attachment, render error modal
+                    // if user confirms the modal, they can download the original msg
+                    // then can remove the warning
+                    logger.logWarning("attachment could not be decrypted due to error: \(decryptErr.error.type) - \(decryptErr.error.message)")
+                    attachment = MessageAttachment(
+                        name: meta.name,
+                        data: meta.data
+                    )
+                } else {
+                    throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
+                }
+            } else {
+                attachment = MessageAttachment(
+                    name: meta.name,
+                    data: meta.data
+                )
+            }
+            attachments.append(attachment)
+        }
+
+        return attachments
+    }
+
+    private func hasMsgBlockThatNeedsPassPhrase(_ msg: CoreRes.ParseDecryptMsg) -> Bool {
+        let maybeBlock = msg.blocks.first(where: { $0.decryptErr?.error.type == .needPassphrase })
+        guard let block = maybeBlock, let decryptErr = block.decryptErr else {
+            return false
+        }
+        logger.logInfo("missing pass phrase for one of longids \(decryptErr.longids)")
+        return true
     }
 }
 
-private extension MessageAttachment {
-    init(block: MsgBlock) {
-        self.name = block.attMeta?.name ?? "Attachment"
-        self.size = block.attMeta?.length ?? 0
-        self.data = block.attMeta?.data ?? Data()
+// MARK: - Message verification
+extension MessageService {
+    private func fetchVerificationPubKeys(for sender: String?, onlyLocal: Bool) async throws -> [String] {
+        guard let sender = sender else { return [] }
+
+        let pubKeys = contactsService.retrievePubKeys(for: sender)
+        if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
+
+        guard let contact = try? await contactsService.searchContact(with: sender)
+        else { return [] }
+
+        return contact.pubKeys.map(\.armored)
+    }
+
+    private func evaluateSignatureVerificationResult(
+        signature: MsgBlock.VerifyRes?
+    ) async -> ProcessedMessage.MessageSignature {
+        guard let signature = signature else { return .unsigned }
+
+        if let error = signature.error { return .error(error) }
+
+        guard let signer = signature.signer else { return .unsigned }
+
+        guard signature.match != nil else { return .missingPubkey(signer) }
+
+        guard signature.match == true else { return .bad }
+
+        guard signature.partial != true else { return .partial }
+
+        guard signature.mixed != true else { return .goodMixed }
+
+        return .good
     }
 }

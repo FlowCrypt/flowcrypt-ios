@@ -9,19 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
-
-enum CreateKeyError: Error {
-    case weakPassPhrase(_ strength: CoreRes.ZxcvbnStrengthBar)
-    // Missing user email
-    case missedUserEmail
-    // Missing user name
-    case missedUserName
-    // Pass phrases don't match
-    case doesntMatch
-    // silent abort
-    case conformingPassPhraseError
-}
 
 /**
  * Controller which is responsible for generating a new key during setup
@@ -29,35 +16,28 @@ enum CreateKeyError: Error {
  * - Here user can enter a pass phrase (can be saved in memory or in encrypted storage) and generate a key
  * - After key is generated, user will be redirected to **main flow** (inbox view)
  */
-
 final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewController {
 
-    private let backupService: BackupServiceType
     private let attester: AttesterApiType
-
-    private lazy var logger = Logger.nested(in: Self.self, with: .setup)
+    private let service: Service
 
     init(
+        appContext: AppContext,
         user: UserId,
-        backupService: BackupServiceType = BackupService(),
-        core: Core = .shared,
-        router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        attester: AttesterApiType = AttesterApi(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
-        self.backupService = backupService
-        self.attester = attester
-        super.init(
+        self.attester = AttesterApi(
+            clientConfiguration: appContext.clientConfigurationService.getSaved(for: user.email)
+        )
+        self.service = Service(
+            appContext: appContext,
             user: user,
-            core: core,
-            router: router,
-            decorator: decorator,
-            storage: storage,
-            keyStorage: keyStorage,
-            passPhraseService: passPhraseService
+            attester: self.attester
+        )
+        super.init(
+            appContext: appContext,
+            user: user,
+            decorator: decorator
         )
     }
 
@@ -70,7 +50,11 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         showSpinner()
         Task {
             do {
-                try await setupAccountWithGeneratedKey(with: passphrase)
+                try await service.setupAccount(
+                    passPhrase: passphrase,
+                    storageMethod: storageMethod,
+                    viewController: self
+                )
                 hideSpinner()
                 moveToMainFlow()
             } catch {
@@ -86,49 +70,90 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     }
 }
 
-// MARK: - Setup
+// TODO temporary solution for background execution problem
+private actor Service {
+    typealias ViewController = SetupCreatePassphraseAbstractViewController
 
-extension SetupGenerateKeyViewController {
-    private func setupAccountWithGeneratedKey(with passPhrase: String) async throws {
+    private let appContext: AppContext
+    private let user: UserId
+    private let attester: AttesterApiType
+
+    init(
+        appContext: AppContext,
+        user: UserId,
+        attester: AttesterApiType
+    ) {
+        self.appContext = appContext
+        self.user = user
+        self.attester = attester
+    }
+
+    func setupAccount(
+        passPhrase: String,
+        storageMethod: StorageMethod,
+        viewController: ViewController
+    ) async throws {
         let userId = try getUserId()
 
-        try awaitPromise(validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase))
+        try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
-        let encryptedPrv = try await core.generateKey(passphrase: passPhrase, variant: .curve25519, userIds: [userId])
-        try await backupService.backupToInbox(keys: [encryptedPrv.key], for: user)
+        let encryptedPrv = try await Core.shared.generateKey(
+            passphrase: passPhrase,
+            variant: .curve25519,
+            userIds: [userId]
+        )
+        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
 
-        keyStorage.addKeys(keyDetails: [encryptedPrv.key],
-                           passPhrase: storageMethod == .persistent ? passPhrase: nil,
-                           source: .generated,
-                           for: user.email)
+        try appContext.encryptedStorage.putKeypairs(
+            keyDetails: [encryptedPrv.key],
+            passPhrase: storageMethod == .persistent ? passPhrase: nil,
+            source: .generated,
+            for: user.email
+        )
 
         if storageMethod == .memory {
-            let passPhrase = PassPhrase(value: passPhrase, fingerprints: encryptedPrv.key.fingerprints)
-            passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
+            let passPhrase = PassPhrase(
+                value: passPhrase,
+                fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints
+            )
+            try appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 
-        let updateKey = attester.updateKey(
+        await submitKeyToAttesterAndShowAlertOnFailure(
             email: userId.email,
-            pubkey: encryptedPrv.key.public,
-            token: storage.token
+            publicKey: encryptedPrv.key.public,
+            viewController: viewController
         )
 
-        try awaitPromise(alertAndSkipOnRejection(
-            updateKey,
-            fail: "Failed to submit Public Key")
-        )
-        let testWelcome = attester.testWelcome(email: userId.email, pubkey: encryptedPrv.key.public)
-        try awaitPromise(alertAndSkipOnRejection(
-            testWelcome,
-            fail: "Failed to send you welcome email")
+        // sending welcome email is not crucial, so we don't handle errors
+        _ = try? await attester.testWelcome(
+            email: userId.email,
+            pubkey: encryptedPrv.key.public
         )
     }
 
+    private func submitKeyToAttesterAndShowAlertOnFailure(
+        email: String,
+        publicKey: String,
+        viewController: ViewController
+    ) async {
+        do {
+            _ = try await attester.update(
+                email: email,
+                pubkey: publicKey,
+                token: appContext.dataService.token
+            )
+        } catch {
+            let message = "Failed to submit Public Key"
+            await viewController.showAlert(error: error, message: message)
+        }
+    }
+
     private func getUserId() throws -> UserId {
-        guard let email = DataService.shared.email, !email.isEmpty else {
+        guard let email = appContext.dataService.email, !email.isEmpty else {
             throw CreateKeyError.missedUserEmail
         }
-        guard let name = DataService.shared.email, !name.isEmpty else {
+        guard let name = appContext.dataService.currentUser?.name, !name.isEmpty else {
             throw CreateKeyError.missedUserName
         }
         return UserId(email: email, name: name)

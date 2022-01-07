@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Promises
 
 /**
  * Controller that gives a possibility for the user to enter information about his email provider like, account, imap/smtp information
@@ -25,25 +24,21 @@ final class SetupImapViewController: TableNodeViewController {
     private var state: State = .idle
     private var selectedSection: Section?
 
-    private let dataService: DataServiceType
-    private let globalRouter: GlobalRouterType
-
+    private let appContext: AppContext
     private let decorator: SetupImapViewDecorator
     private let sessionCredentials: SessionCredentialsProvider
     private let imap: Imap
-    private var user = UserObject.empty
+    private var user = User.empty
 
     init(
-        globalRouter: GlobalRouterType = GlobalRouter(),
-        dataService: DataServiceType = DataService.shared,
+        appContext: AppContext,
         decorator: SetupImapViewDecorator = SetupImapViewDecorator(),
         sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
-        imap: Imap = Imap.shared
+        imap: Imap = Imap(user: User.empty)
     ) {
-        self.globalRouter = globalRouter
+        self.appContext = appContext
         self.decorator = decorator
         self.sessionCredentials = sessionCredentials
-        self.dataService = dataService
         self.imap = imap
 
         super.init(node: TableNode())
@@ -189,7 +184,7 @@ extension SetupImapViewController {
         state = newState
 
         node.reloadSections(
-            IndexSet(arrayLiteral: 3),
+            IndexSet(integer: 3),
             with: .fade
         )
 
@@ -258,6 +253,7 @@ extension SetupImapViewController {
         }
         .then {
             $0.textField.attributedText = self.decorator.stringFor(user: self.user, for: section)
+            $0.textField.autocapitalizationType = .none
             self.setPicker(for: section, and: $0)
         }
     }
@@ -273,8 +269,7 @@ extension SetupImapViewController {
 
     private func buttonNode() -> ButtonCellNode {
         let input = ButtonCellNode.Input(
-            title: decorator.connectButtonTitle,
-            insets: decorator.connectButtonInsets
+            title: decorator.connectButtonTitle
         )
         return ButtonCellNode(input: input) { [weak self] in
             self?.connect()
@@ -361,7 +356,7 @@ extension SetupImapViewController {
 
     private func updateForEmailChanges(with text: String?) {
         guard let email = text, email.isNotEmpty else {
-            user = UserObject.empty
+            user = User.empty
             node.reloadData()
             return
         }
@@ -413,7 +408,8 @@ extension SetupImapViewController {
 
         switch settings {
         case let .failure(.notFound(defaultPort)):
-            user.imap?.port = user.imap?.port ?? defaultPort
+            let port = user.imap?.port ?? defaultPort
+            user.imap?.port = port
         case let .success(imapSetting):
             updateUser(imap: imapSetting)
         }
@@ -428,7 +424,8 @@ extension SetupImapViewController {
 
         switch settings {
         case let .failure(.notFound(defaultPort)):
-            user.smtp?.port = user.smtp?.port ?? defaultPort
+            let port = user.smtp?.port ?? defaultPort
+            user.smtp?.port = port
         case let .success(imapSetting):
             updateUser(smtp: imapSetting)
         }
@@ -485,37 +482,40 @@ extension SetupImapViewController {
     private func connect() {
         view.endEditing(true)
 
-        let result = checkCurrentUser()
-        switch result {
-        case .failure(.empty):
-            showToast("other_provider_error_other".localized)
-        case .failure(.password):
-            showToast("other_provider_error_password".localized)
-        case .failure(.email):
-            showToast("other_provider_error_email".localized)
-        case .success:
+        do {
+            try checkCurrentUser()
             checkImapSession()
+        } catch {
+            switch error as? UserError {
+            case .empty:
+                showToast("other_provider_error_other".localized)
+            case .password:
+                showToast("other_provider_error_password".localized)
+            case .email:
+                showToast("other_provider_error_email".localized)
+            default:
+                break
+            }
         }
     }
 
     private func checkImapSession() {
         showSpinner()
 
-        guard let imapSessionToCheck = IMAPSession(userObject: user),
-            let smtpSession = SMTPSession(userObject: user)
+        guard
+            let imapSessionToCheck = IMAPSession(user: user),
+            let smtpSession = SMTPSession(user: user)
         else {
             fatalError("Should be able to create session at this momment")
         }
-
-        Promise<Void> {
-            try awaitPromise(self.imap.connectImap(session: imapSessionToCheck))
-            try awaitPromise(self.imap.connectSmtp(session: smtpSession))
-        }
-        .then(on: .main) { [weak self] in
-            self?.handleSuccessfulConnection()
-        }
-        .catch(on: .main) { [weak self] error in
-            self?.handleConnection(error: error)
+        Task {
+            do {
+                try await self.imap.connectImap(session: imapSessionToCheck)
+                try await self.imap.connectSmtp(session: smtpSession)
+                handleSuccessfulConnection()
+            } catch {
+                handleConnection(error: error)
+            }
         }
     }
 
@@ -525,19 +525,19 @@ extension SetupImapViewController {
 
     private func handleSuccessfulConnection() {
         hideSpinner()
-        globalRouter.signIn(with: .other(.session(user)))
+        Task {
+            await appContext.globalRouter.signIn(appContext: self.appContext, route: .other(.session(user)))
+        }
     }
 
-    private func checkCurrentUser() -> Result<UserObject, UserError> {
-        guard user != UserObject.empty, user.email != UserObject.empty.email else {
-            return .failure(.empty)
+    private func checkCurrentUser() throws {
+        guard user != User.empty, user.email != User.empty.email else {
+            throw UserError.empty
         }
 
         guard let password = user.password, password.isNotEmpty else {
-            return .failure(.password)
+            throw UserError.password
         }
-
-        return .success(user)
     }
 }
 

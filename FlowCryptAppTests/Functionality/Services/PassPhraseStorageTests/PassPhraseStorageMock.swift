@@ -6,30 +6,30 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 @testable import FlowCrypt
+import Foundation
 
 class PassPhraseStorageMock: PassPhraseStorageType {
-    
-    var saveResult: ((PassPhrase) -> ())?
+
+    var saveResult: ((PassPhrase) -> Void)?
     func save(passPhrase: PassPhrase) {
         saveResult?(passPhrase)
     }
-    
-    var updateResult: ((PassPhrase) -> ())?
+
+    var updateResult: ((PassPhrase) -> Void)?
     func update(passPhrase: PassPhrase) {
         updateResult?(passPhrase)
     }
-    
-    var isRemovePassPhraseResult: ((PassPhrase) -> ())?
+
+    var isRemovePassPhraseResult: ((PassPhrase) -> Void)?
     func remove(passPhrase: PassPhrase) {
         isRemovePassPhraseResult?(passPhrase)
     }
-    
+
     var getPassPhrasesResult: () -> ([PassPhrase]) = {
         [
-            PassPhrase(value: "a", fingerprints: ["11","12"]),
-            PassPhrase(value: "2", fingerprints: ["21","22"])
+            PassPhrase(value: "a", fingerprintsOfAssociatedKey: ["11","12"]),
+            PassPhrase(value: "2", fingerprintsOfAssociatedKey: ["21","22"])
         ]
     }
     func getPassPhrases() -> [PassPhrase] {

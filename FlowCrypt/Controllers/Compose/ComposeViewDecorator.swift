@@ -9,18 +9,19 @@
 import FlowCryptUI
 import UIKit
 
-typealias RecipientState = RecipientEmailsCellNode.Input.State
 typealias RecipientStateContext = RecipientEmailsCellNode.Input.StateContext
 
 struct ComposeViewDecorator {
     let recipientIdleState: RecipientState = .idle(idleStateContext)
     let recipientSelectedState: RecipientState = .selected(selectedStateContext)
     let recipientKeyFoundState: RecipientState = .keyFound(keyFoundStateContext)
+    let recipientKeyExpiredState: RecipientState = .keyExpired(keyExpiredStateContext)
+    let recipientKeyRevokedState: RecipientState = .keyRevoked(keyRevokedStateContext)
     let recipientKeyNotFoundState: RecipientState = .keyNotFound(keyNotFoundStateContext)
-    let recipientErrorState: RecipientState = .error(errorStateContext, false)
-    var recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
+    let recipientInvalidEmailState: RecipientState = .invalidEmail(invalidEmailStateContext)
+    let recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
 
-    func styledTextViewInput(with height: CGFloat) -> TextViewCellNode.Input {
+    func styledTextViewInput(with height: CGFloat, accessibilityIdentifier: String? = nil) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
             placeholder: "message_compose_secure".localized.attributed(
                 .regular(17),
@@ -28,11 +29,14 @@ struct ComposeViewDecorator {
                 alignment: .left
             ),
             preferredHeight: height,
-            textColor: .mainTextColor
+            textColor: .mainTextColor,
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 
-    func styledTextFieldInput(with text: String, keyboardType: UIKeyboardType = .default) -> TextFieldCellNode.Input {
+    func styledTextFieldInput(with text: String,
+                              keyboardType: UIKeyboardType = .default,
+                              accessibilityIdentifier: String? = nil) -> TextFieldCellNode.Input {
         TextFieldCellNode.Input(
             placeholder: text.localized.attributed(
                 .regular(17),
@@ -44,7 +48,8 @@ struct ComposeViewDecorator {
             textAlignment: .left,
             height: 40,
             width: UIScreen.main.bounds.width,
-            keyboardType: keyboardType
+            keyboardType: keyboardType,
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 
@@ -57,7 +62,7 @@ struct ComposeViewDecorator {
         InfoCellNode.Input(
             attributedText: email.attributed(
                 .medium(17),
-                color: UIColor.mainTextColor.withAlphaComponent(0.8),
+                color: .mainTextColor.withAlphaComponent(0.8),
                 alignment: .left
             ),
             image: nil,
@@ -69,8 +74,8 @@ struct ComposeViewDecorator {
         text.attributed(.regular(17))
     }
 
-    func styledReplyQuote(with input: ComposeMessageInput) -> NSAttributedString {
-        guard case let .reply(info) = input.type else { return NSAttributedString(string: "") }
+    func styledQuote(with input: ComposeMessageInput) -> NSAttributedString {
+        guard case let .quote(info) = input.type else { return NSAttributedString(string: "") }
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
@@ -82,10 +87,10 @@ struct ComposeViewDecorator {
         dateFormatter.timeStyle = .short
         let time = dateFormatter.string(from: info.sentDate)
 
-        let from = info.recipient ?? "unknown sender"
+        let from = info.sender ?? "unknown sender"
 
         let text: String = "\n\n"
-            + "compose_reply_from".localizeWithArguments(date, time, from)
+            + "compose_quote_from".localizeWithArguments(date, time, from)
             + "\n"
 
         let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
@@ -93,10 +98,36 @@ struct ComposeViewDecorator {
         return (text + message).attributed(.regular(17))
     }
 
+    func styledEmptyMessagePasswordInput() -> MessagePasswordCellNode.Input {
+        messagePasswordInput(
+            text: "compose_password_placeholder".localized,
+            color: .warningColor,
+            imageName: "lock"
+        )
+    }
+
+    func styledFilledMessagePasswordInput() -> MessagePasswordCellNode.Input {
+        messagePasswordInput(
+            text: "compose_password_set_message".localized,
+            color: .main,
+            imageName: "checkmark.circle"
+        )
+    }
+
+    private func messagePasswordInput(text: String,
+                                      color: UIColor,
+                                      imageName: String) -> MessagePasswordCellNode.Input {
+        .init(
+            text: text.attributed(.regular(14), color: color),
+            color: color,
+            image: UIImage(systemName: imageName)?.tinted(color)
+        )
+    }
+
     func frame(for string: NSAttributedString,
                insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)) -> CGRect {
         let width = UIScreen.main.bounds.width - insets.left - insets.right
-        let maxSize = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
+        let maxSize = CGSize(width: width, height: .greatestFiniteMagnitude)
         return string.boundingRect(with: maxSize,
                                    options: [.usesLineFragmentOrigin, .usesFontLeading],
                                    context: nil)
@@ -106,30 +137,30 @@ struct ComposeViewDecorator {
 // MARK: - Color
 extension UIColor {
     static var titleNodeBackgroundColorSelected: UIColor {
-        UIColor.colorFor(
-            darkStyle: UIColor.lightGray,
-            lightStyle: UIColor.black.withAlphaComponent(0.1)
+        colorFor(
+            darkStyle: lightGray,
+            lightStyle: black.withAlphaComponent(0.1)
         )
     }
 
     static var titleNodeBackgroundColor: UIColor {
-        UIColor.colorFor(
-            darkStyle: UIColor.darkGray.withAlphaComponent(0.5),
-            lightStyle: UIColor.white.withAlphaComponent(0.9)
+        colorFor(
+            darkStyle: darkGray.withAlphaComponent(0.5),
+            lightStyle: white.withAlphaComponent(0.9)
         )
     }
 
     static var borderColorSelected: UIColor {
-        UIColor.colorFor(
-            darkStyle: UIColor.white.withAlphaComponent(0.5),
+        colorFor(
+            darkStyle: white.withAlphaComponent(0.5),
             lightStyle: black.withAlphaComponent(0.4)
         )
     }
 
     static var borderColor: UIColor {
-        UIColor.colorFor(
-            darkStyle: UIColor.white.withAlphaComponent(0.5),
-            lightStyle: UIColor.black.withAlphaComponent(0.3)
+        colorFor(
+            darkStyle: white.withAlphaComponent(0.5),
+            lightStyle: black.withAlphaComponent(0.3)
         )
     }
 }
@@ -141,7 +172,8 @@ extension ComposeViewDecorator {
             backgroundColor: .titleNodeBackgroundColor,
             borderColor: .borderColor,
             textColor: .mainTextColor,
-            image: #imageLiteral(resourceName: "retry")
+            image: #imageLiteral(resourceName: "retry"),
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -150,7 +182,8 @@ extension ComposeViewDecorator {
             backgroundColor: .gray,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -159,7 +192,28 @@ extension ComposeViewDecorator {
             backgroundColor: .main,
             borderColor: .borderColor,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "green"
+        )
+    }
+
+    private static var keyExpiredStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .warningColor,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil,
+            accessibilityIdentifier: "orange"
+        )
+    }
+
+    private static var keyRevokedStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .errorColor,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil,
+            accessibilityIdentifier: "red"
         )
     }
 
@@ -168,16 +222,28 @@ extension ComposeViewDecorator {
             backgroundColor: .titleNodeBackgroundColorSelected,
             borderColor: .borderColorSelected,
             textColor: .white,
-            image: nil
+            image: nil,
+            accessibilityIdentifier: "gray"
+        )
+    }
+
+    private static var invalidEmailStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .red,
+            borderColor: .borderColorSelected,
+            textColor: .white,
+            image: nil,
+            accessibilityIdentifier: "red"
         )
     }
 
     private static var errorStateContext: RecipientStateContext {
         RecipientStateContext(
-            backgroundColor: .red,
-            borderColor: .borderColor,
+            backgroundColor: .gray,
+            borderColor: .red,
             textColor: .white,
-            image: #imageLiteral(resourceName: "cancel")
+            image: #imageLiteral(resourceName: "cancel"),
+            accessibilityIdentifier: "gray"
         )
     }
 
@@ -186,7 +252,8 @@ extension ComposeViewDecorator {
             backgroundColor: .red,
             borderColor: .borderColor,
             textColor: .white,
-            image: #imageLiteral(resourceName: "retry")
+            image: #imageLiteral(resourceName: "retry"),
+            accessibilityIdentifier: "red"
         )
     }
 }
@@ -207,12 +274,13 @@ extension RecipientEmailsCellNode.Input {
 
 // MARK: - AttachmentNode.Input
 extension AttachmentNode.Input {
-    init(composeAttachment: ComposeMessageAttachment) {
+    init(attachment: MessageAttachment, index: Int) {
         self.init(
-            name: composeAttachment.name
+            name: attachment.name
                 .attributed(.regular(18), color: .mainTextColor, alignment: .left),
-            size: "\(composeAttachment.size)"
-                .attributed(.medium(12), color: .mainTextColor, alignment: .left)
+            size: attachment.formattedSize
+                .attributed(.medium(12), color: .mainTextColor, alignment: .left),
+            index: index
         )
     }
 }

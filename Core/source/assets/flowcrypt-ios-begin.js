@@ -35,8 +35,8 @@ const window = { navigator, crypto, setTimeout, clearTimeout };
 const self = { window, navigator, crypto };
 global.window = window;
 
-var engine_host_cb_value_formatter = function(val) {
-    coreHost.handleCallback(val.json, val.data);
+var engine_host_cb_value_formatter = function(callbackId, val) {
+    coreHost.handleCallback(callbackId, val.json, val.data);
 };
 
 (function() {

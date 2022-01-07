@@ -17,16 +17,18 @@ import FlowCryptUI
  */
 final class ContactsListViewController: TableNodeViewController {
     private let decorator: ContactsListDecoratorType
-    private let contactsProvider: LocalContactsProviderType
-    private var recipients: [RecipientWithPubKeys] = []
+    private let localContactsProvider: LocalContactsProviderType
+    private var recipients: [RecipientWithSortedPubKeys] = []
     private var selectedIndexPath: IndexPath?
+    private let appContext: AppContext
 
     init(
-        decorator: ContactsListDecoratorType = ContactsListDecorator(),
-        contactsProvider: LocalContactsProviderType = LocalContactsProvider()
+        appContext: AppContext,
+        decorator: ContactsListDecoratorType = ContactsListDecorator()
     ) {
         self.decorator = decorator
-        self.contactsProvider = contactsProvider
+        self.appContext = appContext
+        self.localContactsProvider = LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
         super.init(node: TableNode())
     }
 
@@ -62,7 +64,14 @@ extension ContactsListViewController {
     }
 
     private func fetchContacts() {
-        recipients = contactsProvider.getAllRecipients()
+        Task {
+            do {
+                self.recipients = try await localContactsProvider.getAllRecipients()
+                await self.node.reloadData()
+            } catch {
+                self.showToast("contacts_screen_load_error".localizeWithArguments(error.localizedDescription))
+            }
+        }
     }
 }
 
@@ -97,6 +106,7 @@ extension ContactsListViewController {
 
     private func proceedToContactDetail(with indexPath: IndexPath) {
         let contactDetailViewController = ContactDetailViewController(
+            appContext: appContext,
             recipient: recipients[indexPath.row]
         ) { [weak self] action in
             guard case let .delete(contact) = action else {
@@ -109,8 +119,8 @@ extension ContactsListViewController {
         navigationController?.pushViewController(contactDetailViewController, animated: true)
     }
 
-    private func delete(with context: Either<RecipientWithPubKeys, IndexPath>) {
-        let recipientToRemove: RecipientWithPubKeys
+    private func delete(with context: Either<RecipientWithSortedPubKeys, IndexPath>) {
+        let recipientToRemove: RecipientWithSortedPubKeys
         let indexPathToRemove: IndexPath
         switch context {
         case .left(let recipient):
@@ -125,8 +135,12 @@ extension ContactsListViewController {
             recipientToRemove = recipients[indexPath.row]
         }
 
-        contactsProvider.remove(recipient: recipientToRemove)
-        recipients.remove(at: indexPathToRemove.row)
-        node.deleteRows(at: [indexPathToRemove], with: .left)
+        do {
+            try localContactsProvider.remove(recipient: recipientToRemove)
+            recipients.remove(at: indexPathToRemove.row)
+            node.deleteRows(at: [indexPathToRemove], with: .left)
+        } catch {
+            showToast("contacts_screen_remove_error".localizeWithArguments(error.localizedDescription))
+        }
     }
 }

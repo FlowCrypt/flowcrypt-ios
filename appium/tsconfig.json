@@ -1,12 +1,31 @@
 {
   "compilerOptions": {
     "outDir": "./.tsbuild/",
-    "target": "es2016",
+    "target": "ES2018",
     "module": "commonjs",
-    "types": ["node", "@wdio/sync", "@wdio/jasmine-framework"],
-    "esModuleInterop": true
+    "types": [
+      "node",
+      "webdriverio/async",
+      "@wdio/jasmine-framework"
+    ],
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": false,
+    "sourceMap": false,
+    "checkJs": false,
+    "strict": true,
+    "baseUrl": "."
   },
   "include": [
-    "./tests/**/*.ts"
+    "./tests/**/*.ts",
+    "./api-mocks/mock.ts",
+    "./api-mocks/self-test.ts"
   ]
 }

@@ -16,16 +16,22 @@ import FlowCryptUI
  * - User can see detail information for the key in *KeyDetailViewController*
  */
 final class KeySettingsViewController: TableNodeViewController {
+
+    private let appContext: AppContext
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
-    private let keyService: KeyServiceType
+    private let isUsingKeyManager: Bool
 
     init(
-        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator(),
-        keyService: KeyServiceType = KeyService()
+        appContext: AppContext,
+        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
     ) {
+        self.appContext = appContext
         self.decorator = decorator
-        self.keyService = keyService
+        guard let currentUser = appContext.dataService.currentUser else {
+            fatalError("missing current user") // todo - need more elegant solution
+        }
+        self.isUsingKeyManager = appContext.clientConfigurationService.getSaved(for: currentUser.email).isUsingKeyManager
         super.init(node: TableNode())
     }
 
@@ -41,35 +47,41 @@ final class KeySettingsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
         node.reloadData()
-
-        loadKeysFromStorageAndRender()
         setupNavigationBar()
+        loadKeys()
     }
 
     private func setupNavigationBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .add,
-            target: self,
-            action: #selector(handleAddButtonTap)
-        )
+        if !isUsingKeyManager {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                barButtonSystemItem: .add,
+                target: self,
+                action: #selector(handleAddButtonTap)
+            )
+        }
     }
-}
 
-extension KeySettingsViewController {
-    private func loadKeysFromStorageAndRender() {
-        switch keyService.getPrvKeyDetails() {
-        case let .failure(error):
-            handleCommon(error: error)
-        case let .success(keys):
-            self.keys = keys
-            node.reloadData()
+    private func loadKeys() {
+        Task {
+            do {
+                try await loadKeysFromStorageAndRender()
+            } catch {
+                handleCommon(error: error)
+            }
         }
     }
 }
 
 extension KeySettingsViewController {
+    private func loadKeysFromStorageAndRender() async throws {
+        self.keys = try await appContext.keyService.getPrvKeyDetails()
+        await node.reloadData()
+    }
+}
+
+extension KeySettingsViewController {
     @objc private func handleAddButtonTap() {
-        navigationController?.pushViewController(SetupManuallyImportKeyViewController(), animated: true)
+        navigationController?.pushViewController(SetupManuallyImportKeyViewController(appContext: appContext), animated: true)
     }
 }
 
@@ -95,7 +107,15 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard let key = keys[safe: indexPath.row] else { return }
-        let viewController = KeyDetailViewController(key: key)
+
+        var parts = KeyDetailViewController.Parts.allCases
+        if isUsingKeyManager {
+            if let index = parts.firstIndex(where: { $0 == .privateInfo }) {
+                parts.remove(at: index)
+            }
+        }
+
+        let viewController = KeyDetailViewController(key: key, parts: parts)
         navigationController?.pushViewController(viewController, animated: true)
     }
 }

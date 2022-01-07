@@ -28,25 +28,22 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
         }
     }
 
+    private let appContext: AppContext
     private let decorator: SetupViewDecorator
     private let pasteboard: UIPasteboard
-    private let dataService: DataServiceType
-    private let core: Core
 
     private var userInfoMessage = "" {
         didSet { updateSubtitle() }
     }
 
     init(
+        appContext: AppContext,
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        pasteboard: UIPasteboard = UIPasteboard.general,
-        core: Core = Core.shared,
-        dataService: DataServiceType = DataService.shared
+        pasteboard: UIPasteboard = UIPasteboard.general
     ) {
+        self.appContext = appContext
         self.pasteboard = pasteboard
         self.decorator = decorator
-        self.dataService = dataService
-        self.core = core
         super.init(node: TableNode())
     }
 
@@ -78,9 +75,7 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
     }
 
     private func updateSubtitle() {
-        DispatchQueue.main.async {
-            self.node.reloadRows(at: [Parts.description.indexPath], with: .fade)
-        }
+        node.reloadRows(at: [Parts.description.indexPath], with: .fade)
     }
 }
 
@@ -113,19 +108,24 @@ extension SetupManuallyImportKeyViewController: ASTableDelegate, ASTableDataSour
                 )
             case .fileImport:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .fileImport),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .fileImport)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     self?.proceedToKeyImportFromFile()
                 }
             case .pasteBoardImport:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .pasteBoard),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .pasteBoard)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
-                    self?.proceedToKeyImportFromPasteboard()
+                    guard let self = self else { return }
+                    Task {
+                        do {
+                            try await self.proceedToKeyImportFromPasteboard()
+                        } catch {
+                            self.userInfoMessage = error.localizedDescription
+                        }
+                    }
                 }
                 .then {
                     $0.isButtonEnabled = self.pasteboard.hasStrings
@@ -159,30 +159,26 @@ extension SetupManuallyImportKeyViewController {
         present(documentInteractionController, animated: true, completion: nil)
     }
 
-    private func proceedToKeyImportFromPasteboard() {
+    private func proceedToKeyImportFromPasteboard() async throws {
         guard let armoredKey = pasteboard.string else { return }
-        parseUserProvided(data: Data(armoredKey.utf8))
+        try await parseUserProvided(data: Data(armoredKey.utf8))
     }
 
-    private func parseUserProvided(data keyData: Data) {
-        do {
-            let keys = try core.parseKeys(armoredOrBinary: keyData)
-            let privateKey = keys.keyDetails.filter { $0.private != nil }
-            let user = dataService.email ?? "unknown_title".localized
-
-            if privateKey.isEmpty {
-                userInfoMessage = "import_no_backups_clipboard".localized + user
-            } else {
-                userInfoMessage = "Found \(privateKey.count) key\(privateKey.count > 1 ? "s" : "")"
-                proceedToPassPhrase(with: user, keys: privateKey)
-            }
-        } catch {
-            userInfoMessage = error.localizedDescription
+    private func parseUserProvided(data keyData: Data) async throws {
+        let keys = try await Core.shared.parseKeys(armoredOrBinary: keyData)
+        let privateKey = keys.keyDetails.filter { $0.private != nil }
+        let user = appContext.dataService.email ?? "unknown_title".localized
+        if privateKey.isEmpty {
+            userInfoMessage = "import_no_backups_clipboard".localized + user
+        } else {
+            userInfoMessage = "Found \(privateKey.count) key\(privateKey.count > 1 ? "s" : "")"
+            proceedToPassPhrase(with: user, keys: privateKey)
         }
     }
 
     private func proceedToPassPhrase(with email: String, keys: [KeyDetails]) {
         let viewController = SetupManuallyEnterPassPhraseViewController(
+            appContext: appContext,
             decorator: decorator,
             email: email,
             fetchedKeys: keys
@@ -215,7 +211,14 @@ extension SetupManuallyImportKeyViewController: UIDocumentPickerDelegate {
         document.open { [weak self] success in
             guard success else { assertionFailure("Failed to open doc"); return }
             guard let metadata = document.data else { assertionFailure("Failed to fetch data"); return }
-            self?.parseUserProvided(data: metadata)
+            guard let self = self else { return}
+            Task {
+                do {
+                    try await self.parseUserProvided(data: metadata)
+                } catch {
+                    self.userInfoMessage = error.localizedDescription
+                }
+            }
         }
     }
 }

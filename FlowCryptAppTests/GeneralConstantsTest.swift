@@ -6,12 +6,12 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import XCTest
 @testable import FlowCrypt
+import XCTest
 
 class GeneralConstantsTest: XCTestCase {
     func testGeneralGlobalConstants() {
-        XCTAssert(GeneralConstants.Global.generalError == -1)
+        XCTAssert(URLSession.generalError == -1)
     }
 
     func testGeneralEmailConstants() {
@@ -25,13 +25,23 @@ class GeneralConstantsTest: XCTestCase {
 
     func testGmailConstants() {
         // Scope
-        let currentScope: Set<String> = Set(GeneralConstants.Gmail.currentScope.map { $0.value })
-        let expectedScope = Set([
+        let mailScope: Set<String> = Set(GeneralConstants.Gmail.mailScope.map(\.value))
+        let expectedMailScope = Set([
             "https://www.googleapis.com/auth/userinfo.profile",
             "https://mail.google.com/",
-            "https://www.googleapis.com/auth/contacts"
+            "https://www.googleapis.com/auth/userinfo.email"
         ])
-        XCTAssert(currentScope == expectedScope)
+        XCTAssert(mailScope == expectedMailScope)
+
+        let contactsScope: Set<String> = Set(GeneralConstants.Gmail.contactsScope.map(\.value))
+        let expectedContactsScope = Set([
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://mail.google.com/",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/contacts",
+            "https://www.googleapis.com/auth/contacts.other.readonly"
+        ])
+        XCTAssert(contactsScope == expectedContactsScope)
 
         // Client Id
         let clientId = GeneralConstants.Gmail.clientID

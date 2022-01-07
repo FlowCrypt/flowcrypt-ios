@@ -9,43 +9,46 @@
 import Foundation
 import UIKit
 import Photos
-import Combine
+import PhotosUI
 
-typealias PhotoViewController = UIViewController
-& UIImagePickerControllerDelegate
-& UINavigationControllerDelegate
+typealias PhotoPickerViewController = UIViewController & PHPickerViewControllerDelegate
+typealias TakePhotoViewController = UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
 
+@MainActor
 protocol PhotosManagerType {
-    func selectPhoto(
-        source: UIImagePickerController.SourceType,
-        from viewController: PhotoViewController
-    ) -> Future<Void, Error>
+    func takePhoto(from viewController: TakePhotoViewController) async throws
+    func selectPhoto(from viewController: PhotoPickerViewController) async
 }
 
 enum PhotosManagerError: Error {
-    case noAccessToLibrary
+    case noAccessToCamera
+    case cantFetchMovie
+    case cantFetchImage
 }
 
-class PhotosManager: PhotosManagerType {
+final class PhotosManager {
+}
 
-    enum MediaType {
-        static let image = "public.image"
-        static let video = "public.movie"
-    }
-    
-    func selectPhoto(
-        source: UIImagePickerController.SourceType,
-        from viewController: UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
-    ) -> Future<Void, Error> {
-        Future<Void, Error> { promise in
-            DispatchQueue.main.async {
-                let imagePicker = UIImagePickerController()
-                imagePicker.delegate = viewController
-                imagePicker.sourceType = source
-                imagePicker.mediaTypes = [MediaType.image, MediaType.video]
-                viewController.present(imagePicker, animated: true, completion: nil)
-                promise(.success(()))
-            }
+extension PhotosManager: PhotosManagerType {
+    func takePhoto(from viewController: TakePhotoViewController) async throws {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized, .notDetermined:
+            let imagePicker = UIImagePickerController()
+            imagePicker.delegate = viewController
+            imagePicker.sourceType = .camera
+            viewController.present(imagePicker, animated: true, completion: nil)
+        default:
+            throw PhotosManagerError.noAccessToCamera
         }
+    }
+
+    func selectPhoto(from viewController: PhotoPickerViewController) async {
+        var config = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
+        config.selectionLimit = 1
+        config.filter = PHPickerFilter.any(of: [.images, .videos])
+
+        let pickerViewController = PHPickerViewController(configuration: config)
+        pickerViewController.delegate = viewController
+        viewController.present(pickerViewController, animated: true, completion: nil)
     }
 }

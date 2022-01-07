@@ -5,6 +5,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
+import UIKit
 
 /**
  * Sign in controller
@@ -24,19 +25,14 @@ final class SignInViewController: TableNodeViewController {
         case links, logo, description, gmail, outlook, other
     }
 
-    private let globalRouter: GlobalRouterType
-    private let core: Core
+    private let appContext: AppContext
     private let decorator: SignInViewDecoratorType
 
-    private lazy var logger = Logger.nested(Self.self)
-
     init(
-        globalRouter: GlobalRouterType = GlobalRouter(),
-        core: Core = Core.shared,
+        appContext: AppContext,
         decorator: SignInViewDecoratorType = SignInViewDecorator()
     ) {
-        self.globalRouter = globalRouter
-        self.core = core
+        self.appContext = appContext
         self.decorator = decorator
 
         super.init(node: TableNode())
@@ -80,7 +76,6 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         let imageHeight = tableNode.bounds.size.height * 0.2
-
         return { [weak self] in
             guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
@@ -90,7 +85,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
                     self?.handle(option: appLink)
                 }
             case .logo:
-                return SignInImageNode(self.decorator.logo, height: imageHeight)
+                return SignInImageNode(self.decorator.logo, imageHeight: imageHeight)
             case .description:
                 return SignInDescriptionNode(self.decorator.description)
             case .gmail:
@@ -118,7 +113,9 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 
 extension SignInViewController {
     private func signInWithGmail() {
-        globalRouter.signIn(with: .gmailLogin(self))
+        Task {
+            await appContext.globalRouter.signIn(appContext: appContext, route: .gmailLogin(self))
+        }
     }
 
     private func signInWithOutlook() {
@@ -126,7 +123,7 @@ extension SignInViewController {
     }
 
     private func proceedToOtherProvider() {
-        let setupViewController = SetupImapViewController()
+        let setupViewController = SetupImapViewController(appContext: appContext)
         navigationController?.pushViewController(setupViewController, animated: true)
     }
 

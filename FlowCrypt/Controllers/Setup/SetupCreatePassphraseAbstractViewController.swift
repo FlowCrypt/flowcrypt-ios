@@ -9,14 +9,15 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Promises
 
 /**
  * Controller which decalres a base logic for passphrase setup
  * - Has not to have an instance!
  */
 
+@MainActor
 class SetupCreatePassphraseAbstractViewController: TableNodeViewController, PassPhraseSaveable, NavigationChildController {
+
     enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, action, subtitle, fetchedKeys
     }
@@ -25,14 +26,10 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         Parts.allCases
     }
 
+    let appContext: AppContext
     let decorator: SetupViewDecorator
-    let core: Core
-    let router: GlobalRouterType
     let user: UserId
     let fetchedKeysCount: Int
-    let storage: DataServiceType
-    let keyStorage: KeyStorageType
-    let passPhraseService: PassPhraseServiceType
 
     var storageMethod: StorageMethod = .persistent {
         didSet {
@@ -50,23 +47,16 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
+        appContext: AppContext,
         user: UserId,
         fetchedKeysCount: Int = 0,
-        core: Core = .shared,
         router: GlobalRouterType = GlobalRouter(),
-        decorator: SetupViewDecorator = SetupViewDecorator(),
-        storage: DataServiceType = DataService.shared,
-        keyStorage: KeyStorageType = KeyDataStorage(),
-        passPhraseService: PassPhraseServiceType = PassPhraseService()
+        decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
+        self.appContext = appContext
         self.user = user
         self.fetchedKeysCount = fetchedKeysCount
-        self.core = core
-        self.router = router
         self.decorator = decorator
-        self.storage = storage
-        self.keyStorage = keyStorage
-        self.passPhraseService = passPhraseService
         super.init(node: TableNode())
     }
 
@@ -98,7 +88,11 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     }
 
     func handleBackButtonTap() {
-        router.signOut()
+        do {
+            try appContext.globalRouter.signOut(appContext: self.appContext)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 }
 
@@ -137,58 +131,50 @@ extension SetupCreatePassphraseAbstractViewController {
 
 extension SetupCreatePassphraseAbstractViewController {
 
-    func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) -> Promise<Void> {
-        Promise { [weak self] in
-            guard let self = self else { throw AppErr.nilSelf }
-
-            let strength = try self.core.zxcvbnStrengthBar(passPhrase: passPhrase)
-
-            guard strength.word.pass else {
-                throw CreateKeyError.weakPassPhrase(strength)
-            }
-
-            let confirmPassPhrase = try awaitPromise(self.awaitUserPassPhraseEntry())
-
-            guard confirmPassPhrase != nil else {
-                throw CreateKeyError.conformingPassPhraseError
-            }
-
-            guard confirmPassPhrase == passPhrase else {
-                throw CreateKeyError.doesntMatch
-            }
+    func validateAndConfirmNewPassPhraseOrReject(passPhrase: String) async throws {
+        let strength = try await Core.shared.zxcvbnStrengthBar(passPhrase: passPhrase)
+        guard strength.word.pass else {
+            throw CreateKeyError.weakPassPhrase(strength)
+        }
+        let confirmPassPhrase = try await self.awaitUserPassPhraseEntry()
+        guard confirmPassPhrase != nil else {
+            throw CreateKeyError.conformingPassPhraseError
+        }
+        guard confirmPassPhrase == passPhrase else {
+            throw CreateKeyError.doesntMatch
         }
     }
 
-    private func awaitUserPassPhraseEntry() -> Promise<String?> {
-        Promise<String?>(on: .main) { [weak self] resolve, _ in
-            guard let self = self else { throw AppErr.nilSelf }
-            let alert = UIAlertController(
-                title: "Pass Phrase",
-                message: "Confirm Pass Phrase",
-                preferredStyle: .alert
-            )
+    private func awaitUserPassPhraseEntry() async throws -> String? {
+        return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
+            DispatchQueue.main.async {
+                let alert = UIAlertController(
+                    title: "Pass Phrase",
+                    message: "Confirm Pass Phrase",
+                    preferredStyle: .alert
+                )
 
-            alert.addTextField { textField in
-                textField.isSecureTextEntry = true
-                textField.accessibilityLabel = "textField"
+                alert.addTextField { textField in
+                    textField.isSecureTextEntry = true
+                    textField.accessibilityLabel = "textField"
+                }
+
+                alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
+                    return continuation.resume(returning: nil)
+                })
+                alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
+                    return continuation.resume(returning: alert?.textFields?[0].text)
+                })
+
+                self.present(alert, animated: true, completion: nil)
             }
-
-            alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
-                resolve(nil)
-            })
-
-            alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
-                resolve(alert?.textFields?[0].text)
-            })
-
-            self.present(alert, animated: true, completion: nil)
         }
     }
 }
 
 extension SetupCreatePassphraseAbstractViewController {
     func moveToMainFlow() {
-        router.proceed()
+        appContext.globalRouter.proceed()
     }
 
     private func showChoosingOptions() {
@@ -249,8 +235,7 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                 }
             case .action:
                 let input = ButtonCellNode.Input(
-                    title: self.decorator.buttonTitle(for: .setPassPhrase),
-                    insets: self.decorator.insets.buttonInsets
+                    title: self.decorator.buttonTitle(for: .setPassPhrase)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     self?.handleButtonAction()

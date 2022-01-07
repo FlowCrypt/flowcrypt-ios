@@ -6,20 +6,17 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Combine
-import Promises
 import UIKit
 
 final class BackupService {
     let backupProvider: BackupProvider
     let core: Core
     let messageSender: MessageGateway
-    private var cancellable = Set<AnyCancellable>()
 
     init(
-        backupProvider: BackupProvider = MailProvider.shared.backupProvider,
+        backupProvider: BackupProvider,
         core: Core = .shared,
-        messageSender: MessageGateway = MailProvider.shared.messageSender
+        messageSender: MessageGateway
     ) {
         self.backupProvider = backupProvider
         self.core = core
@@ -31,9 +28,8 @@ final class BackupService {
 extension BackupService: BackupServiceType {
     func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
         let backupData = try await self.backupProvider.searchBackups(for: userId.email)
-
         do {
-            let parsed = try core.parseKeys(armoredOrBinary: backupData)
+            let parsed = try await core.parseKeys(armoredOrBinary: backupData)
             let keys = parsed.keyDetails.filter { $0.private != nil }
             return keys
         } catch {
@@ -66,10 +62,12 @@ extension BackupService: BackupServiceType {
             replyToMimeMsg: nil,
             atts: attachments,
             pubKeys: nil,
-            signingPrv: nil)
+            signingPrv: nil,
+            password: nil)
 
         let t = try await core.composeEmail(msg: message, fmt: .plain)
-        try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil))
+        try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil),
+                                         progressHandler: nil)
     }
 
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {

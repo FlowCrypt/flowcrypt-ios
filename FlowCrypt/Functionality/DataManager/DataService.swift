@@ -7,14 +7,11 @@
 //
 
 import Foundation
-import Promises
 import RealmSwift
 
-protocol EmailProviderType {
-    var email: String? { get }
-}
-
-protocol DataServiceType: EmailProviderType {
+// todo DataServiceType in general is a bit of a confused class
+// hopefully we can refactor it away or shrink it
+protocol DataServiceType {
     // data
     var email: String? { get }
     var currentUser: User? { get }
@@ -25,17 +22,14 @@ protocol DataServiceType: EmailProviderType {
 
     var users: [User] { get }
 
-    func validAccounts() -> [User]
-}
+    func getFinishedSetupUsers(exceptUserEmail: String) -> [User]
 
-protocol ImapSessionProvider {
-    func imapSession() -> IMAPSession?
-    func smtpSession() -> SMTPSession?
+    func performMigrationIfNeeded() async throws
 }
 
 enum SessionType: CustomStringConvertible {
     case google(_ email: String, name: String, token: String)
-    case session(_ userObject: UserObject)
+    case session(_ user: User)
 
     var description: String {
         switch self {
@@ -49,14 +43,13 @@ enum SessionType: CustomStringConvertible {
 
 // MARK: - DataService
 final class DataService {
-    static let shared = DataService()
 
     private let encryptedStorage: EncryptedStorageType
     private let localStorage: LocalStorageType
     private let migrationService: DBMigration
 
-    private init(
-        encryptedStorage: EncryptedStorageType = EncryptedStorage(),
+    init(
+        encryptedStorage: EncryptedStorageType,
         localStorage: LocalStorageType = LocalStorage()
     ) {
         self.encryptedStorage = encryptedStorage
@@ -67,10 +60,6 @@ final class DataService {
 
 // MARK: - DataServiceType
 extension DataService: DataServiceType {
-    var storage: Realm {
-        encryptedStorage.storage
-    }
-
     var isSetupFinished: Bool {
         isLoggedIn && doesAnyKeyExistForCurrentUser
     }
@@ -79,7 +68,7 @@ extension DataService: DataServiceType {
         guard let currentUser = currentUser else {
             return false
         }
-        return encryptedStorage.doesAnyKeyExist(for: currentUser.email)
+        return encryptedStorage.doesAnyKeypairExist(for: currentUser.email)
     }
 
     var isLoggedIn: Bool {
@@ -91,75 +80,45 @@ extension DataService: DataServiceType {
     }
 
     // helper to get current user object from DB
-    private var currentUserObject: UserObject? {
+    private var activeUser: User? {
         encryptedStorage.activeUser
     }
 
     var users: [User] {
         encryptedStorage.getAllUsers()
-            .map(User.init)
     }
 
     var currentUser: User? {
-        users.first(where: \.isActive)
+        encryptedStorage.getAllUsers().first(where: \.isActive)
     }
 
     var currentAuthType: AuthType? {
-        currentUserObject?.authType
+        activeUser?.authType
     }
 
     var token: String? {
         switch currentAuthType {
         case .oAuthGmail:
-            return GoogleUserService().userToken
+            return GoogleUserService(
+                currentUserEmail: currentUser?.email,
+                appDelegateGoogleSessionContainer: nil // needed only when signing in/out
+            ).accessToken
         default:
             return nil
         }
     }
 
-    func validAccounts() -> [User] {
+    func getFinishedSetupUsers(exceptUserEmail: String) -> [User] {
         encryptedStorage.getAllUsers()
-            .filter { encryptedStorage.doesAnyKeyExist(for: $0.email) }
-            .filter { $0.email != currentUser?.email }
-            .map(User.init)
+            .filter { $0.email != exceptUserEmail }
+            .filter { encryptedStorage.doesAnyKeypairExist(for: $0.email) }
     }
 }
 
 // MARK: - Migration
 extension DataService: DBMigration {
     /// Perform all kind of migrations
-    func performMigrationIfNeeded() -> Promise<Void> {
-        migrationService.performMigrationIfNeeded()
-    }
-}
-
-// MARK: - SessionProvider
-extension DataService: ImapSessionProvider {
-    func imapSession() -> IMAPSession? {
-        guard let user = currentUserObject else {
-            assertionFailure("Can't get IMAP Session without user data")
-            return nil
-        }
-
-        guard let imapSession = IMAPSession(userObject: user) else {
-            assertionFailure("couldn't create IMAP Session with this parameters")
-            return nil
-        }
-
-        return imapSession
-    }
-
-    func smtpSession() -> SMTPSession? {
-        guard let user = currentUserObject else {
-            assertionFailure("Can't get SMTP Session without user data")
-            return nil
-        }
-
-        guard let smtpSession = SMTPSession(userObject: user) else {
-            assertionFailure("couldn't create SMTP Session with this parameters")
-            return nil
-        }
-
-        return smtpSession
+    func performMigrationIfNeeded() async throws {
+        try await migrationService.performMigrationIfNeeded()
     }
 }
