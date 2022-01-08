@@ -26,7 +26,7 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
 // copy raw to flowcrypt-bundle
 fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-bare-bundle.js`);
 
-const sanitizeHtmlDist = './node_modules/sanitize-html/dist/sanitize-html.js';
+const sanitizeHtmlDist = './node_modules/sanitize-html/index.js';
 
 // copy wip to html-sanitize-bundle
 fs.writeFileSync(
