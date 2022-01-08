@@ -60,7 +60,7 @@ extension CheckBoxTextNode.Input {
 
         return CheckBoxTextNode.Input(
             title: attributedTitle,
-            insets: .init(top: 8, left: 16, bottom: 8, right: 16),
+            insets: .deviceSpecificInsets(top: 8, bottom: 8),
             preferredSize: CGSize(width: 30, height: 30),
             checkBoxInput: CheckBoxNode.Input(
                 color: checkboxColor,
