@@ -7,21 +7,24 @@
 //
 
 import UIKit
+import FlowCryptCommon
 
 enum AlertsFactory {
     typealias PassPhraseCompletion = ((String) -> Void)
     typealias CancelCompletion = (() -> Void)
 
     static func makePassPhraseAlert(
+        title: String = "setup_enter_pass_phrase".localized,
+        in view: UIView,
         onCancel: @escaping CancelCompletion,
-        onCompletion: @escaping PassPhraseCompletion,
-        title: String = "setup_enter_pass_phrase".localized
+        onCompletion: @escaping PassPhraseCompletion
     ) -> UIAlertController {
         let alert = UIAlertController(
             title: title,
             message: nil,
             preferredStyle: .alert
-        )
+        ).popoverPresentation(style: .centered(view))
+
         alert.addTextField { tf in
             tf.isSecureTextEntry = true
         }

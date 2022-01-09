@@ -66,11 +66,12 @@ final class ContactKeyDetailViewController: TableNodeViewController {
 
 extension ContactKeyDetailViewController {
     private final func handleSaveAction() {
-        let vc = UIActivityViewController(
+        let activityViewController = UIActivityViewController(
             activityItems: [pubKey.armored],
             applicationActivities: nil
         )
-        present(vc, animated: true, completion: nil)
+        activityViewController.popoverPresentationController?.centeredPresentation(in: view)
+        present(activityViewController, animated: true, completion: nil)
     }
 
     private final func handleCopyAction() {

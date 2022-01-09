@@ -66,8 +66,10 @@ extension BackupService: BackupServiceType {
             password: nil)
 
         let t = try await core.composeEmail(msg: message, fmt: .plain)
-        try await messageSender.sendMail(input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil),
-                                         progressHandler: nil)
+        try await messageSender.sendMail(
+            input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil),
+            progressHandler: nil
+        )
     }
 
     func backupAsFile(keys: [KeyDetails], for viewController: UIViewController) {
@@ -76,6 +78,7 @@ extension BackupService: BackupServiceType {
             activityItems: [file],
             applicationActivities: nil
         )
+        activityViewController.popoverPresentationController?.centeredPresentation(in: viewController.view)
         viewController.present(activityViewController, animated: true)
     }
 }

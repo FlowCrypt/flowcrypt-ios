@@ -53,7 +53,12 @@ public extension UIViewController {
     func showAlert(title: String? = "error".localized, message: String, onOk: (() -> Void)? = nil) {
         self.view.hideAllToasts()
         hideSpinner()
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        ).popoverPresentation(style: .centered(view))
+        
         alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in onOk?() })
         self.present(alert, animated: true, completion: nil)
     }
@@ -67,7 +72,12 @@ public extension UIViewController {
     ) {
         self.view.hideAllToasts()
         hideSpinner()
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        ).popoverPresentation(style: .centered(view))
+        
         alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
         present(alert, animated: true, completion: nil)

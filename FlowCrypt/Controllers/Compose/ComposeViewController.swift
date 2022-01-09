@@ -438,8 +438,11 @@ extension ComposeViewController {
     }
 
     private func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo) async throws -> String {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+        return try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<String, Error>) in
+            guard let self = self else { return continuation.resume(throwing: AppErr.nilSelf) }
+            
             let alert = AlertsFactory.makePassPhraseAlert(
+                in: self.view,
                 onCancel: {
                     return continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
                 },
@@ -1060,7 +1063,7 @@ extension ComposeViewController {
             title: "compose_password_modal_title".localized,
             message: "compose_password_modal_message".localized,
             preferredStyle: .alert
-        )
+        ).popoverPresentation(style: .centered(view))
 
         alert.addTextField { [weak self] in
             guard let self = self else { return }
@@ -1213,7 +1216,8 @@ extension ComposeViewController {
         let alert = UIAlertController(
             title: "files_picking_select_input_source_title".localized,
             message: nil, preferredStyle: .actionSheet
-        )
+        ).popoverPresentation(style: .centered(view))
+        
         alert.addAction(
             UIAlertAction(
                 title: "files_picking_camera_input_source".localized,
@@ -1266,7 +1270,8 @@ extension ComposeViewController {
             title: "files_picking_no_library_access_error_title".localized,
             message: "files_picking_no_library_access_error_message".localized,
             preferredStyle: .alert
-        )
+        ).popoverPresentation(style: .centered(view))
+        
         let okAction = UIAlertAction(
             title: "OK",
             style: .cancel
@@ -1288,7 +1293,8 @@ extension ComposeViewController {
             title: "files_picking_no_camera_access_error_title".localized,
             message: "files_picking_no_camera_access_error_message".localized,
             preferredStyle: .alert
-        )
+        ).popoverPresentation(style: .centered(view))
+
         let okAction = UIAlertAction(
             title: "OK",
             style: .cancel
@@ -1329,7 +1335,8 @@ extension ComposeViewController {
             title: "error".localized,
             message: "compose_missing_contacts_scopes".localizeWithArguments(scopes),
             preferredStyle: .alert
-        )
+        ).popoverPresentation(style: .centered(view))
+
         let laterAction = UIAlertAction(
             title: "later".localized,
             style: .cancel

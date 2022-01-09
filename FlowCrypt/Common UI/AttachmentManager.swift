@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import FlowCryptCommon
 
 @MainActor
 protocol AttachmentManagerType {
@@ -17,18 +18,21 @@ final class AttachmentManager: NSObject {
     private weak var controller: UIViewController?
     private let filesManager: FilesManagerType
 
-    init(controller: UIViewController,
-         filesManager: FilesManagerType) {
+    init(
+        controller: UIViewController,
+        filesManager: FilesManagerType
+    ) {
         self.controller = controller
         self.filesManager = filesManager
     }
 
     private func showFileSharedAlert(with url: URL) {
+        guard let view = controller?.view else { return }
         let alert = UIAlertController(
             title: "message_attachment_saved_successfully_title".localized,
             message: "message_attachment_saved_successfully_message".localized,
             preferredStyle: .alert
-        )
+        ).popoverPresentation(style: .centered(view))
 
         let cancel = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in }
         let open = UIAlertAction(title: "open".localized, style: .default) { _ in

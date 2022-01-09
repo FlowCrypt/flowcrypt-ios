@@ -156,7 +156,13 @@ extension ThreadDetailsViewController {
     }
 
     private func handleMenuTap(at indexPath: IndexPath) {
-        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(
+            title: nil,
+            message: nil,
+            preferredStyle: .actionSheet
+        ).popoverPresentation(style: .centered(view))
+        // TODO: - Anton actionSheet
+        
         alert.addAction(
             UIAlertAction(
                 title: "forward".localized,
@@ -301,25 +307,28 @@ extension ThreadDetailsViewController {
 
     private func handleMissedPassPhrase(for rawMimeData: Data, at indexPath: IndexPath) {
         let alert = AlertsFactory.makePassPhraseAlert(
+            in: view,
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
                 self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
-            })
+            }
+        )
 
         present(alert, animated: true, completion: nil)
     }
 
     private func handleWrongPassPhrase(for rawMimeData: Data, with phrase: String, at indexPath: IndexPath) {
         let alert = AlertsFactory.makePassPhraseAlert(
+            title: "setup_wrong_pass_phrase_retry".localized,
+            in: view,
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
                 self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
-            },
-            title: "setup_wrong_pass_phrase_retry".localized
+            }
         )
         present(alert, animated: true, completion: nil)
     }
