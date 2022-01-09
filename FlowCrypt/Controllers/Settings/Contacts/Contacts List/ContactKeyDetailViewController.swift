@@ -70,7 +70,7 @@ extension ContactKeyDetailViewController {
             activityItems: [pubKey.armored],
             applicationActivities: nil
         )
-        activityViewController.popoverPresentationController?.centeredPresentation(in: view)
+        activityViewController.popoverPresentationController?.centredPresentation(in: view)
         present(activityViewController, animated: true, completion: nil)
     }
 

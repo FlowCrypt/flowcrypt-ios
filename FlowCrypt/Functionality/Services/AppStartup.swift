@@ -142,7 +142,7 @@ struct AppStartup {
         )
 
         if let view = window.rootViewController?.view {
-            alert.popoverPresentation(style: .centered(view))
+            alert.popoverPresentation(style: .centred(view))
         }
 
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in

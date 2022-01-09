@@ -32,7 +32,7 @@ final class AttachmentManager: NSObject {
             title: "message_attachment_saved_successfully_title".localized,
             message: "message_attachment_saved_successfully_message".localized,
             preferredStyle: .alert
-        ).popoverPresentation(style: .centered(view))
+        ).popoverPresentation(style: .centred(view))
 
         let cancel = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in }
         let open = UIAlertAction(title: "open".localized, style: .default) { _ in

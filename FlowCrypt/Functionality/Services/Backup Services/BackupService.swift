@@ -78,7 +78,7 @@ extension BackupService: BackupServiceType {
             activityItems: [file],
             applicationActivities: nil
         )
-        activityViewController.popoverPresentationController?.centeredPresentation(in: viewController.view)
+        activityViewController.popoverPresentationController?.centredPresentation(in: viewController.view)
         viewController.present(activityViewController, animated: true)
     }
 }

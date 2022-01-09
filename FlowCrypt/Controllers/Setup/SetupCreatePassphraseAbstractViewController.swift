@@ -152,7 +152,7 @@ extension SetupCreatePassphraseAbstractViewController {
                     title: "Pass Phrase",
                     message: "Confirm Pass Phrase",
                     preferredStyle: .alert
-                ).popoverPresentation(style: .centered(self.view))
+                ).popoverPresentation(style: .centred(self.view))
 
                 alert.addTextField { textField in
                     textField.isSecureTextEntry = true

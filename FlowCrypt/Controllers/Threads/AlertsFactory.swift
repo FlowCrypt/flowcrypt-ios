@@ -23,7 +23,7 @@ enum AlertsFactory {
             title: title,
             message: nil,
             preferredStyle: .alert
-        ).popoverPresentation(style: .centered(view))
+        ).popoverPresentation(style: .centred(view))
 
         alert.addTextField { tf in
             tf.isSecureTextEntry = true

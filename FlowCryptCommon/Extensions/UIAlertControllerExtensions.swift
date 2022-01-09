@@ -11,15 +11,15 @@ import UIKit
 
 public extension UIAlertController {
     enum PopoverPresentationStyle {
-        case centered(UIView)
+        case centred(UIView)
         case sourceView(UIView)
     }
     
     @discardableResult
     func popoverPresentation(style: PopoverPresentationStyle) -> UIAlertController {
         switch style {
-        case .centered(let view):
-            popoverPresentationController?.centeredPresentation(in: view)
+        case .centred(let view):
+            popoverPresentationController?.centredPresentation(in: view)
         case .sourceView(let view):
             popoverPresentationController?.sourceView = view
         }

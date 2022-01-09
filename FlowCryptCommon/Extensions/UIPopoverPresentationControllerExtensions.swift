@@ -10,7 +10,7 @@
 import UIKit
 
 public extension UIPopoverPresentationController {
-    func centeredPresentation(in view: UIView) {
+    func centredPresentation(in view: UIView) {
         sourceView = view
         sourceRect = .init(
             x: view.bounds.midX,

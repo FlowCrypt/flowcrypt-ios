@@ -99,7 +99,7 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
                 activityItems: items,
                 applicationActivities: nil
             )
-            activityViewController.popoverPresentationController?.centeredPresentation(in: view)
+            activityViewController.popoverPresentationController?.centredPresentation(in: view)
 
             present(activityViewController, animated: true)
         case .privateInfo:

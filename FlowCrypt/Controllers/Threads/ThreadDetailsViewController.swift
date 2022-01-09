@@ -160,9 +160,13 @@ extension ThreadDetailsViewController {
             title: nil,
             message: nil,
             preferredStyle: .actionSheet
-        ).popoverPresentation(style: .centered(view))
-        // TODO: - Anton actionSheet
-        
+        )
+        if let view = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode {
+            alert.popoverPresentation(style: .sourceView(view.menuNode.view))
+        } else {
+            alert.popoverPresentation(style: .centred(view))
+        }
+
         alert.addAction(
             UIAlertAction(
                 title: "forward".localized,
