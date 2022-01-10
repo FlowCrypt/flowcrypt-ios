@@ -438,7 +438,7 @@ extension ComposeViewController {
     }
 
     private func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo) async throws -> String {
-        return try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<String, Error>) in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
                 onCancel: {
                     return continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
@@ -1212,7 +1212,8 @@ extension ComposeViewController {
     private func openAttachmentsInputSourcesSheet() {
         let alert = UIAlertController(
             title: "files_picking_select_input_source_title".localized,
-            message: nil, preferredStyle: .actionSheet
+            message: nil,
+            preferredStyle: .actionSheet
         ).popoverPresentation(style: .centred(view))
 
         alert.addAction(
