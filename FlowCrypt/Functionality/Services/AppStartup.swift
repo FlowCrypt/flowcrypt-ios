@@ -140,11 +140,6 @@ struct AppStartup {
             message: "\(error.localizedDescription)",
             preferredStyle: .alert
         )
-
-        if let view = window.rootViewController?.view {
-            alert.popoverPresentation(style: .centred(view))
-        }
-
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in
             self.initializeApp(window: window)
         }

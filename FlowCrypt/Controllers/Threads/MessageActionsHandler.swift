@@ -115,8 +115,7 @@ extension MessageActionsHandler where Self: UIViewController {
             title: "Are you sure?",
             message: "You're about to permanently delete a message",
             preferredStyle: .alert
-        ).popoverPresentation(style: .centred(view))
-        
+        )
         alert.addAction(
             UIAlertAction(title: "Cancel", style: .default)
         )

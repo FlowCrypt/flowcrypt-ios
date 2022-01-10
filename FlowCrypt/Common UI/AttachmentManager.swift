@@ -27,12 +27,11 @@ final class AttachmentManager: NSObject {
     }
 
     private func showFileSharedAlert(with url: URL) {
-        guard let view = controller?.view else { return }
         let alert = UIAlertController(
             title: "message_attachment_saved_successfully_title".localized,
             message: "message_attachment_saved_successfully_message".localized,
             preferredStyle: .alert
-        ).popoverPresentation(style: .centred(view))
+        )
 
         let cancel = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in }
         let open = UIAlertAction(title: "open".localized, style: .default) { _ in

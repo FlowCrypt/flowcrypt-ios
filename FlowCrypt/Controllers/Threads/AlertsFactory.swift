@@ -15,7 +15,6 @@ enum AlertsFactory {
 
     static func makePassPhraseAlert(
         title: String = "setup_enter_pass_phrase".localized,
-        in view: UIView,
         onCancel: @escaping CancelCompletion,
         onCompletion: @escaping PassPhraseCompletion
     ) -> UIAlertController {
@@ -23,7 +22,7 @@ enum AlertsFactory {
             title: title,
             message: nil,
             preferredStyle: .alert
-        ).popoverPresentation(style: .centred(view))
+        )
 
         alert.addTextField { tf in
             tf.isSecureTextEntry = true
