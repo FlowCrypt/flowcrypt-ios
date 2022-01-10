@@ -162,7 +162,7 @@
 		9F65B0B9278346F8005CD19C /* UIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F65B0B8278346F8005CD19C /* UIConstants.swift */; };
 		9F67998B277B222B00AFE5BE /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 9F67998A277B222B00AFE5BE /* BigInt */; };
 		9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E20275AA417007B8802 /* BundleExtensions.swift */; };
-		9F67998D277B3E4D00AFE5BE /* CommandLineExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */; };
+		9F67998D277B3E4D00AFE5BE /* (null) in Sources */ = {isa = PBXBuildFile; };
 		9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE1542597399D0059BA51 /* BackupProvider.swift */; };
 		9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
 		9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */; };
@@ -243,6 +243,8 @@
 		9FC7EBAA266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC7EBA9266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift */; };
 		9FD364862381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD364852381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift */; };
 		9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD505262785C2CD00FAA82F /* UIDeviceExtensions.swift */; };
+		9FD5052927889D8200FAA82F /* UIAlertControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD5052827889D8200FAA82F /* UIAlertControllerExtensions.swift */; };
+		9FD5052B278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD5052A278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift */; };
 		9FE1B3802563F85400D6D086 /* MessagesListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */; };
 		9FE1B3942563F98600D6D086 /* Imap+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */; };
 		9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FE1B39F2565B0CD00D6D086 /* Message.swift */; };
@@ -370,8 +372,6 @@
 		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
 		D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
-		E26D5E21275AA417007B8802 /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E20275AA417007B8802 /* BundleExtensions.swift */; };
-		E26D5E22275AA421007B8802 /* BundleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26D5E20275AA417007B8802 /* BundleExtensions.swift */; };
 		F191F621272511790053833E /* BlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F191F620272511790053833E /* BlurViewController.swift */; };
 		F80E95362720B6640093F243 /* DraftsListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F80E95352720B6640093F243 /* DraftsListProvider.swift */; };
 		F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678DCB2722143300BB1710 /* GmailService+draft.swift */; };
@@ -683,6 +683,8 @@
 		9FD22A1E230FEFC6005067A6 /* NavigationBarActionButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarActionButton.swift; sourceTree = "<group>"; };
 		9FD364852381EFCB00657302 /* SetupManuallyEnterPassPhraseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupManuallyEnterPassPhraseViewController.swift; sourceTree = "<group>"; };
 		9FD505262785C2CD00FAA82F /* UIDeviceExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIDeviceExtensions.swift; sourceTree = "<group>"; };
+		9FD5052827889D8200FAA82F /* UIAlertControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAlertControllerExtensions.swift; sourceTree = "<group>"; };
+		9FD5052A278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIPopoverPresentationControllerExtensions.swift; sourceTree = "<group>"; };
 		9FDF3637235A0B3100614596 /* InfoCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoCellNode.swift; sourceTree = "<group>"; };
 		9FE1B37F2563F85400D6D086 /* MessagesListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesListProvider.swift; sourceTree = "<group>"; };
 		9FE1B3932563F98600D6D086 /* Imap+MessagesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+MessagesList.swift"; sourceTree = "<group>"; };
@@ -1029,15 +1031,6 @@
 		517C2E312779F91300FECF32 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				D2D27B78248A8694007346FA /* BigIntExtension.swift */,
-				E26D5E20275AA417007B8802 /* BundleExtensions.swift */,
-				51E4F0B427348E310017DABB /* Error+Extension.swift */,
-				51B0C7702729861C00124663 /* String+Extension.swift */,
-				518389C92726D8F700131B2C /* UIApplicationExtension.swift */,
-				9F31AB9D232BF2A600CF87EA /* UIColorExtension.swift */,
-				518389C72726D7DD00131B2C /* UIViewController+Spinner.swift */,
-				9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */,
-				32DCA7E0AFE19FACB0F233ED /* URLSessionExtension.swift */,
 				517C2E32277A0C6300FECF32 /* EnterpriseServerApiError.swift */,
 				5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */,
 				517C2E2F2779F90700FECF32 /* MultipartDataRequest.swift */,
@@ -1888,7 +1881,6 @@
 				21C7DEFB26669A3700C44800 /* CalendarExtensions.swift */,
 				32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */,
 				D2531F452402C62D007E5198 /* CollectionExtensions.swift */,
-				E26D5E1E275AA295007B8802 /* CommandLineExtensions.swift */,
 				9F0C3C2723194E8500299985 /* CommonExtensions.swift */,
 				9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */,
 				32DCABF1508B0C08DEDE2059 /* DispatchTimeExtensions.swift */,
@@ -1898,12 +1890,14 @@
 				9F56BD3923438D3700A7371A /* StyleExtensions.swift */,
 				32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */,
 				2196A21F2684B9BE001B9E00 /* URLExtensions.swift */,
+				9FD5052827889D8200FAA82F /* UIAlertControllerExtensions.swift */,
 				518389C92726D8F700131B2C /* UIApplicationExtensions.swift */,
 				9F31AB9D232BF2A600CF87EA /* UIColorExtensions.swift */,
 				9FD505262785C2CD00FAA82F /* UIDeviceExtensions.swift */,
 				9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */,
 				32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */,
 				9F8277952373732000E19C07 /* UIImageExtensions.swift */,
+				9FD5052A278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift */,
 				32DCA7E0AFE19FACB0F233ED /* URLSessionExtensions.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				D2FD0F682453245E00259FF0 /* Either.swift */,
@@ -2847,8 +2841,9 @@
 				D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */,
 				D2CDC3CE2402CDB4002B045F /* DispatchTimeExtensions.swift in Sources */,
 				9F44971626430710003A9FE9 /* Trace.swift in Sources */,
-				9F67998D277B3E4D00AFE5BE /* CommandLineExtensions.swift in Sources */,
+				9F67998D277B3E4D00AFE5BE /* (null) in Sources */,
 				9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */,
+				9FD5052B278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift in Sources */,
 				D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */,
 				21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */,
 				D29AFFF6240939AE00C1387D /* Then.swift in Sources */,
@@ -2864,6 +2859,7 @@
 				D2FD0F692453245E00259FF0 /* Either.swift in Sources */,
 				9FBD69EB27775086002FC602 /* UIColorExtensions.swift in Sources */,
 				21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */,
+				9FD5052927889D8200FAA82F /* UIAlertControllerExtensions.swift in Sources */,
 				9F8076D927762515008E5874 /* BigIntExtensions.swift in Sources */,
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
 				D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */,

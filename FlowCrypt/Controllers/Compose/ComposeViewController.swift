@@ -1212,8 +1212,10 @@ extension ComposeViewController {
     private func openAttachmentsInputSourcesSheet() {
         let alert = UIAlertController(
             title: "files_picking_select_input_source_title".localized,
-            message: nil, preferredStyle: .actionSheet
-        )
+            message: nil,
+            preferredStyle: .actionSheet
+        ).popoverPresentation(style: .centred(view))
+
         alert.addAction(
             UIAlertAction(
                 title: "files_picking_camera_input_source".localized,
