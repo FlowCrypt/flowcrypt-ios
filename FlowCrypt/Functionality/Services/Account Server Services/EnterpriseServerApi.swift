@@ -171,7 +171,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         guard let service = responseDictionary["service"] as? String else { return false }
         return service == "enterprise-server"
     }
-    
+
     private func shouldTolerateWhenCallingOpportunistically(_ error: Error) async -> Bool {
         if Bundle.isEnterprise() {
             return false // FlowCrypt Enterprise Server (FES) required on enterprise bundle
@@ -192,7 +192,7 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             return false // do not tolertate the error
         }
     }
-    
+
     private func doesTheInternetWork() async -> Bool {
         // this API is mentioned here:
         // https://www.chromium.org/chromium-os/chromiumos-design-docs/network-portal-detection

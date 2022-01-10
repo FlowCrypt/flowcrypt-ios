@@ -189,15 +189,15 @@ final class ComposeMessageService {
                     replyToken: replyToken
                 )
 
-                let encryptedTextFile = try await core.encryptFile(
-                    pubKeys: message.pubKeys,
-                    fileData: message.text.data(),
-                    name: "mail"
+                let bodyAttachment = SendableMsg.Attachment(
+                    name: "encrypted.asc",
+                    type: "text",
+                    base64: message.text.data().base64EncodedString()
                 )
 
                 let html = generatePasswordMessageHtml(sender: message.from, url: url)
 
-                let newMessage = SendableMsg(
+                let passwordMessage = SendableMsg(
                     text: html,
                     html: html,
                     to: message.to,
@@ -206,12 +206,12 @@ final class ComposeMessageService {
                     from: message.from,
                     subject: message.subject,
                     replyToMimeMsg: message.replyToMimeMsg,
-                    atts: message.atts,
+                    atts: [bodyAttachment] + message.atts,
                     pubKeys: nil,
                     signingPrv: nil,
                     password: nil
                 )
-                let formattedMessage = try await core.composeEmail(msg: newMessage, fmt: .plain)
+                let formattedMessage = try await core.composeEmail(msg: passwordMessage, fmt: .plain)
                 try await messageGateway.sendMail(
                     input: MessageGatewayInput(mime: formattedMessage.mimeEncoded, threadId: threadId),
                     progressHandler: { [weak self] progress in
@@ -266,10 +266,11 @@ final class ComposeMessageService {
         let infoDiv = try generateMsgInfoDiv(for: message, replyToken: replyToken)
         let updatedText = message.text + infoDiv
 
-        let messageWithInfoDiv = message.copy(text: updatedText, pubKeys: [], signingPrv: nil)
+        let messageWithInfoDiv = message.copy(text: updatedText)
         let formatted = try await core.composeEmail(msg: messageWithInfoDiv, fmt: .plain)
 
-        let formattedMessage = messageWithInfoDiv.copy(text: formatted.mimeEncoded.toStr())
+        let formattedMessage = SendableMsg(text: formatted.mimeEncoded.toStr(), html: formatted.mimeEncoded.toStr(), to: message.to, cc: message.cc, bcc: message.bcc, from: message.from, subject: message.subject, replyToMimeMsg: message.replyToMimeMsg, atts: message.atts, pubKeys: nil, signingPrv: nil, password: message.password)
+
         let encoded = try await core.encryptMsg(msg: formattedMessage, fmt: .encryptInline)
 
         let details = MessageUploadDetails(from: message, replyToken: replyToken)

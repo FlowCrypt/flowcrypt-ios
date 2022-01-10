@@ -38,7 +38,7 @@ export class Endpoints {
 
   public encryptMsgWithPwd = async (uncheckedReq: any): Promise<EndpointRes> => {
     const req = ValidateInput.encryptMsgWithPwd(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: [], pwd: req.msgPwd, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
+    const encrypted = await PgpMsg.encrypt({ pubkeys: [], signingPrv: undefined, pwd: req.msgPwd, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
     return fmtRes({}, Buf.fromUtfStr(encrypted.data));
   }
 
@@ -311,4 +311,16 @@ export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Pro
     throw new Error(`Fail to decrypt signing key`);
   }
 }
+
+// export const getSigningPrvForPwd = async (req: NodeRequest.encryptMsgWithPwd): Promise<OpenPGP.key.Key | undefined> => {
+//   if (!req.signingPrv) {
+//     return undefined;
+//   }
+//   const key = await readArmoredKeyOrThrow(req.signingPrv.private);
+//   if (await PgpKey.decrypt(key, req.signingPrv.passphrase || '')) {
+//     return key;
+//   } else {
+//     throw new Error(`Fail to decrypt signing key`);
+//   }
+// }
 

@@ -155,8 +155,8 @@ extension SendableMsg {
             subject: self.subject,
             replyToMimeMsg: self.replyToMimeMsg,
             atts: self.atts,
-            pubKeys: pubKeys ?? self.pubKeys,
-            signingPrv: signingPrv ?? self.signingPrv,
+            pubKeys: nil, //pubKeys ?? self.pubKeys,
+            signingPrv: nil, //signingPrv ?? self.signingPrv,
             password: password ?? self.password
         )
     }

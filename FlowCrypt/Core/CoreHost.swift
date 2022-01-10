@@ -124,7 +124,7 @@ final class CoreHost: NSObject, CoreHostExports {
             await Core.shared.handleCallbackResult(callbackId: callbackId, json: string, data: data)
         }
     }
-
+    
     @objc func callJsCb(_ timer: Timer) {
         let callback = (timer.userInfo as! JSValue)
         callback.call(withArguments: nil)
