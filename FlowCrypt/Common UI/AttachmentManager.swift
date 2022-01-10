@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import FlowCryptCommon
 
 @MainActor
 protocol AttachmentManagerType {
