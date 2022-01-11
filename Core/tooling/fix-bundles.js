@@ -26,12 +26,12 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
 // copy raw to flowcrypt-bundle
 fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-bare-bundle.js`);
 
-const sanitizeHtmlDist = './node_modules/sanitize-html/index.js';
+const sanitizeHtmlDist = `${bundleWipDir}/sanitize-html.js`;
 
 // copy wip to html-sanitize-bundle
 fs.writeFileSync(
   `${bundleDir}/bare-html-sanitize-bundle.js`,
-  `${fs.readFileSync(sanitizeHtmlDist).toString()}\nconst dereq_html_sanitize = window.sanitizeHtml;\n`
+  fs.readFileSync(sanitizeHtmlDist).toString()
 );
 
 // copy zxcvbn, only used for bare (iOS) because zxcvbn-ios is not well maintained: https://github.com/dropbox/zxcvbn-ios/issues
