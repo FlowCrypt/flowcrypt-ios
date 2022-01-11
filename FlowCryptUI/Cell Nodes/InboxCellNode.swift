@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import UIKit
 
 public final class InboxCellNode: CellNode {
     public struct Input {
@@ -90,8 +91,9 @@ public final class InboxCellNode: CellNode {
         let finalSpec = ASStackLayoutSpec.vertical()
         finalSpec.children = [headerStackSpec, separatorNode]
         finalSpec.spacing = 8
+        let sideInset: CGFloat = UIDevice.isIpad ? 24 : 16
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            insets: UIEdgeInsets(top: 8, left: sideInset, bottom: 8, right: sideInset),
             child: finalSpec
         )
     }

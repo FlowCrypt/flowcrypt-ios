@@ -141,6 +141,7 @@
 		9F41FA2F253B7624003B970D /* BackupSelectKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */; };
 		9F4300CC2571045B00791CFB /* InboxViewControllerContainerDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4300CB2571045B00791CFB /* InboxViewControllerContainerDecorator.swift */; };
 		9F44971626430710003A9FE9 /* Trace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F72E866263ECE2A0039CF81 /* Trace.swift */; };
+		9F525991278E091B005940D2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F525990278E091B005940D2 /* ViewController.swift */; };
 		9F53CB7B2555E1E300C0157A /* GmailService+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB7A2555E1E300C0157A /* GmailService+folders.swift */; };
 		9F53CB872555E7F300C0157A /* Imap+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB862555E7F300C0157A /* Imap+Other.swift */; };
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
@@ -585,6 +586,7 @@
 		9F4453BF236B894D005D7D05 /* TableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNode.swift; sourceTree = "<group>"; };
 		9F4453C1236B9273005D7D05 /* TextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNode.swift; sourceTree = "<group>"; };
 		9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerCellNode.swift; sourceTree = "<group>"; };
+		9F525990278E091B005940D2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		9F53CB7A2555E1E300C0157A /* GmailService+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GmailService+folders.swift"; sourceTree = "<group>"; };
 		9F53CB862555E7F300C0157A /* Imap+Other.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Other.swift"; sourceTree = "<group>"; };
 		9F56BD2B23438A8500A7371A /* Imap+messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+messages.swift"; sourceTree = "<group>"; };
@@ -2051,6 +2053,7 @@
 				9F7ECCA6272C3FB4008A1770 /* TextImageNode.swift */,
 				51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */,
 				511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */,
+				9F525990278E091B005940D2 /* ViewController.swift */,
 				9FA1988F253C841F008C9CF2 /* TableViewController.swift */,
 				9F696292236091DD003712E1 /* SignInImageNode.swift */,
 				9F696294236091F4003712E1 /* SignInDescriptionNode.swift */,
@@ -2780,6 +2783,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F525991278E091B005940D2 /* ViewController.swift in Sources */,
 				511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */,
 				9F7ECCA7272C3FB4008A1770 /* TextImageNode.swift in Sources */,
 				D27177452424D44200BDA9A9 /* ComposeButtonNode.swift in Sources */,
