@@ -95,11 +95,13 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
             navigationController?.pushViewController(viewController, animated: true)
         case .save:
             let items = [key.public]
-            let viewController = UIActivityViewController(
+            let activityViewController = UIActivityViewController(
                 activityItems: items,
                 applicationActivities: nil
             )
-            present(viewController, animated: true)
+            activityViewController.popoverPresentationController?.centredPresentation(in: view)
+
+            present(activityViewController, animated: true)
         case .privateInfo:
             showToast("key_settings_detail_show_private".localized)
         case .description:

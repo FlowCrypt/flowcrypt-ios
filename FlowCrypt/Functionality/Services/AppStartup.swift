@@ -135,7 +135,11 @@ struct AppStartup {
 
     @MainActor
     private func showErrorAlert(of error: Error, on window: UIWindow) {
-        let alert = UIAlertController(title: "Startup Error", message: "\(error.localizedDescription)", preferredStyle: .alert)
+        let alert = UIAlertController(
+            title: "Startup Error",
+            message: "\(error.localizedDescription)",
+            preferredStyle: .alert
+        )
         let retry = UIAlertAction(title: "Retry", style: .default) { _ in
             self.initializeApp(window: window)
         }

@@ -17,8 +17,10 @@ final class AttachmentManager: NSObject {
     private weak var controller: UIViewController?
     private let filesManager: FilesManagerType
 
-    init(controller: UIViewController,
-         filesManager: FilesManagerType) {
+    init(
+        controller: UIViewController,
+        filesManager: FilesManagerType
+    ) {
         self.controller = controller
         self.filesManager = filesManager
     }

@@ -3,7 +3,7 @@
 'use strict';
 
 // @ts-ignore - this way we can test the Xss class directly as well
-global.dereq_html_sanitize = require("sanitize-html");
+global.dereq_sanitize_html = require("sanitize-html");
 // @ts-ignore - this way we can test ISO-2201-JP encoding
 global.dereq_encoding_japanese = require("encoding-japanese");
 (global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder');

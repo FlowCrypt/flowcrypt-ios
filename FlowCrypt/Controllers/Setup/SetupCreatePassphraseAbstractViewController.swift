@@ -153,7 +153,6 @@ extension SetupCreatePassphraseAbstractViewController {
                     message: "Confirm Pass Phrase",
                     preferredStyle: .alert
                 )
-
                 alert.addTextField { textField in
                     textField.isSecureTextEntry = true
                     textField.accessibilityLabel = "textField"
