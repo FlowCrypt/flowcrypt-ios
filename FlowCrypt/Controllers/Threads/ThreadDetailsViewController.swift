@@ -481,11 +481,13 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 )
             }
 
-            guard let processedMessage = message.processedMessage
-            else { return ASCellNode() }
+            guard let processedMessage = message.processedMessage else {
+                return ASCellNode()
+            }
 
-            guard indexPath.row > 1
-            else { return MessageTextSubjectNode(processedMessage.attributedMessage) }
+            guard indexPath.row > 1 else {
+                return MessageTextSubjectNode(processedMessage.attributedMessage)
+            }
 
             let attachmentIndex = indexPath.row - 2
             let attachment = processedMessage.attachments[attachmentIndex]

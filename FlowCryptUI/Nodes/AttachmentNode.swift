@@ -80,14 +80,13 @@ public final class AttachmentNode: CellNode {
             children: [imageNode, verticalStack, deleteButtonNode]
         )
 
-        let borderInset = UIEdgeInsets.side(8)
-
+        let borderInset = UIEdgeInsets.deviceSpecificTextInsets(top: 8, bottom: 8)
         let resultSpec = ASInsetLayoutSpec(
             insets: UIEdgeInsets(
                 top: 8 + borderInset.top,
                 left: 16 + borderInset.left,
                 bottom: 8 + borderInset.bottom,
-                right: 17 + borderInset.right
+                right: 16 + borderInset.right
             ),
             child: finalSpec
         )

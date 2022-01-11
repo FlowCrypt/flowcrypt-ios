@@ -14,9 +14,9 @@ extension ThreadMessageInfoCellNode.Input {
         let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
         let recipientPrefix = "to".localized
         let recipientsList = threadMessage.rawMessage
-                                .allRecipients
-                                .map(\.displayName)
-                                .joined(separator: ", ")
+            .allRecipients
+            .map(\.displayName)
+            .joined(separator: ", ")
         let recipientLabel = [recipientPrefix, recipientsList].joined(separator: " ")
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
         let isMessageRead = threadMessage.rawMessage.isMessageRead
@@ -32,23 +32,16 @@ extension ThreadMessageInfoCellNode.Input {
         self.init(
             encryptionBadge: makeEncryptionBadge(threadMessage),
             signatureBadge: makeSignatureBadge(threadMessage),
-            sender: NSAttributedString.text(from: sender, style: style, color: .label),
-            recipientLabel: NSAttributedString.text(from: recipientLabel, style: style, color: .secondaryLabel),
+            sender: .text(from: sender, style: style, color: .label),
+            recipientLabel: .text(from: recipientLabel, style: style, color: .secondaryLabel),
             recipients: threadMessage.rawMessage.recipients.map(\.rawString),
             ccRecipients: threadMessage.rawMessage.cc.map(\.rawString),
             bccRecipients: threadMessage.rawMessage.bcc.map(\.rawString),
-            date: NSAttributedString.text(from: date, style: style, color: dateColor),
+            date: .text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,
             shouldShowRecipientsList: threadMessage.shouldShowRecipientsList,
-            buttonColor: .messageButtonColor,
-            nodeInsets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 8)
+            buttonColor: .colorFor(darkStyle: .white, lightStyle: .main)
         )
-    }
-}
-
-extension UIColor {
-    static var messageButtonColor: UIColor {
-        .colorFor(darkStyle: .white, lightStyle: .main)
     }
 }
 

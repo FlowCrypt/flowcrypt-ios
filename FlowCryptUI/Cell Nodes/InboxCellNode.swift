@@ -91,9 +91,8 @@ public final class InboxCellNode: CellNode {
         let finalSpec = ASStackLayoutSpec.vertical()
         finalSpec.children = [headerStackSpec, separatorNode]
         finalSpec.spacing = 8
-        let sideInset: CGFloat = UIDevice.isIpad ? 24 : 16
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: sideInset, bottom: 8, right: sideInset),
+            insets: .deviceSpecificTextInsets(top: 8, bottom: 8),
             child: finalSpec
         )
     }

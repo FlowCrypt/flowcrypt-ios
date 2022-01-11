@@ -23,7 +23,7 @@ public final class MessageTextSubjectNode: CellNode {
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textNode.style.flexGrow = 1.0
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            insets: .deviceSpecificTextInsets(top: 8, bottom: 8),
             child: textNode
         )
     }
