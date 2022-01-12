@@ -198,20 +198,22 @@ final class ComposeMessageService {
                     type: "application/pgp-encrypted",
                     base64: encryptedTextFile.mimeEncoded.base64EncodedString()
                 )
+
                 var encryptedAttachments: [SendableMsg.Attachment] = []
+
                 for attachment in message.atts {
+                    guard let data = Data(base64Encoded: attachment.base64) else { continue }
+
                     let encryptedFile = try await core.encryptFile(
                         pubKeys: message.pubKeys,
-                        fileData: attachment.toJsonData(),
+                        fileData: data,
                         name: attachment.name
                     )
-
                     let encryptedAttachment = SendableMsg.Attachment(
                         name: "\(attachment.name).pgp",
                         type: "application/pgp-encrypted",
                         base64: encryptedFile.encryptedFile.base64EncodedString()
                     )
-
                     encryptedAttachments.append(encryptedAttachment)
                 }
 

@@ -124,15 +124,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     // MARK: - Messages
     public func encryptMsg(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
-        let signingPrv = msg.signingPrv.map { value in
-            [
-                "private": value.`private`,
-                "longid": value.longid,
-                "passphrase": value.passphrase
-            ]
-        }
-
-        let jsonDict: [String: Any?] = [
+        let r = try await call("encryptMsg", jsonDict: [
             "text": msg.text,
             "to": msg.to,
             "cc": msg.cc,
@@ -143,10 +135,8 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": msg.pubKeys,
-            "signingPrv": signingPrv
-        ]
-
-        let r = try await call("encryptMsg", jsonDict: jsonDict, data: msg.text.data())
+            "signingPrv": msg.signingPrv?.jsonDict
+        ], data: msg.text.data())
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
 
@@ -212,15 +202,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
-        let signingPrv = msg.signingPrv.map { value in
-            [
-                "private": value.`private`,
-                "longid": value.longid,
-                "passphrase": value.passphrase
-            ]
-        }
-
-        let jsonDict: [String: Any?] = [
+        let r = try await call("composeEmail", jsonDict: [
             "text": msg.text,
             "html": msg.html,
             "to": msg.to,
@@ -232,10 +214,8 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": fmt == .plain ? nil : msg.pubKeys,
-            "signingPrv": fmt == .plain ? nil : signingPrv
-        ]
-
-        let r = try await call("composeEmail", jsonDict: jsonDict, data: nil)
+            "signingPrv": fmt == .plain ? nil : msg.signingPrv?.jsonDict
+        ], data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
 
