@@ -228,11 +228,18 @@ extension InboxViewController {
         case .idle:
             fetchAndRenderEmails(context)
         case let .fetched(.byNumber(total)):
-            if inboxInput.count != total {
-                loadMore(context)
+            guard inboxInput.count != total else {
+                context?.completeBatchFetching(true)
+                return
             }
+
+            loadMore(context)
         case let .fetched(.byNextPage(token)):
-            guard token != nil else { return }
+            guard token != nil else {
+                context?.completeBatchFetching(true)
+                return
+            }
+
             loadMore(context)
         case .empty:
             fetchAndRenderEmails(context)

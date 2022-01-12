@@ -156,7 +156,17 @@ extension ThreadDetailsViewController {
     }
 
     private func handleMenuTap(at indexPath: IndexPath) {
-        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(
+            title: nil,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+        if let view = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode {
+            alert.popoverPresentation(style: .sourceView(view.menuNode.view))
+        } else {
+            alert.popoverPresentation(style: .centred(view))
+        }
+
         alert.addAction(
             UIAlertAction(
                 title: "forward".localized,
@@ -306,20 +316,21 @@ extension ThreadDetailsViewController {
             },
             onCompletion: { [weak self] passPhrase in
                 self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
-            })
+            }
+        )
 
         present(alert, animated: true, completion: nil)
     }
 
     private func handleWrongPassPhrase(for rawMimeData: Data, with phrase: String, at indexPath: IndexPath) {
         let alert = AlertsFactory.makePassPhraseAlert(
+            title: "setup_wrong_pass_phrase_retry".localized,
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
                 self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
-            },
-            title: "setup_wrong_pass_phrase_retry".localized
+            }
         )
         present(alert, animated: true, completion: nil)
     }

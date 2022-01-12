@@ -25,18 +25,20 @@ public final class ThreadMessageInfoCellNode: CellNode {
         public let buttonColor: UIColor
         public let nodeInsets: UIEdgeInsets
 
-        public init(encryptionBadge: BadgeNode.Input,
-                    signatureBadge: BadgeNode.Input?,
-                    sender: NSAttributedString,
-                    recipientLabel: NSAttributedString,
-                    recipients: [(String?, String)],
-                    ccRecipients: [(String?, String)],
-                    bccRecipients: [(String?, String)],
-                    date: NSAttributedString,
-                    isExpanded: Bool,
-                    shouldShowRecipientsList: Bool,
-                    buttonColor: UIColor,
-                    nodeInsets: UIEdgeInsets) {
+        public init(
+            encryptionBadge: BadgeNode.Input,
+            signatureBadge: BadgeNode.Input?,
+            sender: NSAttributedString,
+            recipientLabel: NSAttributedString,
+            recipients: [(String?, String)],
+            ccRecipients: [(String?, String)],
+            bccRecipients: [(String?, String)],
+            date: NSAttributedString,
+            isExpanded: Bool,
+            shouldShowRecipientsList: Bool,
+            buttonColor: UIColor,
+            nodeInsets: UIEdgeInsets
+        ) {
             self.encryptionBadge = encryptionBadge
             self.signatureBadge = signatureBadge
             self.sender = sender
@@ -136,7 +138,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
     private let dateNode = ASTextNode2()
 
     private let replyNode = ASButtonNode()
-    private let menuNode = ASButtonNode()
+    public private(set) var menuNode = ASButtonNode()
     public private(set) var expandNode = ASImageNode()
 
     private lazy var recipientsListNode: ASDisplayNode = {

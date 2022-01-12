@@ -204,8 +204,13 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
         context!.exceptionHandler = { _, exception in
             guard let exception = exception else { return }
+
+            let line = exception.objectForKeyedSubscript("line").toString()
+            let column = exception.objectForKeyedSubscript("column").toString()
+            let location = [line, column].compactMap { $0 }.joined(separator: ":")
+
             let logger = Logger.nested(in: Self.self, with: "Js")
-            logger.logWarning("\(exception)")
+            logger.logWarning("\(exception), \(location)")
         }
         context!.evaluateScript("const APP_VERSION = 'iOS 0.2';")
         context!.evaluateScript(jsFileSrc)
