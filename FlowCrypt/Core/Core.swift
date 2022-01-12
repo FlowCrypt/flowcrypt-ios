@@ -124,7 +124,34 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     // MARK: - Messages
     public func encryptMsg(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
-        let r = try await call("encryptMsgWithPwd", jsonDict: [
+        let signingPrv = msg.signingPrv.map { value in
+            [
+                "private": value.`private`,
+                "longid": value.longid,
+                "passphrase": value.passphrase
+            ]
+        }
+
+        let jsonDict: [String: Any?] = [
+            "text": msg.text,
+            "to": msg.to,
+            "cc": msg.cc,
+            "bcc": msg.bcc,
+            "from": msg.from,
+            "subject": msg.subject,
+            "replyToMimeMsg": msg.replyToMimeMsg,
+            "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
+            "format": fmt.rawValue,
+            "pubKeys": msg.pubKeys,
+            "signingPrv": signingPrv
+        ]
+
+        let r = try await call("encryptMsg", jsonDict: jsonDict, data: msg.text.data())
+        return CoreRes.ComposeEmail(mimeEncoded: r.data)
+    }
+
+    public func encryptMsgWithPwd(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
+        let jsonDict: [String: Any?] = [
             "text": msg.text,
             "to": msg.to,
             "cc": msg.cc,
@@ -135,7 +162,9 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "msgPwd": msg.password
-        ], data: nil)
+        ]
+
+        let r = try await call("encryptMsgWithPwd", jsonDict: jsonDict, data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
 
@@ -156,6 +185,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "msgPwd": msgPwd,
             "verificationPubkeys": verificationPubKeys
         ]
+
         let parsed = try await call(
             "parseDecryptMsg",
             jsonDict: json,
@@ -190,7 +220,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             ]
         }
 
-        let r = try await call("composeEmail", jsonDict: [
+        let jsonDict: [String: Any?] = [
             "text": msg.text,
             "html": msg.html,
             "to": msg.to,
@@ -201,9 +231,11 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "replyToMimeMsg": msg.replyToMimeMsg,
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
-            "pubKeys": msg.pubKeys,
-            "signingPrv": signingPrv
-        ], data: nil)
+            "pubKeys": fmt == .plain ? nil : msg.pubKeys,
+            "signingPrv": fmt == .plain ? nil : signingPrv
+        ]
+
+        let r = try await call("composeEmail", jsonDict: jsonDict, data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
 

@@ -311,16 +311,3 @@ export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Pro
     throw new Error(`Fail to decrypt signing key`);
   }
 }
-
-// export const getSigningPrvForPwd = async (req: NodeRequest.encryptMsgWithPwd): Promise<OpenPGP.key.Key | undefined> => {
-//   if (!req.signingPrv) {
-//     return undefined;
-//   }
-//   const key = await readArmoredKeyOrThrow(req.signingPrv.private);
-//   if (await PgpKey.decrypt(key, req.signingPrv.passphrase || '')) {
-//     return key;
-//   } else {
-//     throw new Error(`Fail to decrypt signing key`);
-//   }
-// }
-

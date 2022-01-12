@@ -125,8 +125,8 @@ struct SendableMsg: Equatable {
         let base64: String
     }
 
-    let text: String
-    let html: String?
+    var text: String
+    var html: String?
     let to: [String]
     let cc: [String]
     let bcc: [String]

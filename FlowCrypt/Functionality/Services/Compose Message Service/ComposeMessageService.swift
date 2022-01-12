@@ -16,7 +16,8 @@ typealias RecipientState = RecipientEmailsCellNode.Input.State
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
     func encryptMsg(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
-    func encryptFile(pubKeys: [String]?, fileData: Data, name: String)  async throws -> CoreRes.EncryptFile
+    func encryptMsgWithPwd(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
+    func encryptFile(pubKeys: [String]?, fileData: Data, name: String) async throws -> CoreRes.EncryptFile
 }
 
 final class ComposeMessageService {
@@ -189,13 +190,30 @@ final class ComposeMessageService {
                     replyToken: replyToken
                 )
 
+                let html = generatePasswordMessageHtml(sender: message.from, url: url)
+
+                let encryptedTextFile = try await core.encryptMsg(msg: message, fmt: .encryptInline)
                 let bodyAttachment = SendableMsg.Attachment(
                     name: "encrypted.asc",
-                    type: "text",
-                    base64: message.text.data().base64EncodedString()
+                    type: "application/pgp-encrypted",
+                    base64: encryptedTextFile.mimeEncoded.base64EncodedString()
                 )
+                var encryptedAttachments: [SendableMsg.Attachment] = []
+                for attachment in message.atts {
+                    let encryptedFile = try await core.encryptFile(
+                        pubKeys: message.pubKeys,
+                        fileData: attachment.toJsonData(),
+                        name: attachment.name
+                    )
 
-                let html = generatePasswordMessageHtml(sender: message.from, url: url)
+                    let encryptedAttachment = SendableMsg.Attachment(
+                        name: "\(attachment.name).pgp",
+                        type: "application/pgp-encrypted",
+                        base64: encryptedFile.encryptedFile.base64EncodedString()
+                    )
+
+                    encryptedAttachments.append(encryptedAttachment)
+                }
 
                 let passwordMessage = SendableMsg(
                     text: html,
@@ -206,7 +224,7 @@ final class ComposeMessageService {
                     from: message.from,
                     subject: message.subject,
                     replyToMimeMsg: message.replyToMimeMsg,
-                    atts: [bodyAttachment] + message.atts,
+                    atts: [bodyAttachment] + encryptedAttachments,
                     pubKeys: nil,
                     signingPrv: nil,
                     password: nil
@@ -266,12 +284,28 @@ final class ComposeMessageService {
         let infoDiv = try generateMsgInfoDiv(for: message, replyToken: replyToken)
         let updatedText = message.text + infoDiv
 
-        let messageWithInfoDiv = message.copy(text: updatedText)
-        let formatted = try await core.composeEmail(msg: messageWithInfoDiv, fmt: .plain)
+        var message = message
+        message.text = updatedText
+        message.html = updatedText
 
-        let formattedMessage = SendableMsg(text: formatted.mimeEncoded.toStr(), html: formatted.mimeEncoded.toStr(), to: message.to, cc: message.cc, bcc: message.bcc, from: message.from, subject: message.subject, replyToMimeMsg: message.replyToMimeMsg, atts: message.atts, pubKeys: nil, signingPrv: nil, password: message.password)
+        let formatted = try await core.composeEmail(msg: message, fmt: .plain)
 
-        let encoded = try await core.encryptMsg(msg: formattedMessage, fmt: .encryptInline)
+        let formattedMessage = SendableMsg(
+            text: formatted.mimeEncoded.toStr(),
+            html: formatted.mimeEncoded.toStr(),
+            to: message.to,
+            cc: message.cc,
+            bcc: message.bcc,
+            from: message.from,
+            subject: message.subject,
+            replyToMimeMsg: message.replyToMimeMsg,
+            atts: message.atts,
+            pubKeys: nil,
+            signingPrv: nil,
+            password: message.password
+        )
+
+        let encoded = try await core.encryptMsgWithPwd(msg: formattedMessage, fmt: .encryptInline)
 
         let details = MessageUploadDetails(from: message, replyToken: replyToken)
         return try await enterpriseServer.upload(message: encoded.mimeEncoded, details: details)

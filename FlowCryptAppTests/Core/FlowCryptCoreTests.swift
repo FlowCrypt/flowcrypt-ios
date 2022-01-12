@@ -106,6 +106,7 @@ final class FlowCryptCoreTests: XCTestCase {
     func testComposeEmailPlain() async throws {
         let msg = SendableMsg(
             text: "this is the message",
+            html: "this is the message",
             to: ["email@hello.com"],
             cc: [],
             bcc: [],
@@ -128,6 +129,7 @@ final class FlowCryptCoreTests: XCTestCase {
     func testComposeEmailEncryptInline() async throws {
         let msg = SendableMsg(
             text: "this is the message",
+            html: "this is the message",
             to: ["email@hello.com"],
             cc: [],
             bcc: [],
@@ -158,6 +160,7 @@ final class FlowCryptCoreTests: XCTestCase {
         )
         let msg = SendableMsg(
             text: "this is the message",
+            html: "this is the message",
             to: ["email@hello.com"], cc: [], bcc: [],
             from: "sender@hello.com",
             subject: "subj", replyToMimeMsg: nil,
@@ -186,6 +189,7 @@ final class FlowCryptCoreTests: XCTestCase {
         let k = generateKeyRes.key
         let msg = SendableMsg(
             text: text,
+            html: text,
             to: [email],
             cc: [],
             bcc: [],
