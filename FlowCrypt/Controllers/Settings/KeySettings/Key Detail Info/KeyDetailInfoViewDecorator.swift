@@ -10,8 +10,8 @@ import FlowCryptCommon
 import UIKit
 
 struct KeyDetailInfoViewDecorator {
-    let insets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-    let dividerInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+    let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 4, bottom: 4)
+    let dividerInsets = UIEdgeInsets.deviceSpecificTextInsets(top: 8, bottom: 8)
 
     func attributedTitle(
         for part: KeyDetailInfoViewController.Parts,

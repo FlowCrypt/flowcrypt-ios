@@ -8,15 +8,9 @@
 
 import UIKit
 
-protocol LegalViewDecoratorType {
-    var sceneTitle: String { get }
-    var insets: UIEdgeInsets { get }
-    func attributedSetting(_ title: String) -> NSAttributedString
-}
-
-struct LegalViewDecorator: LegalViewDecoratorType {
+struct LegalViewDecorator {
     let sceneTitle = "settings_screen_legal".localized
-    let insets = UIEdgeInsets.side(16)
+    let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 16, bottom: 16)
 
     func attributedSetting(_ title: String) -> NSAttributedString {
         title.attributed(.regular(16), color: .mainTextColor)

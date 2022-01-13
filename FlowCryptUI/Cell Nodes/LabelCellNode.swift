@@ -13,9 +13,11 @@ public final class LabelCellNode: CellNode {
     private let textNode = ASTextNode2()
     private let insets: UIEdgeInsets
 
-    public init(title: NSAttributedString,
-                text: NSAttributedString,
-                insets: UIEdgeInsets = UIEdgeInsets.side(8)) {
+    public init(
+        title: NSAttributedString,
+        text: NSAttributedString,
+        insets: UIEdgeInsets = UIEdgeInsets.deviceSpecificTextInsets(top: 8, bottom: 8)
+    ) {
         self.insets = insets
         super.init()
         titleNode.attributedText = title
