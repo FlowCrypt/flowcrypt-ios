@@ -10,14 +10,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import UIKit
 
-protocol MyMenuViewDecoratorType {
-    var dividerColor: UIColor { get }
-    var backgroundColor: UIColor { get }
-    func header(for user: User?, image: UIImage?) -> TextImageNode.Input
-    func nodeForAccount(for user: User) -> InfoCellNode.Input
-}
-
-struct MyMenuViewDecorator: MyMenuViewDecoratorType {
+struct MyMenuViewDecorator {
     var dividerColor: UIColor { .dividerColor }
     var backgroundColor: UIColor { .backgroundColor }
 
@@ -30,13 +23,19 @@ struct MyMenuViewDecorator: MyMenuViewDecoratorType {
         )
     }
 
-    func nodeForAccount(for user: User) -> InfoCellNode.Input {
+    func nodeForAccount(for user: User, index: Int) -> InfoCellNode.Input {
         let name = nameFor(user: user)
             .attributed(.medium(18), color: .mainTextColor, alignment: .left)
         let email = emailFor(user: user).attributed(.medium(16), color: .mainTextColor, alignment: .left)
-        let text = name.mutable() + "\n".attributed() + email
+        let text = name.mutable()
+            + "\n".attributed()
+            + email
 
-        return InfoCellNode.Input(attributedText: text, image: nil, insets: .side(16))
+        return InfoCellNode.Input(
+            attributedText: text,
+            insets: .side(16),
+            accessibilityIdentifier: "aid-account-email-\(index)"
+        )
     }
 
     private func nameFor(user: User?) -> String {
