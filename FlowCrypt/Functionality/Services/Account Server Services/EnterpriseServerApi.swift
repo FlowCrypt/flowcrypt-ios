@@ -6,19 +6,18 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import MailCore
 import FlowCryptCommon
 
 protocol EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) async throws -> String?
     func getClientConfiguration(for email: String) async throws -> RawClientConfiguration
     func getReplyToken(for email: String) async throws -> String
-    func upload(message: Data, details: MessageUploadDetails) async throws -> String
+    func upload(message: Data, details: MessageUploadDetails, progressHandler: ((Float) -> Void)?) async throws -> String
 }
 
 /// server run by individual enterprise customers, serves client configuration
 /// https://flowcrypt.com/docs/technical/enterprise/email-deployment-overview.html
-class EnterpriseServerApi: EnterpriseServerApiType {
+class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
 
     static let publicEmailProviderDomains = ["gmail.com", "googlemail.com", "outlook.com"]
 
@@ -55,6 +54,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         }
         return "https://fes.\(emailDomain)" // live
     }
+
+    private var messageUploadProgressHandler: ((Float) -> Void)?
 
     func getActiveFesUrl(for email: String) async throws -> String? {
         do {
@@ -123,7 +124,9 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         return response.replyToken
     }
 
-    func upload(message: Data, details: MessageUploadDetails) async throws -> String {
+    func upload(message: Data, details: MessageUploadDetails, progressHandler: ((Float) -> Void)?) async throws -> String {
+        self.messageUploadProgressHandler = progressHandler
+
         let detailsData = try details.toJsonData()
 
         let detailsDataItem = MultipartDataItem(
@@ -149,7 +152,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             url: "/api/v1/message",
             headers: [contentTypeHeader],
             method: .post,
-            body: request.httpBody as Data
+            body: request.httpBody as Data,
+            delegate: self
         )
 
         return response.url
@@ -215,7 +219,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         headers: [URLHeader] = [],
         method: HTTPMethod = .post,
         body: Data? = nil,
-        withAuthorization: Bool = true
+        withAuthorization: Bool = true,
+        delegate: URLSessionTaskDelegate? = nil
     ) async throws -> T {
         guard let fesUrl = try await getActiveFesUrl(for: email) else {
             throw EnterpriseServerApiError.noActiveFesUrl
@@ -234,7 +239,8 @@ class EnterpriseServerApi: EnterpriseServerApiType {
             url: "\(fesUrl)\(url)",
             method: method,
             body: body,
-            headers: headers
+            headers: headers,
+            delegate: delegate
         )
 
         let safeResponse = try await ApiCall.call(request)
@@ -243,5 +249,17 @@ class EnterpriseServerApi: EnterpriseServerApiType {
         else { throw EnterpriseServerApiError.parse }
 
         return data
+    }
+}
+
+extension EnterpriseServerApi: URLSessionTaskDelegate {
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didSendBodyData bytesSent: Int64,
+        totalBytesSent: Int64,
+        totalBytesExpectedToSend: Int64
+    ) {
+        messageUploadProgressHandler?(Float(task.progress.fractionCompleted))
     }
 }

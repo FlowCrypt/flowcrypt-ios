@@ -20,6 +20,7 @@ extension ApiCall {
         var headers: [URLHeader] = []
         var timeout: TimeInterval = 60.0
         var tolerateStatus: [Int]?
+        var delegate: URLSessionTaskDelegate? = nil
     }
 }
 
@@ -44,7 +45,8 @@ extension ApiCall {
         do {
             let result = try await URLSession.shared.call(
                 urlRequest,
-                tolerateStatus: request.tolerateStatus
+                tolerateStatus: request.tolerateStatus,
+                delegate: request.delegate
             )
             return result
         } catch {

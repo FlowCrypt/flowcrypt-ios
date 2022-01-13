@@ -291,9 +291,15 @@ final class ComposeMessageService {
         )
 
         let encoded = try await core.encryptMsg(msg: formattedMessage, fmt: .encryptInline)
-
         let details = MessageUploadDetails(from: message, replyToken: replyToken)
-        return try await enterpriseServer.upload(message: encoded.mimeEncoded, details: details)
+
+        return try await enterpriseServer.upload(
+            message: encoded.mimeEncoded,
+            details: details,
+            progressHandler: { [weak self] progress in
+                self?.onStateChanged?(.progressChanged(progress / 2))
+            }
+        )
     }
 
     func formatPasswordMessage(message: SendableMsg, replyToken: String) async throws -> CoreRes.ComposeEmail {
