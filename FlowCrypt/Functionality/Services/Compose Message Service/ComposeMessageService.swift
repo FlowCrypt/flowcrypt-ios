@@ -116,7 +116,7 @@ final class ComposeMessageService {
 
         return SendableMsg(
             text: text,
-            html: text,
+            html: nil,
             to: recipients.map(\.email),
             cc: [],
             bcc: [],

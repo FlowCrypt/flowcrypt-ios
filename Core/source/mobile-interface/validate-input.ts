@@ -53,7 +53,7 @@ export class ValidateInput {
     if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?') && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
       return v as NodeRequest.composeEmailEncrypted;
     }
-    if ((!hasProp(v, 'pubKeys', 'string[]') || !v.pubKeys.length) && v.format === 'plain') {
+    if (!v.pubKeys && v.format === 'plain') {
       return v as NodeRequest.composeEmailPlain;
     }
     throw new Error('Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encrypt-inline OR format:plain allowed');

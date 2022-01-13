@@ -119,7 +119,7 @@ struct UserId: Encodable {
 }
 
 struct SendableMsg: Equatable {
-    struct Attachment: Equatable, Encodable {
+    struct Attachment: Equatable {
         let name: String
         let type: String
         let base64: String
