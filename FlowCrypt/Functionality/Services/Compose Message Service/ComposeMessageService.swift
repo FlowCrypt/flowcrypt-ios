@@ -182,9 +182,10 @@ final class ComposeMessageService {
         do {
             onStateChanged?(.startComposing)
 
+            let hasPassword = (message.password ?? "").isNotEmpty
             let composedEmail: CoreRes.ComposeEmail
 
-            if let password = message.password, password.isNotEmpty {
+            if hasPassword {
                 composedEmail = try await composePasswordMessage(from: message)
             } else {
                 composedEmail = try await core.composeEmail(
@@ -201,7 +202,8 @@ final class ComposeMessageService {
             try await messageGateway.sendMail(
                 input: input,
                 progressHandler: { [weak self] progress in
-                    self?.onStateChanged?(.progressChanged(progress))
+                    let progressToShow = hasPassword ? 0.5 + progress / 2 : progress
+                    self?.onStateChanged?(.progressChanged(progressToShow))
                 }
             )
 

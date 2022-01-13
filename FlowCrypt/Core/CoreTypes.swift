@@ -139,29 +139,6 @@ struct SendableMsg: Equatable {
     let password: String?
 }
 
-extension SendableMsg {
-    func copy(text: String? = nil,
-              html: String? = nil,
-              pubKeys: [String]? = nil,
-              signingPrv: PrvKeyInfo? = nil,
-              password: String? = nil) -> SendableMsg {
-        SendableMsg(
-            text: text ?? self.text,
-            html: html ?? self.html,
-            to: self.to,
-            cc: self.cc,
-            bcc: self.bcc,
-            from: self.from,
-            subject: self.subject,
-            replyToMimeMsg: self.replyToMimeMsg,
-            atts: self.atts,
-            pubKeys: nil, //pubKeys ?? self.pubKeys,
-            signingPrv: nil, //signingPrv ?? self.signingPrv,
-            password: password ?? self.password
-        )
-    }
-}
-
 struct DecryptErr: Decodable {
     let error: Error
     let longids: Longids
