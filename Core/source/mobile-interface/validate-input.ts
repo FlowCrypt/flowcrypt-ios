@@ -15,8 +15,7 @@ export namespace NodeRequest {
 
   export type generateKey = { passphrase: string, variant: 'rsa2048' | 'rsa4096' | 'curve25519', userIds: { name: string, email: string }[] };
   export type composeEmail = composeEmailPlain | composeEmailEncrypted;
-  export type encryptMsg = { pubKeys: string[] };
-  export type encryptMsgWithPwd = { msgPwd: string, text: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] };
+  export type encryptMsg = { pubKeys: string[], msgPwd?: string };
   export type encryptFile = { pubKeys: string[], name: string };
   export type parseDecryptMsg = { keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean, verificationPubkeys?: string[] };
   export type decryptFile = { keys: PrvKeyInfo[], msgPwd?: string };
@@ -43,14 +42,6 @@ export class ValidateInput {
     }
     throw new Error('Wrong request structure for NodeRequest.encryptMsg');
   }
-
-  public static encryptMsgWithPwd = (v: any): NodeRequest.encryptMsgWithPwd => {
-    if ((isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string') && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]') && hasProp(v, 'msgPwd', 'string'))) {
-      return v as NodeRequest.encryptMsgWithPwd;
-    }
-    throw new Error('Wrong request structure for NodeRequest.encryptMsgWithPwd');
-  }
-
 
   public static composeEmail = (v: any): NodeRequest.composeEmail => {
     if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'html', 'string?') && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string') && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {

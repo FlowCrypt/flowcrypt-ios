@@ -502,8 +502,7 @@ extension ComposeViewController {
             input: self.input,
             contextToSend: self.contextToSend,
             email: self.email,
-            signingPrv: signingKey,
-            isMessagePasswordSupported: isMessagePasswordSupported
+            signingPrv: signingKey
         )
         UIApplication.shared.isIdleTimerDisabled = true
         try await service.encryptAndSend(

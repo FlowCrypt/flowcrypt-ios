@@ -24,10 +24,6 @@ class CoreComposeMessageMock: CoreComposeMessageType, KeyParser {
         throw(AppErr.general("not implemented"))
     }
 
-    func encryptMsgWithPwd(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
-        throw(AppErr.general("not implemented"))
-    }
-
     func encryptFile(pubKeys: [String]?, fileData: Data, name: String) async throws -> CoreRes.EncryptFile {
         throw(AppErr.general("not implemented"))
     }

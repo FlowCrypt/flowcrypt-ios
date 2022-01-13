@@ -32,13 +32,7 @@ export class Endpoints {
 
   public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptMsg(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.concat(data), armor: true }) as OpenPGP.EncryptArmorResult;
-    return fmtRes({}, Buf.fromUtfStr(encrypted.data));
-  }
-
-  public encryptMsgWithPwd = async (uncheckedReq: any): Promise<EndpointRes> => {
-    const req = ValidateInput.encryptMsgWithPwd(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: [], signingPrv: undefined, pwd: req.msgPwd, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
+    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as OpenPGP.EncryptArmorResult;
     return fmtRes({}, Buf.fromUtfStr(encrypted.data));
   }
 

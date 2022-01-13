@@ -16,7 +16,6 @@ typealias RecipientState = RecipientEmailsCellNode.Input.State
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
     func encryptMsg(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
-    func encryptMsgWithPwd(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
     func encryptFile(pubKeys: [String]?, fileData: Data, name: String) async throws -> CoreRes.EncryptFile
 }
 
@@ -63,13 +62,13 @@ final class ComposeMessageService {
         self.onStateChanged = completion
     }
 
+    // MARK: - Validation
     func validateAndProduceSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
         email: String,
         includeAttachments: Bool = true,
-        signingPrv: PrvKeyInfo?,
-        isMessagePasswordSupported: Bool = false
+        signingPrv: PrvKeyInfo?
     ) async throws -> SendableMsg {
         onStateChanged?(.validatingMessage)
 
@@ -164,6 +163,7 @@ final class ComposeMessageService {
         return recipients.flatMap(\.activePubKeys).map(\.armored)
     }
 
+    // MARK: - Drafts
     private var draft: GTLRGmail_Draft?
     func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
         do {
@@ -182,115 +182,98 @@ final class ComposeMessageService {
         do {
             onStateChanged?(.startComposing)
 
+            let composedEmail: CoreRes.ComposeEmail
+
             if let password = message.password, password.isNotEmpty {
-                let replyToken = try await enterpriseServer.getReplyToken(for: message.from)
-
-                let url = try await prepareAndUploadPwdEncryptedMsg(
-                    message: message,
-                    replyToken: replyToken
-                )
-
-                let html = generatePasswordMessageHtml(sender: message.from, url: url)
-
-                let encryptedTextFile = try await core.encryptMsg(msg: message, fmt: .encryptInline)
-                let bodyAttachment = SendableMsg.Attachment(
-                    name: "encrypted.asc",
-                    type: "application/pgp-encrypted",
-                    base64: encryptedTextFile.mimeEncoded.base64EncodedString()
-                )
-
-                var encryptedAttachments: [SendableMsg.Attachment] = []
-
-                for attachment in message.atts {
-                    guard let data = Data(base64Encoded: attachment.base64) else { continue }
-
-                    let encryptedFile = try await core.encryptFile(
-                        pubKeys: message.pubKeys,
-                        fileData: data,
-                        name: attachment.name
-                    )
-                    let encryptedAttachment = SendableMsg.Attachment(
-                        name: "\(attachment.name).pgp",
-                        type: "application/pgp-encrypted",
-                        base64: encryptedFile.encryptedFile.base64EncodedString()
-                    )
-                    encryptedAttachments.append(encryptedAttachment)
-                }
-
-                let passwordMessage = SendableMsg(
-                    text: html,
-                    html: html,
-                    to: message.to,
-                    cc: message.cc,
-                    bcc: message.bcc,
-                    from: message.from,
-                    subject: message.subject,
-                    replyToMimeMsg: message.replyToMimeMsg,
-                    atts: [bodyAttachment] + encryptedAttachments,
-                    pubKeys: nil,
-                    signingPrv: nil,
-                    password: nil
-                )
-                let formattedMessage = try await core.composeEmail(msg: passwordMessage, fmt: .plain)
-                try await messageGateway.sendMail(
-                    input: MessageGatewayInput(mime: formattedMessage.mimeEncoded, threadId: threadId),
-                    progressHandler: { [weak self] progress in
-                        self?.onStateChanged?(.progressChanged(progress))
-                    }
-                )
+                composedEmail = try await composePasswordMessage(from: message)
             } else {
-                let r = try await core.composeEmail(
+                composedEmail = try await core.composeEmail(
                     msg: message,
-                    fmt: MsgFmt.encryptInline
-                )
-
-                try await messageGateway.sendMail(
-                    input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId),
-                    progressHandler: { [weak self] progress in
-                        self?.onStateChanged?(.progressChanged(progress))
-                    }
+                    fmt: .encryptInline
                 )
             }
+
+            let input = MessageGatewayInput(
+                mime: composedEmail.mimeEncoded,
+                threadId: threadId
+            )
+
+            try await messageGateway.sendMail(
+                input: input,
+                progressHandler: { [weak self] progress in
+                    self?.onStateChanged?(.progressChanged(progress))
+                }
+            )
 
             // cleaning any draft saved/created/fetched during editing
             if let draftId = draft?.identifier {
                 await draftGateway?.deleteDraft(with: draftId)
             }
+
             onStateChanged?(.messageSent)
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }
     }
 
-    func generateMsgInfoDiv(for message: SendableMsg, replyToken: String) throws -> String {
-        let replyInfo = ReplyInfo(
-            sender: message.from,
-            recipient: message.to,
-            subject: message.subject,
-            token: replyToken
-        )
-        let replyInfoJsonString = try replyInfo.toJsonData().base64EncodedString()
-        return "\n\n<div style=\"display: none\" class=\"cryptup_reply\" cryptup-data=\"\(replyInfoJsonString)\"></div>"
-    }
+    // MARK: - Message password
+    func composePasswordMessage(from message: SendableMsg) async throws -> CoreRes.ComposeEmail {
+        let replyToken = try await enterpriseServer.getReplyToken(for: message.from)
 
-    func generatePasswordMessageHtml(sender: String, url: String) -> String {
-        let aStyle = "padding: 2px 6px; background: #2199e8; color: #fff; display: inline-block; text-decoration: none;"
-        return """
-        \(sender) has sent you a password-encrypted email <a href="\(url)" style="\(aStyle)">Click here to Open Message</a>
-        <br><br>
-        Alternatively copy and paste the following link: \(url)
-        """
+        let messageUrl = try await prepareAndUploadPwdEncryptedMsg(
+            message: message,
+            replyToken: replyToken
+        )
+
+        let html = generatePasswordMessageHtml(sender: message.from, url: messageUrl)
+
+        let encryptedTextFile = try await core.encryptMsg(msg: message, fmt: .encryptInline)
+        let bodyAttachment = SendableMsg.Attachment(
+            name: "encrypted.asc",
+            type: "application/pgp-encrypted",
+            base64: encryptedTextFile.mimeEncoded.base64EncodedString()
+        )
+
+        var encryptedAttachments: [SendableMsg.Attachment] = []
+
+        for attachment in message.atts {
+            guard let data = Data(base64Encoded: attachment.base64) else { continue }
+
+            let encryptedFile = try await core.encryptFile(
+                pubKeys: message.pubKeys,
+                fileData: data,
+                name: attachment.name
+            )
+            let encryptedAttachment = SendableMsg.Attachment(
+                name: "\(attachment.name).pgp",
+                type: "application/pgp-encrypted",
+                base64: encryptedFile.encryptedFile.base64EncodedString()
+            )
+            encryptedAttachments.append(encryptedAttachment)
+        }
+
+        let passwordMessage = SendableMsg(
+            text: html,
+            html: html,
+            to: message.to,
+            cc: message.cc,
+            bcc: message.bcc,
+            from: message.from,
+            subject: message.subject,
+            replyToMimeMsg: message.replyToMimeMsg,
+            atts: [bodyAttachment] + encryptedAttachments,
+            pubKeys: nil,
+            signingPrv: nil,
+            password: nil
+        )
+        return try await core.composeEmail(msg: passwordMessage, fmt: .plain)
     }
 
     func prepareAndUploadPwdEncryptedMsg(message: SendableMsg, replyToken: String) async throws -> String {
-        let infoDiv = try generateMsgInfoDiv(for: message, replyToken: replyToken)
-        let updatedText = message.text + infoDiv
-
-        var message = message
-        message.text = updatedText
-        message.html = updatedText
-
-        let formatted = try await core.composeEmail(msg: message, fmt: .plain)
+        let formatted = try await formatPasswordMessage(
+            message: message,
+            replyToken: replyToken
+        )
 
         let formattedMessage = SendableMsg(
             text: formatted.mimeEncoded.toStr(),
@@ -302,14 +285,45 @@ final class ComposeMessageService {
             subject: message.subject,
             replyToMimeMsg: message.replyToMimeMsg,
             atts: message.atts,
-            pubKeys: nil,
+            pubKeys: [],
             signingPrv: nil,
             password: message.password
         )
 
-        let encoded = try await core.encryptMsgWithPwd(msg: formattedMessage, fmt: .encryptInline)
+        let encoded = try await core.encryptMsg(msg: formattedMessage, fmt: .encryptInline)
 
         let details = MessageUploadDetails(from: message, replyToken: replyToken)
         return try await enterpriseServer.upload(message: encoded.mimeEncoded, details: details)
+    }
+
+    func formatPasswordMessage(message: SendableMsg, replyToken: String) async throws -> CoreRes.ComposeEmail {
+        let infoDiv = try generateMsgInfoDiv(for: message, replyToken: replyToken)
+        let messageText = message.text
+
+        var message = message
+        message.text = [messageText, "/n/n", infoDiv].joined()
+        message.html = [messageText, "<br><br>", infoDiv].joined()
+
+       return try await core.composeEmail(msg: message, fmt: .plain)
+    }
+
+    func generateMsgInfoDiv(for message: SendableMsg, replyToken: String) throws -> String {
+        let replyInfo = ReplyInfo(
+            sender: message.from,
+            recipient: message.to,
+            subject: message.subject,
+            token: replyToken
+        )
+        let replyInfoJsonString = try replyInfo.toJsonData().base64EncodedString()
+        return "<div style=\"display: none\" class=\"cryptup_reply\" cryptup-data=\"\(replyInfoJsonString)\"></div>"
+    }
+
+    func generatePasswordMessageHtml(sender: String, url: String) -> String {
+        let aStyle = "padding: 2px 6px; background: #2199e8; color: #fff; display: inline-block; text-decoration: none;"
+        return """
+        \(sender) has sent you a password-encrypted email <a href="\(url)" style="\(aStyle)">Click here to Open Message</a>
+        <br><br>
+        Alternatively copy and paste the following link: \(url)
+        """
     }
 }
