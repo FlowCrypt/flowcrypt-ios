@@ -73,7 +73,11 @@ public final class TextViewCellNode: CellNode {
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textView.style.preferredSize.height = height
-        return ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8), child: textView)
+        
+        return ASInsetLayoutSpec(
+            insets: .deviceSpecificTextInsets(top: 8, bottom: 0),
+            child: textView
+        )
     }
 
     @discardableResult

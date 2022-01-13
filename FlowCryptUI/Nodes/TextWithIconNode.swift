@@ -19,7 +19,7 @@ public final class TextWithIconNode: CellNode {
             title: NSAttributedString,
             image: UIImage?,
             imageSize: CGSize = CGSize(width: 20, height: 20),
-            nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 16, left: 8, bottom: 16, right: 8)
+            nodeInsets: UIEdgeInsets = .deviceSpecificTextInsets(top: 8, bottom: 8)
         ) {
             self.title = title
             self.image = image

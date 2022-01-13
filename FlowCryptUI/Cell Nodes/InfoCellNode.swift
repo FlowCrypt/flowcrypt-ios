@@ -20,7 +20,7 @@ public final class InfoCellNode: CellNode {
         public init(
             attributedText: NSAttributedString,
             image: UIImage?,
-            insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            insets: UIEdgeInsets = .deviceSpecificTextInsets(top: 8, bottom: 8),
             backgroundColor: UIColor? = nil,
             accessibilityIdentifier: String? = nil
         ) {

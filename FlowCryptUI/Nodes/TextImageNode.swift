@@ -24,7 +24,7 @@ public final class TextImageNode: CellNode {
             subtitle: NSAttributedString?,
             image: UIImage?,
             imageSize: CGSize = CGSize(width: 24, height: 24),
-            nodeInsets: UIEdgeInsets = UIEdgeInsets(top: 32, left: 16, bottom: 32, right: 16),
+            nodeInsets: UIEdgeInsets = .deviceSpecificTextInsets(top: 32, bottom: 32),
             backgroundColor: UIColor,
             isTapAnimated: Bool = true
         ) {
