@@ -37,7 +37,7 @@ export class ValidateInput {
   }
 
   public static encryptMsg = (v: any): NodeRequest.encryptMsg => {
-    if (isObj(v) && hasProp(v, 'pubKeys', 'string[]')) {
+    if (isObj(v) && hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'msgPwd', 'string?')) {
       return v as NodeRequest.encryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.encryptMsg');
