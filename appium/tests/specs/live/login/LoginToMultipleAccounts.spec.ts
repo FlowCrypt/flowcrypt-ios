@@ -19,7 +19,6 @@ describe('LOGIN: ', () => {
     const messageOutlook = CommonData.outlookEmail.message;
     const outlookEmail = CommonData.outlookAccount.email;
     const outlookFolder = CommonData.outlookAccount.outlookFolder;
-    const outlookUserName = CommonData.outlookAccount.name;
 
     const senderGmail = CommonData.recipientsListEmail.sender;
     const subjectGmail = CommonData.recipientsListEmail.subject;
@@ -72,7 +71,8 @@ describe('LOGIN: ', () => {
     await MenuBarScreen.checkMenuBarItem(gmailFolder);
 
     await MenuBarScreen.clickOnUserEmail();
-    await MenuBarScreen.selectAccount(outlookUserName, outlookEmail);
+
+    await MenuBarScreen.selectAccount();
 
     await MailFolderScreen.checkInboxScreen();
 

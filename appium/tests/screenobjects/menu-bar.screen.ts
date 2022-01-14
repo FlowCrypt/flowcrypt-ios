@@ -92,14 +92,13 @@ class MenuBarScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.trashButton);
   }
 
-  checkMenuBarItem = async(menuItem: string) => {
+  checkMenuBarItem = async (menuItem: string) => {
     const menuBarItem = await $(`~menuBarItem${menuItem}`);
     await menuBarItem.waitForDisplayed();
   }
 
-  selectAccount = async(name: string = CommonData.account.name , email: string = CommonData.account.email) => {
-    const account = `**/XCUIElementTypeStaticText[\`label == "${name} ${email}"\`]`;
-    const ele = $(`-ios class chain:${account}`);
+  selectAccount = async (index: number = 1) => {
+    const ele = await $(`~aid-account-email-${index-1}`);
     await ElementHelper.waitAndClick(await ele);
   }
 }
