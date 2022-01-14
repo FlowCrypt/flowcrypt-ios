@@ -8,6 +8,7 @@ const SELECTORS = {
   OK_BUTTON: '~Ok',
   CONFIRM_PASS_PHRASE_FIELD: '~textField',
   LOAD_ACCOUNT_BUTTON: '~load_account',
+  CREATE_NEW_KEY_BUTTON: '~Create a new key'
 };
 
 class SetupKeyScreen extends BaseScreen {
@@ -35,6 +36,10 @@ class SetupKeyScreen extends BaseScreen {
     return $(SELECTORS.CONFIRM_PASS_PHRASE_FIELD)
   }
 
+  get createNewKeyButton () {
+    return $(SELECTORS.CREATE_NEW_KEY_BUTTON)
+  }
+
   setPassPhrase = async (text: string = CommonData.account.passPhrase) => {
     // retrying several times because following login, we switch
     //   from webview to our own view and then to another one several
@@ -52,19 +57,30 @@ class SetupKeyScreen extends BaseScreen {
   }
 
   setPassPhraseForOtherProviderEmail = async (text: string = CommonData.outlookAccount.passPhrase) => {
+
     // retrying several times because following login, we switch
     //   from webview to our own view and then to another one several
     //   times, which was causing flaky tests. Originally we did a 10s
     //   delay but now instead we're retrying once per second until
     //   we see what we expect.
+
     let count = 0;
     do {
-        await browser.pause(1000);
-        count++;
-    } while (await (await this.enterPassPhraseField).isDisplayed() !== true && count <= 15);
-    await this.fillPassPhrase(text);
-    await this.clickLoadAccountButton();
+      await browser.pause(1000);
+      count++;
+    } while ((await (await this.loadAccountButton).isDisplayed() !== true && await (await this.createNewKeyButton).isDisplayed() !== true) && count <= 15);
+
+    if(await (await this.enterPassPhraseField).isDisplayed() !== true) {
+      await this.clickCreateNewKeyButton();
+      await this.fillPassPhrase(text);
+      await this.clickSetPassPhraseBtn();
+      await this.confirmPassPhrase(text);
+    } else {
+      await this.fillPassPhrase(text);
+      await this.clickLoadAccountButton();
+    }
   }
+
 
   fillPassPhrase = async (passPhrase: string) => {
     await ElementHelper.waitClickAndType(await this.enterPassPhraseField, passPhrase);
@@ -81,6 +97,10 @@ class SetupKeyScreen extends BaseScreen {
   confirmPassPhrase = async (passPhrase: string) => {
     await ElementHelper.waitClickAndType(await this.confirmPassPhraseField, passPhrase);
     await ElementHelper.waitAndClick(await this.okButton);
+  }
+
+  clickCreateNewKeyButton = async () => {
+    await ElementHelper.waitAndClick(await this.createNewKeyButton);
   }
 }
 

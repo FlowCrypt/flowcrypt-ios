@@ -142,7 +142,7 @@ class SplashScreen extends BaseScreen {
   }
 
   gmailLogin = async (email: string, password: string) => {
-    const emailSelector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
+    const emailSelector = `-ios class chain:**/XCUIElementTypeLink/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
     await (await this.signInAsGoogleAccounLabel).waitForDisplayed();
     await browser.pause(1000); // stability sleep for language change
     if (await (await $(emailSelector)).isDisplayed()) {
