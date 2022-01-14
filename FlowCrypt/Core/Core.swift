@@ -76,7 +76,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
     
     // MARK: Files
-    public func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) async throws -> CoreRes.DecryptFile {
+    func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) async throws -> CoreRes.DecryptFile {
         struct DecryptFileRaw: Decodable {
             let decryptSuccess: DecryptSuccess?
             let decryptErr: DecryptErr?
@@ -108,7 +108,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         throw AppErr.unexpected("decryptFile: both decryptErr and decryptSuccess were nil")
     }
     
-    public func encrypt(file: Data, name: String, pubKeys: [String]?)  async throws -> Data {
+    func encrypt(file: Data, name: String, pubKeys: [String]?)  async throws -> Data {
         let json: [String: Any?]? = [
             "pubKeys": pubKeys,
             "name": name
@@ -123,7 +123,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     // MARK: - Messages
-    public func encrypt(msg: SendableMsg) async throws -> Data {
+    func encrypt(msg: SendableMsg) async throws -> Data {
         try await encrypt(
             data: msg.text.data(),
             pubKeys: msg.pubKeys,

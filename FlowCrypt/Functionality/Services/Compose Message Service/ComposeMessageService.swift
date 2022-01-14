@@ -221,32 +221,23 @@ final class ComposeMessageService {
 
 // MARK: - Message password
 extension ComposeMessageService {
-    func composePasswordMessage(from message: SendableMsg) async throws -> CoreRes.ComposeEmail {
+    private func composePasswordMessage(from message: SendableMsg) async throws -> CoreRes.ComposeEmail {
         let messageUrl = try await prepareAndUploadPwdEncryptedMsg(message: message)
         let messageBody = createMessageBodyWithPasswordLink(sender: message.from, url: messageUrl)
 
         let encryptedBodyAttachment = try await encryptBodyWithoutAttachments(message: message)
         let encryptedAttachments = try await encryptAttachments(message: message)
 
-        let sendableMsg = SendableMsg(
-            text: messageBody.text,
-            html: messageBody.html,
-            to: message.to,
-            cc: message.cc,
-            bcc: message.bcc,
-            from: message.from,
-            subject: message.subject,
-            replyToMimeMsg: message.replyToMimeMsg,
+        let sendableMsg = message.copy(
+            body: messageBody,
             atts: [encryptedBodyAttachment] + encryptedAttachments,
-            pubKeys: nil,
-            signingPrv: nil,
-            password: nil
+            pubKeys: nil
         )
 
         return try await core.composeEmail(msg: sendableMsg, fmt: .plain)
     }
 
-    func encryptBodyWithoutAttachments(message: SendableMsg) async throws -> SendableMsg.Attachment {
+    private func encryptBodyWithoutAttachments(message: SendableMsg) async throws -> SendableMsg.Attachment {
         let pubEncryptedNoAttachments = try await core.encrypt(msg: message)
         return SendableMsg.Attachment(
             name: "encrypted.asc",
@@ -255,7 +246,7 @@ extension ComposeMessageService {
         )
     }
 
-    func encryptAttachments(message: SendableMsg) async throws -> [SendableMsg.Attachment] {
+    private func encryptAttachments(message: SendableMsg) async throws -> [SendableMsg.Attachment] {
         var encryptedAttachments: [SendableMsg.Attachment] = []
 
         for attachment in message.atts {
@@ -277,7 +268,7 @@ extension ComposeMessageService {
         return encryptedAttachments
     }
 
-    func prepareAndUploadPwdEncryptedMsg(message: SendableMsg) async throws -> String {
+    private func prepareAndUploadPwdEncryptedMsg(message: SendableMsg) async throws -> String {
         let replyToken = try await enterpriseServer.getReplyToken(for: message.from)
 
         let bodyWithReplyToken = try getPwdMsgBodyWithReplyToken(
@@ -315,7 +306,7 @@ extension ComposeMessageService {
         )
     }
 
-    func getPwdMsgBodyWithReplyToken(message: SendableMsg, replyToken: String) throws -> SendableMsgBody {
+    private func getPwdMsgBodyWithReplyToken(message: SendableMsg, replyToken: String) throws -> SendableMsgBody {
         let replyInfoDiv = try createReplyInfoDiv(for: message, replyToken: replyToken)
 
         let text = [message.text, "/n/n", replyInfoDiv].joined()
@@ -324,7 +315,7 @@ extension ComposeMessageService {
         return SendableMsgBody(text: text, html: html)
     }
 
-    func createReplyInfoDiv(for message: SendableMsg, replyToken: String) throws -> String {
+    private func createReplyInfoDiv(for message: SendableMsg, replyToken: String) throws -> String {
         let replyInfo = ReplyInfo(
             sender: message.from,
             recipient: message.to,
@@ -335,7 +326,7 @@ extension ComposeMessageService {
         return "<div style=\"display: none\" class=\"cryptup_reply\" cryptup-data=\"\(replyInfoJsonString)\"></div>"
     }
 
-    func createMessageBodyWithPasswordLink(sender: String, url: String) -> SendableMsgBody {
+    private func createMessageBodyWithPasswordLink(sender: String, url: String) -> SendableMsgBody {
         let text = "\(sender) has sent you a password-encrypted email.\n\nTo open message copy and paste the following link: \(url)"
 
         let aStyle = "padding: 2px 6px; background: #2199e8; color: #fff; display: inline-block; text-decoration: none;"
