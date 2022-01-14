@@ -45,7 +45,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     private let appContext: AppContext
     private let foldersService: FoldersServiceType
-    private let decorator: MyMenuViewDecoratorType
+    private let decorator: MyMenuViewDecorator
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
@@ -67,7 +67,7 @@ final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
 
     init(
         appContext: AppContext,
-        decorator: MyMenuViewDecoratorType = MyMenuViewDecorator(),
+        decorator: MyMenuViewDecorator = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
         guard let currentUser = appContext.dataService.currentUser else {
@@ -258,7 +258,7 @@ extension MyMenuViewController {
                 self?.handleTapOn(header: node)
             }
         case (.main, .accountAdding):
-            return InfoCellNode(input: decorator.nodeForAccount(for: accounts[row]))
+            return InfoCellNode(input: decorator.nodeForAccount(for: accounts[row], index: row))
         case (.main, .folders):
             return InfoCellNode(input: folders[safe: row].map(InfoCellNode.Input.init))
         case (.additional, .accountAdding):
