@@ -31,6 +31,13 @@ class SearchScreen extends BaseScreen {
     const selector = `~${subject}`;
     await ElementHelper.waitAndClick(await $(selector), 500);
   }
+
+  searchAndClickEmailForOutlook = async (subject: string) => {
+    await (await this.searchField).setValue(subject);
+
+    const selector = `~${subject}`;
+    await ElementHelper.waitAndClick(await $(selector), 500);
+  }
 }
 
 export default new SearchScreen();

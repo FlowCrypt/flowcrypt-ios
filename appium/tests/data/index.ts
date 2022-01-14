@@ -3,8 +3,22 @@ import * as path from 'path';
 export const CommonData = {
   account: {
     email: 'e2e.enterprise.test@flowcrypt.com',
-    password: process.env.ACCOUNT_PASSWORD,
-    passPhrase: 'London blueBARREY capi'
+    password: process.env.E2E_ENTERPRISE_TESTS_GOOGLE_PASSWORD,
+    passPhrase: 'London blueBARREY capi',
+    folder: 'Gmail enterprise folder',
+    name: 'e2e'
+  },
+  outlookAccount: {
+    email: 'e2e.consumer.tests@outlook.com',
+    password: process.env.E2E_CONSUMER_TESTS_OUTLOOK_PASSWORD,
+    passPhrase: 'flowcrypt compatibility accounts o',
+    name: 'e2e.consumer.tests',
+    outlookFolder: 'Outlook consumer folder'
+  },
+  outlookEmail: {
+    subject: 'outlook account inbox email',
+    message: 'test email from gmail',
+    sender: 'e2e.enterprise.test@flowcrypt.com'
   },
   sender: {
     email: 'dmitry@flowcrypt.com',
@@ -115,7 +129,9 @@ export const CommonData = {
       '\n' +
       'One or more of your recipients have revoked public keys (marked in red).\n' +
       '\n' +
-      'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
+      'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.',
+    wrongPassPhraseOnLogin: 'Error\n' +
+      'Wrong pass phrase, please try again'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
