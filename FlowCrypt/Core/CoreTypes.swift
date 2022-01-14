@@ -51,10 +51,6 @@ struct CoreRes {
             let data: Data
         }
     }
-    
-    struct EncryptFile: Decodable {
-        let encryptedFile: Data
-    }
 
     struct Error: Decodable {
         struct ErrorWithOptionalStack: Decodable {
@@ -126,6 +122,7 @@ struct SendableMsg: Equatable {
     }
 
     let text: String
+    let html: String?
     let to: [String]
     let cc: [String]
     let bcc: [String]
@@ -136,6 +133,30 @@ struct SendableMsg: Equatable {
     let pubKeys: [String]?
     let signingPrv: PrvKeyInfo?
     let password: String?
+}
+
+extension SendableMsg {
+    func copy(body: SendableMsgBody, atts: [Attachment], pubKeys: [String]?) -> SendableMsg {
+        SendableMsg(
+            text: body.text,
+            html: body.html,
+            to: self.to,
+            cc: self.cc,
+            bcc: self.bcc,
+            from: self.from,
+            subject: self.subject,
+            replyToMimeMsg: self.replyToMimeMsg,
+            atts: atts,
+            pubKeys: pubKeys,
+            signingPrv: self.signingPrv,
+            password: self.password
+        )
+    }
+}
+
+struct SendableMsgBody {
+    let text: String
+    let html: String?
 }
 
 struct DecryptErr: Decodable {

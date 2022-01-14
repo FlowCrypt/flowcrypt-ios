@@ -106,6 +106,7 @@ final class FlowCryptCoreTests: XCTestCase {
     func testComposeEmailPlain() async throws {
         let msg = SendableMsg(
             text: "this is the message",
+            html: "this is the message",
             to: ["email@hello.com"],
             cc: [],
             bcc: [],
@@ -128,6 +129,7 @@ final class FlowCryptCoreTests: XCTestCase {
     func testComposeEmailEncryptInline() async throws {
         let msg = SendableMsg(
             text: "this is the message",
+            html: "this is the message",
             to: ["email@hello.com"],
             cc: [],
             bcc: [],
@@ -158,6 +160,7 @@ final class FlowCryptCoreTests: XCTestCase {
         )
         let msg = SendableMsg(
             text: "this is the message",
+            html: "this is the message",
             to: ["email@hello.com"], cc: [], bcc: [],
             from: "sender@hello.com",
             subject: "subj", replyToMimeMsg: nil,
@@ -186,6 +189,7 @@ final class FlowCryptCoreTests: XCTestCase {
         let k = generateKeyRes.key
         let msg = SendableMsg(
             text: text,
+            html: text,
             to: [email],
             cc: [],
             bcc: [],
@@ -252,13 +256,13 @@ final class FlowCryptCoreTests: XCTestCase {
         ]
 
         // When
-        let encrypted = try await core.encryptFile(
-            pubKeys: [k.public],
-            fileData: fileData,
-            name: initialFileName
+        let encrypted = try await core.encrypt(
+            file: fileData,
+            name: initialFileName,
+            pubKeys: [k.public]
         )
         let decrypted = try await core.decryptFile(
-            encrypted: encrypted.encryptedFile,
+            encrypted: encrypted,
             keys: keys,
             msgPwd: nil
         )
@@ -318,13 +322,13 @@ final class FlowCryptCoreTests: XCTestCase {
             userIds: [UserId(email: email, name: "End to end")]
         )
         let k = generateKeyRes.key
-        let encrypted = try await core.encryptFile(
-            pubKeys: [k.public],
-            fileData: fileData,
-            name: initialFileName
+        let encryptedFile = try await core.encrypt(
+            file: fileData,
+            name: initialFileName,
+            pubKeys: [k.public]
         )
         let decryptResult = try await core.decryptFile(
-            encrypted: encrypted.encryptedFile,
+            encrypted: encryptedFile,
             keys: [],
             msgPwd: nil
         )
@@ -356,13 +360,13 @@ final class FlowCryptCoreTests: XCTestCase {
         ]
 
         // When
-        let encrypted = try await core.encryptFile(
-            pubKeys: [k.public],
-            fileData: fileData,
-            name: initialFileName
+        let encrypted = try await core.encrypt(
+            file: fileData,
+            name: initialFileName,
+            pubKeys: [k.public]
         )
         let decrypted = try await core.decryptFile(
-            encrypted: encrypted.encryptedFile,
+            encrypted: encrypted,
             keys: keys,
             msgPwd: nil
         )

@@ -54,6 +54,7 @@ extension BackupService: BackupServiceType {
         let attachments = [SendableMsg.Attachment(name: filename, type: "text/plain", base64: privateKeyData)]
         let message = SendableMsg(
             text: "setup_backup_email".localized,
+            html: nil,
             to: [userId.toMime],
             cc: [],
             bcc: [],
@@ -63,7 +64,8 @@ extension BackupService: BackupServiceType {
             atts: attachments,
             pubKeys: nil,
             signingPrv: nil,
-            password: nil)
+            password: nil
+        )
 
         let t = try await core.composeEmail(msg: message, fmt: .plain)
         try await messageSender.sendMail(

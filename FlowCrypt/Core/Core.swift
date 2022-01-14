@@ -76,7 +76,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
     
     // MARK: Files
-    public func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) async throws -> CoreRes.DecryptFile {
+    func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) async throws -> CoreRes.DecryptFile {
         struct DecryptFileRaw: Decodable {
             let decryptSuccess: DecryptSuccess?
             let decryptErr: DecryptErr?
@@ -108,7 +108,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         throw AppErr.unexpected("decryptFile: both decryptErr and decryptSuccess were nil")
     }
     
-    public func encryptFile(pubKeys: [String]?, fileData: Data, name: String)  async throws -> CoreRes.EncryptFile {
+    func encrypt(file: Data, name: String, pubKeys: [String]?)  async throws -> Data {
         let json: [String: Any?]? = [
             "pubKeys": pubKeys,
             "name": name
@@ -117,9 +117,25 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let encrypted = try await call(
             "encryptFile",
             jsonDict: json,
-            data: fileData
+            data: file
         )
-        return CoreRes.EncryptFile(encryptedFile: encrypted.data)
+        return encrypted.data
+    }
+
+    // MARK: - Messages
+    func encrypt(data: Data, pubKeys: [String]?, password: String?) async throws -> Data {
+        let jsonDict: [String: Any?] = [
+            "pubKeys": pubKeys,
+            "msgPwd": password
+        ]
+
+        let encryptedMessage = try await call(
+            "encryptMsg",
+            jsonDict: jsonDict,
+            data: data
+        )
+
+        return encryptedMessage.data
     }
 
     func parseDecryptMsg(
@@ -139,11 +155,13 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "msgPwd": msgPwd,
             "verificationPubkeys": verificationPubKeys
         ]
+
         let parsed = try await call(
             "parseDecryptMsg",
             jsonDict: json,
             data: encrypted
         )
+
         let meta = try parsed.json.decodeJson(as: ParseDecryptMsgRaw.self)
 
         let blocks = parsed.data
@@ -164,16 +182,9 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
-        let signingPrv = msg.signingPrv.map { value in
-            [
-                "private": value.`private`,
-                "longid": value.longid,
-                "passphrase": value.passphrase
-            ]
-        }
-
         let r = try await call("composeEmail", jsonDict: [
             "text": msg.text,
+            "html": msg.html,
             "to": msg.to,
             "cc": msg.cc,
             "bcc": msg.bcc,
@@ -183,8 +194,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": msg.pubKeys,
-            "signingPrv": signingPrv,
-            "pwd": msg.password
+            "signingPrv": msg.signingPrv?.jsonDict
         ], data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }

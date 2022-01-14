@@ -11,6 +11,48 @@ import XCTest
 
 class CoreTypesTest: XCTestCase {
 
+    func test_sendable_msg_copy() {
+        let msg = SendableMsg(
+            text: "this is message",
+            html: "<b>this is message</b>",
+            to: ["some@gmail.com"],
+            cc: [],
+            bcc: [],
+            from: "from@gmail.com",
+            subject: "Some subject",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: ["public key"],
+            signingPrv: nil,
+            password: "123")
+
+        let copyBody = SendableMsgBody(
+            text: "another message",
+            html: "<b>another message</b>"
+        )
+        let copyAttachments = [SendableMsg.Attachment(
+            name: "test.txt",
+            type: "text/plain",
+            base64: "test".data().base64EncodedString()
+        )]
+        let copyPubKeys = ["another key"]
+
+        let msgCopy = msg.copy(
+            body: copyBody,
+            atts: copyAttachments,
+            pubKeys: copyPubKeys
+        )
+
+        XCTAssertEqual(msgCopy.text, copyBody.text)
+        XCTAssertEqual(msgCopy.html, copyBody.html)
+        XCTAssertEqual(msgCopy.atts, copyAttachments)
+        XCTAssertEqual(msgCopy.pubKeys, copyPubKeys)
+        XCTAssertEqual(msgCopy.to, msg.to)
+        XCTAssertEqual(msgCopy.from, msg.from)
+        XCTAssertEqual(msgCopy.subject, msg.subject)
+        XCTAssertEqual(msgCopy.password, msg.password)
+    }
+
     func test_key_details_with_same_fingerprints() {
         let firstKeyDetail = KeyDetails(
             public: "public1",
