@@ -123,14 +123,6 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     // MARK: - Messages
-    func encrypt(msg: SendableMsg) async throws -> Data {
-        try await encrypt(
-            data: msg.text.data(),
-            pubKeys: msg.pubKeys,
-            password: msg.password
-        )
-    }
-
     func encrypt(data: Data, pubKeys: [String]?, password: String?) async throws -> Data {
         let jsonDict: [String: Any?] = [
             "pubKeys": pubKeys,

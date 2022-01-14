@@ -15,7 +15,7 @@ typealias RecipientState = RecipientEmailsCellNode.Input.State
 
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
-    func encrypt(msg: SendableMsg) async throws -> Data
+    func encrypt(data: Data, pubKeys: [String]?, password: String?) async throws -> Data
     func encrypt(file: Data, name: String, pubKeys: [String]?) async throws -> Data
 }
 
@@ -238,7 +238,12 @@ extension ComposeMessageService {
     }
 
     private func encryptBodyWithoutAttachments(message: SendableMsg) async throws -> SendableMsg.Attachment {
-        let pubEncryptedNoAttachments = try await core.encrypt(msg: message)
+        let pubEncryptedNoAttachments = try await core.encrypt(
+            data: message.text.data(),
+            pubKeys: message.pubKeys,
+            password: nil
+        )
+
         return SendableMsg.Attachment(
             name: "encrypted.asc",
             type: "application/pgp-encrypted",
@@ -283,18 +288,13 @@ extension ComposeMessageService {
         let pgpMimeWithAttachments = try await core.composeEmail(
             msg: msgWithReplyToken,
             fmt: .plain
-        ).mimeEncoded.toStr()
+        ).mimeEncoded
 
-        let sendableMsg = message.copy(
-            body: SendableMsgBody(
-                text: pgpMimeWithAttachments,
-                html: pgpMimeWithAttachments
-            ),
-            atts: [],
-            pubKeys: []
+        let pwdEncryptedWithAttachments = try await core.encrypt(
+            data: pgpMimeWithAttachments,
+            pubKeys: [],
+            password: message.password
         )
-
-        let pwdEncryptedWithAttachments = try await core.encrypt(msg: sendableMsg)
         let details = MessageUploadDetails(from: msgWithReplyToken, replyToken: replyToken)
 
         return try await enterpriseServer.upload(
