@@ -15,8 +15,8 @@ typealias RecipientState = RecipientEmailsCellNode.Input.State
 
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
-    func encryptMsg(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
-    func encryptFile(pubKeys: [String]?, fileData: Data, name: String) async throws -> CoreRes.EncryptFile
+    func encrypt(msg: SendableMsg) async throws -> Data
+    func encrypt(file: Data, name: String, pubKeys: [String]?) async throws -> Data
 }
 
 final class ComposeMessageService {
@@ -217,8 +217,10 @@ final class ComposeMessageService {
             throw ComposeMessageError.gatewayError(error)
         }
     }
+}
 
-    // MARK: - Message password
+// MARK: - Message password
+extension ComposeMessageService {
     func composePasswordMessage(from message: SendableMsg) async throws -> CoreRes.ComposeEmail {
         let replyToken = try await enterpriseServer.getReplyToken(for: message.from)
 
@@ -229,11 +231,11 @@ final class ComposeMessageService {
 
         let html = generatePasswordMessageHtml(sender: message.from, url: messageUrl)
 
-        let encryptedTextFile = try await core.encryptMsg(msg: message, fmt: .encryptInline)
+        let encryptedTextFile = try await core.encrypt(msg: message)
         let bodyAttachment = SendableMsg.Attachment(
             name: "encrypted.asc",
             type: "application/pgp-encrypted",
-            base64: encryptedTextFile.mimeEncoded.base64EncodedString()
+            base64: encryptedTextFile.base64EncodedString()
         )
 
         var encryptedAttachments: [SendableMsg.Attachment] = []
@@ -241,15 +243,15 @@ final class ComposeMessageService {
         for attachment in message.atts {
             guard let data = Data(base64Encoded: attachment.base64) else { continue }
 
-            let encryptedFile = try await core.encryptFile(
-                pubKeys: message.pubKeys,
-                fileData: data,
-                name: attachment.name
+            let encryptedFile = try await core.encrypt(
+                file: data,
+                name: attachment.name,
+                pubKeys: message.pubKeys
             )
             let encryptedAttachment = SendableMsg.Attachment(
                 name: "\(attachment.name).pgp",
                 type: "application/pgp-encrypted",
-                base64: encryptedFile.encryptedFile.base64EncodedString()
+                base64: encryptedFile.base64EncodedString()
             )
             encryptedAttachments.append(encryptedAttachment)
         }
@@ -292,11 +294,11 @@ final class ComposeMessageService {
             password: message.password
         )
 
-        let encoded = try await core.encryptMsg(msg: formattedMessage, fmt: .encryptInline)
+        let encoded = try await core.encrypt(msg: formattedMessage)
         let details = MessageUploadDetails(from: message, replyToken: replyToken)
 
         return try await enterpriseServer.upload(
-            message: encoded.mimeEncoded,
+            message: encoded,
             details: details,
             progressHandler: { [weak self] progress in
                 self?.onStateChanged?(.progressChanged(progress / 2))

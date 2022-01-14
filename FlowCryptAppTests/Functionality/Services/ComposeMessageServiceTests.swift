@@ -333,7 +333,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
         let expected = SendableMsg(
             text: message,
-            html: message,
+            html: nil,
             to: recipients.map(\.email),
             cc: [],
             bcc: [],
@@ -408,7 +408,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
         let expected = SendableMsg(
             text: message,
-            html: message,
+            html: nil,
             to: recipients.map(\.email),
             cc: [],
             bcc: [],

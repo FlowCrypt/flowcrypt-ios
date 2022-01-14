@@ -51,10 +51,6 @@ struct CoreRes {
             let data: Data
         }
     }
-    
-    struct EncryptFile: Decodable {
-        let encryptedFile: Data
-    }
 
     struct Error: Decodable {
         struct ErrorWithOptionalStack: Decodable {

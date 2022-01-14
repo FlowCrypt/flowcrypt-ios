@@ -58,7 +58,7 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
         return ""
     }
 
-    func upload(message: Data, details: MessageUploadDetails) async throws -> String {
+    func upload(message: Data, details: MessageUploadDetails, progressHandler: ((Float) -> Void)?) async throws -> String {
         return ""
     }
 }

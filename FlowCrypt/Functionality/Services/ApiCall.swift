@@ -20,7 +20,7 @@ extension ApiCall {
         var headers: [URLHeader] = []
         var timeout: TimeInterval = 60.0
         var tolerateStatus: [Int]?
-        var delegate: URLSessionTaskDelegate? = nil
+        weak var delegate: URLSessionTaskDelegate?
     }
 }
 

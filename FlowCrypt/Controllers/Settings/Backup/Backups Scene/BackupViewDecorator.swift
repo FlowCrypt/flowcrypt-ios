@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 struct BackupViewDecorator {
     let sceneTitle: String = "backup_screen_title"
         .localized

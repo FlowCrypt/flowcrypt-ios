@@ -30,12 +30,6 @@ export class Endpoints {
     return fmtRes({ app_version: VERSION });
   }
 
-  public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
-    const req = ValidateInput.encryptMsg(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as OpenPGP.EncryptArmorResult;
-    return fmtRes({}, Buf.fromUtfStr(encrypted.data));
-  }
-
   public generateKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // generateKey may be used when changing major settings, wipe cache to prevent dated results
     const { passphrase, userIds, variant } = ValidateInput.generateKey(uncheckedReq);
@@ -71,6 +65,12 @@ export class Endpoints {
     } else {
       throw new Error(`Unknown format: ${req.format}`);
     }
+  }
+
+  public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
+    const req = ValidateInput.encryptMsg(uncheckedReq);
+    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as OpenPGP.EncryptArmorResult;
+    return fmtRes({}, Buf.fromUtfStr(encrypted.data));
   }
 
   public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
