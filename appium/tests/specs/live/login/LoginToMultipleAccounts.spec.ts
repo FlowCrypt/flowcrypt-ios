@@ -72,7 +72,7 @@ describe('LOGIN: ', () => {
 
     await MenuBarScreen.clickOnUserEmail();
 
-    await MenuBarScreen.selectAccount();
+    await MenuBarScreen.selectAccount(1);
 
     await MailFolderScreen.checkInboxScreen();
 

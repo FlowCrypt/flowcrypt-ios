@@ -97,8 +97,8 @@ class MenuBarScreen extends BaseScreen {
     await menuBarItem.waitForDisplayed();
   }
 
-  selectAccount = async (index: number = 1) => {
-    const ele = await $(`~aid-account-email-${index-1}`);
+  selectAccount = async (order: number) => {
+    const ele = await $(`~aid-account-email-${order-1}`);
     await ElementHelper.waitAndClick(await ele);
   }
 }
