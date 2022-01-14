@@ -20,11 +20,13 @@ class CoreComposeMessageMock: CoreComposeMessageType, KeyParser {
         return parseKeysResult(armoredOrBinary)
     }
 
+    var encryptMsgResult: ((SendableMsg) -> Data)!
     func encrypt(msg: SendableMsg) async throws -> Data {
-        throw(AppErr.general("not implemented"))
+        return encryptMsgResult(msg)
     }
 
+    var encryptFileResult: ((Data, String, [String]?) -> Data)!
     func encrypt(file: Data, name: String, pubKeys: [String]?) async throws -> Data {
-        throw(AppErr.general("not implemented"))
+        return encryptFileResult(file, name, pubKeys)
     }
 }
