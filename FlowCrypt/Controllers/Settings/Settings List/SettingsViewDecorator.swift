@@ -8,15 +8,9 @@
 
 import UIKit
 
-protocol SettingsViewDecoratorType {
-    var sceneTitle: String { get }
-    var insets: UIEdgeInsets { get }
-    func attributedSetting(_ title: String) -> NSAttributedString
-}
-
-struct SettingsViewDecorator: SettingsViewDecoratorType {
+struct SettingsViewDecorator {
     let sceneTitle = "settings_screen_title".localized
-    let insets = UIEdgeInsets.side(16)
+    let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 16, bottom: 16)
 
     func attributedSetting(_ title: String) -> NSAttributedString {
         title.attributed(.regular(16), color: .mainTextColor)

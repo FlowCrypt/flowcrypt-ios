@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import UIKit
 
 public final class InboxCellNode: CellNode {
     public struct Input {
@@ -91,7 +92,7 @@ public final class InboxCellNode: CellNode {
         finalSpec.children = [headerStackSpec, separatorNode]
         finalSpec.spacing = 8
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            insets: .deviceSpecificTextInsets(top: 8, bottom: 8),
             child: finalSpec
         )
     }

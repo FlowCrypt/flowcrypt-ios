@@ -89,7 +89,7 @@ public final class ContactKeyCellNode: CellNode {
             children: specs
         )
 
-        let borderInset = UIEdgeInsets.side(8)
+        let borderInset = UIEdgeInsets.deviceSpecificTextInsets(top: 8, bottom: 8)
 
         let resultSpec = ASInsetLayoutSpec(
             insets: UIEdgeInsets(

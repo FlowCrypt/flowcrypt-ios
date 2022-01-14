@@ -8,7 +8,7 @@ import FlowCryptUI
 import Foundation
 
 @MainActor
-final class InboxViewController: ASDKViewController<ASDisplayNode> {
+final class InboxViewController: ViewController {
     private lazy var logger = Logger.nested(Self.self)
 
     private let numberOfInboxItemsToLoad: Int
@@ -373,7 +373,6 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         open(with: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
     }
 
-    // MARK: Cell Nodes
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }

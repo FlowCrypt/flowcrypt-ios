@@ -44,13 +44,13 @@ final class SettingsViewController: TableNodeViewController {
     }
 
     private let appContext: AppContext
-    private let decorator: SettingsViewDecoratorType
+    private let decorator: SettingsViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let rows: [SettingsMenuItem]
 
     init(
         appContext: AppContext,
-        decorator: SettingsViewDecoratorType = SettingsViewDecorator()
+        decorator: SettingsViewDecorator = SettingsViewDecorator()
     ) {
         self.appContext = appContext
         self.decorator = decorator

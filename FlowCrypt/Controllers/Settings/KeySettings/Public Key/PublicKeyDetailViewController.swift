@@ -42,15 +42,14 @@ extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt _: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
-            SetupTitleNode(
-                SetupTitleNode.Input(
-                    title: (self?.text ?? "").attributed(.regular(16)),
-                    insets: .side(16),
-                    backgroundColor: .backgroundColor,
-                    accessibilityIdentifier: "publicKey"
-                )
-            )
+        return { [weak self] in
+            InfoCellNode(input: InfoCellNode.Input.init(
+                attributedText: (self?.text ?? "").attributed(.regular(16)),
+                image: nil,
+                insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
+                backgroundColor: .backgroundColor,
+                accessibilityIdentifier: "publicKey"
+            ))
         }
     }
 }

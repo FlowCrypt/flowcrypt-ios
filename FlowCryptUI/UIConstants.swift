@@ -11,6 +11,10 @@ import UIKit
 import FlowCryptCommon
 
 public extension UIEdgeInsets {
+    static func deviceSpecificTextInsets(top: CGFloat, bottom: CGFloat) -> UIEdgeInsets {
+        .init(top: top, left: .Insets.textSide, bottom: bottom, right: .Insets.textSide)
+    }
+
     static func deviceSpecificInsets(top: CGFloat, bottom: CGFloat) -> UIEdgeInsets {
         .init(top: top, left: .Insets.side, bottom: bottom, right: .Insets.side)
     }
@@ -21,7 +25,7 @@ public extension UIEdgeInsets {
     }
 }
 
-fileprivate extension CGFloat {
+public extension CGFloat {
     enum Insets {
         fileprivate static var side: CGFloat {
             let minSide = Swift.min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
@@ -31,9 +35,9 @@ fileprivate extension CGFloat {
         fileprivate static var height: CGFloat {
             UIDevice.isIpad ? 24 : 8
         }
-        
-        fileprivate var minSide: CGFloat {
-            UIDevice.isIpad ? 24 : 8
+
+        public static var textSide: CGFloat {
+            UIDevice.isIpad ? 24 : 16
         }
     }
 }

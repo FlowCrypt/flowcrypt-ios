@@ -25,14 +25,14 @@ final class ContactDetailViewController: TableNodeViewController {
         case header = 0, keys
     }
 
-    private let decorator: ContactDetailDecoratorType
+    private let decorator: ContactDetailDecorator
     private let contactsProvider: LocalContactsProviderType
     private var recipient: RecipientWithSortedPubKeys
     private let action: ContactDetailAction?
 
     init(
         appContext: AppContext,
-        decorator: ContactDetailDecoratorType = ContactDetailDecorator(),
+        decorator: ContactDetailDecorator = ContactDetailDecorator(),
         recipient: RecipientWithSortedPubKeys,
         action: ContactDetailAction?
     ) {
@@ -149,10 +149,10 @@ extension ContactDetailViewController {
     private func node(for section: Section, row: Int) -> ASCellNode {
         switch section {
         case .header:
-            return ContactUserCellNode(input: self.decorator.userNodeInput(with: self.recipient))
+            return ContactUserCellNode(input: decorator.userNodeInput(with: recipient))
         case .keys:
             return ContactKeyCellNode(
-                input: self.decorator.keyNodeInput(with: self.recipient.pubKeys[row])
+                input: decorator.keyNodeInput(with: recipient.pubKeys[row])
             )
         }
     }

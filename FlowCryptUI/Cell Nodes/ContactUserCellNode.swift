@@ -32,7 +32,7 @@ public final class ContactUserCellNode: CellNode {
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
+            insets: .deviceSpecificTextInsets(top: 8, bottom: 8),
             child: ASStackLayoutSpec(
                 direction: .vertical,
                 spacing: 4,

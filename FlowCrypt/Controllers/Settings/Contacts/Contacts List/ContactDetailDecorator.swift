@@ -9,13 +9,7 @@
 import FlowCryptUI
 import Foundation
 
-protocol ContactDetailDecoratorType {
-    var title: String { get }
-    func userNodeInput(with contact: RecipientWithSortedPubKeys) -> ContactUserCellNode.Input
-    func keyNodeInput(with key: PubKey) -> ContactKeyCellNode.Input
-}
-
-struct ContactDetailDecorator: ContactDetailDecoratorType {
+struct ContactDetailDecorator {
     let title = "contact_detail_screen_title".localized
 
     func userNodeInput(with contact: RecipientWithSortedPubKeys) -> ContactUserCellNode.Input {

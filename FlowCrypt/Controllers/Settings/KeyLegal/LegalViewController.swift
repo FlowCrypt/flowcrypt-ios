@@ -37,11 +37,11 @@ final class LegalViewController: TableNodeViewController {
         }
     }
 
-    private let decorator: LegalViewDecoratorType
+    private let decorator: LegalViewDecorator
     private let rows = Items.allCases
 
     init(
-        decorator: LegalViewDecoratorType = LegalViewDecorator()
+        decorator: LegalViewDecorator = LegalViewDecorator()
     ) {
         self.decorator = decorator
         super.init(node: TableNode())

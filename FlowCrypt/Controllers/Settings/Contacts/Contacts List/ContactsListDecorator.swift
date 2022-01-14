@@ -9,12 +9,7 @@
 import FlowCryptUI
 import UIKit
 
-protocol ContactsListDecoratorType {
-    var title: String { get }
-    func contactNodeInput(with recipient: RecipientWithSortedPubKeys) -> ContactCellNode.Input
-}
-
-struct ContactsListDecorator: ContactsListDecoratorType {
+struct ContactsListDecorator {
     let title = "contacts_screen_title".localized
 
     func contactNodeInput(with recipient: RecipientWithSortedPubKeys) -> ContactCellNode.Input {
@@ -45,7 +40,7 @@ struct ContactsListDecorator: ContactsListDecoratorType {
             name: name.attributed(.medium(16)),
             email: recipient.email.attributed(.medium(14)),
             keys: "(\(keysCount))".attributed(.medium(14), color: .mainTextColor.withAlphaComponent(0.5)),
-            insets: UIEdgeInsets(top: 16, left: 16, bottom: 8, right: 16),
+            insets: .deviceSpecificTextInsets(top: 16, bottom: 8),
             buttonImage: UIImage(systemName: "trash")?.tinted(buttonColor)
         )
     }

@@ -53,10 +53,12 @@ public final class TextCellNode: CellNode {
         itemsAlignment = input.itemsAlignment
         super.init()
         addSubnode(textNode)
-        textNode.attributedText = NSAttributedString.text(from: input.title,
-                                                          style: .medium(16),
-                                                          color: .lightGray,
-                                                          alignment: input.textAlignment)
+        textNode.attributedText = NSAttributedString.text(
+            from: input.title,
+            style: .medium(16),
+            color: .lightGray,
+            alignment: input.textAlignment
+        )
         if input.withSpinner {
             addSubnode(spinner)
         }

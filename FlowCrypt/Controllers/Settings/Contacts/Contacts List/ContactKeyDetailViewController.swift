@@ -104,8 +104,10 @@ extension ContactKeyDetailViewController: ASTableDelegate, ASTableDataSource {
 // MARK: - UI
 extension ContactKeyDetailViewController {
     private func node(for part: Part) -> ASCellNode {
-        LabelCellNode(title: decorator.attributedTitle(for: part),
-                      text: content(for: part).attributed(.regular(14)))
+        LabelCellNode(
+            title: decorator.attributedTitle(for: part),
+            text: content(for: part).attributed(.regular(14))
+        )
     }
 
     private func content(for part: Part) -> String {
