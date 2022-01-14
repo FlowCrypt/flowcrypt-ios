@@ -19,7 +19,7 @@ public final class InfoCellNode: CellNode {
 
         public init(
             attributedText: NSAttributedString,
-            image: UIImage?,
+            image: UIImage? = nil,
             insets: UIEdgeInsets = .deviceSpecificTextInsets(top: 8, bottom: 8),
             backgroundColor: UIColor? = nil,
             accessibilityIdentifier: String? = nil
