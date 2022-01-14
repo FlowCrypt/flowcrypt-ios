@@ -52,14 +52,18 @@ public final class InfoCellNode: CellNode {
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        imageNode.style.preferredSize = imageNode.image != nil
-            ? CGSize(width: 24, height: 24)
-            : .zero
-
+        guard imageNode.image != nil else {
+            return ASInsetLayoutSpec(
+                insets: input?.insets ?? .zero,
+                child: textNode
+            )
+        }
+        
+        imageNode.style.preferredSize = CGSize(width: 24, height: 24)
         return ASInsetLayoutSpec(
             insets: input?.insets ?? .zero,
             child: ASStackLayoutSpec.horizontal().then {
-                $0.spacing = imageNode.image != nil ? 6.0 : 0.0
+                $0.spacing = 6.0
                 $0.children = [imageNode, textNode]
                 $0.alignItems = .center
             }
