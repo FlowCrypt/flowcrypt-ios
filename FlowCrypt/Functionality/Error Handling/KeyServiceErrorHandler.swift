@@ -19,7 +19,7 @@ enum CreateKeyError: Error {
     /// Silent abort
     case conformingPassPhraseError
     /// Failed to submit key
-    case submitKey
+    case submitKey(Error)
 }
 
 extension CreateKeyError: CustomStringConvertible {
@@ -33,8 +33,10 @@ extension CreateKeyError: CustomStringConvertible {
             return "backupServiceError_name".localized
         case .doesntMatch:
             return "pass_phrase_match_error".localized
-        case .submitKey:
+        case .submitKey(let error):
             return "submit_key_error".localized
+                + "\n"
+                + "\(error.errorMessage)"
         case .conformingPassPhraseError:
             return ""
         }

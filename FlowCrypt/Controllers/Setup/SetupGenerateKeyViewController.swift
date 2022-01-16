@@ -102,7 +102,7 @@ private actor Service {
             variant: .curve25519,
             userIds: [userId]
         )
-        
+
         try await submitKeyToAttester(email: userId.email, publicKey: encryptedPrv.key.public)
         try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
         try await putKeypairs(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
@@ -143,7 +143,7 @@ private actor Service {
                 token: appContext.dataService.token
             )
         } catch {
-            throw CreateKeyError.submitKey
+            throw CreateKeyError.submitKey(error)
         }
     }
 
