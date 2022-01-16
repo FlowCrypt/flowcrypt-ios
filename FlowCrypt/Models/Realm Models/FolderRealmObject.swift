@@ -15,6 +15,7 @@ final class FolderRealmObject: Object {
     @Persisted var image: Data?
     @Persisted var itemType: String
     @Persisted var user: UserRealmObject?
+    @Persisted var test: String?
 }
 
 extension FolderRealmObject {
