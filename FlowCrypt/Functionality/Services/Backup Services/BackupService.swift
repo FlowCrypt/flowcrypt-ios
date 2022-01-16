@@ -37,6 +37,7 @@ extension BackupService: BackupServiceType {
         }
     }
 
+    @MainActor
     func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
         let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
 

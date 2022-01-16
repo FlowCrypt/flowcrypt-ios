@@ -104,7 +104,10 @@ extension DataService: DataServiceType {
                 appDelegateGoogleSessionContainer: nil // needed only when signing in/out
             ).accessToken
         default:
-            return nil
+            guard let currentUser = currentUser else {
+                return nil
+            }
+            return Imap(user: currentUser).imapSess?.oAuth2Token
         }
     }
 

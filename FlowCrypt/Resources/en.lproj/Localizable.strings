@@ -295,3 +295,5 @@
 "imap_error_no_session" = "Session isn't established";
 "imap_error_provider" = "Provider error %@";
 "imap_error_msg_info" = "Can't parse message without \"%@\"";
+
+"submit_key_error" = "Failed to submit Public Key";
