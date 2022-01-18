@@ -179,26 +179,32 @@ extension ThreadDetailsViewController {
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {
+        Task {
+            do {
+                let attachment = try await getAttachment(at: indexPath)
+                let attachmentViewController = AttachmentViewController(file: attachment)
+                navigationController?.pushViewController(attachmentViewController, animated: true)
+            } catch {
+                showAlert(message: error.errorMessage)
+            }
+
+        }
+    }
+
+    private func getAttachment(at indexPath: IndexPath) async throws -> MessageAttachment {
         let section = input[indexPath.section-1]
         let attachmentIndex = indexPath.row - 2
 
-        guard let attachment = section.processedMessage?.attachments[attachmentIndex] else { return }
+        guard let attachment = section.processedMessage?.attachments[attachmentIndex]
+        else { throw MessageServiceError.attachmentDecryptFailed("message_attachment_decrypt_error".localized) }
 
         if attachment.isEncrypted {
-            Task {
-                let decryptedAttachment = try await messageService.decrypt(attachment: attachment)
-                input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
-                node.reloadRows(at: [indexPath], with: .automatic)
-                navigationController?.pushViewController(
-                    AttachmentViewController(file: decryptedAttachment),
-                    animated: true
-                )
-            }
+            let decryptedAttachment = try await messageService.decrypt(attachment: attachment)
+            input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
+            node.reloadRows(at: [indexPath], with: .automatic)
+            return decryptedAttachment
         } else {
-            navigationController?.pushViewController(
-                AttachmentViewController(file: attachment),
-                animated: true
-            )
+            return attachment
         }
     }
 
