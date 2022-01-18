@@ -80,35 +80,40 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         struct DecryptFileRaw: Decodable {
             let decryptSuccess: DecryptSuccess?
             let decryptErr: DecryptErr?
+
             struct DecryptSuccess: Decodable {
                 let name: String
             }
         }
-        let json: [String : Any?]? = [
+
+        let decrypted = try await call("decryptFile", jsonDict: [
             "keys": try keys.map { try $0.toJsonEncodedDict() },
             "msgPwd": msgPwd
-        ]
-        let decrypted = try await call("decryptFile", jsonDict: json, data: encrypted)
+        ], data: encrypted)
+
         let decryptFileRes = try decrypted.json.decodeJson(as: DecryptFileRaw.self)
+
         if let decryptErr = decryptFileRes.decryptErr {
             return CoreRes.DecryptFile(
                 decryptSuccess: nil,
                 decryptErr: decryptErr
             )
         }
-        if let decryptSuccess = decryptFileRes.decryptSuccess {
-            return CoreRes.DecryptFile(
-                decryptSuccess: CoreRes.DecryptFile.DecryptSuccess(
-                    name: decryptSuccess.name,
-                    data: decrypted.data
-                ),
-                decryptErr: nil
-            )
+
+        guard let decryptSuccess = decryptFileRes.decryptSuccess else {
+            throw AppErr.unexpected("decryptFile: both decryptErr and decryptSuccess were nil")
         }
-        throw AppErr.unexpected("decryptFile: both decryptErr and decryptSuccess were nil")
+
+        return CoreRes.DecryptFile(
+            decryptSuccess: CoreRes.DecryptFile.DecryptSuccess(
+                name: decryptSuccess.name,
+                data: decrypted.data
+            ),
+            decryptErr: nil
+        )
     }
     
-    func encrypt(file: Data, name: String, pubKeys: [String]?)  async throws -> Data {
+    func encrypt(file: Data, name: String, pubKeys: [String]?) async throws -> Data {
         let json: [String: Any?]? = [
             "pubKeys": pubKeys,
             "name": name
@@ -149,7 +154,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             let replyType: ReplyType
             let text: String
         }
-        let json: [String : Any?]? = [
+        let json: [String: Any?]? = [
             "keys": try keys.map { try $0.toJsonEncodedDict() },
             "isEmail": isEmail,
             "msgPwd": msgPwd,

@@ -178,6 +178,30 @@ extension ThreadDetailsViewController {
         present(alert, animated: true, completion: nil)
     }
 
+    private func handleAttachmentTap(at indexPath: IndexPath) {
+        let section = input[indexPath.section-1]
+        let attachmentIndex = indexPath.row - 2
+
+        guard let attachment = section.processedMessage?.attachments[attachmentIndex] else { return }
+
+        if attachment.isEncrypted {
+            Task {
+                let decryptedAttachment = try await messageService.decrypt(attachment: attachment)
+                input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
+                node.reloadRows(at: [indexPath], with: .automatic)
+                navigationController?.pushViewController(
+                    AttachmentViewController(file: decryptedAttachment),
+                    animated: true
+                )
+            }
+        } else {
+            navigationController?.pushViewController(
+                AttachmentViewController(file: attachment),
+                animated: true
+            )
+        }
+    }
+
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
         guard let input = input[safe: indexPath.section-1],
               let processedMessage = input.processedMessage
@@ -417,7 +441,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
     }
 
     func handleMarkUnreadTap() {
-        let messages = input.filter { $0.isExpanded }.map(\.rawMessage)
+        let messages = input.filter(\.isExpanded).map(\.rawMessage)
 
         guard messages.isNotEmpty else { return }
 
@@ -505,12 +529,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         case is ThreadMessageInfoCellNode:
             handleExpandTap(at: indexPath)
         case is AttachmentNode:
-            let section = self.input[indexPath.section-1]
-            guard let attachment = section.processedMessage?.attachments[indexPath.row - 2] else { return }
-            navigationController?.pushViewController(
-                AttachmentViewController(file: attachment, shouldShowDownloadButton: true),
-                animated: true
-            )
+            handleAttachmentTap(at: indexPath)
         default: return
         }
     }
@@ -537,7 +556,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
-        logger.logInfo("Back button. Are all messages read \(isRead) ")
+        logger.logInfo("Back button. Are all messages read \(isRead)")
         onComplete(MessageAction.markAsRead(isRead), .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: self.user.email))
         navigationController?.popViewController(animated: true)
     }

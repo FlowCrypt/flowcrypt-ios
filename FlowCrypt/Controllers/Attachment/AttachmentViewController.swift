@@ -69,7 +69,7 @@ final class AttachmentViewController: UIViewController {
 
     init(
         file: FileType,
-        shouldShowDownloadButton: Bool,
+        shouldShowDownloadButton: Bool = true,
         filesManager: FilesManagerType = FilesManager()
     ) {
         self.file = file

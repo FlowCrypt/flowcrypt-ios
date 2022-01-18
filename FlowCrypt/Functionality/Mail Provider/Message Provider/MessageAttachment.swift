@@ -12,6 +12,7 @@ import UIKit
 struct MessageAttachment: Equatable, FileType {
     let name: String
     let data: Data
+    var isEncrypted: Bool
 }
 
 extension MessageAttachment {
@@ -23,6 +24,7 @@ extension MessageAttachment {
 
         self.name = "\(UUID().uuidString).jpg"
         self.data = data
+        self.isEncrypted = false
     }
 
     init?(fileURL: URL) {
@@ -32,6 +34,7 @@ extension MessageAttachment {
 
         self.name = fileURL.lastPathComponent
         self.data = data
+        self.isEncrypted = false
     }
 }
 

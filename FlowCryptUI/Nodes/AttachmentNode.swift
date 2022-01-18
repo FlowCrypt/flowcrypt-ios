@@ -10,11 +10,13 @@ public final class AttachmentNode: CellNode {
         let name: NSAttributedString
         let size: NSAttributedString
         let index: Int
+        let isEncrypted: Bool
 
-        public init(name: NSAttributedString, size: NSAttributedString, index: Int) {
+        public init(name: NSAttributedString, size: NSAttributedString, index: Int, isEncrypted: Bool) {
             self.name = name
             self.size = size
             self.index = index
+            self.isEncrypted = isEncrypted
         }
 
         var cellIdentifier: String { "aid-attachment-cell-\(index)" }
@@ -50,7 +52,9 @@ public final class AttachmentNode: CellNode {
         deleteButtonNode.setImage(UIImage(named: "cancel")?.tinted(.gray), for: .normal)
         deleteButtonNode.accessibilityIdentifier = input.deleteButtonIdentifier
 
-        imageNode.image = UIImage(named: "paperclip")?.tinted(.gray)
+        let imageName = input.isEncrypted ? "lock" : "doc.text.image"
+        let configuration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 24, weight: .light))
+        imageNode.image = UIImage(systemName: imageName, withConfiguration: configuration)?.tinted(.gray)
 
         titleNode.attributedText = input.name
         titleNode.accessibilityIdentifier = input.titleLabelIdentifier

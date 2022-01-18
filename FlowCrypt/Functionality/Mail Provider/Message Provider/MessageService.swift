@@ -15,91 +15,17 @@ enum MessageFetchState {
     case fetch, download(Float), decrypt
 }
 
-// MARK: - ProcessedMessage
-struct ProcessedMessage {
-    enum MessageType: Hashable {
-        case error(DecryptErr.ErrorType), encrypted, plain
-    }
-
-    enum MessageSignature: Hashable {
-        case good, goodMixed, unsigned, error(String), missingPubkey(String), partial, bad, pending
-
-        var message: String {
-            switch self {
-            case .good:
-                return "message_signed".localized
-            case .goodMixed:
-                return "message_signature_good_mixed".localized
-            case .unsigned:
-                return "message_not_signed".localized
-            case .error(let message):
-                return "message_signature_verify_error".localizeWithArguments(message)
-            case .missingPubkey(let longid):
-                let message = "message_missing_pubkey".localizeWithArguments(longid)
-                return "message_signature_verify_error".localizeWithArguments(message)
-            case .partial:
-                return "message_signature_partial".localized
-            case .bad:
-                return "message_bad_signature".localized
-            case .pending:
-                return "message_signature_pending".localized
-            }
-        }
-
-        var icon: String {
-            switch self {
-            case .good, .goodMixed:
-                return "lock"
-            case .error, .missingPubkey, .partial:
-                return "exclamationmark.triangle"
-            case .unsigned, .bad:
-                return "xmark"
-            case .pending:
-                return "clock"
-            }
-        }
-
-        var color: UIColor {
-            switch self {
-            case .good, .goodMixed:
-                return .main
-            case .error, .missingPubkey, .partial:
-                return .warningColor
-            case .unsigned, .bad:
-                return .errorColor
-            case .pending:
-                return .lightGray
-            }
-        }
-    }
-
-    let rawMimeData: Data
-    let text: String
-    let attachments: [MessageAttachment]
-    let messageType: MessageType
-    var signature: MessageSignature?
-}
-
-extension ProcessedMessage {
-    // TODO: - Ticket - fix with empty state for ThreadDetailsViewController
-    static let empty = ProcessedMessage(
-        rawMimeData: Data(),
-        text: "loading_title".localized + "...",
-        attachments: [],
-        messageType: .plain,
-        signature: .unsigned
-    )
-}
-
-// MARK: - MessageService
+// MARK: - MessageServiceError
 enum MessageServiceError: Error {
     case missingPassPhrase(_ rawMimeData: Data)
     case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
     // Could not fetch keys
     case emptyKeys
+    case attachmentDecryptFailed(_ message: String)
     case unknown
 }
 
+// MARK: - MessageService
 final class MessageService {
 
     private let messageProvider: MessageProvider
@@ -188,6 +114,23 @@ final class MessageService {
         )
     }
 
+    func decrypt(attachment: MessageAttachment) async throws -> MessageAttachment {
+        guard attachment.isEncrypted else { return attachment }
+
+        let keys = try await keyService.getPrvKeyInfo()
+        let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys, msgPwd: nil)
+
+        if let decryptErr = decrypted.decryptErr {
+            throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)
+        }
+
+        guard let decryptSuccess = decrypted.decryptSuccess else {
+            throw MessageServiceError.attachmentDecryptFailed("message_attachment_decrypt_error".localized)
+        }
+
+        return MessageAttachment(name: decryptSuccess.name, data: decryptSuccess.data, isEncrypted: false)
+    }
+
     private func processMessage(
         rawMimeData: Data,
         sender: String?,
@@ -196,7 +139,7 @@ final class MessageService {
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
-        let attachments: [MessageAttachment] = try await getAttachments(
+        let attachments = try await getAttachments(
             blocks: decrypted.blocks,
             keys: keys
         )
@@ -229,8 +172,8 @@ final class MessageService {
         return ProcessedMessage(
             rawMimeData: rawMimeData,
             text: text,
-            attachments: attachments,
             messageType: messageType,
+            attachments: attachments,
             signature: signature
         )
     }
@@ -240,48 +183,15 @@ final class MessageService {
         keys: [PrvKeyInfo]
     ) async throws -> [MessageAttachment] {
         let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
+        let attachments: [MessageAttachment] = attachmentBlocks.compactMap { block in
+            guard let meta = block.attMeta else { return nil }
 
-        var attachments: [MessageAttachment] = []
-        for block in attachmentBlocks {
-            guard let meta = block.attMeta else { continue }
-            let attachment: MessageAttachment
-            if block.type == .encryptedAtt { // decrypt
-                // todo - this is decrypting attachments too early
-                //   there is no need to decrypt attachments when rendering message,
-                //   since user may never tap them.
-                //   Instead decrypt them when actually tapped.
-                let decrypted = try await core.decryptFile(
-                    encrypted: meta.data,
-                    keys: keys,
-                    msgPwd: nil
-                )
-                if let decryptSuccess = decrypted.decryptSuccess {
-                    attachment = MessageAttachment(
-                        name: decryptSuccess.name,
-                        data: decryptSuccess.data
-                    )
-                } else if let decryptErr = decrypted.decryptErr {
-                    // todo - once above todo is done and we are decrypting
-                    //   at the time of tapping an attachment, render error modal
-                    // if user confirms the modal, they can download the original msg
-                    // then can remove the warning
-                    logger.logWarning("attachment could not be decrypted due to error: \(decryptErr.error.type) - \(decryptErr.error.message)")
-                    attachment = MessageAttachment(
-                        name: meta.name,
-                        data: meta.data
-                    )
-                } else {
-                    throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
-                }
-            } else {
-                attachment = MessageAttachment(
-                    name: meta.name,
-                    data: meta.data
-                )
-            }
-            attachments.append(attachment)
+            return MessageAttachment(
+                name: meta.name,
+                data: meta.data,
+                isEncrypted: block.type == .encryptedAtt
+            )
         }
-
         return attachments
     }
 
