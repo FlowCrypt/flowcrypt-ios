@@ -16,13 +16,29 @@ enum MessageFetchState {
 }
 
 // MARK: - MessageServiceError
-enum MessageServiceError: Error {
+enum MessageServiceError: Error, CustomStringConvertible {
     case missingPassPhrase(_ rawMimeData: Data)
     case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
-    // Could not fetch keys
     case emptyKeys
+    case attachmentNotFound
     case attachmentDecryptFailed(_ message: String)
-    case unknown
+}
+
+extension MessageServiceError {
+    var description: String {
+        switch self {
+        case .missingPassPhrase:
+            return "Passphrase is missing"
+        case .wrongPassPhrase:
+            return "Passphrase is wrong"
+        case .emptyKeys:
+            return "Could not fetch keys"
+        case .attachmentNotFound:
+            return "Failed to download attachment"
+        case .attachmentDecryptFailed(let message):
+            return message
+        }
+    }
 }
 
 // MARK: - MessageService
@@ -125,7 +141,7 @@ final class MessageService {
         }
 
         guard let decryptSuccess = decrypted.decryptSuccess else {
-            throw MessageServiceError.attachmentDecryptFailed("message_attachment_decrypt_error".localized)
+            throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
         }
 
         return MessageAttachment(name: decryptSuccess.name, data: decryptSuccess.data, isEncrypted: false)

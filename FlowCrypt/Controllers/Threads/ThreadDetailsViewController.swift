@@ -182,10 +182,9 @@ extension ThreadDetailsViewController {
         Task {
             do {
                 let attachment = try await getAttachment(at: indexPath)
-                let attachmentViewController = AttachmentViewController(file: attachment)
-                navigationController?.pushViewController(attachmentViewController, animated: true)
+                show(attachment: attachment)
             } catch {
-                showAlert(message: error.errorMessage)
+                handleAttachmentDecryptError(error, at: indexPath)
             }
 
         }
@@ -196,7 +195,7 @@ extension ThreadDetailsViewController {
         let attachmentIndex = indexPath.row - 2
 
         guard let attachment = section.processedMessage?.attachments[attachmentIndex]
-        else { throw MessageServiceError.attachmentDecryptFailed("message_attachment_decrypt_error".localized) }
+        else { throw MessageServiceError.attachmentNotFound }
 
         if attachment.isEncrypted {
             let decryptedAttachment = try await messageService.decrypt(attachment: attachment)
@@ -206,6 +205,11 @@ extension ThreadDetailsViewController {
         } else {
             return attachment
         }
+    }
+
+    private func show(attachment: MessageAttachment) {
+        let attachmentViewController = AttachmentViewController(file: attachment)
+        navigationController?.pushViewController(attachmentViewController, animated: true)
     }
 
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
@@ -337,6 +341,30 @@ extension ThreadDetailsViewController {
             }
             navigationController?.popViewController(animated: true)
         }
+    }
+
+    private func handleAttachmentDecryptError(_ error: Error, at indexPath: IndexPath) {
+        let message = "message_attachment_corrupted_file".localized
+
+        let alertController = UIAlertController(
+            title: "message_attachment_decrypt_error".localized,
+            message: "\n\(error.errorMessage)\n\n\(message)",
+            preferredStyle: .alert
+        )
+
+        let downloadAction = UIAlertAction(title: "download".localized, style: .default) { [weak self] _ in
+            guard let self = self,
+                  let attachment = self.input[indexPath.section-1].processedMessage?.attachments[indexPath.row-2]
+            else { return }
+
+            self.show(attachment: attachment)
+        }
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+
+        alertController.addAction(downloadAction)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true)
     }
 
     private func handleMissedPassPhrase(for rawMimeData: Data, at indexPath: IndexPath) {
