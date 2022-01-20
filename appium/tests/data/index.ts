@@ -44,7 +44,8 @@ export const CommonData = {
   encryptedEmailWithAttachment: {
     subject: 'email with attachment',
     message: 'this email contains attachment',
-    attachmentName: 'image.png'
+    attachmentName: 'image.png',
+    encryptedAttachmentName: 'image.png.pgp'
   },
   simpleEmail: {
     subject: 'Test 1',

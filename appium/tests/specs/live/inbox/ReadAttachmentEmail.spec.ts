@@ -17,6 +17,7 @@ describe('INBOX: ', () => {
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
     const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
+    const encryptedAttachmentName = CommonData.encryptedEmailWithAttachment.encryptedAttachmentName;
 
     const wrongPassPhrase = 'wrong';
     const correctPassPhrase = CommonData.account.passPhrase;
@@ -29,7 +30,7 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await EmailScreen.checkAttachment(attachmentName);
+    await EmailScreen.checkAttachment(encryptedAttachmentName);
 
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
@@ -47,7 +48,7 @@ describe('INBOX: ', () => {
     await EmailScreen.enterPassPhrase(correctPassPhrase);
     await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await EmailScreen.checkAttachment(attachmentName);
+    await EmailScreen.checkAttachment(encryptedAttachmentName);
     await EmailScreen.clickOnAttachmentCell();
     await AttachmentScreen.checkAttachment(attachmentName);
 
