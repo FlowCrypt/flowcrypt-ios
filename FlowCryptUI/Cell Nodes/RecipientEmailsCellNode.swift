@@ -55,11 +55,10 @@ final public class RecipientEmailsCellNode: CellNode {
         guard recipients.isNotEmpty else {
             return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
         }
-        let recipientNodeInset = RecipientEmailNode.Constants.layoutInsets.height
-            + RecipientEmailNode.Constants.titleInsets.height
-
         let textSize: CGSize = recipients.first?.email.size() ?? .zero
-        let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
+        let recipientBubbleHeight = textSize.height + RecipientEmailNode.Constants.layoutInsets.height
+        let recipientsHeight = recipientBubbleHeight * CGFloat(recipients.count)
+
         let insets = Constants.minimumLineSpacing * CGFloat(recipients.count - 1)
         let height = recipientsHeight + insets + Constants.sectionInset.height
 
