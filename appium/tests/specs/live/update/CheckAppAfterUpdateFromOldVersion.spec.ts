@@ -10,7 +10,8 @@ import {
     PublicKeyScreen,
     ContactScreen,
     ContactPublicKeyScreen,
-    SearchScreen
+    SearchScreen,
+    PublicKeyDetailsScreen
 } from '../../../screenobjects/all-screens';
 import {CommonData} from "../../../data";
 
@@ -62,7 +63,7 @@ describe('UPDATE: ', () => {
     await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
-    await ContactPublicKeyScreen.checkPublicKeyNotEmpty();
+    await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
 
     //close old app version
     await driver.terminateApp(bundleId);
@@ -87,7 +88,7 @@ describe('UPDATE: ', () => {
     await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
-    await ContactPublicKeyScreen.checkPublicKeyNotEmpty();
+    await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
 
     await ContactPublicKeyScreen.clickBackButton();
     await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
