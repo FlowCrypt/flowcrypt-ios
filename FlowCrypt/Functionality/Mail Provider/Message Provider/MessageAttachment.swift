@@ -12,7 +12,7 @@ import UIKit
 struct MessageAttachment: Equatable, FileType {
     let name: String
     let data: Data
-    var isEncrypted: Bool
+    let isEncrypted: Bool
 }
 
 extension MessageAttachment {
