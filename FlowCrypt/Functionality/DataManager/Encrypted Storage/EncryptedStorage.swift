@@ -47,7 +47,7 @@ final class EncryptedStorage: EncryptedStorageType {
             case .version5:
                 return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 5)
             case .version6:
-                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 6)
+                return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 7)
             }
         }
     }
