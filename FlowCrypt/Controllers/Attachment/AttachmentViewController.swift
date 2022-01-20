@@ -34,16 +34,26 @@ final class AttachmentViewController: UIViewController {
         configuration.defaultWebpagePreferences = preferences
 
         let view = WKWebView(frame: .zero, configuration: configuration)
-        view.translatesAutoresizingMaskIntoConstraints = false
         view.navigationDelegate = self
         view.backgroundColor = .backgroundColor
         view.allowsLinkPreview = false
+        view.accessibilityIdentifier = "aid-attachment-web-view"
         return view
+    }()
+
+    private lazy var textView: UITextView = {
+        let textView = UITextView(frame: .zero)
+        textView.textContainerInset = .deviceSpecificTextInsets(top: 16, bottom: 16)
+        textView.isEditable = false
+        textView.font = .systemFont(ofSize: 14)
+        textView.textColor = .textColor
+        textView.backgroundColor = .backgroundColor
+        textView.accessibilityIdentifier = "aid-attachment-text-view"
+        return textView
     }()
 
     private let errorLabel: UILabel = {
         let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         label.text = "no_preview_avalable".localized
         label.isHidden = true
@@ -66,6 +76,7 @@ final class AttachmentViewController: UIViewController {
     }
 
     private var isNavigated = false
+    private var didLayoutSubviews = false
 
     init(
         file: FileType,
@@ -85,10 +96,62 @@ final class AttachmentViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
         setupNavigationBar()
-        setupUI()
-        showSpinner()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard !didLayoutSubviews else { return }
+        didLayoutSubviews = true
+
+        renderAttachment()
+    }
+
+    private func setupNavigationBar() {
         title = file.name
+
+        guard shouldShowDownloadButton else { return }
+
+        let imageConfiguration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 24, weight: .light))
+        let image = UIImage(systemName: "square.and.arrow.down", withConfiguration: imageConfiguration)
+
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(
+            with: [
+                NavigationBarItemsView.Input(
+                    image: image?.tinted(.gray),
+                    accessibilityId: "aid-save-attachment-to-device",
+                    onTap: { [weak self] in self?.downloadAttachment() }
+                )
+            ]
+        )
+    }
+
+    private func renderAttachment() {
+        switch file.type {
+        case "text/plain":
+            showTextAttachment()
+        default:
+            renderAttachmentData()
+        }
+    }
+
+    private func showTextAttachment() {
+        view.addSubview(textView)
+        view.constrainToEdges(textView)
+        textView.text = file.data.toStr()
+        textView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: false)
+    }
+
+    private func renderAttachmentData() {
+        view.addSubview(webView)
+        webView.addSubview(errorLabel)
+
+        view.constrainToEdges(webView)
+        webView.constrainToEdges(errorLabel)
+
+        showSpinner()
 
         Task {
             do {
@@ -101,20 +164,6 @@ final class AttachmentViewController: UIViewController {
                 hideSpinner()
             }
         }
-    }
-
-    private func setupNavigationBar() {
-        guard shouldShowDownloadButton else { return }
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(
-            with: [
-                NavigationBarItemsView.Input(
-                    image: UIImage(named: "download")?.tinted(.gray),
-                    title: "save".localized,
-                    accessibilityId: "aid-save-attachment-to-device",
-                    onTap: { [weak self] in self?.downloadAttachment() }
-                )
-            ]
-        )
     }
 
     private func downloadAttachment() {
@@ -167,21 +216,5 @@ private extension AttachmentViewController {
         }
         logger.logDebug("base64 encoding time is \(encoderTrace.finish())")
         webView.load(URLRequest(url: url))
-    }
-
-    private func setupUI() {
-        view.addSubview(webView)
-        webView.addSubview(errorLabel)
-
-        NSLayoutConstraint.activate([
-            webView.leftAnchor.constraint(equalTo: view.leftAnchor),
-            webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            webView.rightAnchor.constraint(equalTo: view.rightAnchor),
-            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            errorLabel.leftAnchor.constraint(equalTo: webView.leftAnchor),
-            errorLabel.topAnchor.constraint(equalTo: webView.topAnchor),
-            errorLabel.rightAnchor.constraint(equalTo: webView.rightAnchor),
-            errorLabel.bottomAnchor.constraint(equalTo: webView.bottomAnchor)
-        ])
     }
 }

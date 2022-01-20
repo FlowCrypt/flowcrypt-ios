@@ -35,7 +35,7 @@ export default class BaseScreen {
   static checkModalMessage = async (message: string) => {
     await expect(await this.currentModal).toBeDisplayed();
     const alertText = await driver.getAlertText();
-    await expect(alertText).toEqual(message);
+    expect(alertText).toEqual(message);
   }
 
   static clickOkButtonOnError = async () => {
