@@ -12,6 +12,9 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     case emptyRecipient
     case emptySubject
     case emptyMessage
+    case weakPassword
+    case subjectContainsPassword
+    case notUniquePassword
     case missedPublicKey
     case noPubRecipients
     case revokedKeyRecipients
@@ -27,6 +30,12 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
             return "compose_enter_subject".localized
         case .emptyMessage:
             return "compose_enter_secure".localized
+        case .weakPassword:
+            return "compose_password_weak".localized
+        case .subjectContainsPassword:
+            return "compose_password_subject_error".localized
+        case .notUniquePassword:
+            return "compose_password_passphrase_error".localized
         case .missedPublicKey:
             return "compose_no_pub_sender".localized
         case .noPubRecipients:

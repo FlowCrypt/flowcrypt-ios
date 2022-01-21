@@ -118,7 +118,8 @@ final class ComposeViewController: TableNodeViewController {
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
             clientConfiguration: clientConfiguration,
             encryptedStorage: appContext.encryptedStorage,
-            messageGateway: appContext.getRequiredMailProvider().messageSender
+            messageGateway: appContext.getRequiredMailProvider().messageSender,
+            passPhraseService: appContext.passPhraseService
         )
         self.filesManager = filesManager
         self.photosManager = photosManager

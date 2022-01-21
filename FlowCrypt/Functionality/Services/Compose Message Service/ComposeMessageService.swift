@@ -22,6 +22,7 @@ protocol CoreComposeMessageType {
 final class ComposeMessageService {
 
     private let messageGateway: MessageGateway
+    private let passPhraseService: PassPhraseServiceType
     private let storage: EncryptedStorageType
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
@@ -40,12 +41,14 @@ final class ComposeMessageService {
         clientConfiguration: ClientConfiguration,
         encryptedStorage: EncryptedStorageType,
         messageGateway: MessageGateway,
+        passPhraseService: PassPhraseServiceType,
         draftGateway: DraftGateway? = nil,
         contactsService: ContactsServiceType? = nil,
         core: CoreComposeMessageType & KeyParser = Core.shared,
         enterpriseServer: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
         self.messageGateway = messageGateway
+        self.passPhraseService = passPhraseService
         self.draftGateway = draftGateway
         self.storage = encryptedStorage
         self.contactsService = contactsService ?? ContactsService(
@@ -113,6 +116,21 @@ final class ComposeMessageService {
         )
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
+
+        if let password = contextToSend.messagePassword, password.isNotEmpty {
+            if !isMessagePasswordStrong(pwd: password, isFesUsed: true) {
+                throw MessageValidationError.weakPassword
+            }
+
+            if subject.lowercased().contains(password.lowercased()) {
+                throw MessageValidationError.subjectContainsPassword
+            }
+            
+            let storedPassphrases = passPhraseService.getPassPhrases().map(\.value)
+            if storedPassphrases.contains(password) {
+                throw MessageValidationError.notUniquePassword
+            }
+        }
 
         return SendableMsg(
             text: text,
@@ -337,5 +355,27 @@ extension ComposeMessageService {
         """
 
         return SendableMsgBody(text: text, html: html)
+    }
+
+    private func isMessagePasswordStrong(pwd: String, isFesUsed: Bool) -> Bool {
+        let minLength = 8
+
+        guard isFesUsed else {
+            // consumers - just 8 chars requirement
+            return pwd.count >= minLength
+        }
+
+        // enterprise FES - use common corporate password rules
+        let predicate = NSPredicate(
+            format: "SELF MATCHES %@ ", [
+                "(?=.*[a-z])", // 1 lowercase character
+                "(?=.*[A-Z])", // 1 uppercase character
+                "(?=.*[0-9])", // 1 number
+                "(?=.*[\\-@$#!%*?&_,;:'()\"])", // 1 special symbol
+                ".{\(minLength),}$" // minimum 8 characters
+            ].joined()
+        )
+
+        return predicate.evaluate(with: pwd)
     }
 }

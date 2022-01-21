@@ -6,7 +6,7 @@ import Foundation
 
 public extension String {
     var hasContent: Bool {
-        trimmingCharacters(in: .whitespaces).isEmpty == false
+        !trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     var trimLeadingSlash: String {
