@@ -53,7 +53,7 @@ export const CommonData = {
   longEmail: {
     message: '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nText'
   },
-  updateUser: {
+  updateRecipientPublicKey: {
     email: 'updating.key@example.test',
     oldSignatureDate: 'Jan 12, 2022 at 11:16:58 AM',//time for CI runs
     newSignatureDate:  'Jan 12, 2022 at 11:27:20 AM',//time for CI runs
