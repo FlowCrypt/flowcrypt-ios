@@ -54,6 +54,15 @@ export const CommonData = {
   longEmail: {
     message: '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nText'
   },
+  updateRecipientPublicKey: {
+    email: 'updating.key@example.test',
+    oldSignatureDate: 'Jan 12, 2022 at 11:16:58 AM',//time for CI runs
+    newSignatureDate:  'Jan 12, 2022 at 11:27:20 AM',//time for CI runs
+    // oldSignatureDate: 'Jan 12, 2022 at 9:16:58 PM', //- for local run
+    // newSignatureDate:  'Jan 12, 2022 at 9:27:20 PM', // for local run
+    oldFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0',
+    newFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0, 40E4EE0325E38F717737889AC54F277266650211'
+  },
   keyMismatchEmail: {
     subject: 'Encrypted message with key mismatch',
     message: 'Could not decrypt:',

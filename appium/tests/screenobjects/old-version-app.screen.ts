@@ -4,6 +4,7 @@ import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
   BACK_BUTTON: '~arrow left c',
   SENDER_EMAIL: '~messageSenderLabel',
+  PUBLIC_KEY: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[2]'
 };
 
 class OldVersionAppScreen extends BaseScreen {
@@ -17,6 +18,9 @@ class OldVersionAppScreen extends BaseScreen {
 
   get senderEmail() {
     return $(SELECTORS.SENDER_EMAIL);
+  }
+  get publicKeyValue () {
+      return $(SELECTORS.PUBLIC_KEY);
   }
 
   clickBackButton = async () => {
@@ -41,6 +45,12 @@ class OldVersionAppScreen extends BaseScreen {
     await this.checkEmailAddress(email);
     await this.checkEmailSubject(subject);
     await this.checkEmailText(text);
+  }
+
+  checkPublicKeyNotEmpty = async () => {
+    const pubkeyEl = await this.publicKeyValue;
+    await pubkeyEl.waitForExist();
+    expect(await pubkeyEl.getAttribute('value')).toBeTruthy();
   }
 }
 
