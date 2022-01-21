@@ -2,7 +2,6 @@ import { MockApi } from 'api-mocks/mock';
 import {
     SplashScreen,
     SetupKeyScreen,
-    MailFolderScreen,
     PublicKeyDetailsScreen,
     ContactPublicKeyScreen,
     MenuBarScreen,
@@ -44,7 +43,6 @@ describe('SETUP: ', () => {
       //stage 1
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
-      await MailFolderScreen.checkInboxScreen();
 
       await PublicKeyHelper.checkSignatureAndFingerprints(userEmail, oldSignatureDate, oldFingerprintsValue);
       firstFetchedDate = await DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
@@ -65,7 +63,6 @@ describe('SETUP: ', () => {
           'updating.key@example.test': attesterPublicKeySamples.keyNewerVersion
         }
       };
-      await MailFolderScreen.checkInboxScreen();
       await PublicKeyHelper.checkSignatureAndFingerprints(userEmail, newSignatureDate, newFingerprintsValue);
 
       secondFetchedDate = await DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
@@ -88,7 +85,6 @@ describe('SETUP: ', () => {
           'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
         }
       };
-      await MailFolderScreen.checkInboxScreen();
       await PublicKeyHelper.checkSignatureAndFingerprints(userEmail, newSignatureDate, newFingerprintsValue);
 
       thirdFetchedDate = await DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
@@ -106,7 +102,6 @@ describe('SETUP: ', () => {
       await MenuBarScreen.clickMenuIcon();
       await MenuBarScreen.clickInboxButton();
 
-      await MailFolderScreen.checkInboxScreen();
       await PublicKeyHelper.checkSignatureAndFingerprints(userEmail, oldSignatureDate, oldFingerprintsValue);
 
       fourthFetchedDate = await DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
