@@ -3,37 +3,37 @@ import {
     SplashScreen,
     SetupKeyScreen,
     MailFolderScreen,
-    NewMessageScreen,
-    PublicKeyDetailsScreen
+    PublicKeyDetailsScreen,
+    ContactPublicKeyScreen,
+    MenuBarScreen,
+    SettingsScreen,
+    ContactScreen,
 } from '../../../screenobjects/all-screens';
 import {attesterPublicKeySamples} from "../../../../api-mocks/apis/attester/attester-endpoints";
-import MenuBarScreen from "../../../screenobjects/menu-bar.screen";
-import SettingsScreen from "../../../screenobjects/settings.screen";
-import ContactScreen from "../../../screenobjects/contacts.screen";
-import ContactPublicKeyScreen from "../../../screenobjects/contact-public-key.screen";
 import {CommonData} from "../../../data";
 import DataHelper from "../../../helpers/DataHelper";
+import PublicKeyHelper from "../../../helpers/PublicKeyHelper";
 
 
 describe('SETUP: ', () => {
 
   it('app updates older public keys to newer but not vice versa', async () => {
 
-      let firstFetchedDate, secondFetchedDate, thirdFetchedDate, fourthFetchedDate;
+    let firstFetchedDate, secondFetchedDate, thirdFetchedDate, fourthFetchedDate;
 
-      const mockApi = new MockApi();
+    const mockApi = new MockApi();
 
-      mockApi.fesConfig = {
-          clientConfiguration: {
-              flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-              key_manager_url: "https://ekm.flowcrypt.com",
-          }
-      };
-      mockApi.attesterConfig = {
-          servedPubkeys: {
-              'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
-          }
-      };
+    mockApi.fesConfig = {
+      clientConfiguration: {
+        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
+        key_manager_url: "https://ekm.flowcrypt.com",
+      }
+    };
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
+      }
+    };
     const userEmail = CommonData.updateUser.email;
     const oldSignatureDate = CommonData.updateUser.oldSignatureDate;
     const oldFingerprintsValue = CommonData.updateUser.oldFingerprints;
@@ -45,32 +45,9 @@ describe('SETUP: ', () => {
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
-      await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.setAddRecipient(userEmail);
-      await NewMessageScreen.checkAddedRecipient(userEmail);
-      await NewMessageScreen.clickBackButton();
 
-      // Go to Contacts screen
-      await MenuBarScreen.clickMenuIcon();
-      await MenuBarScreen.checkUserEmail();
-
-      await MenuBarScreen.clickSettingsButton();
-      await SettingsScreen.checkSettingsScreen();
-      await SettingsScreen.clickOnSettingItem('Contacts');
-
-      await ContactScreen.checkContactScreen();
-      await ContactScreen.checkContact(userEmail);
-      // Go to Contact screen
-      await ContactScreen.clickOnContact(userEmail);
-      await ContactPublicKeyScreen.checkPgpUserId(userEmail);
-      await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
-      await ContactPublicKeyScreen.clickOnFingerPrint();
-
-      await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
-      await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
-      await PublicKeyDetailsScreen.checkSignatureDateValue(oldSignatureDate);
+      await PublicKeyHelper.checkSignatureAndFingerprints(userEmail, oldSignatureDate, oldFingerprintsValue);
       firstFetchedDate = await DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
-      await PublicKeyDetailsScreen.checkFingerPrintsValue(oldFingerprintsValue);
 
       await PublicKeyDetailsScreen.clickBackButton();
       await ContactPublicKeyScreen.checkPgpUserId(userEmail);
@@ -89,32 +66,9 @@ describe('SETUP: ', () => {
         }
       };
       await MailFolderScreen.checkInboxScreen();
-      await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.setAddRecipient(userEmail);
-      await NewMessageScreen.checkAddedRecipient(userEmail);
-      await NewMessageScreen.clickBackButton();
+      await PublicKeyHelper.checkSignatureAndFingerprints(userEmail, newSignatureDate, newFingerprintsValue);
 
-      // Go to Contacts screen
-      await MenuBarScreen.clickMenuIcon();
-      await MenuBarScreen.checkUserEmail();
-
-      await MenuBarScreen.clickSettingsButton();
-      await SettingsScreen.checkSettingsScreen();
-      await SettingsScreen.clickOnSettingItem('Contacts');
-
-      await ContactScreen.checkContactScreen();
-      await ContactScreen.checkContact(userEmail);
-      // Go to Contact screen
-      await ContactScreen.clickOnContact(userEmail);
-      await ContactPublicKeyScreen.checkPgpUserId(userEmail);
-      await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
-      await ContactPublicKeyScreen.clickOnFingerPrint();
-
-      await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
-      await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
-      await PublicKeyDetailsScreen.checkSignatureDateValue(newSignatureDate);
       secondFetchedDate = await DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
-      await PublicKeyDetailsScreen.checkFingerPrintsValue(newFingerprintsValue);
 
       await expect(firstFetchedDate).toBeLessThan(secondFetchedDate);
 
@@ -135,33 +89,9 @@ describe('SETUP: ', () => {
         }
       };
       await MailFolderScreen.checkInboxScreen();
-      await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.setAddRecipient(userEmail);
-      await NewMessageScreen.checkAddedRecipient(userEmail);
-      await NewMessageScreen.clickBackButton();
+      await PublicKeyHelper.checkSignatureAndFingerprints(userEmail, newSignatureDate, newFingerprintsValue);
 
-      // Go to Contacts screen
-      await MenuBarScreen.clickMenuIcon();
-      await MenuBarScreen.checkUserEmail();
-
-      await MenuBarScreen.clickSettingsButton();
-      await SettingsScreen.checkSettingsScreen();
-      await SettingsScreen.clickOnSettingItem('Contacts');
-
-      await ContactScreen.checkContactScreen();
-      await ContactScreen.checkContact(userEmail);
-      // Go to Contact screen
-      await ContactScreen.clickOnContact(userEmail);
-      await ContactPublicKeyScreen.checkPgpUserId(userEmail);
-      await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
-      await ContactPublicKeyScreen.clickOnFingerPrint();
-
-      await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
-      await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
-      await PublicKeyDetailsScreen.checkSignatureDateValue(newSignatureDate);
       thirdFetchedDate = await DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
-      await PublicKeyDetailsScreen.checkFingerPrintsValue(newFingerprintsValue);
-
       await expect(secondFetchedDate).toBeLessThan(thirdFetchedDate);
 
       await PublicKeyDetailsScreen.clickBackButton();
@@ -177,31 +107,9 @@ describe('SETUP: ', () => {
       await MenuBarScreen.clickInboxButton();
 
       await MailFolderScreen.checkInboxScreen();
-      await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.setAddRecipient(userEmail);
-      await NewMessageScreen.checkAddedRecipient(userEmail);
-      await NewMessageScreen.clickBackButton();
+      await PublicKeyHelper.checkSignatureAndFingerprints(userEmail, oldSignatureDate, oldFingerprintsValue);
 
-      await MenuBarScreen.clickMenuIcon();
-      await MenuBarScreen.checkUserEmail();
-
-      await MenuBarScreen.clickSettingsButton();
-      await SettingsScreen.checkSettingsScreen();
-      await SettingsScreen.clickOnSettingItem('Contacts');
-
-      await ContactScreen.checkContactScreen();
-      await ContactScreen.checkContact(userEmail);
-      // Go to Contact screen
-      await ContactScreen.clickOnContact(userEmail);
-      await ContactPublicKeyScreen.checkPgpUserId(userEmail);
-      await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
-      await ContactPublicKeyScreen.clickOnFingerPrint();
-
-      await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
-      await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
-      await PublicKeyDetailsScreen.checkSignatureDateValue(oldSignatureDate);
       fourthFetchedDate = await DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
-      await PublicKeyDetailsScreen.checkFingerPrintsValue(oldFingerprintsValue);
 
       await expect(thirdFetchedDate).toBeLessThan(fourthFetchedDate);
     });
