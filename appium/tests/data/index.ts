@@ -44,7 +44,8 @@ export const CommonData = {
   encryptedEmailWithAttachment: {
     subject: 'email with attachment',
     message: 'this email contains attachment',
-    attachmentName: 'image.png'
+    attachmentName: 'image.png',
+    encryptedAttachmentName: 'image.png.pgp'
   },
   simpleEmail: {
     subject: 'Test 1',
@@ -92,7 +93,8 @@ export const CommonData = {
     senderEmail: 'sunitnandi834@gmail.com',
     encryptedBadgeText: 'encrypted',
     signatureBadgeText: 'not signed',
-    firstAttachmentName: 'Screenshot_20180422_125217.png.asc'
+    firstAttachmentName: 'Screenshot_20180422_125217.png.asc',
+    firstAttachmentBody: '-----BEGIN PGP MESSAGE-----\nVersion: Mailvelope v2.2.0\nComment: https://www.mailvelope.com'
   },
   recipientWithoutPublicKey: {
     email: 'no.publickey@flowcrypt.com',
@@ -131,7 +133,11 @@ export const CommonData = {
       '\n' +
       'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.',
     wrongPassPhraseOnLogin: 'Error\n' +
-      'Wrong pass phrase, please try again'
+      'Wrong pass phrase, please try again',
+    attachmentDecryptKeyMismatchError: 'Error decrypting attachment\n' +
+      ' Missing appropriate key\n' +
+      '\n' +
+      'This will likely download a corrupted file. Download anyway?'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'

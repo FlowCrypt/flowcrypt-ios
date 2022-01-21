@@ -288,7 +288,8 @@ extension AttachmentNode.Input {
                 .attributed(.regular(18), color: .mainTextColor, alignment: .left),
             size: attachment.formattedSize
                 .attributed(.medium(12), color: .mainTextColor, alignment: .left),
-            index: index
+            index: index,
+            isEncrypted: false
         )
     }
 }

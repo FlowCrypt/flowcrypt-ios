@@ -7,6 +7,7 @@ import {
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
+import BaseScreen from 'tests/screenobjects/base.screen';
 
 describe('INBOX: ', () => {
 
@@ -38,7 +39,9 @@ describe('INBOX: ', () => {
     const keyMismatchText = CommonData.keyMismatch.message;
     const keyMismatchEncryptedBadge = CommonData.keyMismatch.encryptedBadgeText;
     const keyMismatchSignatureBadge= CommonData.keyMismatch.signatureBadgeText;
+    const keyMismatchAttachmentError = CommonData.errors.attachmentDecryptKeyMismatchError;
     const firstAttachmentName = CommonData.keyMismatch.firstAttachmentName;
+    const firstAttachmentBody = CommonData.keyMismatch.firstAttachmentBody;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
@@ -93,5 +96,9 @@ describe('INBOX: ', () => {
     await EmailScreen.checkEncryptionBadge(keyMismatchEncryptedBadge);
     await EmailScreen.checkSignatureBadge(keyMismatchSignatureBadge);
     await EmailScreen.checkAttachment(firstAttachmentName);
+    await EmailScreen.clickOnAttachmentCell();
+    await BaseScreen.checkModalMessage(keyMismatchAttachmentError);
+    await EmailScreen.clickDownloadButton();
+    await EmailScreen.checkAttachmentTextView(firstAttachmentBody);
   });
 });

@@ -17,10 +17,13 @@ const SELECTORS = {
   MENU_BUTTON: '~aid-message-menu-button',
   FORWARD_BUTTON: '~Forward',
   DELETE_BUTTON: '~Delete',
+  DOWNLOAD_BUTTON: '~Download',
+  CANCEL_BUTTON: '~Cancel',
   CONFIRM_DELETING: '~OK',
   SENDER_EMAIL: '~aid-message-sender-label',
   ENCRYPTION_BADGE: '~aid-encryption-badge',
-  SIGNATURE_BADGE: '~aid-signature-badge'
+  SIGNATURE_BADGE: '~aid-signature-badge',
+  ATTACHMENT_TEXT_VIEW: '~aid-attachment-text-view'
 };
 
 
@@ -89,6 +92,14 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.CONFIRM_DELETING)
   }
 
+  get downloadButton() {
+    return $(SELECTORS.DOWNLOAD_BUTTON);
+  }
+
+  get cancelButton() {
+    return $(SELECTORS.CANCEL_BUTTON);
+  }
+
   get senderEmail() {
     return $(SELECTORS.SENDER_EMAIL);
   }
@@ -99,6 +110,10 @@ class EmailScreen extends BaseScreen {
 
   get signatureBadge() {
     return $(SELECTORS.SIGNATURE_BADGE);
+  }
+
+  get attachmentTextView() {
+    return $(SELECTORS.ATTACHMENT_TEXT_VIEW);
   }
 
   checkEmailAddress = async (email: string) => {
@@ -127,6 +142,10 @@ class EmailScreen extends BaseScreen {
 
   clickOkButton = async () => {
     await ElementHelper.waitAndClick(await this.okButton);
+  }
+
+  clickDownloadButton = async () => {
+    await ElementHelper.waitAndClick(await  this.downloadButton);
   }
 
   enterPassPhrase = async (text: string = CommonData.account.passPhrase) => {
@@ -186,6 +205,11 @@ class EmailScreen extends BaseScreen {
 
   checkSignatureBadge = async (value: string) => {
     await ElementHelper.checkStaticText(await this.signatureBadge, value);
+  }
+
+  checkAttachmentTextView = async (value: string) => {
+    const el = await this.attachmentTextView;
+    expect(el).toHaveValueContaining(value);
   }
 }
 
