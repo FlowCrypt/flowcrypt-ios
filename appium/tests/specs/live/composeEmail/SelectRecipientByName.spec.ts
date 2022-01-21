@@ -6,7 +6,8 @@ import {
   ContactScreen,
   ContactPublicKeyScreen,
   SettingsScreen,
-  MenuBarScreen
+  MenuBarScreen,
+  PublicKeyDetailsScreen
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -73,6 +74,7 @@ describe('COMPOSE EMAIL: ', () => {
     await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
-    await ContactPublicKeyScreen.checkPublicKeyNotEmpty();
+    await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
+    await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
   });
 });

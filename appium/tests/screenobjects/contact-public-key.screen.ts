@@ -3,8 +3,6 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
-  KEY: '~Key',
-  PUBLIC_KEY: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
   FINGERPRINT_VALUE: '~fingerprintValue',
   CREATED_VALUE: '~createdAtValue',
   EXPIRES_VALUE: '~expiresValue',
@@ -13,7 +11,7 @@ const SELECTORS = {
   EXPIRES_LABEL: '~Expires:',
   PGD_USER_ID_LABEL: '~User:',
   PGD_USER_ID_EMAIL: '~userEmail',
-  TRASH_BUTTON: '~trash'
+  TRASH_BUTTON: '~trash',
 };
 
 class ContactPublicKeyScreen extends BaseScreen {
@@ -27,14 +25,6 @@ class ContactPublicKeyScreen extends BaseScreen {
 
   get backButton() {
       return $(SELECTORS.BACK_BTN);
-  }
-
-  get key() {
-      return $(SELECTORS.KEY);
-  }
-
-  get publicKey() {
-      return $(SELECTORS.PUBLIC_KEY);
   }
 
   get fingerPrintLabel() {
@@ -69,13 +59,6 @@ class ContactPublicKeyScreen extends BaseScreen {
       return $(SELECTORS.PGD_USER_ID_EMAIL);
   }
 
-  checkPublicKeyNotEmpty = async () => {
-    await (await this.key).waitForDisplayed();
-    const pubkeyEl = await this.publicKey;
-    await pubkeyEl.waitForExist();
-    expect(await pubkeyEl.getAttribute('value')).toBeTruthy();
-  }
-
   checkPublicKeyDetailsNotEmpty = async () => {
     await (await this.fingerPrintLabel).waitForDisplayed();
     expect(await (await this.fingerPrintValue).getAttribute('value')).toBeTruthy();
@@ -99,6 +82,9 @@ class ContactPublicKeyScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.backButton);
   }
 
+  clickTrashButton = async () => {
+    await ElementHelper.waitAndClick(await this.trashButton);
+  }
 }
 
 export default new ContactPublicKeyScreen();
