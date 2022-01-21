@@ -105,7 +105,7 @@ private actor Service {
 
         try await submitKeyToAttester(email: userId.email, publicKey: encryptedPrv.key.public)
         try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
-        try await putKeypairs(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
+        try await putKeypairsInEncryptedStorage(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
 
         if storageMethod == .memory {
             let passPhrase = PassPhrase(
@@ -123,7 +123,7 @@ private actor Service {
     }
 
     @MainActor
-    private func putKeypairs(encryptedPrv: CoreRes.GenerateKey, storageMethod: StorageMethod, passPhrase: String) throws {
+    private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: StorageMethod, passPhrase: String) throws {
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,
@@ -149,10 +149,10 @@ private actor Service {
 
     private func getUserId() throws -> UserId {
         guard let email = appContext.dataService.email, !email.isEmpty else {
-            throw CreateKeyError.missedUserEmail
+            throw CreateKeyError.missingUserEmail
         }
         guard let name = appContext.dataService.currentUser?.name, !name.isEmpty else {
-            throw CreateKeyError.missedUserName
+            throw CreateKeyError.missingUserName
         }
         return UserId(email: email, name: name)
     }

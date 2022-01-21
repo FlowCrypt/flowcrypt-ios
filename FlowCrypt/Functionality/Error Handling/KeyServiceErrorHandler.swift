@@ -11,9 +11,9 @@ import UIKit
 enum CreateKeyError: Error {
     case weakPassPhrase(_ strength: CoreRes.ZxcvbnStrengthBar)
     /// Missing user email
-    case missedUserEmail
+    case missingUserEmail
     /// Missing user name
-    case missedUserName
+    case missingUserName
     /// Pass phrases don't match
     case doesntMatch
     /// Silent abort
@@ -27,9 +27,9 @@ extension CreateKeyError: CustomStringConvertible {
         switch self {
         case .weakPassPhrase(let strength):
             return "Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase."
-        case .missedUserEmail:
+        case .missingUserEmail:
             return "backupServiceError_email".localized
-        case .missedUserName:
+        case .missingUserName:
             return "backupServiceError_name".localized
         case .doesntMatch:
             return "pass_phrase_match_error".localized

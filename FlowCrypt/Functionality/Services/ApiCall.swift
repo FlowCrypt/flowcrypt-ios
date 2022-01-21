@@ -69,12 +69,12 @@ extension ApiError {
                 internalError: httpError.error
             )
         }
-        
+
         guard let object = try? JSONDecoder().decode(HttpError.self, from: data) else {
             let errorDescription = httpError.error?.localizedDescription
                 ?? String(data: data, encoding: .utf8)
-                ?? "missed description"
-            
+                ?? "missing error description"
+
             return ApiError(
                 errorDescription: errorDescription,
                 internalError: httpError.error
