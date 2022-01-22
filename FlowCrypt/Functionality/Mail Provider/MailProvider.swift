@@ -79,10 +79,11 @@ final class MailProvider {
 
     init(
         currentAuthType: AuthType,
-        currentUser: User
+        currentUser: User,
+        delegate: AppDelegateGoogleSesssionContainer?
     ) {
         self.currentAuthType = currentAuthType
-        self.services = MailServiceProviderFactory.services(user: currentUser)
+        self.services = MailServiceProviderFactory.services(user: currentUser, delegate: delegate)
     }
 
     private func resolveService<T>(of type: T.Type) -> T {
@@ -102,7 +103,8 @@ final class MailProvider {
 
 private struct MailServiceProviderFactory {
     static func services(
-        user: User
+        user: User,
+        delegate: AppDelegateGoogleSesssionContainer?
     ) -> [MailServiceProvider] {
         [
             Imap(user: user),
@@ -110,7 +112,7 @@ private struct MailServiceProviderFactory {
                 currentUserEmail: user.email,
                 gmailUserService: GoogleUserService(
                     currentUserEmail: user.email,
-                    appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegateGoogleSesssionContainer
+                    appDelegateGoogleSessionContainer: delegate
                 )
             )
         ]
