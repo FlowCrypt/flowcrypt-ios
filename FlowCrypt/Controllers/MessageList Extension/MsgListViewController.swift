@@ -10,7 +10,7 @@ import UIKit
 
 @MainActor
 protocol MsgListViewController {
-    func open(with message: InboxRenderable, path: String, appContext: AppContext)
+    func open(with message: InboxRenderable, path: String, appContext: AppContext, user: User)
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int?
     func updateMessage(isRead: Bool, at index: Int)
@@ -20,12 +20,12 @@ protocol MsgListViewController {
 extension MsgListViewController where Self: UIViewController {
 
     // todo - tom - don't know how to add AppContext into init of protocol/extension
-    func open(with message: InboxRenderable, path: String, appContext: AppContext) {
+    func open(with message: InboxRenderable, path: String, appContext: AppContext, user: User) {
         switch message.wrappedType {
         case .message(let message):
-            openMsg(appContext: appContext, with: message, path: path)
+            openMsg(appContext: appContext, user: user, with: message, path: path)
         case .thread(let thread):
-            openThread(with: thread, appContext: appContext)
+            openThread(with: thread, appContext: appContext, user: user)
         }
     }
 
@@ -36,19 +36,20 @@ extension MsgListViewController where Self: UIViewController {
         navigationController?.pushViewController(controller, animated: true)
     }
 
-    private func openMsg(appContext: AppContext, with message: Message, path: String) {
+    private func openMsg(appContext: AppContext, user: User, with message: Message, path: String) {
         let thread = MessageThread(
             identifier: message.threadId,
             snippet: nil,
             path: path,
             messages: [message]
         )
-        openThread(with: thread, appContext: appContext)
+        openThread(with: thread, appContext: appContext, user: user)
     }
 
-    private func openThread(with thread: MessageThread, appContext: AppContext) {
+    private func openThread(with thread: MessageThread, appContext: AppContext, user: User) {
         let viewController = ThreadDetailsViewController(
             appContext: appContext,
+            user: user,
             thread: thread
         ) { [weak self] (action, message) in
             self?.handleMessageOperation(with: message, action: action)

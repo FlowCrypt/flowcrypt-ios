@@ -94,7 +94,7 @@ extension ExtensionTests {
         let otherYearDate = Date(timeIntervalSince1970: 1579883652)
 
         XCTAssertTrue(dateFormatter.date(from: DateFormatter().formatDate(sameDayDate)) != nil)
-        XCTAssertEqual(DateFormatter().formatDate(sameYearDate), "Jan 24")
+        XCTAssertEqual(DateFormatter().formatDate(sameYearDate), "00:00")
         XCTAssertEqual(DateFormatter().formatDate(otherYearDate), "Jan 24, 2020")
     }
 }

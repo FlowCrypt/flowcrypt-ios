@@ -24,14 +24,12 @@ final class KeySettingsViewController: TableNodeViewController {
 
     init(
         appContext: AppContext,
+        user: User,
         decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
     ) {
         self.appContext = appContext
         self.decorator = decorator
-        guard let currentUser = appContext.dataService.currentUser else {
-            fatalError("missing current user") // todo - need more elegant solution
-        }
-        self.isUsingKeyManager = appContext.clientConfigurationService.getSaved(for: currentUser.email).isUsingKeyManager
+        self.isUsingKeyManager = appContext.clientConfigurationService.getSaved(for: user.email).isUsingKeyManager
         super.init(node: TableNode())
     }
 

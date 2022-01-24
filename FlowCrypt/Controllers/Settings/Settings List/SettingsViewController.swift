@@ -44,20 +44,20 @@ final class SettingsViewController: TableNodeViewController {
     }
 
     private let appContext: AppContext
+    private let user: User
     private let decorator: SettingsViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let rows: [SettingsMenuItem]
 
     init(
         appContext: AppContext,
+        user: User,
         decorator: SettingsViewDecorator = SettingsViewDecorator()
     ) {
         self.appContext = appContext
+        self.user = user
         self.decorator = decorator
-        guard let currentUser = appContext.dataService.currentUser?.email else {
-            fatalError("missing current user") // todo - need more elegant solution
-        }
-        self.clientConfiguration = appContext.clientConfigurationService.getSaved(for: currentUser)
+        self.clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
         self.rows = SettingsMenuItem.filtered(with: self.clientConfiguration)
         super.init(node: TableNode())
     }
@@ -117,7 +117,8 @@ extension SettingsViewController {
         switch setting {
         case .keys:
             viewController = KeySettingsViewController(
-                appContext: appContext
+                appContext: appContext,
+                user: user
             )
         case .legal:
             viewController = LegalViewController()
@@ -126,12 +127,11 @@ extension SettingsViewController {
                 appContext: appContext
             )
         case .backups:
-            guard let currentUser = appContext.dataService.currentUser,
-                  clientConfiguration.canBackupKeys else {
+            guard clientConfiguration.canBackupKeys else {
                 viewController = nil
                 return
             }
-            let userId = UserId(email: currentUser.email, name: currentUser.email)
+            let userId = UserId(email: user.email, name: user.email)
             viewController = BackupViewController(appContext: appContext, userId: userId)
         default:
             viewController = nil

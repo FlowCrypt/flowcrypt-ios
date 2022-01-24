@@ -12,7 +12,10 @@ import UIKit
 class InboxViewControllerFactory {
     @MainActor
     static func make(appContext: AppContext, with viewModel: InboxViewModel) -> InboxViewController {
-        guard let currentAuthType = appContext.dataService.currentAuthType else {
+        guard
+            let currentAuthType = appContext.dataService.currentAuthType,
+            let user = appContext.dataService.currentUser
+        else {
             fatalError("Internal inconsistency")
         }
 
@@ -25,7 +28,8 @@ class InboxViewControllerFactory {
 
             return InboxViewController(
                 appContext: appContext,
-                viewModel,
+                viewModel: viewModel,
+                user: user,
                 numberOfInboxItemsToLoad: 20, // else timeouts happen
                 provider: InboxMessageThreadsProvider(provider: threadsProvider)
             )
@@ -35,7 +39,8 @@ class InboxViewControllerFactory {
 
             return InboxViewController(
                 appContext: appContext,
-                viewModel,
+                viewModel: viewModel,
+                user: user,
                 numberOfInboxItemsToLoad: 50, // safe to load 50, single call on IMAP
                 provider: provider
             )

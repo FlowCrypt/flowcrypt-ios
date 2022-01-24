@@ -68,8 +68,13 @@ struct AppStartup {
 
         switch entryPoint {
         case .mainFlow:
-            let contentViewController = InboxViewContainerController(appContext: appContext)
-            viewController = SideMenuNavigationController(appContext: appContext, contentViewController: contentViewController)
+            guard let user = appContext.dataService.currentUser else { return }
+            let contentViewController = InboxViewContainerController(appContext: appContext, user: user)
+            viewController = SideMenuNavigationController(
+                appContext: appContext,
+                user: user,
+                contentViewController: contentViewController
+            )
         case .signIn:
             viewController = MainNavigationController(rootViewController: SignInViewController(appContext: appContext))
         case .setupFlow(let userId):

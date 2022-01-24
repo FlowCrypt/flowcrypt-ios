@@ -48,14 +48,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     init(
         appContext: AppContext,
+        user: User,
         messageService: MessageService? = nil,
         thread: MessageThread,
         completion: @escaping MessageActionCompletion
     ) {
         self.appContext = appContext
-        guard let user = appContext.dataService.currentUser else {
-            fatalError("expected current user to exist") // todo - better accept user as VC argument
-        }
         self.user = user
         let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
         self.messageService = messageService ?? MessageService(

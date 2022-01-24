@@ -35,15 +35,13 @@ final class InboxViewController: ViewController {
 
     init(
         appContext: AppContext,
-        _ viewModel: InboxViewModel,
+        viewModel: InboxViewModel,
+        user: User,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
-        guard let user = appContext.dataService.currentUser else {
-            fatalError("missing current user") // todo - DI user
-        }
         self.user = user
         self.appContext = appContext
         self.viewModel = viewModel
@@ -330,7 +328,7 @@ extension InboxViewController {
     }
 
     private func handleSearchTap() {
-        let viewController = SearchViewController(appContext: appContext, folderPath: viewModel.path)
+        let viewController = SearchViewController(appContext: appContext, user: user, folderPath: viewModel.path)
         navigationController?.pushViewController(viewController, animated: false)
     }
 
@@ -370,7 +368,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(with: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
+        open(with: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext, user: user)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {

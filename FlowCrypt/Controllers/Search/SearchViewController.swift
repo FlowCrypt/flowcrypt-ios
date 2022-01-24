@@ -45,17 +45,15 @@ final class SearchViewController: TableNodeViewController {
     private let searchController = UISearchController(searchResultsController: nil)
     private let folderPath: String
     private var searchedExpression: String = ""
-    private let currentUser: User
+    private let user: User
 
     init(
         appContext: AppContext,
+        user: User,
         searchProvider: MessageSearchProvider? = nil,
         folderPath: String
     ) {
-        guard let currentUser = appContext.dataService.currentUser else {
-            fatalError("no current user") // todo - use DI
-        }
-        self.currentUser = currentUser
+        self.user = user
         self.appContext = appContext
         self.service = ServiceActor(
             searchProvider: searchProvider ?? appContext.getRequiredMailProvider().messageSearchProvider
@@ -222,7 +220,7 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         guard let message = state.messages[safe: indexPath.row] else { return }
 
         // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
-        open(with: .init(message: message), path: folderPath, appContext: appContext)
+        open(with: .init(message: message), path: folderPath, appContext: appContext, user: user)
     }
 }
 
