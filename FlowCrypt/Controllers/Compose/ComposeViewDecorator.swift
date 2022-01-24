@@ -34,9 +34,11 @@ struct ComposeViewDecorator {
         )
     }
 
-    func styledTextFieldInput(with text: String,
-                              keyboardType: UIKeyboardType = .default,
-                              accessibilityIdentifier: String? = nil) -> TextFieldCellNode.Input {
+    func styledTextFieldInput(
+        with text: String,
+        keyboardType: UIKeyboardType = .default,
+        accessibilityIdentifier: String? = nil
+    ) -> TextFieldCellNode.Input {
         TextFieldCellNode.Input(
             placeholder: text.localized.attributed(
                 .regular(17),
@@ -44,8 +46,8 @@ struct ComposeViewDecorator {
                 alignment: .left
             ),
             isSecureTextEntry: false,
-            textInsets: -8,
             textAlignment: .left,
+            insets: .deviceSpecificTextInsets(top: 0, bottom: 0),
             height: 40,
             width: UIScreen.main.bounds.width,
             keyboardType: keyboardType,
@@ -66,7 +68,7 @@ struct ComposeViewDecorator {
                 alignment: .left
             ),
             image: nil,
-            insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+            insets: .deviceSpecificTextInsets(top: 8, bottom: 8)
         )
     }
 
@@ -114,23 +116,29 @@ struct ComposeViewDecorator {
         )
     }
 
-    private func messagePasswordInput(text: String,
-                                      color: UIColor,
-                                      imageName: String) -> MessagePasswordCellNode.Input {
-        .init(
-            text: text.attributed(.regular(14), color: color),
-            color: color,
+    private func messagePasswordInput(
+        text: String,
+        color: UIColor,
+        imageName: String
+    ) -> MessagePasswordCellNode.Input {
+            .init(
+                text: text.attributed(.regular(14), color: color),
+                color: color,
             image: UIImage(systemName: imageName)?.tinted(color)
         )
     }
 
-    func frame(for string: NSAttributedString,
-               insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 8)) -> CGRect {
+    func frame(
+        for string: NSAttributedString,
+        insets: UIEdgeInsets = .deviceSpecificTextInsets(top: 8, bottom: 0)
+    ) -> CGRect {
         let width = UIScreen.main.bounds.width - insets.left - insets.right
         let maxSize = CGSize(width: width, height: .greatestFiniteMagnitude)
-        return string.boundingRect(with: maxSize,
-                                   options: [.usesLineFragmentOrigin, .usesFontLeading],
-                                   context: nil)
+        return string.boundingRect(
+            with: maxSize,
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            context: nil
+        )
     }
 }
 
@@ -280,7 +288,8 @@ extension AttachmentNode.Input {
                 .attributed(.regular(18), color: .mainTextColor, alignment: .left),
             size: attachment.formattedSize
                 .attributed(.medium(12), color: .mainTextColor, alignment: .left),
-            index: index
+            index: index,
+            isEncrypted: false
         )
     }
 }

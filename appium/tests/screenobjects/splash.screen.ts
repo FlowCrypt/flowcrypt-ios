@@ -1,6 +1,9 @@
 import BaseScreen from './base.screen';
 import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
+import {
+    EmailProviderScreen
+} from '../screenobjects/all-screens';
 
 const SELECTORS = {
   PRIVACY_TAB: '~privacy',
@@ -98,6 +101,10 @@ class SplashScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.continueWithGmailBtn);
   }
 
+  clickOtherEmailProvider = async () => {
+      await ElementHelper.waitAndClick(await this.otherEmailProviderButton)  ;
+  }
+
   clickContinueBtn = async () => {
     // expect(await this.continueButton).toBeDisplayed();
     // expect(await this.cancelButton).toBeDisplayed();
@@ -135,7 +142,7 @@ class SplashScreen extends BaseScreen {
   }
 
   gmailLogin = async (email: string, password: string) => {
-    const emailSelector = `-ios class chain:**/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
+    const emailSelector = `-ios class chain:**/XCUIElementTypeLink/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
     await (await this.signInAsGoogleAccounLabel).waitForDisplayed();
     await browser.pause(1000); // stability sleep for language change
     if (await (await $(emailSelector)).isDisplayed()) {
@@ -159,6 +166,14 @@ class SplashScreen extends BaseScreen {
     await this.changeLanguage();
     await this.gmailLogin(email, password);
     await ElementHelper.waitElementInvisible(await this.signInAsGoogleAccounLabel);
+  }
+
+  loginToOtherEmailProvider = async (email: string  = CommonData.outlookAccount.email, password: string = CommonData.outlookAccount.password!) => {
+    await this.clickOtherEmailProvider();
+    await EmailProviderScreen.checkEmailProviderScreen();
+    await EmailProviderScreen.fillEmail(email);
+    await EmailProviderScreen.fillPassword(password);
+    await EmailProviderScreen.clickConnectBtn();
   }
 }
 

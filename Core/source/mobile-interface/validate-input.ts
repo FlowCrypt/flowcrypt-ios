@@ -9,13 +9,13 @@ type Obj = { [k: string]: any };
 export namespace NodeRequest {
   type PrvKeyInfo = { private: string; longid: string, passphrase: string | undefined };
   type Attachment = { name: string; type: string; base64: string };
-  interface composeEmailBase { text: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] };
+  interface composeEmailBase { text: string, html?: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] };
   export interface composeEmailPlain extends composeEmailBase { format: 'plain' };
   export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo | undefined };
 
   export type generateKey = { passphrase: string, variant: 'rsa2048' | 'rsa4096' | 'curve25519', userIds: { name: string, email: string }[] };
   export type composeEmail = composeEmailPlain | composeEmailEncrypted;
-  export type encryptMsg = { pubKeys: string[] };
+  export type encryptMsg = { pubKeys: string[], msgPwd?: string };
   export type encryptFile = { pubKeys: string[], name: string };
   export type parseDecryptMsg = { keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean, verificationPubkeys?: string[] };
   export type decryptFile = { keys: PrvKeyInfo[], msgPwd?: string };
@@ -37,14 +37,14 @@ export class ValidateInput {
   }
 
   public static encryptMsg = (v: any): NodeRequest.encryptMsg => {
-    if (isObj(v) && hasProp(v, 'pubKeys', 'string[]')) {
+    if (isObj(v) && hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'msgPwd', 'string?')) {
       return v as NodeRequest.encryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.encryptMsg');
   }
 
   public static composeEmail = (v: any): NodeRequest.composeEmail => {
-    if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string') && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {
+    if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'html', 'string?') && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string') && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {
       throw new Error('Wrong request structure for NodeRequest.composeEmail, need: text,from,subject,to,cc,bcc,atts (can use empty arr for cc/bcc, and can skip atts)');
     }
     if (!hasProp(v, 'atts', 'Attachment[]?')) {

@@ -14,7 +14,7 @@ import FlowCryptUI
  * On settings tap user will be redirected to `SettingsViewController`
  */
 @MainActor
-final class MyMenuViewController: ASDKViewController<ASDisplayNode> {
+final class MyMenuViewController: ViewController {
     private enum Constants {
         static let allMail = "folder_all_mail".localized
         static let inbox = "folder_all_inbox".localized

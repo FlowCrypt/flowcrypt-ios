@@ -23,7 +23,6 @@ public final class ThreadMessageInfoCellNode: CellNode {
         public let isExpanded: Bool
         public let shouldShowRecipientsList: Bool
         public let buttonColor: UIColor
-        public let nodeInsets: UIEdgeInsets
 
         public init(
             encryptionBadge: BadgeNode.Input,
@@ -36,8 +35,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
             date: NSAttributedString,
             isExpanded: Bool,
             shouldShowRecipientsList: Bool,
-            buttonColor: UIColor,
-            nodeInsets: UIEdgeInsets
+            buttonColor: UIColor
         ) {
             self.encryptionBadge = encryptionBadge
             self.signatureBadge = signatureBadge
@@ -50,7 +48,6 @@ public final class ThreadMessageInfoCellNode: CellNode {
             self.isExpanded = isExpanded
             self.shouldShowRecipientsList = shouldShowRecipientsList
             self.buttonColor = buttonColor
-            self.nodeInsets = nodeInsets
         }
 
         var replyImage: UIImage? { createButtonImage("arrow.turn.up.left") }
@@ -289,7 +286,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
         expandNode.style.preferredSize = CGSize(width: 36, height: 44)
 
         return ASInsetLayoutSpec(
-            insets: input.nodeInsets,
+            insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
             child: contentSpec
         )
     }

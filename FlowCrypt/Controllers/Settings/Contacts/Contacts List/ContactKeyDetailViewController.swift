@@ -25,12 +25,12 @@ final class ContactKeyDetailViewController: TableNodeViewController {
         case armored = 0, signature, created, checked, expire, longids, fingerprints, algo
     }
 
-    private let decorator: ContactKeyDetailDecoratorType
+    private let decorator: ContactKeyDetailDecorator
     private let pubKey: PubKey
     private let action: ContactKeyDetailAction?
 
     init(
-        decorator: ContactKeyDetailDecoratorType = ContactKeyDetailDecorator(),
+        decorator: ContactKeyDetailDecorator = ContactKeyDetailDecorator(),
         pubKey: PubKey,
         action: ContactKeyDetailAction?
     ) {
@@ -93,48 +93,16 @@ extension ContactKeyDetailViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        { [weak self] in
-            guard let self = self, let part = Part(rawValue: indexPath.row)
-            else { return ASCellNode() }
-            return self.node(for: part)
+        return { [weak self] in
+            guard let self = self, let part = Part(rawValue: indexPath.row) else {
+                return ASCellNode()
+            }
+            return LabelCellNode(
+                input: self.decorator.details(
+                    for: self.pubKey,
+                    part: part
+                )
+            )
         }
-    }
-}
-
-// MARK: - UI
-extension ContactKeyDetailViewController {
-    private func node(for part: Part) -> ASCellNode {
-        LabelCellNode(title: decorator.attributedTitle(for: part),
-                      text: content(for: part).attributed(.regular(14)))
-    }
-
-    private func content(for part: Part) -> String {
-        switch part {
-        case .armored:
-            return pubKey.armored
-        case .signature:
-            return string(from: pubKey.lastSig)
-        case .created:
-            return string(from: pubKey.created)
-        case .checked:
-            return string(from: pubKey.lastChecked)
-        case .expire:
-            return string(from: pubKey.expiresOn)
-        case .longids:
-            return pubKey.longids.joined(separator: ", ")
-        case .fingerprints:
-            return pubKey.fingerprints.joined(separator: ", ")
-        case .algo:
-            return pubKey.algo?.algorithm ?? "-"
-        }
-    }
-
-    private func string(from date: Date?) -> String {
-        guard let date = date else { return "-" }
-
-        let df = DateFormatter()
-        df.dateStyle = .medium
-        df.timeStyle = .medium
-        return df.string(from: date)
     }
 }

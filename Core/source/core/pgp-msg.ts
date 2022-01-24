@@ -11,7 +11,6 @@ import { Catch } from '../platform/catch';
 import { FcAttLinkData } from './att';
 import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
-import { PgpHash } from './pgp-hash';
 import { Store } from '../platform/store';
 import { openpgp } from './pgp';
 
@@ -222,8 +221,8 @@ export class PgpMsg {
 
   public static encrypt: PgpMsgMethod.Encrypt = async ({ pubkeys, signingPrv, pwd, data, filename, armor, date }) => {
     const message = openpgp.message.fromBinary(data, filename, date);
+
     const options: OpenPGP.EncryptOptions = { armor, message, date };
-    let usedChallenge = false;
     if (pubkeys) {
       options.publicKeys = [];
       for (const armoredPubkey of pubkeys) {
@@ -232,10 +231,9 @@ export class PgpMsg {
       }
     }
     if (pwd) {
-      options.passwords = [await PgpHash.challengeAnswer(pwd)];
-      usedChallenge = true;
+      options.passwords = [pwd];
     }
-    if (!pubkeys && !usedChallenge) {
+    if (!pubkeys && !pwd) {
       throw new Error('no-pubkeys-no-challenge');
     }
     if (signingPrv && typeof signingPrv.isPrivate !== 'undefined' && signingPrv.isPrivate()) { // tslint:disable-line:no-unbound-method - only testing if exists

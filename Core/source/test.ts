@@ -57,6 +57,18 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired' && na
   });
 }
 
+ava.default(`encryptMsg -> parseDecryptMsg (with password)`, async t => {
+  const content = 'hello\nwrld';
+  const msgPwd = '123';
+  const { data: encryptedMsg, json: encryptJson } = parseResponse(await endpoints.encryptMsg({ pubKeys: [], msgPwd: msgPwd }, [Buffer.from(content, 'utf8')]));
+  expectEmptyJson(encryptJson);
+  expectData(encryptedMsg, 'armoredMsg');
+  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys: [], msgPwd: msgPwd }, [encryptedMsg]));
+  expect(decryptJson).to.deep.equal({ text: content, replyType: 'encrypted' });
+  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
+  t.pass();
+});
+
 ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { keys } = getKeypairs('rsa1');

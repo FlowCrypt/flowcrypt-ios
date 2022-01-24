@@ -7,24 +7,44 @@
 //
     
 import AsyncDisplayKit
+import Foundation
 
 public final class LabelCellNode: CellNode {
+    public struct Input {
+        let title: NSAttributedString
+        let text: NSAttributedString
+        let insets: UIEdgeInsets
+        let accessibilityIdentifier: String?
+        
+        public init(
+            title: NSAttributedString,
+            text: NSAttributedString,
+            insets: UIEdgeInsets = .deviceSpecificTextInsets(top: 8, bottom: 8),
+            accessibilityIdentifier: String?
+        ) {
+            self.title = title
+            self.text = text
+            self.insets = insets
+            self.accessibilityIdentifier = accessibilityIdentifier
+        }
+    }
+    
     private let titleNode = ASTextNode2()
     private let textNode = ASTextNode2()
-    private let insets: UIEdgeInsets
+    private let input: Input
 
-    public init(title: NSAttributedString,
-                text: NSAttributedString,
-                insets: UIEdgeInsets = UIEdgeInsets.side(8)) {
-        self.insets = insets
+    public init(input: Input) {
+        self.input = input
         super.init()
-        titleNode.attributedText = title
-        textNode.attributedText = text
+
+        titleNode.attributedText = input.title
+        textNode.attributedText = input.text
+        textNode.accessibilityIdentifier = input.accessibilityIdentifier
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
-            insets: insets,
+            insets: input.insets,
             child: ASStackLayoutSpec(
                 direction: .vertical,
                 spacing: 4,

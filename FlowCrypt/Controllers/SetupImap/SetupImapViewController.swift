@@ -234,10 +234,9 @@ extension SetupImapViewController {
             assertionFailure()
             return ASCellNode()
         }
-
-        let input = decorator.title(for: section)
-
-        return InfoCellNode(input: input)
+        return InfoCellNode(
+            input: decorator.title(for: section)
+        )
     }
 
     private func textFieldNode(for indexPath: IndexPath) -> ASCellNode {

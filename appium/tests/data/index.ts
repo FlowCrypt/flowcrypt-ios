@@ -3,8 +3,22 @@ import * as path from 'path';
 export const CommonData = {
   account: {
     email: 'e2e.enterprise.test@flowcrypt.com',
-    password: process.env.ACCOUNT_PASSWORD,
-    passPhrase: 'London blueBARREY capi'
+    password: process.env.E2E_ENTERPRISE_TESTS_GOOGLE_PASSWORD,
+    passPhrase: 'London blueBARREY capi',
+    folder: 'Gmail enterprise folder',
+    name: 'e2e'
+  },
+  outlookAccount: {
+    email: 'e2e.consumer.tests@outlook.com',
+    password: process.env.E2E_CONSUMER_TESTS_OUTLOOK_PASSWORD,
+    passPhrase: 'flowcrypt compatibility accounts o',
+    name: 'e2e.consumer.tests',
+    outlookFolder: 'Outlook consumer folder'
+  },
+  outlookEmail: {
+    subject: 'outlook account inbox email',
+    message: 'test email from gmail',
+    sender: 'e2e.enterprise.test@flowcrypt.com'
   },
   sender: {
     email: 'dmitry@flowcrypt.com',
@@ -30,7 +44,8 @@ export const CommonData = {
   encryptedEmailWithAttachment: {
     subject: 'email with attachment',
     message: 'this email contains attachment',
-    attachmentName: 'image.png'
+    attachmentName: 'image.png',
+    encryptedAttachmentName: 'image.png.pgp'
   },
   simpleEmail: {
     subject: 'Test 1',
@@ -38,6 +53,15 @@ export const CommonData = {
   },
   longEmail: {
     message: '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nText'
+  },
+  updateRecipientPublicKey: {
+    email: 'updating.key@example.test',
+    oldSignatureDate: 'Jan 12, 2022 at 11:16:58 AM',//time for CI runs
+    newSignatureDate:  'Jan 12, 2022 at 11:27:20 AM',//time for CI runs
+    // oldSignatureDate: 'Jan 12, 2022 at 9:16:58 PM', //- for local run
+    // newSignatureDate:  'Jan 12, 2022 at 9:27:20 PM', // for local run
+    oldFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0',
+    newFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0, 40E4EE0325E38F717737889AC54F277266650211'
   },
   keyMismatchEmail: {
     subject: 'Encrypted message with key mismatch',
@@ -78,7 +102,8 @@ export const CommonData = {
     senderEmail: 'sunitnandi834@gmail.com',
     encryptedBadgeText: 'encrypted',
     signatureBadgeText: 'not signed',
-    firstAttachmentName: 'Screenshot_20180422_125217.png.asc'
+    firstAttachmentName: 'Screenshot_20180422_125217.png.asc',
+    firstAttachmentBody: '-----BEGIN PGP MESSAGE-----\nVersion: Mailvelope v2.2.0\nComment: https://www.mailvelope.com'
   },
   recipientWithoutPublicKey: {
     email: 'no.publickey@flowcrypt.com',
@@ -115,7 +140,13 @@ export const CommonData = {
       '\n' +
       'One or more of your recipients have revoked public keys (marked in red).\n' +
       '\n' +
-      'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.'
+      'Please ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.',
+    wrongPassPhraseOnLogin: 'Error\n' +
+      'Wrong pass phrase, please try again',
+    attachmentDecryptKeyMismatchError: 'Error decrypting attachment\n' +
+      ' Missing appropriate key\n' +
+      '\n' +
+      'This will likely download a corrupted file. Download anyway?'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'

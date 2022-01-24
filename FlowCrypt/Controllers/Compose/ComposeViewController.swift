@@ -497,6 +497,7 @@ extension ComposeViewController {
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
         try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
+
         let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
             input: self.input,
             contextToSend: self.contextToSend,
@@ -764,7 +765,7 @@ extension ComposeViewController {
             title: "compose_no_contacts_found".localized,
             withSpinner: false,
             size: .zero,
-            insets: UIEdgeInsets(top: 16, left: 8, bottom: 16, right: 8),
+            insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
             itemsAlignment: .start)
         )
     }

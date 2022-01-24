@@ -67,7 +67,7 @@ public final class KeySettingCellNode: CellNode {
         finalSpec.children = [headerStackSpec, separatorNode]
         finalSpec.spacing = 8
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
             child: finalSpec
         )
     }

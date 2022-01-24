@@ -30,12 +30,6 @@ export class Endpoints {
     return fmtRes({ app_version: VERSION });
   }
 
-  public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
-    const req = ValidateInput.encryptMsg(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.concat(data), armor: true }) as OpenPGP.EncryptArmorResult;
-    return fmtRes({}, Buf.fromUtfStr(encrypted.data));
-  }
-
   public generateKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // generateKey may be used when changing major settings, wipe cache to prevent dated results
     const { passphrase, userIds, variant } = ValidateInput.generateKey(uncheckedReq);
@@ -57,19 +51,26 @@ export class Endpoints {
     }
     if (req.format === 'plain') {
       const atts = (req.atts || []).map(({ name, type, base64 }) => new Att({ name, type, data: Buf.fromBase64Str(base64) }));
-      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': req.text }, mimeHeaders, atts)));
+      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': req.text, 'text/html': req.html }, mimeHeaders, atts)));
     } else if (req.format === 'encrypt-inline') {
       const encryptedAtts: Att[] = [];
       for (const att of req.atts || []) {
         const encryptedAtt = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromBase64Str(att.base64), filename: att.name, armor: false }) as OpenPGP.EncryptBinaryResult;
         encryptedAtts.push(new Att({ name: `${att.name}.pgp`, type: 'application/pgp-encrypted', data: encryptedAtt.message.packets.write() }))
       }
+
       const signingPrv = await getSigningPrv(req);
       const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted.data }, mimeHeaders, encryptedAtts)));
     } else {
       throw new Error(`Unknown format: ${req.format}`);
     }
+  }
+
+  public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
+    const req = ValidateInput.encryptMsg(uncheckedReq);
+    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as OpenPGP.EncryptArmorResult;
+    return fmtRes({}, Buf.fromUtfStr(encrypted.data));
   }
 
   public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
@@ -304,4 +305,3 @@ export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Pro
     throw new Error(`Fail to decrypt signing key`);
   }
 }
-

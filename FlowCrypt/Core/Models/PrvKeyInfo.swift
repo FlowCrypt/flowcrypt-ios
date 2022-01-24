@@ -22,6 +22,12 @@ extension PrvKeyInfo {
         self.passphrase = keypair.passphrase ?? passphrase
         self.fingerprints = keypair.allFingerprints
     }
+}
+
+extension PrvKeyInfo {
+    var jsonDict: [String: String?] {
+        ["private": `private`, "longid": longid, "passphrase": passphrase]
+    }
 
     func copy(with passphrase: String) -> PrvKeyInfo {
         PrvKeyInfo(private: self.private,

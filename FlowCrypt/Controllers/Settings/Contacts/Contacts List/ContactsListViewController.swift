@@ -16,7 +16,7 @@ import FlowCryptUI
  * - By tapping on a particular contact, user will be forwarded to *ContactDetailViewController*
  */
 final class ContactsListViewController: TableNodeViewController {
-    private let decorator: ContactsListDecoratorType
+    private let decorator: ContactsListDecorator
     private let localContactsProvider: LocalContactsProviderType
     private var recipients: [RecipientWithSortedPubKeys] = []
     private var selectedIndexPath: IndexPath?
@@ -24,7 +24,7 @@ final class ContactsListViewController: TableNodeViewController {
 
     init(
         appContext: AppContext,
-        decorator: ContactsListDecoratorType = ContactsListDecorator()
+        decorator: ContactsListDecorator = ContactsListDecorator()
     ) {
         self.decorator = decorator
         self.appContext = appContext

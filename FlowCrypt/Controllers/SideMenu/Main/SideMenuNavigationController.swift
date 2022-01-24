@@ -37,6 +37,7 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     }
 
     private enum Constants {
+        static let iPadMenuWidth: CGFloat = 300
         static let menuOffset: CGFloat = 80
         static let animationDuration: TimeInterval = 0.3
     }
@@ -77,9 +78,10 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     }
 
     private func updateSideMenuSize() {
-        sideMenu?.menuWidth =
-            min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-            - Constants.menuOffset
+        sideMenu?.menuWidth = UIDevice.isIpad
+            ? Constants.iPadMenuWidth
+            : min(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height) - Constants.menuOffset
+
         fixSideMenuSize()
 
         if gestureView.superview != nil {

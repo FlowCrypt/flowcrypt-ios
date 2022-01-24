@@ -29,7 +29,7 @@
 		21C7DF09266C0D8F00C44800 /* EnterpriseServerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */; };
 		21CE25E62650070300ADFF4B /* WkdUrlConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */; };
 		21EA3B592656611D00691848 /* ClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21EA3B15265647C400691848 /* ClientConfiguration.swift */; };
-		21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */; };
+		21F836B62652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F836B52652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift */; };
 		2C03CC16275BB53400887EEB /* EnterpriseServerApiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C03CC15275BB53400887EEB /* EnterpriseServerApiTests.swift */; };
 		2C08F6BE273FA7B900EE1610 /* Version5SchemaMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C08F6BD273FA7B900EE1610 /* Version5SchemaMigration.swift */; };
 		2C124DB42728809100A2EFA6 /* ApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C124DB32728809100A2EFA6 /* ApiCall.swift */; };
@@ -70,6 +70,7 @@
 		514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */; };
 		514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */; };
 		5152F196277E5AED00BE8A5B /* MessageUploadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */; };
+		51689F3F2795C1D90050A9B8 /* ProcessedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */; };
 		5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5168FB0A274F94D300131072 /* MessageAttachment.swift */; };
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
 		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
@@ -141,6 +142,7 @@
 		9F41FA2F253B7624003B970D /* BackupSelectKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */; };
 		9F4300CC2571045B00791CFB /* InboxViewControllerContainerDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4300CB2571045B00791CFB /* InboxViewControllerContainerDecorator.swift */; };
 		9F44971626430710003A9FE9 /* Trace.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F72E866263ECE2A0039CF81 /* Trace.swift */; };
+		9F525991278E091B005940D2 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F525990278E091B005940D2 /* ViewController.swift */; };
 		9F53CB7B2555E1E300C0157A /* GmailService+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB7A2555E1E300C0157A /* GmailService+folders.swift */; };
 		9F53CB872555E7F300C0157A /* Imap+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB862555E7F300C0157A /* Imap+Other.swift */; };
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
@@ -345,7 +347,7 @@
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
 		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtensions.swift */; };
 		D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
-		D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */; };
+		D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */; };
 		D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */; };
 		D2CDC3D824047066002B045F /* RecipientEmailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */; };
 		D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; };
@@ -448,7 +450,7 @@
 		21EA3B2E26565B7400691848 /* client_configuraion.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion.json; sourceTree = "<group>"; };
 		21EA3B3526565B8100691848 /* client_configuraion_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_empty.json; sourceTree = "<group>"; };
 		21EA3B3C26565B9800691848 /* client_configuraion_partly_empty.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_partly_empty.json; sourceTree = "<group>"; };
-		21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataExntensions+ZBase32Encoding.swift"; sourceTree = "<group>"; };
+		21F836B52652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataExtensions+ZBase32Encoding.swift"; sourceTree = "<group>"; };
 		21F836CB2652A38700B2448C /* ZBase32EncodingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZBase32EncodingTests.swift; sourceTree = "<group>"; };
 		21F836D22652A46E00B2448C /* WKDURLsConstructorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKDURLsConstructorTests.swift; sourceTree = "<group>"; };
 		2C03CC15275BB53400887EEB /* EnterpriseServerApiTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApiTests.swift; sourceTree = "<group>"; };
@@ -470,7 +472,7 @@
 		32DCA0C3D34A69851A238E87 /* Core.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 		32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtensions.swift; sourceTree = "<group>"; };
 		32DCA377D22F4D67A8FA05EB /* Imap.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Imap.swift; sourceTree = "<group>"; };
-		32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableExntensions.swift; sourceTree = "<group>"; };
+		32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableExtensions.swift; sourceTree = "<group>"; };
 		32DCA4B11D4531B3B04D01D1 /* AppErr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppErr.swift; sourceTree = "<group>"; };
 		32DCA55C094E9745AA1FD210 /* Imap+msg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Imap+msg.swift"; sourceTree = "<group>"; };
 		32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIVIewExtensions.swift; sourceTree = "<group>"; };
@@ -502,6 +504,7 @@
 		514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageRecipient.swift; sourceTree = "<group>"; };
 		514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeMessageService+State.swift"; sourceTree = "<group>"; };
 		5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageUploadDetails.swift; sourceTree = "<group>"; };
+		51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessedMessage.swift; sourceTree = "<group>"; };
 		5168FB0A274F94D300131072 /* MessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAttachment.swift; sourceTree = "<group>"; };
 		51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfoTests.swift; sourceTree = "<group>"; };
 		51775C38270C7D2400D7C944 /* StorageMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMethod.swift; sourceTree = "<group>"; };
@@ -585,6 +588,7 @@
 		9F4453BF236B894D005D7D05 /* TableNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableNode.swift; sourceTree = "<group>"; };
 		9F4453C1236B9273005D7D05 /* TextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldNode.swift; sourceTree = "<group>"; };
 		9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerCellNode.swift; sourceTree = "<group>"; };
+		9F525990278E091B005940D2 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		9F53CB7A2555E1E300C0157A /* GmailService+folders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GmailService+folders.swift"; sourceTree = "<group>"; };
 		9F53CB862555E7F300C0157A /* Imap+Other.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Other.swift"; sourceTree = "<group>"; };
 		9F56BD2B23438A8500A7371A /* Imap+messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+messages.swift"; sourceTree = "<group>"; };
@@ -956,7 +960,7 @@
 			isa = PBXGroup;
 			children = (
 				32DCAEFF16F5D91A35791730 /* DataExtensions.swift */,
-				21F836B52652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift */,
+				21F836B52652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -1458,6 +1462,7 @@
 				9F9362182573D10E0009912F /* Imap+Message.swift */,
 				9FA9C83B264C2D75005A9670 /* MessageService.swift */,
 				5168FB0A274F94D300131072 /* MessageAttachment.swift */,
+				51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */,
 			);
 			path = "Message Provider";
 			sourceTree = "<group>";
@@ -1879,7 +1884,7 @@
 				D2D27B78248A8694007346FA /* BigIntExtensions.swift */,
 				E26D5E20275AA417007B8802 /* BundleExtensions.swift */,
 				21C7DEFB26669A3700C44800 /* CalendarExtensions.swift */,
-				32DCA38E87F2B7196E0E1F1F /* CodableExntensions.swift */,
+				32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */,
 				D2531F452402C62D007E5198 /* CollectionExtensions.swift */,
 				9F0C3C2723194E8500299985 /* CommonExtensions.swift */,
 				9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */,
@@ -2051,6 +2056,7 @@
 				9F7ECCA6272C3FB4008A1770 /* TextImageNode.swift */,
 				51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */,
 				511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */,
+				9F525990278E091B005940D2 /* ViewController.swift */,
 				9FA1988F253C841F008C9CF2 /* TableViewController.swift */,
 				9F696292236091DD003712E1 /* SignInImageNode.swift */,
 				9F696294236091F4003712E1 /* SignInDescriptionNode.swift */,
@@ -2262,7 +2268,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1240;
-				LastUpgradeCheck = 1310;
+				LastUpgradeCheck = 1320;
 				ORGANIZATIONNAME = "FlowCrypt Limited";
 				TargetAttributes = {
 					9F2AC5C5267BE99E00F6149B = {
@@ -2676,6 +2682,7 @@
 				9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */,
 				21C7DF09266C0D8F00C44800 /* EnterpriseServerApi.swift in Sources */,
 				9FF0670825520CF800FCC9E6 /* GmailService.swift in Sources */,
+				51689F3F2795C1D90050A9B8 /* ProcessedMessage.swift in Sources */,
 				215897E8267A553300423694 /* FilesManager.swift in Sources */,
 				9F5C2A77257D705100DE9B4B /* MessageLabel.swift in Sources */,
 				9F93623F2573D16F0009912F /* Gmail+Message.swift in Sources */,
@@ -2780,6 +2787,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F525991278E091B005940D2 /* ViewController.swift in Sources */,
 				511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */,
 				9F7ECCA7272C3FB4008A1770 /* TextImageNode.swift in Sources */,
 				D27177452424D44200BDA9A9 /* ComposeButtonNode.swift in Sources */,
@@ -2845,7 +2853,7 @@
 				9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */,
 				9FD5052B278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift in Sources */,
 				D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */,
-				21F836B62652A26B00B2448C /* DataExntensions+ZBase32Encoding.swift in Sources */,
+				21F836B62652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift in Sources */,
 				D29AFFF6240939AE00C1387D /* Then.swift in Sources */,
 				9FBD69EE27775086002FC602 /* ErrorExtensions.swift in Sources */,
 				9F6F5F6C26A2F66B00C625C7 /* Logger.swift in Sources */,
@@ -2862,7 +2870,7 @@
 				9FD5052927889D8200FAA82F /* UIAlertControllerExtensions.swift in Sources */,
 				9F8076D927762515008E5874 /* BigIntExtensions.swift in Sources */,
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
-				D2CDC3D42402D50A002B045F /* CodableExntensions.swift in Sources */,
+				D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */,
 				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
 				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,

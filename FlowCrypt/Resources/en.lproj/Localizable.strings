@@ -9,6 +9,7 @@
 "retry_title" = "Retry";
 "ok" = "Ok";
 "cancel" = "Cancel";
+"download" = "Download";
 "set" = "Set";
 "open" = "Open";
 "settings" = "Settings";
@@ -37,6 +38,8 @@
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved. %@";
+"message_attachment_decrypt_error" = "Error decrypting attachment";
+"message_attachment_corrupted_file" = "This will likely download a corrupted file. Download anyway?";
 "message_encrypted" = "encrypted";
 "message_not_encrypted" = "not encrypted";
 "message_signed" = "signed";

@@ -35,14 +35,15 @@ public enum HTTPMethod: String {
 public extension URLSession {
     static let generalError = -1
     
-    func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil) async throws -> HttpRes {
+    func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil, delegate: URLSessionTaskDelegate? = nil) async throws -> HttpRes {
         let trace = Trace(id: "call")
 
         var data: Data?
         var response: URLResponse?
         var requestError: Error?
+        
         do {
-            (data, response) = try await self.data(for: urlRequest)
+            (data, response) = try await self.data(for: urlRequest, delegate: delegate)
         } catch {
             requestError = error
         }

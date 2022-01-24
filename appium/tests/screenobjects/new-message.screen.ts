@@ -106,7 +106,7 @@ class NewMessageScreen extends BaseScreen {
 
   setComposeSecurityMessage = async (message: string) => {
     await browser.pause(500);
-    await (await this.composeSecurityMessage).setValue(message);
+    await ElementHelper.waitClickAndType(await this.composeSecurityMessage, message);
   };
 
   filledSubject = async (subject: string) => {
@@ -200,6 +200,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkPasswordCell = async (text: string) => {
+    await ElementHelper.waitElementVisible(await this.passwordCell);
     await ElementHelper.checkStaticText(await this.passwordCell, text);
   }
 

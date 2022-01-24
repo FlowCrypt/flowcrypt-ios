@@ -9,6 +9,7 @@ const SELECTORS = {
   INBOX_BTN: '~menuBarItemInbox',
   SENT_BTN: '~menuBarItemSent',
   TRASH_BTN: '~menuBarItemTrash',
+  ADD_ACCOUNT_BUTTON: '~Add account'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -40,6 +41,10 @@ class MenuBarScreen extends BaseScreen {
     return $(SELECTORS.TRASH_BTN)
   }
 
+  get addAccountButton() {
+    return $(SELECTORS.ADD_ACCOUNT_BUTTON);
+  }
+
   clickMenuIcon = async () => {
     await ElementHelper.waitAndClick(await this.menuIcon, 1000);
     await this.checkMenuBar();
@@ -48,6 +53,15 @@ class MenuBarScreen extends BaseScreen {
   checkUserEmail = async (email: string = CommonData.account.email) => {
     const el = await $(`~${email}`);
     await el.waitForDisplayed();
+  }
+
+  clickOnUserEmail = async (email: string = CommonData.account.email) => {
+    const el = await $(`~${email}`);
+    await ElementHelper.waitAndClick(await el);
+  }
+
+  clickAddAccountButton = async() => {
+    await ElementHelper.waitAndClick(await this.addAccountButton);
   }
 
   checkMenuBar = async () => {
@@ -76,6 +90,16 @@ class MenuBarScreen extends BaseScreen {
 
   clickTrashButton = async () => {
     await ElementHelper.waitAndClick(await this.trashButton);
+  }
+
+  checkMenuBarItem = async (menuItem: string) => {
+    const menuBarItem = await $(`~menuBarItem${menuItem}`);
+    await menuBarItem.waitForDisplayed();
+  }
+
+  selectAccount = async (order: number) => {
+    const ele = await $(`~aid-account-email-${order-1}`);
+    await ElementHelper.waitAndClick(await ele);
   }
 }
 
