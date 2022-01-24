@@ -41,7 +41,7 @@ blocks:
             - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/dev/flowcrypt-ios-2021-12-17-v060-for-ci-migration-test.zip -P ~/git/flowcrypt-ios/appium'
             - cd appium && npm run-script lint
             - unzip flowcrypt-ios-*.zip
-            - sudo ln -sf /usr/share/zoneinfo/Europe/Belgrade /etc/localtime
+            - sudo ln -sf /usr/share/zoneinfo/UTC /etc/localtime
             - npm run-script test.mock.all
             - npm run-script test.live.all
       epilogue:
