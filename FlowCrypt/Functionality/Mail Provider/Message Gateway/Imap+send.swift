@@ -6,9 +6,9 @@ import Foundation
 
 extension Imap: MessageGateway {
     func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws {
-        try await withCheckedThrowingContinuation { [weak smtpSess] (continuation: CheckedContinuation<Void, Error>) in
-            guard let session = smtpSess else {
-                return continuation.resume(returning: ())
+        try await withCheckedThrowingContinuation { [weak self] (continuation: CheckedContinuation<Void, Error>) in
+            guard let session = self?.smtpSess else {
+                return continuation.resume(throwing: ImapError.noSession)
             }
 
             session.sendOperation(with: input.mime)
