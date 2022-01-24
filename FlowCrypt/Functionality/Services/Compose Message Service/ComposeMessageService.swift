@@ -118,17 +118,18 @@ final class ComposeMessageService {
             .flatMap { String(data: $0, encoding: .utf8) }
 
         if let password = contextToSend.messagePassword, password.isNotEmpty {
-            if !isMessagePasswordStrong(pwd: password, isFesUsed: true) {
-                throw MessageValidationError.weakPassword
-            }
-
             if subject.lowercased().contains(password.lowercased()) {
                 throw MessageValidationError.subjectContainsPassword
             }
-            
+
             let storedPassphrases = passPhraseService.getPassPhrases().map(\.value)
             if storedPassphrases.contains(password) {
                 throw MessageValidationError.notUniquePassword
+            }
+
+            // TODO: Add FES check
+            if !isMessagePasswordStrong(pwd: password, isFesUsed: true) {
+                throw MessageValidationError.weakPassword
             }
         }
 

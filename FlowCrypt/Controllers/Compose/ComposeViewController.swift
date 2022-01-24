@@ -522,8 +522,17 @@ extension ComposeViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
             guard let self = self else { return }
 
-            if case MessageValidationError.noPubRecipients = error, self.isMessagePasswordSupported {
-                self.setMessagePassword()
+            if self.isMessagePasswordSupported {
+                switch error {
+                case MessageValidationError.noPubRecipients:
+                    self.setMessagePassword()
+                case MessageValidationError.notUniquePassword,
+                    MessageValidationError.subjectContainsPassword,
+                    MessageValidationError.weakPassword:
+                    self.showAlert(message: error.errorMessage)
+                default:
+                    self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+                }
             } else {
                 self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
             }
