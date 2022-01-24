@@ -27,6 +27,8 @@ describe('SETUP: ', () => {
     };
 
     await mockApi.withMockedApis(async () => {
+        let times = await driver.getDeviceTime();
+        console.log('times', times);
         await SplashScreen.login();
         await SetupKeyScreen.setPassPhrase();
         await MailFolderScreen.checkInboxScreen();
