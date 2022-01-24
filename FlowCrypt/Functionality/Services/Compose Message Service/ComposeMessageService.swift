@@ -362,6 +362,7 @@ extension ComposeMessageService {
     private func isMessagePasswordStrong(pwd: String, isFesUsed: Bool) -> Bool {
         let minLength = 8
 
+        // currently password-protected messages are supported only with FES on iOS
         guard isFesUsed else {
             // consumers - just 8 chars requirement
             return pwd.count >= minLength

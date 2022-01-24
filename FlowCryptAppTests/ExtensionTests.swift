@@ -82,19 +82,21 @@ extension ExtensionTests {
         dateFormatter.dateFormat = "HH:mm"
 
         let today = Date()
-        let year = Calendar.current.dateComponents([.year], from: today).year
+        let components = Calendar.current.dateComponents([.year, .day], from: today)
+        let day = components.day == 24 ? 23 : components.day!
+
         let sameYearDate = try XCTUnwrap(DateComponents(
             calendar: .current,
             timeZone: .current,
-            year: year,
+            year: components.year,
             month: 1,
-            day: 24
+            day: day
         ).date)
         // Jan 24, 2020
         let otherYearDate = Date(timeIntervalSince1970: 1579883652)
 
         XCTAssertTrue(dateFormatter.date(from: DateFormatter().formatDate(sameDayDate)) != nil)
-        XCTAssertEqual(DateFormatter().formatDate(sameYearDate), "Jan 24")
+        XCTAssertEqual(DateFormatter().formatDate(sameYearDate), "Jan \(day)")
         XCTAssertEqual(DateFormatter().formatDate(otherYearDate), "Jan 24, 2020")
     }
 }

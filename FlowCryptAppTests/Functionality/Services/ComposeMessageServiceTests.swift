@@ -43,6 +43,7 @@ class ComposeMessageServiceTests: XCTestCase {
             ),
             encryptedStorage: encryptedStorage,
             messageGateway: MessageGatewayMock(),
+            passPhraseService: PassPhraseServiceMock(),
             draftGateway: DraftGatewayMock(),
             contactsService: contactsService,
             core: core
