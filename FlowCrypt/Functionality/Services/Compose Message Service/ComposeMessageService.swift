@@ -127,8 +127,9 @@ final class ComposeMessageService {
                 throw MessageValidationError.notUniquePassword
             }
 
-            // TODO: Add FES check
-            if !isMessagePasswordStrong(pwd: password, isFesUsed: true) {
+            let fesUrl = try await enterpriseServer.getActiveFesUrl(for: email)
+            let isFesUsed = fesUrl != nil
+            if !isMessagePasswordStrong(pwd: password, isFesUsed: isFesUsed) {
                 throw MessageValidationError.weakPassword
             }
         }

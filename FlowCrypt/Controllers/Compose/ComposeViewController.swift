@@ -966,9 +966,10 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEvaluation(for recipient: ComposeMessageRecipient,
-                                  with state: RecipientState,
-                                  keyState: PubKeyState?) {
+    private func handleEvaluation(
+        for recipient: ComposeMessageRecipient,
+        with state: RecipientState,
+        keyState: PubKeyState?) {
         updateRecipientWithNew(
             state: state,
             keyState: keyState,
