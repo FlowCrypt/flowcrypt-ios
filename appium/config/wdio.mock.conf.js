@@ -7,7 +7,7 @@ config.suites = {
   // all: [
   //   './tests/specs/mock/**/*.spec.ts'
   // ],
-  all: ['./tests/specs/mock/setup/CannotFindEmailOnAttesterWithDisallowAttesterSearchForDomain.spec.ts']
+  all: ['./tests/specs/mock/setup/UpdateOlderPubKeyToNewer.spec.ts']
 };
 
 config.capabilities = [
