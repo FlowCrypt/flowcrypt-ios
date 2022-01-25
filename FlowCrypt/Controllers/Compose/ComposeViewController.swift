@@ -119,7 +119,8 @@ final class ComposeViewController: TableNodeViewController {
             clientConfiguration: clientConfiguration,
             encryptedStorage: appContext.encryptedStorage,
             messageGateway: appContext.getRequiredMailProvider().messageSender,
-            passPhraseService: appContext.passPhraseService
+            passPhraseService: appContext.passPhraseService,
+            sender: email
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
@@ -266,7 +267,6 @@ extension ComposeViewController {
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
                     input: input,
                     contextToSend: contextToSend,
-                    email: email,
                     includeAttachments: false,
                     signingPrv: signingPrv
                 )
@@ -502,7 +502,6 @@ extension ComposeViewController {
         let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
             input: self.input,
             contextToSend: self.contextToSend,
-            email: self.email,
             signingPrv: signingKey
         )
         UIApplication.shared.isIdleTimerDisabled = true
@@ -1097,7 +1096,9 @@ extension ComposeViewController {
     }
 
     @objc private func messagePasswordTextFieldDidChange(_ sender: UITextField) {
-        messagePasswordAlertController?.actions[1].isEnabled = (sender.text ?? "").isNotEmpty
+        let password = sender.text ?? ""
+        let isPasswordStrong = composeMessageService.isMessagePasswordStrong(pwd: password)
+        messagePasswordAlertController?.actions[1].isEnabled = isPasswordStrong
     }
 }
 

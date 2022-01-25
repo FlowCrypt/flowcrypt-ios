@@ -46,6 +46,7 @@ class ComposeMessageServiceTests: XCTestCase {
             passPhraseService: PassPhraseServiceMock(),
             draftGateway: DraftGatewayMock(),
             contactsService: contactsService,
+            sender: "some@gmail.com",
             core: core
         )
 
@@ -66,7 +67,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: [],
                     subject: nil
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -89,7 +89,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: nil
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -107,7 +106,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: nil
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -122,7 +120,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: ""
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -137,7 +134,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "     "
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -155,7 +151,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "Some subject"
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -170,7 +165,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "Some subject"
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -185,7 +179,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "Some subject"
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -204,7 +197,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "Some subject"
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -228,7 +220,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "Some subject"
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -256,7 +247,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "Some subject"
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -284,7 +274,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "Some subject"
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -328,7 +317,6 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: subject
             ),
-            email: email,
             signingPrv: nil
         )
 
@@ -375,7 +363,6 @@ class ComposeMessageServiceTests: XCTestCase {
                     recipients: recipients,
                     subject: "Some subject"
                 ),
-                email: "some@gmail.com",
                 signingPrv: nil
             )
             XCTFail("expected to throw above")
@@ -403,7 +390,6 @@ class ComposeMessageServiceTests: XCTestCase {
                 recipients: recipients,
                 subject: subject
             ),
-            email: email,
             signingPrv: nil
         )
 

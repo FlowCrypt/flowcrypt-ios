@@ -13,16 +13,13 @@ describe('COMPOSE EMAIL: ', () => {
   it('sending message to user without public key produces password modal', async () => {
 
     const recipient = CommonData.recipientWithoutPublicKey.email;
-    const emailSubject = CommonData.simpleEmail.subject;
+    const emailSubject = CommonData.recipientWithoutPublicKey.subject;
     const emailText = CommonData.simpleEmail.message;
     const emailWeakPassword = CommonData.recipientWithoutPublicKey.weakPassword;
     const emailPassword = CommonData.recipientWithoutPublicKey.password;
-    const passphrase = CommonData.account.passPhrase;
 
     const passwordModalMessage = CommonData.recipientWithoutPublicKey.modalMessage;
     const emptyPasswordMessage = CommonData.recipientWithoutPublicKey.emptyPasswordMessage;
-    const weakPasswordMessage = CommonData.recipientWithoutPublicKey.weakPasswordMessage;
-    const passphrasePasswordErrorMessage = CommonData.recipientWithoutPublicKey.passphrasePasswordErrorMessage;
     const subjectPasswordErrorMessage = CommonData.recipientWithoutPublicKey.subjectPasswordErrorMessage;
     const addedPasswordMessage = CommonData.recipientWithoutPublicKey.addedPasswordMessage;
 
@@ -53,18 +50,9 @@ describe('COMPOSE EMAIL: ', () => {
     await BaseScreen.clickOkButtonOnError();
 
     await NewMessageScreen.clickPasswordCell();
-    await NewMessageScreen.setMessagePassword(passphrase);
-    await NewMessageScreen.clickSendButton();
-    await BaseScreen.checkModalMessage(passphrasePasswordErrorMessage);
-    await BaseScreen.clickOkButtonOnError();
-
-    await NewMessageScreen.clickPasswordCell();
     await NewMessageScreen.setMessagePassword(emailWeakPassword);
-    await NewMessageScreen.clickSendButton();
-    await BaseScreen.checkModalMessage(weakPasswordMessage);
-    await BaseScreen.clickOkButtonOnError();
+    await NewMessageScreen.checkSetPasswordButton(false);
 
-    await NewMessageScreen.clickPasswordCell();
     await NewMessageScreen.setMessagePassword(emailPassword);
     await NewMessageScreen.checkPasswordCell(addedPasswordMessage);
   });

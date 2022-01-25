@@ -30,6 +30,8 @@ final class ComposeMessageService {
     private let draftGateway: DraftGateway?
     private lazy var logger: Logger = Logger.nested(Self.self)
 
+    private let sender: String
+
     private struct ReplyInfo: Encodable {
         let sender: String
         let recipient: [String]
@@ -44,6 +46,7 @@ final class ComposeMessageService {
         passPhraseService: PassPhraseServiceType,
         draftGateway: DraftGateway? = nil,
         contactsService: ContactsServiceType? = nil,
+        sender: String,
         core: CoreComposeMessageType & KeyParser = Core.shared,
         enterpriseServer: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
@@ -57,6 +60,7 @@ final class ComposeMessageService {
         )
         self.core = core
         self.enterpriseServer = enterpriseServer
+        self.sender = sender
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
@@ -69,7 +73,6 @@ final class ComposeMessageService {
     func validateAndProduceSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        email: String,
         includeAttachments: Bool = true,
         signingPrv: PrvKeyInfo?
     ) async throws -> SendableMsg {
@@ -101,7 +104,7 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = storage.getKeypairs(by: email).map(\.public).first else {
+        guard let myPubKey = storage.getKeypairs(by: sender).map(\.public).first else {
             throw MessageValidationError.missedPublicKey
         }
 
@@ -122,15 +125,9 @@ final class ComposeMessageService {
                 throw MessageValidationError.subjectContainsPassword
             }
 
-            let storedPassphrases = passPhraseService.getPassPhrases().map(\.value)
-            if storedPassphrases.contains(password) {
+            let allAvailablePassPhrases = passPhraseService.getPassPhrases().map(\.value)
+            if allAvailablePassPhrases.contains(password) {
                 throw MessageValidationError.notUniquePassword
-            }
-
-            let fesUrl = try await enterpriseServer.getActiveFesUrl(for: email)
-            let isFesUsed = fesUrl != nil
-            if !isMessagePasswordStrong(pwd: password, isFesUsed: isFesUsed) {
-                throw MessageValidationError.weakPassword
             }
         }
 
@@ -140,7 +137,7 @@ final class ComposeMessageService {
             to: recipients.map(\.email),
             cc: [],
             bcc: [],
-            from: email,
+            from: sender,
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
@@ -359,14 +356,14 @@ extension ComposeMessageService {
         return SendableMsgBody(text: text, html: html)
     }
 
-    private func isMessagePasswordStrong(pwd: String, isFesUsed: Bool) -> Bool {
+    func isMessagePasswordStrong(pwd: String) -> Bool {
         let minLength = 8
 
         // currently password-protected messages are supported only with FES on iOS
-        guard isFesUsed else {
-            // consumers - just 8 chars requirement
-            return pwd.count >= minLength
-        }
+        // guard enterpriseServer.isFesUsed else {
+        //     // consumers - just 8 chars requirement
+        //     return pwd.count >= minLength
+        // }
 
         // enterprise FES - use common corporate password rules
         let predicate = NSPredicate(

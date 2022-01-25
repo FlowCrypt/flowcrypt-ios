@@ -83,7 +83,6 @@ extension ExtensionTests {
 
         let today = Date()
         let components = Calendar.current.dateComponents([.year, .day], from: today)
-        let day = components.day == 24 ? 23 : components.day!
 
         let sameYearDate = try XCTUnwrap(DateComponents(
             calendar: .current,
