@@ -107,7 +107,8 @@ final class InboxViewContainerController: TableNodeViewController {
             let input = InboxViewModel(inbox)
             let inboxViewController = InboxViewControllerFactory.make(
                 appContext: appContext,
-                with: input
+                user: user,
+                viewModel: input
             )
             navigationController?.setViewControllers([inboxViewController], animated: false)
         }

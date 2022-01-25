@@ -13,7 +13,7 @@ private let logger = Logger.nested("AppStart")
 
 struct AppStartup {
     private enum EntryPoint {
-        case signIn, setupFlow(UserId), mainFlow
+        case signIn, setupFlow(UserId), mainFlow(User)
     }
 
     private let appContext: AppContext
@@ -67,8 +67,7 @@ struct AppStartup {
         let viewController: UIViewController
 
         switch entryPoint {
-        case .mainFlow:
-            guard let user = appContext.dataService.currentUser else { return }
+        case .mainFlow(let user):
             let contentViewController = InboxViewContainerController(appContext: appContext, user: user)
             viewController = SideMenuNavigationController(
                 appContext: appContext,
@@ -89,9 +88,9 @@ struct AppStartup {
         if !appContext.dataService.isLoggedIn {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
-        } else if appContext.dataService.isSetupFinished {
+        } else if appContext.dataService.isSetupFinished, let user = appContext.dataService.currentUser {
             logger.logInfo("Setup finished -> mainFlow")
-            return .mainFlow
+            return .mainFlow(user)
         } else if let session = appContext.session, let userId = makeUserIdForSetup(session: session) {
             logger.logInfo("User with session \(session) -> setupFlow")
             return .setupFlow(userId)

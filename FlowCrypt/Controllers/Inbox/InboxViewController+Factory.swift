@@ -11,10 +11,9 @@ import UIKit
 
 class InboxViewControllerFactory {
     @MainActor
-    static func make(appContext: AppContext, with viewModel: InboxViewModel) -> InboxViewController {
+    static func make(appContext: AppContext, user: User, viewModel: InboxViewModel) -> InboxViewController {
         guard
-            let currentAuthType = appContext.dataService.currentAuthType,
-            let user = appContext.dataService.currentUser
+            let currentAuthType = appContext.dataService.currentAuthType
         else {
             fatalError("Internal inconsistency")
         }

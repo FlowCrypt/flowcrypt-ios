@@ -281,7 +281,7 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let viewController = InboxViewControllerFactory.make(appContext: appContext, with: input)
+            let viewController = InboxViewControllerFactory.make(appContext: appContext, user: user, viewModel: input)
 
             if let topController = topController(controllerType: InboxViewController.self),
                topController.path == folder.path {
