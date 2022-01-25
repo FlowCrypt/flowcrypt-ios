@@ -54,7 +54,7 @@ struct AppStartup {
 
     /// todo - refactor so that it doesn't need getOptionalMailProvider
     private func renewSessionIfValid() async throws {
-        guard let mailProvider = appContext.getOptionalMailProvider() else {
+        guard let mailProvider = await appContext.getOptionalMailProvider() else {
             return
         }
         return try await mailProvider.sessionProvider.renewSession()

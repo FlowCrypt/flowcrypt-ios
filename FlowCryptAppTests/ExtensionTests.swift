@@ -90,13 +90,20 @@ extension ExtensionTests {
             timeZone: .current,
             year: components.year,
             month: 1,
-            day: day
+            day: 24,
+            hour: 18,
+            minute: 34,
+            second: 9
         ).date)
         // Jan 24, 2020
         let otherYearDate = Date(timeIntervalSince1970: 1579883652)
 
         XCTAssertTrue(dateFormatter.date(from: DateFormatter().formatDate(sameDayDate)) != nil)
-        XCTAssertEqual(DateFormatter().formatDate(sameYearDate), "Jan \(day)")
-        XCTAssertEqual(DateFormatter().formatDate(otherYearDate), "Jan 24, 2020")
+        if Calendar.current.isDateInToday(sameYearDate) {
+            XCTAssertEqual(dateFormatter.formatDate(sameYearDate), "18:34")
+        } else {
+            XCTAssertEqual(dateFormatter.formatDate(sameYearDate), "Jan 24")
+        }
+        XCTAssertEqual(dateFormatter.formatDate(otherYearDate), "Jan 24, 2020")
     }
 }

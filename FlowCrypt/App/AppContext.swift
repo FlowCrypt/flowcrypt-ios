@@ -91,6 +91,7 @@ class AppContext {
         )
     }
 
+    @MainActor
     func getRequiredMailProvider() -> MailProvider {
         guard let mailProvider = getOptionalMailProvider() else {
             // todo - should throw instead
@@ -99,16 +100,21 @@ class AppContext {
         return mailProvider
     }
 
+    @MainActor
     func getOptionalMailProvider() -> MailProvider? {
-        guard let currentUser = self.dataService.currentUser, let currentAuthType = self.dataService.currentAuthType else {
-            return nil
-        }
+        guard
+            let currentUser = dataService.currentUser,
+            let currentAuthType = dataService.currentAuthType
+        else { return nil }
+
         return MailProvider(
             currentAuthType: currentAuthType,
-            currentUser: currentUser
+            currentUser: currentUser,
+            delegate: UIApplication.shared.delegate as? AppDelegateGoogleSesssionContainer
         )
     }
 
+    @MainActor
     func getBackupService() -> BackupService {
         let mailProvider = self.getRequiredMailProvider()
         return BackupService(
@@ -117,6 +123,7 @@ class AppContext {
         )
     }
 
+    @MainActor
     func getFoldersService() -> FoldersService {
         return FoldersService(
             encryptedStorage: self.encryptedStorage,
