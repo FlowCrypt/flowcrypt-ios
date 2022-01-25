@@ -22,6 +22,12 @@ private struct ComposedDraft: Equatable {
  * - Or from *ThreadDetailsViewController* controller by tapping on *reply* or *forward*
  **/
 final class ComposeViewController: TableNodeViewController {
+    private let minRecipientsPartHeight: CGFloat = 44
+    var calculatedRecipientsPartHeight: CGFloat? {
+        didSet {
+            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+        }
+    }
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
@@ -713,11 +719,27 @@ extension ComposeViewController {
     }
 
     private func recipientsNode() -> RecipientEmailsCellNode {
-        RecipientEmailsCellNode(recipients: recipients.map(RecipientEmailsCellNode.Input.init))
+        return RecipientEmailsCellNode(
+            recipients: recipients.map(RecipientEmailsCellNode.Input.init),
+            height: calculatedRecipientsPartHeight ?? minRecipientsPartHeight
+        )
+            .onLayoutHeightChanged { [weak self] layoutHeight in
+                guard let self = self, self.calculatedRecipientsPartHeight != layoutHeight else {
+                    return
+                }
+
+                if layoutHeight > self.minRecipientsPartHeight {
+                    self.calculatedRecipientsPartHeight = layoutHeight
+                } else if layoutHeight > 0 {
+                    self.calculatedRecipientsPartHeight = layoutHeight
+                }
+            }
             .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
                 switch action {
-                case let .imageTap(indexPath): self?.handleRecipientAction(with: indexPath)
-                case let .select(indexPath): self?.handleRecipientSelection(with: indexPath)
+                case let .imageTap(indexPath):
+                    self?.handleRecipientAction(with: indexPath)
+                case let .select(indexPath):
+                    self?.handleRecipientSelection(with: indexPath)
                 }
             }
     }
@@ -956,9 +978,11 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEvaluation(for recipient: ComposeMessageRecipient,
-                                  with state: RecipientState,
-                                  keyState: PubKeyState?) {
+    private func handleEvaluation(
+        for recipient: ComposeMessageRecipient,
+        with state: RecipientState,
+        keyState: PubKeyState?
+    ) {
         updateRecipientWithNew(
             state: state,
             keyState: keyState,
@@ -983,9 +1007,11 @@ extension ComposeViewController {
         )
     }
 
-    private func updateRecipientWithNew(state: RecipientState,
-                                        keyState: PubKeyState?,
-                                        for context: Either<ComposeMessageRecipient, IndexPath>) {
+    private func updateRecipientWithNew(
+        state: RecipientState,
+        keyState: PubKeyState?,
+        for context: Either<ComposeMessageRecipient, IndexPath>
+    ) {
         let index: Int? = {
             switch context {
             case let .left(recipient):
