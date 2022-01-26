@@ -1,6 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
-import moment from 'moment-timezone'
+import moment from 'moment'
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
