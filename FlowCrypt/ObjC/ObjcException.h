@@ -1,5 +1,5 @@
 //
-//  ObjException.h
+//  ObjcException.h
 //  FlowCrypt
 //
 //  Created by  Ivan Ushakov on 25.01.2022
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ObjException : NSObject
+@interface ObjcException : NSObject
 
 + (BOOL)catchException:(void(^)(void))tryBlock error:(__autoreleasing NSError **)error;
 

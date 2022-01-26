@@ -37,7 +37,7 @@
 		2C141B2F274578C20038A3F8 /* Keypair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141B2E274578C20038A3F8 /* Keypair.swift */; };
 		2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */; };
 		2C2A3B4D2719EF7300B7F27B /* PassPhraseServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */; };
-		2C2B058927A07F7B00A406F0 /* ObjException.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2B058827A07F7B00A406F0 /* ObjException.m */; };
+		2C2B058927A07F7B00A406F0 /* ObjcException.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2B058827A07F7B00A406F0 /* ObjcException.m */; };
 		2C2D0B95275FDF6B0052771D /* Version6SchemaMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2D0B94275FDF6B0052771D /* Version6SchemaMigration.swift */; };
 		2C4E60F72757D91A00DE5770 /* EncryptedStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4E60F62757D91A00DE5770 /* EncryptedStorageMock.swift */; };
 		2C60AB0C272564D40040D7F2 /* InvalidStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */; };
@@ -462,8 +462,8 @@
 		2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceTests.swift; sourceTree = "<group>"; };
 		2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseServiceMock.swift; sourceTree = "<group>"; };
 		2C2B058627A07F7A00A406F0 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
-		2C2B058727A07F7B00A406F0 /* ObjException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjException.h; sourceTree = "<group>"; };
-		2C2B058827A07F7B00A406F0 /* ObjException.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ObjException.m; sourceTree = "<group>"; };
+		2C2B058727A07F7B00A406F0 /* ObjcException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjcException.h; sourceTree = "<group>"; };
+		2C2B058827A07F7B00A406F0 /* ObjcException.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ObjcException.m; sourceTree = "<group>"; };
 		2C2D0B94275FDF6B0052771D /* Version6SchemaMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version6SchemaMigration.swift; sourceTree = "<group>"; };
 		2C4E60F62757D91A00DE5770 /* EncryptedStorageMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedStorageMock.swift; sourceTree = "<group>"; };
 		2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidStorageViewController.swift; sourceTree = "<group>"; };
@@ -1003,8 +1003,8 @@
 		2C2B058A27A0809400A406F0 /* ObjC */ = {
 			isa = PBXGroup;
 			children = (
-				2C2B058727A07F7B00A406F0 /* ObjException.h */,
-				2C2B058827A07F7B00A406F0 /* ObjException.m */,
+				2C2B058727A07F7B00A406F0 /* ObjcException.h */,
+				2C2B058827A07F7B00A406F0 /* ObjcException.m */,
 			);
 			path = ObjC;
 			sourceTree = "<group>";
@@ -2613,7 +2613,7 @@
 				C192421F1EC48B6900C3D251 /* SetupBackupsViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */,
-				2C2B058927A07F7B00A406F0 /* ObjException.m in Sources */,
+				2C2B058927A07F7B00A406F0 /* ObjcException.m in Sources */,
 				21CE25E62650070300ADFF4B /* WkdUrlConstructor.swift in Sources */,
 				9FC411212595EA12001180A8 /* MessageSearchProvider.swift in Sources */,
 				9F778E7E27162038001D4B21 /* MessageThread.swift in Sources */,

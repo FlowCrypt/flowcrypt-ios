@@ -453,20 +453,20 @@ extension InboxViewController: MsgListViewController {
             } else {
                 state = .fetched(.byNumber(total: newTotalNumber))
                 do {
-                    try ObjException.catch {
+                    try ObjcException.catch {
                         self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
                     }
                 } catch {
-                    logger.logError("Failed to remove message at \(index) in fetched state")
+                    logger.logError("Failed to remove message at \(index) in fetched state: \(error)")
                 }
             }
         default:
             do {
-                try ObjException.catch {
+                try ObjcException.catch {
                     self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
                 }
             } catch {
-                logger.logError("Failed to remove message at \(index) in default state")
+                logger.logError("Failed to remove message at \(index) in default state: \(error)")
             }
         }
     }
