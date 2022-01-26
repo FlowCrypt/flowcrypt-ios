@@ -12,6 +12,7 @@ struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
     struct MessageQuoteInfo: Equatable {
+        let quoteType: MessageQuoteType
         let recipients: [String]
         let sender: String?
         let subject: String?
@@ -31,8 +32,42 @@ struct ComposeMessageInput: Equatable {
 
     var isQuote: Bool {
         switch type {
-        case .idle: return false
-        case .quote: return true
+        case .idle:
+            return false
+        case .quote:
+            return true
+        }
+    }
+
+    var isIdle: Bool {
+        !isQuote
+    }
+
+    var isReply: Bool {
+        switch type {
+        case .idle:
+            return false
+        case .quote(let messageQuoteInfo):
+            switch messageQuoteInfo.quoteType {
+            case .reply:
+                return true
+            case .forward:
+                return false
+            }
+        }
+    }
+
+    var isForward: Bool {
+        switch type {
+        case .idle:
+            return false
+        case .quote(let messageQuoteInfo):
+            switch messageQuoteInfo.quoteType {
+            case .reply:
+                return false
+            case .forward:
+                return true
+            }
         }
     }
 

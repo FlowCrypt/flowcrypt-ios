@@ -697,7 +697,9 @@ extension ComposeViewController {
                 let mutableString = NSMutableAttributedString(attributedString: messageText)
                 mutableString.append(styledQuote)
                 $0.textView.attributedText = mutableString
-                $0.becomeFirstResponder()
+                if input.isReply {
+                    $0.becomeFirstResponder()
+                }
             } else {
                 $0.textView.attributedText = messageText
             }
@@ -744,7 +746,7 @@ extension ComposeViewController {
             input: decorator.styledTextFieldInput(
                 with: "compose_recipient".localized,
                 keyboardType: .emailAddress,
-                accessibilityIdentifier: "recipientTextField")
+                accessibilityIdentifier: "aid-recipient-text-field")
         ) { [weak self] action in
             self?.handleTextFieldAction(with: action)
         }
@@ -757,7 +759,7 @@ extension ComposeViewController {
         }
         .then {
             $0.isLowercased = true
-            if !self.input.isQuote {
+            if self.input.isForward || self.input.isIdle {
                 $0.becomeFirstResponder()
             }
         }
