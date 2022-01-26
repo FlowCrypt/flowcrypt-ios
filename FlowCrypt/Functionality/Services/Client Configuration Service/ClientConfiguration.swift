@@ -53,6 +53,10 @@ class ClientConfiguration {
         return URL(string: urlString) != nil
     }
 
+    var isUsingFes: Bool {
+        raw.fesUrl != nil
+    }
+
     /// Enforce a key algo for keygen, eg rsa2048,rsa4096,curve25519
     var enforcedKeygenAlgo: String? {
         raw.enforceKeygenAlgo

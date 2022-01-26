@@ -14,6 +14,7 @@ final class ClientConfigurationRealmObject: Object {
     @Persisted var flags: Data?
     @Persisted var customKeyserverUrl: String?
     @Persisted var keyManagerUrl: String?
+    @Persisted var fesUrl: String?
     @Persisted var disallowAttesterSearchForDomains: Data?
     @Persisted var enforceKeygenAlgo: String?
     @Persisted var enforceKeygenExpireMonths: Int
@@ -23,6 +24,7 @@ final class ClientConfigurationRealmObject: Object {
         flags: [String]?,
         customKeyserverUrl: String?,
         keyManagerUrl: String?,
+        fesUrl: String?,
         disallowAttesterSearchForDomains: [String]?,
         enforceKeygenAlgo: String?,
         enforceKeygenExpireMonths: Int?,
@@ -34,6 +36,7 @@ final class ClientConfigurationRealmObject: Object {
         }
         self.customKeyserverUrl = customKeyserverUrl
         self.keyManagerUrl = keyManagerUrl
+        self.fesUrl = fesUrl
         if let disallowAttesterSearchForDomains = disallowAttesterSearchForDomains {
             self.disallowAttesterSearchForDomains = try? JSONEncoder().encode(disallowAttesterSearchForDomains)
         }
@@ -45,11 +48,12 @@ final class ClientConfigurationRealmObject: Object {
 }
 
 extension ClientConfigurationRealmObject {
-    convenience init(configuration: RawClientConfiguration, user: User) {
+    convenience init(configuration: RawClientConfiguration, user: User, fesUrl: String?) {
         self.init(
             flags: configuration.flags?.map(\.rawValue),
             customKeyserverUrl: configuration.customKeyserverUrl,
             keyManagerUrl: configuration.keyManagerUrl,
+            fesUrl: fesUrl,
             disallowAttesterSearchForDomains: configuration.disallowAttesterSearchForDomains,
             enforceKeygenAlgo: configuration.enforceKeygenAlgo,
             enforceKeygenExpireMonths: configuration.enforceKeygenExpireMonths,
