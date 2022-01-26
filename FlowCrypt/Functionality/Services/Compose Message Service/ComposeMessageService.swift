@@ -105,7 +105,7 @@ final class ComposeMessageService {
         let subject = contextToSend.subject ?? "(no subject)"
 
         guard let myPubKey = storage.getKeypairs(by: sender).map(\.public).first else {
-            throw MessageValidationError.missedPublicKey
+            throw MessageValidationError.missingPublicKey
         }
 
         let sendableAttachments: [SendableMsg.Attachment] = includeAttachments

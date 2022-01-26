@@ -201,7 +201,7 @@ class ComposeMessageServiceTests: XCTestCase {
             )
             XCTFail("expected to throw above")
         } catch {
-            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.missedPublicKey)
+            XCTAssertEqual(error as? MessageValidationError, MessageValidationError.missingPublicKey)
         }
     }
 
