@@ -119,5 +119,4 @@ final class PassPhraseService: PassPhraseServiceType {
             try savePassPhrase(with: pp, storageMethod: .memory)
         }
     }
-
 }

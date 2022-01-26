@@ -87,7 +87,7 @@ public final class MessageRecipientsNode: ASDisplayNode {
                                 .compactMap { $0 }
                                 .reduce(NSMutableAttributedString(), {
                                     if !$0.string.isEmpty { $0.append(separator) }
-                                    $0.append($1);
+                                    $0.append($1)
                                     return $0
                                 })
 

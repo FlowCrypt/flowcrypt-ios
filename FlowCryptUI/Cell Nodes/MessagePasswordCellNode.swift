@@ -48,7 +48,7 @@ public final class MessagePasswordCellNode: CellNode {
         buttonNode.cornerRadius = 6
         buttonNode.contentHorizontalAlignment = .left
         buttonNode.accessibilityIdentifier = "aid-message-password-cell"
-        
+
         buttonNode.setAttributedTitle(input.text, for: .normal)
         buttonNode.setImage(input.image, for: .normal)
         buttonNode.addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)

@@ -27,7 +27,6 @@ public final class ContactUserCellNode: CellNode {
         userTitleNode.attributedText = "User:".attributed(.bold(16))
         userNode.attributedText = input.user
         userNode.accessibilityIdentifier = "userEmail"
-
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

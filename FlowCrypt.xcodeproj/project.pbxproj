@@ -295,7 +295,6 @@
 		D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E2250538100070F805 /* LocalFoldersProvider.swift */; };
 		D227C0E6250538780070F805 /* RemoteFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */; };
 		D227C0E8250538A90070F805 /* FoldersService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E7250538A90070F805 /* FoldersService.swift */; };
-		D2324CAD2471DCF800FD1C6F /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = D2324CAC2471DCF800FD1C6F /* format.sh */; };
 		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
@@ -745,7 +744,6 @@
 		D227C0E2250538100070F805 /* LocalFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFoldersProvider.swift; sourceTree = "<group>"; };
 		D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFoldersProvider.swift; sourceTree = "<group>"; };
 		D227C0E7250538A90070F805 /* FoldersService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersService.swift; sourceTree = "<group>"; };
-		D2324CAC2471DCF800FD1C6F /* format.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = format.sh; sourceTree = "<group>"; };
 		D2324CB22471E60300FD1C6F /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNode.swift; sourceTree = "<group>"; };
@@ -1692,7 +1690,6 @@
 			children = (
 				D2324CB22471E60300FD1C6F /* .swiftlint.yml */,
 				C132B9B21EC2DBD800763715 /* FlowCrypt */,
-				D2324CAB2471DCF800FD1C6F /* Scripts */,
 				2DC3601602226D74335E18F4 /* Pods */,
 				D204DB9F23FB35700083B9D6 /* FlowCryptUI */,
 				D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */,
@@ -1859,14 +1856,6 @@
 				9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */,
 			);
 			path = "Folders Services";
-			sourceTree = "<group>";
-		};
-		D2324CAB2471DCF800FD1C6F /* Scripts */ = {
-			isa = PBXGroup;
-			children = (
-				D2324CAC2471DCF800FD1C6F /* format.sh */,
-			);
-			path = Scripts;
 			sourceTree = "<group>";
 		};
 		D24ABA6123FDB275002EE9DD /* Resources */ = {
@@ -2359,7 +2348,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */,
-				D2324CAD2471DCF800FD1C6F /* format.sh in Resources */,
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,

@@ -186,7 +186,6 @@ extension ThreadDetailsViewController {
             } catch {
                 handleAttachmentDecryptError(error, at: indexPath)
             }
-
         }
     }
 

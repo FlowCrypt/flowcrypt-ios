@@ -15,14 +15,14 @@ public extension String {
         }
         return self
     }
-    
+
     var addTrailingSlashIfNeeded: String {
         if self.last != "/" {
             return "\(self)/"
         }
         return self
     }
-    
+
     func data() -> Data {
         data(using: .utf8)!
     }
@@ -45,7 +45,7 @@ public extension String {
             }
         }
     }
-    
+
     var deletingPathExtension: String {
         NSString(string: self).deletingPathExtension as String
     }
@@ -70,7 +70,7 @@ public extension String {
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailFormat)
         return emailPredicate.evaluate(with: self)
     }
-    
+
     var emailParts: (username: String, domain: String)? {
         let parts = self.split(separator: "@")
         guard parts.count == 2 else { return nil }
