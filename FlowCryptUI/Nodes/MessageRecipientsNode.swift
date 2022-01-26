@@ -16,9 +16,11 @@ public final class MessageRecipientsNode: ASDisplayNode {
         let ccRecipients: [MessageRecipient]
         let bccRecipients: [MessageRecipient]
 
-        public init(recipients: [MessageRecipient],
-                    ccRecipients: [MessageRecipient],
-                    bccRecipients: [MessageRecipient]) {
+        public init(
+            recipients: [MessageRecipient],
+            ccRecipients: [MessageRecipient],
+            bccRecipients: [MessageRecipient]
+        ) {
             self.recipients = recipients
             self.ccRecipients = ccRecipients
             self.bccRecipients = bccRecipients
@@ -84,12 +86,12 @@ public final class MessageRecipientsNode: ASDisplayNode {
         let node = ASTextNode2()
         node.accessibilityIdentifier = identifier
         node.attributedText = [nameString, emailString]
-                                .compactMap { $0 }
-                                .reduce(NSMutableAttributedString(), {
-                                    if !$0.string.isEmpty { $0.append(separator) }
-                                    $0.append($1);
-                                    return $0
-                                })
+            .compactMap { $0 }
+            .reduce(NSMutableAttributedString(), {
+                if !$0.string.isEmpty { $0.append(separator) }
+                $0.append($1);
+                return $0
+            })
 
         return node
     }
