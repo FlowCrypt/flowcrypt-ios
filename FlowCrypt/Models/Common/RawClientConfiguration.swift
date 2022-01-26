@@ -87,6 +87,7 @@ extension RawClientConfiguration {
             flags: decodedFlags?.compactMap(ClientConfigurationFlag.init),
             customKeyserverUrl: unwrappedObject.customKeyserverUrl,
             keyManagerUrl: unwrappedObject.keyManagerUrl,
+            fesUrl: unwrappedObject.fesUrl,
             disallowAttesterSearchForDomains: decodedDisallowAttesterSearchForDomains,
             enforceKeygenAlgo: unwrappedObject.enforceKeygenAlgo,
             enforceKeygenExpireMonths: unwrappedObject.enforceKeygenExpireMonths
