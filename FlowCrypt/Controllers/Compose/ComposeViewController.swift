@@ -22,7 +22,6 @@ private struct ComposedDraft: Equatable {
  * - Or from *ThreadDetailsViewController* controller by tapping on *reply* or *forward*
  **/
 final class ComposeViewController: TableNodeViewController {
-    private let minRecipientsPartHeight: CGFloat = 44
     var calculatedRecipientsPartHeight: CGFloat? {
         didSet {
             node.reloadRows(at: [recipientsIndexPath], with: .fade)
@@ -31,6 +30,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
+        static let minRecipientsPartHeight: CGFloat = 44
     }
 
     enum State {
@@ -721,18 +721,13 @@ extension ComposeViewController {
     private func recipientsNode() -> RecipientEmailsCellNode {
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.Input.init),
-            height: calculatedRecipientsPartHeight ?? minRecipientsPartHeight
+            height: calculatedRecipientsPartHeight ?? Constants.minRecipientsPartHeight
         )
             .onLayoutHeightChanged { [weak self] layoutHeight in
-                guard let self = self, self.calculatedRecipientsPartHeight != layoutHeight else {
+                guard self?.calculatedRecipientsPartHeight != layoutHeight, layoutHeight > 0 else {
                     return
                 }
-
-                if layoutHeight > self.minRecipientsPartHeight {
-                    self.calculatedRecipientsPartHeight = layoutHeight
-                } else if layoutHeight > 0 {
-                    self.calculatedRecipientsPartHeight = layoutHeight
-                }
+                self?.calculatedRecipientsPartHeight = layoutHeight
             }
             .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
                 switch action {
