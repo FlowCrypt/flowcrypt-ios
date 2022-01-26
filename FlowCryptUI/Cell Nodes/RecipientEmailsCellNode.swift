@@ -24,22 +24,28 @@ final public class RecipientEmailsCellNode: CellNode {
 
     private var onAction: RecipientTap?
 
-    public lazy var collectionNode: ASCollectionNode = {
+    private lazy var layout: LeftAlignedCollectionViewFlowLayout = {
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 1
         layout.minimumLineSpacing = Constants.minimumLineSpacing
         layout.sectionInset = Constants.sectionInset
-        let collectionNode = ASCollectionNode(collectionViewLayout: layout)
-        collectionNode.accessibilityIdentifier = "recipientsList"
-        collectionNode.backgroundColor = .clear
-        return collectionNode
+        return layout
     }()
 
-    public var recipients: [Input] = []
+    public lazy var collectionNode: ASCollectionNode = {
+        let node = ASCollectionNode(collectionViewLayout: layout)
+        node.accessibilityIdentifier = "recipientsList"
+        node.backgroundColor = .clear
+        return node
+    }()
 
-    public init(recipients: [Input]) {
+    private var collectionLayoutHeight: CGFloat
+    private var recipients: [Input] = []
+
+    public init(recipients: [Input], height: CGFloat) {
         self.recipients = recipients
+        self.collectionLayoutHeight = height
         super.init()
         collectionNode.dataSource = self
         collectionNode.delegate = self
@@ -55,15 +61,8 @@ final public class RecipientEmailsCellNode: CellNode {
         guard recipients.isNotEmpty else {
             return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
         }
-        let recipientNodeInset = RecipientEmailNode.Constants.layoutInsets.height
-            + RecipientEmailNode.Constants.titleInsets.height
 
-        let textSize: CGSize = recipients.first?.email.size() ?? .zero
-        let recipientsHeight = (textSize.height + recipientNodeInset) * CGFloat(recipients.count)
-        let insets = Constants.minimumLineSpacing * CGFloat(recipients.count - 1)
-        let height = recipientsHeight + insets + Constants.sectionInset.height
-
-        collectionNode.style.preferredSize.height = height
+        collectionNode.style.preferredSize.height = collectionLayoutHeight
         collectionNode.style.preferredSize.width = constrainedSize.max.width
 
         return ASInsetLayoutSpec(
@@ -76,6 +75,11 @@ final public class RecipientEmailsCellNode: CellNode {
 extension RecipientEmailsCellNode {
     public func onItemSelect(_ action: RecipientTap?) -> Self {
         self.onAction = action
+        return self
+    }
+
+    public func onLayoutHeightChanged(_ completion: @escaping (CGFloat) -> Void) -> Self {
+        self.layout.onHeightChanged = completion
         return self
     }
 }

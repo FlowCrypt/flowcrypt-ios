@@ -1,1 +1,1 @@
-public struct BuildTools { }
+public struct BuildTools {}
