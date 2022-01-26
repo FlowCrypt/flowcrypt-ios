@@ -42,6 +42,7 @@ describe('SETUP: ', () => {
     await mockApi.withMockedApis(async () => {
       const times = await driver.getDeviceTime();
       console.log('times', times);
+
       //stage 1
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
