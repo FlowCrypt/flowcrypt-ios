@@ -2157,6 +2157,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9F2AC5CD267BE99E00F6149B /* Build configuration list for PBXNativeTarget "FlowCryptAppTests" */;
 			buildPhases = (
+				9F79F49327A1F411005A141D /* Format Code */,
 				9F2AC5C2267BE99E00F6149B /* Sources */,
 				9F2AC5C3267BE99E00F6149B /* Frameworks */,
 				9F2AC5C4267BE99E00F6149B /* Resources */,
@@ -2176,7 +2177,6 @@
 			buildConfigurationList = C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */;
 			buildPhases = (
 				85C230714DC341D246864AD0 /* [CP] Check Pods Manifest.lock */,
-				D2324CAA2471D47B00FD1C6F /* Format code */,
 				D2324CA92471CED200FD1C6F /* SwiftLint */,
 				C132B9AC1EC2DBD800763715 /* Sources */,
 				C132B9AD1EC2DBD800763715 /* Frameworks */,
@@ -2454,6 +2454,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		9F79F49327A1F411005A141D /* Format Code */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Format Code";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd BuildTools\nSDKROOT=(xcrun --sdk macosx --show-sdk-path)\n#swift package update #Uncomment this line temporarily to update the version used to the latest matching your BuildTools/Package.swift file\nswift run -c release swiftformat \"$SRCROOT\"\n";
+		};
 		BF91BAF1F0E74BA172BDA5C0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2493,24 +2511,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
-		};
-		D2324CAA2471D47B00FD1C6F /* Format code */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Format code";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cd BuildTools\nSDKROOT=(xcrun --sdk macosx --show-sdk-path)\n#swift package update #Uncomment this line temporarily to update the version used to the latest matching your BuildTools/Package.swift file\nswift run -c release swiftformat \"$SRCROOT\"\n";
 		};
 		E531C3B50A9C90454C72F878 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
