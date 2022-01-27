@@ -21,7 +21,7 @@ class AppContext {
     let passPhraseService: PassPhraseServiceType
     let clientConfigurationService: ClientConfigurationServiceType
 
-    fileprivate init(
+    init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
@@ -145,7 +145,7 @@ class UserContext: AppContext {
     let authType: AuthType
     let user: User
 
-    fileprivate init(
+    init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
