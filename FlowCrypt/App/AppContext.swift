@@ -21,7 +21,7 @@ class AppContext {
     let passPhraseService: PassPhraseServiceType
     let clientConfigurationService: ClientConfigurationServiceType
 
-    private init(
+    fileprivate init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
@@ -78,16 +78,25 @@ class AppContext {
         )
     }
 
-    func withSession(_ session: SessionType?) -> AppContext {
-        return AppContext(
-            encryptedStorage: self.encryptedStorage,
+    func withSession(_ session: SessionType?) -> UserContext {
+        guard
+            let authType = dataService.currentAuthType,
+            let user = dataService.currentUser
+        else {
+            fatalError()
+        }
+
+        return UserContext(
+            encryptedStorage: encryptedStorage,
             session: session,
-            userAccountService: self.userAccountService,
-            dataService: self.dataService,
-            keyService: self.keyService,
-            passPhraseService: self.passPhraseService,
-            clientConfigurationService: self.clientConfigurationService,
-            globalRouter: globalRouter
+            userAccountService: userAccountService,
+            dataService: dataService,
+            keyService: keyService,
+            passPhraseService: passPhraseService,
+            clientConfigurationService: clientConfigurationService,
+            globalRouter: globalRouter,
+            authType: authType,
+            user: user
         )
     }
 
@@ -130,5 +139,36 @@ class AppContext {
             remoteFoldersProvider: self.getRequiredMailProvider().remoteFoldersProvider
         )
     }
+}
 
+class UserContext: AppContext {
+    let authType: AuthType
+    let user: User
+
+    fileprivate init(
+        encryptedStorage: EncryptedStorageType,
+        session: SessionType?,
+        userAccountService: SessionServiceType,
+        dataService: DataServiceType,
+        keyService: KeyServiceType,
+        passPhraseService: PassPhraseServiceType,
+        clientConfigurationService: ClientConfigurationServiceType,
+        globalRouter: GlobalRouterType,
+        authType: AuthType,
+        user: User
+    ) {
+        self.authType = authType
+        self.user = user
+
+        super.init(
+            encryptedStorage: encryptedStorage,
+            session: session,
+            userAccountService: userAccountService,
+            dataService: dataService,
+            keyService: keyService,
+            passPhraseService: passPhraseService,
+            clientConfigurationService: clientConfigurationService,
+            globalRouter: globalRouter
+        )
+    }
 }

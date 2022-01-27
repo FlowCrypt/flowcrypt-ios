@@ -32,13 +32,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
         case thread, message
     }
 
-    private let appContext: AppContext
+    private let userContext: UserContext
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
     private let thread: MessageThread
     private var input: [ThreadDetailsViewController.Input]
-    private let user: User
 
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
@@ -47,36 +46,34 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let onComplete: MessageActionCompletion
 
     init(
-        appContext: AppContext,
-        user: User,
+        userContext: UserContext,
         messageService: MessageService? = nil,
         thread: MessageThread,
         completion: @escaping MessageActionCompletion
     ) {
-        self.appContext = appContext
-        self.user = user
-        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
+        self.userContext = userContext
+        let clientConfiguration = userContext.clientConfigurationService.getSaved(for: userContext.user.email)
         self.messageService = messageService ?? MessageService(
             contactsService: ContactsService(
                 localContactsProvider: LocalContactsProvider(
-                    encryptedStorage: appContext.encryptedStorage
+                    encryptedStorage: userContext.encryptedStorage
                 ),
                 clientConfiguration: clientConfiguration
             ),
-            keyService: appContext.keyService,
-            messageProvider: appContext.getRequiredMailProvider().messageProvider,
-            passPhraseService: appContext.passPhraseService
+            keyService: userContext.keyService,
+            messageProvider: userContext.getRequiredMailProvider().messageProvider,
+            passPhraseService: userContext.passPhraseService
         )
-        guard let threadOperationsProvider = appContext.getRequiredMailProvider().threadOperationsProvider else {
+        guard let threadOperationsProvider = userContext.getRequiredMailProvider().threadOperationsProvider else {
             fatalError("expected threadOperationsProvider on gmail")
         }
         self.threadOperationsProvider = threadOperationsProvider
-        self.messageOperationsProvider = appContext.getRequiredMailProvider().messageOperationsProvider
+        self.messageOperationsProvider = userContext.getRequiredMailProvider().messageOperationsProvider
         self.trashFolderProvider = TrashFolderProvider(
-            user: user,
+            user: userContext.user,
             foldersService: FoldersService(
-                encryptedStorage: appContext.encryptedStorage,
-                remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
+                encryptedStorage: userContext.encryptedStorage,
+                remoteFoldersProvider: userContext.getRequiredMailProvider().remoteFoldersProvider
             )
         )
         self.thread = thread
@@ -98,7 +95,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
 
-        setupNavigationBar(user: user)
+        setupNavigationBar(user: userContext.user)
         expandThreadMessage()
     }
 }
@@ -239,7 +236,7 @@ extension ThreadDetailsViewController {
 
         let composeInput = ComposeMessageInput(type: .quote(replyInfo))
         navigationController?.pushViewController(
-            ComposeViewController(appContext: appContext, input: composeInput),
+            ComposeViewController(userContext: userContext, input: composeInput),
             animated: true
         )
     }
@@ -449,7 +446,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
     private func handleSuccessfulMessage(action: MessageAction) {
         hideSpinner()
-        onComplete(action, .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: user.email))
+        onComplete(action, .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: userContext.user.email))
         navigationController?.popViewController(animated: true)
     }
 
@@ -589,7 +586,7 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
         logger.logInfo("Back button. Are all messages read \(isRead)")
-        onComplete(MessageAction.markAsRead(isRead), .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: self.user.email))
+        onComplete(MessageAction.markAsRead(isRead), .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: userContext.user.email))
         navigationController?.popViewController(animated: true)
     }
 }

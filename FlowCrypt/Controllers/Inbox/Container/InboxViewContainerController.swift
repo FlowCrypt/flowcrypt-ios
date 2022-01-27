@@ -29,25 +29,22 @@ final class InboxViewContainerController: TableNodeViewController {
         case loadedFolders([FolderViewModel])
     }
 
-    let appContext: AppContext
+    let userContext: UserContext
     let foldersService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
-    let user: User
 
     private var state: State = .loading {
         didSet { handleNewState() }
     }
 
     init(
-        appContext: AppContext,
-        user: User,
+        userContext: UserContext,
         foldersService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
-        self.appContext = appContext
-        self.foldersService = foldersService ?? appContext.getFoldersService()
+        self.userContext = userContext
+        self.foldersService = foldersService ?? userContext.getFoldersService()
         self.decorator = decorator
-        self.user = user
         super.init(node: TableNode())
         node.delegate = self
         node.dataSource = self
@@ -66,7 +63,7 @@ final class InboxViewContainerController: TableNodeViewController {
     private func fetchInboxFolder() {
         Task {
             do {
-                let folders = try await foldersService.fetchFolders(isForceReload: true, for: user)
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: userContext.user)
                 self.handleFetched(folders: folders)
             } catch {
                 self.state = .error(error)
@@ -106,8 +103,7 @@ final class InboxViewContainerController: TableNodeViewController {
             }
             let input = InboxViewModel(inbox)
             let inboxViewController = InboxViewControllerFactory.make(
-                appContext: appContext,
-                user: user,
+                userContext: userContext,
                 viewModel: input
             )
             navigationController?.setViewControllers([inboxViewController], animated: false)

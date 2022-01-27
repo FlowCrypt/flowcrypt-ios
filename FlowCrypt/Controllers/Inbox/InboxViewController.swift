@@ -13,8 +13,7 @@ final class InboxViewController: ViewController {
 
     private let numberOfInboxItemsToLoad: Int
 
-    private let appContext: AppContext
-    private let user: User
+    private let userContext: UserContext
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
@@ -34,21 +33,19 @@ final class InboxViewController: ViewController {
     var path: String { viewModel.path }
 
     init(
-        appContext: AppContext,
+        userContext: UserContext,
         viewModel: InboxViewModel,
-        user: User,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
-        self.user = user
-        self.appContext = appContext
+        self.userContext = userContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
 
         self.service = ServiceActor(inboxDataProvider: provider)
-        self.draftsListProvider = draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
+        self.draftsListProvider = draftsListProvider ?? userContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
 
@@ -124,7 +121,7 @@ extension InboxViewController {
 // MARK: - Helpers
 extension InboxViewController {
     private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        appContext
+        userContext
             .getRequiredMailProvider()
             .currentMessagesListPagination(from: number, token: state.token)
     }
@@ -184,7 +181,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: numberOfInboxItemsToLoad,
                         pagination: currentMessagesListPagination()
-                    ), userEmail: user.email
+                    ), userEmail: userContext.user.email
                 )
                 handleEndFetching(with: context, context: batchContext)
             } catch {
@@ -206,7 +203,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
                         pagination: pagination
-                    ), userEmail: user.email
+                    ), userEmail: userContext.user.email
                 )
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
@@ -328,7 +325,7 @@ extension InboxViewController {
     }
 
     private func handleSearchTap() {
-        let viewController = SearchViewController(appContext: appContext, user: user, folderPath: viewModel.path)
+        let viewController = SearchViewController(userContext: userContext, folderPath: viewModel.path)
         navigationController?.pushViewController(viewController, animated: false)
     }
 
@@ -340,7 +337,7 @@ extension InboxViewController {
 
     private func btnComposeTap() {
         TapTicFeedback.generate(.light)
-        let composeVc = ComposeViewController(appContext: appContext)
+        let composeVc = ComposeViewController(userContext: userContext)
         navigationController?.pushViewController(composeVc, animated: true)
     }
 }
@@ -368,7 +365,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(with: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext, user: user)
+        open(with: inboxInput[indexPath.row], path: viewModel.path, userContext: userContext)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {

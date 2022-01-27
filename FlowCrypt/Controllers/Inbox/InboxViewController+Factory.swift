@@ -11,35 +11,27 @@ import UIKit
 
 class InboxViewControllerFactory {
     @MainActor
-    static func make(appContext: AppContext, user: User, viewModel: InboxViewModel) -> InboxViewController {
-        guard
-            let currentAuthType = appContext.dataService.currentAuthType
-        else {
-            fatalError("Internal inconsistency")
-        }
-
-        switch currentAuthType {
+    static func make(userContext: UserContext, viewModel: InboxViewModel) -> InboxViewController {
+        switch userContext.authType {
         case .oAuthGmail:
             // Inject threads provider - Gmail API
-            guard let threadsProvider = appContext.getRequiredMailProvider().messagesThreadProvider else {
+            guard let threadsProvider = userContext.getRequiredMailProvider().messagesThreadProvider else {
                 fatalError("Internal inconsistency")
             }
 
             return InboxViewController(
-                appContext: appContext,
+                userContext: userContext,
                 viewModel: viewModel,
-                user: user,
                 numberOfInboxItemsToLoad: 20, // else timeouts happen
                 provider: InboxMessageThreadsProvider(provider: threadsProvider)
             )
         case .password:
             // Inject message list provider - IMAP
-            let provider = InboxMessageListProvider(provider: appContext.getRequiredMailProvider().messageListProvider)
+            let provider = InboxMessageListProvider(provider: userContext.getRequiredMailProvider().messageListProvider)
 
             return InboxViewController(
-                appContext: appContext,
+                userContext: userContext,
                 viewModel: viewModel,
-                user: user,
                 numberOfInboxItemsToLoad: 50, // safe to load 50, single call on IMAP
                 provider: provider
             )

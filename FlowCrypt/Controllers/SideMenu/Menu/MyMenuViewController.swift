@@ -43,16 +43,15 @@ final class MyMenuViewController: ViewController {
         }
     }
 
-    private let appContext: AppContext
+    private let userContext: UserContext
     private let foldersService: FoldersServiceType
     private let decorator: MyMenuViewDecorator
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
     private var accounts: [User] {
-        appContext.dataService.getFinishedSetupUsers(exceptUserEmail: user.email)
+        userContext.dataService.getFinishedSetupUsers(exceptUserEmail: userContext.user.email)
     }
-    private let user: User
 
     private let tableNode: ASTableNode
 
@@ -66,14 +65,12 @@ final class MyMenuViewController: ViewController {
     private var isFirstLaunch = true
 
     init(
-        appContext: AppContext,
-        user: User,
+        userContext: UserContext,
         decorator: MyMenuViewDecorator = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
-        self.user = user
-        self.appContext = appContext
-        self.foldersService = appContext.getFoldersService()
+        self.userContext = userContext
+        self.foldersService = userContext.getFoldersService()
         self.decorator = decorator
         self.tableNode = tableNode
         super.init(node: ASDisplayNode())
@@ -174,7 +171,7 @@ extension MyMenuViewController {
         showSpinner()
         Task {
             do {
-                let folders = try await foldersService.fetchFolders(isForceReload: true, for: user)
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: userContext.user)
                 handleNewFolders(with: folders)
             } catch {
                 handleError(with: error)
@@ -210,7 +207,7 @@ extension MyMenuViewController {
 // MARK: - Account functionality
 extension MyMenuViewController {
     private func addAccount() {
-        let vc = MainNavigationController(rootViewController: SignInViewController(appContext: appContext))
+        let vc = MainNavigationController(rootViewController: SignInViewController(appContext: userContext))
         present(vc, animated: true, completion: nil)
     }
 
@@ -220,7 +217,7 @@ extension MyMenuViewController {
         }
 
         do {
-            try appContext.globalRouter.switchActive(user: account, appContext: appContext)
+            try userContext.globalRouter.switchActive(user: account, appContext: userContext)
         } catch {
             showAlert(message: error.localizedDescription)
         }
@@ -248,7 +245,7 @@ extension MyMenuViewController {
     private func node(for section: Sections, row: Int) -> ASCellNode {
         switch (section, state) {
         case (.header, _):
-            let headerInput = decorator.header(for: user, image: state.arrowImage)
+            let headerInput = decorator.header(for: userContext.user, image: state.arrowImage)
             return TextImageNode(input: headerInput) { [weak self] node in
                 self?.handleTapOn(header: node)
             }
@@ -281,7 +278,7 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let viewController = InboxViewControllerFactory.make(appContext: appContext, user: user, viewModel: input)
+            let viewController = InboxViewControllerFactory.make(userContext: userContext, viewModel: input)
 
             if let topController = topController(controllerType: InboxViewController.self),
                topController.path == folder.path {
@@ -295,13 +292,10 @@ extension MyMenuViewController {
                 sideMenuController()?.sideMenu?.hideSideMenu()
                 return
             }
-            sideMenuController()?.setContentViewController(SettingsViewController(
-                appContext: appContext,
-                user: user
-            ))
+            sideMenuController()?.setContentViewController(SettingsViewController(userContext: userContext))
         case .logOut:
             do {
-                try appContext.globalRouter.signOut(appContext: appContext)
+                try userContext.globalRouter.signOut(appContext: userContext)
             } catch {
                 showAlert(message: error.localizedDescription)
             }

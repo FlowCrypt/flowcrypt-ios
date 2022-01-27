@@ -43,21 +43,18 @@ final class SettingsViewController: TableNodeViewController {
         }
     }
 
-    private let appContext: AppContext
-    private let user: User
+    private let userContext: UserContext
     private let decorator: SettingsViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let rows: [SettingsMenuItem]
 
     init(
-        appContext: AppContext,
-        user: User,
+        userContext: UserContext,
         decorator: SettingsViewDecorator = SettingsViewDecorator()
     ) {
-        self.appContext = appContext
-        self.user = user
+        self.userContext = userContext
         self.decorator = decorator
-        self.clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
+        self.clientConfiguration = userContext.clientConfigurationService.getSaved(for: userContext.user.email)
         self.rows = SettingsMenuItem.filtered(with: self.clientConfiguration)
         super.init(node: TableNode())
     }
@@ -116,23 +113,18 @@ extension SettingsViewController {
 
         switch setting {
         case .keys:
-            viewController = KeySettingsViewController(
-                appContext: appContext,
-                user: user
-            )
+            viewController = KeySettingsViewController(userContext: userContext)
         case .legal:
             viewController = LegalViewController()
         case .contacts:
-            viewController = ContactsListViewController(
-                appContext: appContext
-            )
+            viewController = ContactsListViewController(appContext: userContext)
         case .backups:
             guard clientConfiguration.canBackupKeys else {
                 viewController = nil
                 return
             }
-            let userId = UserId(email: user.email, name: user.email)
-            viewController = BackupViewController(appContext: appContext, userId: userId)
+            let userId = UserId(email: userContext.user.email, name: userContext.user.email)
+            viewController = BackupViewController(appContext: userContext, userId: userId)
         default:
             viewController = nil
         }
