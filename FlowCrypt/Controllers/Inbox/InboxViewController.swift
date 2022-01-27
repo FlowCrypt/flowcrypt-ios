@@ -457,7 +457,7 @@ extension InboxViewController: MsgListViewController {
                         self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
                     }
                 } catch {
-                    logger.logError("Failed to remove message at \(index) in fetched state: \(error)")
+                    showAlert(message: "Failed to remove message at \(index) in fetched state: \(error)")
                 }
             }
         default:
@@ -466,7 +466,7 @@ extension InboxViewController: MsgListViewController {
                     self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
                 }
             } catch {
-                logger.logError("Failed to remove message at \(index) in default state: \(error)")
+                showAlert(message: "Failed to remove message at \(index) in \(state): \(error)")
             }
         }
     }
