@@ -107,10 +107,15 @@ export const CommonData = {
   },
   recipientWithoutPublicKey: {
     email: 'no.publickey@flowcrypt.com',
-    password: '123456',
-    modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)`,
+    subject: 'Test subject 1*',
+    weakPassword: '123aaBBc',
+    password: 'abcABC1*',
+    modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)\n\nPassword should include: - one uppercase - one lowercase - one number - one special character eg &/#"-'_%-@,;:!*() - min 8 characters length`,
     emptyPasswordMessage: 'Tap to add password for recipients who don\'t have encryption set up.',
     addedPasswordMessage: 'Web portal password added',
+    weakPasswordMessage: 'Error\nPassword didn\'t comply with company policy, which requires at least:\n\n- one uppercase - one lowercase - one number - one special character eg &/#"-\'_%-@,;:!*() - 8 characters length\n\nPlease update the password and re-send.',
+    passphrasePasswordErrorMessage: 'Error\nPlease do not use your private key pass phrase as a password for this message.\n\nYou should come up with some other unique password that you can share with recipient.',
+    subjectPasswordErrorMessage: 'Error\nPlease do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don\'t need a password.'
   },
   recipientWithExpiredPublicKey: {
     email: 'expired@flowcrypt.com'
