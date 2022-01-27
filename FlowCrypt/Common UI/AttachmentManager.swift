@@ -46,6 +46,7 @@ final class AttachmentManager: NSObject {
     @MainActor
     private func openDocumentsController(from url: URL) {
         let documentController = UIDocumentPickerViewController(forExporting: [url])
+        documentController.shouldShowFileExtensions = true
         documentController.delegate = self
         present(documentController, animated: true, completion: nil)
     }

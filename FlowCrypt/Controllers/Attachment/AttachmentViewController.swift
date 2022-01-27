@@ -52,7 +52,7 @@ final class AttachmentViewController: UIViewController {
         return textView
     }()
 
-    private let errorLabel: UILabel = {
+    private lazy var errorLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.text = "no_preview_avalable".localized
@@ -62,7 +62,7 @@ final class AttachmentViewController: UIViewController {
         return label
     }()
 
-    private var encodedContentRules: String {
+    private let encodedContentRules: String =
         """
         [{
             "trigger": {
@@ -73,7 +73,6 @@ final class AttachmentViewController: UIViewController {
             }
         }]
         """
-    }
 
     private var isNavigated = false
     private var didLayoutSubviews = false
@@ -122,7 +121,9 @@ final class AttachmentViewController: UIViewController {
                 NavigationBarItemsView.Input(
                     image: image?.tinted(.gray),
                     accessibilityId: "aid-save-attachment-to-device",
-                    onTap: { [weak self] in self?.downloadAttachment() }
+                    onTap: { [weak self] in
+                        self?.downloadAttachment()
+                    }
                 )
             ]
         )

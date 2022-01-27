@@ -14,11 +14,21 @@ protocol FileType {
 }
 
 extension FileType {
-    var size: Int { data.count }
+    var size: Int {
+        data.count
+    }
     var formattedSize: String {
         ByteCountFormatter().string(fromByteCount: Int64(size))
     }
-    var type: String { name.mimeType }
+    var type: String {
+        name.mimeType
+    }
+    var fileName: String {
+        guard let sufix = name.components(separatedBy: ".").last else {
+            return name
+        }
+        return name + "." + sufix
+    }
 }
 
 protocol FilesManagerPresenter {
@@ -47,7 +57,8 @@ final class FilesManager {
 
 extension FilesManager: FilesManagerType {
     func save(file: FileType) async throws -> URL {
-        let url = self.documentsDirectoryURL.appendingPathComponent(file.name)
+        let url = self.documentsDirectoryURL.appendingPathComponent(file.fileName)
+
         return try await withCheckedThrowingContinuation { continuation in
             queue.async {
                 do {
