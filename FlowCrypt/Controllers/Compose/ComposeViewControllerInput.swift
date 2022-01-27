@@ -12,7 +12,6 @@ struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
     struct MessageQuoteInfo: Equatable {
-        let quoteType: MessageQuoteType
         let recipients: [String]
         let sender: String?
         let subject: String?

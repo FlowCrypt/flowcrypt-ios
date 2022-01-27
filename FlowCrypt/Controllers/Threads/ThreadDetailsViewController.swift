@@ -229,7 +229,6 @@ extension ThreadDetailsViewController {
         let threadId = quoteType == .reply ? input.rawMessage.threadId : nil
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
-            quoteType: quoteType,
             recipients: recipients,
             sender: input.rawMessage.sender,
             subject: [quoteType.subjectPrefix, subject].joined(),
