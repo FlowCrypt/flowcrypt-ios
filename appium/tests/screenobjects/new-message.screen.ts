@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  ADD_RECIPIENT_FIELD: '~recipientTextField',
+  ADD_RECIPIENT_FIELD: '~aid-recipient-text-field',
   SUBJECT_FIELD: '~subjectTextField',
   COMPOSE_SECURITY_MESSAGE: '~messageTextView',
   RECIPIENTS_LIST: '~recipientsList',
