@@ -111,7 +111,6 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization? {
         getAuthorizationForCurrentUser()
     }
-
 }
 
 extension GoogleUserService: UserServiceType {

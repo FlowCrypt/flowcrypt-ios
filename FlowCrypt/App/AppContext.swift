@@ -130,5 +130,4 @@ class AppContext {
             remoteFoldersProvider: self.getRequiredMailProvider().remoteFoldersProvider
         )
     }
-
 }

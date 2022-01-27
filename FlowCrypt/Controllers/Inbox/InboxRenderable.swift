@@ -23,7 +23,6 @@ struct InboxRenderable {
     let date: Date
 
     let wrappedType: WrappedType
-
 }
 
 extension InboxRenderable {

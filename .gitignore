@@ -51,3 +51,5 @@ appium/.env
 appium/FlowCrypt.app
 appium/video
 
+BuildTools/.build
+BuildTools/.swiftpm

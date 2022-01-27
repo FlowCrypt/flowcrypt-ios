@@ -5,7 +5,6 @@
 //  Created by Anton Kharchevskyi on 07.01.2022
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
 import UIKit
 
@@ -14,7 +13,7 @@ public extension UIAlertController {
         case centred(UIView)
         case sourceView(UIView)
     }
-    
+
     @discardableResult
     func popoverPresentation(style: PopoverPresentationStyle) -> UIAlertController {
         switch style {

@@ -40,7 +40,7 @@ public final class AttachmentNode: CellNode {
         super.init()
 
         accessibilityIdentifier = input.cellIdentifier
-        
+
         automaticallyManagesSubnodes = true
         borderNode.borderWidth = 1.0
         borderNode.cornerRadius = 8.0
@@ -59,11 +59,11 @@ public final class AttachmentNode: CellNode {
         titleNode.attributedText = input.name
         titleNode.accessibilityIdentifier = input.titleLabelIdentifier
         subtitleNode.attributedText = input.size
-        
+
         deleteButtonNode.addTarget(self, action: #selector(onDeleteButtonTap), forControlEvents: .touchUpInside)
         deleteButtonNode.isHidden = onDeleteTap == nil
     }
-    
+
     @objc private func onDeleteButtonTap() {
         onDeleteTap?()
     }

@@ -64,7 +64,6 @@ extension RecipientWithSortedPubKeys {
                 return expire1 > expire2
             })
     }
-
 }
 
 extension RecipientWithSortedPubKeys: Equatable {

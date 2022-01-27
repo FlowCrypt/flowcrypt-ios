@@ -37,7 +37,6 @@ final class GlobalRouter {
     }
 
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
-
 }
 
 // MARK: - Proceed

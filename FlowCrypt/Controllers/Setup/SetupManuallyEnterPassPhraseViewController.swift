@@ -174,7 +174,6 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                             self.handleCommon(error: error)
                         }
                     }
-
                 }
             case .chooseAnother:
                 return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in

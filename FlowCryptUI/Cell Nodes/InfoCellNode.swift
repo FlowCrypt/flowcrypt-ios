@@ -42,10 +42,10 @@ public final class InfoCellNode: CellNode {
         self.textNode.attributedText = input?.attributedText
         self.textNode.isAccessibilityElement = true
         self.textNode.accessibilityIdentifier = input?.accessibilityIdentifier
-        
+
         self.imageNode.image = input?.image
         self.automaticallyManagesSubnodes = true
-        
+
         if let backgroundColor = input?.backgroundColor {
             self.backgroundColor = backgroundColor
         }
@@ -58,7 +58,7 @@ public final class InfoCellNode: CellNode {
                 child: textNode
             )
         }
-        
+
         imageNode.style.preferredSize = CGSize(width: 24, height: 24)
         return ASInsetLayoutSpec(
             insets: input?.insets ?? .zero,
