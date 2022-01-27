@@ -88,10 +88,8 @@ class PublicKeyDetailsScreen extends BaseScreen {
 
   checkSignatureDateValue = async (value: string) => {
     const signatureValue = await this.signatureValue.getValue();
-    console.log('value', signatureValue);
-    console.log('test1', moment(signatureValue.replace('at', '')).utcOffset(0).format('D MMM yyyy, hh:mm:ss A'));
-    console.log('test2', moment(value).utcOffset(0).format('D MMM yyyy, hh:mm:ss A'));
-    expect(moment(signatureValue).utcOffset(0).format('D MMM yyyy, hh:mm:ss A')).toEqual(value);
+    const convertedToUTC = moment(signatureValue.replace('at', '')).utcOffset(0).format('D MMM yyyy, hh:mm:ss A');
+    expect(convertedToUTC).toEqual(value);
   }
 
   getLastFetchedDateValue = async () => {

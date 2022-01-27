@@ -4,10 +4,9 @@ const pathWdioConfig = require('path');
 require('dotenv').config({ path: pathWdioConfig.resolve(__dirname, '../.env') });
 
 config.suites = {
-  // all: [
-  //   './tests/specs/mock/**/*.spec.ts'
-  // ],
-  all: ['./tests/specs/mock/setup/UpdateOlderPubKeyToNewer.spec.ts']
+  all: [
+    './tests/specs/mock/**/*.spec.ts'
+  ],
 };
 
 config.capabilities = [
