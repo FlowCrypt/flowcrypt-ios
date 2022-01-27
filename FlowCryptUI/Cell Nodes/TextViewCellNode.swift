@@ -61,19 +61,19 @@ public final class TextViewCellNode: CellNode {
             self.textView.textView.accessibilityIdentifier = input.accessibilityIdentifier
         }
     }
-    
+
     private func setHeight(_ height: CGFloat) {
         let shouldAnimate = self.height < height
 
         self.height = height
         setNeedsLayout()
-        
+
         if shouldAnimate { action?(.heightChanged(textView.textView)) }
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textView.style.preferredSize.height = height
-        
+
         return ASInsetLayoutSpec(
             insets: .deviceSpecificTextInsets(top: 8, bottom: 0),
             child: textView
@@ -97,7 +97,7 @@ extension TextViewCellNode: ASEditableTextNodeDelegate {
     public func editableTextNodeDidFinishEditing(_ editableTextNode: ASEditableTextNode) {
         action?(.didEndEditing(editableTextNode.attributedText))
     }
-    
+
     public func editableTextNodeDidUpdateText(_ editableTextNode: ASEditableTextNode) {
         let calculatedHeight = editableTextNode.textView.sizeThatFits(textView.frame.size).height
         setHeight(calculatedHeight)

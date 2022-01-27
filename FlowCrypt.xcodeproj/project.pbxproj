@@ -132,6 +132,11 @@
 		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
 		9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+Backup.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
+		9F38619C27A181CE00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619B27A181CE00851419 /* .swiftformat */; };
+		9F38619E27A18A9100851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619D27A18A9100851419 /* .swiftformat */; };
+		9F3861A027A18AA500851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619F27A18AA500851419 /* .swiftformat */; };
+		9F3861A227A18AAF00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A127A18AAF00851419 /* .swiftformat */; };
+		9F3861A427A18ABA00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A327A18ABA00851419 /* .swiftformat */; };
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
 		9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */; };
 		9F3EF33123B1785600FA0CEF /* MsgListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF33023B1785600FA0CEF /* MsgListViewController.swift */; };
@@ -290,7 +295,6 @@
 		D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E2250538100070F805 /* LocalFoldersProvider.swift */; };
 		D227C0E6250538780070F805 /* RemoteFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */; };
 		D227C0E8250538A90070F805 /* FoldersService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E7250538A90070F805 /* FoldersService.swift */; };
-		D2324CAD2471DCF800FD1C6F /* format.sh in Resources */ = {isa = PBXBuildFile; fileRef = D2324CAC2471DCF800FD1C6F /* format.sh */; };
 		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
@@ -575,6 +579,11 @@
 		9F31AB922329950800CF87EA /* Imap+Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Backup.swift"; sourceTree = "<group>"; };
 		9F31AB9D232BF2A600CF87EA /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UIColorExtensions.swift; path = ../../FlowCrypt/Extensions/UIColorExtensions.swift; sourceTree = "<group>"; };
 		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
+		9F38619B27A181CE00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
+		9F38619D27A18A9100851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
+		9F38619F27A18AA500851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
+		9F3861A127A18AAF00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
+		9F3861A327A18ABA00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
 		9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelper.swift; sourceTree = "<group>"; };
 		9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelperTest.swift; sourceTree = "<group>"; };
 		9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -735,7 +744,6 @@
 		D227C0E2250538100070F805 /* LocalFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFoldersProvider.swift; sourceTree = "<group>"; };
 		D227C0E5250538780070F805 /* RemoteFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFoldersProvider.swift; sourceTree = "<group>"; };
 		D227C0E7250538A90070F805 /* FoldersService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersService.swift; sourceTree = "<group>"; };
-		D2324CAC2471DCF800FD1C6F /* format.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = format.sh; sourceTree = "<group>"; };
 		D2324CB22471E60300FD1C6F /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNode.swift; sourceTree = "<group>"; };
@@ -1209,6 +1217,7 @@
 				9F7E902726A1AD280021C07F /* Core */,
 				9F6F3C6326ADFBDB005BD9C6 /* Mocks */,
 				51B0C772272AB5FD00124663 /* Extensions */,
+				9F3861A327A18ABA00851419 /* .swiftformat */,
 			);
 			path = FlowCryptAppTests;
 			sourceTree = "<group>";
@@ -1681,7 +1690,6 @@
 			children = (
 				D2324CB22471E60300FD1C6F /* .swiftlint.yml */,
 				C132B9B21EC2DBD800763715 /* FlowCrypt */,
-				D2324CAB2471DCF800FD1C6F /* Scripts */,
 				2DC3601602226D74335E18F4 /* Pods */,
 				D204DB9F23FB35700083B9D6 /* FlowCryptUI */,
 				D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */,
@@ -1721,6 +1729,7 @@
 				C132B9BA1EC2DBD800763715 /* Assets.xcassets */,
 				949ED9412303E3B400530579 /* Colors.xcassets */,
 				C132B9BF1EC2DBD800763715 /* Info.plist */,
+				9F38619B27A181CE00851419 /* .swiftformat */,
 			);
 			path = FlowCrypt;
 			sourceTree = "<group>";
@@ -1810,6 +1819,7 @@
 				D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */,
 				D28655972424D0BC0066F52E /* Views */,
 				9F65B0B8278346F8005CD19C /* UIConstants.swift */,
+				9F38619D27A18A9100851419 /* .swiftformat */,
 			);
 			path = FlowCryptUI;
 			sourceTree = "<group>";
@@ -1848,14 +1858,6 @@
 			path = "Folders Services";
 			sourceTree = "<group>";
 		};
-		D2324CAB2471DCF800FD1C6F /* Scripts */ = {
-			isa = PBXGroup;
-			children = (
-				D2324CAC2471DCF800FD1C6F /* format.sh */,
-			);
-			path = Scripts;
-			sourceTree = "<group>";
-		};
 		D24ABA6123FDB275002EE9DD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -1873,6 +1875,7 @@
 				D254AA5F24092A9E0041CAE0 /* Extensions */,
 				9F72E866263ECE2A0039CF81 /* Trace.swift */,
 				9F8220D426336626004B2009 /* Logger.swift */,
+				9F3861A127A18AAF00851419 /* .swiftformat */,
 			);
 			path = FlowCryptCommon;
 			sourceTree = "<group>";
@@ -2015,6 +2018,7 @@
 				D2F6D12924311E5300DB4065 /* Colors.xcassets */,
 				D2A1D3C423FD64AD00D626D6 /* LaunchScreen.storyboard */,
 				D2A1D3C723FD64AD00D626D6 /* Info.plist */,
+				9F38619F27A18AA500851419 /* .swiftformat */,
 			);
 			path = FlowCryptUIApplication;
 			sourceTree = "<group>";
@@ -2332,6 +2336,7 @@
 			files = (
 				9F976569267E18F30058419D /* client_configuraion.json in Resources */,
 				9F976576267E18F90058419D /* client_configuraion_partly_empty.json in Resources */,
+				9F3861A427A18ABA00851419 /* .swiftformat in Resources */,
 				9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */,
 				215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */,
 				21594C9626F1DBA900BE654C /* data.txt in Resources */,
@@ -2343,13 +2348,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */,
-				D2324CAD2471DCF800FD1C6F /* format.sh in Resources */,
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
+				9F38619C27A181CE00851419 /* .swiftformat in Resources */,
 				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
 				949ED9422303E3B400530579 /* Colors.xcassets in Resources */,
@@ -2360,6 +2365,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F38619E27A18A9100851419 /* .swiftformat in Resources */,
 				D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2368,6 +2374,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F3861A227A18AAF00851419 /* .swiftformat in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2375,6 +2382,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F3861A027A18AA500851419 /* .swiftformat in Resources */,
 				D2F6D12A24311E5300DB4065 /* Colors.xcassets in Resources */,
 				D28325DD24895F5700D311BD /* Colors.xcassets in Resources */,
 				D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */,
@@ -2502,7 +2510,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "make format\n";
+			shellScript = "cd BuildTools\nSDKROOT=(xcrun --sdk macosx --show-sdk-path)\n#swift package update #Uncomment this line temporarily to update the version used to the latest matching your BuildTools/Package.swift file\nswift run -c release swiftformat \"$SRCROOT\"\n";
 		};
 		E531C3B50A9C90454C72F878 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

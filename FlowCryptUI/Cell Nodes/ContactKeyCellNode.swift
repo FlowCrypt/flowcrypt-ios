@@ -5,7 +5,6 @@
 //  Created by Roma Sosnovsky on 11/10/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
 import AsyncDisplayKit
 import Foundation
@@ -49,16 +48,13 @@ public final class ContactKeyCellNode: CellNode {
         fingerprintNode.attributedText = input.fingerprint
         fingerprintNode.accessibilityIdentifier = "fingerprintValue"
 
-            
         createdAtTitleNode.attributedText = "Created:".attributed(.bold(16))
         createdAtNode.attributedText = input.createdAt
         createdAtNode.accessibilityIdentifier = "createdAtValue"
 
-
         expiresTitleNode.attributedText = "Expires:".attributed(.bold(16))
         expiresNode.attributedText = input.expires
         expiresNode.accessibilityIdentifier = "expiresValue"
-
 
         borderNode.borderWidth = 1.0
         borderNode.cornerRadius = 8.0

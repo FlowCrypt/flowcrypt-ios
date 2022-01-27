@@ -53,5 +53,4 @@ enum AlertsFactory {
 
         return alert
     }
-
 }

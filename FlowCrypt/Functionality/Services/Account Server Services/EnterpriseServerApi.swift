@@ -112,7 +112,6 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         } catch {
             throw error
         }
-
     }
 
     func getReplyToken(for email: String) async throws -> String {

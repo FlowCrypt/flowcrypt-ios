@@ -25,7 +25,7 @@ public final class SignInImageNode: CellNode {
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize.height = imageHeight
-        
+
         return ASInsetLayoutSpec(
             insets: .deviceSpecificInsets(
                 top: UIDevice.isIphone ? 8 : 32,
@@ -35,4 +35,3 @@ public final class SignInImageNode: CellNode {
         )
     }
 }
-

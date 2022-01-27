@@ -70,7 +70,7 @@ extension RecipientEmailsCellNode {
             public var stateImage: UIImage? {
                 stateContext.image
             }
-            
+
             public var accessibilityIdentifier: String? {
                 stateContext.accessibilityIdentifier
             }
