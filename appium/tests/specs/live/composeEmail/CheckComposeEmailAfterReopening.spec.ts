@@ -21,7 +21,7 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickCreateEmail();
-    await NewMessageScreen.composeEmail('', '', longEmailText);
+    await NewMessageScreen.setComposeSecurityMessage(longEmailText);
     await NewMessageScreen.checkRecipientsTextFieldIsInvisible();
 
     await NewMessageScreen.clickBackButton();
