@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  ADD_RECIPIENT_FIELD: '~recipientTextField',
+  ADD_RECIPIENT_FIELD: '~aid-recipient-text-field',
   SUBJECT_FIELD: '~subjectTextField',
   COMPOSE_SECURITY_MESSAGE: '~messageTextView',
   RECIPIENTS_LIST: '~recipientsList',
@@ -116,8 +116,8 @@ class NewMessageScreen extends BaseScreen {
 
   composeEmail = async (recipient: string, subject: string, message: string) => {
     await this.setAddRecipient(recipient);
-    await this.setSubject(subject);
     await this.setComposeSecurityMessage(message);
+    await this.setSubject(subject);
   };
 
   setAddRecipientByName = async (name: string, email: string) => {
@@ -197,6 +197,11 @@ class NewMessageScreen extends BaseScreen {
 
   clickCancelButton = async () => {
     await ElementHelper.waitAndClick(await this.cancelButton);
+  }
+
+  checkSetPasswordButton = async(isEnabled: boolean) => {
+    const el = await this.setPasswordButton;
+    expect(await el.isEnabled()).toBe(isEnabled);
   }
 
   checkPasswordCell = async (text: string) => {

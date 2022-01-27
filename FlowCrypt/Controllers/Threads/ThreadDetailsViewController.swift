@@ -238,7 +238,14 @@ extension ThreadDetailsViewController {
             attachments: attachments
         )
 
-        let composeInput = ComposeMessageInput(type: .quote(replyInfo))
+        let composeType: ComposeMessageInput.InputType
+        switch quoteType {
+        case .reply:
+            composeType = .reply(replyInfo)
+        case .forward:
+            composeType = .forward(replyInfo)
+        }
+        let composeInput = ComposeMessageInput(type: composeType)
         navigationController?.pushViewController(
             ComposeViewController(appContext: appContext, input: composeInput),
             animated: true

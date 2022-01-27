@@ -82,11 +82,12 @@ extension ExtensionTests {
         dateFormatter.dateFormat = "HH:mm"
 
         let today = Date()
-        let year = Calendar.current.dateComponents([.year], from: today).year
+        let components = Calendar.current.dateComponents([.year, .day], from: today)
+
         let sameYearDate = try XCTUnwrap(DateComponents(
             calendar: .current,
             timeZone: .current,
-            year: year,
+            year: components.year,
             month: 1,
             day: 24,
             hour: 18,

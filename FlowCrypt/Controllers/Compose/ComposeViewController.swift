@@ -122,7 +122,9 @@ final class ComposeViewController: TableNodeViewController {
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
             clientConfiguration: clientConfiguration,
             encryptedStorage: appContext.encryptedStorage,
-            messageGateway: appContext.getRequiredMailProvider().messageSender
+            messageGateway: appContext.getRequiredMailProvider().messageSender,
+            passPhraseService: appContext.passPhraseService,
+            sender: email
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
@@ -269,7 +271,6 @@ extension ComposeViewController {
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
                     input: input,
                     contextToSend: contextToSend,
-                    email: email,
                     includeAttachments: false,
                     signingPrv: signingPrv
                 )
@@ -505,7 +506,6 @@ extension ComposeViewController {
         let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
             input: self.input,
             contextToSend: self.contextToSend,
-            email: self.email,
             signingPrv: signingKey
         )
         UIApplication.shared.isIdleTimerDisabled = true
@@ -525,8 +525,17 @@ extension ComposeViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
             guard let self = self else { return }
 
-            if case MessageValidationError.noPubRecipients = error, self.isMessagePasswordSupported {
-                self.setMessagePassword()
+            if self.isMessagePasswordSupported {
+                switch error {
+                case MessageValidationError.noPubRecipients:
+                    self.setMessagePassword()
+                case MessageValidationError.notUniquePassword,
+                    MessageValidationError.subjectContainsPassword,
+                    MessageValidationError.weakPassword:
+                    self.showAlert(message: error.errorMessage)
+                default:
+                    self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+                }
             } else {
                 self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
             }
@@ -695,7 +704,9 @@ extension ComposeViewController {
                 let mutableString = NSMutableAttributedString(attributedString: messageText)
                 mutableString.append(styledQuote)
                 $0.textView.attributedText = mutableString
-                $0.becomeFirstResponder()
+                if input.isReply {
+                    $0.becomeFirstResponder()
+                }
             } else {
                 $0.textView.attributedText = messageText
             }
@@ -742,7 +753,7 @@ extension ComposeViewController {
             input: decorator.styledTextFieldInput(
                 with: "compose_recipient".localized,
                 keyboardType: .emailAddress,
-                accessibilityIdentifier: "recipientTextField")
+                accessibilityIdentifier: "aid-recipient-text-field")
         ) { [weak self] action in
             self?.handleTextFieldAction(with: action)
         }
@@ -755,7 +766,7 @@ extension ComposeViewController {
         }
         .then {
             $0.isLowercased = true
-            if !self.input.isQuote {
+            if self.input.isForward || self.input.isIdle {
                 $0.becomeFirstResponder()
             }
         }
@@ -1105,7 +1116,9 @@ extension ComposeViewController {
     }
 
     @objc private func messagePasswordTextFieldDidChange(_ sender: UITextField) {
-        messagePasswordAlertController?.actions[1].isEnabled = (sender.text ?? "").isNotEmpty
+        let password = sender.text ?? ""
+        let isPasswordStrong = composeMessageService.isMessagePasswordStrong(pwd: password)
+        messagePasswordAlertController?.actions[1].isEnabled = isPasswordStrong
     }
 }
 

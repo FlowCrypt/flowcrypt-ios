@@ -77,7 +77,7 @@ struct ComposeViewDecorator {
     }
 
     func styledQuote(with input: ComposeMessageInput) -> NSAttributedString {
-        guard case let .quote(info) = input.type else { return NSAttributedString(string: "") }
+        guard let info = input.type.info else { return NSAttributedString(string: "") }
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
