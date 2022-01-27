@@ -65,12 +65,20 @@ struct ApiError: LocalizedError {
 
 extension ApiError {
     static func create(from httpError: HttpErr, request: ApiCall.Request) -> Self {
-        guard
-            let data = httpError.data,
-            let object = try? JSONDecoder().decode(HttpError.self, from: data)
-        else {
+        guard let data = httpError.data else {
             return ApiError(
                 errorDescription: httpError.error?.localizedDescription ?? "",
+                internalError: httpError.error
+            )
+        }
+
+        guard let object = try? JSONDecoder().decode(HttpError.self, from: data) else {
+            let errorDescription = httpError.error?.localizedDescription
+                ?? String(data: data, encoding: .utf8)
+                ?? "missing error description"
+
+            return ApiError(
+                errorDescription: errorDescription,
                 internalError: httpError.error
             )
         }

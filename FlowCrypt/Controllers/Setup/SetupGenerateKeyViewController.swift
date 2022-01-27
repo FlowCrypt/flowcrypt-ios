@@ -102,14 +102,10 @@ private actor Service {
             variant: .curve25519,
             userIds: [userId]
         )
-        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
 
-        try appContext.encryptedStorage.putKeypairs(
-            keyDetails: [encryptedPrv.key],
-            passPhrase: storageMethod == .persistent ? passPhrase: nil,
-            source: .generated,
-            for: user.email
-        )
+        try await submitKeyToAttester(email: userId.email, publicKey: encryptedPrv.key.public)
+        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
+        try await putKeypairsInEncryptedStorage(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
 
         if storageMethod == .memory {
             let passPhrase = PassPhrase(
@@ -119,12 +115,6 @@ private actor Service {
             try appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
         }
 
-        await submitKeyToAttesterAndShowAlertOnFailure(
-            email: userId.email,
-            publicKey: encryptedPrv.key.public,
-            viewController: viewController
-        )
-
         // sending welcome email is not crucial, so we don't handle errors
         _ = try? await attester.testWelcome(
             email: userId.email,
@@ -132,11 +122,20 @@ private actor Service {
         )
     }
 
-    private func submitKeyToAttesterAndShowAlertOnFailure(
+    @MainActor
+    private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: StorageMethod, passPhrase: String) throws {
+        try appContext.encryptedStorage.putKeypairs(
+            keyDetails: [encryptedPrv.key],
+            passPhrase: storageMethod == .persistent ? passPhrase: nil,
+            source: .generated,
+            for: user.email
+        )
+    }
+
+    private func submitKeyToAttester(
         email: String,
-        publicKey: String,
-        viewController: ViewController
-    ) async {
+        publicKey: String
+    ) async throws {
         do {
             _ = try await attester.update(
                 email: email,
@@ -144,17 +143,16 @@ private actor Service {
                 token: appContext.dataService.token
             )
         } catch {
-            let message = "Failed to submit Public Key"
-            await viewController.showAlert(error: error, message: message)
+            throw CreateKeyError.submitKey(error)
         }
     }
 
     private func getUserId() throws -> UserId {
         guard let email = appContext.dataService.email, !email.isEmpty else {
-            throw CreateKeyError.missedUserEmail
+            throw CreateKeyError.missingUserEmail
         }
         guard let name = appContext.dataService.currentUser?.name, !name.isEmpty else {
-            throw CreateKeyError.missedUserName
+            throw CreateKeyError.missingUserName
         }
         return UserId(email: email, name: name)
     }

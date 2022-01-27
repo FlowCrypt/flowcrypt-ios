@@ -35,7 +35,6 @@ private struct ComposedErrorHandler: ErrorHandler {
         handlers: [
             KeyServiceErrorHandler(),
             BackupServiceErrorHandler(),
-            CreateKeyErrorHandler()
         ]
     )
 
