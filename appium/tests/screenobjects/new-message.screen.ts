@@ -116,8 +116,8 @@ class NewMessageScreen extends BaseScreen {
 
   composeEmail = async (recipient: string, subject: string, message: string) => {
     await this.setAddRecipient(recipient);
-    await this.setSubject(subject);
     await this.setComposeSecurityMessage(message);
+    await this.setSubject(subject);
   };
 
   setAddRecipientByName = async (name: string, email: string) => {
