@@ -82,10 +82,13 @@
 "compose_recipient_revoked" = "One or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.";
 "compose_recipient_expired" = "One or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.";
 "compose_recipient_invalid_email" = "One or more of your recipients have invalid email address (marked in red)";
+"compose_password_weak" = "Password didn't comply with company policy, which requires at least:\n\n- one uppercase\n- one lowercase\n- one number\n- one special character eg &/#\"-'_%-@,;:!*()\n- 8 characters length\n\nPlease update the password and re-send.";
+"compose_password_passphrase_error" = "Please do not use your private key pass phrase as a password for this message.\n\nYou should come up with some other unique password that you can share with recipient.";
+"compose_password_subject_error" = "Please do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don't need a password.";
 "compose_password_placeholder" = "Tap to add password for recipients who don't have encryption set up.";
 "compose_password_set_message" = "Web portal password added";
 "compose_password_modal_title" = "Set web portal password";
-"compose_password_modal_message" = "The recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)";
+"compose_password_modal_message" = "The recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)\n\nPassword should include:\n- one uppercase\n- one lowercase\n- one number\n- one special character eg &/#\"-'_%-@,;:!*()\n- min 8 characters length";
 "compose_error" = "Could not compose message";
 "compose_reply_successful" = "Reply successfully sent";
 "compose_quote_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
@@ -298,3 +301,5 @@
 "imap_error_no_session" = "Session isn't established";
 "imap_error_provider" = "Provider error %@";
 "imap_error_msg_info" = "Can't parse message without \"%@\"";
+
+"submit_key_error" = "Failed to submit Public Key";

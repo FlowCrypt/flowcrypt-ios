@@ -181,7 +181,6 @@ extension ThreadDetailsViewController {
             } catch {
                 handleAttachmentDecryptError(error, at: indexPath)
             }
-
         }
     }
 
@@ -234,7 +233,14 @@ extension ThreadDetailsViewController {
             attachments: attachments
         )
 
-        let composeInput = ComposeMessageInput(type: .quote(replyInfo))
+        let composeType: ComposeMessageInput.InputType
+        switch quoteType {
+        case .reply:
+            composeType = .reply(replyInfo)
+        case .forward:
+            composeType = .forward(replyInfo)
+        }
+        let composeInput = ComposeMessageInput(type: composeType)
         navigationController?.pushViewController(
             ComposeViewController(userContext: userContext, input: composeInput),
             animated: true

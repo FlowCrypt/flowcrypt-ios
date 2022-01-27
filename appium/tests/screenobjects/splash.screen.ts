@@ -84,7 +84,7 @@ class SplashScreen extends BaseScreen {
     return $(SELECTORS.SIGN_IN_WITH_GMAIL);
   }
 
-  get useAnotherAcoount() {
+  get useAnotherAccount() {
     return $(SELECTORS.USE_ANOTHER_ACCOUNT);
   }
 
@@ -147,7 +147,7 @@ class SplashScreen extends BaseScreen {
     await browser.pause(1000); // stability sleep for language change
     if (await (await $(emailSelector)).isDisplayed()) {
       await ElementHelper.waitAndClick(await $(emailSelector));
-      await (await this.useAnotherAcoount).waitForDisplayed({ timeout: 5000, reverse: true });
+      await (await this.useAnotherAccount).waitForDisplayed({ timeout: 5000, reverse: true });
       if (await (await this.passwordField).isDisplayed()) {
         await this.fillPassword(password);
         await this.clickNextBtn();

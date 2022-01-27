@@ -32,6 +32,7 @@ public final class TextFieldNode: ASDisplayNode {
 
     public var shouldEndEditing: ((UITextField) -> (Bool))?
 
+    // swiftlint:disable force_cast
     private var textField: TextField {
         node.view as! TextField
     }
@@ -111,7 +112,7 @@ public final class TextFieldNode: ASDisplayNode {
             }
         }
     }
-    
+
     public var autocapitalizationType: UITextAutocapitalizationType = .sentences {
         didSet {
             DispatchQueue.main.async {

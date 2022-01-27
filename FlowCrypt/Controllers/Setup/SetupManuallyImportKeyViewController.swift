@@ -211,7 +211,7 @@ extension SetupManuallyImportKeyViewController: UIDocumentPickerDelegate {
         document.open { [weak self] success in
             guard success else { assertionFailure("Failed to open doc"); return }
             guard let metadata = document.data else { assertionFailure("Failed to fetch data"); return }
-            guard let self = self else { return}
+            guard let self = self else { return }
             Task {
                 do {
                     try await self.parseUserProvided(data: metadata)

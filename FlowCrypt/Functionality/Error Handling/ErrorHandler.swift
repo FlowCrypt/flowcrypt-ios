@@ -34,8 +34,7 @@ private struct ComposedErrorHandler: ErrorHandler {
     static let shared: ComposedErrorHandler = ComposedErrorHandler(
         handlers: [
             KeyServiceErrorHandler(),
-            BackupServiceErrorHandler(),
-            CreateKeyErrorHandler()
+            BackupServiceErrorHandler()
         ]
     )
 

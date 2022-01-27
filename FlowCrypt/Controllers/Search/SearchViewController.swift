@@ -253,7 +253,6 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
             )
         searchController.searchBar.searchTextField.textColor = .white
         searchController.searchBar.searchTextField.accessibilityIdentifier = "searchAllEmailField"
-
     }
 }
 
