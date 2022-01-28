@@ -29,7 +29,7 @@ final class InboxViewContainerController: TableNodeViewController {
         case loadedFolders([FolderViewModel])
     }
 
-    let userContext: UserContext
+    let appContext: AppContextWithUser
     let foldersService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
 
@@ -38,12 +38,12 @@ final class InboxViewContainerController: TableNodeViewController {
     }
 
     init(
-        userContext: UserContext,
+        appContext: AppContextWithUser,
         foldersService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
-        self.userContext = userContext
-        self.foldersService = foldersService ?? userContext.getFoldersService()
+        self.appContext = appContext
+        self.foldersService = foldersService ?? appContext.getFoldersService()
         self.decorator = decorator
         super.init(node: TableNode())
         node.delegate = self
@@ -63,7 +63,7 @@ final class InboxViewContainerController: TableNodeViewController {
     private func fetchInboxFolder() {
         Task {
             do {
-                let folders = try await foldersService.fetchFolders(isForceReload: true, for: userContext.user)
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: appContext.user)
                 self.handleFetched(folders: folders)
             } catch {
                 self.state = .error(error)
@@ -103,7 +103,7 @@ final class InboxViewContainerController: TableNodeViewController {
             }
             let input = InboxViewModel(inbox)
             let inboxViewController = InboxViewControllerFactory.make(
-                userContext: userContext,
+                appContext: appContext,
                 viewModel: input
             )
             navigationController?.setViewControllers([inboxViewController], animated: false)

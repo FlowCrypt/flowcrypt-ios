@@ -41,19 +41,19 @@ final class SearchViewController: TableNodeViewController {
     // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads
     private let service: ServiceActor
     private var searchTask: DispatchWorkItem?
-    private let userContext: UserContext
+    private let appContext: AppContextWithUser
     private let searchController = UISearchController(searchResultsController: nil)
     private let folderPath: String
     private var searchedExpression: String = ""
 
     init(
-        userContext: UserContext,
+        appContext: AppContextWithUser,
         searchProvider: MessageSearchProvider? = nil,
         folderPath: String
     ) {
-        self.userContext = userContext
+        self.appContext = appContext
         self.service = ServiceActor(
-            searchProvider: searchProvider ?? userContext.getRequiredMailProvider().messageSearchProvider
+            searchProvider: searchProvider ?? appContext.getRequiredMailProvider().messageSearchProvider
         )
         self.folderPath = folderPath
         super.init(node: TableNode())
@@ -217,7 +217,7 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         guard let message = state.messages[safe: indexPath.row] else { return }
 
         // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
-        open(with: .init(message: message), path: folderPath, userContext: userContext)
+        open(with: .init(message: message), path: folderPath, appContext: appContext)
     }
 }
 

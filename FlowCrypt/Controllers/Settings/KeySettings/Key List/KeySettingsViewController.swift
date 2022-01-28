@@ -17,18 +17,18 @@ import FlowCryptUI
  */
 final class KeySettingsViewController: TableNodeViewController {
 
-    private let userContext: UserContext
+    private let appContext: AppContextWithUser
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
     private let isUsingKeyManager: Bool
 
     init(
-        userContext: UserContext,
+        appContext: AppContextWithUser,
         decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
     ) {
-        self.userContext = userContext
+        self.appContext = appContext
         self.decorator = decorator
-        self.isUsingKeyManager = userContext.clientConfigurationService.getSaved(for: userContext.user.email).isUsingKeyManager
+        self.isUsingKeyManager = appContext.clientConfigurationService.getSaved(for: appContext.user.email).isUsingKeyManager
         super.init(node: TableNode())
     }
 
@@ -71,14 +71,14 @@ final class KeySettingsViewController: TableNodeViewController {
 
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() async throws {
-        self.keys = try await userContext.keyService.getPrvKeyDetails()
+        self.keys = try await appContext.keyService.getPrvKeyDetails()
         await node.reloadData()
     }
 }
 
 extension KeySettingsViewController {
     @objc private func handleAddButtonTap() {
-        navigationController?.pushViewController(SetupManuallyImportKeyViewController(appContext: userContext), animated: true)
+        navigationController?.pushViewController(SetupManuallyImportKeyViewController(appContext: appContext), animated: true)
     }
 }
 

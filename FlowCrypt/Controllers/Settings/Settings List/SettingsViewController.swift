@@ -43,19 +43,19 @@ final class SettingsViewController: TableNodeViewController {
         }
     }
 
-    private let userContext: UserContext
+    private let appContext: AppContextWithUser
     private let decorator: SettingsViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let rows: [SettingsMenuItem]
 
     init(
-        userContext: UserContext,
+        appContext: AppContextWithUser,
         decorator: SettingsViewDecorator = SettingsViewDecorator()
     ) {
-        self.userContext = userContext
+        self.appContext = appContext
         self.decorator = decorator
-        self.clientConfiguration = userContext.clientConfigurationService.getSaved(for: userContext.user.email)
-        self.rows = SettingsMenuItem.filtered(with: self.clientConfiguration)
+        self.clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        self.rows = SettingsMenuItem.filtered(with: clientConfiguration)
         super.init(node: TableNode())
     }
 
@@ -113,18 +113,18 @@ extension SettingsViewController {
 
         switch setting {
         case .keys:
-            viewController = KeySettingsViewController(userContext: userContext)
+            viewController = KeySettingsViewController(appContext: appContext)
         case .legal:
             viewController = LegalViewController()
         case .contacts:
-            viewController = ContactsListViewController(appContext: userContext)
+            viewController = ContactsListViewController(appContext: appContext)
         case .backups:
             guard clientConfiguration.canBackupKeys else {
                 viewController = nil
                 return
             }
-            let userId = UserId(email: userContext.user.email, name: userContext.user.email)
-            viewController = BackupViewController(appContext: userContext, userId: userId)
+            let userId = UserId(email: appContext.user.email, name: appContext.user.email)
+            viewController = BackupViewController(appContext: appContext, userId: userId)
         default:
             viewController = nil
         }

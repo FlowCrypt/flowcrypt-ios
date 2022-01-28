@@ -49,7 +49,7 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
-    private let userContext: UserContext
+    private let appContext: AppContextWithUser
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
     private let decorator: ComposeViewDecorator
@@ -88,7 +88,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     init(
-        userContext: UserContext,
+        appContext: AppContextWithUser,
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
@@ -99,31 +99,31 @@ final class ComposeViewController: TableNodeViewController {
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods()
     ) {
-        self.userContext = userContext
-        self.email = userContext.user.email
+        self.appContext = appContext
+        self.email = appContext.user.email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        let clientConfiguration = userContext.clientConfigurationService.getSaved(for: userContext.user.email)
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(
-                encryptedStorage: userContext.encryptedStorage
+                encryptedStorage: appContext.encryptedStorage
             ),
             clientConfiguration: clientConfiguration
         )
         let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
             userService: GoogleUserService(
-                currentUserEmail: userContext.user.email,
+                currentUserEmail: appContext.user.email,
                 appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
             )
         )
         self.cloudContactProvider = cloudContactProvider
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
             clientConfiguration: clientConfiguration,
-            encryptedStorage: userContext.encryptedStorage,
-            messageGateway: userContext.getRequiredMailProvider().messageSender,
-            passPhraseService: userContext.passPhraseService,
-            sender: userContext.user.email
+            encryptedStorage: appContext.encryptedStorage,
+            messageGateway: appContext.getRequiredMailProvider().messageSender,
+            passPhraseService: appContext.passPhraseService,
+            sender: appContext.user.email
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
@@ -133,7 +133,7 @@ final class ComposeViewController: TableNodeViewController {
             contactsService: self.contactsService,
             cloudContactProvider: cloudContactProvider
         )
-        self.router = userContext.globalRouter
+        self.router = appContext.globalRouter
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
         self.clientConfiguration = clientConfiguration
@@ -430,7 +430,7 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
-        guard let signingKey = try await userContext.keyService.getSigningKey() else {
+        guard let signingKey = try await appContext.keyService.getSigningKey() else {
             throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
 
@@ -472,7 +472,7 @@ extension ComposeViewController {
     private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await userContext.keyService.getPrvKeyInfo()
+        let allKeys = try await appContext.keyService.getPrvKeyInfo()
         guard allKeys.isNotEmpty else {
             // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
             //   I copied it from another usage, but has to be changed
@@ -480,7 +480,7 @@ extension ComposeViewController {
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try userContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        try appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         // now figure out if the pass phrase also matched the signing prv itself
         let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
         return matched != nil// true if the pass phrase matched signing key
@@ -1344,7 +1344,7 @@ extension ComposeViewController {
 
         Task {
             do {
-                try await router.askForContactsPermission(for: .gmailLogin(self), appContext: userContext)
+                try await router.askForContactsPermission(for: .gmailLogin(self), appContext: appContext)
                 node.reloadSections([2], with: .automatic)
             } catch {
                 handleContactsPermissionError(error)

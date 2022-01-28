@@ -78,7 +78,7 @@ class AppContext {
         )
     }
 
-    func withSession(_ session: SessionType?) -> UserContext {
+    func withSession(_ session: SessionType?) -> AppContextWithUser {
         guard
             let authType = dataService.currentAuthType,
             let user = dataService.currentUser
@@ -86,7 +86,7 @@ class AppContext {
             fatalError()
         }
 
-        return UserContext(
+        return AppContextWithUser(
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
@@ -141,7 +141,7 @@ class AppContext {
     }
 }
 
-class UserContext: AppContext {
+class AppContextWithUser: AppContext {
     let authType: AuthType
     let user: User
 
