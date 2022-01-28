@@ -11,13 +11,13 @@ import Foundation
 public extension URL {
     var sharedDocumentURL: URL? {
         guard let scheme = self.scheme else { return nil }
-        
+
         let urlString = self.absoluteString
         let sharedDocumentUrlString = urlString.replacingOccurrences(
             of: scheme,
             with: "shareddocuments"
         )
-        
+
         return URL(string: sharedDocumentUrlString)
     }
 }

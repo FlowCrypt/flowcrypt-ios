@@ -22,12 +22,15 @@ protocol CoreComposeMessageType {
 final class ComposeMessageService {
 
     private let messageGateway: MessageGateway
+    private let passPhraseService: PassPhraseServiceType
     private let storage: EncryptedStorageType
     private let contactsService: ContactsServiceType
     private let core: CoreComposeMessageType & KeyParser
     private let enterpriseServer: EnterpriseServerApiType
     private let draftGateway: DraftGateway?
     private lazy var logger: Logger = Logger.nested(Self.self)
+
+    private let sender: String
 
     private struct ReplyInfo: Encodable {
         let sender: String
@@ -40,12 +43,15 @@ final class ComposeMessageService {
         clientConfiguration: ClientConfiguration,
         encryptedStorage: EncryptedStorageType,
         messageGateway: MessageGateway,
+        passPhraseService: PassPhraseServiceType,
         draftGateway: DraftGateway? = nil,
         contactsService: ContactsServiceType? = nil,
+        sender: String,
         core: CoreComposeMessageType & KeyParser = Core.shared,
         enterpriseServer: EnterpriseServerApiType = EnterpriseServerApi()
     ) {
         self.messageGateway = messageGateway
+        self.passPhraseService = passPhraseService
         self.draftGateway = draftGateway
         self.storage = encryptedStorage
         self.contactsService = contactsService ?? ContactsService(
@@ -54,6 +60,7 @@ final class ComposeMessageService {
         )
         self.core = core
         self.enterpriseServer = enterpriseServer
+        self.sender = sender
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
@@ -66,7 +73,6 @@ final class ComposeMessageService {
     func validateAndProduceSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        email: String,
         includeAttachments: Bool = true,
         signingPrv: PrvKeyInfo?
     ) async throws -> SendableMsg {
@@ -98,8 +104,8 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = storage.getKeypairs(by: email).map(\.public).first else {
-            throw MessageValidationError.missedPublicKey
+        guard let myPubKey = storage.getKeypairs(by: sender).map(\.public).first else {
+            throw MessageValidationError.missingPublicKey
         }
 
         let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
@@ -114,13 +120,24 @@ final class ComposeMessageService {
         let replyToMimeMsg = input.replyToMime
             .flatMap { String(data: $0, encoding: .utf8) }
 
+        if let password = contextToSend.messagePassword, password.isNotEmpty {
+            if subject.lowercased().contains(password.lowercased()) {
+                throw MessageValidationError.subjectContainsPassword
+            }
+
+            let allAvailablePassPhrases = passPhraseService.getPassPhrases().map(\.value)
+            if allAvailablePassPhrases.contains(password) {
+                throw MessageValidationError.notUniquePassword
+            }
+        }
+
         return SendableMsg(
             text: text,
             html: nil,
             to: recipients.map(\.email),
             cc: [],
             bcc: [],
-            from: email,
+            from: sender,
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
@@ -337,5 +354,28 @@ extension ComposeMessageService {
         """
 
         return SendableMsgBody(text: text, html: html)
+    }
+
+    func isMessagePasswordStrong(pwd: String) -> Bool {
+        let minLength = 8
+
+        // currently password-protected messages are supported only with FES on iOS
+        // guard enterpriseServer.isFesUsed else {
+        //     // consumers - just 8 chars requirement
+        //     return pwd.count >= minLength
+        // }
+
+        // enterprise FES - use common corporate password rules
+        let predicate = NSPredicate(
+            format: "SELF MATCHES %@ ", [
+                "(?=.*[a-z])", // 1 lowercase character
+                "(?=.*[A-Z])", // 1 uppercase character
+                "(?=.*[0-9])", // 1 number
+                "(?=.*[\\-@$#!%*?&_,;:'()\"])", // 1 special symbol
+                ".{\(minLength),}$" // minimum 8 characters
+            ].joined()
+        )
+
+        return predicate.evaluate(with: pwd)
     }
 }

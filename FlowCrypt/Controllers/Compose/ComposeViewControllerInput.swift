@@ -24,52 +24,80 @@ struct ComposeMessageInput: Equatable {
 
     enum InputType: Equatable {
         case idle
-        case quote(MessageQuoteInfo)
+        case reply(MessageQuoteInfo)
+        case forward(MessageQuoteInfo)
     }
 
     let type: InputType
 
-    var isQuote: Bool {
-        switch type {
-        case .idle: return false
-        case .quote: return true
-        }
-    }
-
     var quoteRecipients: [String] {
-        guard case let .quote(info) = type else { return [] }
+        guard case .reply(let info) = type else {
+            return []
+        }
         return info.recipients
     }
 
-    var successfullySentToast: String {
-        switch type {
-        case .idle: return "compose_encrypted_sent".localized
-        case .quote(let info):
-            if info.recipients.isEmpty {
-                return "compose_forward_successful".localized
-            } else {
-                return "compose_reply_successful".localized
-            }
-        }
-    }
-
     var subject: String? {
-        guard case let .quote(info) = type else { return nil }
-        return info.subject
+        type.info?.subject
     }
 
     var replyToMime: Data? {
-        guard case let .quote(info) = type else { return nil }
-        return info.mime
+        type.info?.mime
     }
 
     var threadId: String? {
-        guard case let .quote(info) = type else { return nil }
-        return info.threadId
+        type.info?.threadId
     }
 
     var attachments: [MessageAttachment] {
-        guard case let .quote(info) = type else { return [] }
-        return info.attachments
+        type.info?.attachments ?? []
+    }
+}
+
+extension ComposeMessageInput {
+    var successfullySentToast: String {
+        switch type {
+        case .idle:
+            return "compose_encrypted_sent".localized
+        case .forward:
+            return "compose_forward_successful".localized
+        case .reply:
+            return "compose_reply_successful".localized
+        }
+    }
+}
+
+extension ComposeMessageInput {
+    var isQuote: Bool {
+        type != .idle
+    }
+
+    var isIdle: Bool {
+        !isQuote
+    }
+
+    var isReply: Bool {
+        guard case .reply = type else {
+            return false
+        }
+        return true
+    }
+
+    var isForward: Bool {
+        guard case .forward = type else {
+            return false
+        }
+        return true
+    }
+}
+
+extension ComposeMessageInput.InputType {
+    var info: ComposeMessageInput.MessageQuoteInfo? {
+        switch self {
+        case .idle:
+            return nil
+        case .reply(let info), .forward(let info):
+            return info
+        }
     }
 }

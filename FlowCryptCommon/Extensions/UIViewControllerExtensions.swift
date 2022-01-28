@@ -75,7 +75,7 @@ public extension UIViewController {
             title: title,
             message: message,
             preferredStyle: .alert
-        ) 
+        )
         alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
         present(alert, animated: true, completion: nil)

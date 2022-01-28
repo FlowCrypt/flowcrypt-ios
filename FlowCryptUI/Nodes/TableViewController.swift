@@ -16,12 +16,12 @@ open class TableNodeViewController: ASDKViewController<TableNode> {
             navigationItem.setAccessibility(id: title)
         }
     }
-    
+
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         node.reloadData()
     }
-    
+
     open override func viewDidLoad() {
         super.viewDidLoad()
         Logger.nested(Self.self).logDebug("View did load")
@@ -38,7 +38,7 @@ public extension UINavigationItem {
         )
         titleLabel.sizeToFit()
         titleView = titleLabel
-        
+
         titleLabel.isAccessibilityElement = true
         titleLabel.accessibilityTraits = .header
         titleView?.accessibilityIdentifier = "navigationItem\((id ?? "").capitalized)"

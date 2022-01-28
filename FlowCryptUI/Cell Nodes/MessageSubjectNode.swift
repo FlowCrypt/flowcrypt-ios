@@ -5,7 +5,6 @@
 //  Created by Roma Sosnovsky on 05/11/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-    
 
 import AsyncDisplayKit
 

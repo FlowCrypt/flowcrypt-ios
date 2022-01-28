@@ -54,4 +54,3 @@ public final class TextWithIconNode: CellNode {
         )
     }
 }
-
