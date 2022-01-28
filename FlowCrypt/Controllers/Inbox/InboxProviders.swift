@@ -29,13 +29,21 @@ class InboxMessageThreadsProvider: InboxDataProvider {
 
     override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
-        let inboxData = result.threads.map { thread in
-            return InboxRenderable(thread: thread, folderPath: context.folderPath ?? "", activeUserEmail: userEmail)
+        let folderPath = context.folderPath ?? ""
+
+        let inboxData = result.threads.map {
+            InboxRenderable(
+                thread: $0,
+                folderPath: folderPath,
+                activeUserEmail: userEmail
+            )
         }
+
         let inboxContext = InboxContext(
             data: inboxData,
             pagination: result.pagination
         )
+
         return inboxContext
     }
 }
@@ -51,9 +59,7 @@ class InboxMessageListProvider: InboxDataProvider {
     override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
 
-        let inboxData = result.messages
-            .sorted(by: { $0.date > $1.date })
-            .map(InboxRenderable.init)
+        let inboxData = result.messages.map(InboxRenderable.init)
 
         let inboxContext = InboxContext(
             data: inboxData,
