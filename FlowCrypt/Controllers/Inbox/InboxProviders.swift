@@ -50,11 +50,16 @@ class InboxMessageListProvider: InboxDataProvider {
 
     override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
-        let inboxData = result.messages.map { InboxRenderable(message: $0) }
+
+        let inboxData = result.messages
+            .sorted(by: { $0.date > $1.date })
+            .map(InboxRenderable.init)
+
         let inboxContext = InboxContext(
             data: inboxData,
             pagination: result.pagination
         )
+
         return inboxContext
     }
 }
