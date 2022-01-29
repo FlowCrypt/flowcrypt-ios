@@ -7,7 +7,7 @@ import Foundation
 public struct HttpRes {
     public let status: Int
     public let data: Data
-    
+
     public init(status: Int, data: Data) {
         self.status = status
         self.data = data
@@ -18,7 +18,7 @@ public struct HttpErr: Error {
     public let status: Int
     public let data: Data?
     public let error: Error?
-    
+
     public init(status: Int, data: Data?, error: Error?) {
         self.status = status
         self.data = data
@@ -34,14 +34,14 @@ public enum HTTPMethod: String {
 
 public extension URLSession {
     static let generalError = -1
-    
+
     func call(_ urlRequest: URLRequest, tolerateStatus: [Int]? = nil, delegate: URLSessionTaskDelegate? = nil) async throws -> HttpRes {
         let trace = Trace(id: "call")
 
         var data: Data?
         var response: URLResponse?
         var requestError: Error?
-        
+
         do {
             (data, response) = try await self.data(for: urlRequest, delegate: delegate)
         } catch {
@@ -66,7 +66,7 @@ public extension URLSession {
             throw HttpErr(status: status, data: data, error: requestError)
         }
     }
-    
+
     private func toString(_ trace: Trace) -> String {
         let result = trace.result()
         if result < 1.0 {
@@ -81,7 +81,7 @@ public struct URLHeader {
         self.value = value
         self.httpHeaderField = httpHeaderField
     }
-    
+
     let value: String
     let httpHeaderField: String
 }

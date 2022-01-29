@@ -56,10 +56,8 @@ export const CommonData = {
   },
   updateRecipientPublicKey: {
     email: 'updating.key@example.test',
-    oldSignatureDate: 'Jan 12, 2022 at 11:16:58 AM',//time for CI runs
-    newSignatureDate:  'Jan 12, 2022 at 11:27:20 AM',//time for CI runs
-    // oldSignatureDate: 'Jan 12, 2022 at 9:16:58 PM', //- for local run
-    // newSignatureDate:  'Jan 12, 2022 at 9:27:20 PM', // for local run
+    oldSignatureDate: '12 Jan 2022, 07:16:58 PM',//in UTC
+    newSignatureDate:  '12 Jan 2022, 07:27:20 PM',//in UTC
     oldFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0',
     newFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0, 40E4EE0325E38F717737889AC54F277266650211'
   },
@@ -107,10 +105,15 @@ export const CommonData = {
   },
   recipientWithoutPublicKey: {
     email: 'no.publickey@flowcrypt.com',
-    password: '123456',
-    modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)`,
+    subject: 'Test subject 1*',
+    weakPassword: '123aaBBc',
+    password: 'abcABC1*',
+    modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)\n\nPassword should include: - one uppercase - one lowercase - one number - one special character eg &/#"-'_%-@,;:!*() - min 8 characters length`,
     emptyPasswordMessage: 'Tap to add password for recipients who don\'t have encryption set up.',
     addedPasswordMessage: 'Web portal password added',
+    weakPasswordMessage: 'Error\nPassword didn\'t comply with company policy, which requires at least:\n\n- one uppercase - one lowercase - one number - one special character eg &/#"-\'_%-@,;:!*() - 8 characters length\n\nPlease update the password and re-send.',
+    passphrasePasswordErrorMessage: 'Error\nPlease do not use your private key pass phrase as a password for this message.\n\nYou should come up with some other unique password that you can share with recipient.',
+    subjectPasswordErrorMessage: 'Error\nPlease do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don\'t need a password.'
   },
   recipientWithExpiredPublicKey: {
     email: 'expired@flowcrypt.com'

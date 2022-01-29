@@ -9,7 +9,7 @@
 import Foundation
 
 public extension Data {
-    
+
     private enum Constants {
         static let alphabet = "ybndrfg8ejkmcpqxot1uwisza345h769".unicodeScalars.map { UInt8(ascii: $0) }
         static let bitsInZBase32Character = 5
@@ -17,7 +17,7 @@ public extension Data {
     }
 
     func zBase32EncodedBytes() -> [UInt8] {
-        
+
         let bytes = [UInt8](self)
         let capacity = (bytes.count / Constants.bitsInZBase32Character) * Constants.bitsInZBase32Character
 

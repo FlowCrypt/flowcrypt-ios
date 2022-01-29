@@ -20,12 +20,12 @@ extension Bundle {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return .debug }
         return FlowCryptBundleType(rawValue: bundleIdentifier) ?? .debug
     }
-    
+
     public static func isDebugBundleWithArgument(_ argument: String) -> Bool {
         guard Bundle.flowCryptBundleType == .debug else { return false }
         return CommandLine.arguments.contains(argument)
     }
-    
+
     public static func isEnterprise() -> Bool {
         if flowCryptBundleType == .enterprise {
             return true // for production
@@ -35,5 +35,4 @@ extension Bundle {
         }
         return false
     }
-
 }
