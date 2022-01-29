@@ -168,7 +168,7 @@ extension InboxViewController {
                     )
                 )
                 let inboxContext = InboxContext(
-                    data: context.messages.map { InboxRenderable(message: $0) },
+                    data: context.messages.map(InboxRenderable.init),
                     pagination: context.pagination
                 )
                 handleEndFetching(with: inboxContext, context: batchContext)
@@ -289,23 +289,17 @@ extension InboxViewController {
     }
 
     private func handleFetched(_ input: InboxContext) {
-        let count = inboxInput.count - 1
+        let initialIndex = inboxInput.count
 
-        // insert new messages
-        let indexesToInsert = input.data
-            .enumerated()
-            .map { index, _ -> Int in
-                let indexInTableView = index + count
-                return indexInTableView
-            }
-            .map { IndexPath(row: $0, section: 0) }
+        let indexesToInsert = input.data.indices
+            .map { IndexPath(row: initialIndex + $0, section: 0) }
 
         inboxInput.append(contentsOf: input.data)
         state = .fetched(input.pagination)
 
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()
-            self.tableNode.insertRows(at: indexesToInsert, with: .none)
+            self.tableNode.insertRows(at: indexesToInsert, with: .automatic)
         }
     }
 

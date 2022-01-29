@@ -54,7 +54,7 @@ public final class TextViewCellNode: CellNode {
         textView.attributedPlaceholderText = input.placeholder
         textView.typingAttributes = [
             NSAttributedString.Key.font.rawValue: NSAttributedString.Style.regular(17).font,
-            NSAttributedString.Key.foregroundColor.rawValue: input.textColor,
+            NSAttributedString.Key.foregroundColor.rawValue: input.textColor
         ]
 
         DispatchQueue.main.async {
