@@ -74,10 +74,10 @@ extension GlobalRouter: GlobalRouterType {
                 )
                 try appContext.userAccountService.startSessionFor(session: session)
                 viewController.hideSpinner()
-                proceed(with: appContext.withSession(session))
+                proceed(with: appContext, session: session)
             case .other(let session):
                 try appContext.userAccountService.startSessionFor(session: session)
-                proceed(with: appContext.withSession(session))
+                proceed(with: appContext, session: session)
             }
         } catch {
             if case .gmailLogin(let viewController) = route {
@@ -91,7 +91,7 @@ extension GlobalRouter: GlobalRouterType {
     func signOut(appContext: AppContext) throws {
         if let session = try appContext.userAccountService.startActiveSessionForNextUser() {
             logger.logInfo("Start session for another email user \(session)")
-            proceed(with: appContext.withSession(session))
+            proceed(with: appContext, session: session)
         } else {
             logger.logInfo("Sign out")
             appContext.userAccountService.cleanup()
@@ -130,7 +130,7 @@ extension GlobalRouter: GlobalRouterType {
             logger.logWarning("Can't switch active user with \(user.email)")
             return
         }
-        proceed(with: appContext.withSession(session))
+        proceed(with: appContext, session: session)
     }
 
     @MainActor
@@ -149,6 +149,29 @@ extension GlobalRouter: GlobalRouterType {
     private func proceed(with appContext: AppContext) {
         logger.logInfo("proceed for session: \(appContext.session?.description ?? "nil")")
         AppStartup(appContext: appContext).initializeApp(window: keyWindow)
+    }
+
+    @MainActor
+    private func proceed(with appContext: AppContext, session: SessionType) {
+        logger.logInfo("proceed for session: \(session.description)")
+        guard
+            let authType = appContext.dataService.currentAuthType,
+            let user = appContext.dataService.currentUser
+        else {
+            let message = "Wrong application state. User not found for session \(session.description)"
+            logger.logError(message)
+
+            keyWindow.rootViewController?.showAlert(
+                title: "error".localized,
+                message: message,
+                onOk: { fatalError() }
+            )
+
+            return
+        }
+
+        let appContextWithUser = appContext.withSession(session: session, authType: authType, user: user)
+        AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
     }
 
     @MainActor

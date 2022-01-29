@@ -78,14 +78,7 @@ class AppContext {
         )
     }
 
-    func withSession(_ session: SessionType?) -> AppContextWithUser {
-        guard
-            let authType = dataService.currentAuthType,
-            let user = dataService.currentUser
-        else {
-            fatalError()
-        }
-
+    func withSession(session: SessionType?, authType: AuthType, user: User) -> AppContextWithUser {
         return AppContextWithUser(
             encryptedStorage: encryptedStorage,
             session: session,
