@@ -37,6 +37,7 @@
 		2C141B2F274578C20038A3F8 /* Keypair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141B2E274578C20038A3F8 /* Keypair.swift */; };
 		2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */; };
 		2C2A3B4D2719EF7300B7F27B /* PassPhraseServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */; };
+		2C2B058927A07F7B00A406F0 /* ObjcException.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2B058827A07F7B00A406F0 /* ObjcException.m */; };
 		2C2D0B95275FDF6B0052771D /* Version6SchemaMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2D0B94275FDF6B0052771D /* Version6SchemaMigration.swift */; };
 		2C4E60F72757D91A00DE5770 /* EncryptedStorageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C4E60F62757D91A00DE5770 /* EncryptedStorageMock.swift */; };
 		2C60AB0C272564D40040D7F2 /* InvalidStorageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */; };
@@ -464,6 +465,9 @@
 		2C141B2E274578C20038A3F8 /* Keypair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keypair.swift; sourceTree = "<group>"; };
 		2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceTests.swift; sourceTree = "<group>"; };
 		2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseServiceMock.swift; sourceTree = "<group>"; };
+		2C2B058627A07F7A00A406F0 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
+		2C2B058727A07F7B00A406F0 /* ObjcException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjcException.h; sourceTree = "<group>"; };
+		2C2B058827A07F7B00A406F0 /* ObjcException.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ObjcException.m; sourceTree = "<group>"; };
 		2C2D0B94275FDF6B0052771D /* Version6SchemaMigration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Version6SchemaMigration.swift; sourceTree = "<group>"; };
 		2C4E60F62757D91A00DE5770 /* EncryptedStorageMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptedStorageMock.swift; sourceTree = "<group>"; };
 		2C60AB0B272564D40040D7F2 /* InvalidStorageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidStorageViewController.swift; sourceTree = "<group>"; };
@@ -1002,6 +1006,15 @@
 				51DA5BDB2722D444001C4359 /* Models */,
 			);
 			path = "Key Services";
+			sourceTree = "<group>";
+		};
+		2C2B058A27A0809400A406F0 /* ObjC */ = {
+			isa = PBXGroup;
+			children = (
+				2C2B058727A07F7B00A406F0 /* ObjcException.h */,
+				2C2B058827A07F7B00A406F0 /* ObjcException.m */,
+			);
+			path = ObjC;
 			sourceTree = "<group>";
 		};
 		2DC3601602226D74335E18F4 /* Pods */ = {
@@ -1715,20 +1728,22 @@
 		C132B9B21EC2DBD800763715 /* FlowCrypt */ = {
 			isa = PBXGroup;
 			children = (
-				9F1C90ED26F236BE0046E7D7 /* FlowCryptEnterprise.entitlements */,
-				A3B7C31623E437370022D628 /* FlowCryptRelease.entitlements */,
-				A3B7C31523E436E10022D628 /* FlowCrypt.entitlements */,
-				32DCA376D595968F13A3347A /* Core */,
-				C132B9C51EC2DCAB00763715 /* Controllers */,
-				04B4728A1ECE29D200B8266F /* Models */,
-				9FD22A1D230FEEC8005067A6 /* Common UI */,
-				C132B9C61EC2DCC000763715 /* Functionality */,
-				A3DAD60C22E469E400F2C4CD /* Resources */,
 				9F8220D32633661C004B2009 /* App */,
 				C132B9B31EC2DBD800763715 /* AppDelegate.swift */,
 				C132B9BA1EC2DBD800763715 /* Assets.xcassets */,
 				949ED9412303E3B400530579 /* Colors.xcassets */,
+				9FD22A1D230FEEC8005067A6 /* Common UI */,
+				C132B9C51EC2DCAB00763715 /* Controllers */,
+				32DCA376D595968F13A3347A /* Core */,
+				2C2B058627A07F7A00A406F0 /* FlowCrypt-Bridging-Header.h */,
+				A3B7C31523E436E10022D628 /* FlowCrypt.entitlements */,
+				9F1C90ED26F236BE0046E7D7 /* FlowCryptEnterprise.entitlements */,
+				A3B7C31623E437370022D628 /* FlowCryptRelease.entitlements */,
+				C132B9C61EC2DCC000763715 /* Functionality */,
 				C132B9BF1EC2DBD800763715 /* Info.plist */,
+				04B4728A1ECE29D200B8266F /* Models */,
+				2C2B058A27A0809400A406F0 /* ObjC */,
+				A3DAD60C22E469E400F2C4CD /* Resources */,
 				9F38619B27A181CE00851419 /* .swiftformat */,
 			);
 			path = FlowCrypt;
@@ -2281,7 +2296,7 @@
 					};
 					C132B9AF1EC2DBD800763715 = {
 						CreatedOnToolsVersion = 8.3.2;
-						LastSwiftMigration = 1020;
+						LastSwiftMigration = 1320;
 						ProvisioningStyle = Automatic;
 					};
 					D204DB9D23FB35700083B9D6 = {
@@ -2606,6 +2621,7 @@
 				C192421F1EC48B6900C3D251 /* SetupBackupsViewController.swift in Sources */,
 				9F0C3C2623194E0A00299985 /* FolderViewModel.swift in Sources */,
 				F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */,
+				2C2B058927A07F7B00A406F0 /* ObjcException.m in Sources */,
 				21CE25E62650070300ADFF4B /* WkdUrlConstructor.swift in Sources */,
 				9FC411212595EA12001180A8 /* MessageSearchProvider.swift in Sources */,
 				9F778E7E27162038001D4B21 /* MessageThread.swift in Sources */,
@@ -3062,7 +3078,7 @@
 				PRODUCT_NAME = FlowCrypt;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "FlowCrypt/FlowCrypt-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
@@ -3447,7 +3463,7 @@
 				PRODUCT_NAME = FlowCrypt;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "FlowCrypt/FlowCrypt-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
@@ -3506,7 +3522,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.flowcrypt.as.ios.consumer;
 				PRODUCT_NAME = FlowCrypt;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "FlowCrypt/FlowCrypt-Bridging-Header.h";
 				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
