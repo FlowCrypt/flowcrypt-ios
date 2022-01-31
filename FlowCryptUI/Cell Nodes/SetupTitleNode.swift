@@ -59,7 +59,7 @@ public final class SetupTitleNode: CellNode {
                 $0.spacing = 4
                 $0.children = [
                     ASInsetLayoutSpec(insets: input.insets, child: textNode),
-                    selectedNode,
+                    selectedNode
                 ]
             }
         } else {

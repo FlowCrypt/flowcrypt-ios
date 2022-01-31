@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
+import moment from 'moment'
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -86,9 +87,9 @@ class PublicKeyDetailsScreen extends BaseScreen {
   }
 
   checkSignatureDateValue = async (value: string) => {
-    const signatureValue = await this.signatureValue;
-    await signatureValue.waitForExist();
-    expect(await signatureValue.getValue()).toEqual(value);
+    const signatureValue = await this.signatureValue.getValue();
+    const convertedToUTC = moment(signatureValue.replace('at', '')).utcOffset(0).format('D MMM yyyy, hh:mm:ss A');
+    expect(convertedToUTC).toEqual(value);
   }
 
   getLastFetchedDateValue = async () => {
