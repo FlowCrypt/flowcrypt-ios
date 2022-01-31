@@ -95,7 +95,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] {
-        let objects: [Recipient] = storage.objects(RecipientRealmObject.self)
+        let objects = storage.objects(RecipientRealmObject.self)
             .map(Recipient.init)
         var recipients: [RecipientWithSortedPubKeys] = []
         for object in objects {
@@ -129,7 +129,7 @@ extension LocalContactsProvider {
 
     private func parseRecipient(from recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
         let armoredToParse = recipient.pubKeys
-            .map { $0.armored }
+            .map(\.armored)
             .joined(separator: "\n")
         let parsed = try await core.parseKeys(armoredOrBinary: armoredToParse.data())
         return RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)

@@ -1053,6 +1053,15 @@
 			path = SignIn;
 			sourceTree = "<group>";
 		};
+		5161D87D27A488BD00130518 /* Contacts Service */ = {
+			isa = PBXGroup;
+			children = (
+				D2FC1C0524D82C9F003B949D /* ContactsService.swift */,
+				D27B912024EFE842002DF0A1 /* Models */,
+			);
+			path = "Contacts Service";
+			sourceTree = "<group>";
+		};
 		517C2E312779F91300FECF32 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -1177,8 +1186,9 @@
 				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
+				5161D87D27A488BD00130518 /* Contacts Service */,
 				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
-				D27B911724EFE787002DF0A1 /* Local Pub Key Services */,
+				D27B911724EFE787002DF0A1 /* Local Contacts Service */,
 				A381F24F271C1CA300A3D13C /* Remote Private Key Services */,
 				A381F24D271C1C1100A3D13C /* Remote Pub Key Services */,
 			);
@@ -1928,14 +1938,12 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		D27B911724EFE787002DF0A1 /* Local Pub Key Services */ = {
+		D27B911724EFE787002DF0A1 /* Local Contacts Service */ = {
 			isa = PBXGroup;
 			children = (
-				D2FC1C0524D82C9F003B949D /* ContactsService.swift */,
 				D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */,
-				D27B912024EFE842002DF0A1 /* Models */,
 			);
-			path = "Local Pub Key Services";
+			path = "Local Contacts Service";
 			sourceTree = "<group>";
 		};
 		D27B912024EFE842002DF0A1 /* Models */ = {

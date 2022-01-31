@@ -223,13 +223,13 @@ final class MessageService {
 
 // MARK: - Message verification
 extension MessageService {
-    private func fetchVerificationPubKeys(for sender: String?, onlyLocal: Bool) async throws -> [String] {
-        guard let sender = sender else { return [] }
+    private func fetchVerificationPubKeys(for email: String?, onlyLocal: Bool) async throws -> [String] {
+        guard let email = email else { return [] }
 
-        let pubKeys = contactsService.retrievePubKeys(for: sender)
+        let pubKeys = contactsService.retrievePubKeys(for: email)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
-        guard let contact = try? await contactsService.searchContact(with: sender)
+        guard let contact = try? await contactsService.fetchContact(with: email)
         else { return [] }
 
         return contact.pubKeys.map(\.armored)
