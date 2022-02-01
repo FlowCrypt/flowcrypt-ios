@@ -2,7 +2,6 @@ import {
   SplashScreen,
   SetupKeyScreen,
   MailFolderScreen,
-  NewMessageScreen,
   ContactScreen,
   ContactPublicKeyScreen,
   SettingsScreen,
@@ -11,6 +10,7 @@ import {
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
+import PublicKeyHelper from "../../../helpers/PublicKeyHelper";
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -23,30 +23,7 @@ describe('COMPOSE EMAIL: ', () => {
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
-    // Add first contact
-    await MailFolderScreen.clickCreateEmail();
-    await NewMessageScreen.setAddRecipientByName(contactName, contactEmail);
-    await NewMessageScreen.checkAddedRecipientColor(contactEmail, 0, 'green');
-    await NewMessageScreen.clickBackButton();
-
-    // Go to Contacts screen
-    await MenuBarScreen.clickMenuIcon();
-    await MenuBarScreen.checkUserEmail();
-
-    await MenuBarScreen.clickSettingsButton();
-    await SettingsScreen.checkSettingsScreen();
-    await SettingsScreen.clickOnSettingItem('Contacts');
-
-    await ContactScreen.checkContactScreen();
-    await ContactScreen.checkContact(contactEmail);
-
-    await ContactScreen.clickOnContact(contactEmail);
-    await ContactPublicKeyScreen.checkPgpUserId(contactEmail);
-    await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
-    await ContactPublicKeyScreen.clickOnFingerPrint();
-
-    await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
-    await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
+    await PublicKeyHelper.addRecipientAndCheckFetchedKey(contactName, contactEmail);
 
     await PublicKeyDetailsScreen.clickTrashButton();
     await ContactPublicKeyScreen.checkPgpUserId(contactEmail);
@@ -62,28 +39,6 @@ describe('COMPOSE EMAIL: ', () => {
     await MenuBarScreen.clickInboxButton();
     await MailFolderScreen.checkInboxScreen();
 
-    await MailFolderScreen.clickCreateEmail();
-    await NewMessageScreen.setAddRecipientByName(contactName, contactEmail);
-    await NewMessageScreen.checkAddedRecipientColor(contactEmail, 0, 'green');
-    await NewMessageScreen.clickBackButton();
-
-    // Go to Contacts screen
-    await MenuBarScreen.clickMenuIcon();
-    await MenuBarScreen.checkUserEmail();
-
-    await MenuBarScreen.clickSettingsButton();
-    await SettingsScreen.checkSettingsScreen();
-    await SettingsScreen.clickOnSettingItem('Contacts');
-
-    await ContactScreen.checkContactScreen();
-    await ContactScreen.checkContact(contactEmail);
-
-    await ContactScreen.clickOnContact(contactEmail);
-    await ContactPublicKeyScreen.checkPgpUserId(contactEmail);
-    await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
-    await ContactPublicKeyScreen.clickOnFingerPrint();
-
-    await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
-    await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
+    await PublicKeyHelper.addRecipientAndCheckFetchedKey(contactName, contactEmail);
   });
 });
