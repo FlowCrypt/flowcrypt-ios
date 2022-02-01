@@ -20,15 +20,15 @@ public extension Collection {
 
 public extension MutableCollection {
     subscript(safe index: Index) -> Iterator.Element? {
-        set {
-            if indices.contains(index), let newValue = newValue {
-                self[index] = newValue
-            }
-        }
         get {
             return indices.contains(index)
                 ? self[index]
                 : nil
+        }
+        set {
+            if indices.contains(index), let newValue = newValue {
+                self[index] = newValue
+            }
         }
     }
 }
@@ -54,7 +54,7 @@ public extension Array where Element == String {
     }
 
     func containsCaseInsensitive(_ stringToCompare: String) -> Bool {
-        contains(where: { $0.caseInsensitiveCompare(stringToCompare) == .orderedSame } )
+        contains(where: { $0.caseInsensitiveCompare(stringToCompare) == .orderedSame })
     }
 }
 

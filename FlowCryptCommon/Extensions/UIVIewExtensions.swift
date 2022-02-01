@@ -52,7 +52,7 @@ public extension UIView {
             topConstraint,
             bottomConstraint,
             leadingConstraint,
-            trailingConstraint,
+            trailingConstraint
         ])
     }
 }

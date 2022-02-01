@@ -5,6 +5,7 @@ const SELECTORS = {
   CONTACTS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Contacts"`]',
   BACK_BUTTON: '~aid-back-button',
   EMPTY_CONTACTS_LIST: '~Empty list',
+  NO_PUBLIC_KEY_LABEL: '~(No public keys)'
 };
 
 class ContactsScreen extends BaseScreen {
@@ -22,6 +23,10 @@ class ContactsScreen extends BaseScreen {
 
   get emptyContactsList() {
     return $(SELECTORS.EMPTY_CONTACTS_LIST);
+  }
+
+  get noPublicKeyLabel() {
+    return $(SELECTORS.NO_PUBLIC_KEY_LABEL);
   }
 
   contactName = async (name: string) => {
@@ -43,6 +48,11 @@ class ContactsScreen extends BaseScreen {
   checkContact = async (name: string) => {
     const element = await this.contactName(name);
     await element.waitForDisplayed();
+  }
+
+  checkContactWithoutPubKey = async (name: string) => {
+    await this.checkContact(name);
+    await (await this.noPublicKeyLabel).waitForDisplayed();
   }
 
   clickOnContact = async (name: string) => {
