@@ -9,13 +9,13 @@
 import Foundation
 
 enum MessageQuoteType {
-    case reply, forward
+    case reply, replyAll, forward
 }
 
 extension MessageQuoteType {
     var subjectPrefix: String {
         switch self {
-        case .reply:
+        case .reply, .replyAll:
             return "Re: "
         case .forward:
             return "Fwd: "
