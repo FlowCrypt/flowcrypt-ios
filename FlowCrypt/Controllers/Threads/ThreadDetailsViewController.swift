@@ -161,29 +161,27 @@ extension ThreadDetailsViewController {
             message: nil,
             preferredStyle: .actionSheet
         )
+
         if let view = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode {
             alert.popoverPresentation(style: .sourceView(view.menuNode.view))
         } else {
             alert.popoverPresentation(style: .centred(view))
         }
 
-        alert.addAction(
-            UIAlertAction(
-                title: "message_reply_all".localized,
-                style: .default) { [weak self] _ in
-                    self?.composeNewMessage(at: indexPath, quoteType: .replyAll)
-                }
-            )
+        let replyAllAction = createMessageAlertAction(at: indexPath, type: .replyAll)
+        let forwardAction = createMessageAlertAction(at: indexPath, type: .forward)
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        [replyAllAction, forwardAction, cancelAction].forEach(alert.addAction)
 
-        alert.addAction(
-            UIAlertAction(
-                title: "forward".localized,
-                style: .default) { [weak self] _ in
-                    self?.composeNewMessage(at: indexPath, quoteType: .forward)
-                }
-            )
-        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
         present(alert, animated: true, completion: nil)
+    }
+
+    private func createMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
+        UIAlertAction(
+            title: type.actionLabel,
+            style: .default) { [weak self] _ in
+                self?.composeNewMessage(at: indexPath, quoteType: type)
+            }
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {

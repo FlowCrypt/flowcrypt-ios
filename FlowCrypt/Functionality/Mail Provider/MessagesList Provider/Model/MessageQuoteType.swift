@@ -21,4 +21,15 @@ extension MessageQuoteType {
             return "Fwd: "
         }
     }
+
+    var actionLabel: String {
+        switch self {
+        case .reply:
+            return ""
+        case .replyAll:
+            return "message_reply_all".localized
+        case .forward:
+            return "forward".localized
+        }
+    }
 }

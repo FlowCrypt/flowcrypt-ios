@@ -29,13 +29,13 @@ describe('COMPOSE EMAIL: ', () => {
 
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(recipient, emailSubject, emailText);
-    await NewMessageScreen.checkFilledComposeEmailInfo(recipient, emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo([recipient], emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
     await BaseScreen.checkModalMessage(passwordModalMessage);
     await NewMessageScreen.clickCancelButton();
     await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);
 
-    await NewMessageScreen.deleteAddedRecipient(0, 'gray');
+    await NewMessageScreen.deleteAddedRecipient(0);
 
     await NewMessageScreen.setAddRecipient(recipient);
     await NewMessageScreen.clickSendButton();
