@@ -35,6 +35,32 @@ class PublicKeyHelper {
    await PublicKeyDetailsScreen.checkSignatureDateValue(signatureDate);
    await PublicKeyDetailsScreen.checkFingerPrintsValue(fingerprintsValue);
  }
+ static addRecipientAndCheckFetchedKey = async (userName: string, userEmail: string ) => {
+   // Add first contact
+   await MailFolderScreen.clickCreateEmail();
+   await NewMessageScreen.setAddRecipientByName(userName, userEmail);
+   await NewMessageScreen.checkAddedRecipientColor(userEmail, 0, 'green');
+   await NewMessageScreen.clickBackButton();
+
+   // Go to Contacts screen
+   await MenuBarScreen.clickMenuIcon();
+   await MenuBarScreen.checkUserEmail();
+
+   await MenuBarScreen.clickSettingsButton();
+   await SettingsScreen.checkSettingsScreen();
+   await SettingsScreen.clickOnSettingItem('Contacts');
+
+   await ContactScreen.checkContactScreen();
+   await ContactScreen.checkContact(userEmail);
+
+   await ContactScreen.clickOnContact(userEmail);
+   await ContactPublicKeyScreen.checkPgpUserId(userEmail);
+   await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
+   await ContactPublicKeyScreen.clickOnFingerPrint();
+
+   await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
+   await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
+ }
 }
 
 export default PublicKeyHelper;
