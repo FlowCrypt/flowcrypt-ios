@@ -43,16 +43,15 @@ final class MyMenuViewController: ViewController {
         }
     }
 
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
     private let foldersService: FoldersServiceType
     private let decorator: MyMenuViewDecorator
 
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
     private var accounts: [User] {
-        appContext.dataService.getFinishedSetupUsers(exceptUserEmail: currentUser.email)
+        appContext.dataService.getFinishedSetupUsers(exceptUserEmail: appContext.user.email)
     }
-    private let currentUser: User
 
     private let tableNode: ASTableNode
 
@@ -66,14 +65,10 @@ final class MyMenuViewController: ViewController {
     private var isFirstLaunch = true
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         decorator: MyMenuViewDecorator = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
     ) {
-        guard let currentUser = appContext.dataService.currentUser else {
-            fatalError("no current user") // todo - dependency-inject
-        }
-        self.currentUser = currentUser
         self.appContext = appContext
         self.foldersService = appContext.getFoldersService()
         self.decorator = decorator
@@ -176,7 +171,7 @@ extension MyMenuViewController {
         showSpinner()
         Task {
             do {
-                let folders = try await foldersService.fetchFolders(isForceReload: true, for: self.currentUser)
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: appContext.user)
                 handleNewFolders(with: folders)
             } catch {
                 handleError(with: error)
@@ -250,10 +245,7 @@ extension MyMenuViewController {
     private func node(for section: Sections, row: Int) -> ASCellNode {
         switch (section, state) {
         case (.header, _):
-            let headerInput = decorator.header(
-                for: appContext.dataService.currentUser,
-                image: state.arrowImage
-            )
+            let headerInput = decorator.header(for: appContext.user, image: state.arrowImage)
             return TextImageNode(input: headerInput) { [weak self] node in
                 self?.handleTapOn(header: node)
             }
@@ -286,7 +278,7 @@ extension MyMenuViewController {
         switch folder.itemType {
         case .folder:
             let input = InboxViewModel(folder)
-            let viewController = InboxViewControllerFactory.make(appContext: appContext, with: input)
+            let viewController = InboxViewControllerFactory.make(appContext: appContext, viewModel: input)
 
             if let topController = topController(controllerType: InboxViewController.self),
                topController.path == folder.path {

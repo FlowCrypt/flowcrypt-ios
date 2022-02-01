@@ -13,8 +13,7 @@ final class InboxViewController: ViewController {
 
     private let numberOfInboxItemsToLoad: Int
 
-    private let appContext: AppContext
-    private let user: User
+    private let appContext: AppContextWithUser
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
@@ -34,17 +33,13 @@ final class InboxViewController: ViewController {
     var path: String { viewModel.path }
 
     init(
-        appContext: AppContext,
-        _ viewModel: InboxViewModel,
+        appContext: AppContextWithUser,
+        viewModel: InboxViewModel,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
-        guard let user = appContext.dataService.currentUser else {
-            fatalError("missing current user") // todo - DI user
-        }
-        self.user = user
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
@@ -186,7 +181,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: numberOfInboxItemsToLoad,
                         pagination: currentMessagesListPagination()
-                    ), userEmail: user.email
+                    ), userEmail: appContext.user.email
                 )
                 handleEndFetching(with: context, context: batchContext)
             } catch {
@@ -208,7 +203,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
                         pagination: pagination
-                    ), userEmail: user.email
+                    ), userEmail: appContext.user.email
                 )
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
