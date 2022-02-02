@@ -130,9 +130,15 @@ export class PgpKey {
     return { keys: allKeys, errs: allErrs };
   }
 
-  public static isPacketPrivate = (p: OpenPGP.packet.AnyKeyPacket): p is PrvPacket => {
+  public static isPacketPrivate = (p: OpenPGP.packet.BaseKeyPacket): p is PrvPacket => {
     return p.tag === openpgp.enums.packet.secretKey || p.tag === openpgp.enums.packet.secretSubkey;
   }
+
+  public static validateAllDecryptedPackets = async (key: OpenPGP.key.Key): Promise<void> => {
+    for (const prvPacket of key.toPacketlist().filter(PgpKey.isPacketPrivate).filter(packet => packet.isDecrypted())) {
+      await prvPacket.validate(); // gnu-dummy never raises an exception, invalid keys raise exceptions
+    }
+  };
 
   public static decrypt = async (prv: OpenPGP.key.Key, passphrase: string, optionalKeyid?: OpenPGP.Keyid, optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED'): Promise<boolean> => {
     if (!prv.isPrivate()) {
@@ -152,6 +158,7 @@ export class PgpKey {
       }
       try {
         await prvPacket.decrypt(passphrase); // throws on password mismatch
+        await prvPacket.validate(); // throws 
       } catch (e) {
         if (e instanceof Error && e.message.toLowerCase().includes('passphrase')) {
           return false;

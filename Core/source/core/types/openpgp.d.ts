@@ -184,6 +184,7 @@ declare namespace OpenPGP {
       isDecrypted(): boolean;
       encrypt(passphrase: string): Promise<boolean>;
       decrypt(passphrase: string): Promise<true>;
+      validate(): Promise<any>;
       // encrypted: null | unknown[]; // Encrypted secret-key data, not meant for public use
       s2k: { type: string } | null;
     }
@@ -198,6 +199,7 @@ declare namespace OpenPGP {
       isDecrypted(): boolean;
       encrypt(passphrase: string): Promise<boolean>;
       decrypt(passphrase: string): Promise<true>;
+      validate(): Promise<any>;
       // encrypted: null | unknown[]; // Encrypted secret-key data, not meant for public use
       s2k: { type: string } | null;
     }
@@ -822,6 +824,7 @@ declare namespace OpenPGP {
       getUserIds(): string[];
       isPrivate(): boolean;
       isPublic(): boolean;
+      toPacketlist(): packet.BasePacket[];
       toPublic(): Key;
       update(key: Key): void;
       verifyPrimaryKey(): Promise<enums.keyStatus>;
@@ -839,6 +842,7 @@ declare namespace OpenPGP {
       getCreationTime(): Date;
       getAlgorithmInfo(): AlgorithmInfo;
       getKeyId(): Keyid;
+      validate(): Promise<any>;
       primaryKey: packet.PublicKey | packet.SecretKey;
       subKeys: SubKey[];
       users: User[];
