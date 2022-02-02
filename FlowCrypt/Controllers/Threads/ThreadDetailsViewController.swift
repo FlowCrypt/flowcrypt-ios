@@ -224,7 +224,7 @@ extension ThreadDetailsViewController {
             case .replyAll:
                 let recipientEmails = input.rawMessage.recipients.map(\.email)
                 let allRecipients = recipientEmails + [input.rawMessage.sender].compactMap({ $0 })
-                return allRecipients.filter { $0 != user.email }
+                return allRecipients.filter { $0 != appContext.user.email }
             case .forward:
                 return []
             }
