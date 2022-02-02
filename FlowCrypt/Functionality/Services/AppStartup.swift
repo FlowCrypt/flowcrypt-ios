@@ -32,7 +32,6 @@ struct AppStartup {
 
             do {
                 await setupCore()
-                try await appContext.dataService.performMigrationIfNeeded()
                 try await setupSession()
                 try await getUserOrgRulesIfNeeded()
                 chooseView(for: window)
@@ -76,10 +75,11 @@ struct AppStartup {
     }
 
     private func entryPointForUser() -> EntryPoint {
-        if !appContext.dataService.isLoggedIn {
+        guard let activeUser = appContext.encryptedStorage.activeUser else {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
-        } else if appContext.dataService.isSetupFinished, appContext.dataService.currentUser != nil {
+        }
+        if appContext.encryptedStorage.doesAnyKeypairExist(for: activeUser.email) {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
         } else if let session = appContext.session, let userId = makeUserIdForSetup(session: session) {
@@ -92,32 +92,30 @@ struct AppStartup {
     }
 
     private func getUserOrgRulesIfNeeded() async throws {
-        guard let currentUser = appContext.dataService.currentUser else {
+        guard let currentUser = appContext.encryptedStorage.activeUser else {
             return
         }
-        if appContext.dataService.isLoggedIn {
-            _ = try await appContext.clientConfigurationService.fetch(for: currentUser)
-        }
+        _ = try await appContext.clientConfigurationService.fetch(for: currentUser)
     }
 
     private func makeUserIdForSetup(session: SessionType) -> UserId? {
-        guard let currentUser = appContext.dataService.currentUser else {
+        guard let activeUser = appContext.encryptedStorage.activeUser else {
             Logger.logInfo("Can't create user id for setup")
             return nil
         }
 
-        var userId = UserId(email: currentUser.email, name: currentUser.name)
+        var userId = UserId(email: activeUser.email, name: activeUser.name)
 
         switch session {
         case let .google(email, name, _):
-            guard currentUser.email != email else {
+            guard activeUser.email != email else {
                 logger.logInfo("UserId = current user id")
                 return userId
             }
             logger.logInfo("UserId = google user id")
             userId = UserId(email: email, name: name)
         case let .session(userObject):
-            guard userObject.email != currentUser.email else {
+            guard userObject.email != activeUser.email else {
                 Logger.logInfo("UserId = current user id")
                 return userId
             }
@@ -147,8 +145,8 @@ struct AppStartup {
         let session = appContext.session
 
         guard
-            let authType = appContext.dataService.currentAuthType,
-            let user = appContext.dataService.currentUser
+            let user = appContext.encryptedStorage.activeUser,
+            let authType = user.authType
         else {
             let message = "Wrong application state. User not found for session \(session?.description ?? "nil")"
             logger.logError(message)

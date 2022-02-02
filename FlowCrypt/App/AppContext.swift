@@ -16,7 +16,6 @@ class AppContext {
     let session: SessionType?
     // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
     let userAccountService: SessionServiceType
-    let dataService: DataServiceType
     let keyService: KeyServiceType
     let passPhraseService: PassPhraseServiceType
     let clientConfigurationService: ClientConfigurationServiceType
@@ -25,7 +24,6 @@ class AppContext {
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
-        dataService: DataServiceType,
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
         clientConfigurationService: ClientConfigurationServiceType,
@@ -34,7 +32,6 @@ class AppContext {
         self.encryptedStorage = encryptedStorage
         self.session = session
         self.userAccountService = userAccountService
-        self.dataService = dataService
         self.keyService = keyService
         self.passPhraseService = passPhraseService
         self.clientConfigurationService = clientConfigurationService
@@ -47,12 +44,11 @@ class AppContext {
         let encryptedStorage = EncryptedStorage(
             storageEncryptionKey: try keyChainService.getStorageEncryptionKey()
         )
-        let dataService = DataService(encryptedStorage: encryptedStorage)
         let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
         let keyService = KeyService(
             storage: encryptedStorage,
             passPhraseService: passPhraseService,
-            currentUserEmail: { dataService.email }
+            currentUserEmail: { encryptedStorage.activeUser?.email }
         )
         let clientConfigurationService = ClientConfigurationService(
             local: LocalClientConfiguration(
@@ -64,13 +60,11 @@ class AppContext {
             session: nil, // will be set later. But would be nice to already set here, if available
             userAccountService: SessionService(
                 encryptedStorage: encryptedStorage,
-                dataService: dataService,
                 googleService: GoogleUserService(
-                    currentUserEmail: dataService.currentUser?.email,
+                    currentUserEmail: encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
             ),
-            dataService: dataService,
             keyService: keyService,
             passPhraseService: passPhraseService,
             clientConfigurationService: clientConfigurationService,
@@ -83,7 +77,6 @@ class AppContext {
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
-            dataService: dataService,
             keyService: keyService,
             passPhraseService: passPhraseService,
             clientConfigurationService: clientConfigurationService,
@@ -105,8 +98,8 @@ class AppContext {
     @MainActor
     func getOptionalMailProvider() -> MailProvider? {
         guard
-            let currentUser = dataService.currentUser,
-            let currentAuthType = dataService.currentAuthType
+            let currentUser = encryptedStorage.activeUser,
+            let currentAuthType = currentUser.authType
         else { return nil }
 
         return MailProvider(
@@ -142,7 +135,6 @@ class AppContextWithUser: AppContext {
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
-        dataService: DataServiceType,
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
         clientConfigurationService: ClientConfigurationServiceType,
@@ -157,7 +149,6 @@ class AppContextWithUser: AppContext {
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
-            dataService: dataService,
             keyService: keyService,
             passPhraseService: passPhraseService,
             clientConfigurationService: clientConfigurationService,

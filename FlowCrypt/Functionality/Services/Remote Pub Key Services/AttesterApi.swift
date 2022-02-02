@@ -7,8 +7,8 @@ import FlowCryptCommon
 
 protocol AttesterApiType {
     func lookup(email: String) async throws -> [KeyDetails]
-    func update(email: String, pubkey: String, token: String?) async throws -> String
-    func replace(email: String, pubkey: String) async throws -> String
+    func replace(email: String, pubkey: String, idToken: String?) async throws -> String
+    func update(email: String, pubkey: String) async throws -> String
     func testWelcome(email: String, pubkey: String) async throws
 }
 
@@ -72,10 +72,10 @@ extension AttesterApi {
     }
 
     @discardableResult
-    func update(email: String, pubkey: String, token: String?) async throws -> String {
+    func replace(email: String, pubkey: String, idToken: String?) async throws -> String {
         let httpMethod: HTTPMethod
         let headers: [URLHeader]
-        if let value = token {
+        if let value = idToken {
             httpMethod = .post
             headers = [URLHeader(value: "Bearer \(value)", httpHeaderField: "Authorization")]
         } else {
@@ -94,7 +94,7 @@ extension AttesterApi {
     }
 
     @discardableResult
-    func replace(email: String, pubkey: String) async throws -> String {
+    func update(email: String, pubkey: String) async throws -> String {
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: pubUrl(email: email),

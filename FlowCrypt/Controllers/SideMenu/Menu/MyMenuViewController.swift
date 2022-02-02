@@ -50,7 +50,9 @@ final class MyMenuViewController: ViewController {
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
     private var accounts: [User] {
-        appContext.dataService.getFinishedSetupUsers(exceptUserEmail: appContext.user.email)
+        appContext.encryptedStorage.getAllUsers()
+            .filter { $0.email != appContext.user.email }
+            .filter { appContext.encryptedStorage.doesAnyKeypairExist(for: $0.email) }
     }
 
     private let tableNode: ASTableNode

@@ -22,8 +22,8 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     private let service: Service
 
     init(
-        appContext: AppContext,
-        user: UserId,
+        appContext: AppContextWithUser,
+        userId: UserId,
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.attester = AttesterApi(
@@ -31,7 +31,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
         self.service = Service(
             appContext: appContext,
-            user: user,
+            userId: user,
             attester: self.attester
         )
         super.init(
@@ -74,17 +74,16 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 private actor Service {
     typealias ViewController = SetupCreatePassphraseAbstractViewController
 
-    private let appContext: AppContext
-    private let user: UserId
+    private let appContext: AppContextWithUser
+    private let userId: UserId
     private let attester: AttesterApiType
 
     init(
-        appContext: AppContext,
-        user: UserId,
+        appContext: AppContextWithUser,
+        userId: UserId,
         attester: AttesterApiType
     ) {
         self.appContext = appContext
-        self.user = user
         self.attester = attester
     }
 
@@ -103,8 +102,8 @@ private actor Service {
             userIds: [userId]
         )
 
-        try await submitKeyToAttester(email: userId.email, publicKey: encryptedPrv.key.public)
-        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
+        try await submitKeyToAttester(user: appContext.user, publicKey: encryptedPrv.key.public)
+        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: userId)
         try await putKeypairsInEncryptedStorage(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
 
         if storageMethod == .memory {
@@ -128,19 +127,33 @@ private actor Service {
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,
             source: .generated,
-            for: user.email
+            for: userId.email
         )
     }
 
+    // todo - there is a similar method in EnterpriseServierApi
+    //   this should be put somewhere general
+    private func getIdToken(for user: User) async throws -> String? {
+        switch user.authType {
+        case .oAuthGmail:
+            return try await GoogleUserService(
+                currentUserEmail: user.email,
+                appDelegateGoogleSessionContainer: nil // needed only when signing in/out
+            ).getCachedOrRefreshedIdToken()
+        default:
+            return Imap(user: user).imapSess?.oAuth2Token
+        }
+    }
+    
     private func submitKeyToAttester(
-        email: String,
+        user: User,
         publicKey: String
     ) async throws {
         do {
-            _ = try await attester.update(
-                email: email,
+            _ = try await attester.replace(
+                email: user.email,
                 pubkey: publicKey,
-                token: appContext.dataService.token
+                idToken: try await getIdToken(for: user)
             )
         } catch {
             throw CreateKeyError.submitKey(error)
@@ -148,12 +161,12 @@ private actor Service {
     }
 
     private func getUserId() throws -> UserId {
-        guard let email = appContext.dataService.email, !email.isEmpty else {
+        guard !appContext.user.email.isEmpty else {
             throw CreateKeyError.missingUserEmail
         }
-        guard let name = appContext.dataService.currentUser?.name, !name.isEmpty else {
+        guard !appContext.user.name.isEmpty else {
             throw CreateKeyError.missingUserName
         }
-        return UserId(email: email, name: name)
+        return UserId(email: appContext.user.email, name: appContext.user.name)
     }
 }
