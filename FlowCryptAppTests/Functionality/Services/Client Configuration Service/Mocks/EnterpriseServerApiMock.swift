@@ -12,8 +12,8 @@ import Foundation
 final class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getActiveFesUrlInvoked = false
     var getActiveFesUrlInvokedCount = 0
-    var getActiveFesUrlCall: (String) throws -> String? = { _ in
-        throw OrganisationalRulesServiceError.getActiveFesUrlCall
+    var getActiveFesUrlCall: (String) -> String? = { _ in
+        return nil
     }
     func getActiveFesUrl(for email: String) async throws -> String? {
         getActiveFesUrlInvoked = true

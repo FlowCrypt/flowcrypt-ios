@@ -34,6 +34,7 @@ struct RawClientConfiguration: Codable, Equatable {
     let flags: [ClientConfigurationFlag]?
     let customKeyserverUrl: String?
     let keyManagerUrl: String?
+    let fesUrl: String?
     let disallowAttesterSearchForDomains: [String]?
     let enforceKeygenAlgo: String?
     let enforceKeygenExpireMonths: Int?
@@ -42,6 +43,7 @@ struct RawClientConfiguration: Codable, Equatable {
         flags: [ClientConfigurationFlag]? = nil,
         customKeyserverUrl: String? = nil,
         keyManagerUrl: String? = nil,
+        fesUrl: String? = nil,
         disallowAttesterSearchForDomains: [String]? = nil,
         enforceKeygenAlgo: String? = nil,
         enforceKeygenExpireMonths: Int? = nil
@@ -49,6 +51,7 @@ struct RawClientConfiguration: Codable, Equatable {
         self.flags = flags
         self.customKeyserverUrl = customKeyserverUrl
         self.keyManagerUrl = keyManagerUrl
+        self.fesUrl = fesUrl
         self.disallowAttesterSearchForDomains = disallowAttesterSearchForDomains
         self.enforceKeygenAlgo = enforceKeygenAlgo
         self.enforceKeygenExpireMonths = enforceKeygenExpireMonths
@@ -58,14 +61,7 @@ struct RawClientConfiguration: Codable, Equatable {
 // MARK: - Empty model
 extension RawClientConfiguration {
     static var empty: RawClientConfiguration {
-        return RawClientConfiguration(
-            flags: [],
-            customKeyserverUrl: nil,
-            keyManagerUrl: nil,
-            disallowAttesterSearchForDomains: nil,
-            enforceKeygenAlgo: nil,
-            enforceKeygenExpireMonths: nil
-        )
+        return RawClientConfiguration()
     }
 }
 
@@ -91,6 +87,7 @@ extension RawClientConfiguration {
             flags: decodedFlags?.compactMap(ClientConfigurationFlag.init),
             customKeyserverUrl: unwrappedObject.customKeyserverUrl,
             keyManagerUrl: unwrappedObject.keyManagerUrl,
+            fesUrl: unwrappedObject.fesUrl,
             disallowAttesterSearchForDomains: decodedDisallowAttesterSearchForDomains,
             enforceKeygenAlgo: unwrappedObject.enforceKeygenAlgo,
             enforceKeygenExpireMonths: unwrappedObject.enforceKeygenExpireMonths
