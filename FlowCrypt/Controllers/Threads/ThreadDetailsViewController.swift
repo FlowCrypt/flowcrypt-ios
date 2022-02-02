@@ -163,15 +163,14 @@ extension ThreadDetailsViewController {
             alert.popoverPresentation(style: .centred(view))
         }
 
-        let replyAllAction = createMessageAlertAction(at: indexPath, type: .replyAll)
-        let forwardAction = createMessageAlertAction(at: indexPath, type: .forward)
-        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
-        [replyAllAction, forwardAction, cancelAction].forEach(alert.addAction)
+        alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .replyAll))
+        alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .forward))
+        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
 
         present(alert, animated: true, completion: nil)
     }
 
-    private func createMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
+    private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
         UIAlertAction(
             title: type.actionLabel,
             style: .default) { [weak self] _ in
@@ -217,14 +216,16 @@ extension ThreadDetailsViewController {
               let processedMessage = input.processedMessage
         else { return }
 
+        let sender = [input.rawMessage.sender].compactMap { $0 }
         let recipients: [String] = {
             switch quoteType {
             case .reply:
-                return [input.rawMessage.sender].compactMap({ $0 })
+                return sender
             case .replyAll:
                 let recipientEmails = input.rawMessage.recipients.map(\.email)
-                let allRecipients = recipientEmails + [input.rawMessage.sender].compactMap({ $0 })
-                return allRecipients.filter { $0 != appContext.user.email }
+                let allRecipients = (recipientEmails + sender).unique()
+                let filteredRecipients = allRecipients.filter { $0 != appContext.user.email }
+                return filteredRecipients.isEmpty ? sender : filteredRecipients
             case .forward:
                 return []
             }
