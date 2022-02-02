@@ -1034,6 +1034,12 @@ extension ComposeViewController {
         }()
 
         guard let recipientIndex = index else { return }
+
+        let recipient = contextToSend.recipients[recipientIndex]
+        let needsReload = recipient.state != state || recipient.keyState != keyState
+
+        guard needsReload else { return }
+
         contextToSend.recipients[recipientIndex].state = state
         contextToSend.recipients[recipientIndex].keyState = keyState
 
