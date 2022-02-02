@@ -145,7 +145,7 @@ class NewMessageScreen extends BaseScreen {
     }
   }
 
-  checkAddedRecipient = async (recipient: string, order: number) => {
+  checkAddedRecipient = async (recipient: string, order = 0) => {
     const recipientCell = await $(`~aid-to-${order}-label`);
     const name = await recipientCell.getValue();
     expect(name).toEqual(`  ${recipient}  `);
