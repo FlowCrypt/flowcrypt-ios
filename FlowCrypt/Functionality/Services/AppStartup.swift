@@ -62,29 +62,24 @@ struct AppStartup {
 
     @MainActor
     private func chooseView(for window: UIWindow) {
-        let entryPoint = entryPointForUser()
-
-        let viewController: UIViewController
-
-        switch entryPoint {
+        switch entryPointForUser() {
         case .mainFlow:
-            let contentViewController = InboxViewContainerController(appContext: appContext)
-            viewController = SideMenuNavigationController(appContext: appContext, contentViewController: contentViewController)
+            startMainFlow(appContext: appContext, window: window)
         case .signIn:
-            viewController = MainNavigationController(rootViewController: SignInViewController(appContext: appContext))
+            window.rootViewController = MainNavigationController(
+                rootViewController: SignInViewController(appContext: appContext)
+            )
         case .setupFlow(let userId):
             let setupViewController = SetupInitialViewController(appContext: appContext, user: userId)
-            viewController = MainNavigationController(rootViewController: setupViewController)
+            window.rootViewController = MainNavigationController(rootViewController: setupViewController)
         }
-
-        window.rootViewController = viewController
     }
 
     private func entryPointForUser() -> EntryPoint {
         if !appContext.dataService.isLoggedIn {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
-        } else if appContext.dataService.isSetupFinished {
+        } else if appContext.dataService.isSetupFinished, appContext.dataService.currentUser != nil {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
         } else if let session = appContext.session, let userId = makeUserIdForSetup(session: session) {
@@ -145,5 +140,38 @@ struct AppStartup {
         }
         alert.addAction(retry)
         window.rootViewController?.present(alert, animated: true, completion: nil)
+    }
+
+    @MainActor
+    private func startMainFlow(appContext: AppContext, window: UIWindow) {
+        let session = appContext.session
+
+        guard
+            let authType = appContext.dataService.currentAuthType,
+            let user = appContext.dataService.currentUser
+        else {
+            let message = "Wrong application state. User not found for session \(session?.description ?? "nil")"
+            logger.logError(message)
+
+            if window.rootViewController == nil {
+                window.rootViewController = UIViewController()
+            }
+
+            window.rootViewController?.showAlert(
+                title: "error".localized,
+                message: message,
+                onOk: { fatalError() }
+            )
+
+            return
+        }
+
+        let appContextWithUser = appContext.withSession(session: session, authType: authType, user: user)
+        let contentViewController = InboxViewContainerController(appContext: appContextWithUser)
+        let viewController = SideMenuNavigationController(
+            appContext: appContextWithUser,
+            contentViewController: contentViewController
+        )
+        window.rootViewController = viewController
     }
 }

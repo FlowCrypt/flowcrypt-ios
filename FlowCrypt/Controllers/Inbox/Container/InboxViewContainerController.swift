@@ -29,24 +29,19 @@ final class InboxViewContainerController: TableNodeViewController {
         case loadedFolders([FolderViewModel])
     }
 
-    let appContext: AppContext
+    let appContext: AppContextWithUser
     let foldersService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
-    let currentUser: User
 
     private var state: State = .loading {
         didSet { handleNewState() }
     }
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         foldersService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) {
-        guard let currentUser = appContext.dataService.currentUser else {
-            fatalError("missing current user") // todo - use DI
-        }
-        self.currentUser = currentUser
         self.appContext = appContext
         self.foldersService = foldersService ?? appContext.getFoldersService()
         self.decorator = decorator
@@ -68,7 +63,7 @@ final class InboxViewContainerController: TableNodeViewController {
     private func fetchInboxFolder() {
         Task {
             do {
-                let folders = try await foldersService.fetchFolders(isForceReload: true, for: self.currentUser)
+                let folders = try await foldersService.fetchFolders(isForceReload: true, for: appContext.user)
                 self.handleFetched(folders: folders)
             } catch {
                 self.state = .error(error)
@@ -107,7 +102,10 @@ final class InboxViewContainerController: TableNodeViewController {
                 return
             }
             let input = InboxViewModel(inbox)
-            let inboxViewController = InboxViewControllerFactory.make(appContext: appContext, with: input)
+            let inboxViewController = InboxViewControllerFactory.make(
+                appContext: appContext,
+                viewModel: input
+            )
             navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }

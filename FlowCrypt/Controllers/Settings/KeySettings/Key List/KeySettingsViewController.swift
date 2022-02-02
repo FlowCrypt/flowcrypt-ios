@@ -17,21 +17,18 @@ import FlowCryptUI
  */
 final class KeySettingsViewController: TableNodeViewController {
 
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
     private let isUsingKeyManager: Bool
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
     ) {
         self.appContext = appContext
         self.decorator = decorator
-        guard let currentUser = appContext.dataService.currentUser else {
-            fatalError("missing current user") // todo - need more elegant solution
-        }
-        self.isUsingKeyManager = appContext.clientConfigurationService.getSaved(for: currentUser.email).isUsingKeyManager
+        self.isUsingKeyManager = appContext.clientConfigurationService.getSaved(for: appContext.user.email).isUsingKeyManager
         super.init(node: TableNode())
     }
 

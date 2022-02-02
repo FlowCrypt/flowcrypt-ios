@@ -49,7 +49,7 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
     private let decorator: ComposeViewDecorator
@@ -88,7 +88,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
@@ -100,14 +100,11 @@ final class ComposeViewController: TableNodeViewController {
         keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.appContext = appContext
-        guard let email = appContext.dataService.email else {
-            fatalError("missing current user email") // todo - need a more elegant solution
-        }
-        self.email = email
+        self.email = appContext.user.email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: email)
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(
                 encryptedStorage: appContext.encryptedStorage
@@ -116,7 +113,7 @@ final class ComposeViewController: TableNodeViewController {
         )
         let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
             userService: GoogleUserService(
-                currentUserEmail: email,
+                currentUserEmail: appContext.user.email,
                 appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
             )
         )
@@ -126,7 +123,7 @@ final class ComposeViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage,
             messageGateway: appContext.getRequiredMailProvider().messageSender,
             passPhraseService: appContext.passPhraseService,
-            sender: email
+            sender: appContext.user.email
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
