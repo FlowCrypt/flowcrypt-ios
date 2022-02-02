@@ -12,7 +12,7 @@ import RealmSwift
 protocol LocalClientConfigurationType {
     func load(for user: String) -> RawClientConfiguration?
     func remove(for user: String) throws
-    func save(for user: User, raw: RawClientConfiguration) throws
+    func save(for user: User, raw: RawClientConfiguration, fesUrl: String?) throws
 }
 
 final class LocalClientConfiguration {
@@ -44,8 +44,13 @@ extension LocalClientConfiguration: LocalClientConfigurationType {
         }
     }
 
-    func save(for user: User, raw: RawClientConfiguration) throws {
-        let object = ClientConfigurationRealmObject(configuration: raw, user: user)
+    func save(for user: User, raw: RawClientConfiguration, fesUrl: String?) throws {
+        let object = ClientConfigurationRealmObject(
+            configuration: raw,
+            user: user,
+            fesUrl: fesUrl
+        )
+
         try storage.write {
             storage.add(object, update: .modified)
         }

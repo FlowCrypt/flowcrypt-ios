@@ -86,7 +86,7 @@ struct AppStartup {
             logger.logInfo("User with session \(session) -> setupFlow")
             return .setupFlow(userId)
         } else {
-            logger.logInfo("User us not signed in -> mainFlow")
+            logger.logInfo("User is not signed in -> mainFlow")
             return .signIn
         }
     }
