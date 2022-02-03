@@ -162,7 +162,7 @@ export class PgpMsg {
     const keys = await PgpMsg.getSortedKeys([], message);
     if (verificationPubkeys) {
       for (const verificationPubkey of verificationPubkeys) {
-        keys.forVerification.push(...(await openpgp.key.readArmored(verificationPubkey)).keys);
+        keys.forVerification.push(...(await openpgp.readArmored(verificationPubkey)).keys);
       }
     }
     return await PgpMsg.verify(message, keys.forVerification);
@@ -226,7 +226,7 @@ export class PgpMsg {
     if (pubkeys) {
       options.publicKeys = [];
       for (const armoredPubkey of pubkeys) {
-        const { keys: publicKeys } = await openpgp.key.readArmored(armoredPubkey);
+        const { keys: publicKeys } = await openpgp.readArmored(armoredPubkey);
         options.publicKeys.push(...publicKeys);
       }
     }
@@ -318,7 +318,7 @@ export class PgpMsg {
     if (typeof verificationPubkeys !== 'undefined') {
       keys.forVerification = [];
       for (const verificationPubkey of verificationPubkeys) {
-        const { keys: keysForVerification } = await openpgp.key.readArmored(verificationPubkey);
+        const { keys: keysForVerification } = await openpgp.readArmored(verificationPubkey);
         keys.forVerification.push(...keysForVerification);
       }
     }

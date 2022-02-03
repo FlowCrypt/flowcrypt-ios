@@ -95,7 +95,7 @@ export class PgpKey {
     if (fromCache) {
       return fromCache;
     }
-    const { keys: [key] } = await openpgp.key.readArmored(armoredKey);
+    const { keys: [key] } = await openpgp.readArmored(armoredKey);
     if (key?.isPrivate()) {
       Store.armoredKeyCacheSet(armoredKey, key);
     }
@@ -112,8 +112,8 @@ export class PgpKey {
     const armoredPublicKeyBlocks = blocks.filter(block => block.type === 'publicKey' || block.type === 'privateKey');
     const pushKeysAndErrs = async (content: string | Buf, type: 'readArmored' | 'read') => {
       try {
-        const { err, keys } = type === 'readArmored' ? await openpgp.key.readArmored(content.toString())
-          : await openpgp.key.read(typeof content === 'string' ? Buf.fromUtfStr(content) : content);
+        const { err, keys } = type === 'readArmored' ? await openpgp.readArmored(content.toString())
+          : await openpgp.read(typeof content === 'string' ? Buf.fromUtfStr(content) : content);
         allErrs.push(...(err || []));
         allKeys.push(...keys);
       } catch (e) {
@@ -182,9 +182,9 @@ export class PgpKey {
       let keys: OpenPGP.Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
       if (RegExp(PgpArmor.headers('publicKey', 're').begin).test(armored)) {
-        keys = (await openpgp.key.readArmored(armored)).keys;
+        keys = (await openpgp.readArmored(armored)).keys;
       } else if (RegExp(PgpArmor.headers('privateKey', 're').begin).test(armored)) {
-        keys = (await openpgp.key.readArmored(armored)).keys;
+        keys = (await openpgp.readArmored(armored)).keys;
       } else if (RegExp(PgpArmor.headers('encryptedMsg', 're').begin).test(armored)) {
         keys = [new OpenPGP.Key((await openpgp.message.readArmored(armored)).packets)];
       }
@@ -258,7 +258,7 @@ export class PgpKey {
     if (!PgpKey.fingerprint(armored)) {
       return false;
     }
-    const { keys: [pubkey] } = await openpgp.key.readArmored(armored);
+    const { keys: [pubkey] } = await openpgp.readArmored(armored);
     if (!pubkey) {
       return false;
     }

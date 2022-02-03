@@ -336,7 +336,7 @@ declare namespace OpenPGP {
   }
 
   /**
-   * Intended for internal use with openpgp.key.generate()
+   * Intended for internal use with openpgp.generate()
    * It's recommended that users choose openpgp.generateKey() that requires KeyOptions instead
    */
   export interface FullKeyOptions {

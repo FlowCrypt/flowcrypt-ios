@@ -7,7 +7,7 @@
  *  - Errietta Kostala <https://github.com/errietta>
  */
 
-export namespace OpenPGP {
+declare namespace OpenPGP {
 
 /* ############## v5 KEY #################### */
 // The Key and PublicKey types can be used interchangably since TS cannot detect the difference, as they have the same class properties.

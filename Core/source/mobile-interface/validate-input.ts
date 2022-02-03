@@ -178,7 +178,7 @@ const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object'
 }
 
 export const readArmoredKeyOrThrow = async (armored: string) => {
-  const { keys: [key], err } = await openpgp.key.readArmored(armored);
+  const { keys: [key], err } = await openpgp.readArmored(armored);
   if (err && err.length && err[0] instanceof Error) {
     throw err[0];
   }

@@ -252,7 +252,7 @@ export class Endpoints {
       return fmtRes({ format: 'armored', keyDetails });
     }
     // binary
-    const { keys: openPgpKeys } = await openpgp.key.read(allData);
+    const { keys: openPgpKeys } = await openpgp.read(allData);
     for (const openPgpKey of openPgpKeys) {
       keyDetails.push(await PgpKey.details(openPgpKey))
     }
