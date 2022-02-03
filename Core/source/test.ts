@@ -442,7 +442,10 @@ ava.default('encryptKey', async t => {
   const encryptedKey = await openpgp.readKey({armoredKey: json.encryptedKey});
   expect(encryptedKey.isFullyEncrypted()).to.be.true;
   expect(encryptedKey.isFullyDecrypted()).to.be.false;
-  expect(await (encryptedKey as OpenPGP.PrivateKey).decrypt(passphrase)).to.be.true;
+  expect(await openpgp.decryptKey({
+    privateKey: (encryptedKey as OpenPGP.PrivateKey),
+    passphrase: passphrase
+  })).to.be.true
   expectNoData(data);
   t.pass();
 });
