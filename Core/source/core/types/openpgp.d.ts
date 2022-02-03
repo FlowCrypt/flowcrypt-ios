@@ -891,4 +891,5 @@ export namespace enums {
     mime = 109
   }
 }
+
 } // namespace OpenPGP

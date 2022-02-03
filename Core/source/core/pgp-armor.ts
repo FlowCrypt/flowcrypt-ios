@@ -8,7 +8,7 @@ import { Str } from './common';
 import { openpgp } from './pgp';
 
 export type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: OpenPGP.CleartextMessage }
-  | { isArmored: boolean, isCleartext: false, message: OpenPGP.Message<any> // TODO: Maybe smth better?
+  | { isArmored: boolean, isCleartext: false, message: OpenPGP.Message<OpenPGP.Data>
    };
 
 type CryptoArmorHeaderDefinitions = { readonly [type in ReplaceableMsgBlockType | 'null' | 'signature']: CryptoArmorHeaderDefinition; };
@@ -84,11 +84,23 @@ export class PgpArmor {
     const isArmoredSignedOnly = utfChunk.includes(PgpArmor.headers('signedMsg').begin);
     const isArmored = isArmoredEncrypted || isArmoredSignedOnly;
     if (isArmoredSignedOnly) {
-      return { isArmored, isCleartext: true, message: await openpgp.readCleartextMessage(new Buf(encrypted).toUtfStr()) };
+      return {
+        isArmored,
+        isCleartext: true,
+        message: await openpgp.readCleartextMessage({cleartextMessage: (new Buf(encrypted)).toUtfStr()})
+      };
     } else if (isArmoredEncrypted) {
-      return { isArmored, isCleartext: false, message: await openpgp.readArmored(new Buf(encrypted).toUtfStr()) };
+      return {
+        isArmored,
+        isCleartext: false,
+        message: await openpgp.readMessage({armoredMessage: (new Buf(encrypted)).toUtfStr()})
+      };
     } else if (encrypted instanceof Uint8Array) {
-      return { isArmored, isCleartext: false, message: await openpgp.read(encrypted) };
+      return {
+        isArmored,
+        isCleartext: false,
+        message: await openpgp.readMessage({binaryMessage: encrypted})
+      };
     }
     throw new Error('Message does not have armor headers');
   }
