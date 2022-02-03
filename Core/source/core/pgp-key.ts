@@ -134,7 +134,7 @@ export class PgpKey {
     return p.tag === openpgp.enums.packet.secretKey || p.tag === openpgp.enums.packet.secretSubkey;
   }
 
-  public static decrypt = async (prv: OpenPGP.Key, passphrase: string, optionalKeyid?: OpenPGP.Keyid, optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED'): Promise<boolean> => {
+  public static decrypt = async (prv: OpenPGP.Key, passphrase: string, optionalKeyid?: OpenPGP.KeyID, optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED'): Promise<boolean> => {
     if (!prv.isPrivate()) {
       throw new Error("Nothing to decrypt in a public key");
     }
@@ -243,7 +243,7 @@ export class PgpKey {
     return await PgpKey.longid(await PgpKey.fingerprint(keyOrFingerprintOrBytes));
   }
 
-  public static longids = async (keyIds: OpenPGP.Keyid[]) => {
+  public static longids = async (keyIds: OpenPGP.KeyID[]) => {
     const longids: string[] = [];
     for (const id of keyIds) {
       const longid = await PgpKey.longid(id.bytes);

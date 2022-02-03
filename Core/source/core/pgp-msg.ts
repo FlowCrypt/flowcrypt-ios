@@ -245,7 +245,7 @@ export class PgpMsg {
   public static diagnosePubkeys: PgpMsgMethod.DiagnosePubkeys = async ({ privateKis, message }) => {
     const m = await openpgp.message.readArmored(Buf.fromUint8(message).toUtfStr());
     const msgKeyIds = m.getEncryptionKeyIds ? m.getEncryptionKeyIds() : [];
-    const localKeyIds: OpenPGP.Keyid[] = [];
+    const localKeyIds: OpenPGP.KeyID[] = [];
     for (const k of await Promise.all(privateKis.map(ki => PgpKey.read(ki.public)))) {
       localKeyIds.push(...k.getKeyIds());
     }
@@ -377,12 +377,12 @@ export class PgpMsg {
     return keys;
   }
 
-  private static matchingKeyids = (key: OpenPGP.Key, encryptedFor: OpenPGP.Keyid[]): OpenPGP.Keyid[] => {
+  private static matchingKeyids = (key: OpenPGP.Key, encryptedFor: OpenPGP.KeyID[]): OpenPGP.KeyID[] => {
     const msgKeyidBytesArr = (encryptedFor || []).map(kid => kid.bytes);
     return key.getKeyIds().filter(kid => msgKeyidBytesArr.includes(kid.bytes));
   }
 
-  private static decryptKeyFor = async (prv: OpenPGP.Key, passphrase: string, matchingKeyIds: OpenPGP.Keyid[]): Promise<boolean> => {
+  private static decryptKeyFor = async (prv: OpenPGP.Key, passphrase: string, matchingKeyIds: OpenPGP.KeyID[]): Promise<boolean> => {
     if (!matchingKeyIds.length) { // we don't know which keyids match, decrypt all key packets
       return await PgpKey.decrypt(prv, passphrase, undefined, 'OK-IF-ALREADY-DECRYPTED');
     }
@@ -394,7 +394,7 @@ export class PgpMsg {
     return true;
   }
 
-  private static isKeyDecryptedFor = (prv: OpenPGP.Key, msgKeyIds: OpenPGP.Keyid[]): boolean => {
+  private static isKeyDecryptedFor = (prv: OpenPGP.Key, msgKeyIds: OpenPGP.KeyID[]): boolean => {
     if (prv.isFullyDecrypted()) {
       return true; // primary k + all subkeys decrypted, therefore it must be decrypted for any/every particular keyid
     }

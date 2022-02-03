@@ -70,6 +70,11 @@ export abstract class Key {
   public getAlgorithmInfo(): AlgorithmInfo;
   public getKeyID(): KeyID;
   public toPacketList(): PacketList<AllowedKeyPackets>;
+  // ----- BEGIN ADDED BY FLOWCRYPT -----
+  public isFullyEncrypted(): boolean;
+  public isFullyDecrypted(): boolean;
+  public isPacketDecrypted(keyId: KeyID): boolean;
+  // ----- END ADDED BY FLOWCRYPT -----
 }
 
 type AllowedKeyPackets = PublicKeyPacket | PublicSubkeyPacket | SecretKeyPacket | SecretSubkeyPacket | UserIDPacket | UserAttributePacket | SignaturePacket;
