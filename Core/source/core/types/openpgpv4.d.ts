@@ -118,7 +118,7 @@ declare namespace OpenPGP {
       getFingerprint(): string;
       getFingerprintBytes(): Uint8Array | null;
       getCreationTime(): Date;
-      getKeyId(): KeyID;
+      getKeyId(): Keyid;
 
       version: number;
       expirationTimeV3: number | null;
@@ -225,7 +225,7 @@ declare namespace OpenPGP {
       revocationKeyClass: null | number;
       revocationKeyAlgorithm: null | number;
       revocationKeyFingerprint: null | Uint8Array;
-      issuerKeyId: KeyID;
+      issuerKeyId: Keyid;
       notation: null | { [name: string]: string };
       preferredHashAlgorithms: null | number[];
       preferredCompressionAlgorithms: null | number[];
@@ -349,7 +349,7 @@ declare namespace OpenPGP {
     subkeys: KeyOptions[]; // required unline KeyOptions.subkeys
   }
 
-  export interface KeyID {
+  export interface Keyid {
     bytes: string;
   }
 
@@ -524,7 +524,7 @@ declare namespace OpenPGP {
 
       /** Returns the key IDs of the keys that signed the cleartext message
        */
-      getSigningKeyIds(): Array<KeyID>;
+      getSigningKeyIds(): Array<Keyid>;
 
       /** Get cleartext
        */
@@ -814,10 +814,10 @@ declare namespace OpenPGP {
     class Key {
       constructor(packetlist: packet.List<packet.AnyPacket>);
       armor(): string;
-      decrypt(passphrase: string | string[], keyId?: KeyID): Promise<boolean>;
+      decrypt(passphrase: string | string[], keyId?: Keyid): Promise<boolean>;
       encrypt(passphrase: string | string[]): Promise<void>;
-      getExpirationTime(capability?: 'encrypt' | 'encrypt_sign' | 'sign' | null, keyId?: KeyID | null, userId?: UserId | null): Promise<Date | typeof Infinity | null>; // Returns null if `capabilities` is passed and the key does not have the specified capabilities or is revoked or invalid.
-      getKeyIds(): KeyID[];
+      getExpirationTime(capability?: 'encrypt' | 'encrypt_sign' | 'sign' | null, keyId?: Keyid | null, userId?: UserId | null): Promise<Date | typeof Infinity | null>; // Returns null if `capabilities` is passed and the key does not have the specified capabilities or is revoked or invalid.
+      getKeyIds(): Keyid[];
       getPrimaryUser(): Promise<PrimaryUser | null>;
       getUserIds(): string[];
       isPrivate(): boolean;
@@ -828,17 +828,17 @@ declare namespace OpenPGP {
       isRevoked(): Promise<boolean>;
       revoke(reason: { flag?: enums.reasonForRevocation; string?: string; }, date?: Date): Promise<Key>;
       getRevocationCertificate(): Promise<Stream<string> | string | undefined>;
-      getEncryptionKey(keyid?: KeyID | null, date?: Date, userId?: UserId | null): Promise<packet.PublicSubkey | packet.SecretSubkey | packet.SecretKey | packet.PublicKey | null>;
+      getEncryptionKey(keyid?: Keyid | null, date?: Date, userId?: UserId | null): Promise<packet.PublicSubkey | packet.SecretSubkey | packet.SecretKey | packet.PublicKey | null>;
       getSigningKey(): Promise<packet.PublicSubkey | packet.SecretSubkey | packet.SecretKey | packet.PublicKey | null>;
-      getKeys(keyId?: KeyID): (Key | SubKey)[];
+      getKeys(keyId?: Keyid): (Key | SubKey)[];
       // isDecrypted(): boolean;
       isFullyEncrypted(): boolean;
       isFullyDecrypted(): boolean;
-      isPacketDecrypted(keyId: KeyID): boolean;
+      isPacketDecrypted(keyId: Keyid): boolean;
       getFingerprint(): string;
       getCreationTime(): Date;
       getAlgorithmInfo(): AlgorithmInfo;
-      getKeyId(): KeyID;
+      getKeyId(): Keyid;
       primaryKey: packet.PublicKey | packet.SecretKey;
       subKeys: SubKey[];
       users: User[];
@@ -857,7 +857,7 @@ declare namespace OpenPGP {
       getFingerprint(): string;
       getCreationTime(): Date;
       getAlgorithmInfo(): AlgorithmInfo;
-      getKeyId(): KeyID;
+      getKeyId(): Keyid;
     }
 
     export interface User {
@@ -943,7 +943,7 @@ declare namespace OpenPGP {
 
       /** Returns the key IDs of the keys to which the session key is encrypted
        */
-      getEncryptionKeyIds(): KeyID[];
+      getEncryptionKeyIds(): Keyid[];
 
       /** Get literal data that is the body of the message
        */
@@ -951,7 +951,7 @@ declare namespace OpenPGP {
 
       /** Returns the key IDs of the keys that signed the message
        */
-      getSigningKeyIds(): KeyID[];
+      getSigningKeyIds(): Keyid[];
 
       /** Get literal data as text
        */
@@ -987,7 +987,7 @@ declare namespace OpenPGP {
     }
 
     export interface Verification {
-      keyid: KeyID;
+      keyid: Keyid;
       verified: Promise<null | boolean>;
       signature: Promise<signature.Signature>;
     }
