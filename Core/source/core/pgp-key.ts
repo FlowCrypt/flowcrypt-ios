@@ -70,7 +70,7 @@ export interface KeyDetails {
     curve?: string;
   };
 }
-export type PrvPacket = (OpenPGP.packet.SecretKey | OpenPGP.packet.SecretSubkey);
+export type PrvPacket = (OpenPGP.SecretKey | OpenPGP.SecretSubkey);
 
 export class PgpKey {
   public static create = async (userIds: { name: string, email: string }[], variant: KeyAlgo, passphrase: string):
@@ -95,7 +95,7 @@ export class PgpKey {
     if (fromCache) {
       return fromCache;
     }
-    const { keys: [key] } = await openpgp.readArmored(armoredKey);
+    const key = await openpgp.readKey({armoredKey: armoredKey});
     if (key?.isPrivate()) {
       Store.armoredKeyCacheSet(armoredKey, key);
     }
