@@ -428,7 +428,7 @@ ava.default('parseKeys - revoked', async t => {
 ava.default('decryptKey', async t => {
   const { keys: [key] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
-  const { keys: [decryptedKey] } = await openpgp.readKey({armoredKey: json.decryptedKey});
+  const decryptedKey = await openpgp.readKey({armoredKey: json.decryptedKey});
   expect(decryptedKey.isFullyDecrypted()).to.be.true;
   expect(decryptedKey.isFullyEncrypted()).to.be.false;
   expectNoData(data);
