@@ -4,8 +4,6 @@
 
 import { base64encode, secureRandomBytes, Uint8Array_to_str } from '../platform/util';
 
-import { openpgp } from './pgp';
-
 interface PwdStrengthResult {
   word: {
     match: string;
