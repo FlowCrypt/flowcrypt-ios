@@ -58,6 +58,7 @@ public extension UIViewController {
             message: message,
             preferredStyle: .alert
         )
+        // TODO: - Anton
         alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in onOk?() })
         self.present(alert, animated: true, completion: nil)
     }
@@ -76,6 +77,7 @@ public extension UIViewController {
             message: message,
             preferredStyle: .alert
         )
+        // TODO: - Anton
         alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
         present(alert, animated: true, completion: nil)

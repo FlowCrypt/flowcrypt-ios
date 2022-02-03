@@ -165,6 +165,7 @@ final class MessageService {
 
         if let firstBlockParseErr = firstBlockParseErr {
             // Swift failed to parse one of the MsgBlock returned from TypeScript Core
+            // TODO: - Anton
             text = "Internal error: could not parse MsgBlock. Please report this error to us.\n\n\(firstBlockParseErr.content)"
             messageType = .error(.other)
             signature = nil
@@ -173,6 +174,7 @@ final class MessageService {
             let err = decryptErrBlock.decryptErr?.error
             let hideContent = err?.type == .badMdc || err?.type == .noMdc
             let rawMsg = hideContent ? "(content hidden for security)" : decryptErrBlock.content
+            // TODO: - Anton
             text = "Could not decrypt:\n\(err?.type.rawValue ?? "UNKNOWN"): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
             signature = nil

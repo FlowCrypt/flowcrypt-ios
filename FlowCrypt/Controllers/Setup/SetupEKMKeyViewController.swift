@@ -60,7 +60,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
 
                 let isErrorHandled = self.handleCommon(error: error)
                 if !isErrorHandled {
-                    showAlert(error: error, message: "Could not finish setup, please try again")
+                    showAlert(error: error, message: "Could not finish setup, please try again") // TODO: - Anton
                 }
             }
         }

@@ -50,7 +50,7 @@ extension CheckMailAuthViewController {
         node.delegate = self
         node.dataSource = self
 
-        title = "FlowCrypt"
+        title = "FlowCrypt" // TODO: - Anton
     }
     private func unauthStateNode(for indexPath: IndexPath) -> ASCellNode {
         switch indexPath.row {

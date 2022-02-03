@@ -24,7 +24,7 @@ public final class ContactUserCellNode: CellNode {
 
     public init(input: Input) {
         self.input = input
-        userTitleNode.attributedText = "User:".attributed(.bold(16))
+        userTitleNode.attributedText = "User:".attributed(.bold(16)) // TODO: - Anton
         userNode.attributedText = input.user
         userNode.accessibilityIdentifier = "userEmail"
     }

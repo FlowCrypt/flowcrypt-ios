@@ -72,15 +72,15 @@ struct SetupImapViewDecorator {
         case let .account(part):
             switch part {
             case .email:
-                placeholder = "Email"
+                placeholder = "Email" // TODO: - Anton
                 keyboardType = .emailAddress
                 accessibilityIdentifier = "Email"
             case .password:
-                placeholder = "Password"
+                placeholder = "Password" // TODO: - Anton
                 isSecure = true
                 accessibilityIdentifier = "Password"
             case .username:
-                placeholder = "Username"
+                placeholder = "Username" // TODO: - Anton
             case .title:
                 placeholder = nil
             }
@@ -89,14 +89,14 @@ struct SetupImapViewDecorator {
         case let .imap(part):
             switch part {
             case .port:
-                placeholder = "IMAP port"
+                placeholder = "IMAP port" // TODO: - Anton
                 keyboardType = .numberPad
                 accessibilityIdentifier = "IMAP port"
             case .security:
-                placeholder = "Security type"
+                placeholder = "Security type" // TODO: - Anton
                 accessibilityIdentifier = "IMAP type"
             case .server:
-                placeholder = "IMAP server"
+                placeholder = "IMAP server" // TODO: - Anton
             case .title:
                 placeholder = nil
             }
@@ -105,14 +105,14 @@ struct SetupImapViewDecorator {
         case let .smtp(part):
             switch part {
             case .port:
-                placeholder = "SMTP port"
+                placeholder = "SMTP port" // TODO: - Anton
                 keyboardType = .numberPad
                 accessibilityIdentifier = "SMTP port"
             case .security:
-                placeholder = "Security type"
+                placeholder = "Security type" // TODO: - Anton
                 accessibilityIdentifier = "SMTP type"
             case .server:
-                placeholder = "SMTP server"
+                placeholder = "SMTP server" // TODO: - Anton
             case .title:
                 placeholder = nil
             }
@@ -121,10 +121,10 @@ struct SetupImapViewDecorator {
         case let .other(part):
             switch part {
             case .name:
-                placeholder = "SMTP username"
+                placeholder = "SMTP username" // TODO: - Anton
             case .password:
                 isSecure = true
-                placeholder = "SMTP password"
+                placeholder = "SMTP password" // TODO: - Anton
             case .title:
                 placeholder = nil
             }

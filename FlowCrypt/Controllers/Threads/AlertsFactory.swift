@@ -27,7 +27,7 @@ enum AlertsFactory {
         alert.addTextField { tf in
             tf.isSecureTextEntry = true
         }
-
+        // TODO: - Anton
         let saveAction = UIAlertAction(title: "Ok", style: .default) { _ in
             guard let textField = alert.textFields?.first,
                   let passPhrase = textField.text,
@@ -41,7 +41,7 @@ enum AlertsFactory {
                 onCompletion(passPhrase)
             }
         }
-
+        // TODO: - Anton
         let cancelAction = UIAlertAction(title: "Cancel", style: .destructive) { _ in
             alert.dismiss(animated: true) {
                 onCancel()

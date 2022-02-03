@@ -86,7 +86,8 @@ extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
             case .title:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: "invalid_storage_text".localized
+                        title: "invalid_storage_text"
+                            .localized
                             .attributed(
                                 .regular(16),
                                 color: .mainTextColor,
@@ -111,11 +112,13 @@ extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
             case .button:
                 return ButtonCellNode(
                     input: ButtonCellNode.Input(
-                        title: "invalid_storage_reset_button".localized.attributed(
-                            .bold(16),
-                            color: .white,
-                            alignment: .center
-                        ),
+                        title: "invalid_storage_reset_button"
+                            .localized
+                            .attributed(
+                                .bold(16),
+                                color: .white,
+                                alignment: .center
+                            ),
                         color: .red
                     )
                 ) { [weak self] in

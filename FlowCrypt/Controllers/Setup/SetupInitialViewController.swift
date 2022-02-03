@@ -185,9 +185,12 @@ extension SetupInitialViewController {
                         }
                     )
                 case .keysAreNotDecrypted:
-                    showAlert(message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized, onOk: { [weak self] in
-                        self?.signOut()
-                    })
+                    showAlert(
+                        message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized,
+                        onOk: { [weak self] in
+                            self?.signOut()
+                        }
+                    )
                 }
             } catch {
                 if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {

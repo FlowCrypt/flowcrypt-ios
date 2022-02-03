@@ -15,7 +15,7 @@ import FlowCryptUI
  * - Used to fetch folders and get correct path for "inbox" folder
  */
 final class InboxViewContainerController: TableNodeViewController {
-    private let inbox = "inbox"
+    private let inbox = "inbox" // TODO: - Anton - check?
 
     private enum InboxViewControllerContainerError: Error {
         case noInbox

@@ -248,8 +248,7 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
     }
 
     private func update(searchController: UISearchController) {
-        searchController.searchBar.searchTextField
-            .attributedPlaceholder = "search_placeholder"
+        searchController.searchBar.searchTextField.attributedPlaceholder = "search_placeholder"
             .localized
             .attributed(
                 .regular(14),

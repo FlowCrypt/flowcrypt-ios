@@ -60,7 +60,7 @@ extension BackupService: BackupServiceType {
             cc: [],
             bcc: [],
             from: userId.toMime,
-            subject: "Your FlowCrypt Backup",
+            subject: "Your FlowCrypt Backup", // TODO: - Anton
             replyToMimeMsg: nil,
             atts: attachments,
             pubKeys: nil,

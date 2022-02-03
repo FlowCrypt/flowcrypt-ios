@@ -110,6 +110,7 @@ extension MessageActionsHandler where Self: UIViewController {
         }
     }
 
+    // TODO: - Anton
     func awaitUserConfirmation(_ completion: @escaping () -> Void) {
         let alert = UIAlertController(
             title: "Are you sure?",

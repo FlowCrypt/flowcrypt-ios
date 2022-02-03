@@ -25,7 +25,7 @@ struct BackupViewDecorator {
 
         switch state {
         case .idle:
-            title = "Fetching backups..."
+            title = "Fetching backups..." // TODO: - Anton
             subtitle = ""
         case let .backups(keys):
             title = "backup_screen_found".localized

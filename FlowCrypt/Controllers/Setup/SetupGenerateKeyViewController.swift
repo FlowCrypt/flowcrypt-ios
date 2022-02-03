@@ -63,7 +63,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
                 let isErrorHandled = handleCommon(error: error)
 
                 if !isErrorHandled {
-                    showAlert(error: error, message: "Could not finish setup, please try again")
+                    showAlert(error: error, message: "Could not finish setup, please try again") // TODO: - Anton
                 }
             }
         }

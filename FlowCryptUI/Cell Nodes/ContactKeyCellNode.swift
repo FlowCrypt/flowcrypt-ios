@@ -44,15 +44,15 @@ public final class ContactKeyCellNode: CellNode {
 
         super.init()
 
-        fingerprintTitleNode.attributedText = "Fingerprint:".attributed(.bold(16))
+        fingerprintTitleNode.attributedText = "Fingerprint:".attributed(.bold(16))// TODO: - Anton
         fingerprintNode.attributedText = input.fingerprint
         fingerprintNode.accessibilityIdentifier = "fingerprintValue"
 
-        createdAtTitleNode.attributedText = "Created:".attributed(.bold(16))
+        createdAtTitleNode.attributedText = "Created:".attributed(.bold(16))// TODO: - Anton
         createdAtNode.attributedText = input.createdAt
         createdAtNode.accessibilityIdentifier = "createdAtValue"
 
-        expiresTitleNode.attributedText = "Expires:".attributed(.bold(16))
+        expiresTitleNode.attributedText = "Expires:".attributed(.bold(16))// TODO: - Anton
         expiresNode.attributedText = input.expires
         expiresNode.accessibilityIdentifier = "expiresValue"
 

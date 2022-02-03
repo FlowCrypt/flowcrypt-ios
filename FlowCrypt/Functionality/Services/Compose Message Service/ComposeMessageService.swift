@@ -343,6 +343,7 @@ extension ComposeMessageService {
         return "<div style=\"display: none\" class=\"cryptup_reply\" cryptup-data=\"\(replyInfoJsonString)\"></div>"
     }
 
+    // TODO: - Anton
     private func createMessageBodyWithPasswordLink(sender: String, url: String) -> SendableMsgBody {
         let text = "\(sender) has sent you a password-encrypted email.\n\nTo open message copy and paste the following link: \(url)"
 

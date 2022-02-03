@@ -149,8 +149,8 @@ extension SetupCreatePassphraseAbstractViewController {
         return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
             DispatchQueue.main.async {
                 let alert = UIAlertController(
-                    title: "Pass Phrase",
-                    message: "Confirm Pass Phrase",
+                    title: "Pass Phrase",// TODO: - Anton
+                    message: "Confirm Pass Phrase",// TODO: - Anton
                     preferredStyle: .alert
                 )
                 alert.addTextField { textField in
