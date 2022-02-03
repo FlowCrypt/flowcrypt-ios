@@ -156,21 +156,26 @@ extension ThreadDetailsViewController {
             message: nil,
             preferredStyle: .actionSheet
         )
+
         if let view = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode {
             alert.popoverPresentation(style: .sourceView(view.menuNode.view))
         } else {
             alert.popoverPresentation(style: .centred(view))
         }
 
-        alert.addAction(
-            UIAlertAction(
-                title: "forward".localized,
-                style: .default) { [weak self] _ in
-                    self?.composeNewMessage(at: indexPath, quoteType: .forward)
-                }
-            )
+        alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .replyAll))
+        alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .forward))
         alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
+
         present(alert, animated: true, completion: nil)
+    }
+
+    private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
+        UIAlertAction(
+            title: type.actionLabel,
+            style: .default) { [weak self] _ in
+                self?.composeNewMessage(at: indexPath, quoteType: type)
+            }
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {
@@ -211,16 +216,27 @@ extension ThreadDetailsViewController {
               let processedMessage = input.processedMessage
         else { return }
 
-        let recipients = quoteType == .reply
-            ? [input.rawMessage.sender].compactMap({ $0 })
-            : []
+        let sender = [input.rawMessage.sender].compactMap { $0 }
+        let recipients: [String] = {
+            switch quoteType {
+            case .reply:
+                return sender
+            case .replyAll:
+                let recipientEmails = input.rawMessage.recipients.map(\.email)
+                let allRecipients = (recipientEmails + sender).unique()
+                let filteredRecipients = allRecipients.filter { $0 != appContext.user.email }
+                return filteredRecipients.isEmpty ? sender : filteredRecipients
+            case .forward:
+                return []
+            }
+        }()
 
         let attachments = quoteType == .forward
             ? input.processedMessage?.attachments ?? []
             : []
 
         let subject = input.rawMessage.subject ?? "(no subject)"
-        let threadId = quoteType == .reply ? input.rawMessage.threadId : nil
+        let threadId = quoteType == .forward ? nil : input.rawMessage.threadId
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
@@ -233,13 +249,15 @@ extension ThreadDetailsViewController {
             attachments: attachments
         )
 
-        let composeType: ComposeMessageInput.InputType
-        switch quoteType {
-        case .reply:
-            composeType = .reply(replyInfo)
-        case .forward:
-            composeType = .forward(replyInfo)
-        }
+        let composeType: ComposeMessageInput.InputType = {
+            switch quoteType {
+            case .reply, .replyAll:
+                return .reply(replyInfo)
+            case .forward:
+                return .forward(replyInfo)
+            }
+        }()
+
         let composeInput = ComposeMessageInput(type: composeType)
         navigationController?.pushViewController(
             ComposeViewController(appContext: appContext, input: composeInput),

@@ -11,7 +11,7 @@ import UIKit
 // MARK: Input
 extension RecipientEmailsCellNode {
     public struct Input {
-        public struct StateContext {
+        public struct StateContext: Equatable {
             let backgroundColor, borderColor, textColor: UIColor
             let image: UIImage?
             let accessibilityIdentifier: String?
@@ -31,7 +31,7 @@ extension RecipientEmailsCellNode {
             }
         }
 
-        public enum State: CustomStringConvertible {
+        public enum State: CustomStringConvertible, Equatable {
             case idle(StateContext)
             case selected(StateContext)
             case keyFound(StateContext)

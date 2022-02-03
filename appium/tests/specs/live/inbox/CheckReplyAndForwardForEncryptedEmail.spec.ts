@@ -13,10 +13,11 @@ describe('INBOX: ', () => {
 
   it('user is able to reply or forward email and check info from composed email', async () => {
 
-    const senderEmail = CommonData.sender.email;
-    const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
-    const emailText = CommonData.encryptedEmailWithAttachment.message;
-    const encryptedAttachmentName = CommonData.encryptedEmailWithAttachment.encryptedAttachmentName;
+    const senderEmail = CommonData.emailWithMultipleRecipients.sender;
+    const recipientEmail = CommonData.emailWithMultipleRecipients.recipient;
+    const emailSubject = CommonData.emailWithMultipleRecipients.subject;
+    const emailText = CommonData.emailWithMultipleRecipients.message;
+    const encryptedAttachmentName = CommonData.emailWithMultipleRecipients.encryptedAttachmentName;
 
     const replySubject = `Re: ${emailSubject}`;
     const forwardSubject = `Fwd: ${emailSubject}`;
@@ -30,13 +31,21 @@ describe('INBOX: ', () => {
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
 
+    // check reply message
     await EmailScreen.clickReplyButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo(senderEmail, replySubject, quoteText);
-
+    await NewMessageScreen.checkFilledComposeEmailInfo([senderEmail], replySubject, quoteText);
     await NewMessageScreen.clickBackButton();
+
+    // check reply all message
+    await EmailScreen.clickMenuButton();
+    await EmailScreen.clickReplyAllButton();
+    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail, senderEmail], replySubject, quoteText);
+    await NewMessageScreen.clickBackButton();
+
+    // check forwarded message
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickForwardButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo("", forwardSubject, quoteText, encryptedAttachmentName);
+    await NewMessageScreen.checkFilledComposeEmailInfo([], forwardSubject, quoteText, encryptedAttachmentName);
     await NewMessageScreen.deleteAttachment();
   });
 });

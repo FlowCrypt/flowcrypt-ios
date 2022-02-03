@@ -35,7 +35,7 @@ final public class RecipientEmailsCellNode: CellNode {
 
     public lazy var collectionNode: ASCollectionNode = {
         let node = ASCollectionNode(collectionViewLayout: layout)
-        node.accessibilityIdentifier = "recipientsList"
+        node.accessibilityIdentifier = "aid-recipients-list"
         node.backgroundColor = .clear
         return node
     }()
