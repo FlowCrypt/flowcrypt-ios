@@ -16,7 +16,7 @@ import { openpgp } from './pgp';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
-    export type Encrypt = { pubkeys: string[], signingPrv?: OpenPGP.key.Key, pwd?: string, data: Uint8Array, filename?: string, armor: boolean, date?: Date };
+    export type Encrypt = { pubkeys: string[], signingPrv?: OpenPGP.Key, pwd?: string, data: Uint8Array, filename?: string, armor: boolean, date?: Date };
     export type Type = { data: Uint8Array };
     export type Decrypt = { kisWithPp: PrvKeyInfo[], encryptedData: Uint8Array, msgPwd?: string, verificationPubkeys?: string[] };
     export type DiagnosePubkeys = { privateKis: KeyInfo[], message: Uint8Array };
@@ -30,7 +30,7 @@ export namespace PgpMsgMethod {
 }
 
 type SortedKeysForDecrypt = {
-  forVerification: OpenPGP.key.Key[];
+  forVerification: OpenPGP.Key[];
   encryptedFor: string[];
   signedBy: string[];
   prvMatching: PrvKeyInfo[];
@@ -115,7 +115,7 @@ export class PgpMsg {
    * Returns signed data if detached=false, armored
    * Returns signature if detached=true, armored
    */
-  public static sign = async (signingPrv: OpenPGP.key.Key, data: string, detached = false): Promise<string> => {
+  public static sign = async (signingPrv: OpenPGP.Key, data: string, detached = false): Promise<string> => {
     const message = openpgp.cleartext.fromText(data);
     const signRes = await openpgp.sign({ message, armor: true, privateKeys: [signingPrv], detached });
     if (detached) {
@@ -127,7 +127,7 @@ export class PgpMsg {
     return await openpgp.stream.readToEnd((signRes as OpenPGP.SignArmorResult).data);
   }
 
-  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.message.Verification[], pubs: OpenPGP.key.Key[]): Promise<VerifyRes> => {
+  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.message.Verification[], pubs: OpenPGP.Key[]): Promise<VerifyRes> => {
     const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
     try {
       // While this looks like bad method API design, it's here to ensure execution order when 1) reading data, 2) verifying, 3) processing signatures
@@ -377,12 +377,12 @@ export class PgpMsg {
     return keys;
   }
 
-  private static matchingKeyids = (key: OpenPGP.key.Key, encryptedFor: OpenPGP.Keyid[]): OpenPGP.Keyid[] => {
+  private static matchingKeyids = (key: OpenPGP.Key, encryptedFor: OpenPGP.Keyid[]): OpenPGP.Keyid[] => {
     const msgKeyidBytesArr = (encryptedFor || []).map(kid => kid.bytes);
     return key.getKeyIds().filter(kid => msgKeyidBytesArr.includes(kid.bytes));
   }
 
-  private static decryptKeyFor = async (prv: OpenPGP.key.Key, passphrase: string, matchingKeyIds: OpenPGP.Keyid[]): Promise<boolean> => {
+  private static decryptKeyFor = async (prv: OpenPGP.Key, passphrase: string, matchingKeyIds: OpenPGP.Keyid[]): Promise<boolean> => {
     if (!matchingKeyIds.length) { // we don't know which keyids match, decrypt all key packets
       return await PgpKey.decrypt(prv, passphrase, undefined, 'OK-IF-ALREADY-DECRYPTED');
     }
@@ -394,7 +394,7 @@ export class PgpMsg {
     return true;
   }
 
-  private static isKeyDecryptedFor = (prv: OpenPGP.key.Key, msgKeyIds: OpenPGP.Keyid[]): boolean => {
+  private static isKeyDecryptedFor = (prv: OpenPGP.Key, msgKeyIds: OpenPGP.Keyid[]): boolean => {
     if (prv.isFullyDecrypted()) {
       return true; // primary k + all subkeys decrypted, therefore it must be decrypted for any/every particular keyid
     }

@@ -294,7 +294,7 @@ export class Endpoints {
   }
 }
 
-export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Promise<OpenPGP.key.Key | undefined> => {
+export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Promise<OpenPGP.Key | undefined> => {
   if (!req.signingPrv) {
     return undefined;
   }

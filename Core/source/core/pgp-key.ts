@@ -32,8 +32,8 @@ export interface PrvKeyInfo {
   private: string;
   longid: string;
   passphrase?: string;
-  decrypted?: OpenPGP.key.Key;  // only for internal use in this file
-  parsed?: OpenPGP.key.Key;     // only for internal use in this file
+  decrypted?: OpenPGP.Key;  // only for internal use in this file
+  parsed?: OpenPGP.Key;     // only for internal use in this file
 }
 
 export type KeyAlgo = 'curve25519' | 'rsa2048' | 'rsa4096';
@@ -105,8 +105,8 @@ export class PgpKey {
   /**
    * Read many keys, could be armored or binary, in single armor or separately, useful for importing keychains of various formats
    */
-  public static readMany = async (fileData: Buf): Promise<{ keys: OpenPGP.key.Key[], errs: Error[] }> => {
-    const allKeys: OpenPGP.key.Key[] = [];
+  public static readMany = async (fileData: Buf): Promise<{ keys: OpenPGP.Key[], errs: Error[] }> => {
+    const allKeys: OpenPGP.Key[] = [];
     const allErrs: Error[] = [];
     const { blocks } = MsgBlockParser.detectBlocks(fileData.toUtfStr());
     const armoredPublicKeyBlocks = blocks.filter(block => block.type === 'publicKey' || block.type === 'privateKey');
@@ -134,7 +134,7 @@ export class PgpKey {
     return p.tag === openpgp.enums.packet.secretKey || p.tag === openpgp.enums.packet.secretSubkey;
   }
 
-  public static decrypt = async (prv: OpenPGP.key.Key, passphrase: string, optionalKeyid?: OpenPGP.Keyid, optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED'): Promise<boolean> => {
+  public static decrypt = async (prv: OpenPGP.Key, passphrase: string, optionalKeyid?: OpenPGP.Keyid, optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED'): Promise<boolean> => {
     if (!prv.isPrivate()) {
       throw new Error("Nothing to decrypt in a public key");
     }
@@ -162,7 +162,7 @@ export class PgpKey {
     return true;
   }
 
-  public static encrypt = async (prv: OpenPGP.key.Key, passphrase: string) => {
+  public static encrypt = async (prv: OpenPGP.Key, passphrase: string) => {
     if (!passphrase || passphrase === 'undefined' || passphrase === 'null') {
       throw new Error(`Encryption passphrase should not be empty:${typeof passphrase}:${passphrase}`);
     }
@@ -177,16 +177,16 @@ export class PgpKey {
     await prv.encrypt(passphrase);
   }
 
-  public static normalize = async (armored: string): Promise<{ normalized: string, keys: OpenPGP.key.Key[] }> => {
+  public static normalize = async (armored: string): Promise<{ normalized: string, keys: OpenPGP.Key[] }> => {
     try {
-      let keys: OpenPGP.key.Key[] = [];
+      let keys: OpenPGP.Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
       if (RegExp(PgpArmor.headers('publicKey', 're').begin).test(armored)) {
         keys = (await openpgp.key.readArmored(armored)).keys;
       } else if (RegExp(PgpArmor.headers('privateKey', 're').begin).test(armored)) {
         keys = (await openpgp.key.readArmored(armored)).keys;
       } else if (RegExp(PgpArmor.headers('encryptedMsg', 're').begin).test(armored)) {
-        keys = [new openpgp.key.Key((await openpgp.message.readArmored(armored)).packets)];
+        keys = [new OpenPGP.Key((await openpgp.message.readArmored(armored)).packets)];
       }
       for (const k of keys) {
         for (const u of k.users) {
@@ -200,10 +200,10 @@ export class PgpKey {
     }
   }
 
-  public static fingerprint = async (key: OpenPGP.key.Key | string, formatting: "default" | "spaced" = 'default'): Promise<string | undefined> => {
+  public static fingerprint = async (key: OpenPGP.Key | string, formatting: "default" | "spaced" = 'default'): Promise<string | undefined> => {
     if (!key) {
       return undefined;
-    } else if (key instanceof openpgp.key.Key) {
+    } else if (key instanceof OpenPGP.Key) {
       if (!key.primaryKey.getFingerprintBytes()) {
         return undefined;
       }
@@ -230,7 +230,7 @@ export class PgpKey {
     }
   }
 
-  public static longid = async (keyOrFingerprintOrBytes: string | OpenPGP.key.Key | undefined): Promise<string | undefined> => {
+  public static longid = async (keyOrFingerprintOrBytes: string | OpenPGP.Key | undefined): Promise<string | undefined> => {
     if (!keyOrFingerprintOrBytes) {
       return undefined;
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 8) {
@@ -268,7 +268,7 @@ export class PgpKey {
     return await PgpKey.usableButExpired(pubkey);
   }
 
-  public static expired = async (key: OpenPGP.key.Key): Promise<boolean> => {
+  public static expired = async (key: OpenPGP.Key): Promise<boolean> => {
     if (!key) {
       return false;
     }
@@ -282,7 +282,7 @@ export class PgpKey {
     throw new Error(`Got unexpected value for expiration: ${exp}`); // exp must be either null, Infinity or a Date
   }
 
-  public static usableButExpired = async (key: OpenPGP.key.Key): Promise<boolean> => {
+  public static usableButExpired = async (key: OpenPGP.Key): Promise<boolean> => {
     if (!key) {
       return false;
     }
@@ -297,7 +297,7 @@ export class PgpKey {
     return Boolean(await key.getEncryptionKey(undefined, oneSecondBeforeExpiration));
   }
 
-  public static dateBeforeExpiration = async (key: OpenPGP.key.Key | string): Promise<Date | undefined> => {
+  public static dateBeforeExpiration = async (key: OpenPGP.Key | string): Promise<Date | undefined> => {
     const openPgpKey = typeof key === 'string' ? await PgpKey.read(key) : key;
     const expires = await openPgpKey.getExpirationTime('encrypt');
     if (expires instanceof Date && expires.getTime() < Date.now()) { // expired
@@ -311,7 +311,7 @@ export class PgpKey {
     return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)) };
   }
 
-  public static details = async (k: OpenPGP.key.Key): Promise<KeyDetails> => {
+  public static details = async (k: OpenPGP.Key): Promise<KeyDetails> => {
     const keys = k.getKeys();
     const algoInfo = k.primaryKey.getAlgorithmInfo();
     const algo = { algorithm: algoInfo.algorithm, bits: algoInfo.bits, curve: (algoInfo as any).curve, algorithmId: openpgp.enums.publicKey[algoInfo.algorithm] };
@@ -349,7 +349,7 @@ export class PgpKey {
    * Get latest self-signature date, in utc millis.
    * This is used to figure out how recently was key updated, and if one key is newer than other.
    */
-  public static lastSig = async (key: OpenPGP.key.Key): Promise<number> => {
+  public static lastSig = async (key: OpenPGP.Key): Promise<number> => {
     await key.getExpirationTime(); // will force all sigs to be verified
     const allSignatures: OpenPGP.packet.Signature[] = [];
     for (const user of key.users) {
@@ -366,7 +366,7 @@ export class PgpKey {
     throw new Error('No valid signature found in key');
   }
 
-  public static revoke = async (key: OpenPGP.key.Key): Promise<string | undefined> => {
+  public static revoke = async (key: OpenPGP.Key): Promise<string | undefined> => {
     if (! await key.isRevoked()) {
       key = await key.revoke({});
     }

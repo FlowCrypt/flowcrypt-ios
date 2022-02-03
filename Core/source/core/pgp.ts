@@ -14,7 +14,7 @@ if (typeof openpgp !== 'undefined') { // in certain environments, eg browser con
   openpgp.config.commentstring = 'Seamlessly send and receive encrypted email';
   openpgp.config.ignore_mdc_error = true; // we manually check for missing MDC and show loud warning to user (no auto-decrypt)
   // openpgp.config.require_uid_self_cert = false;
-  const getPrvPackets = (k: OpenPGP.key.Key) => {
+  const getPrvPackets = (k: OpenPGP.Key) => {
     if (!k.isPrivate()) {
       throw new Error("Cannot check encryption status of secret keys in a Public Key");
     }
@@ -31,13 +31,13 @@ if (typeof openpgp !== 'undefined') { // in certain environments, eg browser con
     }
     return nonDummyPrvPackets;
   };
-  openpgp.key.Key.prototype.isFullyDecrypted = function () {
+  OpenPGP.Key.prototype.isFullyDecrypted = function () {
     return getPrvPackets(this).every(p => p.isDecrypted() === true);
   };
-  openpgp.key.Key.prototype.isFullyEncrypted = function () {
+  OpenPGP.Key.prototype.isFullyEncrypted = function () {
     return getPrvPackets(this).every(p => p.isDecrypted() === false);
   };
-  openpgp.key.Key.prototype.isPacketDecrypted = function (keyId: OpenPGP.Keyid) {
+  OpenPGP.Key.prototype.isPacketDecrypted = function (keyId: OpenPGP.Keyid) {
     if (!this.isPrivate()) {
       throw new Error("Cannot check packet encryption status of secret key in a Public Key");
     }

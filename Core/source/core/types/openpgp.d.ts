@@ -1,11 +1,13 @@
 /**
  * Type definitions for OpenPGP.js http://openpgpjs.org/
- * 
+ *
  * Contributors:
  *  - FlowCrypt a. s. <https://flowcrypt.com>
  *  - Guillaume Lacasa <https://blog.lacasa.fr>
  *  - Errietta Kostala <https://github.com/errietta>
  */
+
+export namespace OpenPGP {
 
 /* ############## v5 KEY #################### */
 // The Key and PublicKey types can be used interchangably since TS cannot detect the difference, as they have the same class properties.
@@ -171,13 +173,13 @@ export class CleartextMessage {
 
 /* ############## v5 MSG #################### */
 export function generateSessionKey(options: { encryptionKeys: MaybeArray<PublicKey>, date?: Date, encryptionUserIDs?: MaybeArray<UserID>, config?: PartialConfig }): Promise<SessionKey>;
-export function encryptSessionKey(options: SessionKey & { 
+export function encryptSessionKey(options: SessionKey & {
   encryptionKeys?: MaybeArray<PublicKey>, passwords?: MaybeArray<string>, format?: 'armored', wildcard?: boolean, encryptionKeyIDs?: MaybeArray<KeyID>, date?: Date, encryptionUserIDs?: MaybeArray<UserID>, config?: PartialConfig
 }) : Promise<string>;
-export function encryptSessionKey(options: SessionKey & { 
+export function encryptSessionKey(options: SessionKey & {
   encryptionKeys?: MaybeArray<PublicKey>, passwords?: MaybeArray<string>, format: 'binary', wildcard?: boolean, encryptionKeyIDs?: MaybeArray<KeyID>, date?: Date, encryptionUserIDs?: MaybeArray<UserID>, config?: PartialConfig
 }) : Promise<Uint8Array>;
-export function encryptSessionKey(options: SessionKey & { 
+export function encryptSessionKey(options: SessionKey & {
   encryptionKeys?: MaybeArray<PublicKey>, passwords?: MaybeArray<string>, format: 'object', wildcard?: boolean, encryptionKeyIDs?: MaybeArray<KeyID>, date?: Date, encryptionUserIDs?: MaybeArray<UserID>, config?: PartialConfig
 }) : Promise<Message<Data>>;
 export function decryptSessionKeys<T extends MaybeStream<Data>>(options: { message: Message<T>, decryptionKeys?: MaybeArray<PrivateKey>, passwords?: MaybeArray<string>, date?: Date, config?: PartialConfig }): Promise<SessionKey[]>;
@@ -349,7 +351,7 @@ interface PartialConfig extends Partial<Config> {}
 
 /* ############## v5 PACKET #################### */
 
-declare abstract class BasePacket {
+abstract class BasePacket {
   static readonly tag: enums.packet;
   public read(bytes: Uint8Array): void;
   public write(): Uint8Array;
@@ -360,7 +362,7 @@ declare abstract class BasePacket {
  * - A Secret (Sub)Key Packet can always be used when a Public one is expected.
  * - A Subkey Packet cannot always be used when a Primary Key Packet is expected (and vice versa).
  */
-declare abstract class BasePublicKeyPacket extends BasePacket {
+abstract class BasePublicKeyPacket extends BasePacket {
   public algorithm: enums.publicKey;
   public created: Date;
   public version: number;
@@ -388,7 +390,7 @@ export class PublicSubkeyPacket extends BasePublicKeyPacket {
   protected isSubkey(): true;
 }
 
-declare abstract class BaseSecretKeyPacket extends BasePublicKeyPacket {
+abstract class BaseSecretKeyPacket extends BasePublicKeyPacket {
   public privateParams: object | null;
   public encrypt(passphrase: string, config?: Config): Promise<void>; // throws on error
   public decrypt(passphrase: string): Promise<void>; // throws on error
@@ -688,7 +690,7 @@ interface SubkeyOptions {
   config?: PartialConfig;
 }
 
-declare class KeyID {
+class KeyID {
   bytes: string;
   equals(keyID: KeyID, matchWildcard?: boolean): boolean;
   toHex(): string;
@@ -884,3 +886,4 @@ export namespace enums {
     mime = 109
   }
 }
+} // namespace OpenPGP
