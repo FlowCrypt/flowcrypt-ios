@@ -4,12 +4,12 @@
 
 /// <reference path="../core/types/openpgp.d.ts" />
 
-import { openpgp } from '../core/pgp';
+import { str_to_hex } from './util';
 
 let KEY_CACHE: { [longidOrArmoredKey: string]: OpenPGP.Key } = {};
 let KEY_CACHE_WIPE_TIMEOUT: NodeJS.Timeout;
 
-const keyLongid = (k: OpenPGP.Key) => openpgp.str_to_hex(k.getKeyID().bytes).toUpperCase();
+const keyLongid = (k: OpenPGP.Key) => str_to_hex(k.getKeyID().bytes).toUpperCase();
 
 export class Store {
 
