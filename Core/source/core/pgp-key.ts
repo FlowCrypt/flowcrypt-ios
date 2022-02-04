@@ -367,7 +367,8 @@ export class PgpKey {
   }
 
   public static revoke = async (key: OpenPGP.Key): Promise<string | undefined> => {
-    if (! await key.isRevoked()) {
+    if (! await key.isRevoked(null)) {
+      openpgp.revokeKey({key: key.keyPacket});
       key = await key.revoke({});
     }
     const certificate = await key.getRevocationCertificate();
