@@ -9,6 +9,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { openpgp } from './pgp';
+import { PrivateKey, SecretKeyPacket, SecretSubkeyPacket } from 'openpgp';
 
 export type Contact = {
   email: string;
@@ -131,7 +132,7 @@ export class PgpKey {
   }
 
   public static isPacketPrivate = (p: OpenPGP.AnyKeyPacket): p is PrvPacket => {
-    return p.tag === openpgp.enums.packet.secretKey || p.tag === openpgp.enums.packet.secretSubkey;
+    return p instanceof SecretKeyPacket || p instanceof SecretSubkeyPacket;
   }
 
   public static decrypt = async (prv: OpenPGP.Key, passphrase: string, optionalKeyid?: OpenPGP.KeyID, optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED'): Promise<boolean> => {
