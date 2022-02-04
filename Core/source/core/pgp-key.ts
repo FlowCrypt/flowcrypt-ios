@@ -10,6 +10,7 @@ import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { openpgp } from './pgp';
 import { PrivateKey, SecretKeyPacket, SecretSubkeyPacket } from 'openpgp';
+import { str_to_hex } from '../platform/util';
 
 export type Contact = {
   email: string;
@@ -206,11 +207,8 @@ export class PgpKey {
     if (!key) {
       return undefined;
     } else if (key instanceof OpenPGP.Key) {
-      if (!key.primaryKey.getFingerprintBytes()) {
-        return undefined;
-      }
       try {
-        const fp = key.primaryKey.getFingerprint().toUpperCase();
+        const fp = key.getFingerprint().toUpperCase();
         if (formatting === 'spaced') {
           return fp.replace(/(.{4})/g, '$1 ').trim();
         }
@@ -236,7 +234,7 @@ export class PgpKey {
     if (!keyOrFingerprintOrBytes) {
       return undefined;
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 8) {
-      return openpgp.util.str_to_hex(keyOrFingerprintOrBytes).toUpperCase();
+      return str_to_hex(keyOrFingerprintOrBytes).toUpperCase();
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 40) {
       return keyOrFingerprintOrBytes.substr(-16);
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 49) {
@@ -260,7 +258,7 @@ export class PgpKey {
     if (!PgpKey.fingerprint(armored)) {
       return false;
     }
-    const { keys: [pubkey] } = await openpgp.readArmored(armored);
+    const pubkey = await openpgp.readKey({armoredKey: armored});
     if (!pubkey) {
       return false;
     }
@@ -274,7 +272,7 @@ export class PgpKey {
     if (!key) {
       return false;
     }
-    const exp = await key.getExpirationTime('encrypt');
+    const exp = await key.getExpirationTime();
     if (exp === Infinity || !exp) {
       return false;
     }
@@ -301,7 +299,7 @@ export class PgpKey {
 
   public static dateBeforeExpiration = async (key: OpenPGP.Key | string): Promise<Date | undefined> => {
     const openPgpKey = typeof key === 'string' ? await PgpKey.read(key) : key;
-    const expires = await openPgpKey.getExpirationTime('encrypt');
+    const expires = await openPgpKey.getExpirationTime();
     if (expires instanceof Date && expires.getTime() < Date.now()) { // expired
       return new Date(expires.getTime() - 1000);
     }
@@ -315,10 +313,10 @@ export class PgpKey {
 
   public static details = async (k: OpenPGP.Key): Promise<KeyDetails> => {
     const keys = k.getKeys();
-    const algoInfo = k.primaryKey.getAlgorithmInfo();
+    const algoInfo = k.getAlgorithmInfo();
     const algo = { algorithm: algoInfo.algorithm, bits: algoInfo.bits, curve: (algoInfo as any).curve, algorithmId: openpgp.enums.publicKey[algoInfo.algorithm] };
-    const created = k.primaryKey.created.getTime() / 1000;
-    const exp = await k.getExpirationTime('encrypt');
+    const created = k.getCreationTime().getTime() / 1000;
+    const exp = await k.getExpirationTime();
     const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
     const lastModified = await PgpKey.lastSig(k) / 1000;
     const ids: KeyDetails$ids[] = [];
@@ -337,7 +335,7 @@ export class PgpKey {
       isFullyDecrypted: k.isPrivate() ? k.isFullyDecrypted() : undefined,
       isFullyEncrypted: k.isPrivate() ? k.isFullyEncrypted() : undefined,
       public: k.toPublic().armor(),
-      users: k.getUserIds(),
+      users: k.getUserIDs(),
       ids,
       algo,
       created,
@@ -353,17 +351,17 @@ export class PgpKey {
    */
   public static lastSig = async (key: OpenPGP.Key): Promise<number> => {
     await key.getExpirationTime(); // will force all sigs to be verified
-    const allSignatures: OpenPGP.packet.Signature[] = [];
+    const allSignatures: OpenPGP.SignaturePacket[] = [];
     for (const user of key.users) {
       allSignatures.push(...user.selfCertifications);
     }
-    for (const subKey of key.subKeys) {
+    for (const subKey of key.subkeys) {
       allSignatures.push(...subKey.bindingSignatures);
     }
-    allSignatures.sort((a, b) => b.created.getTime() - a.created.getTime());
+    allSignatures.sort((a, b) => (b.created ? b.created.getTime() : 0) - (a.created ? a.created.getTime() : 0));
     const newestSig = allSignatures.find(sig => sig.verified === true);
     if (newestSig) {
-      return newestSig.created.getTime();
+      return newestSig.created ? newestSig.created.getTime() : 0;
     }
     throw new Error('No valid signature found in key');
   }
