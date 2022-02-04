@@ -7,7 +7,9 @@
  *  - Errietta Kostala <https://github.com/errietta>
  */
 
-declare namespace OpenPGP {
+  // ----- BEGIN ADDED BY FLOWCRYPT -----
+  declare namespace OpenPGP {
+  // ----- END ADDED BY FLOWCRYPT -----
 
 /* ############## v5 KEY #################### */
 // The Key and PublicKey types can be used interchangably since TS cannot detect the difference, as they have the same class properties.
@@ -892,4 +894,6 @@ export namespace enums {
   }
 }
 
+// ----- BEGIN ADDED BY FLOWCRYPT -----
 } // namespace OpenPGP
+// ----- END ADDED BY FLOWCRYPT -----

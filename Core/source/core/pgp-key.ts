@@ -175,7 +175,7 @@ export class PgpKey {
     if (encryptedPacketCount) {
       throw new Error(`Cannot encrypt a key that has ${encryptedPacketCount} of ${secretPackets.length} private packets still encrypted`);
     }
-    await prv.encrypt(passphrase);
+    await ((prv as unknown) as OpenPGP.BaseSecretKeyPacket).encrypt(passphrase);
   }
 
   public static normalize = async (armored: string): Promise<{ normalized: string, keys: OpenPGP.Key[] }> => {
@@ -183,11 +183,12 @@ export class PgpKey {
       let keys: OpenPGP.Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
       if (RegExp(PgpArmor.headers('publicKey', 're').begin).test(armored)) {
-        keys = (await openpgp.readArmored(armored)).keys;
+        keys = (await openpgp.readKeys({armoredKeys: armored}));
       } else if (RegExp(PgpArmor.headers('privateKey', 're').begin).test(armored)) {
-        keys = (await openpgp.readArmored(armored)).keys;
+        keys = (await openpgp.readKeys({armoredKeys: armored}));
       } else if (RegExp(PgpArmor.headers('encryptedMsg', 're').begin).test(armored)) {
-        keys = [new OpenPGP.Key((await openpgp.message.readArmored(armored)).packets)];
+        const msg = await openpgp.readMessage({armoredMessage: armored});
+        keys = [new OpenPGP.PublicKey(msg.packets as OpenPGP.PacketList<OpenPGP.AnyKeyPacket>)];
       }
       for (const k of keys) {
         for (const u of k.users) {
