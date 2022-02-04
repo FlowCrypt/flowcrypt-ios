@@ -74,17 +74,16 @@ export type PrvPacket = (OpenPGP.SecretKeyPacket | OpenPGP.SecretSubkeyPacket);
 
 export class PgpKey {
   public static create = async (userIds: OpenPGP.UserID[], variant: KeyAlgo, passphrase: string):
-    Promise<{ private: string, public: string }> => {
-    const opt: OpenPGP.KeyOptions = { userIDs: userIds, passphrase };
-    if (variant === 'curve25519') {
-      opt.curve = 'curve25519';
-    } else if (variant === 'rsa2048') {
-      opt.rsaBits = 2048;
-    } else {
-      opt.rsaBits = 4096;
-    }
-    const k = await openpgp.generateKey(opt);
-    return { public: k.publicKeyArmored, private: k.privateKeyArmored };
+    Promise<{ private: string, public: string, revCert: string }> => {
+    // With openpgp.js v5 Separate declaration of variable of type OpenPGP.KeyOptions
+    // leads to error when calling generate().
+    // I don't know how to overcome this, so just passing "inline" object, which works.
+    const k = await openpgp.generateKey({
+      userIDs: userIds, passphrase: passphrase, format: 'armored',
+      curve: (variant === 'curve25519' ? 'curve25519' : undefined),
+      rsaBits: (variant === 'curve25519' ? undefined : (variant === 'rsa2048' ? 2048 : 4096))
+    });
+    return { public: k.publicKey, private: k.privateKey, revCert: k.revocationCertificate };
   }
 
   /**
@@ -103,7 +102,8 @@ export class PgpKey {
   }
 
   /**
-   * Read many keys, could be armored or binary, in single armor or separately, useful for importing keychains of various formats
+   * Read many keys, could be armored or binary, in single armor or separately,
+   * useful for importing keychains of various formats
    */
   public static readMany = async (fileData: Buf): Promise<{ keys: OpenPGP.Key[], errs: Error[] }> => {
     const allKeys: OpenPGP.Key[] = [];
@@ -112,9 +112,9 @@ export class PgpKey {
     const armoredPublicKeyBlocks = blocks.filter(block => block.type === 'publicKey' || block.type === 'privateKey');
     const pushKeysAndErrs = async (content: string | Buf, type: 'readArmored' | 'read') => {
       try {
-        const { err, keys } = type === 'readArmored' ? await openpgp.readArmored(content.toString())
-          : await openpgp.read(typeof content === 'string' ? Buf.fromUtfStr(content) : content);
-        allErrs.push(...(err || []));
+        const keys = type === 'readArmored'
+          ? await openpgp.readKeys({armoredKeys: content.toString()})
+          : await openpgp.readKeys({binaryKeys: (typeof content === 'string' ? Buf.fromUtfStr(content) : content)});
         allKeys.push(...keys);
       } catch (e) {
         allErrs.push(e instanceof Error ? e : new Error(String(e)));
@@ -130,7 +130,7 @@ export class PgpKey {
     return { keys: allKeys, errs: allErrs };
   }
 
-  public static isPacketPrivate = (p: OpenPGP.packet.AnyKeyPacket): p is PrvPacket => {
+  public static isPacketPrivate = (p: OpenPGP.AnyKeyPacket): p is PrvPacket => {
     return p.tag === openpgp.enums.packet.secretKey || p.tag === openpgp.enums.packet.secretSubkey;
   }
 
