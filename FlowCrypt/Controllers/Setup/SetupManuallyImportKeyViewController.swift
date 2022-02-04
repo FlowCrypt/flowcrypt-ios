@@ -171,7 +171,10 @@ extension SetupManuallyImportKeyViewController {
         if privateKey.isEmpty {
             userInfoMessage = "import_no_backups_clipboard".localized + user
         } else {
-            userInfoMessage = "Found \(privateKey.count) key\(privateKey.count > 1 ? "s" : "")" // TODO: - Anton
+            let key = privateKey.count > 1
+                ? "setup_found_key"
+                : "setup_found_keys"
+            userInfoMessage = key.localized
             proceedToPassPhrase(with: user, keys: privateKey)
         }
     }

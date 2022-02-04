@@ -121,7 +121,6 @@ extension SearchViewController {
 // MARK: - MessageHandlerViewConroller
 extension SearchViewController: MsgListViewController {
 
-    // TODO: - ANTON - check
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
         guard let message = message.wrappedMessage else {
             return nil

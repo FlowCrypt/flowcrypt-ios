@@ -167,7 +167,7 @@ extension SetupBackupsViewController {
                 hideSpinner()
                 showAlert(
                     error: error,
-                    message: "Failed to set up account", // TODO: - Anton
+                    message: "error_setup_failed".localized,
                     onOk: {
                         // todo - what to do? maybe nothing, since they should now see the same button again that they can press again
                     })

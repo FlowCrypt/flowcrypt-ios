@@ -1308,7 +1308,7 @@ extension ComposeViewController {
             preferredStyle: .alert
         )
         let okAction = UIAlertAction(
-            title: "OK", // TODO: - Anton
+            title: "ok".localized,
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(
@@ -1330,7 +1330,7 @@ extension ComposeViewController {
             preferredStyle: .alert
         )
         let okAction = UIAlertAction(
-            title: "OK", // TODO: - Anton
+            title: "ok".localized,
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(

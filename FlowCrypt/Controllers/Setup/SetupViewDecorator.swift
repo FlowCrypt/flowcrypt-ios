@@ -74,9 +74,14 @@ struct SetupViewDecorator {
 
         switch subtitleType {
         case let .fetchedKeys(count):
-            subtitle = "Found \(count) key backup\(count > 1 ? "s" : "")" // TODO: - Anton
+            let key = count > 1
+                ? "setup_fetched_keys"
+                : "setup_fetched_key"
+            subtitle = key.localizeWithArguments(count)
+            // TODO: - Anton - check
         case let .fetchedEKMKeys(count):
-            subtitle = "Fetched %@ key(s) on EKM".localizeWithArguments(count)
+            subtitle = "setup_fetched_ekm_keys".localizeWithArguments(count)
+            // TODO: - Anton - check
         case .common:
             subtitle = "setup_description".localized
         case .choosingPassPhrase:

@@ -23,7 +23,7 @@ public final class TextFieldCellNode: CellNode {
         public let accessibilityIdentifier: String?
 
         public init(
-            placeholder: NSAttributedString = NSAttributedString(string: "PLACEHOLDER"), // TODO: - Anton
+            placeholder: NSAttributedString = .init(string: "placeholder".localized),
             isSecureTextEntry: Bool = false,
             textInsets: CGFloat = .zero,
             textAlignment: NSTextAlignment = .left,

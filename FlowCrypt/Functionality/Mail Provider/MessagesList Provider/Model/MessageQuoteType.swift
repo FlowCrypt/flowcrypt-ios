@@ -16,10 +16,9 @@ extension MessageQuoteType {
     var subjectPrefix: String {
         switch self {
         case .reply:
-            return "Re: "
+            return "re".localized
         case .forward:
-            return "Fwd: "
+            return "fwd".localized
         }
     }
 }
-// TODO: - Anton - check in gmail re and fwd

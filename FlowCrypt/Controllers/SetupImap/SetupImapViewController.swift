@@ -153,7 +153,7 @@ extension SetupImapViewController {
 // MARK: - Setup
 extension SetupImapViewController {
     private func setupUI() {
-        title = "Email Provider" // TODO: - Anton
+        title = "setup_providers".localized
         observeKeyboardNotifications()
     }
 
@@ -519,7 +519,7 @@ extension SetupImapViewController {
     }
 
     private func handleConnection(error: Error) {
-        showAlert(error: error, message: "Connection Error") // TODO: - Anton
+        showAlert(error: error, message: "error_connection".localized)
     }
 
     private func handleSuccessfulConnection() {

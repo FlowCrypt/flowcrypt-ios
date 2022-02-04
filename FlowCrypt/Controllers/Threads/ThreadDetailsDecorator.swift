@@ -115,4 +115,4 @@ private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> B
 
 // TODO: - Anton
 // check show error
-// localize errors - separate tasl
+// localized errors - separate tasl

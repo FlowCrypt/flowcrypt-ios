@@ -110,18 +110,17 @@ extension MessageActionsHandler where Self: UIViewController {
         }
     }
 
-    // TODO: - Anton
     func awaitUserConfirmation(_ completion: @escaping () -> Void) {
         let alert = UIAlertController(
-            title: "Are you sure?",
-            message: "You're about to permanently delete a message",
+            title: "message_permanently_delete_title".localized,
+            message: "message_permanently_delete".localized,
             preferredStyle: .alert
         )
         alert.addAction(
-            UIAlertAction(title: "Cancel", style: .default)
+            UIAlertAction(title: "cancel".localized, style: .default)
         )
         alert.addAction(
-            UIAlertAction(title: "OK", style: .default) { _ in
+            UIAlertAction(title: "ok".localized, style: .default) { _ in
                 completion()
             }
         )
