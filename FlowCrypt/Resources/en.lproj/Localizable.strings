@@ -1,5 +1,5 @@
 // COMMON
-"app_name" = "FlowCrypt"
+"app_name" = "FlowCrypt";
 "loading_title" = "Loading";
 "downloading_title" = "Downloading";
 "encrypting_title" = "Encrypting...";
