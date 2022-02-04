@@ -70,18 +70,18 @@ export interface KeyDetails {
     curve?: string;
   };
 }
-export type PrvPacket = (OpenPGP.SecretKey | OpenPGP.SecretSubkey);
+export type PrvPacket = (OpenPGP.SecretKeyPacket | OpenPGP.SecretSubkeyPacket);
 
 export class PgpKey {
-  public static create = async (userIds: { name: string, email: string }[], variant: KeyAlgo, passphrase: string):
+  public static create = async (userIds: OpenPGP.UserID[], variant: KeyAlgo, passphrase: string):
     Promise<{ private: string, public: string }> => {
-    const opt: OpenPGP.KeyOptions = { userIds, passphrase };
+    const opt: OpenPGP.KeyOptions = { userIDs: userIds, passphrase };
     if (variant === 'curve25519') {
       opt.curve = 'curve25519';
     } else if (variant === 'rsa2048') {
-      opt.numBits = 2048;
+      opt.rsaBits = 2048;
     } else {
-      opt.numBits = 4096;
+      opt.rsaBits = 4096;
     }
     const k = await openpgp.generateKey(opt);
     return { public: k.publicKeyArmored, private: k.privateKeyArmored };
