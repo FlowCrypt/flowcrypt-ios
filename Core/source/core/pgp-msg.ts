@@ -200,28 +200,46 @@ export class PgpMsg {
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
     if (!keys.prvMatching.length && !msgPwd) {
-      return { success: false, error: { type: DecryptErrTypes.keyMismatch, message: 'Missing appropriate key' }, message: prepared.message, longids, isEncrypted };
+      return {
+        success: false,
+        error: { type: DecryptErrTypes.keyMismatch, message: 'Missing appropriate key' },
+        message: prepared.message,
+        longids,
+        isEncrypted
+      };
     }
     if (!keys.prvForDecryptDecrypted.length && !msgPwd) {
-      return { success: false, error: { type: DecryptErrTypes.needPassphrase, message: 'Missing pass phrase' }, message: prepared.message, longids, isEncrypted };
+      return {
+        success: false,
+        error: { type: DecryptErrTypes.needPassphrase, message: 'Missing pass phrase' },
+        message: prepared.message,
+        longids,
+        isEncrypted
+      };
     }
     try {
-      const packets = (prepared.message as OpenPGP.message.Message).packets;
-      const isSymEncrypted = packets.filter(p => p.tag === openpgp.enums.packet.symEncryptedSessionKey).length > 0;
-      const isPubEncrypted = packets.filter(p => p.tag === openpgp.enums.packet.publicKeyEncryptedSessionKey).length > 0;
+      const packets = (prepared.message as OpenPGP.Message<OpenPGP.Data>).packets;
+      const isSymEncrypted = packets.filterByTag(openpgp.enums.packet.symEncryptedSessionKey).length > 0;
+      const isPubEncrypted = packets.filterByTag(openpgp.enums.packet.publicKeyEncryptedSessionKey).length > 0;
       if (isSymEncrypted && !isPubEncrypted && !msgPwd) {
-        return { success: false, error: { type: DecryptErrTypes.usePassword, message: 'Use message password' }, longids, isEncrypted };
+        return {
+          success: false,
+          error: { type: DecryptErrTypes.usePassword, message: 'Use message password' },
+          longids,
+          isEncrypted
+        };
       }
       const passwords = msgPwd ? [msgPwd] : undefined;
       const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!);
-      const decrypted = await (prepared.message as OpenPGP.message.Message).decrypt(privateKeys, passwords, undefined, false);
+      const decrypted = await (prepared.message as OpenPGP.Message<OpenPGP.Data>).decrypt(privateKeys, passwords, undefined, false);
       // we can only figure out who signed the msg once it's decrypted
       await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
       await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined; // verify first to prevent stream hang
       const content = new Buf(await openpgp.stream.readToEnd(decrypted.getLiteralData()!)); // read content second to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined; // evaluate verify results third to prevent stream hang
-      if (!prepared.isCleartext && (prepared.message as OpenPGP.message.Message).packets.filterByTag(openpgp.enums.packet.symmetricallyEncrypted).length) {
+      if (!prepared.isCleartext && (prepared.message as OpenPGP.Message<OpenPGP.Data>).packets
+        .filterByTag(openpgp.enums.packet.symmetricallyEncryptedData).length) {
         const noMdc = 'Security threat!\n\nMessage is missing integrity checks (MDC). The sender should update their outdated software and resend.';
         return { success: false, content, error: { type: DecryptErrTypes.noMdc, message: noMdc }, message: prepared.message, longids, isEncrypted };
       }
@@ -232,14 +250,13 @@ export class PgpMsg {
   }
 
   public static encrypt: PgpMsgMethod.Encrypt = async ({ pubkeys, signingPrv, pwd, data, filename, armor, date }) => {
-    const message = openpgp.message.fromBinary(data, filename, date);
-
-    const options: OpenPGP.EncryptOptions = { armor, message, date };
+    const message = await openpgp.createMessage({binary: data, filename, date});
+    const options: OpenPGP.EncryptOptions = { format: (armor ? 'armored' : 'binary'), message, date };
     if (pubkeys) {
-      options.publicKeys = [];
+      options.encryptionKeys = [];
       for (const armoredPubkey of pubkeys) {
-        const { keys: publicKeys } = await openpgp.readArmored(armoredPubkey);
-        options.publicKeys.push(...publicKeys);
+        const publicKeys = await openpgp.readKeys({armoredKeys: armoredPubkey});
+        options.encryptionKeys.push(...publicKeys);
       }
     }
     if (pwd) {
@@ -249,7 +266,7 @@ export class PgpMsg {
       throw new Error('no-pubkeys-no-challenge');
     }
     if (signingPrv && typeof signingPrv.isPrivate !== 'undefined' && signingPrv.isPrivate()) { // tslint:disable-line:no-unbound-method - only testing if exists
-      options.privateKeys = [signingPrv];
+      options.signingKeys = signingPrv;
     }
     return await openpgp.encrypt(options);
   }
