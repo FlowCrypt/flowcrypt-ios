@@ -39,7 +39,7 @@ export namespace PgpMsgMethod {
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
   export type Decrypt = (arg: Arg.Decrypt) => Promise<DecryptSuccess | DecryptError>;
   export type Type = (arg: Arg.Type) => Promise<PgpMsgTypeResult>;
-  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGP.Message<OpenPGP.MaybeStream<string>>>;
+  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGP.MaybeStream<string>>;
 }
 
 type SortedKeysForDecrypt = {
