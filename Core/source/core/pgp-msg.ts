@@ -26,7 +26,7 @@ export namespace PgpMsgMethod {
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
   export type Decrypt = (arg: Arg.Decrypt) => Promise<DecryptSuccess | DecryptError>;
   export type Type = (arg: Arg.Type) => Promise<PgpMsgTypeResult>;
-  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGP.EncryptResult>;
+  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGP.Message<OpenPGP.MaybeStream<OpenPGP.Data>>>;
 }
 
 type SortedKeysForDecrypt = {
@@ -44,12 +44,12 @@ type DecryptError$error = { type: DecryptErrTypes; message: string; };
 type DecryptError$longids = { message: string[]; matching: string[]; chosen: string[]; needPassphrase: string[]; };
 export type DecryptError = {
   success: false; error: DecryptError$error; longids: DecryptError$longids; content?: Buf;
-  isEncrypted?: boolean; message?: OpenPGP.message.Message | OpenPGP.cleartext.CleartextMessage;
+  isEncrypted?: boolean; message?: OpenPGP.Message<OpenPGP.Data> | OpenPGP.CleartextMessage;
 };
-type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: OpenPGP.cleartext.CleartextMessage }
-  | { isArmored: boolean, isCleartext: false, message: OpenPGP.message.Message };
+type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: OpenPGP.CleartextMessage }
+  | { isArmored: boolean, isCleartext: false, message: OpenPGP.Message<OpenPGP.Data> };
 
-type OpenpgpMsgOrCleartext = OpenPGP.message.Message | OpenPGP.cleartext.CleartextMessage;
+type OpenpgpMsgOrCleartext = OpenPGP.Message<OpenPGP.Data> | OpenPGP.CleartextMessage;
 
 export type VerifyRes = {
   signer?: string;
@@ -100,7 +100,13 @@ export class PgpMsg {
         // This does not 100% mean it's OpenPGP message
         // But it's a good indication that it may
         const t = openpgp.enums.packet;
-        const msgTpes = [t.symEncryptedIntegrityProtected, t.modificationDetectionCode, t.symEncryptedAEADProtected, t.symmetricallyEncrypted, t.compressed];
+        const msgTpes = [
+          t.symEncryptedIntegrityProtectedData,
+          t.modificationDetectionCode,
+          t.aeadEncryptedData,
+          t.symmetricallyEncryptedData,
+          t.compressedData
+        ];
         return { armored: false, type: msgTpes.includes(tagNumber) ? 'encryptedMsg' : 'publicKey' };
       }
     }
@@ -116,8 +122,8 @@ export class PgpMsg {
    * Returns signature if detached=true, armored
    */
   public static sign = async (signingPrv: OpenPGP.Key, data: string, detached = false): Promise<string> => {
-    const message = openpgp.cleartext.fromText(data);
-    const signRes = await openpgp.sign({ message, armor: true, privateKeys: [signingPrv], detached });
+    const message = await openpgp.createCleartextMessage({text: data});
+    const signRes = await openpgp.sign({ message, format: 'armored', privateKeys: [signingPrv], detached });
     if (detached) {
       if (typeof signRes.signature !== 'string') {
         throw new Error('signRes.signature unexpectedly not a string when creating detached signature');

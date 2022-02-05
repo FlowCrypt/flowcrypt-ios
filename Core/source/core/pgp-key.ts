@@ -367,15 +367,17 @@ export class PgpKey {
   }
 
   public static revoke = async (key: OpenPGP.Key): Promise<string | undefined> => {
-    if (! await key.isRevoked(null)) {
-      openpgp.revokeKey({key: key.keyPacket});
-      key = await key.revoke({});
+    // It was call to isRevoked(), but it turns that the whole logic truns in to just this:
+    if (key.revocationSignatures.length == 0) {
+      if (!key.isPrivate()) throw Error('Revocation of public key not implemented');
+      const keypair = await openpgp.revokeKey({key: key as OpenPGP.PrivateKey, format: 'object'});
+      key = keypair.privateKey;
     }
     const certificate = await key.getRevocationCertificate();
     if (!certificate || typeof certificate === 'string') {
       return certificate || undefined;
     } else {
-      return await openpgp.stream.readToEnd(certificate);
+      return await certificate.read // TODO read whole certifcate, not sure how
     }
   }
 }
