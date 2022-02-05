@@ -16,6 +16,7 @@ const SELECTORS = {
   RECIPIENTS_BCC_LABEL: '~bccLabel0',
   MENU_BUTTON: '~aid-message-menu-button',
   FORWARD_BUTTON: '~Forward',
+  REPLY_ALL_BUTTON: '~Reply all',
   DELETE_BUTTON: '~Delete',
   DOWNLOAD_BUTTON: '~Download',
   CANCEL_BUTTON: '~Cancel',
@@ -82,6 +83,10 @@ class EmailScreen extends BaseScreen {
 
   get forwardButton() {
     return $(SELECTORS.FORWARD_BUTTON);
+  }
+
+  get replyAllButton() {
+    return $(SELECTORS.REPLY_ALL_BUTTON);
   }
 
   get deleteButton() {
@@ -179,6 +184,10 @@ class EmailScreen extends BaseScreen {
 
   clickForwardButton = async () => {
     await ElementHelper.waitAndClick(await this.forwardButton);
+  }
+
+  clickReplyAllButton = async () => {
+    await ElementHelper.waitAndClick(await this.replyAllButton);
   }
 
   clickDeleteButton = async () => {

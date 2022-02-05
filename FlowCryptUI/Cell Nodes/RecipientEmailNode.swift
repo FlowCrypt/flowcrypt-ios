@@ -34,12 +34,14 @@ final class RecipientEmailNode: CellNode {
     init(input: Input, index: Int) {
         self.input = input
         super.init()
+
+        if let stateAccessibilityIdentifier = input.recipient.state.accessibilityIdentifier {
+            accessibilityIdentifier = "aid-to-\(index)-\(stateAccessibilityIdentifier)"
+        }
+
         titleNode.attributedText = "  ".attributed() + input.recipient.email + "  ".attributed()
         titleNode.backgroundColor = input.recipient.state.backgroundColor
-        if let accessibilityIdentifier = input.recipient.state.accessibilityIdentifier {
-            titleNode.accessibilityIdentifier = "aid-to-\(index)-\(accessibilityIdentifier)"
-        }
-        titleNode.isAccessibilityElement = true
+        titleNode.accessibilityIdentifier = "aid-to-\(index)-label"
 
         titleNode.cornerRadius = 8
         titleNode.clipsToBounds = true

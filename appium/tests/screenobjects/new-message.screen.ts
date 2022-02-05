@@ -5,11 +5,7 @@ const SELECTORS = {
   ADD_RECIPIENT_FIELD: '~aid-recipient-text-field',
   SUBJECT_FIELD: '~subjectTextField',
   COMPOSE_SECURITY_MESSAGE: '~messageTextView',
-  RECIPIENTS_LIST: '~recipientsList',
-  ADDED_RECIPIENT: '-ios class chain:**/XCUIElementTypeWindow[1]/XCUIElementTypeOther/XCUIElementTypeOther' +
-    '/XCUIElementTypeOther/XCUIElementTypeOther[1]/XCUIElementTypeOther/XCUIElementTypeTable' +
-    '/XCUIElementTypeCell[1]/XCUIElementTypeOther/XCUIElementTypeCollectionView/XCUIElementTypeCell' +
-    '/XCUIElementTypeOther/XCUIElementTypeOther/XCUIElementTypeStaticText', //it works only with this selector
+  RECIPIENTS_LIST: '~aid-recipients-list',
   PASSWORD_CELL: '~aid-message-password-cell',
   ATTACHMENT_CELL: '~aid-attachment-cell-0',
   ATTACHMENT_NAME_LABEL: '~aid-attachment-title-label-0',
@@ -43,10 +39,6 @@ class NewMessageScreen extends BaseScreen {
 
   get recipientsList() {
     return $(SELECTORS.RECIPIENTS_LIST);
-  }
-
-  get addedRecipientEmail() {
-    return $(SELECTORS.ADDED_RECIPIENT);
   }
 
   get attachmentCell() {
@@ -126,17 +118,13 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
 
-  checkFilledComposeEmailInfo = async (recipient: string, subject: string, message: string, attachmentName?: string) => {
+  checkFilledComposeEmailInfo = async (recipients: string[], subject: string, message: string, attachmentName?: string) => {
     expect(this.composeSecurityMessage).toHaveTextContaining(message);
 
     const element = await this.filledSubject(subject);
     await element.waitForDisplayed();
 
-    if (recipient.length === 0) {
-      await this.checkEmptyRecipientsList();
-    } else {
-      await this.checkAddedRecipient(recipient);
-    }
+    await this.checkRecipientsList(recipients);
 
     if (attachmentName !== undefined) {
       await this.checkAddedAttachment(attachmentName);
@@ -147,26 +135,30 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(await this.addRecipientField);
   }
 
-  checkEmptyRecipientsList = async () => {
-    const list = await this.recipientsList;
-    const listText = await list.getText();
-    expect(listText.length).toEqual(0);
+  checkRecipientsList = async(recipients: string[]) => {
+    if (recipients.length === 0) {
+      await ElementHelper.waitElementInvisible(await $(`~aid-to-0-label`));
+    } else {
+      for (const [index, recipient] of recipients.entries()) {
+        await this.checkAddedRecipient(recipient, index);
+      }
+    }
   }
 
-  checkAddedRecipient = async (recipient: string) => {
-    const addedRecipientEl = await this.addedRecipientEmail;
-    const value = await addedRecipientEl.getValue();
-    expect(value).toEqual(`  ${recipient}  `);
+  checkAddedRecipient = async (recipient: string, order = 0) => {
+    const recipientCell = await $(`~aid-to-${order}-label`);
+    const name = await recipientCell.getValue();
+    expect(name).toEqual(`  ${recipient}  `);
   }
 
   checkAddedRecipientColor = async (recipient: string, order: number, color: string) => {
     const addedRecipientEl = await $(`~aid-to-${order}-${color}`);
-    const name = await addedRecipientEl.getValue();
-    expect(name).toEqual(`  ${recipient}  `);
+    await ElementHelper.waitElementVisible(addedRecipientEl);
+    await this.checkAddedRecipient(recipient, order);
   }
 
-  deleteAddedRecipient = async (order: number, color: string) => {
-    const addedRecipientEl = await $(`~aid-to-${order}-${color}`);
+  deleteAddedRecipient = async (order: number) => {
+    const addedRecipientEl = await $(`~aid-to-${order}-label`);
     await ElementHelper.waitAndClick(addedRecipientEl);
     await driver.sendKeys(['\b']); // backspace
   }
