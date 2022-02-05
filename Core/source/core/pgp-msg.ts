@@ -16,9 +16,22 @@ import { openpgp } from './pgp';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
-    export type Encrypt = { pubkeys: string[], signingPrv?: OpenPGP.Key, pwd?: string, data: Uint8Array, filename?: string, armor: boolean, date?: Date };
+    export type Encrypt = {
+      pubkeys: string[],
+      signingPrv?: OpenPGP.Key,
+      pwd?: string,
+      data: Uint8Array,
+      filename?: string,
+      armor: boolean,
+      date?: Date
+    };
     export type Type = { data: Uint8Array };
-    export type Decrypt = { kisWithPp: PrvKeyInfo[], encryptedData: Uint8Array, msgPwd?: string, verificationPubkeys?: string[] };
+    export type Decrypt = {
+      kisWithPp: PrvKeyInfo[],
+      encryptedData: Uint8Array,
+      msgPwd?: string,
+      verificationPubkeys?: string[]
+    };
     export type DiagnosePubkeys = { privateKis: KeyInfo[], message: Uint8Array };
     export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array, verificationPubkeys?: string[] };
   }
@@ -251,7 +264,8 @@ export class PgpMsg {
 
   public static encrypt: PgpMsgMethod.Encrypt = async ({ pubkeys, signingPrv, pwd, data, filename, armor, date }) => {
     const message = await openpgp.createMessage({binary: data, filename, date});
-    const options: OpenPGP.EncryptOptions = { format: (armor ? 'armored' : 'binary'), message, date };
+    const options: OpenPGP.EncryptOptions = { message, date };
+    if (armor) options.format = 'armored';
     if (pubkeys) {
       options.encryptionKeys = [];
       for (const armoredPubkey of pubkeys) {
@@ -265,7 +279,8 @@ export class PgpMsg {
     if (!pubkeys && !pwd) {
       throw new Error('no-pubkeys-no-challenge');
     }
-    if (signingPrv && typeof signingPrv.isPrivate !== 'undefined' && signingPrv.isPrivate()) { // tslint:disable-line:no-unbound-method - only testing if exists
+    // tslint:disable-next-line:no-unbound-method - only testing if exists
+    if (signingPrv && typeof signingPrv.isPrivate !== 'undefined' && signingPrv.isPrivate()) {
       options.signingKeys = signingPrv;
     }
     return await openpgp.encrypt(options);
