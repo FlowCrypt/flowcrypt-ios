@@ -123,7 +123,7 @@ export class PgpMsg {
    */
   public static sign = async (signingPrv: OpenPGP.Key, data: string, detached = false): Promise<string> => {
     const message = await openpgp.createCleartextMessage({text: data});
-    const signRes = await openpgp.sign({ message, format: 'armored', privateKeys: [signingPrv], detached });
+    const signRes = await openpgp.sign({ message, signingKeys: (signingPrv as OpenPGP.PrivateKey), detached });
     if (detached) {
       if (typeof signRes.signature !== 'string') {
         throw new Error('signRes.signature unexpectedly not a string when creating detached signature');
@@ -133,7 +133,7 @@ export class PgpMsg {
     return await openpgp.stream.readToEnd((signRes as OpenPGP.SignArmorResult).data);
   }
 
-  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.message.Verification[], pubs: OpenPGP.Key[]): Promise<VerifyRes> => {
+  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.Verification[], pubs: OpenPGP.Key[]): Promise<VerifyRes> => {
     const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
     try {
       // While this looks like bad method API design, it's here to ensure execution order when 1) reading data, 2) verifying, 3) processing signatures
