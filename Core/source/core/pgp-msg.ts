@@ -295,10 +295,16 @@ export class PgpMsg {
     // `<a href="${att.url}" class="cryptup_file" cryptup-data="${fcData}">${linkText}</a>\n`
     // thus we use RegEx so that it works on both browser and node
     if (decryptedContent.includes('class="cryptup_file"')) {
-      decryptedContent = decryptedContent.replace(/<a\s+href="([^"]+)"\s+class="cryptup_file"\s+cryptup-data="([^"]+)"\s*>[^<]+<\/a>\n?/gm, (_, url, fcData) => {
+      decryptedContent = decryptedContent.replace(
+        /<a\s+href="([^"]+)"\s+class="cryptup_file"\s+cryptup-data="([^"]+)"\s*>[^<]+<\/a>\n?/gm, (_, url, fcData) => {
         const a = Str.htmlAttrDecode(String(fcData));
         if (PgpMsg.isFcAttLinkData(a)) {
-          blocks.push(MsgBlock.fromAtt('encryptedAttLink', '', { type: a.type, name: a.name, length: a.size, url: String(url) }));
+          blocks.push(MsgBlock.fromAtt('encryptedAttLink', '', {
+            type: a.type,
+            name: a.name,
+            length: a.size,
+            url: String(url)
+          }));
         }
         return '';
       });
@@ -318,7 +324,8 @@ export class PgpMsg {
     return normalized;
   }
 
-  // public static extractFcReplyToken =  (decryptedContent: string) => { // todo - used exclusively on the web - move to a web package
+  // public static extractFcReplyToken =  (decryptedContent: string) => {
+  //   // todo - used exclusively on the web - move to a web package
   //   const fcTokenElement = $(`<div>${decryptedContent}</div>`).find('.cryptup_reply');
   //   if (fcTokenElement.length) {
   //     const fcData = fcTokenElement.attr('cryptup-data');
@@ -339,7 +346,7 @@ export class PgpMsg {
 
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {
     keys.signedBy = Value.arr.unique(await PgpKey.longids(
-      msg.getSigningKeyIds ? msg.getSigningKeyIds() : []));
+      msg.getSigningKeyIDs ? msg.getSigningKeyIDs() : []));
   }
 
   private static populateKeysForVerification = async (keys: SortedKeysForDecrypt,
@@ -347,7 +354,7 @@ export class PgpMsg {
     if (typeof verificationPubkeys !== 'undefined') {
       keys.forVerification = [];
       for (const verificationPubkey of verificationPubkeys) {
-        const { keys: keysForVerification } = await openpgp.readArmored(verificationPubkey);
+        const keysForVerification = await openpgp.readKeys({ armoredKeys: verificationPubkey });
         keys.forVerification.push(...keysForVerification);
       }
     }
@@ -363,8 +370,8 @@ export class PgpMsg {
       prvForDecryptDecrypted: [],
       prvForDecryptWithoutPassphrases: [],
     };
-    const encryptedForKeyids = msg instanceof openpgp.message.Message
-      ? (msg as OpenPGP.message.Message).getEncryptionKeyIds()
+    const encryptedForKeyids = msg instanceof openpgp.Message
+      ? (msg as OpenPGP.Message<OpenPGP.Data>).getEncryptionKeyIDs()
       : [];
     keys.encryptedFor = await PgpKey.longids(encryptedForKeyids);
     await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
@@ -378,7 +385,7 @@ export class PgpMsg {
         // encrypted for subkeys, thus we have to parse the key to get the info
         // we are filtering here to avoid a significant performance issue of having
         // to attempt decrypting with all keys simultaneously
-        for (const longid of await Promise.all(ki.parsed.getKeyIds().map(({ bytes }) => PgpKey.longid(bytes)))) {
+        for (const longid of await Promise.all(ki.parsed.getKeyIDs().map(({ bytes }) => PgpKey.longid(bytes)))) {
           if (keys.encryptedFor.includes(longid!)) {
             keys.prvMatching.push(ki);
             break;
@@ -408,7 +415,7 @@ export class PgpMsg {
 
   private static matchingKeyids = (key: OpenPGP.Key, encryptedFor: OpenPGP.KeyID[]): OpenPGP.KeyID[] => {
     const msgKeyidBytesArr = (encryptedFor || []).map(kid => kid.bytes);
-    return key.getKeyIds().filter(kid => msgKeyidBytesArr.includes(kid.bytes));
+    return key.getKeyIDs().filter(kid => msgKeyidBytesArr.includes(kid.bytes));
   }
 
   private static decryptKeyFor = async (prv: OpenPGP.Key, passphrase: string, matchingKeyIds: OpenPGP.KeyID[]): Promise<boolean> => {
