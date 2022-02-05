@@ -123,20 +123,25 @@ export class PgpMsg {
    */
   public static sign = async (signingPrv: OpenPGP.Key, data: string, detached = false): Promise<string> => {
     const message = await openpgp.createCleartextMessage({text: data});
-    const signRes = await openpgp.sign({ message, signingKeys: (signingPrv as OpenPGP.PrivateKey), detached });
-    if (detached) {
-      if (typeof signRes.signature !== 'string') {
-        throw new Error('signRes.signature unexpectedly not a string when creating detached signature');
-      }
-      return signRes.signature;
-    }
-    return await openpgp.stream.readToEnd((signRes as OpenPGP.SignArmorResult).data);
+    const signRes = await openpgp.sign({
+      message,
+      signingKeys: (signingPrv as OpenPGP.PrivateKey),
+      detached,
+      format: 'armored'
+    });
+    return signRes;
   }
 
-  public static verify = async (msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.Verification[], pubs: OpenPGP.Key[]): Promise<VerifyRes> => {
+  public static verify = async (
+    msgOrVerResults: OpenpgpMsgOrCleartext | OpenPGP.VerificationResult[],
+    pubs: OpenPGP.Key[]
+    ): Promise<VerifyRes> => {
     const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
     try {
-      // While this looks like bad method API design, it's here to ensure execution order when 1) reading data, 2) verifying, 3) processing signatures
+      // While this looks like bad method API design, it's here to ensure execution order when:
+      // 1. reading data
+      // 2. verifying
+      // 3. processing signatures
       // Else it will hang trying to read a stream: https://github.com/openpgpjs/openpgpjs/issues/916#issuecomment-510620625
       const verifyResults = Array.isArray(msgOrVerResults) ? msgOrVerResults : await msgOrVerResults.verify(pubs);
       for (const verifyRes of verifyResults) {
@@ -147,7 +152,7 @@ export class PgpMsg {
         sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
         if (!sig.signer) {
           // todo - currently only the first signer will be reported. Should we be showing all signers? How common is that?
-          sig.signer = await PgpKey.longid(verifyRes.keyid.bytes);
+          sig.signer = await PgpKey.longid(verifyRes.keyID.bytes);
         }
       }
     } catch (verifyErr) {
@@ -163,12 +168,13 @@ export class PgpMsg {
   }
 
   public static verifyDetached: PgpMsgMethod.VerifyDetached = async ({ plaintext, sigText, verificationPubkeys }) => {
-    const message = openpgp.message.fromText(Buf.fromUint8(plaintext).toUtfStr());
+    const message = await openpgp.createMessage({text: Buf.fromUint8(plaintext).toUtfStr()});
     await message.appendSignature(Buf.fromUint8(sigText).toUtfStr());
     const keys = await PgpMsg.getSortedKeys([], message);
     if (verificationPubkeys) {
       for (const verificationPubkey of verificationPubkeys) {
-        keys.forVerification.push(...(await openpgp.readArmored(verificationPubkey)).keys);
+        const k = await openpgp.readKeys({armoredKeys: verificationPubkey});
+        keys.forVerification.push(...k);
       }
     }
     return await PgpMsg.verify(message, keys.forVerification);
