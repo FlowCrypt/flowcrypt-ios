@@ -39,7 +39,7 @@ export namespace PgpMsgMethod {
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
   export type Decrypt = (arg: Arg.Decrypt) => Promise<DecryptSuccess | DecryptError>;
   export type Type = (arg: Arg.Type) => Promise<PgpMsgTypeResult>;
-  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGP.Message<OpenPGP.MaybeStream<OpenPGP.Data>>>;
+  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGP.Message<OpenPGP.MaybeStream<string>>>;
 }
 
 type SortedKeysForDecrypt = {
@@ -243,8 +243,8 @@ export class PgpMsg {
         };
       }
       const passwords = msgPwd ? [msgPwd] : undefined;
-      const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!);
-      const decrypted = await (prepared.message as OpenPGP.Message<OpenPGP.Data>).decrypt(privateKeys, passwords, undefined, false);
+      const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!) as OpenPGP.PrivateKey[];
+      const decrypted = await (prepared.message as OpenPGP.Message<OpenPGP.Data>).decrypt(privateKeys, passwords);
       // we can only figure out who signed the msg once it's decrypted
       await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
       await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
@@ -280,10 +280,10 @@ export class PgpMsg {
       throw new Error('no-pubkeys-no-challenge');
     }
     // tslint:disable-next-line:no-unbound-method - only testing if exists
-    if (signingPrv && typeof signingPrv.isPrivate !== 'undefined' && signingPrv.isPrivate()) {
+    if (signingPrv && signingPrv.isPrivate()) {
       options.signingKeys = signingPrv;
     }
-    return await openpgp.encrypt(options);
+    return await openpgp.encrypt(options as any);
   }
 
   public static diagnosePubkeys: PgpMsgMethod.DiagnosePubkeys = async ({ privateKis, message }) => {

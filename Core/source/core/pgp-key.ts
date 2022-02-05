@@ -9,7 +9,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { openpgp } from './pgp';
-import { PrivateKey, SecretKeyPacket, SecretSubkeyPacket } from 'openpgp';
+import { SecretKeyPacket, SecretSubkeyPacket } from 'openpgp';
 import { str_to_hex } from '../platform/util';
 
 export type Contact = {
@@ -377,7 +377,7 @@ export class PgpKey {
     if (!certificate || typeof certificate === 'string') {
       return certificate || undefined;
     } else {
-      return await certificate.read // TODO read whole certifcate, not sure how
+      return await openpgp.stream.readToEnd(certificate);
     }
   }
 }

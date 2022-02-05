@@ -204,7 +204,7 @@ ava.default('mime-email-plain-html.txt', async t => {
 
 ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const signingPrv = (await openpgp.readArmored(keys[0].private)).keys[0];
+  const signingPrv = await openpgp.readKey({armoredKey: keys[0].private}) as OpenPGP.PrivateKey;
   // console.log("rsa1 key fingerprint:" + signingPrv.getFingerprint().toUpperCase());
   if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
   const { data } = await PgpMsg.encrypt({ data: text, signingPrv: signingPrv,  pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
@@ -214,7 +214,7 @@ ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
 
 ava.default('mime-email-plain-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const signingPrv = (await openpgp.readArmored(keys[0].private)).keys[0];
+  const signingPrv = await openpgp.readKey({armoredKey: keys[0].private})  as OpenPGP.PrivateKey;
   if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
   const data = text.toString();
   const signed = await PgpMsg.sign(signingPrv, data);
