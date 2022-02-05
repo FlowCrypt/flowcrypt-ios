@@ -63,14 +63,22 @@ struct AppStartup {
     private func chooseView(for window: UIWindow) {
         switch entryPointForUser() {
         case .mainFlow:
-            startMainFlow(appContext: appContext, window: window)
+            startWithUserContext(appContext: appContext, window: window) { context in
+                let controller = InboxViewContainerController(appContext: context)
+                window.rootViewController = SideMenuNavigationController(
+                    appContext: context,
+                    contentViewController: controller
+                )
+            }
         case .signIn:
             window.rootViewController = MainNavigationController(
                 rootViewController: SignInViewController(appContext: appContext)
             )
-        case .setupFlow(let userId):
-            let setupViewController = SetupInitialViewController(appContext: appContext, user: userId)
-            window.rootViewController = MainNavigationController(rootViewController: setupViewController)
+        case .setupFlow:
+            startWithUserContext(appContext: appContext, window: window) { context in
+                let controller = SetupInitialViewController(appContext: context)
+                window.rootViewController = MainNavigationController(rootViewController: controller)
+            }
         }
     }
 
@@ -141,7 +149,7 @@ struct AppStartup {
     }
 
     @MainActor
-    private func startMainFlow(appContext: AppContext, window: UIWindow) {
+    private func startWithUserContext(appContext: AppContext, window: UIWindow, callback: (AppContextWithUser) -> Void) {
         let session = appContext.session
 
         guard
@@ -164,12 +172,6 @@ struct AppStartup {
             return
         }
 
-        let appContextWithUser = appContext.withSession(session: session, authType: authType, user: user)
-        let contentViewController = InboxViewContainerController(appContext: appContextWithUser)
-        let viewController = SideMenuNavigationController(
-            appContext: appContextWithUser,
-            contentViewController: contentViewController
-        )
-        window.rootViewController = viewController
+        callback(appContext.withSession(session: session, authType: authType, user: user))
     }
 }

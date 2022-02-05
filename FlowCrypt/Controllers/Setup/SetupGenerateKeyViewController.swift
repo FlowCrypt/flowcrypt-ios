@@ -23,20 +23,18 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 
     init(
         appContext: AppContextWithUser,
-        userId: UserId,
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.attester = AttesterApi(
-            clientConfiguration: appContext.clientConfigurationService.getSaved(for: user.email)
+            clientConfiguration: appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         )
         self.service = Service(
             appContext: appContext,
-            userId: user,
             attester: self.attester
         )
         super.init(
             appContext: appContext,
-            user: user,
+            user: UserId(email: appContext.user.email, name: appContext.user.name),
             decorator: decorator
         )
     }
@@ -75,12 +73,10 @@ private actor Service {
     typealias ViewController = SetupCreatePassphraseAbstractViewController
 
     private let appContext: AppContextWithUser
-    private let userId: UserId
     private let attester: AttesterApiType
 
     init(
         appContext: AppContextWithUser,
-        userId: UserId,
         attester: AttesterApiType
     ) {
         self.appContext = appContext
@@ -92,7 +88,7 @@ private actor Service {
         storageMethod: StorageMethod,
         viewController: ViewController
     ) async throws {
-        let userId = try getUserId()
+        let userId = UserId(email: appContext.user.email, name: appContext.user.name)
 
         try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
@@ -127,7 +123,7 @@ private actor Service {
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,
             source: .generated,
-            for: userId.email
+            for: appContext.user.email
         )
     }
 
@@ -144,7 +140,7 @@ private actor Service {
             return Imap(user: user).imapSess?.oAuth2Token
         }
     }
-    
+
     private func submitKeyToAttester(
         user: User,
         publicKey: String
@@ -158,15 +154,5 @@ private actor Service {
         } catch {
             throw CreateKeyError.submitKey(error)
         }
-    }
-
-    private func getUserId() throws -> UserId {
-        guard !appContext.user.email.isEmpty else {
-            throw CreateKeyError.missingUserEmail
-        }
-        guard !appContext.user.name.isEmpty else {
-            throw CreateKeyError.missingUserName
-        }
-        return UserId(email: appContext.user.email, name: appContext.user.name)
     }
 }

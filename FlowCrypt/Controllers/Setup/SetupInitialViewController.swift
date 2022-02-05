@@ -52,25 +52,22 @@ final class SetupInitialViewController: TableNodeViewController {
     }
 
     private let service: ServiceActor
-    private let userId: UserId
     private let decorator: SetupViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let emailKeyManagerApi: EmailKeyManagerApiType
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
-        appContext: AppContext,
-        user: UserId,
+        appContext: AppContextWithUser,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         emailKeyManagerApi: EmailKeyManagerApiType? = nil
     ) {
         self.appContext = appContext
-        self.userId = user
         self.service = ServiceActor(backupService: appContext.getBackupService())
         self.decorator = decorator
-        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: user.email)
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.emailKeyManagerApi = emailKeyManagerApi ?? EmailKeyManagerApi(clientConfiguration: clientConfiguration)
         self.clientConfiguration = clientConfiguration
         super.init(node: TableNode())
@@ -123,6 +120,7 @@ extension SetupInitialViewController {
 
         Task {
             do {
+                let userId = UserId(email: appContext.user.email, name: appContext.user.name)
                 let keys = try await service.fetchBackupsFromInbox(for: userId)
                 proceedToSetupWith(keys: keys)
             } catch {
@@ -159,7 +157,7 @@ extension SetupInitialViewController {
 
     private func getIdToken() async throws -> String {
         let googleService = GoogleUserService(
-            currentUserEmail: userId.email,
+            currentUserEmail: appContext.user.email,
             appDelegateGoogleSessionContainer: nil
         )
 
@@ -331,12 +329,12 @@ extension SetupInitialViewController {
     }
 
     private func proceedToCreatingNewKey() {
-        let viewController = SetupGenerateKeyViewController(appContext: appContext, userId: userId)
+        let viewController = SetupGenerateKeyViewController(appContext: appContext)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
     private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {
-        let viewController = SetupEKMKeyViewController(appContext: appContext, user: userId, keys: keys)
+        let viewController = SetupEKMKeyViewController(appContext: appContext, keys: keys)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
@@ -348,7 +346,7 @@ extension SetupInitialViewController {
             state = .noKeyBackupsInInbox
         } else {
             logger.logInfo("\(keys.count) key backups found in inbox")
-            let viewController = SetupBackupsViewController(appContext: appContext, fetchedEncryptedKeys: keys, user: userId)
+            let viewController = SetupBackupsViewController(appContext: appContext, fetchedEncryptedKeys: keys)
             navigationController?.pushViewController(viewController, animated: true)
         }
     }

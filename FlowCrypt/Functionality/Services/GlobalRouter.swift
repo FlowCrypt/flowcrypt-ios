@@ -13,7 +13,7 @@ import UIKit
 protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType) async
-    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws
+    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws
     func switchActive(user: User, appContext: AppContext) throws
     func signOut(appContext: AppContext) throws
 }
@@ -65,7 +65,7 @@ extension GlobalRouter: GlobalRouterType {
                 viewController.showSpinner()
 
                 let googleService = GoogleUserService(
-                    currentUserEmail: appContext.dataService.currentUser?.email,
+                    currentUserEmail: appContext.encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
                 let session = try await googleService.signIn(
@@ -99,14 +99,14 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws {
+    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws {
         logger.logInfo("Ask for contacts permission with \(route)")
 
         switch route {
         case .gmailLogin(let viewController):
             do {
                 let googleService = GoogleUserService(
-                    currentUserEmail: appContext.dataService.currentUser?.email,
+                    currentUserEmail: appContext.user.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
                 let session = try await googleService.signIn(
@@ -155,8 +155,8 @@ extension GlobalRouter: GlobalRouterType {
     private func proceed(with appContext: AppContext, session: SessionType) {
         logger.logInfo("proceed for session: \(session.description)")
         guard
-            let authType = appContext.dataService.currentAuthType,
-            let user = appContext.dataService.currentUser
+            let user = appContext.encryptedStorage.activeUser,
+            let authType = user.authType
         else {
             let message = "Wrong application state. User not found for session \(session.description)"
             logger.logError(message)

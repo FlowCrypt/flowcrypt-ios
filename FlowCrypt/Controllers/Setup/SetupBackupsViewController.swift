@@ -21,10 +21,9 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     }
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
     private let decorator: SetupViewDecorator
     private let keyMethods: KeyMethodsType
-    private let user: UserId
     private let fetchedEncryptedKeys: [KeyDetails]
 
     private var passPhrase: String?
@@ -41,17 +40,15 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     }
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         fetchedEncryptedKeys: [KeyDetails],
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        keyMethods: KeyMethodsType = KeyMethods(),
-        user: UserId
+        keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.appContext = appContext
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.user = user
 
         super.init(node: TableNode())
     }
@@ -141,7 +138,7 @@ extension SetupBackupsViewController {
             keyDetails: Array(matchingKeyBackups),
             passPhrase: storageMethod == .persistent ? passPhrase : nil,
             source: .backup,
-            for: user.email
+            for: appContext.user.email
         )
         moveToMainFlow()
     }

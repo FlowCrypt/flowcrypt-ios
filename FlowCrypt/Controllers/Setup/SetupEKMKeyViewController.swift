@@ -29,15 +29,14 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
     private let keys: [KeyDetails]
 
     init(
-        appContext: AppContext,
-        user: UserId,
+        appContext: AppContextWithUser,
         keys: [KeyDetails] = [],
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.keys = keys
         super.init(
             appContext: appContext,
-            user: user,
+            user: UserId(email: appContext.user.email, name: appContext.user.name),
             fetchedKeysCount: keys.count,
             decorator: decorator
         )
