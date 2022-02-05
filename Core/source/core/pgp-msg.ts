@@ -272,11 +272,11 @@ export class PgpMsg {
   }
 
   public static diagnosePubkeys: PgpMsgMethod.DiagnosePubkeys = async ({ privateKis, message }) => {
-    const m = await openpgp.message.readArmored(Buf.fromUint8(message).toUtfStr());
-    const msgKeyIds = m.getEncryptionKeyIds ? m.getEncryptionKeyIds() : [];
+    const m = await openpgp.readMessage({ armoredMessage: Buf.fromUint8(message).toUtfStr() });
+    const msgKeyIds = m.getEncryptionKeyIDs ? m.getEncryptionKeyIDs() : [];
     const localKeyIds: OpenPGP.KeyID[] = [];
     for (const k of await Promise.all(privateKis.map(ki => PgpKey.read(ki.public)))) {
-      localKeyIds.push(...k.getKeyIds());
+      localKeyIds.push(...k.getKeyIDs());
     }
     const diagnosis = { found_match: false, receivers: msgKeyIds.length };
     for (const msgKeyId of msgKeyIds) {
