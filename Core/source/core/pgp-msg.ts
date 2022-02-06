@@ -40,7 +40,7 @@ export namespace PgpMsgMethod {
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
   export type Decrypt = (arg: Arg.Decrypt) => Promise<DecryptSuccess | DecryptError>;
   export type Type = (arg: Arg.Type) => Promise<PgpMsgTypeResult>;
-  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGP.MaybeStream<string>>;
+  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGP.Data>;
 }
 
 type SortedKeysForDecrypt = {
@@ -264,27 +264,45 @@ export class PgpMsg {
   }
 
   public static encrypt: PgpMsgMethod.Encrypt = async ({ pubkeys, signingPrv, pwd, data, filename, armor, date }) => {
-    const message = await openpgp.createMessage({binary: data, filename, date});
-    const options: OpenPGP.EncryptOptions = { message, date };
-    if (armor) options.format = 'armored';
-    if (pubkeys) {
-      options.encryptionKeys = [];
-      for (const armoredPubkey of pubkeys) {
-        const publicKeys = await openpgp.readKeys({armoredKeys: armoredPubkey});
-        options.encryptionKeys.push(...publicKeys);
-      }
-    }
-    if (pwd) {
-      options.passwords = [pwd];
-    }
     if (!pubkeys && !pwd) {
       throw new Error('no-pubkeys-no-challenge');
     }
-    // tslint:disable-next-line:no-unbound-method - only testing if exists
-    if (signingPrv && signingPrv.isPrivate()) {
-      options.signingKeys = signingPrv;
+
+    const message = await openpgp.createMessage({binary: data, filename, date});
+
+    if (armor) {
+      return await openpgp.encrypt({
+        format: 'armored',
+        message,
+        date,
+        encryptionKeys: await (async () => {
+          const encryptionKeys = [];
+          for (const armoredPubkey of pubkeys) {
+            const publicKeys = await openpgp.readKeys({armoredKeys: armoredPubkey});
+            encryptionKeys.push(...publicKeys);
+          }
+          return encryptionKeys;
+        })(),
+        passwords: pwd ? [pwd] : undefined,
+        signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
+      });
+    } else {
+      return await openpgp.encrypt({
+        format: 'binary',
+        message,
+        date,
+        encryptionKeys: await (async () => {
+          const encryptionKeys = [];
+          for (const armoredPubkey of pubkeys) {
+            const publicKeys = await openpgp.readKeys({armoredKeys: armoredPubkey});
+            encryptionKeys.push(...publicKeys);
+          }
+          return encryptionKeys;
+        })(),
+        passwords: pwd ? [pwd] : undefined,
+        signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
+      });
     }
-    return await openpgp.encrypt(options as any);
   }
 
   public static diagnosePubkeys: PgpMsgMethod.DiagnosePubkeys = async ({ privateKis, message }) => {
