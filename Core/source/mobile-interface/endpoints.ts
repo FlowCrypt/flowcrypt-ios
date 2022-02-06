@@ -280,12 +280,12 @@ export class Endpoints {
   public encryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // encryptKey may be used when changing major settings, wipe cache to prevent dated results
     const { armored, passphrase } = ValidateInput.encryptKey(uncheckedReq);
-    const key = await readArmoredKeyOrThrow(armored);
+    const privateKey = await readArmoredKeyOrThrow(armored) as OpenPGP.PrivateKey;
     if (!passphrase || passphrase.length < 12) { // last resort check, this should never happen
       throw new Error('Pass phrase length seems way too low! Pass phrase strength should be properly checked before encrypting a key.');
     }
-    await key.encrypt(passphrase);
-    return fmtRes({ encryptedKey: key.armor() });
+    const encryptedKey = await openpgp.encryptKey({privateKey, passphrase});
+    return fmtRes({ encryptedKey: encryptedKey.armor() });
   }
 
   public keyCacheWipe = async (): Promise<EndpointRes> => {
