@@ -61,10 +61,10 @@ export abstract class Key {
   public verifyPrimaryKey(date?: Date, userID?: UserID, config?: Config): Promise<void>; // throws on error
   public verifyPrimaryUser(publicKeys: PublicKey[], date?: Date, userIDs?: UserID, config?: Config): Promise<{ keyID: KeyID, valid: boolean | null }[]>;
   public verifyAllUsers(publicKeys: PublicKey[], date?: Date, config?: Config): Promise<{ userID: string, keyID: KeyID, valid: boolean | null }[]>;
-  // ----- BEGIN CHANGED BY FLOWCRYPT -----
+  // ----- BEGIN MODIFIED BY FLOWCRYPT -----
   // public isRevoked(signature: SignaturePacket, key?: AnyKeyPacket, date?: Date, config?: Config): Promise<boolean>;
   public isRevoked(signature?: SignaturePacket, key?: AnyKeyPacket, date?: Date, config?: Config): Promise<boolean>;
-  // ----- END CHANGED BY FLOWCRYPT -----
+  // ----- END MODIFIED BY FLOWCRYPT -----
   public getRevocationCertificate(date?: Date, config?: Config): Promise<MaybeStream<string> | undefined>;
   public getEncryptionKey(keyID?: KeyID, date?: Date | null, userID?: UserID, config?: Config): Promise<this | Subkey>;
   public getSigningKey(keyID?: KeyID, date?: Date | null, userID?: UserID, config?: Config): Promise<this | Subkey>;
