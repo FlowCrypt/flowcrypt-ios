@@ -175,7 +175,7 @@ final class MessageService {
             let err = decryptErrBlock.decryptErr?.error
             let hideContent = err?.type == .badMdc || err?.type == .noMdc
             let rawMsg = hideContent
-            ? "(content hidden for security)"
+            ? "content_hidden".localized
             : decryptErrBlock.content
 
             text = "error_decrypt".localized

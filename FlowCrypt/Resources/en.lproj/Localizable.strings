@@ -30,6 +30,7 @@
 "unknown" = "UNKNOWN";
 "placeholder" = "PLACEHOLDER";
 "backup_subject" = "Your FlowCrypt Backup";
+"content_hidden" = "(content hidden for security)";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
