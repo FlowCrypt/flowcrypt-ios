@@ -207,8 +207,11 @@ export class PgpKey {
     if (!key) {
       return undefined;
     } else if (key instanceof OpenPGP.Key) {
+      if (!key.keyPacket.getFingerprintBytes()) {
+        return undefined;
+      }
       try {
-        const fp = key.getFingerprint().toUpperCase();
+        const fp = key.keyPacket.getFingerprint().toUpperCase();
         if (formatting === 'spaced') {
           return fp.replace(/(.{4})/g, '$1 ').trim();
         }
@@ -313,9 +316,9 @@ export class PgpKey {
 
   public static details = async (k: OpenPGP.Key): Promise<KeyDetails> => {
     const keys = k.getKeys();
-    const algoInfo = k.getAlgorithmInfo();
+    const algoInfo = k.keyPacket.getAlgorithmInfo();
     const algo = { algorithm: algoInfo.algorithm, bits: algoInfo.bits, curve: (algoInfo as any).curve, algorithmId: openpgp.enums.publicKey[algoInfo.algorithm] };
-    const created = k.getCreationTime().getTime() / 1000;
+    const created = k.keyPacket.created.getTime() / 1000;
     const exp = await k.getExpirationTime();
     const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
     const lastModified = await PgpKey.lastSig(k) / 1000;
