@@ -43545,6 +43545,6 @@ exports.sign = sign$5;
 exports.unarmor = unarmor;
 exports.verify = verify$5;
 // -----BEGIN ADDED BY FLOWCRYPT----
-exports.utils = utils;
 exports.readToEnd = readToEnd;
+exports.utils = utils;
 // -----END ADDED BY FLOWCRYPT-----
