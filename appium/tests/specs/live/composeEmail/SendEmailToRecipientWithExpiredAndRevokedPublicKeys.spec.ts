@@ -26,7 +26,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(expiredPublicKey, emailSubject, emailText);
-    await NewMessageScreen.checkFilledComposeEmailInfo(expiredPublicKey, emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo([expiredPublicKey], emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
 
     await BaseScreen.checkModalMessage(expiredPublicKeyError);
@@ -37,7 +37,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(revokedpublicKey, emailSubject, emailText);
-    await NewMessageScreen.checkFilledComposeEmailInfo(revokedpublicKey, emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo([revokedpublicKey], emailSubject, emailText);
     await NewMessageScreen.clickSendButton();
 
     await BaseScreen.checkModalMessage(revokedPublicKeyError);

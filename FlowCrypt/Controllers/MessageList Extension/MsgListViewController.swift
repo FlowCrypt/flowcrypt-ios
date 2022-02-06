@@ -10,7 +10,7 @@ import UIKit
 
 @MainActor
 protocol MsgListViewController {
-    func open(with message: InboxRenderable, path: String, appContext: AppContext)
+    func open(with message: InboxRenderable, path: String, appContext: AppContextWithUser)
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int?
     func updateMessage(isRead: Bool, at index: Int)
@@ -20,7 +20,7 @@ protocol MsgListViewController {
 extension MsgListViewController where Self: UIViewController {
 
     // todo - tom - don't know how to add AppContext into init of protocol/extension
-    func open(with message: InboxRenderable, path: String, appContext: AppContext) {
+    func open(with message: InboxRenderable, path: String, appContext: AppContextWithUser) {
         switch message.wrappedType {
         case .message(let message):
             openMsg(appContext: appContext, with: message, path: path)
@@ -30,13 +30,13 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     // TODO: uncomment in "sent message from draft" feature
-    private func openDraft(appContext: AppContext, with message: Message) {
+    private func openDraft(appContext: AppContextWithUser, with message: Message) {
         let controller = ComposeViewController(appContext: appContext)
         controller.update(with: message)
         navigationController?.pushViewController(controller, animated: true)
     }
 
-    private func openMsg(appContext: AppContext, with message: Message, path: String) {
+    private func openMsg(appContext: AppContextWithUser, with message: Message, path: String) {
         let thread = MessageThread(
             identifier: message.threadId,
             snippet: nil,
@@ -46,7 +46,7 @@ extension MsgListViewController where Self: UIViewController {
         openThread(with: thread, appContext: appContext)
     }
 
-    private func openThread(with thread: MessageThread, appContext: AppContext) {
+    private func openThread(with thread: MessageThread, appContext: AppContextWithUser) {
         let viewController = ThreadDetailsViewController(
             appContext: appContext,
             thread: thread

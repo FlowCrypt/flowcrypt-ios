@@ -13,8 +13,7 @@ final class InboxViewController: ViewController {
 
     private let numberOfInboxItemsToLoad: Int
 
-    private let appContext: AppContext
-    private let user: User
+    private let appContext: AppContextWithUser
     private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
@@ -34,17 +33,13 @@ final class InboxViewController: ViewController {
     var path: String { viewModel.path }
 
     init(
-        appContext: AppContext,
-        _ viewModel: InboxViewModel,
+        appContext: AppContextWithUser,
+        viewModel: InboxViewModel,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator()
     ) {
-        guard let user = appContext.dataService.currentUser else {
-            fatalError("missing current user") // todo - DI user
-        }
-        self.user = user
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
@@ -168,7 +163,7 @@ extension InboxViewController {
                     )
                 )
                 let inboxContext = InboxContext(
-                    data: context.messages.map { InboxRenderable(message: $0) },
+                    data: context.messages.map(InboxRenderable.init),
                     pagination: context.pagination
                 )
                 handleEndFetching(with: inboxContext, context: batchContext)
@@ -186,7 +181,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: numberOfInboxItemsToLoad,
                         pagination: currentMessagesListPagination()
-                    ), userEmail: user.email
+                    ), userEmail: appContext.user.email
                 )
                 handleEndFetching(with: context, context: batchContext)
             } catch {
@@ -208,7 +203,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
                         pagination: pagination
-                    ), userEmail: user.email
+                    ), userEmail: appContext.user.email
                 )
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
@@ -289,23 +284,17 @@ extension InboxViewController {
     }
 
     private func handleFetched(_ input: InboxContext) {
-        let count = inboxInput.count - 1
+        let initialIndex = inboxInput.count
 
-        // insert new messages
-        let indexesToInsert = input.data
-            .enumerated()
-            .map { index, _ -> Int in
-                let indexInTableView = index + count
-                return indexInTableView
-            }
-            .map { IndexPath(row: $0, section: 0) }
+        let indexesToInsert = input.data.indices
+            .map { IndexPath(row: initialIndex + $0, section: 0) }
 
         inboxInput.append(contentsOf: input.data)
         state = .fetched(input.pagination)
 
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()
-            self.tableNode.insertRows(at: indexesToInsert, with: .none)
+            self.tableNode.insertRows(at: indexesToInsert, with: .automatic)
         }
     }
 
@@ -452,10 +441,22 @@ extension InboxViewController: MsgListViewController {
                 tableNode.reloadData()
             } else {
                 state = .fetched(.byNumber(total: newTotalNumber))
-                tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+                do {
+                    try ObjcException.catch {
+                        self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+                    }
+                } catch {
+                    showAlert(message: "Failed to remove message at \(index) in fetched state: \(error)")
+                }
             }
         default:
-            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+            do {
+                try ObjcException.catch {
+                    self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+                }
+            } catch {
+                showAlert(message: "Failed to remove message at \(index) in \(state): \(error)")
+            }
         }
     }
 }

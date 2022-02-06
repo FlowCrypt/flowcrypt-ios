@@ -108,6 +108,9 @@ class PublicKeyDetailsScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.backButton);
   }
 
+  clickTrashButton = async () => {
+    await ElementHelper.waitAndClick(await this.trashButton);
+  }
 }
 
 export default new PublicKeyDetailsScreen();

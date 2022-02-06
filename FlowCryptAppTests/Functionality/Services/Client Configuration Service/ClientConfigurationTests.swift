@@ -25,6 +25,10 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: "not a url string")).isKeyManagerUrlValid)
     }
 
+    func testIsUsingFes() {
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(fesUrl: "https://fes.flowcrypt.com") ).isUsingFes)
+    }
+
     func testMustAutoImportOrAutogenPrvWithKeyManager() {
         XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
             flags: [.privateKeyAutoimportOrAutogen],

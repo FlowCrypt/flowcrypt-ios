@@ -30,7 +30,7 @@ public extension NSAttributedString {
     ) -> NSAttributedString {
         var attributes = [
             NSAttributedString.Key.font: style.font,
-            NSAttributedString.Key.foregroundColor: color,
+            NSAttributedString.Key.foregroundColor: color
         ]
 
         if let alignment = alignment {

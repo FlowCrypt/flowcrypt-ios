@@ -20,15 +20,15 @@ public extension Collection {
 
 public extension MutableCollection {
     subscript(safe index: Index) -> Iterator.Element? {
-        set {
-            if indices.contains(index), let newValue = newValue {
-                self[index] = newValue
-            }
-        }
         get {
             return indices.contains(index)
                 ? self[index]
                 : nil
+        }
+        set {
+            if indices.contains(index), let newValue = newValue {
+                self[index] = newValue
+            }
         }
     }
 }

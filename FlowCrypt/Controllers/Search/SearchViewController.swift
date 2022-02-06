@@ -41,21 +41,16 @@ final class SearchViewController: TableNodeViewController {
     // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads
     private let service: ServiceActor
     private var searchTask: DispatchWorkItem?
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
     private let searchController = UISearchController(searchResultsController: nil)
     private let folderPath: String
     private var searchedExpression: String = ""
-    private let currentUser: User
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         searchProvider: MessageSearchProvider? = nil,
         folderPath: String
     ) {
-        guard let currentUser = appContext.dataService.currentUser else {
-            fatalError("no current user") // todo - use DI
-        }
-        self.currentUser = currentUser
         self.appContext = appContext
         self.service = ServiceActor(
             searchProvider: searchProvider ?? appContext.getRequiredMailProvider().messageSearchProvider

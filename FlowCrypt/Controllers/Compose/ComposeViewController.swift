@@ -49,7 +49,7 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
     private let decorator: ComposeViewDecorator
@@ -64,9 +64,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let email: String
     private var isMessagePasswordSupported: Bool {
-        guard let domain = email.emailParts?.domain else { return false }
-        let senderDomainsWithMessagePasswordSupport = ["flowcrypt.com"]
-        return senderDomainsWithMessagePasswordSupport.contains(domain)
+        return clientConfiguration.isUsingFes
     }
 
     private let search = PassthroughSubject<String, Never>()
@@ -88,7 +86,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
@@ -100,14 +98,11 @@ final class ComposeViewController: TableNodeViewController {
         keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.appContext = appContext
-        guard let email = appContext.dataService.email else {
-            fatalError("missing current user email") // todo - need a more elegant solution
-        }
-        self.email = email
+        self.email = appContext.user.email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: email)
+        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(
                 encryptedStorage: appContext.encryptedStorage
@@ -116,7 +111,7 @@ final class ComposeViewController: TableNodeViewController {
         )
         let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
             userService: GoogleUserService(
-                currentUserEmail: email,
+                currentUserEmail: appContext.user.email,
                 appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
             )
         )
@@ -126,7 +121,7 @@ final class ComposeViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage,
             messageGateway: appContext.getRequiredMailProvider().messageSender,
             passPhraseService: appContext.passPhraseService,
-            sender: email
+            sender: appContext.user.email
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
@@ -949,7 +944,7 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
-            let localEmails = contactsService.searchContacts(query: query)
+            let localEmails = contactsService.searchLocalContacts(query: query)
             let cloudEmails = try? await service.searchContacts(query: query)
             let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
             updateState(with: .searchEmails(Array(emails)))
@@ -958,19 +953,34 @@ extension ComposeViewController {
 
     private func evaluate(recipient: ComposeMessageRecipient) {
         guard recipient.email.isValidEmail else {
-            handleEvaluation(for: recipient, with: self.decorator.recipientInvalidEmailState, keyState: nil)
+            handleEvaluation(for: recipient, with: decorator.recipientInvalidEmailState)
             return
         }
 
         Task {
             do {
-                let contact = try await service.searchContact(with: recipient.email)
-                let state = getRecipientState(from: contact)
-                handleEvaluation(for: recipient, with: state, keyState: contact.keyState)
+                if let contact = try await service.findLocalContact(with: recipient.email) {
+                    handleEvaluation(for: contact)
+                }
+
+                let contactWithFetchedKeys = try await service.fetchContact(with: recipient.email)
+                handleEvaluation(for: contactWithFetchedKeys)
             } catch {
                 handleEvaluation(error: error, with: recipient)
             }
         }
+    }
+
+    private func handleEvaluation(for recipient: RecipientWithSortedPubKeys) {
+        let state = getRecipientState(from: recipient)
+
+        let composeRecipient = ComposeMessageRecipient(
+            email: recipient.email,
+            state: state,
+            keyState: recipient.keyState
+        )
+
+        handleEvaluation(for: composeRecipient)
     }
 
     private func getRecipientState(from recipient: RecipientWithSortedPubKeys) -> RecipientState {
@@ -986,15 +996,11 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEvaluation(
-        for recipient: ComposeMessageRecipient,
-        with state: RecipientState,
-        keyState: PubKeyState?
-    ) {
+    private func handleEvaluation(for composeRecipient: ComposeMessageRecipient, with state: RecipientState? = nil) {
         updateRecipientWithNew(
-            state: state,
-            keyState: keyState,
-            for: .left(recipient)
+            state: state ?? composeRecipient.state,
+            keyState: composeRecipient.keyState,
+            for: .left(composeRecipient)
         )
     }
 
@@ -1023,13 +1029,19 @@ extension ComposeViewController {
         let index: Int? = {
             switch context {
             case let .left(recipient):
-                return recipients.firstIndex(where: { $0.email == recipient.email })
+                return recipients.firstIndex(of: recipient)
             case let .right(index):
                 return index.row
             }
         }()
 
         guard let recipientIndex = index else { return }
+
+        let recipient = contextToSend.recipients[recipientIndex]
+        let needsReload = recipient.state != state || recipient.keyState != keyState
+
+        guard needsReload else { return }
+
         contextToSend.recipients[recipientIndex].state = state
         contextToSend.recipients[recipientIndex].keyState = keyState
 
@@ -1076,6 +1088,7 @@ extension ComposeViewController {
         }
     }
 
+    // MARK: - Message password
     private func setMessagePassword() {
         Task {
             contextToSend.messagePassword = await enterMessagePassword()
@@ -1414,7 +1427,11 @@ private actor ServiceActor {
         return try await cloudContactProvider.searchContacts(query: query)
     }
 
-    func searchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
-        return try await contactsService.searchContact(with: email)
+    func findLocalContact(with email: String) async throws -> RecipientWithSortedPubKeys? {
+        return try await contactsService.findLocalContact(with: email)
+    }
+
+    func fetchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
+        return try await contactsService.fetchContact(with: email)
     }
 }

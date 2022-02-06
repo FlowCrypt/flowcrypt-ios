@@ -61,6 +61,7 @@
 "message_signature_fail_reason" = "Failed to verify signature due to: %@";
 "message_decrypt_error" = "decrypt error";
 "message_mark_read_error" = "Could not mark message as read: %@";
+"message_reply_all" = "Reply all";
 
 // ERROR
 "error_fetch_folders" = "Could not fetch folders";
