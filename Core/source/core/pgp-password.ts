@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { base64encode, secureRandomBytes, Uint8Array_to_str } from '../platform/util';
+import { base64encode, secureRandomBytes } from '../platform/util';
 
 interface PwdStrengthResult {
   word: {
@@ -64,7 +64,8 @@ export class PgpPwd {
   }
 
   public static random = () => { // eg TDW6-DU5M-TANI-LJXY
-    return base64encode(Uint8Array_to_str(secureRandomBytes(128))).toUpperCase().replace(/[^A-Z0-9]|0|O|1/g, '').replace(/(.{4})/g, '$1-').substr(0, 19);
+    return base64encode(OpenPGP.util.uint8ArrayToString(secureRandomBytes(128)))
+      .toUpperCase().replace(/[^A-Z0-9]|0|O|1/g, '').replace(/(.{4})/g, '$1-').substr(0, 19);
   }
 
   private static readableCrackTime = (totalSeconds: number) => { // http://stackoverflow.com/questions/8211744/convert-time-interval-given-in-seconds-into-more-human-readable-form

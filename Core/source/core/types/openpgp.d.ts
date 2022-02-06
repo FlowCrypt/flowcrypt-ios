@@ -899,5 +899,11 @@ export function readToEnd<T extends Data>(input: MaybeStream<T>, concat?: (list:
 // ----- END ADDED BY FLOWCRYPT -----
 
 // ----- BEGIN ADDED BY FLOWCRYPT -----
+export namespace util {
+  function uint8ArrayToString(bytes: Uint8Array): string;
+}
+// ----- END ADDED BY FLOWCRYPT -----
+
+// ----- BEGIN ADDED BY FLOWCRYPT -----
 } // namespace OpenPGP
 // ----- END ADDED BY FLOWCRYPT -----
