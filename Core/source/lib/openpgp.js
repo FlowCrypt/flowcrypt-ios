@@ -43546,5 +43546,5 @@ exports.unarmor = unarmor;
 exports.verify = verify$5;
 // -----BEGIN ADDED BY FLOWCRYPT----
 exports.readToEnd = readToEnd;
-exports.utils = utils;
+exports.util = util;
 // -----END ADDED BY FLOWCRYPT-----
