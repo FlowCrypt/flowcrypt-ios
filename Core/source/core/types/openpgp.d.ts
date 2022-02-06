@@ -7,9 +7,9 @@
  *  - Errietta Kostala <https://github.com/errietta>
  */
 
-// ----- BEGIN ADDED BY FLOWCRYPT -----
+// -----BEGIN ADDED BY FLOWCRYPT-----
 declare namespace OpenPGP {
-// ----- END ADDED BY FLOWCRYPT -----
+// -----END ADDED BY FLOWCRYPT-----
 
 /* ############## v5 KEY #################### */
 // The Key and PublicKey types can be used interchangably since TS cannot detect the difference, as they have the same class properties.
@@ -61,10 +61,10 @@ export abstract class Key {
   public verifyPrimaryKey(date?: Date, userID?: UserID, config?: Config): Promise<void>; // throws on error
   public verifyPrimaryUser(publicKeys: PublicKey[], date?: Date, userIDs?: UserID, config?: Config): Promise<{ keyID: KeyID, valid: boolean | null }[]>;
   public verifyAllUsers(publicKeys: PublicKey[], date?: Date, config?: Config): Promise<{ userID: string, keyID: KeyID, valid: boolean | null }[]>;
-  // ----- BEGIN MODIFIED BY FLOWCRYPT -----
+  // -----BEGIN MODIFIED BY FLOWCRYPT-----
   // public isRevoked(signature: SignaturePacket, key?: AnyKeyPacket, date?: Date, config?: Config): Promise<boolean>;
   public isRevoked(signature?: SignaturePacket, key?: AnyKeyPacket, date?: Date, config?: Config): Promise<boolean>;
-  // ----- END MODIFIED BY FLOWCRYPT -----
+  // -----END MODIFIED BY FLOWCRYPT-----
   public getRevocationCertificate(date?: Date, config?: Config): Promise<MaybeStream<string> | undefined>;
   public getEncryptionKey(keyID?: KeyID, date?: Date | null, userID?: UserID, config?: Config): Promise<this | Subkey>;
   public getSigningKey(keyID?: KeyID, date?: Date | null, userID?: UserID, config?: Config): Promise<this | Subkey>;
@@ -75,11 +75,11 @@ export abstract class Key {
   public getAlgorithmInfo(): AlgorithmInfo;
   public getKeyID(): KeyID;
   public toPacketList(): PacketList<AllowedKeyPackets>;
-  // ----- BEGIN ADDED BY FLOWCRYPT -----
+  // -----BEGIN ADDED BY FLOWCRYPT-----
   public isFullyEncrypted(): boolean;
   public isFullyDecrypted(): boolean;
   public isPacketDecrypted(keyID: KeyID): boolean;
-  // ----- END ADDED BY FLOWCRYPT -----
+  // -----END ADDED BY FLOWCRYPT-----
 }
 
 type AllowedKeyPackets = PublicKeyPacket | PublicSubkeyPacket | SecretKeyPacket | SecretSubkeyPacket | UserIDPacket | UserAttributePacket | SignaturePacket;
@@ -897,16 +897,17 @@ export namespace enums {
   }
 }
 
-// ----- BEGIN ADDED BY FLOWCRYPT -----
+// -----BEGIN ADDED BY FLOWCRYPT-----
 export function readToEnd<T extends Data>(input: MaybeStream<T>, concat?: (list: T[]) => T): Promise<T>;
-// ----- END ADDED BY FLOWCRYPT -----
+// -----END ADDED BY FLOWCRYPT-----
 
-// ----- BEGIN ADDED BY FLOWCRYPT -----
+// -----BEGIN ADDED BY FLOWCRYPT-----
 export namespace util {
+  // we can't copy this into our sources (i.e. util.ts) because of LGPL
   function uint8ArrayToString(bytes: Uint8Array): string;
 }
-// ----- END ADDED BY FLOWCRYPT -----
+// -----END ADDED BY FLOWCRYPT-----
 
-// ----- BEGIN ADDED BY FLOWCRYPT -----
+// -----BEGIN ADDED BY FLOWCRYPT-----
 } // namespace OpenPGP
-// ----- END ADDED BY FLOWCRYPT -----
+// -----END ADDED BY FLOWCRYPT-----
