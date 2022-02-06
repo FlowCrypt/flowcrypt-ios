@@ -13,6 +13,7 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { openpgp } from './pgp';
+import { readToEnd, readToEndBinary } from '../platform/util';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -209,7 +210,7 @@ export class PgpMsg {
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
       const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
-      const text = await openpgp.stream.readToEnd(prepared.message.getText()!);
+      const text = await readToEnd(prepared.message.getText()!);
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
     if (!keys.prvMatching.length && !msgPwd) {
@@ -249,7 +250,7 @@ export class PgpMsg {
       await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
       await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined; // verify first to prevent stream hang
-      const content = new Buf(await openpgp.stream.readToEnd(decrypted.getLiteralData()!)); // read content second to prevent stream hang
+      const content = new Buf(await readToEndBinary(decrypted.getLiteralData()!)); // read content second to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined; // evaluate verify results third to prevent stream hang
       if (!prepared.isCleartext && (prepared.message as OpenPGP.Message<OpenPGP.Data>).packets
         .filterByTag(openpgp.enums.packet.symmetricallyEncryptedData).length) {
