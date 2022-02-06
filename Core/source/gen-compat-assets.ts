@@ -14,7 +14,6 @@ import { AvaContext, getKeypairs, writeFile } from './test/test-utils';
 import { PgpMsg } from './core/pgp-msg';
 import { Xss } from './platform/xss';
 import { openpgp } from './core/pgp';
-import { readToEnd } from './platform/util';
 
 const text = Buffer.from('some\n汉\ntxt');
 const textSpecialChars = Buffer.from('> special <tag> & other\n> second line');
@@ -181,25 +180,25 @@ const write = async (t: AvaContext, fileContent: Buffer | string) => {
 }
 
 ava.default('direct-encrypted-text.txt', async t => {
-  const data = await readToEnd(await PgpMsg.encrypt({ data: text, pubkeys, armor: true }));
+  const data = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as string;
   await write(t, data);
   t.pass();
 });
 
 ava.default('direct-encrypted-pgpmime.txt', async t => {
-  const data = await readToEnd(await PgpMsg.encrypt({ data: mimePgp(t, text), pubkeys, armor: true }));
+  const data = await PgpMsg.encrypt({ data: mimePgp(t, text), pubkeys, armor: true }) as string;
   await write(t, data);
   t.pass();
 });
 
 ava.default('direct-encrypted-pgpmime-special-chars.txt', async t => {
-  const data = await readToEnd(await PgpMsg.encrypt({ data: mimePgp(t, textSpecialChars), pubkeys, armor: true }));
+  const data = await PgpMsg.encrypt({ data: mimePgp(t, textSpecialChars), pubkeys, armor: true }) as string;
   await write(t, data);
   t.pass();
 });
 
 ava.default('direct-encrypted-text-special-chars.txt', async t => {
-  const data = await readToEnd(await PgpMsg.encrypt({ data: textSpecialChars, pubkeys, armor: true }));
+  const data = await PgpMsg.encrypt({ data: textSpecialChars, pubkeys, armor: true }) as string;
   await write(t, data);
   t.pass();
 });
@@ -215,19 +214,19 @@ ava.default('mime-email-plain-with-pubkey.txt', async t => {
 });
 
 ava.default('mime-email-encrypted-inline-text.txt', async t => {
-  const data = await readToEnd(await PgpMsg.encrypt({ data: text, pubkeys, armor: true }));
+  const data = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as string;
   await write(t, mimeEmail(t, data));
   t.pass();
 });
 
 ava.default('mime-email-encrypted-inline-pgpmime.txt', async t => {
-  const data = await readToEnd(await PgpMsg.encrypt({ data: mimePgp(t, text), pubkeys, armor: true }));
+  const data = await PgpMsg.encrypt({ data: mimePgp(t, text), pubkeys, armor: true }) as string;
   await write(t, mimeEmail(t, data));
   t.pass();
 });
 
 ava.default('mime-email-encrypted-inline-text-2.txt', async t => {
-  const data = await readToEnd(await PgpMsg.encrypt({ data: text, pubkeys, armor: true }));
+  const data = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as string;
   await write(t, textEncoderMimeEmail(t, data));
   t.pass();
 });
@@ -243,8 +242,7 @@ ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   // console.log("rsa1 key fingerprint:" + signingPrv.getFingerprint().toUpperCase());
   const signingPrvDecrypted = await OpenPGP.decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
   if (!signingPrvDecrypted) throw Error('Can\'t decrypt private key');
-  const data = await readToEnd(await PgpMsg.encrypt(
-    { data: text, signingPrv: signingPrvDecrypted,  pubkeys, armor: true }));
+  const data = await PgpMsg.encrypt({ data: text, signingPrv: signingPrvDecrypted, pubkeys, armor: true }) as string;
   await write(t, mimeEmail2(t, data));
   t.pass();
 });
