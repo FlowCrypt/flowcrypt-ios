@@ -78,7 +78,7 @@ export abstract class Key {
   // ----- BEGIN ADDED BY FLOWCRYPT -----
   public isFullyEncrypted(): boolean;
   public isFullyDecrypted(): boolean;
-  public isPacketDecrypted(keyId: KeyID): boolean;
+  public isPacketDecrypted(keyID: KeyID): boolean;
   // ----- END ADDED BY FLOWCRYPT -----
 }
 

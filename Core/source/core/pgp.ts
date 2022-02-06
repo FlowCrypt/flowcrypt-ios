@@ -40,14 +40,14 @@ if (typeof openpgp !== 'undefined') { // in certain environments, eg browser con
   OpenPGP.Key.prototype.isFullyEncrypted = function () {
     return getPrvPackets(this).every(p => p.isDecrypted() === false);
   };
-  OpenPGP.Key.prototype.isPacketDecrypted = function (keyId: OpenPGP.KeyID) {
+  OpenPGP.Key.prototype.isPacketDecrypted = function (keyID: OpenPGP.KeyID) {
     if (!this.isPrivate()) {
       throw new Error("Cannot check packet encryption status of secret key in a Public Key");
     }
-    if (!keyId) {
+    if (!keyID) {
       throw new Error("No KeyID provided to isPacketDecrypted");
     }
-    const [key] = this.getKeys(keyId);
+    const [key] = this.getKeys(keyID);
     if (!key) {
       throw new Error("KeyID not found in Private Key");
     }
