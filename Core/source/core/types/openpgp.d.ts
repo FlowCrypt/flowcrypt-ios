@@ -895,5 +895,9 @@ export namespace enums {
 }
 
 // ----- BEGIN ADDED BY FLOWCRYPT -----
+export function readToEnd<T extends Data>(input: MaybeStream<T>, concat?: (list: T[]) => T): Promise<T>;
+// ----- END ADDED BY FLOWCRYPT -----
+
+// ----- BEGIN ADDED BY FLOWCRYPT -----
 } // namespace OpenPGP
 // ----- END ADDED BY FLOWCRYPT -----

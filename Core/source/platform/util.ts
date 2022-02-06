@@ -83,15 +83,3 @@ export const Uint8Array_to_str = (bytes: Uint8Array): string => {
   }
   return result.join('');
 }
-
-export const readToEnd = async (maybeStream: OpenPGP.MaybeStream<string>): Promise<string> => {
-  if (typeof maybeStream === 'string') return maybeStream;
-  // TODO - implement
-  throw Error('Can\'t read stream');
-}
-
-export const readToEndBinary = async (maybeStream: OpenPGP.MaybeStream<Uint8Array>): Promise<Uint8Array> => {
-  if (maybeStream instanceof Uint8Array) return maybeStream;
-  // TODO - implement
-  throw Error('Can\'t read stream');
-}

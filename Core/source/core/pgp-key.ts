@@ -10,7 +10,7 @@ import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { openpgp } from './pgp';
 import { SecretKeyPacket, SecretSubkeyPacket } from 'openpgp';
-import { readToEnd, str_to_hex } from '../platform/util';
+import { str_to_hex } from '../platform/util';
 
 export type Contact = {
   email: string;
@@ -377,7 +377,7 @@ export class PgpKey {
     if (!certificate || typeof certificate === 'string') {
       return certificate || undefined;
     } else {
-      return await readToEnd(certificate);
+      return await openpgp.readToEnd(certificate);
     }
   }
 }
