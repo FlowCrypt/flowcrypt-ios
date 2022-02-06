@@ -83,3 +83,8 @@ export const Uint8Array_to_str = (bytes: Uint8Array): string => {
   }
   return result.join('');
 }
+
+export const readToEnd = async (stream: OpenPGP.MaybeStream<string>): Promise<string> => {
+  // TODO - stream
+  return '';
+}
