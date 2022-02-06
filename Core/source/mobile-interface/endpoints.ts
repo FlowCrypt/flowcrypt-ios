@@ -55,13 +55,13 @@ export class Endpoints {
     } else if (req.format === 'encrypt-inline') {
       const encryptedAtts: Att[] = [];
       for (const att of req.atts || []) {
-        const encryptedAtt = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromBase64Str(att.base64), filename: att.name, armor: false }) as OpenPGP.EncryptBinaryResult;
-        encryptedAtts.push(new Att({ name: `${att.name}.pgp`, type: 'application/pgp-encrypted', data: encryptedAtt.message.packets.write() }))
+        const encryptedAtt = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromBase64Str(att.base64), filename: att.name, armor: false }) as Uint8Array;
+        encryptedAtts.push(new Att({ name: `${att.name}.pgp`, type: 'application/pgp-encrypted', data: encryptedAtt }))
       }
 
       const signingPrv = await getSigningPrv(req);
-      const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv, data: Buf.fromUtfStr(req.text), armor: true }) as OpenPGP.EncryptArmorResult;
-      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted.data }, mimeHeaders, encryptedAtts)));
+      const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv, data: Buf.fromUtfStr(req.text), armor: true }) as string;
+      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted }, mimeHeaders, encryptedAtts)));
     } else {
       throw new Error(`Unknown format: ${req.format}`);
     }
@@ -69,14 +69,14 @@ export class Endpoints {
 
   public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptMsg(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as OpenPGP.EncryptArmorResult;
-    return fmtRes({}, Buf.fromUtfStr(encrypted.data));
+    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as string;
+    return fmtRes({}, Buf.fromUtfStr(encrypted));
   }
 
   public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptFile(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.concat(data), filename: req.name, armor: false }) as OpenPGP.EncryptBinaryResult;
-    return fmtRes({}, encrypted.message.packets.write());
+    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.concat(data), filename: req.name, armor: false }) as Uint8Array;
+    return fmtRes({}, encrypted);
   }
 
   public parseDecryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
@@ -252,7 +252,7 @@ export class Endpoints {
       return fmtRes({ format: 'armored', keyDetails });
     }
     // binary
-    const { keys: openPgpKeys } = await openpgp.read(allData);
+    const openPgpKeys = await openpgp.readKeys({binaryKeys: allData});
     for (const openPgpKey of openPgpKeys) {
       keyDetails.push(await PgpKey.details(openPgpKey))
     }
