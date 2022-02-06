@@ -233,6 +233,7 @@
 "contact_key_fingerprints" = "Fingerprints";
 "contact_key_created" = "Created";
 "contact_key_algo" = "Algo";
+"contacts_key_count" = "%@ public key(s)";
 
 // Key Settings
 "key_settings_title" = "Keys";

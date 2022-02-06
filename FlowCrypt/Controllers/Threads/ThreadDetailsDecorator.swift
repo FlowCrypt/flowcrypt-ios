@@ -112,7 +112,3 @@ private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> B
         textAccessibilityIdentifier: "aid-signature-badge"
     )
 }
-
-// TODO: - Anton
-// check show error
-// localized errors - separate tasl

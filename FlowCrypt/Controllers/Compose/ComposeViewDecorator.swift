@@ -42,7 +42,7 @@ struct ComposeViewDecorator {
         accessibilityIdentifier: String? = nil
     ) -> TextFieldCellNode.Input {
         TextFieldCellNode.Input(
-            placeholder: text.localized.attributed(
+            placeholder: text.attributed(
                 .regular(17),
                 color: .lightGray,
                 alignment: .left

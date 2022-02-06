@@ -21,7 +21,7 @@ public extension String {
         return LocalizedString(self)
     }
 
-    @inline(__always) func localizeWithArguments(_ arguments: CVarArg...) -> String {
+    @inline(__always) func localizeWithArguments(_ arguments: String...) -> String {
         let format = localize(self)
         return String(format: format, arguments: arguments)
     }
