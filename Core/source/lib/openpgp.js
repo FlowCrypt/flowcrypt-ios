@@ -7578,7 +7578,7 @@ var sha256_asm = function ( stdlib, foreign, buffer ) {
         f = H5;
         g = H6;
         h = H7;
-        
+
         // 0
         h = ( w0 + h + ( e>>>6 ^ e>>>11 ^ e>>>25 ^ e<<26 ^ e<<21 ^ e<<7 ) +  ( g ^ e & (f^g) ) + 0x428a2f98 )|0;
         d = ( d + h )|0;
@@ -15373,10 +15373,10 @@ var TYPED_OK = typeof Uint8Array !== "undefined" &&
 // reduce buffer size, avoiding mem copy
 function shrinkBuf(buf, size) {
     if (buf.length === size) {
-        return buf; 
+        return buf;
     }
     if (buf.subarray) {
-        return buf.subarray(0, size); 
+        return buf.subarray(0, size);
     }
     buf.length = size;
     return buf;
@@ -15501,8 +15501,8 @@ const Z_DEFLATED =               8;
 
 function zero$1(buf) {
     let len = buf.length; while (--len >= 0) {
-        buf[len] = 0; 
-    } 
+        buf[len] = 0;
+    }
 }
 
 // From zutil.h
@@ -15772,7 +15772,7 @@ function gen_bitlen(s, desc)
         /* We overwrite tree[n].Dad which is no longer needed */
 
         if (n > max_code) {
-            continue; 
+            continue;
         } /* not a leaf node */
 
         s.bl_count[bits]++;
@@ -15787,7 +15787,7 @@ function gen_bitlen(s, desc)
         }
     }
     if (overflow === 0) {
-        return; 
+        return;
     }
 
     // Trace((stderr,"\nbit length overflow\n"));
@@ -15797,7 +15797,7 @@ function gen_bitlen(s, desc)
     do {
         bits = max_length - 1;
         while (s.bl_count[bits] === 0) {
-            bits--; 
+            bits--;
         }
         s.bl_count[bits]--;      /* move one leaf down the tree */
         s.bl_count[bits + 1] += 2; /* move one overflow item as its brother */
@@ -15818,7 +15818,7 @@ function gen_bitlen(s, desc)
         while (n !== 0) {
             m = s.heap[--h];
             if (m > max_code) {
-                continue; 
+                continue;
             }
             if (tree[m * 2 + 1]/*.Len*/ !== bits) {
                 // Trace((stderr,"code %d bits %d->%d\n", m, tree[m].Len, bits));
@@ -15865,7 +15865,7 @@ function gen_codes(tree, max_code, bl_count)
     for (n = 0;  n <= max_code; n++) {
         const len = tree[n * 2 + 1]/*.Len*/;
         if (len === 0) {
-            continue; 
+            continue;
         }
         /* Now reverse the bits */
         tree[n * 2]/*.Code*/ = bi_reverse(next_code[len]++, len);
@@ -15988,13 +15988,13 @@ function init_block(s) {
 
     /* Initialize the trees. */
     for (n = 0; n < L_CODES;  n++) {
-        s.dyn_ltree[n * 2]/*.Freq*/ = 0; 
+        s.dyn_ltree[n * 2]/*.Freq*/ = 0;
     }
     for (n = 0; n < D_CODES;  n++) {
-        s.dyn_dtree[n * 2]/*.Freq*/ = 0; 
+        s.dyn_dtree[n * 2]/*.Freq*/ = 0;
     }
     for (n = 0; n < BL_CODES; n++) {
-        s.bl_tree[n * 2]/*.Freq*/ = 0; 
+        s.bl_tree[n * 2]/*.Freq*/ = 0;
     }
 
     s.dyn_ltree[END_BLOCK * 2]/*.Freq*/ = 1;
@@ -16072,7 +16072,7 @@ function pqdownheap(s, tree, k)
         }
         /* Exit if v is smaller than both sons */
         if (smaller(tree, v, s.heap[j], s.depth)) {
-            break; 
+            break;
         }
 
         /* Exchange v with the smallest son */
@@ -16203,7 +16203,7 @@ function build_tree(s, desc)
    * establish sub-heaps of increasing lengths:
    */
     for (n = s.heap_len >> 1/*int /2*/; n >= 1; n--) {
-        pqdownheap(s, tree, n); 
+        pqdownheap(s, tree, n);
     }
 
     /* Construct the Huffman tree by repeatedly combining the least two
@@ -16284,7 +16284,7 @@ function scan_tree(s, tree, max_code)
         } else if (curlen !== 0) {
 
             if (curlen !== prevlen) {
-                s.bl_tree[curlen * 2]/*.Freq*/++; 
+                s.bl_tree[curlen * 2]/*.Freq*/++;
             }
             s.bl_tree[REP_3_6 * 2]/*.Freq*/++;
 
@@ -16348,7 +16348,7 @@ function send_tree(s, tree, max_code)
 
         } else if (count < min_count) {
             do {
-                send_code(s, curlen, s.bl_tree); 
+                send_code(s, curlen, s.bl_tree);
             } while (--count !== 0);
 
         } else if (curlen !== 0) {
@@ -16596,7 +16596,7 @@ function _tr_flush_block(s, buf, stored_len, last)
         //        s->last_lit));
 
         if (static_lenb <= opt_lenb) {
-            opt_lenb = static_lenb; 
+            opt_lenb = static_lenb;
         }
 
     } else {
@@ -18611,11 +18611,11 @@ exports.deflateTune = deflateTune;
 // String encode/decode helpers
 
 try {
-    String.fromCharCode.apply(null, [ 0 ]); 
+    String.fromCharCode.apply(null, [ 0 ]);
 } catch (__) {
 }
 try {
-    String.fromCharCode.apply(null, new Uint8Array(1)); 
+    String.fromCharCode.apply(null, new Uint8Array(1));
 } catch (__) {
 }
 
@@ -19443,7 +19443,7 @@ function inflate_table(type, lens, lens_index, codes, table, table_index, work, 
     root = bits;
     for (max = MAXBITS; max >= 1; max--) {
         if (count[max] !== 0) {
-            break; 
+            break;
         }
     }
     if (root > max) {
@@ -19466,7 +19466,7 @@ function inflate_table(type, lens, lens_index, codes, table, table_index, work, 
     }
     for (min = 1; min < max; min++) {
         if (count[min] !== 0) {
-            break; 
+            break;
         }
     }
     if (root < min) {
@@ -19607,7 +19607,7 @@ function inflate_table(type, lens, lens_index, codes, table, table_index, work, 
         sym++;
         if (--count[len] === 0) {
             if (len === max) {
-                break; 
+                break;
             }
             len = lens[lens_index + work[sym]];
         }
@@ -19628,7 +19628,7 @@ function inflate_table(type, lens, lens_index, codes, table, table_index, work, 
             while (curr + drop < max) {
                 left -= count[curr + drop];
                 if (left <= 0) {
-                    break; 
+                    break;
                 }
                 curr++;
                 left <<= 1;
@@ -43544,3 +43544,7 @@ exports.revokeKey = revokeKey;
 exports.sign = sign$5;
 exports.unarmor = unarmor;
 exports.verify = verify$5;
+// -----BEGIN ADDED BY FLOWCRYPT----
+exports.utils = utils;
+exports.readToEnd = readToEnd;
+// -----END ADDED BY FLOWCRYPT-----
