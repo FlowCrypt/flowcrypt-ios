@@ -34,7 +34,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
         super.init(
             appContext: appContext,
-            user: UserId(email: appContext.user.email, name: appContext.user.name),
+            user: appContext.userId,
             decorator: decorator
         )
     }
@@ -88,18 +88,16 @@ private actor Service {
         storageMethod: StorageMethod,
         viewController: ViewController
     ) async throws {
-        let userId = UserId(email: appContext.user.email, name: appContext.user.name)
-
         try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
         let encryptedPrv = try await Core.shared.generateKey(
             passphrase: passPhrase,
             variant: .curve25519,
-            userIds: [userId]
+            userIds: [appContext.userId]
         )
 
         try await submitKeyToAttester(user: appContext.user, publicKey: encryptedPrv.key.public)
-        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: userId)
+        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: appContext.userId)
         try await putKeypairsInEncryptedStorage(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
 
         if storageMethod == .memory {
@@ -112,7 +110,7 @@ private actor Service {
 
         // sending welcome email is not crucial, so we don't handle errors
         _ = try? await attester.testWelcome(
-            email: userId.email,
+            email: appContext.user.email,
             pubkey: encryptedPrv.key.public
         )
     }

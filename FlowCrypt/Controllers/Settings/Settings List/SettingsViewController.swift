@@ -123,8 +123,7 @@ extension SettingsViewController {
                 viewController = nil
                 return
             }
-            let userId = UserId(email: appContext.user.email, name: appContext.user.email)
-            viewController = BackupViewController(appContext: appContext, userId: userId)
+            viewController = BackupViewController(appContext: appContext, userId: appContext.userId)
         default:
             viewController = nil
         }

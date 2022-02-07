@@ -120,8 +120,7 @@ extension SetupInitialViewController {
 
         Task {
             do {
-                let userId = UserId(email: appContext.user.email, name: appContext.user.name)
-                let keys = try await service.fetchBackupsFromInbox(for: userId)
+                let keys = try await service.fetchBackupsFromInbox(for: appContext.userId)
                 proceedToSetupWith(keys: keys)
             } catch {
                 handle(error: error)

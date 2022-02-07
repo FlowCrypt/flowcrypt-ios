@@ -130,6 +130,7 @@ class AppContext {
 class AppContextWithUser: AppContext {
     let authType: AuthType
     let user: User
+    let userId: UserId
 
     init(
         encryptedStorage: EncryptedStorageType,
@@ -144,6 +145,7 @@ class AppContextWithUser: AppContext {
     ) {
         self.authType = authType
         self.user = user
+        self.userId = UserId(email: user.email, name: user.name)
 
         super.init(
             encryptedStorage: encryptedStorage,

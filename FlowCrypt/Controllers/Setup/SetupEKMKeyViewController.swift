@@ -36,7 +36,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
         self.keys = keys
         super.init(
             appContext: appContext,
-            user: UserId(email: appContext.user.email, name: appContext.user.name),
+            user: appContext.userId,
             fetchedKeysCount: keys.count,
             decorator: decorator
         )
