@@ -5,7 +5,7 @@
 import { PgpKey, PrvPacket } from './pgp-key';
 
 import { VERSION } from './const';
-import { Key, KeyID, config } from './types/openpgp';
+import { Key, KeyID, config } from '../lib/openpgp';
 
 config.versionString = `FlowCrypt ${VERSION} Gmail Encryption`;
 config.commentString = 'Seamlessly send and receive encrypted email';

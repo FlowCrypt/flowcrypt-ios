@@ -12,7 +12,7 @@ import { FcAttLinkData } from './att';
 import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
-import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, readToEnd, sign, VerificationResult } from './types/openpgp';
+import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, readToEnd, sign, VerificationResult } from '../lib/openpgp';
 
 export namespace PgpMsgMethod {
   export namespace Arg {

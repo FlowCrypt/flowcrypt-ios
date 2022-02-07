@@ -17,7 +17,7 @@ import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAs
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
 import { Endpoints } from './mobile-interface/endpoints';
-import { decryptKey, PrivateKey, readKey } from './core/types/openpgp';
+import { decryptKey, PrivateKey, readKey } from './lib/openpgp';
 
 const text = 'some\n汉\ntxt';
 const htmlContent = text.replace(/\n/g, '<br />');
