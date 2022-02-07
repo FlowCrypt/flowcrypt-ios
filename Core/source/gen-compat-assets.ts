@@ -1,7 +1,5 @@
 /* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
 
-/// <reference path="./core/types/openpgp.d.ts" />
-
 'use strict';
 
 // @ts-ignore - it cannot figure out the types, because we don't want to install them from npm

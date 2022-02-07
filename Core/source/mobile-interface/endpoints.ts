@@ -1,7 +1,5 @@
 /* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
 
-/// <reference path="../core/types/openpgp.d.ts" />
-
 'use strict';
 
 import { Buffers, EndpointRes, fmtContentBlock, fmtRes, isContentBlock } from './format-output';
@@ -20,7 +18,7 @@ import { VERSION } from '../core/const';
 import { ValidateInput, readArmoredKeyOrThrow, NodeRequest } from './validate-input';
 import { Xss } from '../platform/xss';
 import { gmailBackupSearchQuery } from '../core/const';
-import { openpgp } from '../core/pgp';
+import { encryptKey, Key, PrivateKey, readKeys } from '../core/types/openpgp';
 
 export class Endpoints {
 
@@ -252,7 +250,7 @@ export class Endpoints {
       return fmtRes({ format: 'armored', keyDetails });
     }
     // binary
-    const openPgpKeys = await openpgp.readKeys({binaryKeys: allData});
+    const openPgpKeys = await readKeys({binaryKeys: allData});
     for (const openPgpKey of openPgpKeys) {
       keyDetails.push(await PgpKey.details(openPgpKey))
     }
@@ -280,11 +278,11 @@ export class Endpoints {
   public encryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // encryptKey may be used when changing major settings, wipe cache to prevent dated results
     const { armored, passphrase } = ValidateInput.encryptKey(uncheckedReq);
-    const privateKey = await readArmoredKeyOrThrow(armored) as OpenPGP.PrivateKey;
+    const privateKey = await readArmoredKeyOrThrow(armored) as PrivateKey;
     if (!passphrase || passphrase.length < 12) { // last resort check, this should never happen
       throw new Error('Pass phrase length seems way too low! Pass phrase strength should be properly checked before encrypting a key.');
     }
-    const encryptedKey = await openpgp.encryptKey({privateKey, passphrase});
+    const encryptedKey = await encryptKey({privateKey, passphrase});
     return fmtRes({ encryptedKey: encryptedKey.armor() });
   }
 
@@ -294,7 +292,7 @@ export class Endpoints {
   }
 }
 
-export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Promise<OpenPGP.Key | undefined> => {
+export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Promise<Key | undefined> => {
   if (!req.signingPrv) {
     return undefined;
   }

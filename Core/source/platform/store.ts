@@ -2,33 +2,32 @@
 
 'use strict';
 
-/// <reference path="../core/types/openpgp.d.ts" />
-
+import { Key } from '../core/types/openpgp';
 import { str_to_hex } from './util';
 
-let KEY_CACHE: { [longidOrArmoredKey: string]: OpenPGP.Key } = {};
+let KEY_CACHE: { [longidOrArmoredKey: string]: Key } = {};
 let KEY_CACHE_WIPE_TIMEOUT: NodeJS.Timeout;
 
-const keyLongid = (k: OpenPGP.Key) => str_to_hex(k.getKeyID().bytes).toUpperCase();
+const keyLongid = (k: Key) => str_to_hex(k.getKeyID().bytes).toUpperCase();
 
 export class Store {
 
-  static decryptedKeyCacheSet = (k: OpenPGP.Key) => {
+  static decryptedKeyCacheSet = (k: Key) => {
     Store.keyCacheRenewExpiry();
     KEY_CACHE[keyLongid(k)] = k;
   }
 
-  static decryptedKeyCacheGet = (longid: string): OpenPGP.Key | undefined => {
+  static decryptedKeyCacheGet = (longid: string): Key | undefined => {
     Store.keyCacheRenewExpiry();
     return KEY_CACHE[longid];
   }
 
-  static armoredKeyCacheSet = (armored: string, k: OpenPGP.Key) => {
+  static armoredKeyCacheSet = (armored: string, k: Key) => {
     Store.keyCacheRenewExpiry();
     KEY_CACHE[armored] = k;
   }
 
-  static armoredKeyCacheGet = (armored: string): OpenPGP.Key | undefined => {
+  static armoredKeyCacheGet = (armored: string): Key | undefined => {
     Store.keyCacheRenewExpiry();
     return KEY_CACHE[armored];
   }
@@ -43,5 +42,4 @@ export class Store {
     }
     KEY_CACHE_WIPE_TIMEOUT = setTimeout(Store.keyCacheWipe, 2 * 60 * 1000);
   }
-
 }

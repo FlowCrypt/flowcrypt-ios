@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { openpgp } from '../core/pgp';
+import { readKey } from "../core/types/openpgp";
 
 type Obj = { [k: string]: any };
 
@@ -178,7 +178,7 @@ const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object'
 }
 
 export const readArmoredKeyOrThrow = async (armored: string) => {
-  const key = await openpgp.readKey({armoredKey: armored});
+  const key = await readKey({armoredKey: armored});
   if (!key) {
     throw new Error('No key found');
   }
