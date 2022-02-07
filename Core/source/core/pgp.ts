@@ -31,12 +31,15 @@ const getPrvPackets = (k: Key) => {
   }
   return nonDummyPrvPackets;
 };
+
 Key.prototype.isFullyDecrypted = function () {
   return getPrvPackets(this).every(p => p.isDecrypted() === true);
 };
+
 Key.prototype.isFullyEncrypted = function () {
   return getPrvPackets(this).every(p => p.isDecrypted() === false);
 };
+
 Key.prototype.isPacketDecrypted = function (keyID: KeyID) {
   if (!this.isPrivate()) {
     throw new Error("Cannot check packet encryption status of secret key in a Public Key");
