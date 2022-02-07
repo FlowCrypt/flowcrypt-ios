@@ -100,6 +100,7 @@ extension InboxViewController {
             $0.delegate = self
             $0.dataSource = self
             $0.leadingScreensForBatching = 1
+            $0.accessibilityIdentifier = "aid-inbox-list"
             $0.view.refreshControl = refreshControl
             node.addSubnode($0)
         }

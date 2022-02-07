@@ -10,7 +10,7 @@ const SELECTORS = {
   SEARCH_ICON: '~search icn',
   HELP_ICON: '~help icn',
   SEARCH_FIELD: '~searchAllEmailField',
-  INBOX_LIST: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
+  INBOX_LIST: '~aid-inbox-list',
 };
 
 class MailFolderScreen extends BaseScreen {
@@ -47,7 +47,7 @@ class MailFolderScreen extends BaseScreen {
   }
 
   get inboxList() {
-      return $$(SELECTORS.INBOX_LIST);
+    return $$(SELECTORS.INBOX_LIST);
   }
 
   checkTrashScreen = async () => {
