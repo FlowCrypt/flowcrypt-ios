@@ -76,9 +76,6 @@ export type PrvPacket = (SecretKeyPacket | SecretSubkeyPacket);
 export class PgpKey {
   public static create = async (userIds: UserID[], variant: KeyAlgo, passphrase: string):
     Promise<{ private: string, public: string, revCert: string }> => {
-    // With openpgp.js v5 Separate declaration of variable of type OpenPGP.KeyOptions
-    // leads to error when calling generate().
-    // I don't know how to overcome this, so just passing "inline" object, which works.
     const k = await generateKey({
       userIDs: userIds, passphrase: passphrase, format: 'armored',
       curve: (variant === 'curve25519' ? 'curve25519' : undefined),
