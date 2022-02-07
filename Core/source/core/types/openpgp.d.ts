@@ -7,10 +7,6 @@
  *  - Errietta Kostala <https://github.com/errietta>
  */
 
-// -----BEGIN ADDED BY FLOWCRYPT-----
-// declare namespace OpenPGP {
-// -----END ADDED BY FLOWCRYPT-----
-
 /* ############## v5 KEY #################### */
 // The Key and PublicKey types can be used interchangably since TS cannot detect the difference, as they have the same class properties.
 // The declared readKey(s) return type is Key instead of a PublicKey since it seems more obvious that a Key can be cast to a PrivateKey.
@@ -898,6 +894,7 @@ export namespace enums {
 }
 
 // -----BEGIN ADDED BY FLOWCRYPT-----
+
 export function readToEnd<T extends Data>(input: MaybeStream<T>, concat?: (list: T[]) => T): Promise<T>;
 
 export namespace util {
@@ -916,8 +913,4 @@ export class Hash {
 export class Sha1 extends Hash {}
 export class Sha256 extends Hash {}
 
-// -----END ADDED BY FLOWCRYPT-----
-
-// -----BEGIN ADDED BY FLOWCRYPT-----
-// } // namespace OpenPGP
 // -----END ADDED BY FLOWCRYPT-----
