@@ -159,12 +159,6 @@
 "setup_providers" = "Email Provider";
 "setup_pass_phrase_title" = "Pass Phrase";
 "setup_pass_phrase_confirm" = "Confirm Pass Phrase";
-"setup_fetched_keys" = "Found %@ key backups";
-"setup_fetched_key" = "Found %@ key backup";
-"setup_fetched_ekm_keys" = "Fetched %@ key(s) on EKM";
-"setup_found_key" = "Found %@ key";
-"setup_found_keys" = "Found %@ keys";
-
 
 // Setup IMAP
 "setup_imap_email" = "Email";
@@ -234,7 +228,6 @@
 "contact_key_fingerprints" = "Fingerprints";
 "contact_key_created" = "Created";
 "contact_key_algo" = "Algo";
-"contacts_key_count" = "%@ public key(s)";
 
 // Key Settings
 "key_settings_title" = "Keys";

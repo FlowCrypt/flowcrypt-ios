@@ -22,7 +22,11 @@ public extension String {
     }
 
     @inline(__always) func localizeWithArguments(_ arguments: String...) -> String {
-        let format = localize(self)
-        return String(format: format, arguments: arguments)
+        String(format: localize(self), arguments: arguments)
+    }
+
+    /// use to localize plurals with Localizable.stringsdict
+    @inline(__always) func localizePluralsWithArguments(_ arguments: Int...) -> String {
+        String(format: localize(self), arguments: arguments)
     }
 }
