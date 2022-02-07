@@ -8,7 +8,7 @@
  */
 
 // -----BEGIN ADDED BY FLOWCRYPT-----
-declare namespace OpenPGP {
+// declare namespace OpenPGP {
 // -----END ADDED BY FLOWCRYPT-----
 
 /* ############## v5 KEY #################### */
@@ -361,7 +361,7 @@ interface PartialConfig extends Partial<Config> {}
 
 /* ############## v5 PACKET #################### */
 
-abstract class BasePacket {
+export abstract class BasePacket {
   static readonly tag: enums.packet;
   public read(bytes: Uint8Array): void;
   public write(): Uint8Array;
@@ -372,7 +372,7 @@ abstract class BasePacket {
  * - A Secret (Sub)Key Packet can always be used when a Public one is expected.
  * - A Subkey Packet cannot always be used when a Primary Key Packet is expected (and vice versa).
  */
-abstract class BasePublicKeyPacket extends BasePacket {
+export abstract class BasePublicKeyPacket extends BasePacket {
   public algorithm: enums.publicKey;
   public created: Date;
   public version: number;
@@ -400,7 +400,7 @@ export class PublicSubkeyPacket extends BasePublicKeyPacket {
   protected isSubkey(): true;
 }
 
-abstract class BaseSecretKeyPacket extends BasePublicKeyPacket {
+export abstract class BaseSecretKeyPacket extends BasePublicKeyPacket {
   public privateParams: object | null;
   public encrypt(passphrase: string, config?: Config): Promise<void>; // throws on error
   public decrypt(passphrase: string): Promise<void>; // throws on error
@@ -700,7 +700,7 @@ interface SubkeyOptions {
   config?: PartialConfig;
 }
 
-class KeyID {
+export class KeyID {
   bytes: string;
   equals(keyID: KeyID, matchWildcard?: boolean): boolean;
   toHex(): string;
@@ -909,5 +909,5 @@ export namespace util {
 // -----END ADDED BY FLOWCRYPT-----
 
 // -----BEGIN ADDED BY FLOWCRYPT-----
-} // namespace OpenPGP
+// } // namespace OpenPGP
 // -----END ADDED BY FLOWCRYPT-----

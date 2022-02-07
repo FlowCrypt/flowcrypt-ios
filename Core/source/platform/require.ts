@@ -2,20 +2,6 @@
 
 'use strict';
 
-/// <reference path="../core/types/openpgp.d.ts" />
-
-export const requireOpenpgp = (): typeof OpenPGP => {
-  // @ts-ignore;
-  if (typeof openpgp !== 'undefined') {
-    // @ts-ignore;
-    return openpgp; // self-contained node-mobile
-  }
-  // running tests on a desktop os node instance
-  // making the require semi-dynamic to surpress Webpack warnings/errors. This line does not rely on webpack at all
-  // if this was webpack, then the `openpgp` variable would be already set, and it would never get down here
-  return require(`${'../../../source/lib/openpgp'}`); // points to flowcrypt-mobile-core/source/lib/openpgp.js
-};
-
 export const requireMimeParser = (): any => {
   // @ts-ignore;
   return global['emailjs-mime-parser'];

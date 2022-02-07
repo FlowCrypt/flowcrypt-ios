@@ -16,8 +16,8 @@ import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAs
 
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
-import { openpgp } from './core/pgp';
 import { Endpoints } from './mobile-interface/endpoints';
+import { decryptKey, PrivateKey, readKey } from './core/types/openpgp';
 
 const text = 'some\n汉\ntxt';
 const htmlContent = text.replace(/\n/g, '<br />');
@@ -428,7 +428,7 @@ ava.default('parseKeys - revoked', async t => {
 ava.default('decryptKey', async t => {
   const { keys: [key] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
-  const decryptedKey = await openpgp.readKey({armoredKey: json.decryptedKey});
+  const decryptedKey = await readKey({armoredKey: json.decryptedKey});
   expect(decryptedKey.isFullyDecrypted()).to.be.true;
   expect(decryptedKey.isFullyEncrypted()).to.be.false;
   expectNoData(data);
@@ -439,11 +439,11 @@ ava.default('encryptKey', async t => {
   const passphrase = 'this is some pass phrase';
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey, passphrase }));
-  const encryptedKey = await openpgp.readKey({armoredKey: json.encryptedKey});
+  const encryptedKey = await readKey({armoredKey: json.encryptedKey});
   expect(encryptedKey.isFullyEncrypted()).to.be.true;
   expect(encryptedKey.isFullyDecrypted()).to.be.false;
-  expect(await openpgp.decryptKey({
-    privateKey: (encryptedKey as OpenPGP.PrivateKey),
+  expect(await decryptKey({
+    privateKey: (encryptedKey as PrivateKey),
     passphrase: passphrase
   })).to.be.true
   expectNoData(data);
@@ -452,19 +452,19 @@ ava.default('encryptKey', async t => {
 
 ava.default('decryptKey gpg-dummy', async t => {
   const { keys: [key] } = getKeypairs('gpg-dummy');
-  const encryptedKey = await openpgp.readKey({armoredKey: key.private});
+  const encryptedKey = await readKey({armoredKey: key.private});
   expect(encryptedKey.isFullyEncrypted()).to.be.true;
   expect(encryptedKey.isFullyDecrypted()).to.be.false;
   const { json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
-  const decryptedKey = await openpgp.readKey({armoredKey: json.decryptedKey});
+  const decryptedKey = await readKey({armoredKey: json.decryptedKey});
   expect(decryptedKey.isFullyEncrypted()).to.be.false;
   expect(decryptedKey.isFullyDecrypted()).to.be.true;
   const { json: json2 } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey.armor(), passphrase: 'another pass phrase' }));
-  const reEncryptedKey = await openpgp.readKey({armoredKey: json2.encryptedKey});
+  const reEncryptedKey = await readKey({armoredKey: json2.encryptedKey});
   expect(reEncryptedKey.isFullyEncrypted()).to.be.true;
   expect(reEncryptedKey.isFullyDecrypted()).to.be.false;
   const { json: json3 } = parseResponse(await endpoints.decryptKey({ armored: reEncryptedKey.armor(), passphrases: ['another pass phrase'] }));
-  const reDecryptedKey = await openpgp.readKey({armoredKey: json3.decryptedKey});
+  const reDecryptedKey = await readKey({armoredKey: json3.decryptedKey});
   expect(reDecryptedKey.isFullyEncrypted()).to.be.false;
   expect(reDecryptedKey.isFullyDecrypted()).to.be.true;
   t.pass();

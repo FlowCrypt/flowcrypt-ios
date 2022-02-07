@@ -13,7 +13,7 @@ import * as ava from 'ava';
 import { AvaContext, getKeypairs, writeFile } from './test/test-utils';
 import { PgpMsg } from './core/pgp-msg';
 import { Xss } from './platform/xss';
-import { openpgp } from './core/pgp';
+import { decryptKey, PrivateKey, readKey } from './core/types/openpgp';
 
 const text = Buffer.from('some\n汉\ntxt');
 const textSpecialChars = Buffer.from('> special <tag> & other\n> second line');
@@ -238,9 +238,9 @@ ava.default('mime-email-plain-html.txt', async t => {
 
 ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const signingPrv = await openpgp.readKey({armoredKey: keys[0].private}) as OpenPGP.PrivateKey;
+  const signingPrv = await readKey({armoredKey: keys[0].private}) as PrivateKey;
   // console.log("rsa1 key fingerprint:" + signingPrv.getFingerprint().toUpperCase());
-  const signingPrvDecrypted = await OpenPGP.decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
+  const signingPrvDecrypted = await decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
   if (!signingPrvDecrypted) throw Error('Can\'t decrypt private key');
   const data = await PgpMsg.encrypt({ data: text, signingPrv: signingPrvDecrypted, pubkeys, armor: true }) as string;
   await write(t, mimeEmail2(t, data));
@@ -249,8 +249,8 @@ ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
 
 ava.default('mime-email-plain-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const signingPrv = await openpgp.readKey({armoredKey: keys[0].private})  as OpenPGP.PrivateKey;
-  const signingPrvDecrypted = await OpenPGP.decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
+  const signingPrv = await readKey({armoredKey: keys[0].private})  as PrivateKey;
+  const signingPrvDecrypted = await decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
   if (!signingPrvDecrypted) throw Error('Can\'t decrypt private key');
   const data = text.toString();
   const signed = await PgpMsg.sign(signingPrvDecrypted, data);
