@@ -3,6 +3,7 @@
 'use strict';
 
 import { base64encode, secureRandomBytes } from '../platform/util';
+import { util } from './types/openpgp';
 
 interface PwdStrengthResult {
   word: {
@@ -64,7 +65,7 @@ export class PgpPwd {
   }
 
   public static random = () => { // eg TDW6-DU5M-TANI-LJXY
-    return base64encode(OpenPGP.util.uint8ArrayToString(secureRandomBytes(128)))
+    return base64encode(util.uint8ArrayToString(secureRandomBytes(128)))
       .toUpperCase().replace(/[^A-Z0-9]|0|O|1/g, '').replace(/(.{4})/g, '$1-').substr(0, 19);
   }
 

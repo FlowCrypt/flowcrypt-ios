@@ -64,7 +64,7 @@ export interface KeyDetails {
   lastModified: number | undefined; // date of last signature, or undefined if never had valid signature
   expiration: number | undefined; // number of millis of expiration or undefined if never expires
   revoked: boolean;
-  algo: { // same as OpenPGP.key.AlgorithmInfo
+  algo: { // same as openpgp.js Key.AlgorithmInfo
     algorithm: string;
     algorithmId: number;
     bits?: number;
