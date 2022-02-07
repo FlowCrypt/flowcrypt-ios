@@ -10,7 +10,7 @@ const SELECTORS = {
   SEARCH_ICON: '~search icn',
   HELP_ICON: '~help icn',
   SEARCH_FIELD: '~searchAllEmailField',
-  INBOX_LIST: '~aid-inbox-list',
+  INBOX_LIST: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
 };
 
 class MailFolderScreen extends BaseScreen {
