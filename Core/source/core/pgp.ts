@@ -12,7 +12,8 @@ config.commentString = 'Seamlessly send and receive encrypted email';
 // we manually check for missing MDC and show loud warning to user (no auto-decrypt)
 config.allowUnauthenticatedMessages = true;
 config.allowUnauthenticatedStream = true;
-// openpgp.config.require_uid_self_cert = false;
+// config.require_uid_self_cert = false;
+
 const getPrvPackets = (k: Key) => {
   if (!k.isPrivate()) {
     throw new Error("Cannot check encryption status of secret keys in a Public Key");
