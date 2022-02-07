@@ -58,7 +58,7 @@ export abstract class Key {
   public verifyPrimaryUser(publicKeys: PublicKey[], date?: Date, userIDs?: UserID, config?: Config): Promise<{ keyID: KeyID, valid: boolean | null }[]>;
   public verifyAllUsers(publicKeys: PublicKey[], date?: Date, config?: Config): Promise<{ userID: string, keyID: KeyID, valid: boolean | null }[]>;
   // -----BEGIN MODIFIED BY FLOWCRYPT-----
-  // public isRevoked(signature: SignaturePacket, key?: AnyKeyPacket, date?: Date, config?: Config): Promise<boolean>;
+  // Make this permanent: https://github.com/openpgpjs/openpgpjs/pull/1486
   public isRevoked(signature?: SignaturePacket, key?: AnyKeyPacket, date?: Date, config?: Config): Promise<boolean>;
   // -----END MODIFIED BY FLOWCRYPT-----
   public getRevocationCertificate(date?: Date, config?: Config): Promise<MaybeStream<string> | undefined>;
