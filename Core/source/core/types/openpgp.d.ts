@@ -899,13 +899,23 @@ export namespace enums {
 
 // -----BEGIN ADDED BY FLOWCRYPT-----
 export function readToEnd<T extends Data>(input: MaybeStream<T>, concat?: (list: T[]) => T): Promise<T>;
-// -----END ADDED BY FLOWCRYPT-----
 
-// -----BEGIN ADDED BY FLOWCRYPT-----
 export namespace util {
-  // we can't copy this into our sources (i.e. util.ts) because of LGPL
+  // we can't copy this from openpgp.js into our sources (i.e. util.ts) because of LGPL
   function uint8ArrayToString(bytes: Uint8Array): string;
+  function uint8ArrayToHex(bytes: Uint8Array): string;
 }
+
+export class Hash {
+  public reset(): Hash;
+  public process(data: Uint8Array): Hash;
+  public finish(): Hash;
+  public result: Uint8Array;
+}
+
+export class Sha1 extends Hash {}
+export class Sha256 extends Hash {}
+
 // -----END ADDED BY FLOWCRYPT-----
 
 // -----BEGIN ADDED BY FLOWCRYPT-----

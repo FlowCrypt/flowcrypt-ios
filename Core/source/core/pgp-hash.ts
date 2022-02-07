@@ -2,16 +2,17 @@
 
 'use strict';
 
+import { util, Sha1, Sha256 } from './types/openpgp';
 import { Buf } from './buf';
 
 export class PgpHash {
 
   public static sha1UtfStr = async (string: string): Promise<string> => {
-    return openpgp.util.Uint8Array_to_hex(await openpgp.crypto.hash.digest(openpgp.enums.hash.sha1, Buf.fromUtfStr(string)));
+    return util.uint8ArrayToHex((new Sha1()).process(Buf.fromUtfStr(string)).finish().result);
   }
 
   public static sha256UtfStr = async (string: string) => {
-    return openpgp.util.Uint8Array_to_hex(await openpgp.crypto.hash.digest(openpgp.enums.hash.sha256, Buf.fromUtfStr(string)));
+    return util.uint8ArrayToHex((new Sha256()).process(Buf.fromUtfStr(string)).finish().result);
   }
 
   public static doubleSha1Upper = async (string: string) => {
