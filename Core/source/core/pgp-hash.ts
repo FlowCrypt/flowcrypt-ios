@@ -3,7 +3,6 @@
 'use strict';
 
 import { Buf } from './buf';
-import { openpgp } from './pgp';
 
 export class PgpHash {
 
