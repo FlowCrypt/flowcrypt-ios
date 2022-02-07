@@ -22,10 +22,6 @@ const getPrvPackets = (k: Key) => {
   if (!prvPackets.length) {
     throw new Error("This key has no private packets. Is it a Private Key?");
   }
-  // only encrypted keys have s2k (decrypted keys don't needed, already decrypted)
-  // if s2k is present and it indicates it's a dummy key, filter it out
-  // if s2k is not present, it's a decrypted real key (not dummy)
-  // openpgp.js v5 provides isDummy() instead.
   const nonDummyPrvPackets = prvPackets.filter(p => !p.isDummy());
   if (!nonDummyPrvPackets.length) {
     throw new Error("This key only has a gnu-dummy private packet, with no actual secret keys.");
