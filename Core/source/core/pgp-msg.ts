@@ -16,7 +16,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
-import { readToEnd } from '@openpgp/web-stream-tools';
+import { readToEnd } from '@openpgp/web-stream-tools/streams';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
