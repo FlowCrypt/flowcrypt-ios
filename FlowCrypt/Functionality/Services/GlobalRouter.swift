@@ -65,7 +65,7 @@ extension GlobalRouter: GlobalRouterType {
                 viewController.showSpinner()
 
                 let googleService = GoogleUserService(
-                    currentUserEmail: appContext.encryptedStorage.activeUser?.email,
+                    currentUserEmail: try appContext.encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
                 let session = try await googleService.signIn(
@@ -74,10 +74,10 @@ extension GlobalRouter: GlobalRouterType {
                 )
                 try appContext.userAccountService.startSessionFor(session: session)
                 viewController.hideSpinner()
-                proceed(with: appContext, session: session)
+                try proceed(with: appContext, session: session)
             case .other(let session):
                 try appContext.userAccountService.startSessionFor(session: session)
-                proceed(with: appContext, session: session)
+                try proceed(with: appContext, session: session)
             }
         } catch {
             if case .gmailLogin(let viewController) = route {
@@ -91,10 +91,10 @@ extension GlobalRouter: GlobalRouterType {
     func signOut(appContext: AppContext) throws {
         if let session = try appContext.userAccountService.startActiveSessionForNextUser() {
             logger.logInfo("Start session for another email user \(session)")
-            proceed(with: appContext, session: session)
+            try proceed(with: appContext, session: session)
         } else {
             logger.logInfo("Sign out")
-            appContext.userAccountService.cleanup()
+            try appContext.userAccountService.cleanup()
             proceed()
         }
     }
@@ -130,7 +130,7 @@ extension GlobalRouter: GlobalRouterType {
             logger.logWarning("Can't switch active user with \(user.email)")
             return
         }
-        proceed(with: appContext, session: session)
+        try proceed(with: appContext, session: session)
     }
 
     @MainActor
@@ -152,10 +152,10 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func proceed(with appContext: AppContext, session: SessionType) {
+    private func proceed(with appContext: AppContext, session: SessionType) throws {
         logger.logInfo("proceed for session: \(session.description)")
         guard
-            let user = appContext.encryptedStorage.activeUser,
+            let user = try appContext.encryptedStorage.activeUser,
             let authType = user.authType
         else {
             let message = "Wrong application state. User not found for session \(session.description)"

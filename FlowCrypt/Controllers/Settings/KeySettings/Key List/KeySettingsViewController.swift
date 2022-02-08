@@ -25,10 +25,10 @@ final class KeySettingsViewController: TableNodeViewController {
     init(
         appContext: AppContextWithUser,
         decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
-    ) {
+    ) throws {
         self.appContext = appContext
         self.decorator = decorator
-        self.isUsingKeyManager = appContext.clientConfigurationService.getSaved(for: appContext.user.email).isUsingKeyManager
+        self.isUsingKeyManager = try appContext.clientConfigurationService.getSaved(for: appContext.user.email).isUsingKeyManager
         super.init(node: TableNode())
     }
 

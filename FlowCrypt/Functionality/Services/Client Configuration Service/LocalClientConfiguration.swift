@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 protocol LocalClientConfigurationType {
-    func load(for user: String) -> RawClientConfiguration?
+    func load(for user: String) throws -> RawClientConfiguration?
     func remove(for user: String) throws
     func save(for user: User, raw: RawClientConfiguration, fesUrl: String?) throws
 }
@@ -19,7 +19,9 @@ final class LocalClientConfiguration {
     private let encryptedStorage: EncryptedStorageType
 
     private var storage: Realm {
-        encryptedStorage.storage
+        get throws {
+            try encryptedStorage.storage
+        }
     }
 
     init(encryptedStorage: EncryptedStorageType) {
@@ -28,13 +30,15 @@ final class LocalClientConfiguration {
 }
 
 extension LocalClientConfiguration: LocalClientConfigurationType {
-    func load(for userEmail: String) -> RawClientConfiguration? {
-        return storage.objects(ClientConfigurationRealmObject.self).where {
+    func load(for userEmail: String) throws -> RawClientConfiguration? {
+        return try storage.objects(ClientConfigurationRealmObject.self).where {
             $0.userEmail == userEmail
         }.first.flatMap(RawClientConfiguration.init)
     }
 
     func remove(for userEmail: String) throws {
+        let storage = try storage
+
         let objects = storage.objects(ClientConfigurationRealmObject.self).where {
             $0.userEmail == userEmail
         }
@@ -51,6 +55,7 @@ extension LocalClientConfiguration: LocalClientConfigurationType {
             fesUrl: fesUrl
         )
 
+        let storage = try storage
         try storage.write {
             storage.add(object, update: .modified)
         }

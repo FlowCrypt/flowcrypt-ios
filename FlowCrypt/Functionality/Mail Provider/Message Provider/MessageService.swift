@@ -226,7 +226,7 @@ extension MessageService {
     private func fetchVerificationPubKeys(for email: String?, onlyLocal: Bool) async throws -> [String] {
         guard let email = email else { return [] }
 
-        let pubKeys = contactsService.retrievePubKeys(for: email)
+        let pubKeys = try contactsService.retrievePubKeys(for: email)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
         guard let contact = try? await contactsService.fetchContact(with: email)

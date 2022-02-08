@@ -96,13 +96,13 @@ final class ComposeViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods()
-    ) {
+    ) throws {
         self.appContext = appContext
         self.email = appContext.user.email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(
                 encryptedStorage: appContext.encryptedStorage
@@ -942,10 +942,14 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
-            let localEmails = contactsService.searchLocalContacts(query: query)
-            let cloudEmails = try? await service.searchContacts(query: query)
-            let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
-            updateState(with: .searchEmails(Array(emails)))
+            do {
+                let localEmails = try contactsService.searchLocalContacts(query: query)
+                let cloudEmails = try? await service.searchContacts(query: query)
+                let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
+                updateState(with: .searchEmails(Array(emails)))
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 

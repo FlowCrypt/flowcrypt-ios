@@ -24,9 +24,9 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     init(
         appContext: AppContextWithUser,
         decorator: SetupViewDecorator = SetupViewDecorator()
-    ) {
+    ) throws {
         self.attester = AttesterApi(
-            clientConfiguration: appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+            clientConfiguration: try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         )
         self.service = Service(
             appContext: appContext,

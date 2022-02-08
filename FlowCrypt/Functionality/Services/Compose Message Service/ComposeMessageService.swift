@@ -104,7 +104,7 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = storage.getKeypairs(by: sender).map(\.public).first else {
+        guard let myPubKey = try storage.getKeypairs(by: sender).map(\.public).first else {
             throw MessageValidationError.missingPublicKey
         }
 
@@ -125,7 +125,7 @@ final class ComposeMessageService {
                 throw MessageValidationError.subjectContainsPassword
             }
 
-            let allAvailablePassPhrases = passPhraseService.getPassPhrases().map(\.value)
+            let allAvailablePassPhrases = try passPhraseService.getPassPhrases().map(\.value)
             if allAvailablePassPhrases.contains(password) {
                 throw MessageValidationError.notUniquePassword
             }
@@ -150,7 +150,7 @@ final class ComposeMessageService {
     private func getRecipientKeys(for recipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
         var recipientsWithKeys: [RecipientWithSortedPubKeys] = []
         for recipient in recipients {
-            let armoredPubkeys = contactsService.retrievePubKeys(for: recipient.email).joined(separator: "\n")
+            let armoredPubkeys = try contactsService.retrievePubKeys(for: recipient.email).joined(separator: "\n")
             let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
             recipientsWithKeys.append(RecipientWithSortedPubKeys(email: recipient.email, keyDetails: parsed.keyDetails))
         }

@@ -34,7 +34,7 @@ struct AppStartup {
                 await setupCore()
                 try await setupSession()
                 try await getUserOrgRulesIfNeeded()
-                chooseView(for: window)
+                try chooseView(for: window)
             } catch {
                 showErrorAlert(of: error, on: window)
             }
@@ -60,8 +60,8 @@ struct AppStartup {
     }
 
     @MainActor
-    private func chooseView(for window: UIWindow) {
-        switch entryPointForUser() {
+    private func chooseView(for window: UIWindow) throws {
+        switch try entryPointForUser() {
         case .mainFlow:
             startWithUserContext(appContext: appContext, window: window) { context in
                 let controller = InboxViewContainerController(appContext: context)
@@ -76,21 +76,26 @@ struct AppStartup {
             )
         case .setupFlow:
             startWithUserContext(appContext: appContext, window: window) { context in
-                let controller = SetupInitialViewController(appContext: context)
-                window.rootViewController = MainNavigationController(rootViewController: controller)
+                do {
+                    let controller = try SetupInitialViewController(appContext: context)
+                    window.rootViewController = MainNavigationController(rootViewController: controller)
+                } catch {
+                    window.rootViewController?.showAlert(message: error.localizedDescription)
+                }
             }
         }
     }
 
-    private func entryPointForUser() -> EntryPoint {
-        guard let activeUser = appContext.encryptedStorage.activeUser else {
+    private func entryPointForUser() throws -> EntryPoint {
+        guard let activeUser = try appContext.encryptedStorage.activeUser else {
             logger.logInfo("User is not logged in -> signIn")
             return .signIn
         }
-        if appContext.encryptedStorage.doesAnyKeypairExist(for: activeUser.email) {
+
+        if try appContext.encryptedStorage.doesAnyKeypairExist(for: activeUser.email) {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
-        } else if let session = appContext.session, let userId = makeUserIdForSetup(session: session) {
+        } else if let session = appContext.session, let userId = try makeUserIdForSetup(session: session) {
             logger.logInfo("User with session \(session) -> setupFlow")
             return .setupFlow(userId)
         } else {
@@ -100,14 +105,14 @@ struct AppStartup {
     }
 
     private func getUserOrgRulesIfNeeded() async throws {
-        guard let currentUser = appContext.encryptedStorage.activeUser else {
+        guard let currentUser = try appContext.encryptedStorage.activeUser else {
             return
         }
         _ = try await appContext.clientConfigurationService.fetch(for: currentUser)
     }
 
-    private func makeUserIdForSetup(session: SessionType) -> UserId? {
-        guard let activeUser = appContext.encryptedStorage.activeUser else {
+    private func makeUserIdForSetup(session: SessionType) throws -> UserId? {
+        guard let activeUser = try appContext.encryptedStorage.activeUser else {
             Logger.logInfo("Can't create user id for setup")
             return nil
         }
@@ -153,7 +158,7 @@ struct AppStartup {
         let session = appContext.session
 
         guard
-            let user = appContext.encryptedStorage.activeUser,
+            let user = try? appContext.encryptedStorage.activeUser,
             let authType = user.authType
         else {
             let message = "Wrong application state. User not found for session \(session?.description ?? "nil")"
