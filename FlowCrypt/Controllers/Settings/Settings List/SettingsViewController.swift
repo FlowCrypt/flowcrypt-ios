@@ -123,7 +123,7 @@ extension SettingsViewController {
                 viewController = nil
                 return
             }
-            viewController = BackupViewController(appContext: appContext, userId: appContext.userId)
+            viewController = BackupViewController(appContext: appContext)
         default:
             viewController = nil
         }

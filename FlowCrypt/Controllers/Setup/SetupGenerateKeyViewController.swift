@@ -34,7 +34,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
         super.init(
             appContext: appContext,
-            user: appContext.userId,
             decorator: decorator
         )
     }

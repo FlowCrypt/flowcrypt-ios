@@ -36,7 +36,6 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
         self.keys = keys
         super.init(
             appContext: appContext,
-            user: appContext.userId,
             fetchedKeysCount: keys.count,
             decorator: decorator
         )
@@ -92,7 +91,7 @@ extension SetupEKMKeyViewController {
                 keyDetails: parsedKey.keyDetails,
                 passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
                 source: .ekm,
-                for: self.user.email
+                for: self.appContext.user.email
             )
             allFingerprintsOfAllKeys.append(contentsOf: parsedKey.keyDetails.map(\.fingerprints))
         }
