@@ -2,6 +2,8 @@
 
 'use strict';
 
+/// <reference types="./types/@openpgp/web-stream-tools/streams.d.ts" />
+
 import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key';
 import { MsgBlock, MsgBlockType } from './msg-block';
 import { Str, Value } from './common';
