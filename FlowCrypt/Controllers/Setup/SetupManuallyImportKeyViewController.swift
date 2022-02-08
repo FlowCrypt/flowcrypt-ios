@@ -28,7 +28,7 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
         }
     }
 
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
     private let decorator: SetupViewDecorator
     private let pasteboard: UIPasteboard
 
@@ -37,7 +37,7 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
     }
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         pasteboard: UIPasteboard = UIPasteboard.general
     ) {
@@ -167,7 +167,7 @@ extension SetupManuallyImportKeyViewController {
     private func parseUserProvided(data keyData: Data) async throws {
         let keys = try await Core.shared.parseKeys(armoredOrBinary: keyData)
         let privateKey = keys.keyDetails.filter { $0.private != nil }
-        let user = appContext.dataService.email ?? "unknown_title".localized
+        let user = appContext.user.email
         if privateKey.isEmpty {
             userInfoMessage = "import_no_backups_clipboard".localized + user
         } else {

@@ -26,9 +26,8 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         Parts.allCases
     }
 
-    let appContext: AppContext
+    let appContext: AppContextWithUser
     let decorator: SetupViewDecorator
-    let user: UserId
     let fetchedKeysCount: Int
 
     var storageMethod: StorageMethod = .persistent {
@@ -47,14 +46,12 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
-        appContext: AppContext,
-        user: UserId,
+        appContext: AppContextWithUser,
         fetchedKeysCount: Int = 0,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.appContext = appContext
-        self.user = user
         self.fetchedKeysCount = fetchedKeysCount
         self.decorator = decorator
         super.init(node: TableNode())

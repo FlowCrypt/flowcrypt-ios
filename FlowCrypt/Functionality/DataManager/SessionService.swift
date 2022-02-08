@@ -9,6 +9,20 @@
 import FlowCryptCommon
 import Foundation
 
+enum SessionType: CustomStringConvertible {
+    case google(_ email: String, name: String, token: String)
+    case session(_ user: User)
+
+    var description: String {
+        switch self {
+        case let .google(email, name, _):
+            return "Google \(email) \(name)"
+        case let .session(user):
+            return "Session \(user.email)"
+        }
+    }
+}
+
 protocol SessionServiceType {
     func startSessionFor(session: SessionType) throws
     func switchActiveSessionFor(user: User) throws -> SessionType?
@@ -23,24 +37,21 @@ final class SessionService {
 
     private let imap: Imap
     private let googleService: GoogleUserService
-    private let dataService: DataServiceType
 
     private lazy var logger = Logger.nested(Self.self)
 
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler,
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
-        dataService: DataServiceType,
         imap: Imap? = nil,
         googleService: GoogleUserService
     ) {
         self.googleService = googleService
         // todo - the following User.empty may be wrong - unsure, untested
         // maybe should instead get user
-        self.imap = imap ?? Imap(user: dataService.currentUser ?? User.empty)
+        self.imap = imap ?? Imap(user: encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
-        self.dataService = dataService
     }
 
     private var storages: [LogOutHandler] {
@@ -66,7 +77,7 @@ extension SessionService: SessionServiceType {
     }
 
     func startActiveSessionForNextUser() throws -> SessionType? {
-        guard let currentUser = dataService.currentUser else {
+        guard let currentUser = encryptedStorage.activeUser else {
             return nil
         }
         logOut(user: currentUser)
