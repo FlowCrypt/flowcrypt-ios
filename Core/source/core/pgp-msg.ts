@@ -12,7 +12,8 @@ import { FcAttLinkData } from './att';
 import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
-import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, readToEnd, sign, VerificationResult } from '../lib/openpgp';
+import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, readToEnd, sign, VerificationResult } from 'openpgp';
+import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -462,16 +463,17 @@ export class PgpMsg {
   }
 
   private static isKeyDecryptedFor = (prv: Key, msgKeyIds: KeyID[]): boolean => {
-    if (prv.isFullyDecrypted()) {
+    if (isFullyDecrypted(prv)) {
       return true; // primary k + all subkeys decrypted, therefore it must be decrypted for any/every particular keyid
     }
-    if (prv.isFullyEncrypted()) {
+    if (isFullyEncrypted(prv)) {
       return false; // not decrypted at all
     }
     if (!msgKeyIds.length) {
       return false; // we don't know which keyId to decrypt - must decrypt all (but key is only partially decrypted)
     }
-    return msgKeyIds.filter(kid => prv.isPacketDecrypted(kid)).length === msgKeyIds.length; // test if all needed key packets are decrypted
+    // test if all needed key packets are decrypted
+    return msgKeyIds.filter(kid => isPacketDecrypted(prv, kid)).length === msgKeyIds.length;
   }
 
   private static cryptoMsgDecryptCategorizeErr = (decryptErr: any, msgPwd?: string): DecryptError$error => {

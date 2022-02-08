@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { util, Sha1, Sha256 } from '../lib/openpgp';
+import { util, Sha1, Sha256 } from 'openpgp';
 import { Buf } from './buf';
 
 export class PgpHash {

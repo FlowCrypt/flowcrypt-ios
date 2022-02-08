@@ -5,7 +5,7 @@
 import { PgpKey, PrvPacket } from './pgp-key';
 
 import { VERSION } from './const';
-import { Key, KeyID, config } from '../lib/openpgp';
+import { Key, KeyID, config } from 'openpgp';
 
 config.versionString = `FlowCrypt ${VERSION} Gmail Encryption`;
 config.commentString = 'Seamlessly send and receive encrypted email';
@@ -29,24 +29,24 @@ const getPrvPackets = (k: Key) => {
   return nonDummyPrvPackets;
 };
 
-Key.prototype.isFullyDecrypted = function () {
-  return getPrvPackets(this).every(p => p.isDecrypted() === true);
+export const isFullyDecrypted = (key: Key): boolean => {
+  return getPrvPackets(key).every(p => p.isDecrypted() === true);
 };
 
-Key.prototype.isFullyEncrypted = function () {
-  return getPrvPackets(this).every(p => p.isDecrypted() === false);
+export const isFullyEncrypted = (key: Key): boolean => {
+  return getPrvPackets(key).every(p => p.isDecrypted() === false);
 };
 
-Key.prototype.isPacketDecrypted = function (keyID: KeyID) {
-  if (!this.isPrivate()) {
+export const isPacketDecrypted = (key: Key, keyID: KeyID): boolean => {
+  if (!key.isPrivate()) {
     throw new Error("Cannot check packet encryption status of secret key in a Public Key");
   }
   if (!keyID) {
     throw new Error("No KeyID provided to isPacketDecrypted");
   }
-  const [key] = this.getKeys(keyID);
-  if (!key) {
+  const [k] = key.getKeys(keyID);
+  if (!k) {
     throw new Error("KeyID not found in Private Key");
   }
-  return key.keyPacket.isDecrypted() === true;
+  return k.keyPacket.isDecrypted() === true;
 };

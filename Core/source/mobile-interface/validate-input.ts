@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { readKey } from "../lib/openpgp";
+import { readKey } from "openpgp";
 
 type Obj = { [k: string]: any };
 
