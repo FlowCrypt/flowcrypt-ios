@@ -9,7 +9,8 @@ const SELECTORS = {
   INBOX_HEADER: '~navigationItemInbox',
   SEARCH_ICON: '~search icn',
   HELP_ICON: '~help icn',
-  SEARCH_FIELD: '~searchAllEmailField'
+  SEARCH_FIELD: '~searchAllEmailField',
+  INBOX_LIST: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
 };
 
 class MailFolderScreen extends BaseScreen {
@@ -43,6 +44,10 @@ class MailFolderScreen extends BaseScreen {
 
   get searchField() {
     return $(SELECTORS.SEARCH_FIELD);
+  }
+
+  get inboxList() {
+    return $$(SELECTORS.INBOX_LIST);
   }
 
   checkTrashScreen = async () => {
@@ -86,6 +91,21 @@ class MailFolderScreen extends BaseScreen {
   clickOnUserEmail = async (email: string) => {
     await (await this.createEmailButton).waitForDisplayed();
     await $(`~${email}`).click();
+  }
+
+  scrollDownToEmail = async (subject: string) => {
+    const elem = $(`~${subject}`);
+    await TouchHelper.scrollDownToElement(await elem);
+  };
+
+  getEmailCount = async () => {
+      await browser.pause(1000);
+      return await this.inboxList.length;
+  };
+
+  scrollUpToFirstEmail = async () => {
+    const elem = await this.inboxList[0];
+    await TouchHelper.scrollUpToElement(elem);
   }
 
   checkInboxScreen = async () => {
