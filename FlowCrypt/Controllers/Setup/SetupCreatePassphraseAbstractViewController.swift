@@ -146,15 +146,14 @@ extension SetupCreatePassphraseAbstractViewController {
         return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
             DispatchQueue.main.async {
                 let alert = UIAlertController(
-                    title: "Pass Phrase",
-                    message: "Confirm Pass Phrase",
+                    title: "setup_pass_phrase_title".localized,
+                    message: "setup_pass_phrase_confirm".localized,
                     preferredStyle: .alert
                 )
                 alert.addTextField { textField in
                     textField.isSecureTextEntry = true
                     textField.accessibilityLabel = "textField"
                 }
-
                 alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
                     return continuation.resume(returning: nil)
                 })

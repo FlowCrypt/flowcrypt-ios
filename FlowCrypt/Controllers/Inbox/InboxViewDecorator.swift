@@ -45,7 +45,7 @@ struct InboxViewDecorator {
     func emptyStateNodeInput(for size: CGSize, title: String) -> TextCellNode.Input {
         TextCellNode.Input(
             backgroundColor: .backgroundColor,
-            title: "\(title) is empty",
+            title: title + " " + "empty".localized,
             withSpinner: false,
             size: size,
             insets: UIEdgeInsets(

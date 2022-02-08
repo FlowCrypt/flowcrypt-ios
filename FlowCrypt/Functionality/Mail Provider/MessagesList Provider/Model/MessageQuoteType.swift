@@ -16,9 +16,9 @@ extension MessageQuoteType {
     var subjectPrefix: String {
         switch self {
         case .reply, .replyAll:
-            return "Re: "
+            return "re".localized
         case .forward:
-            return "Fwd: "
+            return "fwd".localized
         }
     }
 

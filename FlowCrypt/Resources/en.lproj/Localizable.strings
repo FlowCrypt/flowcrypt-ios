@@ -1,4 +1,5 @@
 // COMMON
+"app_name" = "FlowCrypt";
 "loading_title" = "Loading";
 "downloading_title" = "Downloading";
 "encrypting_title" = "Encrypting...";
@@ -22,6 +23,14 @@
 "to" = "to";
 "cc" = "cc";
 "bcc" = "bcc";
+"log_out" = "Log out";
+"empty" = "is empty";
+"re" = "Re: ";
+"fwd" = "Fwd: ";
+"unknown" = "UNKNOWN";
+"placeholder" = "PLACEHOLDER";
+"backup_subject" = "Your FlowCrypt Backup";
+"content_hidden" = "(content hidden for security)";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -63,6 +72,14 @@
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
 "error_general_text" = "Something went wrong.";
 "error_no_folders" = "There are no folders on your account";
+"error_connection" = "Connection Error";
+"error_setup_try_again" = "Could not finish setup, please try again";
+"error_setup_failed" = "Failed to set up account";
+"error_internal_parse_block" = "Internal error: could not parse MsgBlock. Please report this error to us.";
+"error_decrypt" = "Could not decrypt:";
+"error_startup" = "Startup Error";
+
+
 
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
@@ -105,10 +122,13 @@
 "compose_uploading" = "Uploading";
 "compose_sent" = "Sent";
 "compose_missing_contacts_scopes" = "To enable contacts search, please allow this device to access %@ of your Google account";
+"compose_password_link" = "%@ has sent you a password-encrypted email.\n\nTo open message copy and paste the following link: %@";
 
+// Folders
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";
 "folder_add_account" = "Add account";
+"folder_settings" = "Settings";
 
 // Sign in
 "sign_in_privacy" = "Privacy";
@@ -136,6 +156,22 @@
 "setup_save_pass_locally" = "Save pass phrase";
 "setup_save_pass_temporarily" = "Remember pass phrase temporarily";
 "setup_enter_pass_phrase" = "Please enter pass phrase";
+"setup_providers" = "Email Provider";
+"setup_pass_phrase_title" = "Pass Phrase";
+"setup_pass_phrase_confirm" = "Confirm Pass Phrase";
+
+// Setup IMAP
+"setup_imap_email" = "Email";
+"setup_imap_password" = "Password";
+"setup_imap_username" = "Username";
+"setup_imap_port" = "IMAP port";
+"setup_imap_security_type" = "Security type";
+"setup_imap_server" = "IMAP server";
+"setup_imap_smptp_port" = "SMTP port";
+"setup_imap_security_type" = "Security type";
+"setup_imap_smtp_server" = "SMTP server";
+"setup_imap_smtp_username" = "SMTP username";
+"setup_imap_smtp_password" = "SMTP password";
 
 // Key Import
 "import_key_title" = "Import Key";
@@ -233,6 +269,7 @@
 
 "backup_screen_not_found" = "There are no bcakups on this account";
 "backup_screen_not_found_description" = "If you lose your device, or it stops working, your encrypted email will be unreadable.";
+"backup_screen_fetching_backups" = "Fetching backups...";
 
 // Backup option screen
 "backup_option_screen_title" = "Backup options";
@@ -304,3 +341,11 @@
 "imap_error_msg_info" = "Can't parse message without \"%@\"";
 
 "submit_key_error" = "Failed to submit Public Key";
+
+"message_permanently_delete" = "You're about to permanently delete a message";
+"message_permanently_delete_title" = "Are you sure?";
+
+"contacts_fingerprint" = "Fingerprint:";
+"contacts_created" = "Created:";
+"contacts_expires" = "Expires:";
+"contacts_user" = "User:";

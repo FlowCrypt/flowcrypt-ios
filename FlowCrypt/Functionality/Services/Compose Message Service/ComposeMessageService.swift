@@ -343,9 +343,9 @@ extension ComposeMessageService {
         return "<div style=\"display: none\" class=\"cryptup_reply\" cryptup-data=\"\(replyInfoJsonString)\"></div>"
     }
 
+    // TODO: - Anton - compose_password_link
     private func createMessageBodyWithPasswordLink(sender: String, url: String) -> SendableMsgBody {
-        let text = "\(sender) has sent you a password-encrypted email.\n\nTo open message copy and paste the following link: \(url)"
-
+        let text = "compose_password_link".localizeWithArguments(sender, url)
         let aStyle = "padding: 2px 6px; background: #2199e8; color: #fff; display: inline-block; text-decoration: none;"
         let html = """
         \(sender) has sent you a password-encrypted email <a href="\(url)" style="\(aStyle)">Click here to Open Message</a>

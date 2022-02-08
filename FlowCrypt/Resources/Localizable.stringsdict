@@ -2,41 +2,77 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Found %@ key backup(s)</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@backup@</string>
+		<key>backup</key>
+		<dict>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>one</key>
+			<string>Found %d key backup</string>
+			<key>zero</key>
+			<string>No backups found</string>
+			<key>other</key>
+			<string>Found %d key backups</string>
+		</dict>
+	</dict>
+	<key>Found %@ key(s)</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@keys@</string>
+		<key>keys</key>
+		<dict>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>one</key>
+			<string>Found %d key</string>
+			<key>zero</key>
+			<string>No backups found for account:</string>
+			<key>other</key>
+			<string>Found %d keys</string>
+		</dict>
+	</dict>
 	<key>Fetched %@ key(s) on EKM</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@keys@</string>
-        <key>keys</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>zero</key>
-            <string>No EKM keys fetched</string>
-            <key>one</key>
-            <string>Fetched %d key on EKM</string>
-            <key>other</key>
-            <string>Fetched %d keys on EKM</string>
-        </dict>
-    </dict>
-    <key>%@ public key(s)</key>
-    <dict>
-        <key>NSStringLocalizedFormatKey</key>
-        <string>%#@keys@</string>
-        <key>keys</key>
-        <dict>
-            <key>NSStringFormatSpecTypeKey</key>
-            <string>NSStringPluralRuleType</string>
-            <key>NSStringFormatValueTypeKey</key>
-            <string>d</string>
-            <key>zero</key>
-            <string>No public keys</string>
-            <key>one</key>
-            <string>%d public key</string>
-            <key>other</key>
-            <string>%d public keys</string>
-        </dict>
-    </dict>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@keys@</string>
+		<key>keys</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>No EKM keys fetched</string>
+			<key>one</key>
+			<string>Fetched %d key on EKM</string>
+			<key>other</key>
+			<string>Fetched %d keys on EKM</string>
+		</dict>
+	</dict>
+	<key>%@ public key(s)</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@keys@</string>
+		<key>keys</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>d</string>
+			<key>zero</key>
+			<string>No public keys</string>
+			<key>one</key>
+			<string>%d public key</string>
+			<key>other</key>
+			<string>%d public keys</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

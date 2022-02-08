@@ -37,14 +37,6 @@ extension KeyDetails {
         return fingerPrint
     }
 
-    @available(*, deprecated, message: "Use primaryFingerprint instead")
-    var longid: String {
-        guard let longid = ids.first?.longid else {
-            fatalError("longid for KeyDetail is missing")
-        }
-        return longid
-    }
-
     var pgpUserEmails: [String] {
         users.map { MCOAddress(nonEncodedRFC822String: $0).mailbox }
     }

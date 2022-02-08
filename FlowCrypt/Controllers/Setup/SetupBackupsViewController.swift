@@ -162,9 +162,12 @@ extension SetupBackupsViewController {
                 try await self.recoverAccount(with: self.fetchedEncryptedKeys, and: passPhrase)
             } catch {
                 hideSpinner()
-                showAlert(error: error, message: "Failed to set up account", onOk: {
-                    // todo - what to do? maybe nothing, since they should now see the same button again that they can press again
-                })
+                showAlert(
+                    error: error,
+                    message: "error_setup_failed".localized,
+                    onOk: {
+                        // todo - what to do? maybe nothing, since they should now see the same button again that they can press again
+                    })
             }
         }
     }

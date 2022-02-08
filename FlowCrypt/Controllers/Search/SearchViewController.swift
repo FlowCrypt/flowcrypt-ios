@@ -116,7 +116,6 @@ extension SearchViewController {
 // MARK: - MessageHandlerViewConroller
 extension SearchViewController: MsgListViewController {
 
-    // TODO: - ANTON - check
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
         guard let message = message.wrappedMessage else {
             return nil
@@ -243,8 +242,7 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
     }
 
     private func update(searchController: UISearchController) {
-        searchController.searchBar.searchTextField
-            .attributedPlaceholder = "search_placeholder"
+        searchController.searchBar.searchTextField.attributedPlaceholder = "search_placeholder"
             .localized
             .attributed(
                 .regular(14),

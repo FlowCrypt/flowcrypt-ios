@@ -795,7 +795,9 @@ extension ComposeViewController {
 
     private func enableGoogleContactsNode() -> ASCellNode {
         TextWithIconNode(input: .init(
-            title: "compose_enable_google_contacts_search".localized.attributed(.regular(16)),
+            title: "compose_enable_google_contacts_search"
+                .localized
+                .attributed(.regular(16)),
             image: UIImage(named: "gmail_icn"))
         )
     }
@@ -1211,7 +1213,8 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
             let url = url,
             let composeMessageAttachment = MessageAttachment(fileURL: url)
         else {
-            let message = isVideo ? "files_picking_videos_error_message".localized
+            let message = isVideo
+                ? "files_picking_videos_error_message".localized
                 : "files_picking_photos_error_message".localized
             let errorMessage = error.flatMap({ "." + $0.localizedDescription }) ?? ""
             showAlert(message: message + errorMessage)
@@ -1318,7 +1321,7 @@ extension ComposeViewController {
             preferredStyle: .alert
         )
         let okAction = UIAlertAction(
-            title: "OK",
+            title: "ok".localized,
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(
@@ -1340,7 +1343,7 @@ extension ComposeViewController {
             preferredStyle: .alert
         )
         let okAction = UIAlertAction(
-            title: "OK",
+            title: "ok".localized,
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(

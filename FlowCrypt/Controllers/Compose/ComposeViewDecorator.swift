@@ -23,11 +23,13 @@ struct ComposeViewDecorator {
 
     func styledTextViewInput(with height: CGFloat, accessibilityIdentifier: String? = nil) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
-            placeholder: "message_compose_secure".localized.attributed(
-                .regular(17),
-                color: .lightGray,
-                alignment: .left
-            ),
+            placeholder: "message_compose_secure"
+                .localized
+                .attributed(
+                    .regular(17),
+                    color: .lightGray,
+                    alignment: .left
+                ),
             preferredHeight: height,
             textColor: .mainTextColor,
             accessibilityIdentifier: accessibilityIdentifier
@@ -40,7 +42,7 @@ struct ComposeViewDecorator {
         accessibilityIdentifier: String? = nil
     ) -> TextFieldCellNode.Input {
         TextFieldCellNode.Input(
-            placeholder: text.localized.attributed(
+            placeholder: text.attributed(
                 .regular(17),
                 color: .lightGray,
                 alignment: .left

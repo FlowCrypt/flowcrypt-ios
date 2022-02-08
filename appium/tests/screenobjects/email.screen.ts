@@ -20,7 +20,7 @@ const SELECTORS = {
   DELETE_BUTTON: '~Delete',
   DOWNLOAD_BUTTON: '~Download',
   CANCEL_BUTTON: '~Cancel',
-  CONFIRM_DELETING: '~OK',
+  CONFIRM_DELETING: '~Ok',
   SENDER_EMAIL: '~aid-message-sender-label',
   ENCRYPTION_BADGE: '~aid-encryption-badge',
   SIGNATURE_BADGE: '~aid-signature-badge',
