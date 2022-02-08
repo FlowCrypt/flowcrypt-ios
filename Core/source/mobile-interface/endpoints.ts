@@ -18,7 +18,7 @@ import { VERSION } from '../core/const';
 import { ValidateInput, readArmoredKeyOrThrow, NodeRequest } from './validate-input';
 import { Xss } from '../platform/xss';
 import { gmailBackupSearchQuery } from '../core/const';
-import { encryptKey, Key, PrivateKey, readKeys } from 'openpgp';
+import { encryptKey, Key, PrivateKey, readKeys } from '../lib/openpgp';
 
 export class Endpoints {
 

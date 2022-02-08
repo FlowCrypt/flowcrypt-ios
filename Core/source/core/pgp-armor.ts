@@ -5,7 +5,7 @@
 import { Buf } from './buf';
 import { ReplaceableMsgBlockType } from './msg-block';
 import { Str } from './common';
-import { CleartextMessage, Data, Message, readCleartextMessage, readMessage } from 'openpgp';
+import { CleartextMessage, Data, Message, readCleartextMessage, readMessage } from '../lib/openpgp';
 
 export type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: CleartextMessage }
   | { isArmored: boolean, isCleartext: false, message: Message<Data> };
