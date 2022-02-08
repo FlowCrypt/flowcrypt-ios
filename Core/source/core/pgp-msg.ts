@@ -2,8 +2,6 @@
 
 'use strict';
 
-/// <reference path="./types/web-stream-tools.d.ts">
-
 import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key';
 import { MsgBlock, MsgBlockType } from './msg-block';
 import { Str, Value } from './common';
