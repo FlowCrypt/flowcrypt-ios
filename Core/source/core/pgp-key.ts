@@ -356,18 +356,21 @@ export class PgpKey {
    * This is used to figure out how recently was key updated, and if one key is newer than other.
    */
   public static lastSig = async (key: Key): Promise<number> => {
+    console.log((Object as any).__oid(key));
     await key.getExpirationTime(); // will force all sigs to be verified
     const allSignatures: SignaturePacket[] = [];
     for (const user of key.users) {
       allSignatures.push(...user.selfCertifications);
+      console.log(`selfcerts=${user.selfCertifications.length}`);
     }
     for (const subKey of key.subkeys) {
       allSignatures.push(...subKey.bindingSignatures);
+      console.log(`sbb=${subKey.bindingSignatures.length}`);
     }
     allSignatures.sort((a, b) => (b.created ? b.created.getTime() : 0) - (a.created ? a.created.getTime() : 0));
     console.log(`nsig=${allSignatures.length}`);
     console.log(`sigs=${JSON.stringify(allSignatures)}`);
-    for (const sig of allSignatures) console.log(sig.verified);
+    for (const sig of allSignatures) console.log(`${(Object as any).__oid(sig)} => ${sig.verified}`);
     const newestSig = allSignatures.find(sig => sig.verified === true);
     if (newestSig) {
       return newestSig.created ? newestSig.created.getTime() : 0;
