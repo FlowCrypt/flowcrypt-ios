@@ -12,7 +12,7 @@ import FlowCryptCommon
 class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssionContainer {
     var blurViewController: BlurViewController?
     var googleAuthSession: OIDExternalUserAgentSession?
-    let window: UIWindow = UIWindow(frame: UIScreen.main.bounds)
+    let window = UIWindow(frame: UIScreen.main.bounds)
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if application.isRunningTests {
