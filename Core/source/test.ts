@@ -361,22 +361,15 @@ ava.default('parseKeys', async t => {
       }
     ]
   };
-  // expect(json.keyDetails[0].ids[0]).to.deep.equal(expected.keyDetails[0].ids[0]);
-  // expect(json.keyDetails[0].ids[1]).to.deep.equal(expected.keyDetails[0].ids[1]);
-  // expect(json.keyDetails[0].algo).to.deep.equal(expected.keyDetails[0].algo);
-  // expect(json.keyDetails[0].created).to.equal(expected.keyDetails[0].created);
-  // expect(json.keyDetails[0].lastModified).to.equal(expected.keyDetails[0].lastModified);
-  // expect(json.keyDetails[0].public).to.equal(expected.keyDetails[0].public);
-  // expect(json.keyDetails[0]).to.deep.equal(expected.keyDetails[0]);
   expect(json).to.deep.equal(expected);
   expectNoData(data);
   t.pass();
 });
 
-ava.default.only('parseKeys - expiration and date last updated', async t => {
+ava.default('parseKeys - expiration and date last updated', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('expired');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
-  expect(json).to.deep.equal({
+  const expected = {
     "format": "armored",
     "keyDetails": [
       {
@@ -400,7 +393,7 @@ ava.default.only('parseKeys - expiration and date last updated', async t => {
         ],
         "algo": {
           "algorithm": "rsaEncryptSign",
-          "bits": 2047,
+          "bits": 2048,
           "algorithmId": 1
         },
         "created": 1594847701,
@@ -409,12 +402,20 @@ ava.default.only('parseKeys - expiration and date last updated', async t => {
         "revoked": false
       }
     ]
-  });
+  };
+  //expect(json.keyDetails[0].ids[0]).to.deep.equal(expected.keyDetails[0].ids[0]);
+  //expect(json.keyDetails[0].ids[1]).to.deep.equal(expected.keyDetails[0].ids[1]);
+  //expect(json.keyDetails[0].algo).to.deep.equal(expected.keyDetails[0].algo);
+  //expect(json.keyDetails[0].created).to.equal(expected.keyDetails[0].created);
+  //expect(json.keyDetails[0].lastModified).to.equal(expected.keyDetails[0].lastModified);
+  //expect(json.keyDetails[0].public).to.equal(expected.keyDetails[0].public);
+  //expect(json.keyDetails[0]).to.deep.equal(expected.keyDetails[0]);
+  expect(json).to.deep.equal(expected);
   expectNoData(data);
   t.pass();
 });
 
-ava.default('parseKeys - revoked', async t => {
+ava.default.only('parseKeys - revoked', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('revoked');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   expect(json).to.deep.equal({
