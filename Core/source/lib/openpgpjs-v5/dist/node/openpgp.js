@@ -22800,7 +22800,7 @@ class UnsupportedError extends Error {
 // GPG4Browsers - An OpenPGP implementation in javascript
 
 // Symbol to store cryptographic validity of the signature, to avoid recomputing multiple times on verification.
-const verified = Symbol('verified');
+// const verified = Symbol('verified');
 
 // GPG puts the Issuer and Signature subpackets in the unhashed area.
 // Tampering with those invalidates the signature, so we still trust them and parse them.
@@ -22874,7 +22874,7 @@ class SignaturePacket {
     this.preferredAEADAlgorithms = null;
 
     this.revoked = null;
-    this[verified] = null;
+    this.verified = null;
   }
 
   /**
@@ -22982,7 +22982,7 @@ class SignaturePacket {
       // getLatestValidSignature(this.revocationSignatures, key, data)` later.
       // Note that this only holds up if the key and data passed to verify are the
       // same as the ones passed to sign.
-      this[verified] = true;
+      this.verified = true;
     }
   }
 
@@ -23447,7 +23447,7 @@ class SignaturePacket {
     // Cryptographic validity is cached after one successful verification.
     // However, for message signatures, we always re-verify, since the passed `data` can change
     const skipVerify = this.verified && !isMessageSignature;
-    console.log(`verify signature OUID ${Object.__oid(this)} ${this[verified]} sigtype=${signatureType}...`);
+    // console.log(`verify signature OUID ${Object.__oid(this)} ${this.verified} sigtype=${signatureType}...`);
     if (!skipVerify) {
       let toHash;
       let hash;
@@ -23469,7 +23469,7 @@ class SignaturePacket {
         this.publicKeyAlgorithm, this.hashAlgorithm, this.params, key.publicParams,
         toHash, hash
       );
-      console.log(`verify signature OUID ${Object.__oid(this)} sigtype=${signatureType} result: ${this.verified}`);
+      // console.log(`verify signature OUID ${Object.__oid(this)} sigtype=${signatureType} result: ${this.verified}`);
 
       if (!this.verified) {
         throw new Error('Signature verification failed');

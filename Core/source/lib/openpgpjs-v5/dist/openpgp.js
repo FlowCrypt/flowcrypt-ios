@@ -22755,7 +22755,7 @@ var openpgp = (function (exports) {
   // GPG4Browsers - An OpenPGP implementation in javascript
 
   // Symbol to store cryptographic validity of the signature, to avoid recomputing multiple times on verification.
-  const verified = Symbol('verified');
+  // const verified = Symbol('verified');
 
   // GPG puts the Issuer and Signature subpackets in the unhashed area.
   // Tampering with those invalidates the signature, so we still trust them and parse them.
@@ -22829,7 +22829,7 @@ var openpgp = (function (exports) {
       this.preferredAEADAlgorithms = null;
 
       this.revoked = null;
-      this[verified] = null;
+      this.verified = null;
     }
 
     /**
@@ -22937,7 +22937,7 @@ var openpgp = (function (exports) {
         // getLatestValidSignature(this.revocationSignatures, key, data)` later.
         // Note that this only holds up if the key and data passed to verify are the
         // same as the ones passed to sign.
-        this[verified] = true;
+        this.verified = true;
       }
     }
 
