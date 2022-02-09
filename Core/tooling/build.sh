@@ -2,15 +2,19 @@
 
 set -euxo pipefail
 
+# fix openpgp node_modules
+cp -f source/types/openpgp.d.ts node_modules/openpgp
+cp -f source/lib/openpgp.js node_modules/dist/node
+
 # clean up
 rm -rf build/ts build/bundles build/final/*
 mkdir -p build/final
 
 # build our source with typescript
-./node_modules/.bin/tsc --project tsconfig.json
+node_modules/.bin/tsc --project tsconfig.json
 
 # build raw/ with webpack
-./node_modules/.bin/webpack --config webpack.bare.config.js
+node_modules/.bin/webpack --config webpack.bare.config.js
 
 # move modified raw/ to bundles/
 node tooling/fix-bundles.js
