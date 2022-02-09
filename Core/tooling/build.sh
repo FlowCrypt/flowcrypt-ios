@@ -73,13 +73,13 @@ export class Sha256 extends Hash {}
 "
 
 dist_ts=node_modules/openpgp/openpgp.d.ts
-tmp_ts=${dist_js}.tmp
+tmp_ts=${dist_ts}.tmp
 set +e
 fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${dist_ts} | wc -l)
 set -e
 if [ $fc_added = 0 ]; then
   cp -f ${dist_ts} ${tmp_ts}
-  echo "$extra_defs" >>${tmp_ts}
+  echo "${extra_defs}" >>${tmp_ts}
   mv -f ${tmp_ts} ${dist_ts}
 fi
 
