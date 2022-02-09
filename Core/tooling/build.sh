@@ -45,6 +45,41 @@ if [ $fc_added = 0 ]; then
   mv -f ${tmp_js} ${dist_js}
 fi
 
+extra_defs="
+// -----BEGIN ADDED BY FLOWCRYPT-----
+
+export function readToEnd<T extends Data>(input: MaybeStream<T>, concat?: (list: T[]) => T): Promise<T>;
+
+export namespace util {
+  // we can't copy this from openpgp.js into our sources (i.e. util.ts) because of LGPL
+  function uint8ArrayToString(bytes: Uint8Array): string;
+  function uint8ArrayToHex(bytes: Uint8Array): string;
+}
+
+export class Hash {
+  public reset(): Hash;
+  public process(data: Uint8Array): Hash;
+  public finish(): Hash;
+  public result: Uint8Array;
+}
+
+export class Sha1 extends Hash {}
+export class Sha256 extends Hash {}
+
+// -----END ADDED BY FLOWCRYPT-----
+"
+
+dist_ts=node_modules/openpgp/openpgp.d.ts
+tmp_ts=${dist_js}.tmp
+set +e
+fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${dist_ts} | wc -l)
+set -e
+if [ $fc_added = 0 ]; then
+  cp -f ${dist_ts} ${tmp_ts}
+  echo "$extra_defs" >>${tmp_ts}
+  mv -f ${tmp_ts} ${dist_ts}
+fi
+
 # clean up
 rm -rf build/ts build/bundles build/final/*
 mkdir -p build/final
