@@ -369,7 +369,10 @@ export class PgpKey {
     }
     allSignatures.sort((a, b) => (b.created ? b.created.getTime() : 0) - (a.created ? a.created.getTime() : 0));
     console.log(`nsig=${allSignatures.length}`);
-    console.log(`sigs=${JSON.stringify(allSignatures)}`);
+    let i = 0;
+    for (const sig of allSignatures) {
+      console.log(`sig[${i++}]=${JSON.stringify(sig)}\n`);
+    }
     for (const sig of allSignatures) console.log(`${(Object as any).__oid(sig)} => ${sig.verified}`);
     const newestSig = allSignatures.find(sig => sig.verified === true);
     if (newestSig) {
