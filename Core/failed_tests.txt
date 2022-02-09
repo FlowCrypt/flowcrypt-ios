@@ -1,7 +1,7 @@
-[parseKeys] Rejected promise returned by test
-[parseKeys - expiration and date last updated] Rejected promise returned by test
-[parseKeys - revoked] Rejected promise returned by test
-[generateKey] Rejected promise returned by test
-[encryptKey] Rejected promise returned by test
-[parseDecryptMsg compat mime-email-plain-with-pubkey] Rejected promise returned by test
-[verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)] Rejected promise returned by test
+[+] [parseKeys] Rejected promise returned by test
+[+] [parseKeys - expiration and date last updated] Rejected promise returned by test
+[+] [parseKeys - revoked] Rejected promise returned by test
+[.] [generateKey] Rejected promise returned by test
+[.] [encryptKey] Rejected promise returned by test
+[.] [parseDecryptMsg compat mime-email-plain-with-pubkey] Rejected promise returned by test
+[.] [verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)] Rejected promise returned by test

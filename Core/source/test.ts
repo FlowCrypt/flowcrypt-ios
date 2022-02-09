@@ -415,10 +415,10 @@ ava.default('parseKeys - expiration and date last updated', async t => {
   t.pass();
 });
 
-ava.default.only('parseKeys - revoked', async t => {
+ava.default('parseKeys - revoked', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('revoked');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
-  expect(json).to.deep.equal({
+  const expected = {
     "format": "armored",
     "keyDetails": [
       {
@@ -431,7 +431,8 @@ ava.default.only('parseKeys - revoked', async t => {
         "revoked": true
       }
     ]
-  });
+  };
+  expect(json).to.deep.equal(expected);
   expectNoData(data);
   t.pass();
 });
