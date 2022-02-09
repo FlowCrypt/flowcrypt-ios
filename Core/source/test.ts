@@ -334,7 +334,7 @@ ava.default('isEmailValid - false', async t => {
   t.pass();
 });
 
-ava.default.only('parseKeys', async t => {
+ava.default('parseKeys', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('rsa1');
   console.log(pubkey);
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
@@ -361,19 +361,19 @@ ava.default.only('parseKeys', async t => {
       }
     ]
   };
-  //expect(json).to.deep.equal(expected);
-  expect(json.keyDetails[0].ids[0]).to.deep.equal(expected.keyDetails[0].ids[0]);
-  expect(json.keyDetails[0].ids[1]).to.deep.equal(expected.keyDetails[0].ids[1]);
-  expect(json.keyDetails[0].algo).to.deep.equal(expected.keyDetails[0].algo);
-  expect(json.keyDetails[0].created).to.equal(expected.keyDetails[0].created);
-  expect(json.keyDetails[0].lastModified).to.equal(expected.keyDetails[0].lastModified);
-  expect(json.keyDetails[0].public).to.equal(expected.keyDetails[0].public);
-  expect(json.keyDetails[0]).to.deep.equal(expected.keyDetails[0]);
+  // expect(json.keyDetails[0].ids[0]).to.deep.equal(expected.keyDetails[0].ids[0]);
+  // expect(json.keyDetails[0].ids[1]).to.deep.equal(expected.keyDetails[0].ids[1]);
+  // expect(json.keyDetails[0].algo).to.deep.equal(expected.keyDetails[0].algo);
+  // expect(json.keyDetails[0].created).to.equal(expected.keyDetails[0].created);
+  // expect(json.keyDetails[0].lastModified).to.equal(expected.keyDetails[0].lastModified);
+  // expect(json.keyDetails[0].public).to.equal(expected.keyDetails[0].public);
+  // expect(json.keyDetails[0]).to.deep.equal(expected.keyDetails[0]);
+  expect(json).to.deep.equal(expected);
   expectNoData(data);
   t.pass();
 });
 
-ava.default('parseKeys - expiration and date last updated', async t => {
+ava.default.only('parseKeys - expiration and date last updated', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('expired');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   expect(json).to.deep.equal({
