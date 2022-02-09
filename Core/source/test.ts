@@ -336,6 +336,7 @@ ava.default('isEmailValid - false', async t => {
 
 ava.default.only('parseKeys', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('rsa1');
+  console.log(pubkey);
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   expect(json).to.deep.equal({
     "format": "armored",
