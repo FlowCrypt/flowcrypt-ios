@@ -29,6 +29,7 @@ const doneWritingReject = Symbol('doneWritingReject');
 
 const readingIndex = Symbol('readingIndex');
 
+// Based on https://stackoverflow.com/a/1997811/1540501
 // inject oids
 (function() {
   if ( typeof Object.__oid == "undefined" ) {
