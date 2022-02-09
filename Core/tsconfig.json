@@ -19,6 +19,9 @@
     "checkJs": false,
     "outDir": "./build/ts",
     "baseUrl": "./",
+    "paths": {
+      "openpgp": ["source/lib"]
+    },
     "typeRoots": [
       "./source/core/types/",
       "./node_modules/@types/"

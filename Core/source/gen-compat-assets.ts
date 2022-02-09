@@ -11,7 +11,7 @@ import * as ava from 'ava';
 import { AvaContext, getKeypairs, writeFile } from './test/test-utils';
 import { PgpMsg } from './core/pgp-msg';
 import { Xss } from './platform/xss';
-import { decryptKey, PrivateKey, readKey } from './lib/openpgp';
+import { decryptKey, PrivateKey, readKey } from 'openpgp';
 
 const text = Buffer.from('some\n汉\ntxt');
 const textSpecialChars = Buffer.from('> special <tag> & other\n> second line');

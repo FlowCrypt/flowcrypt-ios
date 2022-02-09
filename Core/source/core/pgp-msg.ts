@@ -14,7 +14,7 @@ import { FcAttLinkData } from './att';
 import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
-import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, readToEnd, sign, VerificationResult } from '../lib/openpgp';
+import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, readToEnd, sign, VerificationResult } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 
 export namespace PgpMsgMethod {
@@ -449,7 +449,7 @@ export class PgpMsg {
 
   private static matchingKeyids = (key: Key, encryptedFor: KeyID[]): KeyID[] => {
     const msgKeyidBytesArr = (encryptedFor || []).map(kid => kid.bytes);
-    return key.getKeyIDs().filter(kid => msgKeyidBytesArr.includes(kid.bytes));
+    return key.getKeyIDs().filter(kid => msgKeyidBytesArr.includes((kid as KeyID).bytes));
   }
 
   private static decryptKeyFor = async (prv: Key, passphrase: string, matchingKeyIds: KeyID[]): Promise<boolean> => {

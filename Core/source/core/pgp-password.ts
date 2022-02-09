@@ -3,7 +3,7 @@
 'use strict';
 
 import { base64encode, secureRandomBytes } from '../platform/util';
-import { util } from '../lib/openpgp';
+import { util } from 'openpgp';
 
 interface PwdStrengthResult {
   word: {

@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { Key } from '../lib/openpgp';
+import { Key } from 'openpgp';
 import { str_to_hex } from './util';
 
 let KEY_CACHE: { [longidOrArmoredKey: string]: Key } = {};

@@ -9,7 +9,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { str_to_hex } from '../platform/util';
-import { AnyKeyPacket, BaseSecretKeyPacket, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, readToEnd, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from '../lib/openpgp';
+import { AnyKeyPacket, BaseSecretKeyPacket, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, readToEnd, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 
 export type Contact = {
