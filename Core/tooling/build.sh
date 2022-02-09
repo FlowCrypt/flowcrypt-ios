@@ -13,6 +13,37 @@ done
 sed -i 's/openpgp.min.js/openpgp.js/g' node_modules/openpgp/package.json
 sed -i 's/openpgp.min.mjs/openpgp.mjs/g' node_modules/openpgp/package.json
 
+extra_exports="
+// -----BEGIN ADDED BY FLOWCRYPT----
+exports.Hash = Hash;
+exports.Sha1 = Sha1;
+exports.Sha256 = Sha256;
+exports.readToEnd = readToEnd;
+exports.util = util;
+// -----END ADDED BY FLOWCRYPT-----
+"
+
+dist_js=node_modules/openpgp/dist/openpgp.js
+tmp_js=${dist_js}.tmp
+fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${tmp_js} | wc -l)
+if [ $fc_added = 0]; then
+  n=$(grep -n 'exports.verify' openpgp.js | cut -f1 -d':')
+  head -$n ${dist_js} >${tmp_js}
+  echo "$extra_exports" >>${tmp_js}
+  # https://stackoverflow.com/a/14110529/1540501
+  { for ((i=1;i--;));do read;done;while read line;do echo $line;done } < ${dist_js} >>${tmp_js}
+fi
+mv -f ${tmp_js} ${dist_js}
+
+dist_js=node_modules/openpgp/dist/node/openpgp.js
+tmp_js=${dist_js}.tmp
+fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${dist_js} | wc -l)
+if [ $fc_added = 0]; then
+  cp -f ${dist_js} ${tmp_js}
+  echo "$extra_exports" >>${tmp_js}
+fi
+mv -f ${tmp_js} ${dist_js}
+
 # clean up
 rm -rf build/ts build/bundles build/final/*
 mkdir -p build/final
