@@ -8,7 +8,7 @@ for f in openpgp.min.js openpgp.min.js.map openpgp.min.mjs openpgp.min.mjs.map o
   if [ -f node_modules/openpgp/dist/node/$f ]; then rm -f node_modules/openpgp/dist/node/$f ; fi
 done
 
-# MacOS/BSD sed doesn't have "-i" (see https://ss64.com/osx/sed.html)
+# MacOS sed is old BSD sed w/o "-i" (see https://ss64.com/osx/sed.html)
 sed 's/openpgp.min.js/openpgp.js/g' node_modules/openpgp/package.json >node_modules/openpgp/package.json.tmp
 cp -f node_modules/openpgp/package.json.tmp node_modules/openpgp/package.json
 sed 's/openpgp.min.mjs/openpgp.mjs/g' node_modules/openpgp/package.json >node_modules/openpgp/package.json.tmp
@@ -80,7 +80,9 @@ set -e
 if [ $fc_added = 0 ]; then
   cp -f ${dist_ts} ${tmp_ts}
   echo "${extra_defs}" >>${tmp_ts}
-  mv -f ${tmp_ts} ${dist_ts}
+  # MacOS sed MacOS sed is old BSD sed w/o "-i" (see https://ss64.com/osx/sed.html)
+  sed 's/public isRevoked(signature: SignaturePacket/public isRevoked(signature?: SignaturePacket/g' ${tmp_ts} >${tmp_ts}.tmp
+  mv -f ${tmp_ts}.tmp ${dist_ts}
 fi
 
 # clean up
