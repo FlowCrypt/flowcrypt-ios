@@ -37,8 +37,9 @@ ava.default('generateKey', async t => {
   const { json, data } = parseResponse(await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] }));
   expect(json.key.private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
   expect(json.key.public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
-  expect(isFullyDecrypted(json.key)).to.be.true;
-  expect(isFullyDecrypted(json.key)).to.be.false;
+  const key = await readKey({armoredKey: json.key.private});
+  expect(isFullyEncrypted(key)).to.be.true;
+  expect(isFullyDecrypted(key)).to.be.false;
   expect(json.key.algo).to.deep.equal({ algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 });
   expectNoData(data);
   t.pass();
@@ -447,7 +448,7 @@ ava.default('decryptKey', async t => {
   t.pass();
 });
 
-ava.default('encryptKey', async t => {
+ava.default.only('encryptKey', async t => {
   const passphrase = 'this is some pass phrase';
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey, passphrase }));
