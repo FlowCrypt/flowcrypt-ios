@@ -624,7 +624,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
   t.pass();
 });
 
-ava.default.only('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
+ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-pubkey')]));
   const expected = [
@@ -640,7 +640,7 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-with-pubkey', async t 
           { "fingerprint": "E76853E128A0D376CAE47C143A30F4CC0A9A8F10", "longid": "3A30F4CC0A9A8F10", "shortid": "0A9A8F10", "keywords": "DEMAND MARBLE CREDIT BENEFIT POTTERY CAPITAL" },
           { "fingerprint": "9EF2F8F36A841C0D5FAB8B0F0BAB9C018B265D22", "longid": "0BAB9C018B265D22", "shortid": "8B265D22", "keywords": "ARM FRIEND ABOUT BIND GRAPE CATTLE" }
         ],
-        "algo": { "algorithm": "rsaEncryptSign", "bits": 2048, "algorithmId": 1 },
+        "algo": { "algorithm": "rsaEncryptSign", "bits": 2047, "algorithmId": 1 },
         "created": 1543592161,
         "lastModified": 1543592161,
         "revoked": false
@@ -762,7 +762,7 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
   t.pass();
 });
 
-ava.default('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
+ava.default.only('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-edited')]));
   expect(decryptJson.replyType).equals('plain');

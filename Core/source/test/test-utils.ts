@@ -86,16 +86,18 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     for (let i = 0; i < expectedBlocks.length; i++) {
       const a = blocks[i];
       const b = expectedBlocks[i];
-      expect(a.type).to.be.equal(b.type);
-      expect(a.content).to.be.equal(b.content);
-      expect(a.complete).to.be.equal(b.complete);
-      expect(a.keyDetails.public).to.be.equal(b.keyDetails.public);
-      expect(a.keyDetails.algo).to.be.equal(b.keyDetails.algo);
-      expect(a.keyDetails.created).to.deep.equal(b.keyDetails.created);
-      expect(a.keyDetails.lastModified).to.be.equal(b.keyDetails.lastModified);
-      expect(a.keyDetails.revoked).to.deep.equal(b.keyDetails.revoked);
-      expect(a.keyDetails.ids).to.deep.equal(b.keyDetails.ids);
-      expect(a.keyDetails.users).to.deep.equal(b.keyDetails.users);
+      //if (i == 1) {
+      //  expect(a.type).to.be.equal(b.type);
+      //  expect(a.content).to.be.equal(b.content);
+      //  expect(a.complete).to.be.equal(b.complete);
+      //  expect(a.keyDetails.public).to.be.equal(b.keyDetails.public);
+      //  expect(a.keyDetails.algo).to.deep.equal(b.keyDetails.algo);
+      //  expect(a.keyDetails.created).to.deep.equal(b.keyDetails.created);
+      //  expect(a.keyDetails.lastModified).to.be.equal(b.keyDetails.lastModified);
+      //  expect(a.keyDetails.revoked).to.deep.equal(b.keyDetails.revoked);
+      //  expect(a.keyDetails.ids).to.deep.equal(b.keyDetails.ids);
+      //  expect(a.keyDetails.users).to.deep.equal(b.keyDetails.users);
+      //}
       expect(a).to.deep.equal(b, `block ${i} failed cmp check`);
     }
   } else if (type === "binary") {
