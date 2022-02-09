@@ -4,7 +4,7 @@ set -euxo pipefail
 
 # fix openpgp node_modules
 cp -f source/core/types/openpgp.d.ts node_modules/openpgp
-cp -f source/lib/openpgp.js node_modules/dist/node
+cp -f source/lib/openpgp.js node_modules/openpgp/dist/node
 
 # clean up
 rm -rf build/ts build/bundles build/final/*
