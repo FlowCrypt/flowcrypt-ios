@@ -767,18 +767,16 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
 });
 
 ava.default.only('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
-  console.log(">>> 1");
   const { keys, pubKeys } = getKeypairs('rsa1');
-  console.log(">>> 2");
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
       [await getCompatAsset('mime-email-plain-signed-edited')]));
-  console.log(">>> 3");
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
-  console.log(">>> 4");
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
+  console.log(">>> 4");
+  console.log(parsedDecryptData.verifyRes.match);
   expect(parsedDecryptData.verifyRes.match).equals(false);
   console.log(">>> 5");
   t.pass();
