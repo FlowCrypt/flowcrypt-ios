@@ -9,6 +9,7 @@ for f in openpgp.min.js openpgp.min.js.map openpgp.min.mjs openpgp.min.mjs.map o
   if [ -f node_modules/openpgp/dist/node/$f ]; then rm -f node_modules/openpgp/dist/node/$f ; fi
 done
 cp -Rfv source/lib/openpgpjs-v5/* node_modules/openpgp/
+echo "Patching openpgp.js v5 - DONE."
 
 # clean up
 rm -rf build/ts build/bundles build/final/*
