@@ -741,7 +741,9 @@ ava.default('verify plain-text signed message by providing it both correct and i
   const allPubKeys = [];
   for (const pubkey of pubKeys2) allPubKeys.push(pubkey);
   for (const pubkey of pubKeys) allPubKeys.push(pubkey);
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(
+    await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
+      [await getCompatAsset('mime-email-plain-signed')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -753,7 +755,9 @@ ava.default('verify plain-text signed message by providing it both correct and i
 ava.default('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
   const { keys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-plain-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(
+    await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 },
+      [await getCompatAsset('mime-email-plain-signed')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -763,19 +767,28 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
 });
 
 ava.default.only('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
+  console.log(">>> 1");
   const { keys, pubKeys } = getKeypairs('rsa1');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-edited')]));
+  console.log(">>> 2");
+  const { json: decryptJson, data: decryptData } = parseResponse(
+    await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
+      [await getCompatAsset('mime-email-plain-signed-edited')]));
+  console.log(">>> 3");
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
+  console.log(">>> 4");
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).equals(false);
+  console.log(">>> 5");
   t.pass();
 });
 
 ava.default('verify signed message with detached signature by providing it correct key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed-detached')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(
+    await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
+      [await getCompatAsset('mime-email-plain-signed-detached')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed detached');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -786,7 +799,9 @@ ava.default('verify signed message with detached signature by providing it corre
 
 ava.default('decryptErr for not integrity protected message', async t => {
   const { keys, pubKeys } = getKeypairs('flowcrypt.compatibility');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-not-integrity-protected')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(
+    await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
+      [await getCompatAsset('mime-email-not-integrity-protected')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('not integrity protected - should show a warning and not decrypt automatically');
   const blocks = decryptData.toString().split('\n').map(block => JSON.parse(block));
