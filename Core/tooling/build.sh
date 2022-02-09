@@ -3,7 +3,6 @@
 set -euxo pipefail
 
 # fix openpgp in node_modules
-cp -f source/core/types/openpgp.d.ts node_modules/openpgp
 for f in openpgp.min.js openpgp.min.js.map openpgp.min.mjs openpgp.min.mjs.map openpgp.mjs; do
   if [ -f node_modules/openpgp/dist/$f ]; then rm -f node_modules/openpgp/dist/$f ; fi
   if [ -f node_modules/openpgp/dist/node/$f ]; then rm -f node_modules/openpgp/dist/node/$f ; fi
