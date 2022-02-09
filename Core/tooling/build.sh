@@ -4,8 +4,6 @@ set -euxo pipefail
 
 # fix openpgp in node_modules
 cp -f source/core/types/openpgp.d.ts node_modules/openpgp
-cp -f source/lib/openpgp/openpgp.js node_modules/openpgp/dist
-cp -f source/lib/openpgp/node/openpgp.js node_modules/openpgp/dist/node
 for f in openpgp.min.js openpgp.min.js.map openpgp.min.mjs openpgp.min.mjs.map openpgp.mjs; do
   if [ -f node_modules/openpgp/dist/$f ]; then rm -f node_modules/openpgp/dist/$f ; fi
   if [ -f node_modules/openpgp/dist/node/$f ]; then rm -f node_modules/openpgp/dist/node/$f ; fi
@@ -25,23 +23,27 @@ exports.util = util;
 
 dist_js=node_modules/openpgp/dist/openpgp.js
 tmp_js=${dist_js}.tmp
-fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${tmp_js} | wc -l)
-if [ $fc_added = 0]; then
+set +e
+fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${dist_js} | wc -l)
+set -e
+if [ $fc_added = 0 ]; then
   n=$(grep -n 'exports.verify' ${dist_js} | cut -f1 -d':')
   head -$n ${dist_js} >${tmp_js}
   echo "$extra_exports" >>${tmp_js}
   tail -n +$((n+1)) ${dist_js} >>${tmp_js}
+  mv -f ${tmp_js} ${dist_js}
 fi
-mv -f ${tmp_js} ${dist_js}
 
 dist_js=node_modules/openpgp/dist/node/openpgp.js
 tmp_js=${dist_js}.tmp
+set +e
 fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${dist_js} | wc -l)
-if [ $fc_added = 0]; then
+set -e
+if [ $fc_added = 0 ]; then
   cp -f ${dist_js} ${tmp_js}
   echo "$extra_exports" >>${tmp_js}
+  mv -f ${tmp_js} ${dist_js}
 fi
-mv -f ${tmp_js} ${dist_js}
 
 # clean up
 rm -rf build/ts build/bundles build/final/*

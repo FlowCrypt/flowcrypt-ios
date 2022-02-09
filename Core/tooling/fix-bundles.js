@@ -70,7 +70,7 @@ const replace = (libSrc, regex, replacement) => {
   return libSrc.replace(regex, replacement);
 }
 
-let openpgpLib = fs.readFileSync(`${libsDir}/openpgp/node/openpgp.js`).toString();
+let openpgpLib = fs.readFileSync('./node_modules/openpgp/dist/node/openpgp.js').toString();
 const openpgpLibNodeDev = openpgpLib; // dev node runs without any host, no modifications needed
 
 /*
