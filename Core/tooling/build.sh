@@ -6,6 +6,12 @@ set -euxo pipefail
 cp -f source/core/types/openpgp.d.ts node_modules/openpgp
 cp -f source/lib/openpgp/openpgp.js node_modules/openpgp/dist
 cp -f source/lib/openpgp/node/openpgp.js node_modules/openpgp/dist/node
+for f in openpgp.min.js openpgp.min.js.map openpgp.min.mjs openpgp.min.mjs.map openpgp.mjs; do
+  if [ -f node_modules/openpgp/dist/$f ]; then rm -f node_modules/openpgp/dist/$f ; fi
+  if [ -f node_modules/openpgp/dist/node/$f ]; then rm -f node_modules/openpgp/dist/node/$f ; fi
+done
+sed -i 's/openpgp.min.js/openpgp.js/g' node_modules/openpgp/package.json
+sed -i 's/openpgp.min.mjs/openpgp.mjs/g' node_modules/openpgp/package.json
 
 # clean up
 rm -rf build/ts build/bundles build/final/*
