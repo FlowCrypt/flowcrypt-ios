@@ -84,9 +84,11 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     }
     expect(blocks.length).to.equal(expectedBlocks.length);
     for (let i = 0; i < expectedBlocks.length; i++) {
-      // if (i === 0 && blocks[i].type === 'decryptedHtml') {
-      // }
-      expect(blocks[i]).to.deep.equal(expectedBlocks[i], `block ${i} failed cmp check`);
+      const a = blocks[i];
+      const b = expectedBlocks[i];
+      if (i == 1) {
+      }
+      expect(a).to.deep.equal(b, `block ${i} failed cmp check`);
     }
   } else if (type === "binary") {
     expect(details).to.be.instanceOf(Buffer);

@@ -627,7 +627,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
 ava.default.only('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-pubkey')]));
-  expectData(blocks, 'msgBlocks', [
+  const expected = [
     { rendered: true, frameColor: 'plain', htmlContent },
     {
       "type": "publicKey",
@@ -646,7 +646,8 @@ ava.default.only('parseDecryptMsg compat mime-email-plain-with-pubkey', async t 
         "revoked": false
       }
     },
-  ]);
+  ];
+  expectData(blocks, 'msgBlocks', expected);
   expect(decryptJson).to.deep.equal({ text, replyType: 'plain', subject: 'mime email plain with pubkey' });
   t.pass();
 });
