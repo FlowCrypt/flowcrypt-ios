@@ -448,7 +448,7 @@ ava.default('decryptKey', async t => {
   t.pass();
 });
 
-ava.default.only('encryptKey', async t => {
+ava.default('encryptKey', async t => {
   const passphrase = 'this is some pass phrase';
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey, passphrase }));
@@ -458,7 +458,7 @@ ava.default.only('encryptKey', async t => {
   expect(await decryptKey({
     privateKey: (encryptedKey as PrivateKey),
     passphrase: passphrase
-  })).to.be.true
+  })).is.not.null;
   expectNoData(data);
   t.pass();
 });
@@ -624,7 +624,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
+ava.default.only('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-pubkey')]));
   expectData(blocks, 'msgBlocks', [
