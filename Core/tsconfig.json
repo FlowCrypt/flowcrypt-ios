@@ -22,6 +22,7 @@
     "paths": {
       "openpgp": ["source/lib"]
     },
+    "traceResolution": true,
     "typeRoots": [
       "./source/core/types/",
       "./node_modules/@types/"
