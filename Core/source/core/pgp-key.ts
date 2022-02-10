@@ -377,7 +377,7 @@ export class PgpKey {
     for (const subKey of key.subkeys) {
       try {
         const latestValidSig = await subKey.verify();
-        if (latestValidSig) allSignatures.push(latestValidSig);
+        allSignatures.push(latestValidSig);
       } catch (e) {
         console.log(e);
       }
