@@ -360,31 +360,29 @@ export class PgpKey {
    * This is used to figure out how recently was key updated, and if one key is newer than other.
    */
   public static lastSig = async (key: Key): Promise<number> => {
-    // no longer works, need some alternate solution
+    // "await key.getExpirationTime()" no longer works, need some alternate solution
     // discussion is in progress: https://github.com/openpgpjs/openpgpjs/discussions/1491
-    await key.getExpirationTime(); // will force all sigs to be verified
-    const allSignatures: {sigPacket: SignaturePacket, verified: boolean}[] = [];
+    const allSignatures: SignaturePacket[] = [];
     for (const user of key.users) {
+      const data = { userID: user.userID, userAttribute: user.userAttribute, key: key };
       for (const selfCertification of user.selfCertifications) {
-        // TODO: verify
-        const verified = false;
-        allSignatures.push({sigPacket: selfCertification, verified});
+        try {
+          await selfCertification.verify(key.keyPacket, enums.signature.certGeneric, data);
+          allSignatures.push(selfCertification);
+        } catch (e) {
+        }
       }
     }
     for (const subKey of key.subkeys) {
-      for (const bindingSignature of subKey.bindingSignatures) {
-        // TODO: verify
-        const verified = false;
-        allSignatures.push({sigPacket: bindingSignature, verified});
-      }
+      const latestValidSig = await subKey.verify();
+      if (latestValidSig) allSignatures.push(latestValidSig);
     }
-    allSignatures.sort((a, b) => {
-      return (b.sigPacket.created ? b.sigPacket.created.getTime() : 0) -
-        (a.sigPacket.created ? a.sigPacket.created.getTime() : 0);
-    });
-    const newestSig = allSignatures.find(sig => sig.verified === true);
-    if (newestSig) {
-      return newestSig.sigPacket.created ? newestSig.sigPacket.created.getTime() : 0;
+    if (allSignatures.length > 0) {
+        allSignatures.sort((a, b) => {
+          return (b.created ? b.created.getTime() : 0) - (a.created ? a.created.getTime() : 0);
+        });
+        const newestSig = allSignatures[0];
+        return newestSig.created ? newestSig.created.getTime() : 0;
     }
     throw new Error('No valid signature found in key');
   }
