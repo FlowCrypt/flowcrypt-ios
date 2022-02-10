@@ -356,6 +356,8 @@ export class PgpKey {
    * This is used to figure out how recently was key updated, and if one key is newer than other.
    */
   public static lastSig = async (key: Key): Promise<number> => {
+    // no longer works, need some alternate solution
+    // discussion is in progress: https://github.com/openpgpjs/openpgpjs/discussions/1491
     await key.getExpirationTime(); // will force all sigs to be verified
     const allSignatures: SignaturePacket[] = [];
     for (const user of key.users) {
