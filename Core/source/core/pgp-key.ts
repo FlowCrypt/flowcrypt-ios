@@ -319,8 +319,12 @@ export class PgpKey {
   public static details = async (k: Key): Promise<KeyDetails> => {
     const keys = k.getKeys();
     const algoInfo = k.keyPacket.getAlgorithmInfo();
-    const algo = { algorithm: algoInfo.algorithm, bits: algoInfo.bits, curve: (algoInfo as any).curve,
-      algorithmId: enums.publicKey[algoInfo.algorithm] };
+    const algo = {
+      algorithm: algoInfo.algorithm,
+      bits: algoInfo.bits,
+      curve: algoInfo.curve,
+      algorithmId: enums.publicKey[algoInfo.algorithm]
+    };
     const created = k.keyPacket.created.getTime() / 1000;
     const exp = await k.getExpirationTime();
     const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
