@@ -9,7 +9,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { str_to_hex } from '../platform/util';
-import { AnyKeyPacket, BaseSecretKeyPacket, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, readToEnd, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
+import { AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, readToEnd, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 
 export type Contact = {
@@ -177,7 +177,7 @@ export class PgpKey {
       throw new Error(`Cannot encrypt a key that has ${encryptedPacketCount} of ` +
         `${secretPackets.length} private packets still encrypted`);
     }
-    await ((prv as unknown) as BaseSecretKeyPacket).encrypt(passphrase);
+    await encryptKey({privateKey: (prv as PrivateKey), passphrase});
   }
 
   public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[] }> => {
