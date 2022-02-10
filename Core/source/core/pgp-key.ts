@@ -370,12 +370,17 @@ export class PgpKey {
           await selfCertification.verify(key.keyPacket, enums.signature.certGeneric, data);
           allSignatures.push(selfCertification);
         } catch (e) {
+          console.log(e);
         }
       }
     }
     for (const subKey of key.subkeys) {
-      const latestValidSig = await subKey.verify();
-      if (latestValidSig) allSignatures.push(latestValidSig);
+      try {
+        const latestValidSig = await subKey.verify();
+        if (latestValidSig) allSignatures.push(latestValidSig);
+      } catch (e) {
+        console.log(e);
+      }
     }
     if (allSignatures.length > 0) {
         allSignatures.sort((a, b) => {
