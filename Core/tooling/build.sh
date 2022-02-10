@@ -29,7 +29,7 @@ do
     mv -f ${tmp_js} ${dist_js}
   fi
 done
-cp -fv source/types/openpgp.d.ts node_modules/openpgp/
+cp -fv source/core/types/openpgp.d.ts node_modules/openpgp/
 # MacOS sed is old BSD sed w/o "-i" (see https://ss64.com/osx/sed.html)
 sed 's/openpgp.min.js/openpgp.js/g' node_modules/openpgp/package.json >node_modules/openpgp/package.json.tmp
 cp -f node_modules/openpgp/package.json.tmp node_modules/openpgp/package.json
