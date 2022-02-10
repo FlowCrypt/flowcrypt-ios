@@ -32,7 +32,9 @@ export class Endpoints {
     Store.keyCacheWipe(); // generateKey may be used when changing major settings, wipe cache to prevent dated results
     const { passphrase, userIds, variant } = ValidateInput.generateKey(uncheckedReq);
     if (passphrase.length < 12) {
-      throw new Error('Pass phrase length seems way too low! Pass phrase strength should be properly checked before encrypting a key.');
+      throw new Error(
+        'Pass phrase length seems way too low! ' +
+        'Pass phrase strength should be properly checked before encrypting a key.');
     }
     let k = await PgpKey.create(userIds, variant, passphrase);
     return fmtRes({ key: await PgpKey.details(await PgpKey.read(k.private)) });
@@ -42,23 +44,40 @@ export class Endpoints {
     const req = ValidateInput.composeEmail(uncheckedReq);
     const mimeHeaders: RichHeaders = { to: req.to, from: req.from, subject: req.subject, cc: req.cc, bcc: req.bcc };
     if (req.replyToMimeMsg) {
-      const previousMsg = await Mime.decode(Buf.fromUtfStr((req.replyToMimeMsg.substr(0, 10000).split('\n\n')[0] || '') + `\n\nno content`));
+      const previousMsg = await Mime.decode(Buf.fromUtfStr((req.replyToMimeMsg.substr(0, 10000)
+        .split('\n\n')[0] || '') + `\n\nno content`));
       const replyHeaders = Mime.replyHeaders(previousMsg);
       mimeHeaders['in-reply-to'] = replyHeaders['in-reply-to'];
       mimeHeaders['references'] = replyHeaders['references'];
     }
     if (req.format === 'plain') {
-      const atts = (req.atts || []).map(({ name, type, base64 }) => new Att({ name, type, data: Buf.fromBase64Str(base64) }));
-      return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': req.text, 'text/html': req.html }, mimeHeaders, atts)));
+      const atts = (req.atts || []).map(({ name, type, base64 }) =>
+        new Att({ name, type, data: Buf.fromBase64Str(base64) }));
+      return fmtRes({}, Buf.fromUtfStr(await Mime.encode(
+        { 'text/plain': req.text, 'text/html': req.html }, mimeHeaders, atts)));
     } else if (req.format === 'encrypt-inline') {
       const encryptedAtts: Att[] = [];
       for (const att of req.atts || []) {
-        const encryptedAtt = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.fromBase64Str(att.base64), filename: att.name, armor: false }) as Uint8Array;
-        encryptedAtts.push(new Att({ name: `${att.name}.pgp`, type: 'application/pgp-encrypted', data: encryptedAtt }))
+        const encryptedAtt = await PgpMsg.encrypt({
+          pubkeys: req.pubKeys,
+          data: Buf.fromBase64Str(att.base64),
+          filename: att.name,
+          armor: false
+        }) as Uint8Array;
+        encryptedAtts.push(new Att({
+          name: `${att.name}.pgp`,
+          type: 'application/pgp-encrypted',
+          data: encryptedAtt
+        }))
       }
 
       const signingPrv = await getSigningPrv(req);
-      const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, signingPrv, data: Buf.fromUtfStr(req.text), armor: true }) as string;
+      const encrypted = await PgpMsg.encrypt({
+        pubkeys: req.pubKeys,
+        signingPrv,
+        data: Buf.fromUtfStr(req.text),
+        armor: true
+      }) as string;
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted }, mimeHeaders, encryptedAtts)));
     } else {
       throw new Error(`Unknown format: ${req.format}`);
@@ -67,13 +86,15 @@ export class Endpoints {
 
   public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptMsg(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as string;
+    const encrypted = await PgpMsg.encrypt(
+      { pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as string;
     return fmtRes({}, Buf.fromUtfStr(encrypted));
   }
 
   public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptFile(uncheckedReq);
-    const encrypted = await PgpMsg.encrypt({ pubkeys: req.pubKeys, data: Buf.concat(data), filename: req.name, armor: false }) as Uint8Array;
+    const encrypted = await PgpMsg.encrypt(
+      { pubkeys: req.pubKeys, data: Buf.concat(data), filename: req.name, armor: false }) as Uint8Array;
     return fmtRes({}, encrypted);
   }
 
@@ -93,38 +114,73 @@ export class Endpoints {
     const sequentialProcessedBlocks: MsgBlock[] = []; // contains decrypted or otherwise formatted data
     for (const rawBlock of rawBlocks) {
       if ((rawBlock.type === 'signedMsg' || rawBlock.type === 'signedHtml') && rawBlock.signature) {
-        const verify = await PgpMsg.verifyDetached({ sigText: Buf.fromUtfStr(rawBlock.signature), plaintext: Buf.with(rawSigned || rawBlock.content), verificationPubkeys: verificationPubkeys });
+        const verify = await PgpMsg.verifyDetached({
+            sigText: Buf.fromUtfStr(rawBlock.signature),
+            plaintext: Buf.with(rawSigned || rawBlock.content),
+            verificationPubkeys: verificationPubkeys
+          });
         if (rawBlock.type === 'signedHtml') {
-          sequentialProcessedBlocks.push({ type: 'verifiedMsg', content: Xss.htmlSanitizeKeepBasicTags(rawBlock.content.toString()), verifyRes: verify, complete: true });
+          sequentialProcessedBlocks.push({
+              type: 'verifiedMsg',
+              content: Xss.htmlSanitizeKeepBasicTags(rawBlock.content.toString()),
+              verifyRes: verify,
+              complete: true
+            });
         } else { // text
-          sequentialProcessedBlocks.push({ type: 'verifiedMsg', content: Str.asEscapedHtml(rawBlock.content.toString()), verifyRes: verify, complete: true });
+          sequentialProcessedBlocks.push({
+            type: 'verifiedMsg',
+            content: Str.asEscapedHtml(rawBlock.content.toString()),
+            verifyRes: verify,
+            complete: true
+          });
         }
       } else if (rawBlock.type === 'encryptedMsg' || rawBlock.type === 'signedMsg') {
-        const decryptRes = await PgpMsg.decrypt({ kisWithPp, msgPwd, encryptedData: Buf.with(rawBlock.content), verificationPubkeys });
+        const decryptRes = await PgpMsg.decrypt({
+          kisWithPp,
+          msgPwd,
+          encryptedData: Buf.with(rawBlock.content),
+          verificationPubkeys
+        });
         if (decryptRes.success) {
           if (decryptRes.isEncrypted) {
-            const formatted = await MsgBlockParser.fmtDecryptedAsSanitizedHtmlBlocks(decryptRes.content, decryptRes.signature);
+            const formatted = await MsgBlockParser.fmtDecryptedAsSanitizedHtmlBlocks(
+              decryptRes.content, decryptRes.signature);
             sequentialProcessedBlocks.push(...formatted.blocks);
             subject = formatted.subject || subject;
           } else {
             // treating as text, converting to html - what about plain signed html? This could produce html tags
-            // although hopefully, that would, typically, result in the `(rawBlock.type === 'signedMsg' || rawBlock.type === 'signedHtml')` block above
-            // the only time I can imagine it screwing up down here is if it was a signed-only message that was actually fully armored (text not visible) with a mime msg inside
+            // although hopefully, that would, typically, result in the
+            // `(rawBlock.type === 'signedMsg' || rawBlock.type === 'signedHtml')` block above
+            // the only time I can imagine it screwing up down here is if it was a signed-only message
+            // that was actually fully armored (text not visible) with a mime msg inside
             // ... -> in which case the user would I think see full mime content?
-            sequentialProcessedBlocks.push({ type: 'verifiedMsg', content: Str.asEscapedHtml(decryptRes.content.toUtfStr()), complete: true, verifyRes: decryptRes.signature });
+            sequentialProcessedBlocks.push({
+              type: 'verifiedMsg',
+              content: Str.asEscapedHtml(decryptRes.content.toUtfStr()),
+              complete: true,
+              verifyRes: decryptRes.signature
+            });
           }
         } else {
           decryptRes.message = undefined;
           sequentialProcessedBlocks.push({
             type: 'decryptErr',
-            content: decryptRes.error.type === DecryptErrTypes.noMdc ? decryptRes.content!.toUtfStr() : rawBlock.content.toString(),
+            content: decryptRes.error.type === DecryptErrTypes.noMdc
+              ? decryptRes.content!.toUtfStr() : rawBlock.content.toString(),
             decryptErr: decryptRes,
             complete: true
           });
         }
-      } else if (rawBlock.type === 'encryptedAtt' && rawBlock.attMeta && /^(0x)?[A-Fa-f0-9]{16,40}\.asc\.pgp$/.test(rawBlock.attMeta.name || '')) {
+      } else if (rawBlock.type === 'encryptedAtt'
+          && rawBlock.attMeta
+          && /^(0x)?[A-Fa-f0-9]{16,40}\.asc\.pgp$/.test(rawBlock.attMeta.name || '')) {
         // encrypted pubkey attached
-        const decryptRes = await PgpMsg.decrypt({ kisWithPp, msgPwd, encryptedData: Buf.with(rawBlock.attMeta.data || ''), verificationPubkeys });
+        const decryptRes = await PgpMsg.decrypt({
+          kisWithPp,
+          msgPwd,
+          encryptedData: Buf.with(rawBlock.attMeta.data || ''),
+          verificationPubkeys
+        });
         if (decryptRes.content) {
           sequentialProcessedBlocks.push({ type: 'publicKey', content: decryptRes.content.toString(), complete: true });
         } else {
@@ -161,7 +217,12 @@ export class Endpoints {
           const { keys } = await PgpKey.normalize(block.content);
           if (keys.length) {
             for (const pub of keys) {
-              blocks.push({ type: 'publicKey', content: pub.armor(), complete: true, keyDetails: await PgpKey.details(pub) });
+              blocks.push({
+                type: 'publicKey',
+                content: pub.armor(),
+                complete: true,
+                keyDetails: await PgpKey.details(pub)
+              });
             }
           } else {
             blocks.push({
@@ -192,9 +253,14 @@ export class Endpoints {
     return fmtRes({ text, replyType, subject }, Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
   }
 
-  public decryptFile = async (uncheckedReq: any, data: Buffers, verificationPubkeys?: string[]): Promise<EndpointRes> => {
+  public decryptFile = async (uncheckedReq: any, data: Buffers, verificationPubkeys?: string[]):
+      Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
-    const decryptRes = await PgpMsg.decrypt({ kisWithPp, encryptedData: Buf.concat(data), msgPwd, verificationPubkeys });
+    const decryptRes = await PgpMsg.decrypt({
+      kisWithPp,
+      encryptedData: Buf.concat(data),
+      msgPwd, verificationPubkeys
+    });
     if (!decryptRes.success) {
       decryptRes.message = undefined;
       decryptRes.content = undefined;
@@ -211,9 +277,11 @@ export class Endpoints {
   public zxcvbnStrengthBar = async (uncheckedReq: any): Promise<EndpointRes> => {
     const r = ValidateInput.zxcvbnStrengthBar(uncheckedReq);
     if (r.purpose === 'passphrase') {
-      if (typeof r.guesses === 'number') { // the host has a port of zxcvbn and already knows amount of guesses per password
+      if (typeof r.guesses === 'number') {
+        // the host has a port of zxcvbn and already knows amount of guesses per password
         return fmtRes(PgpPwd.estimateStrength(r.guesses));
-      } else if (typeof r.value === 'string') { // host does not have zxcvbn, let's use zxcvbn-js to estimate guesses
+      } else if (typeof r.value === 'string') {
+        // host does not have zxcvbn, let's use zxcvbn-js to estimate guesses
         type FakeWindow = { zxcvbn: (password: string, weakWords: string[]) => { guesses: number } };
         if (typeof (window as unknown as FakeWindow).zxcvbn !== 'function') {
           throw new Error("window.zxcvbn missing in js")
@@ -263,9 +331,11 @@ export class Endpoints {
   }
 
   public decryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
-    Store.keyCacheWipe(); // decryptKey may be used when changing major settings, wipe cache to prevent dated results
+    // decryptKey may be used when changing major settings, wipe cache to prevent dated results
+    Store.keyCacheWipe();
     const { armored, passphrases } = ValidateInput.decryptKey(uncheckedReq);
-    if (passphrases.length !== 1) { // todo - refactor endpoint decryptKey api to accept a single pp
+    if (passphrases.length !== 1) {
+      // todo - refactor endpoint decryptKey api to accept a single pp
       throw new Error(`decryptKey: Can only accept exactly 1 pass phrase for decrypt, received: ${passphrases.length}`);
     }
     const key = await readArmoredKeyOrThrow(armored);
@@ -276,11 +346,14 @@ export class Endpoints {
   }
 
   public encryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
-    Store.keyCacheWipe(); // encryptKey may be used when changing major settings, wipe cache to prevent dated results
+    // encryptKey may be used when changing major settings, wipe cache to prevent dated results
+    Store.keyCacheWipe();
     const { armored, passphrase } = ValidateInput.encryptKey(uncheckedReq);
     const privateKey = await readArmoredKeyOrThrow(armored) as PrivateKey;
     if (!passphrase || passphrase.length < 12) { // last resort check, this should never happen
-      throw new Error('Pass phrase length seems way too low! Pass phrase strength should be properly checked before encrypting a key.');
+      throw new Error(
+        'Pass phrase length seems way too low! ' +
+        'Pass phrase strength should be properly checked before encrypting a key.');
     }
     const encryptedKey = await encryptKey({privateKey, passphrase});
     return fmtRes({ encryptedKey: encryptedKey.armor() });

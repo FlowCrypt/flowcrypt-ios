@@ -179,8 +179,6 @@ const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object'
 
 export const readArmoredKeyOrThrow = async (armored: string) => {
   const key = await readKey({armoredKey: armored});
-  if (!key) {
-    throw new Error('No key found');
-  }
+  if (!key) throw new Error('No key found');
   return key;
 }

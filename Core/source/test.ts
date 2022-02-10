@@ -404,13 +404,6 @@ ava.default('parseKeys - expiration and date last updated', async t => {
       }
     ]
   };
-  //expect(json.keyDetails[0].ids[0]).to.deep.equal(expected.keyDetails[0].ids[0]);
-  //expect(json.keyDetails[0].ids[1]).to.deep.equal(expected.keyDetails[0].ids[1]);
-  //expect(json.keyDetails[0].algo).to.deep.equal(expected.keyDetails[0].algo);
-  //expect(json.keyDetails[0].created).to.equal(expected.keyDetails[0].created);
-  //expect(json.keyDetails[0].lastModified).to.equal(expected.keyDetails[0].lastModified);
-  //expect(json.keyDetails[0].public).to.equal(expected.keyDetails[0].public);
-  //expect(json.keyDetails[0]).to.deep.equal(expected.keyDetails[0]);
   expect(json).to.deep.equal(expected);
   expectNoData(data);
   t.pass();

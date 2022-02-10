@@ -19,9 +19,6 @@
     "checkJs": false,
     "outDir": "./build/ts",
     "baseUrl": "./",
-    "paths": {
-      "openpgp": ["source/lib"]
-    },
     "traceResolution": false,
     "typeRoots": [
       "./source/core/types/",
