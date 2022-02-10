@@ -4,11 +4,32 @@ set -euxo pipefail
 
 # fix openpgp in node_modules
 echo "Patching openpgp.js v5..."
-for f in openpgp.min.js openpgp.min.js.map openpgp.min.mjs openpgp.min.mjs.map openpgp.mjs; do
+for f in openpgp.min.js openpgp.min.js.map openpgp.min.mjs openpgp.min.mjs.map openpgp.mjs;
+do
   if [ -f node_modules/openpgp/dist/$f ]; then rm -f node_modules/openpgp/dist/$f ; fi
   if [ -f node_modules/openpgp/dist/node/$f ]; then rm -f node_modules/openpgp/dist/node/$f ; fi
 done
-cp -Rfv source/lib/openpgpjs-v5/* node_modules/openpgp/
+extra_exports="
+// -----BEGIN ADDED BY FLOWCRYPT----
+exports.readToEnd = readToEnd;
+exports.util = util;
+// -----END ADDED BY FLOWCRYPT-----
+"
+for dist_js in node_modules/openpgp/dist/openpgp.js node_modules/openpgp/dist/node/openpgp.js;
+do
+  tmp_js=${dist_js}.tmp
+  set +e
+  fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${dist_js} | wc -l)
+  set -e
+  if [ $fc_added = 0 ]; then
+    n=$(grep -n 'exports.verify' ${dist_js} | cut -f1 -d':')
+    head -$n ${dist_js} >${tmp_js}
+    echo "$extra_exports" >>${tmp_js}
+    tail -n +$((n+1)) ${dist_js} >>${tmp_js}
+    mv -f ${tmp_js} ${dist_js}
+  fi
+done
+cp -fv source/types/openpgp.d.ts node_modules/openpgp/
 # MacOS sed is old BSD sed w/o "-i" (see https://ss64.com/osx/sed.html)
 sed 's/openpgp.min.js/openpgp.js/g' node_modules/openpgp/package.json >node_modules/openpgp/package.json.tmp
 cp -f node_modules/openpgp/package.json.tmp node_modules/openpgp/package.json
