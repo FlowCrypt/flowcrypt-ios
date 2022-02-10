@@ -363,17 +363,28 @@ export class PgpKey {
     // no longer works, need some alternate solution
     // discussion is in progress: https://github.com/openpgpjs/openpgpjs/discussions/1491
     await key.getExpirationTime(); // will force all sigs to be verified
-    const allSignatures: SignaturePacket[] = [];
+    const allSignatures: {sigPacket: SignaturePacket, verified: boolean}[] = [];
     for (const user of key.users) {
-      allSignatures.push(...user.selfCertifications);
+      for (const selfCertification of user.selfCertifications) {
+        // TODO: verify
+        const verified = false;
+        allSignatures.push({sigPacket: selfCertification, verified});
+      }
     }
     for (const subKey of key.subkeys) {
-      allSignatures.push(...subKey.bindingSignatures);
+      for (const bindingSignature of subKey.bindingSignatures) {
+        // TODO: verify
+        const verified = false;
+        allSignatures.push({sigPacket: bindingSignature, verified});
+      }
     }
-    allSignatures.sort((a, b) => (b.created ? b.created.getTime() : 0) - (a.created ? a.created.getTime() : 0));
+    allSignatures.sort((a, b) => {
+      return (b.sigPacket.created ? b.sigPacket.created.getTime() : 0) -
+        (a.sigPacket.created ? a.sigPacket.created.getTime() : 0);
+    });
     const newestSig = allSignatures.find(sig => sig.verified === true);
     if (newestSig) {
-      return newestSig.created ? newestSig.created.getTime() : 0;
+      return newestSig.sigPacket.created ? newestSig.sigPacket.created.getTime() : 0;
     }
     throw new Error('No valid signature found in key');
   }
