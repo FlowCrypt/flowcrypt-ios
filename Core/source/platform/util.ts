@@ -5,7 +5,7 @@
 import { Buf } from '../core/buf';
 import { randomBytes } from 'crypto';
 import { ConvertStringOptions } from 'encoding-japanese';
-import { Key, KeyID, UserID } from 'openpgp';
+import { Key, KeyID, Subkey, UserID } from 'openpgp';
 
 declare const dereq_encoding_japanese : {
   convert: (data: Uint8Array, options: ConvertStringOptions) => string;
@@ -57,15 +57,26 @@ export const str_to_hex = (str: string): string => {
 
 const maxDate = (dates: (Date | null)[]): Date | null => {
   let res: Date | null = null;
-  for (const d of dates) {
-    if (res == null || (d != null && d > res)) res = d;
+  for (const date of dates) {
+    if (res == null || (date != null && date > res)) {
+      res = date;
+    }
   }
   return res;
 }
 
-// Trying to backport from openpgp.js v4
-export const getExpirationTimeForCapability = async (
-    key: Key, capabilities: string, keyId?: KeyID | undefined, userId?: UserID | undefined
+const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
+  const bindingCreated = maxDate(subkey.bindingSignatures.map(b => b.created));
+  const binding = subkey.bindingSignatures.filter(b => b.created === bindingCreated)[0];
+  return binding.getExpirationTime();
+}
+
+// Attempt to backport from openpgp.js v4
+export const getKeyExpirationTimeForCapabilities = async (
+    key: Key,
+    capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
+    keyId?: KeyID | undefined,
+    userId?: UserID | undefined
   ): Promise<Date | null | typeof Infinity> => {
   const primaryUser = await key.getPrimaryUser(undefined, userId, undefined);
   if (!primaryUser) throw new Error('Could not find primary user');
@@ -80,8 +91,8 @@ export const getExpirationTimeForCapability = async (
       || (await key.getEncryptionKey(keyId, null, userId));
     if (!encryptionKey) return null;
     const encryptExpiry = encryptionKey instanceof Key
-      ? await encryptionKey.getExpirationTime(userId)
-      : ... ;
+      ? (await encryptionKey.getExpirationTime(userId))!
+      : getSubkeyExpirationTime(encryptionKey) ;
     if (encryptExpiry < expiry) expiry = encryptExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
@@ -89,8 +100,8 @@ export const getExpirationTimeForCapability = async (
       || (await key.getSigningKey(keyId, null, userId));
     if (!signatureKey) return null;
     const signExpiry = signatureKey instanceof Key
-      ? await signatureKey.getExpirationTime(userId)
-      : await signatureKey.getExpirationTime(key.keyPacket);
+      ? (await signatureKey.getExpirationTime(userId))!
+      : await getSubkeyExpirationTime(signatureKey);
     if (signExpiry < expiry) expiry = signExpiry;
   }
   return expiry;

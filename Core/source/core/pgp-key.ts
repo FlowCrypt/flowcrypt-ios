@@ -8,7 +8,7 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
-import { str_to_hex } from '../platform/util';
+import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/util';
 import { AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, readToEnd, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 
@@ -304,7 +304,9 @@ export class PgpKey {
 
   public static dateBeforeExpiration = async (key: Key | string): Promise<Date | undefined> => {
     const openPgpKey = typeof key === 'string' ? await PgpKey.read(key) : key;
-    const expires = await openPgpKey.getExpirationTime();
+    // const expires = await openPgpKey.getExpirationTime();
+    // meanhile use or backported fuinction
+    const expires = await getKeyExpirationTimeForCapabilities(openPgpKey, 'encrypt');
     if (expires instanceof Date && expires.getTime() < Date.now()) { // expired
       return new Date(expires.getTime() - 1000);
     }
@@ -326,7 +328,8 @@ export class PgpKey {
       algorithmId: enums.publicKey[algoInfo.algorithm]
     };
     const created = k.keyPacket.created.getTime() / 1000;
-    const exp = await k.getExpirationTime();
+    // meanwhile use our backported function
+    const exp = await getKeyExpirationTimeForCapabilities(k, 'encrypt');
     const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
     const lastModified = await PgpKey.lastSig(k) / 1000;
     const ids: KeyDetails$ids[] = [];
