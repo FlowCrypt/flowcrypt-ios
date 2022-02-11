@@ -12,14 +12,21 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
     private var buttonAction: (() -> Void)?
 
     private lazy var buttonNode: ASButtonNode = {
-        let configuration = UIImage.SymbolConfiguration(pointSize: 16, weight: .light)
+        let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .light)
         let image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
         let button = ASButtonNode()
         button.setImage(image, for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
         button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
         button.addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
         return button
     }()
+
+    var buttonIsRotated = false {
+        didSet {
+            updateButton()
+        }
+    }
 
     public init(input: TextFieldCellNode.Input, action: TextFieldAction? = nil, buttonAction: (() -> Void)?) {
         super.init(input: input, action: action)
@@ -28,10 +35,14 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        let textFieldWidth = input.width ?? (constrainedSize.max.width - input.insets.width)
+
         if buttonAction != nil {
+            let buttonSize = CGSize(width: 40, height: 40)
+
+            buttonNode.style.preferredSize = buttonSize
             textField.style.preferredSize = CGSize(
-                // TODO
-                width: constrainedSize.max.width - 32 - 32,
+                width: textFieldWidth - buttonSize.width - input.insets.right - 4,
                 height: input.height
             )
 
@@ -41,7 +52,7 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
             return ASInsetLayoutSpec(insets: input.insets, child: stack)
         } else {
             textField.style.preferredSize = CGSize(
-                width: input.width ?? (constrainedSize.max.width - input.insets.width),
+                width: textFieldWidth,
                 height: input.height
             )
 
@@ -49,7 +60,14 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
         }
     }
 
+    private func updateButton() {
+        UIView.animate(withDuration: 0.3) {
+            self.buttonNode.view.transform = CGAffineTransform(rotationAngle: self.buttonIsRotated ? .pi : 0)
+        }
+    }
+
     @objc private func onButtonTap() {
+        buttonIsRotated.toggle()
         buttonAction?()
     }
 

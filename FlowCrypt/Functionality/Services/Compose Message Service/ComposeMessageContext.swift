@@ -94,12 +94,11 @@ extension ComposeMessageContext {
     }
 
     mutating func update(recipient: String, state: RecipientState, keyState: PubKeyState?) {
-        RecipientType.allCases.forEach { type in
-            // TODO:
-//            guard let index = recipients[type]?.firstIndex(where: { $0.email == recipient }) else { return }
-//
-//            recipients[type]?[index].state = state
-//            recipients[type]?[index].keyState = keyState
+        recipients.indices.forEach {
+            guard recipients[$0].email == recipient else { return }
+
+            recipients[$0].state = state
+            recipients[$0].keyState = keyState
         }
     }
 }

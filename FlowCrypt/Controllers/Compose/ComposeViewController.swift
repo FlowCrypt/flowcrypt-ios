@@ -109,7 +109,8 @@ final class ComposeViewController: TableNodeViewController {
         navigationController?.navigationBar.frame.maxY ?? 0
     }
 
-    private var selectedRecipientType: RecipientType? = .to
+    private var selectedRecipientType: RecipientType?
+    private var shouldShowAllRecipientTypes = false
 
     init(
         appContext: AppContextWithUser,
@@ -587,7 +588,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (.main, Section.to.rawValue):
             return RecipientPart.allCases.count
         case (.main, Section.cc.rawValue), (.main, Section.bcc.rawValue):
-            return selectedRecipientType == .to ? 0 : RecipientPart.allCases.count
+            return shouldShowAllRecipientTypes ? RecipientPart.allCases.count : 0
         case (.main, Section.password.rawValue):
             return isMessagePasswordSupported && contextToSend.hasRecipientsWithoutPubKey ? 1 : 0
         case (.main, Section.compose.rawValue):
@@ -762,54 +763,23 @@ extension ComposeViewController {
     private func recipientsNode(type: RecipientType) -> ASCellNode {
         let recipients = contextToSend.recipients(of: type)
 
-        let calculatedHeight: CGFloat?
-
-        switch type {
-        case .to:
-            calculatedHeight = calculatedRecipientsToPartHeight
-        case .cc:
-            calculatedHeight = calculatedRecipientsCcPartHeight
-        case .bcc:
-            calculatedHeight = calculatedRecipientsBccPartHeight
-        }
-
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.RecipientInput.init),
-            height: calculatedHeight ?? Constants.minRecipientsPartHeight,
+            height: recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
             textFieldInput: RecipientEmailsCellNode.TextFieldInput(
                 placeholder: type.inputPlaceholder.attributed(
                     .regular(17),
                     color: .lightGray
                 )
-            )) { [weak self] action in
+            ),
+            textFieldAction: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)
-            }
+            })
             .onLayoutHeightChanged { [weak self] layoutHeight in
-                // TODO: Improve
-                guard let self = self else { return }
-                let previousHeight: CGFloat?
-
-                switch type {
-                case .to:
-                    previousHeight = self.calculatedRecipientsToPartHeight
-                case .cc:
-                    previousHeight = self.calculatedRecipientsCcPartHeight
-                case .bcc:
-                    previousHeight = self.calculatedRecipientsBccPartHeight
-                }
-
-                guard previousHeight != layoutHeight, layoutHeight > 0 else {
-                    return
-                }
-
-                switch type {
-                case .to:
-                    self.calculatedRecipientsToPartHeight = layoutHeight
-                case .cc:
-                    self.calculatedRecipientsCcPartHeight = layoutHeight
-                case .bcc:
-                    self.calculatedRecipientsBccPartHeight = layoutHeight
-                }
+                self?.updateRecipientsNode(
+                    layoutHeight: layoutHeight,
+                    type: type
+                )
             }
             .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
                 switch action {
@@ -819,6 +789,34 @@ extension ComposeViewController {
                     self?.handleRecipientSelection(with: indexPath, type: type)
                 }
             }
+    }
+
+    private func recipientsNodeHeight(type: RecipientType) -> CGFloat? {
+        switch type {
+        case .to:
+            return calculatedRecipientsToPartHeight
+        case .cc:
+            return calculatedRecipientsCcPartHeight
+        case .bcc:
+            return calculatedRecipientsBccPartHeight
+        }
+    }
+
+    private func updateRecipientsNode(layoutHeight: CGFloat, type: RecipientType) {
+        let currentHeight = self.recipientsNodeHeight(type: type)
+
+        guard currentHeight != layoutHeight, layoutHeight > 0 else {
+            return
+        }
+
+        switch type {
+        case .to:
+            self.calculatedRecipientsToPartHeight = layoutHeight
+        case .cc:
+            self.calculatedRecipientsCcPartHeight = layoutHeight
+        case .bcc:
+            self.calculatedRecipientsBccPartHeight = layoutHeight
+        }
     }
 
     private func recipientInput(type: RecipientType) -> ASCellNode {
@@ -1034,7 +1032,8 @@ extension ComposeViewController {
 
     private func toggleRecipientsList() {
         let sections: [Section] = [.cc, .bcc]
-        selectedRecipientType = selectedRecipientType == .to ? nil : .to
+        shouldShowAllRecipientTypes.toggle()
+
         node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
     }
 }
@@ -1126,38 +1125,16 @@ extension ComposeViewController {
 
             contextToSend.recipients[$0].state = state
             contextToSend.recipients[$0].keyState = keyState
-//
-//            if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
-//                let section = Section.recipientsSection(for: recipient.type).rawValue
-//                print(section)
-//                node.reloadSections([section], with: .automatic)
-//                // node.reloadRows(at: [recipientsIndexPath], with: .automatic)
-//            }
+
+            if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
+                let sections: [Section] = [.recipientsSection(type: recipient.type), .password]
+                node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
+                // TODO
+                // node.reloadRows(at: [recipientsIndexPath], with: .automatic)
+            }
         }
-        // contextToSend.updateRecipient(email: email, state: state, keyState: keyState)
-        // TODO:
-//        let index: Int? = {
-//            switch context {
-//            case let .left(recipient):
-//                return recipients.firstIndex(of: recipient)
-//            case let .right(index):
-//                return index.row
-//            }
-//        }()
-//
-//        guard let recipientIndex = index else { return }
-//
-//        let recipient = contextToSend.recipients[recipientIndex]
-//        let needsReload = recipient.state != state || recipient.keyState != keyState
-//
-//        guard needsReload else { return }
-//
-//        contextToSend.recipients[recipientIndex].state = state
-//        contextToSend.recipients[recipientIndex].keyState = keyState
-//
-        // TODO
-        // node.reloadSections([Section.password.rawValue], with: .automatic)
-//        node.reloadRows(at: [recipientsIndexPath], with: .automatic)
+
+        node.reloadSections([Section.password.rawValue], with: .automatic)
     }
 
     private func handleRecipientSelection(with indexPath: IndexPath, type: RecipientType) {
@@ -1265,7 +1242,6 @@ extension ComposeViewController {
         case .main:
             node.reloadData()
         case .searchEmails:
-            // TODO: filter sections
             let sections: [Section]
             if let type = selectedRecipientType {
                 let selectedRecipientSection = Section.recipientsSection(type: type)
