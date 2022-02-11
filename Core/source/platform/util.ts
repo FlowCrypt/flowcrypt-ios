@@ -55,30 +55,42 @@ export const str_to_hex = (str: string): string => {
   return r.join('');
 }
 
+const maxDate = (dates: (Date | null)[]): Date | null => {
+  let res: Date | null = null;
+  for (const d of dates) {
+    if (res == null || (d != null && d > res)) res = d;
+  }
+  return res;
+}
+
+// Trying to backport from openpgp.js v4
 export const getExpirationTimeForCapability = async (
-  key: Key, capabilities: string, keyId?: KeyID | undefined, userId?: UserID | undefined)
-    : Promise<Date | null | typeof Infinity> => {
+    key: Key, capabilities: string, keyId?: KeyID | undefined, userId?: UserID | undefined
+  ): Promise<Date | null | typeof Infinity> => {
   const primaryUser = await key.getPrimaryUser(undefined, userId, undefined);
   if (!primaryUser) throw new Error('Could not find primary user');
   const keyExpiry = await key.getExpirationTime(userId);
   if (!keyExpiry) return Infinity;
-  let sigExpiry: Date | number | null = null;
-  for (const exp of primaryUser.user.selfCertifications.map(selfCert => selfCert.getExpirationTime())) {
-    if (sigExpiry == null || exp < sigExpiry!) sigExpiry = exp;
-  }
-  let expiry = sigExpiry == null || keyExpiry < sigExpiry! ? keyExpiry : sigExpiry;
+  const selfCertCreated = maxDate(primaryUser.user.selfCertifications.map(selfCert => selfCert.created));
+  const selfCert = primaryUser.user.selfCertifications.filter(selfCert => selfCert.created === selfCertCreated)[0];
+  const sigExpiry = selfCert.getExpirationTime();
+  let expiry = keyExpiry < sigExpiry ? keyExpiry : sigExpiry;
   if (capabilities === 'encrypt' || capabilities === 'encrypt_sign') {
-    const encryptKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId))
+    const encryptionKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId))
       || (await key.getEncryptionKey(keyId, null, userId));
-    if (!encryptKey) return null;
-    const encryptExpiry = await encryptKey.getExpirationTime(userId);
+    if (!encryptionKey) return null;
+    const encryptExpiry = encryptionKey instanceof Key
+      ? await encryptionKey.getExpirationTime(userId)
+      : ... ;
     if (encryptExpiry < expiry) expiry = encryptExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
-    const signKey = (await key.getSigningKey(keyId, new Date(expiry), userId))
+    const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId))
       || (await key.getSigningKey(keyId, null, userId));
-    if (!signKey) return null;
-    const signExpiry = await signKey.getExpirationTime(key.keyPacket);
+    if (!signatureKey) return null;
+    const signExpiry = signatureKey instanceof Key
+      ? await signatureKey.getExpirationTime(userId)
+      : await signatureKey.getExpirationTime(key.keyPacket);
     if (signExpiry < expiry) expiry = signExpiry;
   }
   return expiry;
