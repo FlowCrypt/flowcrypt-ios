@@ -330,7 +330,6 @@ export class PgpKey {
     const created = k.keyPacket.created.getTime() / 1000;
     // meanwhile use our backported function
     const exp = await getKeyExpirationTimeForCapabilities(k, 'encrypt');
-    console.log(`\nexp=${exp}\n`);
     const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
     const lastModified = await PgpKey.lastSig(k) / 1000;
     const ids: KeyDetails$ids[] = [];
