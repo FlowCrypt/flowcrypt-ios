@@ -16,10 +16,21 @@ import PhotosUI
  * - Or from *ThreadDetailsViewController* controller by tapping on *reply* or *forward*
  **/
 final class ComposeViewController: TableNodeViewController {
-    // TODO:
-    private var calculatedRecipientsPartHeight: CGFloat? {
+    private var calculatedRecipientsToPartHeight: CGFloat? {
         didSet {
-            let sections: [Section] = [.to, .cc, .bcc]
+            let sections: [Section] = [.to, .password]
+            node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
+        }
+    }
+    private var calculatedRecipientsCcPartHeight: CGFloat? {
+        didSet {
+            let sections: [Section] = [.to, .cc, .password]
+            node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
+        }
+    }
+    private var calculatedRecipientsBccPartHeight: CGFloat? {
+        didSet {
+            let sections: [Section] = [.to, .bcc, .password]
             node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
         }
     }
@@ -42,7 +53,7 @@ final class ComposeViewController: TableNodeViewController {
     private enum Section: Int, CaseIterable {
         case to, cc, bcc, password, compose, attachments
 
-        static func recipientsSection(for type: RecipientType) -> Section {
+        static func recipientsSection(type: RecipientType) -> Section {
             switch type {
             case .to:
                 return .to
@@ -52,6 +63,10 @@ final class ComposeViewController: TableNodeViewController {
                 return .bcc
             }
         }
+    }
+
+    private enum RecipientPart: Int, CaseIterable {
+        case list, input
     }
 
     private enum ComposePart: Int, CaseIterable {
@@ -94,7 +109,7 @@ final class ComposeViewController: TableNodeViewController {
         navigationController?.navigationBar.frame.maxY ?? 0
     }
 
-    private var selectedRecipientType: RecipientType?
+    private var selectedRecipientType: RecipientType? = .to
 
     init(
         appContext: AppContextWithUser,
@@ -569,8 +584,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         switch (state, section) {
-        case (.main, Section.to.rawValue), (.main, Section.cc.rawValue), (.main, Section.bcc.rawValue):
-            return 1
+        case (.main, Section.to.rawValue):
+            return RecipientPart.allCases.count
+        case (.main, Section.cc.rawValue), (.main, Section.bcc.rawValue):
+            return selectedRecipientType == .to ? 0 : RecipientPart.allCases.count
         case (.main, Section.password.rawValue):
             return isMessagePasswordSupported && contextToSend.hasRecipientsWithoutPubKey ? 1 : 0
         case (.main, Section.compose.rawValue):
@@ -578,11 +595,11 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (.main, Section.attachments.rawValue):
             return contextToSend.attachments.count
         case (.searchEmails, Section.to.rawValue):
-            return selectedRecipientType == .to ? 1 : 0
+            return selectedRecipientType == .to ? RecipientPart.allCases.count : 0
         case (.searchEmails, Section.cc.rawValue):
-            return selectedRecipientType == .cc ? 1 : 0
+            return selectedRecipientType == .cc ? RecipientPart.allCases.count : 0
         case (.searchEmails, Section.bcc.rawValue):
-            return selectedRecipientType == .bcc ? 1 : 0
+            return selectedRecipientType == .bcc ? RecipientPart.allCases.count : 0
         case let (.searchEmails(emails), RecipientType.allCases.count):
             return emails.isNotEmpty ? emails.count + 1 : 2
         case (.searchEmails, RecipientType.allCases.count + 1):
@@ -599,7 +616,12 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
             switch (self.state, indexPath.section) {
             case (_, Section.to.rawValue), (_, Section.cc.rawValue), (_, Section.bcc.rawValue):
-                return self.recipientsNode(at: indexPath)
+                let recipientType = RecipientType.allCases[indexPath.section]
+                if indexPath.row == 0 {
+                    return self.recipientsNode(type: recipientType)
+                } else {
+                    return self.recipientInput(type: recipientType)
+                }
             case (.main, Section.password.rawValue):
                 return self.messagePasswordNode()
             case (.main, Section.compose.rawValue):
@@ -631,7 +653,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             switch indexPath.section {
             case RecipientType.allCases.count:
                 let selectedEmail = emails[safe: indexPath.row-1]
-                print(selectedEmail)
                 handleEndEditingAction(with: selectedEmail, for: recipientType)
             case RecipientType.allCases.count + 1:
                 askForContactsPermission()
@@ -738,61 +759,98 @@ extension ComposeViewController {
         }
     }
 
-    private func recipientsNode(at indexPath: IndexPath) -> ASCellNode {
-        let recipientType = RecipientType.allCases[indexPath.section]
-        let recipients = contextToSend.recipients(of: recipientType)
+    private func recipientsNode(type: RecipientType) -> ASCellNode {
+        let recipients = contextToSend.recipients(of: type)
+
+        let calculatedHeight: CGFloat?
+
+        switch type {
+        case .to:
+            calculatedHeight = calculatedRecipientsToPartHeight
+        case .cc:
+            calculatedHeight = calculatedRecipientsCcPartHeight
+        case .bcc:
+            calculatedHeight = calculatedRecipientsBccPartHeight
+        }
 
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.RecipientInput.init),
-            height: calculatedRecipientsPartHeight ?? Constants.minRecipientsPartHeight,
+            height: calculatedHeight ?? Constants.minRecipientsPartHeight,
             textFieldInput: RecipientEmailsCellNode.TextFieldInput(
-                placeholder: recipientType.inputPlaceholder.attributed(
+                placeholder: type.inputPlaceholder.attributed(
                     .regular(17),
                     color: .lightGray
                 )
             )) { [weak self] action in
-                self?.handle(textFieldAction: action, at: indexPath, for: recipientType)
+                self?.handle(textFieldAction: action, for: type)
             }
             .onLayoutHeightChanged { [weak self] layoutHeight in
-                guard self?.calculatedRecipientsPartHeight != layoutHeight, layoutHeight > 0 else {
+                // TODO: Improve
+                guard let self = self else { return }
+                let previousHeight: CGFloat?
+
+                switch type {
+                case .to:
+                    previousHeight = self.calculatedRecipientsToPartHeight
+                case .cc:
+                    previousHeight = self.calculatedRecipientsCcPartHeight
+                case .bcc:
+                    previousHeight = self.calculatedRecipientsBccPartHeight
+                }
+
+                guard previousHeight != layoutHeight, layoutHeight > 0 else {
                     return
                 }
-                self?.calculatedRecipientsPartHeight = layoutHeight
+
+                switch type {
+                case .to:
+                    self.calculatedRecipientsToPartHeight = layoutHeight
+                case .cc:
+                    self.calculatedRecipientsCcPartHeight = layoutHeight
+                case .bcc:
+                    self.calculatedRecipientsBccPartHeight = layoutHeight
+                }
             }
             .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
                 switch action {
                 case let .imageTap(indexPath):
-                    self?.handleRecipientAction(with: indexPath)
+                    self?.handleRecipientAction(with: indexPath, type: type)
                 case let .select(indexPath):
-                    self?.handleRecipientSelection(with: indexPath)
+                    self?.handleRecipientSelection(with: indexPath, type: type)
                 }
             }
     }
 
-    private func recipientInput(at indexPath: IndexPath) -> ASCellNode {
-        let recipientType = RecipientType.allCases[indexPath.section]
-
-        return TextFieldCellNode(
+    private func recipientInput(type: RecipientType) -> ASCellNode {
+        return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
-                with: recipientType.inputPlaceholder,
+                with: type.inputPlaceholder,
                 keyboardType: .emailAddress,
-                accessibilityIdentifier: "aid-recipient-text-field-\(recipientType.rawValue)"
-            )
-        ) { [weak self] action in
-            self?.handle(textFieldAction: action, at: indexPath, for: recipientType)
-        }
-        .onShouldReturn { textField -> Bool in
-            textField.resignFirstResponder()
+                accessibilityIdentifier: "aid-recipient-text-field-\(type.rawValue)"
+            ),
+            action: { [weak self] action in
+                self?.handle(textFieldAction: action, for: type)
+            },
+            buttonAction: type == .to && !contextToSend.hasCcOrBccRecipients ? { [weak self] in
+                guard type == .to else { return }
+                self?.toggleRecipientsList()
+            } : nil
+        )
+        .onShouldReturn {
+            $0.resignFirstResponder()
             return true
         }
         .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
-            self?.shouldChange(with: textField, and: character, for: recipientType) ?? true
+            self?.shouldChange(with: textField, and: character, for: type) ?? true
         }
         .then {
             $0.isLowercased = true
-            if self.input.isForward || self.input.isIdle {
-                $0.becomeFirstResponder()
-            }
+
+            guard type == .to,
+                  self.input.isForward || self.input.isIdle
+            else { return }
+
+            $0.becomeFirstResponder()
         }
     }
 
@@ -858,8 +916,7 @@ extension ComposeViewController {
         }
     }
 
-    private func handle(textFieldAction: TextFieldActionType, at indexPath: IndexPath, for recipientType: RecipientType) {
-        print("HANDLE TEXTFIELD \(textFieldAction)")
+    private func handle(textFieldAction: TextFieldActionType, for recipientType: RecipientType) {
         switch textFieldAction {
         case let .deleteBackward(textField): handleBackspaceAction(with: textField, for: recipientType)
         case let .didEndEditing(text): handleEndEditingAction(with: text, for: recipientType)
@@ -872,11 +929,12 @@ extension ComposeViewController {
         guard shouldEvaluateRecipientInput,
               let text = text, text.isNotEmpty
         else { return }
-        print("HANDLE EDITING END \(text)")
-        let recipients = contextToSend.recipients(of: recipientType)
-        let recipientsIndexPath = recipientsIndexPath(for: recipientType)
 
-        recipientsTextField(at: recipientsIndexPath)?.reset()
+        let recipients = contextToSend.recipients(of: recipientType)
+        let indexPath = recipientsIndexPath(type: recipientType, part: .list)
+
+        let textField = recipientsTextField(type: recipientType)
+        textField?.reset()
 
         // Set all recipients to idle state
         let idleRecipients: [ComposeMessageRecipient] = recipients.map { recipient in
@@ -899,14 +957,14 @@ extension ComposeViewController {
         } else {
             // add new recipient
             contextToSend.add(recipient: newRecipient)
-            node.reloadRows(at: [recipientsIndexPath], with: .automatic)
+            node.reloadRows(at: [indexPath], with: .automatic)
             evaluate(recipient: newRecipient)
 
             // scroll to the latest recipient
             indexOfRecipient = recipients.endIndex - 1
         }
 
-        let collectionNode = (node.nodeForRow(at: recipientsIndexPath) as? RecipientEmailsCellNode)?.collectionNode
+        let collectionNode = (node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode)?.collectionNode
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             collectionNode?.scrollToItem(
                 at: IndexPath(row: indexOfRecipient, section: 0),
@@ -921,19 +979,14 @@ extension ComposeViewController {
         updateState(with: .main)
     }
 
-    private func recipientsIndexPath(for recipientType: RecipientType) -> IndexPath {
-        switch recipientType {
-        case .to:
-            return [Section.to.rawValue, 0]
-        case .cc:
-            return [Section.cc.rawValue, 0]
-        case .bcc:
-            return [Section.bcc.rawValue, 0]
-        }
+    private func recipientsIndexPath(type: RecipientType, part: RecipientPart) -> IndexPath {
+        let section = Section.recipientsSection(type: type)
+        return IndexPath(row: part.rawValue, section: section.rawValue)
     }
 
-    private func recipientsTextField(at indexPath: IndexPath) -> TextFieldNode? {
-        (node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode)?.textField
+    private func recipientsTextField(type: RecipientType) -> TextFieldNode? {
+        let indexPath = recipientsIndexPath(type: type, part: .input)
+        return (node.nodeForRow(at: indexPath) as? RecipientEmailTextFieldNode)?.textField
     }
 
     private func handleBackspaceAction(with textField: UITextField, for recipientType: RecipientType) {
@@ -941,15 +994,16 @@ extension ComposeViewController {
 
         var recipients = contextToSend.recipients(of: recipientType)
 
-        let recipientsIndexPath = recipientsIndexPath(for: recipientType)
+        let indexPath = recipientsIndexPath(type: recipientType, part: .input)
         let selectedRecipients = recipients.filter { $0.state.isSelected }
+        let recipientsSection = Section.recipientsSection(type: recipientType)
 
         guard selectedRecipients.isEmpty else {
             let notSelectedRecipients = recipients.filter { !$0.state.isSelected }
             contextToSend.set(recipients: notSelectedRecipients, for: recipientType)
-            // TODO:
+
             node.reloadSections(
-                [Section.to.rawValue, Section.password.rawValue],
+                [recipientsSection.rawValue, Section.password.rawValue],
                 with: .automatic
             )
 
@@ -961,7 +1015,7 @@ extension ComposeViewController {
             lastRecipient.state = self.decorator.recipientSelectedState
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
-            node.reloadRows(at: [recipientsIndexPath], with: .fade)
+            node.reloadRows(at: [indexPath], with: .fade)
             node.reloadSections([Section.password.rawValue], with: .automatic)
         } else {
             // dismiss keyboard if no recipients left
@@ -976,6 +1030,12 @@ extension ComposeViewController {
 
     private func handleDidBeginEditing() {
         node.view.keyboardDismissMode = .none
+    }
+
+    private func toggleRecipientsList() {
+        let sections: [Section] = [.cc, .bcc]
+        selectedRecipientType = selectedRecipientType == .to ? nil : .to
+        node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
     }
 }
 
@@ -1100,33 +1160,33 @@ extension ComposeViewController {
 //        node.reloadRows(at: [recipientsIndexPath], with: .automatic)
     }
 
-    private func handleRecipientSelection(with indexPath: IndexPath) {
-        guard var recipient = contextToSend.recipient(at: indexPath) else { return }
+    private func handleRecipientSelection(with indexPath: IndexPath, type: RecipientType) {
+        guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
-        // TODO
-//        if recipient.state.isSelected {
-//            recipient.state = decorator.recipientIdleState
-//            contextToSend.recipients[indexPath.row].state = decorator.recipientIdleState
-//            evaluate(recipient: recipient)
-//        } else {
-//            contextToSend.recipients[indexPath.row].state = decorator.recipientSelectedState
-//        }
+        let indexPath = recipientsIndexPath(type: type, part: .list)
+        let isSelected = recipient.state.isSelected
+        let state = isSelected ? decorator.recipientIdleState : decorator.recipientSelectedState
+        contextToSend.update(recipient: recipient.email, type: type, state: state)
 
-//        node.reloadRows(at: [recipientsIndexPath], with: .automatic)
+        if isSelected {
+            evaluate(recipient: recipient)
+        }
 
-        // TODO
-//        if !(textField?.isFirstResponder() ?? true) {
-//            textField?.becomeFirstResponder()
-//        }
-//        textField?.reset()
+        node.reloadRows(at: [indexPath], with: .automatic)
+
+        let textField = recipientsTextField(type: type)
+        if !(textField?.isFirstResponder() ?? true) {
+            textField?.becomeFirstResponder()
+        }
+        textField?.reset()
     }
 
-    private func handleRecipientAction(with indexPath: IndexPath) {
-        guard let recipient = contextToSend.recipient(at: indexPath) else { return }
+    private func handleRecipientAction(with indexPath: IndexPath, type: RecipientType) {
+        guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
         switch recipient.state {
         case .idle:
-            handleRecipientSelection(with: indexPath)
+            handleRecipientSelection(with: indexPath, type: type)
         case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .selected:
             break
         case let .error(_, isRetryError):
@@ -1138,9 +1198,9 @@ extension ComposeViewController {
                 )
                 evaluate(recipient: recipient)
             } else {
-                contextToSend.removeRecipient(at: indexPath)
-                // TODO
-                // node.reloadRows(at: [recipientsIndexPath], with: .fade)
+                let listIndexPath = recipientsIndexPath(type: type, part: .list)
+                contextToSend.remove(recipient: recipient.email, type: type)
+                node.reloadRows(at: [listIndexPath], with: .automatic)
             }
         }
     }
@@ -1201,7 +1261,6 @@ extension ComposeViewController {
     private func updateState(with newState: State) {
         state = newState
 
-        print("UPDATE STATE \(newState)")
         switch state {
         case .main:
             node.reloadData()
@@ -1209,7 +1268,7 @@ extension ComposeViewController {
             // TODO: filter sections
             let sections: [Section]
             if let type = selectedRecipientType {
-                let selectedRecipientSection = Section.recipientsSection(for: type)
+                let selectedRecipientSection = Section.recipientsSection(type: type)
                 sections = Section.allCases.filter { $0 != selectedRecipientSection }
             } else {
                 sections = Section.allCases

@@ -24,8 +24,6 @@ final public class RecipientEmailsCellNode: CellNode {
 
     private var onAction: RecipientTap?
 
-    private var textFieldAction: TextFieldAction?
-
     private lazy var layout: LeftAlignedCollectionViewFlowLayout = {
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -35,7 +33,14 @@ final public class RecipientEmailsCellNode: CellNode {
         return layout
     }()
 
-    public let textField: TextFieldNode
+    private lazy var toggleButton: ASButtonNode = {
+        let configuration = UIImage.SymbolConfiguration(pointSize: 16, weight: .light)
+        let image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
+        let button = ASButtonNode()
+        button.setImage(image, for: .normal)
+        button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
+        return button
+    }()
 
     public lazy var collectionNode: ASCollectionNode = {
         let node = ASCollectionNode(collectionViewLayout: layout)
@@ -49,15 +54,6 @@ final public class RecipientEmailsCellNode: CellNode {
     public init(recipients: [RecipientInput], height: CGFloat, textFieldInput: TextFieldInput, textFieldAction: TextFieldAction?) {
         self.recipients = recipients
         self.collectionLayoutHeight = height
-        self.textFieldAction = textFieldAction
-        self.textField = TextFieldNode(
-            preferredHeight: 40, // input.height,
-            action: textFieldAction,
-            accessibilityIdentifier: "" // input.accessibilityIdentifier,
-        )
-        self.textField.isLowercased = true
-        self.textField.keyboardType = .emailAddress
-        self.textField.attributedPlaceholderText = textFieldInput.placeholder
         super.init()
         collectionNode.dataSource = self
         collectionNode.delegate = self
@@ -70,24 +66,12 @@ final public class RecipientEmailsCellNode: CellNode {
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        textField.style.preferredSize = CGSize(
-            width: 200, // input.width ?? (constrainedSize.max.width - input.insets.width),
-            height: 44 // input.height
-        )
-
-//        guard recipients.isNotEmpty else {
-//            return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
-//        }
-
         collectionNode.style.preferredSize.height = recipients.isEmpty ? 0 : collectionLayoutHeight
         collectionNode.style.preferredSize.width = constrainedSize.max.width
 
-        let stack = ASStackLayoutSpec.vertical()
-        stack.children = recipients.isEmpty ? [textField] : [collectionNode, textField]
-
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0),
-            child: stack
+            insets: .zero, // TODO
+            child: collectionNode
         )
     }
 }

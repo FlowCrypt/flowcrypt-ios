@@ -43,6 +43,10 @@ extension ComposeMessageContext {
         messagePassword != nil
     }
 
+    var hasCcOrBccRecipients: Bool {
+        recipients.first(where: { $0.type == .cc || $0.type == .bcc }) != nil
+    }
+
     var hasRecipientsWithoutPubKey: Bool {
         recipients.first { $0.keyState == .empty } != nil
     }
@@ -59,19 +63,8 @@ extension ComposeMessageContext {
         recipients(of: type).map(\.email)
     }
 
-    func recipient(at indexPath: IndexPath) -> ComposeMessageRecipient? {
-        // TODO
-        return nil
-//        guard let recipientType = RecipientType(rawValue: indexPath.section) else { return nil }
-//
-//        switch recipientType {
-//        case .to:
-//            return to[indexPath.row]
-//        case .cc:
-//            return cc[indexPath.row]
-//        case .bcc:
-//            return bcc[indexPath.row]
-//        }
+    func recipient(at index: Int, type: RecipientType) -> ComposeMessageRecipient? {
+        recipients(of: type)[safe: index]
     }
 
     mutating func add(recipient: ComposeMessageRecipient) {
@@ -79,15 +72,13 @@ extension ComposeMessageContext {
     }
 
     mutating func set(recipients: [ComposeMessageRecipient], for recipientType: RecipientType) {
-        // TODO:
-//        switch recipientType {
-//        case .to:
-//            self.recipients[.to] = recipients
-//        case .cc:
-//            self.recipients[.cc] = recipients
-//        case .bcc:
-//            self.recipients[.bcc] = recipients
-//        }
+        self.recipients.removeAll(where: { $0.type == recipientType })
+        self.recipients += recipients
+    }
+
+    mutating func update(recipient: String, type: RecipientType, state: RecipientState) {
+        guard let index = recipients.firstIndex(where: { $0.email == recipient && $0.type == type }) else { return }
+        recipients[index].state = state
     }
 
     mutating func updateRecipient(email: String, state: RecipientState, keyState: PubKeyState?) {
@@ -98,45 +89,17 @@ extension ComposeMessageContext {
         }
     }
 
-    mutating func updateRecipient(at indexPath: IndexPath, state: RecipientState, keyState: PubKeyState?) {
-        // TODO
-//        guard let recipientType = RecipientType(rawValue: indexPath.section) else { return }
-//
-//        switch recipientType {
-//        case .to:
-//            to[indexPath.row].state = state
-//            to[indexPath.row].keyState = keyState
-//        case .cc:
-//            cc[indexPath.row].state = state
-//            cc[indexPath.row].keyState = keyState
-//        case .bcc:
-//            bcc[indexPath.row].state = state
-//            bcc[indexPath.row].keyState = keyState
-//        }
+    mutating func remove(recipient: String, type: RecipientType) {
+        recipients = recipients.filter { $0.email != recipient && $0.type != type }
     }
 
-    mutating func removeRecipient(at indexPath: IndexPath) {
-        // TODO
-//        guard let recipientType = RecipientType(rawValue: indexPath.section) else { return }
-//
-//        switch recipientType {
-//        case .to:
-//            to.remove(at: indexPath.row)
-//        case .cc:
-//            cc.remove(at: indexPath.row)
-//        case .bcc:
-//            bcc.remove(at: indexPath.row)
-//        }
-    }
-
-    mutating func updateRecipient(email: String, state: RecipientState, keyState: PubKeyState) {
-        // TODO
-//        RecipientType.allCases.forEach { type in
-//            guard let index = recipients[type]?.firstIndex(where: { $0.email == email })
-//            else { return }
+    mutating func update(recipient: String, state: RecipientState, keyState: PubKeyState?) {
+        RecipientType.allCases.forEach { type in
+            // TODO:
+//            guard let index = recipients[type]?.firstIndex(where: { $0.email == recipient }) else { return }
 //
 //            recipients[type]?[index].state = state
 //            recipients[type]?[index].keyState = keyState
-//        }
+        }
     }
 }

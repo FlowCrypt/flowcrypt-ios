@@ -71,6 +71,7 @@
 		514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */; };
 		514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */; };
 		5152F196277E5AED00BE8A5B /* MessageUploadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */; };
+		5165ABCC27B526D100CCC379 /* RecipientEmailTextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */; };
 		51689F3F2795C1D90050A9B8 /* ProcessedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */; };
 		5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5168FB0A274F94D300131072 /* MessageAttachment.swift */; };
 		51775C32270B01C200D7C944 /* PrvKeyInfoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */; };
@@ -510,6 +511,7 @@
 		514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageRecipient.swift; sourceTree = "<group>"; };
 		514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeMessageService+State.swift"; sourceTree = "<group>"; };
 		5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageUploadDetails.swift; sourceTree = "<group>"; };
+		5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailTextFieldNode.swift; sourceTree = "<group>"; };
 		51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessedMessage.swift; sourceTree = "<group>"; };
 		5168FB0A274F94D300131072 /* MessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAttachment.swift; sourceTree = "<group>"; };
 		51775C31270B01C200D7C944 /* PrvKeyInfoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrvKeyInfoTests.swift; sourceTree = "<group>"; };
@@ -2047,6 +2049,7 @@
 				D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */,
 				D26F132624509EB6009175BA /* RecipientEmailsCellNodeInput.swift */,
 				D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */,
+				5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */,
 				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
 				9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */,
 				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
@@ -2825,6 +2828,7 @@
 				D2A9CA38242618DF00E1D898 /* LinkButtonNode.swift in Sources */,
 				D24FAFA42520BF9100BF46C5 /* CheckBoxCircleView.swift in Sources */,
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
+				5165ABCC27B526D100CCC379 /* RecipientEmailTextFieldNode.swift in Sources */,
 				D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */,
 				511D07E12769FBBA0050417B /* MessagePasswordCellNode.swift in Sources */,
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
