@@ -91,18 +91,19 @@ export const getKeyExpirationTimeForCapabilities = async (
       || (await key.getEncryptionKey(keyId, null, userId).catch(() => {}));
     if (!encryptionKey) return null;
     console.log(encryptionKey);
-    const encryptionKeyExpiry = encryptionKey instanceof Key
-      ? (await encryptionKey.getExpirationTime(userId))!
-      : getSubkeyExpirationTime(encryptionKey) ;
+    // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
+    const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
+      ? getSubkeyExpirationTime(encryptionKey)
+      : (await encryptionKey.getExpirationTime(userId))!;
     if (encryptionKeyExpiry < expiry) expiry = encryptionKeyExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
     const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => {}))
       || (await key.getSigningKey(keyId, null, userId).catch(() => {}));
     if (!signatureKey) return null;
-    const signatureKeyExpiry = signatureKey instanceof Key
-      ? (await signatureKey.getExpirationTime(userId))!
-      : await getSubkeyExpirationTime(signatureKey);
+    const signatureKeyExpiry = 'bindingSignatures' in signatureKey
+      ? await getSubkeyExpirationTime(signatureKey)
+      : (await signatureKey.getExpirationTime(userId))!;
     if (signatureKeyExpiry < expiry) expiry = signatureKeyExpiry;
   }
   return expiry;
