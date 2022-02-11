@@ -90,7 +90,6 @@ export const getKeyExpirationTimeForCapabilities = async (
     const encryptionKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => {}))
       || (await key.getEncryptionKey(keyId, null, userId).catch(() => {}));
     if (!encryptionKey) return null;
-    console.log(encryptionKey);
     // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
     const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
       ? getSubkeyExpirationTime(encryptionKey)
@@ -101,6 +100,7 @@ export const getKeyExpirationTimeForCapabilities = async (
     const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => {}))
       || (await key.getSigningKey(keyId, null, userId).catch(() => {}));
     if (!signatureKey) return null;
+    // could be the same as above, so checking for property instead of using "instanceof"
     const signatureKeyExpiry = 'bindingSignatures' in signatureKey
       ? await getSubkeyExpirationTime(signatureKey)
       : (await signatureKey.getExpirationTime(userId))!;
