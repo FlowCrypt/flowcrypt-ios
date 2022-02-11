@@ -5,6 +5,7 @@
 import { Buf } from '../core/buf';
 import { randomBytes } from 'crypto';
 import { ConvertStringOptions } from 'encoding-japanese';
+import { Key, KeyID, UserID } from 'openpgp';
 
 declare const dereq_encoding_japanese : {
   convert: (data: Uint8Array, options: ConvertStringOptions) => string;
@@ -52,4 +53,33 @@ export const str_to_hex = (str: string): string => {
     r.push("" + h);
   }
   return r.join('');
+}
+
+export const getExpirationTimeForCapability = async (
+  key: Key, capabilities: string, keyId?: KeyID | undefined, userId?: UserID | undefined)
+    : Promise<Date | null | typeof Infinity> => {
+  const primaryUser = await key.getPrimaryUser(undefined, userId, undefined);
+  if (!primaryUser) throw new Error('Could not find primary user');
+  const keyExpiry = await key.getExpirationTime(userId);
+  if (!keyExpiry) return Infinity;
+  let sigExpiry: Date | number | null = null;
+  for (const exp of primaryUser.user.selfCertifications.map(selfCert => selfCert.getExpirationTime())) {
+    if (sigExpiry == null || exp < sigExpiry!) sigExpiry = exp;
+  }
+  let expiry = sigExpiry == null || keyExpiry < sigExpiry! ? keyExpiry : sigExpiry;
+  if (capabilities === 'encrypt' || capabilities === 'encrypt_sign') {
+    const encryptKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId))
+      || (await key.getEncryptionKey(keyId, null, userId));
+    if (!encryptKey) return null;
+    const encryptExpiry = await encryptKey.getExpirationTime(userId);
+    if (encryptExpiry < expiry) expiry = encryptExpiry;
+  }
+  if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
+    const signKey = (await key.getSigningKey(keyId, new Date(expiry), userId))
+      || (await key.getSigningKey(keyId, null, userId));
+    if (!signKey) return null;
+    const signExpiry = await signKey.getExpirationTime(key.keyPacket);
+    if (signExpiry < expiry) expiry = signExpiry;
+  }
+  return expiry;
 }
