@@ -81,28 +81,29 @@ export const getKeyExpirationTimeForCapabilities = async (
   const primaryUser = await key.getPrimaryUser(undefined, userId, undefined);
   if (!primaryUser) throw new Error('Could not find primary user');
   const keyExpiry = await key.getExpirationTime(userId);
-  if (!keyExpiry) return Infinity;
+  if (!keyExpiry) return null;
   const selfCertCreated = maxDate(primaryUser.user.selfCertifications.map(selfCert => selfCert.created));
   const selfCert = primaryUser.user.selfCertifications.filter(selfCert => selfCert.created === selfCertCreated)[0];
   const sigExpiry = selfCert.getExpirationTime();
   let expiry = keyExpiry < sigExpiry ? keyExpiry : sigExpiry;
   if (capabilities === 'encrypt' || capabilities === 'encrypt_sign') {
-    const encryptionKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId))
-      || (await key.getEncryptionKey(keyId, null, userId));
+    const encryptionKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => {}))
+      || (await key.getEncryptionKey(keyId, null, userId).catch(() => {}));
     if (!encryptionKey) return null;
-    const encryptExpiry = encryptionKey instanceof Key
+    console.log(encryptionKey);
+    const encryptionKeyExpiry = encryptionKey instanceof Key
       ? (await encryptionKey.getExpirationTime(userId))!
       : getSubkeyExpirationTime(encryptionKey) ;
-    if (encryptExpiry < expiry) expiry = encryptExpiry;
+    if (encryptionKeyExpiry < expiry) expiry = encryptionKeyExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
-    const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId))
-      || (await key.getSigningKey(keyId, null, userId));
+    const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => {}))
+      || (await key.getSigningKey(keyId, null, userId).catch(() => {}));
     if (!signatureKey) return null;
-    const signExpiry = signatureKey instanceof Key
+    const signatureKeyExpiry = signatureKey instanceof Key
       ? (await signatureKey.getExpirationTime(userId))!
       : await getSubkeyExpirationTime(signatureKey);
-    if (signExpiry < expiry) expiry = signExpiry;
+    if (signatureKeyExpiry < expiry) expiry = signatureKeyExpiry;
   }
   return expiry;
 }
