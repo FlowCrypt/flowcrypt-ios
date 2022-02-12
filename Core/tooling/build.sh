@@ -13,7 +13,6 @@ if [ -f ./node_modules/openpgp/dist/openpgp.js ]; then rm -f ./node_modules/open
 extra_exports="
 // -----BEGIN ADDED BY FLOWCRYPT----
 exports.readToEnd = readToEnd;
-exports.util = util;
 // -----END ADDED BY FLOWCRYPT-----
 "
 dist_js=./node_modules/openpgp/dist/node/openpgp.js
