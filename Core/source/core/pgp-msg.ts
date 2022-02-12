@@ -275,6 +275,8 @@ export class PgpMsg {
       const publicKeys = await readKeys({armoredKeys: armoredPubkey});
       encryptionKeys.push(...publicKeys);
     }
+    // Have to keep this "if" here because it doesn't compile if we use
+    // format: armor ? 'armored' : 'binary'
     if (armor) {
       return await encrypt({
         format: 'armored',
