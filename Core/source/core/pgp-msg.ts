@@ -14,7 +14,8 @@ import { FcAttLinkData } from './att';
 import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
-import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, readToEnd, sign, VerificationResult } from 'openpgp';
+import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
+import { readToEnd } from '@openpgp/web-stream-tools';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 
 export namespace PgpMsgMethod {
