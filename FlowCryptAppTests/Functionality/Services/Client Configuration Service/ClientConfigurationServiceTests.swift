@@ -29,13 +29,13 @@ final class ClientConfigurationServiceTests: XCTestCase {
         )
     }
 
-    func testGetSavedOrganisationalRulesForCurrentUser() {
+    func testGetSavedOrganisationalRulesForCurrentUser() throws {
         let expectedConfiguration = RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")
         localClientConfigurationProvider.fetchCall = {
             expectedConfiguration
         }
 
-        let clientConfiguration = sut.getSaved(for: user.email)
+        let clientConfiguration = try sut.getSaved(for: user.email)
         XCTAssert(localClientConfigurationProvider.fetchCount == 1)
         XCTAssert(localClientConfigurationProvider.fetchInvoked == true)
         XCTAssert(clientConfiguration.raw == expectedConfiguration)

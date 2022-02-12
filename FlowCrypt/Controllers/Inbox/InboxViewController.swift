@@ -331,9 +331,13 @@ extension InboxViewController {
     }
 
     private func btnComposeTap() {
-        TapTicFeedback.generate(.light)
-        let composeVc = ComposeViewController(appContext: appContext)
-        navigationController?.pushViewController(composeVc, animated: true)
+        do {
+            TapTicFeedback.generate(.light)
+            let composeVc = try ComposeViewController(appContext: appContext)
+            navigationController?.pushViewController(composeVc, animated: true)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 }
 

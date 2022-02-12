@@ -48,7 +48,7 @@ class AppContext {
         let keyService = KeyService(
             storage: encryptedStorage,
             passPhraseService: passPhraseService,
-            currentUserEmail: { encryptedStorage.activeUser?.email }
+            currentUserEmail: { try? encryptedStorage.activeUser?.email }
         )
         let clientConfigurationService = ClientConfigurationService(
             local: LocalClientConfiguration(
@@ -58,10 +58,10 @@ class AppContext {
         return AppContext(
             encryptedStorage: encryptedStorage,
             session: nil, // will be set later. But would be nice to already set here, if available
-            userAccountService: SessionService(
+            userAccountService: try SessionService(
                 encryptedStorage: encryptedStorage,
                 googleService: GoogleUserService(
-                    currentUserEmail: encryptedStorage.activeUser?.email,
+                    currentUserEmail: try encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
             ),
@@ -98,7 +98,7 @@ class AppContext {
     @MainActor
     func getOptionalMailProvider() -> MailProvider? {
         guard
-            let currentUser = encryptedStorage.activeUser,
+            let currentUser = try? encryptedStorage.activeUser,
             let currentAuthType = currentUser.authType
         else { return nil }
 

@@ -38,7 +38,7 @@ final class FoldersService: FoldersServiceType {
         if isForceReload {
             return try await getAndSaveFolders(for: user)
         }
-        let localFolders = self.localFoldersProvider.fetchFolders(for: user.email)
+        let localFolders = try localFoldersProvider.fetchFolders(for: user.email)
         if localFolders.isEmpty {
             return try await getAndSaveFolders(for: user)
         } else {

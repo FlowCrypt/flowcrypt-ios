@@ -12,7 +12,7 @@ import FlowCryptCommon
 
 protocol LocalContactsProviderType: PublicKeyProvider {
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys?
-    func searchEmails(query: String) -> [String]
+    func searchEmails(query: String) throws -> [String]
     func save(recipient: RecipientWithSortedPubKeys) throws
     func remove(recipient: RecipientWithSortedPubKeys) throws
     func updateKeys(for recipient: RecipientWithSortedPubKeys) throws
@@ -26,7 +26,9 @@ final class LocalContactsProvider {
     private lazy var logger = Logger.nested(Self.self)
 
     private var storage: Realm {
-        encryptedStorage.storage
+        get throws {
+            try encryptedStorage.storage
+        }
     }
 
     init(
@@ -39,8 +41,8 @@ final class LocalContactsProvider {
 }
 
 extension LocalContactsProvider: LocalContactsProviderType {
-    func retrievePubKeys(for email: String) -> [String] {
-        guard let object = find(with: email) else { return [] }
+    func retrievePubKeys(for email: String) throws -> [String] {
+        guard let object = try find(with: email) else { return [] }
 
         do {
             try storage.write {
@@ -58,17 +60,18 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func remove(recipient: RecipientWithSortedPubKeys) throws {
-        guard let object = find(with: recipient.email) else {
+        guard let object = try find(with: recipient.email) else {
             return
         }
 
+        let storage = try storage
         try storage.write {
             storage.delete(object)
         }
     }
 
     func updateKeys(for recipient: RecipientWithSortedPubKeys) throws {
-        guard let recipientObject = find(with: recipient.email) else {
+        guard let recipientObject = try find(with: recipient.email) else {
             try save(RecipientRealmObject(recipient))
             return
         }
@@ -84,18 +87,18 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        guard let recipient = find(with: email).map(Recipient.init) else { return nil }
+        guard let recipient = try find(with: email).map(Recipient.init) else { return nil }
         return try await parseRecipient(from: recipient)
     }
 
-    func searchEmails(query: String) -> [String] {
-        storage.objects(RecipientRealmObject.self)
+    func searchEmails(query: String) throws -> [String] {
+        try storage.objects(RecipientRealmObject.self)
             .filter("email contains[c] %@", query)
             .map(\.email)
     }
 
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] {
-        let objects: [Recipient] = storage.objects(RecipientRealmObject.self)
+        let objects: [Recipient] = try storage.objects(RecipientRealmObject.self)
             .map(Recipient.init)
         var recipients: [RecipientWithSortedPubKeys] = []
         for object in objects {
@@ -105,6 +108,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func removePubKey(with fingerprint: String, for email: String) throws {
+        let storage = try storage
+
         try find(with: email)?
             .pubKeys
             .filter { $0.primaryFingerprint == fingerprint }
@@ -117,11 +122,12 @@ extension LocalContactsProvider: LocalContactsProviderType {
 }
 
 extension LocalContactsProvider {
-    private func find(with email: String) -> RecipientRealmObject? {
-        storage.object(ofType: RecipientRealmObject.self, forPrimaryKey: email)
+    private func find(with email: String) throws -> RecipientRealmObject? {
+        try storage.object(ofType: RecipientRealmObject.self, forPrimaryKey: email)
     }
 
     private func save(_ object: RecipientRealmObject) throws {
+        let storage = try storage
         try storage.write {
             storage.add(object, update: .modified)
         }
