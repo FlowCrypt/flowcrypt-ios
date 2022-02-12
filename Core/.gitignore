@@ -2,4 +2,4 @@
 build/*
 tmp/*
 node_modules
-./test.sh
+/test.sh
