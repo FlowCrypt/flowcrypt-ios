@@ -33,11 +33,11 @@ export const iso2022jpToUtf = (content: Buf) => {
 }
 
 /**
- * Create hex string from a binary
- * @param {String} str String to convert
- * @returns {String} String containing the hexadecimal values
- * Ported from openpgp v4.10.10, original source can be obtained here:
- * https://github.com/openpgpjs/openpgpjs/releases/tag/v4.10.10
+ * Create hex string from a binary.
+ * @param {String} str A string to convert.
+ * @returns {String} String containing the hexadecimal values.
+ * @note This method, brought from OpenPGP.js project is, unlike the rest of the codebase,
+ *       licensed under LGPL. See original license file: https://github.com/openpgpjs/openpgpjs/blob/main/LICENSE
  */
 export const str_to_hex = (str: string): string => {
   if (str === null) {
