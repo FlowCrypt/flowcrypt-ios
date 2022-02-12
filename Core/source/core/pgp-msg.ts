@@ -270,19 +270,17 @@ export class PgpMsg {
       throw new Error('no-pubkeys-no-challenge');
     }
     const message = await createMessage({binary: data, filename, date});
+    const encryptionKeys = [];
+    for (const armoredPubkey of pubkeys) {
+      const publicKeys = await readKeys({armoredKeys: armoredPubkey});
+      encryptionKeys.push(...publicKeys);
+    }
     if (armor) {
       return await encrypt({
         format: 'armored',
         message,
         date,
-        encryptionKeys: await (async () => {
-          const encryptionKeys = [];
-          for (const armoredPubkey of pubkeys) {
-            const publicKeys = await readKeys({armoredKeys: armoredPubkey});
-            encryptionKeys.push(...publicKeys);
-          }
-          return encryptionKeys;
-        })(),
+        encryptionKeys,
         passwords: pwd ? [pwd] : undefined,
         signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
       });
@@ -291,14 +289,7 @@ export class PgpMsg {
         format: 'binary',
         message,
         date,
-        encryptionKeys: await (async () => {
-          const encryptionKeys = [];
-          for (const armoredPubkey of pubkeys) {
-            const publicKeys = await readKeys({armoredKeys: armoredPubkey});
-            encryptionKeys.push(...publicKeys);
-          }
-          return encryptionKeys;
-        })(),
+        encryptionKeys,
         passwords: pwd ? [pwd] : undefined,
         signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
       });
