@@ -11,19 +11,19 @@ import RealmSwift
 import UIKit
 
 protocol EncryptedStorageType {
-    var storage: Realm { get }
+    var storage: Realm { get throws }
 
-    var activeUser: User? { get }
-    func getAllUsers() -> [User]
+    var activeUser: User? { get throws }
+    func getAllUsers() throws -> [User]
     func saveActiveUser(with user: User) throws
-    func doesAnyKeypairExist(for email: String) -> Bool
+    func doesAnyKeypairExist(for email: String) throws -> Bool
 
     func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) throws
-    func getKeypairs(by email: String) -> [Keypair]
+    func getKeypairs(by email: String) throws -> [Keypair]
 
     func validate() throws
     func reset() throws
-    func cleanup()
+    func cleanup() throws
 }
 
 final class EncryptedStorage: EncryptedStorageType {
@@ -68,13 +68,10 @@ final class EncryptedStorage: EncryptedStorageType {
     private let storageEncryptionKey: Data
 
     var storage: Realm {
-        do {
+        get throws {
             let configuration = try getConfiguration()
             Realm.Configuration.defaultConfiguration = configuration
-            let realm = try Realm(configuration: configuration)
-            return realm
-        } catch {
-            fatalError("failed to initiate realm: \(error)")
+            return try Realm(configuration: configuration)
         }
     }
 
@@ -82,9 +79,9 @@ final class EncryptedStorage: EncryptedStorageType {
         self.storageEncryptionKey = storageEncryptionKey
     }
 
-    private func getDocumentDirectory() -> String {
+    private func getDocumentDirectory() throws -> String {
         guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
-            fatalError("No path direction for .documentDirectory")
+            throw AppErr.general("No path direction for .documentDirectory")
         }
         return documentDirectory
     }
@@ -94,7 +91,7 @@ final class EncryptedStorage: EncryptedStorageType {
             return Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
         }
 
-        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let path = try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
         let latestSchemaVersion = currentSchema.version.dbSchemaVersion
 
         return Realm.Configuration(
@@ -111,11 +108,13 @@ final class EncryptedStorage: EncryptedStorageType {
 // MARK: - LogOut
 extension EncryptedStorage: LogOutHandler {
     func logOutUser(email: String) throws {
+        let storage = try storage
+
         let users = storage.objects(UserRealmObject.self)
 
         // in case there is only one user - just delete storage
         if users.count == 1, users.first?.email == email {
-            destroyEncryptedStorage()
+            try cleanup()
         } else {
             // remove user and keys for this user
             let userToDelete = users
@@ -134,10 +133,6 @@ extension EncryptedStorage: LogOutHandler {
                 storage.delete(userToDelete)
             }
         }
-    }
-
-    private func destroyEncryptedStorage() {
-        cleanup()
     }
 }
 
@@ -168,11 +163,12 @@ extension EncryptedStorage {
 // MARK: - Keys
 extension EncryptedStorage {
     func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) throws {
-        guard let user = getUserObject(for: email) else {
+        guard let user = try getUserObject(for: email) else {
             logger.logError("Can't find user with given email to update keys. User should be already saved")
             return
         }
 
+        let storage = try storage
         try storage.write {
             for key in keyDetails {
                 let object = try KeypairRealmObject(key, passphrase: passPhrase, source: source, user: user)
@@ -181,27 +177,27 @@ extension EncryptedStorage {
         }
     }
 
-    func getKeypairs(by email: String) -> [Keypair] {
-        return storage.objects(KeypairRealmObject.self).where({
+    func getKeypairs(by email: String) throws -> [Keypair] {
+        return try storage.objects(KeypairRealmObject.self).where({
             $0.account == email
         }).map(Keypair.init)
     }
 
-    func doesAnyKeypairExist(for email: String) -> Bool {
-        let keys = storage.objects(KeypairRealmObject.self).where {
+    func doesAnyKeypairExist(for email: String) throws -> Bool {
+        let keys = try storage.objects(KeypairRealmObject.self).where {
             $0.account == email
         }
         return !keys.isEmpty
     }
 
-    private func getUserObject(for email: String) -> UserRealmObject? {
-        storage.objects(UserRealmObject.self).where {
+    private func getUserObject(for email: String) throws -> UserRealmObject? {
+        try storage.objects(UserRealmObject.self).where {
             $0.email == email
         }.first
     }
 
     private func updateKeys(with primaryFingerprint: String, passphrase: String?) throws {
-        let keys = storage.objects(KeypairRealmObject.self).where {
+        let keys = try storage.objects(KeypairRealmObject.self).where {
             $0.primaryFingerprint == primaryFingerprint
         }
 
@@ -225,8 +221,8 @@ extension EncryptedStorage: PassPhraseStorageType {
         try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
     }
 
-    func getPassPhrases() -> [PassPhrase] {
-        return storage.objects(KeypairRealmObject.self)
+    func getPassPhrases() throws -> [PassPhrase] {
+        return try storage.objects(KeypairRealmObject.self)
             .compactMap(PassPhrase.init)
     }
 }
@@ -234,17 +230,21 @@ extension EncryptedStorage: PassPhraseStorageType {
 // MARK: - User
 extension EncryptedStorage {
     var activeUser: User? {
-        let users = storage.objects(UserRealmObject.self).where {
-            $0.isActive == true
+        get throws {
+            let users = try storage.objects(UserRealmObject.self).where {
+                $0.isActive == true
+            }
+            return users.first.flatMap(User.init)
         }
-        return users.first.flatMap(User.init)
     }
 
-    func getAllUsers() -> [User] {
-        storage.objects(UserRealmObject.self).map(User.init)
+    func getAllUsers() throws -> [User] {
+        try storage.objects(UserRealmObject.self).map(User.init)
     }
 
     func saveActiveUser(with user: User) throws {
+        let storage = try storage
+
         try storage.write {
             // Mark all users as inactive
             storage.objects(UserRealmObject.self).forEach {
@@ -266,17 +266,15 @@ extension EncryptedStorage {
     }
 
     func reset() throws {
-        let path = getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let path = try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
         try FileManager.default.removeItem(atPath: path)
     }
 
-    func cleanup() {
-        do {
-            try storage.write {
-                storage.deleteAll()
-            }
-        } catch {
-            assertionFailure("Error while deleting the objects from the storage \(error)")
+    func cleanup() throws {
+        let storage = try storage
+
+        try storage.write {
+            storage.deleteAll()
         }
     }
 }

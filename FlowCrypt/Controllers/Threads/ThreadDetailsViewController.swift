@@ -50,9 +50,9 @@ final class ThreadDetailsViewController: TableNodeViewController {
         messageService: MessageService? = nil,
         thread: MessageThread,
         completion: @escaping MessageActionCompletion
-    ) {
+    ) throws {
         self.appContext = appContext
-        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.messageService = messageService ?? MessageService(
             contactsService: ContactsService(
                 localContactsProvider: LocalContactsProvider(
@@ -259,10 +259,14 @@ extension ThreadDetailsViewController {
         }()
 
         let composeInput = ComposeMessageInput(type: composeType)
-        navigationController?.pushViewController(
-            ComposeViewController(appContext: appContext, input: composeInput),
-            animated: true
-        )
+        do {
+            navigationController?.pushViewController(
+                try ComposeViewController(appContext: appContext, input: composeInput),
+                animated: true
+            )
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 
     private func markAsRead(at index: Int) {

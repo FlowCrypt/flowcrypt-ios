@@ -11,7 +11,7 @@ import Foundation
 
 protocol ClientConfigurationServiceType {
     func fetch(for user: User) async throws -> ClientConfiguration
-    func getSaved(for user: String) -> ClientConfiguration
+    func getSaved(for user: String) throws -> ClientConfiguration
 }
 
 final class ClientConfigurationService {
@@ -38,15 +38,15 @@ extension ClientConfigurationService: ClientConfigurationServiceType {
             try local.save(for: user, raw: raw, fesUrl: fesUrl)
             return ClientConfiguration(raw: raw)
         } catch {
-            guard let raw = local.load(for: user.email) else {
+            guard let raw = try local.load(for: user.email) else {
                 throw error
             }
             return ClientConfiguration(raw: raw)
         }
     }
 
-    func getSaved(for userEmail: String) -> ClientConfiguration {
-        guard let raw = self.local.load(for: userEmail) else {
+    func getSaved(for userEmail: String) throws -> ClientConfiguration {
+        guard let raw = try local.load(for: userEmail) else {
             // todo - throw instead
             fatalError("There should not be a user without OrganisationalRules")
         }

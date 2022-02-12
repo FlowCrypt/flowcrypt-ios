@@ -63,11 +63,11 @@ final class SetupInitialViewController: TableNodeViewController {
         appContext: AppContextWithUser,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         emailKeyManagerApi: EmailKeyManagerApiType? = nil
-    ) {
+    ) throws {
         self.appContext = appContext
         self.service = ServiceActor(backupService: appContext.getBackupService())
         self.decorator = decorator
-        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.emailKeyManagerApi = emailKeyManagerApi ?? EmailKeyManagerApi(clientConfiguration: clientConfiguration)
         self.clientConfiguration = clientConfiguration
         super.init(node: TableNode())
@@ -331,8 +331,12 @@ extension SetupInitialViewController {
     }
 
     private func proceedToCreatingNewKey() {
-        let viewController = SetupGenerateKeyViewController(appContext: appContext)
-        navigationController?.pushViewController(viewController, animated: true)
+        do {
+            let viewController = try SetupGenerateKeyViewController(appContext: appContext)
+            navigationController?.pushViewController(viewController, animated: true)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 
     private func proceedToSetupWithEKMKeys(keys: [KeyDetails]) {

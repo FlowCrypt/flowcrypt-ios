@@ -58,12 +58,12 @@ protocol PassPhraseStorageType {
     func update(passPhrase: PassPhrase) throws
     func remove(passPhrase: PassPhrase) throws
 
-    func getPassPhrases() -> [PassPhrase]
+    func getPassPhrases() throws -> [PassPhrase]
 }
 
 // MARK: - PassPhraseService
 protocol PassPhraseServiceType {
-    func getPassPhrases() -> [PassPhrase]
+    func getPassPhrases() throws -> [PassPhrase]
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
     func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) throws
@@ -89,7 +89,7 @@ final class PassPhraseService: PassPhraseServiceType {
         case .persistent:
             try encryptedStorage.save(passPhrase: passPhrase)
         case .memory:
-            let storedPassPhrases = encryptedStorage.getPassPhrases()
+            let storedPassPhrases = try encryptedStorage.getPassPhrases()
             let fingerprint = passPhrase.primaryFingerprintOfAssociatedKey
             if storedPassPhrases.contains(where: { $0.primaryFingerprintOfAssociatedKey == fingerprint }) {
                 logger.logInfo("\(StorageMethod.persistent): removing pass phrase for key \(fingerprint)")
@@ -109,8 +109,8 @@ final class PassPhraseService: PassPhraseServiceType {
         }
     }
 
-    func getPassPhrases() -> [PassPhrase] {
-        encryptedStorage.getPassPhrases() + inMemoryStorage.getPassPhrases()
+    func getPassPhrases() throws -> [PassPhrase] {
+        try encryptedStorage.getPassPhrases() + inMemoryStorage.getPassPhrases()
     }
 
     func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) throws {

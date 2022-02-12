@@ -10,7 +10,7 @@ import Foundation
 import RealmSwift
 
 protocol LocalFoldersProviderType {
-    func fetchFolders(for userEmail: String) -> [FolderViewModel]
+    func fetchFolders(for userEmail: String) throws -> [FolderViewModel]
     func removeFolders(for userEmail: String) throws
     func save(folders: [Folder], for user: User) throws
 }
@@ -19,7 +19,9 @@ final class LocalFoldersProvider {
     private let encryptedStorage: EncryptedStorageType
 
     private var storage: Realm {
-        encryptedStorage.storage
+        get throws {
+            try encryptedStorage.storage
+        }
     }
 
     init(encryptedStorage: EncryptedStorageType) {
@@ -28,14 +30,15 @@ final class LocalFoldersProvider {
 }
 
 extension LocalFoldersProvider: LocalFoldersProviderType {
-    func fetchFolders(for userEmail: String) -> [FolderViewModel] {
-        storage.objects(FolderRealmObject.self).where {
+    func fetchFolders(for userEmail: String) throws -> [FolderViewModel] {
+        try storage.objects(FolderRealmObject.self).where {
             $0.user.email == userEmail
         }.compactMap(FolderViewModel.init)
     }
 
     func save(folders: [Folder], for user: User) throws {
         let objects = folders.map { FolderRealmObject(folder: $0, user: user) }
+        let storage = try storage
         try storage.write {
             objects.forEach {
                 storage.add($0, update: .modified)
@@ -44,6 +47,8 @@ extension LocalFoldersProvider: LocalFoldersProviderType {
     }
 
     func removeFolders(for userEmail: String) throws {
+        let storage = try storage
+
         let objects = storage.objects(FolderRealmObject.self).where {
             $0.user.email == userEmail
         }

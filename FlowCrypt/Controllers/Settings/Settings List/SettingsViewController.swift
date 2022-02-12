@@ -51,10 +51,10 @@ final class SettingsViewController: TableNodeViewController {
     init(
         appContext: AppContextWithUser,
         decorator: SettingsViewDecorator = SettingsViewDecorator()
-    ) {
+    ) throws {
         self.appContext = appContext
         self.decorator = decorator
-        self.clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        self.clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.rows = SettingsMenuItem.filtered(with: clientConfiguration)
         super.init(node: TableNode())
     }
@@ -113,7 +113,12 @@ extension SettingsViewController {
 
         switch setting {
         case .keys:
-            viewController = KeySettingsViewController(appContext: appContext)
+            do {
+                viewController = try KeySettingsViewController(appContext: appContext)
+            } catch {
+                viewController = nil
+                showAlert(message: error.localizedDescription)
+            }
         case .legal:
             viewController = LegalViewController()
         case .contacts:

@@ -25,18 +25,18 @@ class PassPhraseStorageTests: XCTestCase {
         )
     }
 
-    func testGetPassPhrasesWhenEmpty() {
+    func testGetPassPhrasesWhenEmpty() throws {
         // no pass phrases in storage
         encryptedStorage.getPassPhrasesResult = { [] }
         // no pass phrases in localStorage
         inMemoryStorage.getPassPhrasesResult = { [] }
 
-        let result = sut.getPassPhrases()
+        let result = try sut.getPassPhrases()
 
         XCTAssertTrue(result.isEmpty)
     }
 
-    func testGetValidPassPhraseFromStorage() {
+    func testGetValidPassPhraseFromStorage() throws {
         let passPhrase1 = PassPhrase(
             value: "some",
             fingerprintsOfAssociatedKey: ["11","12"]
@@ -50,7 +50,7 @@ class PassPhraseStorageTests: XCTestCase {
         // no pass phrases in localStorage
         inMemoryStorage.getPassPhrasesResult = { [] }
 
-        var result = sut.getPassPhrases()
+        var result = try sut.getPassPhrases()
 
         XCTAssertTrue(result.count == 1)
 
@@ -58,12 +58,12 @@ class PassPhraseStorageTests: XCTestCase {
             [passPhrase1, passPhrase2]
         }
 
-        result = sut.getPassPhrases()
+        result = try sut.getPassPhrases()
 
         XCTAssertTrue(result.count == 2)
     }
 
-    func testGetValidPassPhraseInLocalStorage() {
+    func testGetValidPassPhraseInLocalStorage() throws {
         encryptedStorage.getPassPhrasesResult = { [] }
 
         let savedDate = Date()
@@ -77,11 +77,11 @@ class PassPhraseStorageTests: XCTestCase {
         // current timeout = 2
         sleep(1)
 
-        let result = sut.getPassPhrases()
+        let result = try sut.getPassPhrases()
         XCTAssertTrue(result.isNotEmpty)
     }
 
-    func testBothStorageContainsValidPassPhrase() {
+    func testBothStorageContainsValidPassPhrase() throws {
         let passPhrase1 = PassPhrase(
             value: "some",
             fingerprintsOfAssociatedKey: ["A123"]
@@ -103,7 +103,7 @@ class PassPhraseStorageTests: XCTestCase {
 
         inMemoryStorage.getPassPhrasesResult = { [localPassPhrase] }
 
-        let result = sut.getPassPhrases()
+        let result = try sut.getPassPhrases()
         XCTAssertTrue(result.count == 3)
     }
 
