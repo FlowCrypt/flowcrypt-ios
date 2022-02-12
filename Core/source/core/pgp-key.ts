@@ -379,8 +379,8 @@ export class PgpKey {
     }
     for (const subKey of key.subkeys) {
       try {
-        const latestValidSig = await subKey.verify();
-        allSignatures.push(latestValidSig);
+        const latestValidKeyBindingSig = await subKey.verify();
+        allSignatures.push(latestValidKeyBindingSig);
       } catch (e) {
         console.log(`PgpKey.lastSig: Skipping subkey ${subKey.getKeyID().toHex()} ` +
           `because there is no valid binding signature: ${String(e)}`);
