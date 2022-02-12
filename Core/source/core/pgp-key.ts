@@ -368,10 +368,10 @@ export class PgpKey {
     const allSignatures: SignaturePacket[] = [];
     for (const user of key.users) {
       const data = { userID: user.userID, userAttribute: user.userAttribute, key: key };
-      for (const selfCertification of user.selfCertifications) {
+      for (const selfCert of user.selfCertifications) {
         try {
-          await selfCertification.verify(key.keyPacket, enums.signature.certGeneric, data);
-          allSignatures.push(selfCertification);
+          await selfCert.verify(key.keyPacket, enums.signature.certGeneric, data);
+          allSignatures.push(selfCert);
         } catch (e) {
           console.log(`PgpKey.lastSig: Skipping self-certification signature because it is invalid: ${String(e)}`);
         }
