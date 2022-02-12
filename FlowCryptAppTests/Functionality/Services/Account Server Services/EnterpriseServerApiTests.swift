@@ -16,7 +16,7 @@ final class EnterpriseServerApiTests: XCTestCase {
         let service = EnterpriseServerApi()
 
         // act
-        let result = try await service.getActiveFesUrl(for: "user@nonexistentdomain.test")
+        let result = try? await service.getActiveFesUrl(for: "user@nonexistentdomain.test")
 
         // assert
         XCTAssertNil(result)

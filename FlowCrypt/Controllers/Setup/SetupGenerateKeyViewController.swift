@@ -22,21 +22,18 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     private let service: Service
 
     init(
-        appContext: AppContext,
-        user: UserId,
+        appContext: AppContextWithUser,
         decorator: SetupViewDecorator = SetupViewDecorator()
-    ) {
+    ) throws {
         self.attester = AttesterApi(
-            clientConfiguration: appContext.clientConfigurationService.getSaved(for: user.email)
+            clientConfiguration: try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         )
         self.service = Service(
             appContext: appContext,
-            user: user,
             attester: self.attester
         )
         super.init(
             appContext: appContext,
-            user: user,
             decorator: decorator
         )
     }
@@ -63,7 +60,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
                 let isErrorHandled = handleCommon(error: error)
 
                 if !isErrorHandled {
-                    showAlert(error: error, message: "Could not finish setup, please try again")
+                    showAlert(error: error, message: "error_setup_try_again".localized)
                 }
             }
         }
@@ -74,17 +71,14 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 private actor Service {
     typealias ViewController = SetupCreatePassphraseAbstractViewController
 
-    private let appContext: AppContext
-    private let user: UserId
+    private let appContext: AppContextWithUser
     private let attester: AttesterApiType
 
     init(
-        appContext: AppContext,
-        user: UserId,
+        appContext: AppContextWithUser,
         attester: AttesterApiType
     ) {
         self.appContext = appContext
-        self.user = user
         self.attester = attester
     }
 
@@ -93,18 +87,16 @@ private actor Service {
         storageMethod: StorageMethod,
         viewController: ViewController
     ) async throws {
-        let userId = try getUserId()
-
         try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
         let encryptedPrv = try await Core.shared.generateKey(
             passphrase: passPhrase,
             variant: .curve25519,
-            userIds: [userId]
+            userIds: [appContext.userId]
         )
 
-        try await submitKeyToAttester(email: userId.email, publicKey: encryptedPrv.key.public)
-        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: user)
+        try await submitKeyToAttester(user: appContext.user, publicKey: encryptedPrv.key.public)
+        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: appContext.userId)
         try await putKeypairsInEncryptedStorage(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
 
         if storageMethod == .memory {
@@ -117,7 +109,7 @@ private actor Service {
 
         // sending welcome email is not crucial, so we don't handle errors
         _ = try? await attester.testWelcome(
-            email: userId.email,
+            email: appContext.user.email,
             pubkey: encryptedPrv.key.public
         )
     }
@@ -128,32 +120,36 @@ private actor Service {
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,
             source: .generated,
-            for: user.email
+            for: appContext.user.email
         )
     }
 
+    // todo - there is a similar method in EnterpriseServierApi
+    //   this should be put somewhere general
+    private func getIdToken(for user: User) async throws -> String? {
+        switch user.authType {
+        case .oAuthGmail:
+            return try await GoogleUserService(
+                currentUserEmail: user.email,
+                appDelegateGoogleSessionContainer: nil // needed only when signing in/out
+            ).getCachedOrRefreshedIdToken()
+        default:
+            return Imap(user: user).imapSess?.oAuth2Token
+        }
+    }
+
     private func submitKeyToAttester(
-        email: String,
+        user: User,
         publicKey: String
     ) async throws {
         do {
-            _ = try await attester.update(
-                email: email,
+            _ = try await attester.replace(
+                email: user.email,
                 pubkey: publicKey,
-                token: appContext.dataService.token
+                idToken: try await getIdToken(for: user)
             )
         } catch {
             throw CreateKeyError.submitKey(error)
         }
-    }
-
-    private func getUserId() throws -> UserId {
-        guard let email = appContext.dataService.email, !email.isEmpty else {
-            throw CreateKeyError.missingUserEmail
-        }
-        guard let name = appContext.dataService.currentUser?.name, !name.isEmpty else {
-            throw CreateKeyError.missingUserName
-        }
-        return UserId(email: email, name: name)
     }
 }

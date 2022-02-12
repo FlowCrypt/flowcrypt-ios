@@ -51,13 +51,13 @@ extension FolderViewModel {
     static var menuItems: [FolderViewModel] {
         [
             FolderViewModel(
-                name: "Settings",
+                name: "folder_settings".localized,
                 path: "",
                 image: UIImage(named: "settings")?.tinted(.mainTextColor),
                 itemType: .settings
             ),
             FolderViewModel(
-                name: "Log out",
+                name: "log_out".localized,
                 path: "",
                 image: UIImage(named: "exit")?.tinted(.mainTextColor),
                 itemType: .logOut

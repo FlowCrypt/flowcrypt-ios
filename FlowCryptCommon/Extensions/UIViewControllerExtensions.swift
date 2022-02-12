@@ -58,7 +58,11 @@ public extension UIViewController {
             message: message,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .destructive) { _ in onOk?() })
+        let ok = UIAlertAction(
+            title: "ok".localized,
+            style: .destructive
+        ) { _ in onOk?() }
+        alert.addAction(ok)
         self.present(alert, animated: true, completion: nil)
     }
 
@@ -76,8 +80,16 @@ public extension UIViewController {
             message: message,
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "Retry", style: .cancel) { _ in onRetry?() })
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in onOk?() })
+        let retry = UIAlertAction(
+            title: "retry_title".localized,
+            style: .cancel
+        ) { _ in onRetry?() }
+        let ok = UIAlertAction(
+            title: "ok".localized,
+            style: .default
+        ) { _ in onOk?() }
+        alert.addAction(retry)
+        alert.addAction(ok)
         present(alert, animated: true, completion: nil)
     }
 

@@ -50,7 +50,14 @@ final class MyMenuViewController: ViewController {
     private var folders: [FolderViewModel] = []
     private var serviceItems: [FolderViewModel] { FolderViewModel.menuItems }
     private var accounts: [User] {
-        appContext.dataService.getFinishedSetupUsers(exceptUserEmail: appContext.user.email)
+        do {
+            return try appContext.encryptedStorage.getAllUsers()
+                .filter { $0.email != appContext.user.email }
+                .filter { try appContext.encryptedStorage.doesAnyKeypairExist(for: $0.email) }
+        } catch {
+            showAlert(message: error.localizedDescription)
+            return []
+        }
     }
 
     private let tableNode: ASTableNode
@@ -292,7 +299,11 @@ extension MyMenuViewController {
                 sideMenuController()?.sideMenu?.hideSideMenu()
                 return
             }
-            sideMenuController()?.setContentViewController(SettingsViewController(appContext: appContext))
+            do {
+                sideMenuController()?.setContentViewController(try SettingsViewController(appContext: appContext))
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         case .logOut:
             do {
                 try appContext.globalRouter.signOut(appContext: appContext)

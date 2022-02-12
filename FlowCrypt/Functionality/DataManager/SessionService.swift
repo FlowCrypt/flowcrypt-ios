@@ -9,12 +9,26 @@
 import FlowCryptCommon
 import Foundation
 
+enum SessionType: CustomStringConvertible {
+    case google(_ email: String, name: String, token: String)
+    case session(_ user: User)
+
+    var description: String {
+        switch self {
+        case let .google(email, name, _):
+            return "Google \(email) \(name)"
+        case let .session(user):
+            return "Session \(user.email)"
+        }
+    }
+}
+
 protocol SessionServiceType {
     func startSessionFor(session: SessionType) throws
     func switchActiveSessionFor(user: User) throws -> SessionType?
     func startActiveSessionForNextUser() throws -> SessionType?
     func logOutUsersThatDontHaveAnyKeysSetUp() throws
-    func cleanup()
+    func cleanup() throws
 }
 
 final class SessionService {
@@ -23,24 +37,21 @@ final class SessionService {
 
     private let imap: Imap
     private let googleService: GoogleUserService
-    private let dataService: DataServiceType
 
     private lazy var logger = Logger.nested(Self.self)
 
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler,
         localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
-        dataService: DataServiceType,
         imap: Imap? = nil,
         googleService: GoogleUserService
-    ) {
+    ) throws {
         self.googleService = googleService
         // todo - the following User.empty may be wrong - unsure, untested
         // maybe should instead get user
-        self.imap = imap ?? Imap(user: dataService.currentUser ?? User.empty)
+        self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
-        self.dataService = dataService
     }
 
     private var storages: [LogOutHandler] {
@@ -66,12 +77,12 @@ extension SessionService: SessionServiceType {
     }
 
     func startActiveSessionForNextUser() throws -> SessionType? {
-        guard let currentUser = dataService.currentUser else {
+        guard let currentUser = try encryptedStorage.activeUser else {
             return nil
         }
         logOut(user: currentUser)
 
-        guard let nextUser = encryptedStorage.getAllUsers().first else {
+        guard let nextUser = try encryptedStorage.getAllUsers().first else {
             return nil
         }
 
@@ -81,7 +92,7 @@ extension SessionService: SessionServiceType {
     }
 
     func switchActiveSessionFor(user: User) throws -> SessionType? {
-        let currentUser = encryptedStorage
+        let currentUser = try encryptedStorage
             .getAllUsers()
             .first(where: { $0.email == user.email })
 
@@ -95,14 +106,15 @@ extension SessionService: SessionServiceType {
 
     func logOutUsersThatDontHaveAnyKeysSetUp() throws {
         logger.logInfo("Clean up sessions")
-        for user in encryptedStorage.getAllUsers() {
-            if !encryptedStorage.doesAnyKeypairExist(for: user.email) {
+        for user in try encryptedStorage.getAllUsers() {
+            if try !encryptedStorage.doesAnyKeypairExist(for: user.email) {
                 logger.logInfo("User session to clean up \(user.email)")
                 logOut(user: user)
             }
         }
-        let users = encryptedStorage.getAllUsers()
-        if !users.contains(where: { $0.isActive }), let user = users.first(where: { encryptedStorage.doesAnyKeypairExist(for: $0.email) }) {
+
+        let users = try encryptedStorage.getAllUsers()
+        if !users.contains(where: { $0.isActive }), let user = try users.first(where: { try encryptedStorage.doesAnyKeypairExist(for: $0.email) }) {
             try switchActiveSession(for: user)
         }
     }
@@ -147,9 +159,9 @@ extension SessionService: SessionServiceType {
     }
 
     /// cleanup all user sessions
-    func cleanup() {
+    func cleanup() throws {
         logger.logInfo("Clean up storages")
-        encryptedStorage.cleanup()
+        try encryptedStorage.cleanup()
         localStorage.cleanup()
     }
 }

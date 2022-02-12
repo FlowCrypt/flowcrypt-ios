@@ -13,7 +13,7 @@ import UIKit
 protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType) async
-    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws
+    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws
     func switchActive(user: User, appContext: AppContext) throws
     func signOut(appContext: AppContext) throws
 }
@@ -65,7 +65,7 @@ extension GlobalRouter: GlobalRouterType {
                 viewController.showSpinner()
 
                 let googleService = GoogleUserService(
-                    currentUserEmail: appContext.dataService.currentUser?.email,
+                    currentUserEmail: try appContext.encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
                 let session = try await googleService.signIn(
@@ -74,10 +74,10 @@ extension GlobalRouter: GlobalRouterType {
                 )
                 try appContext.userAccountService.startSessionFor(session: session)
                 viewController.hideSpinner()
-                proceed(with: appContext, session: session)
+                try proceed(with: appContext, session: session)
             case .other(let session):
                 try appContext.userAccountService.startSessionFor(session: session)
-                proceed(with: appContext, session: session)
+                try proceed(with: appContext, session: session)
             }
         } catch {
             if case .gmailLogin(let viewController) = route {
@@ -91,22 +91,22 @@ extension GlobalRouter: GlobalRouterType {
     func signOut(appContext: AppContext) throws {
         if let session = try appContext.userAccountService.startActiveSessionForNextUser() {
             logger.logInfo("Start session for another email user \(session)")
-            proceed(with: appContext, session: session)
+            try proceed(with: appContext, session: session)
         } else {
             logger.logInfo("Sign out")
-            appContext.userAccountService.cleanup()
+            try appContext.userAccountService.cleanup()
             proceed()
         }
     }
 
-    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContext) async throws {
+    func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws {
         logger.logInfo("Ask for contacts permission with \(route)")
 
         switch route {
         case .gmailLogin(let viewController):
             do {
                 let googleService = GoogleUserService(
-                    currentUserEmail: appContext.dataService.currentUser?.email,
+                    currentUserEmail: appContext.user.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
                 let session = try await googleService.signIn(
@@ -130,7 +130,7 @@ extension GlobalRouter: GlobalRouterType {
             logger.logWarning("Can't switch active user with \(user.email)")
             return
         }
-        proceed(with: appContext, session: session)
+        try proceed(with: appContext, session: session)
     }
 
     @MainActor
@@ -152,11 +152,11 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func proceed(with appContext: AppContext, session: SessionType) {
+    private func proceed(with appContext: AppContext, session: SessionType) throws {
         logger.logInfo("proceed for session: \(session.description)")
         guard
-            let authType = appContext.dataService.currentAuthType,
-            let user = appContext.dataService.currentUser
+            let user = try appContext.encryptedStorage.activeUser,
+            let authType = user.authType
         else {
             let message = "Wrong application state. User not found for session \(session.description)"
             logger.logError(message)

@@ -16,7 +16,6 @@ class AppContext {
     let session: SessionType?
     // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
     let userAccountService: SessionServiceType
-    let dataService: DataServiceType
     let keyService: KeyServiceType
     let passPhraseService: PassPhraseServiceType
     let clientConfigurationService: ClientConfigurationServiceType
@@ -25,7 +24,6 @@ class AppContext {
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
-        dataService: DataServiceType,
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
         clientConfigurationService: ClientConfigurationServiceType,
@@ -34,7 +32,6 @@ class AppContext {
         self.encryptedStorage = encryptedStorage
         self.session = session
         self.userAccountService = userAccountService
-        self.dataService = dataService
         self.keyService = keyService
         self.passPhraseService = passPhraseService
         self.clientConfigurationService = clientConfigurationService
@@ -47,12 +44,11 @@ class AppContext {
         let encryptedStorage = EncryptedStorage(
             storageEncryptionKey: try keyChainService.getStorageEncryptionKey()
         )
-        let dataService = DataService(encryptedStorage: encryptedStorage)
         let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
         let keyService = KeyService(
             storage: encryptedStorage,
             passPhraseService: passPhraseService,
-            currentUserEmail: { dataService.email }
+            currentUserEmail: { try? encryptedStorage.activeUser?.email }
         )
         let clientConfigurationService = ClientConfigurationService(
             local: LocalClientConfiguration(
@@ -62,15 +58,13 @@ class AppContext {
         return AppContext(
             encryptedStorage: encryptedStorage,
             session: nil, // will be set later. But would be nice to already set here, if available
-            userAccountService: SessionService(
+            userAccountService: try SessionService(
                 encryptedStorage: encryptedStorage,
-                dataService: dataService,
                 googleService: GoogleUserService(
-                    currentUserEmail: dataService.currentUser?.email,
+                    currentUserEmail: try encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
             ),
-            dataService: dataService,
             keyService: keyService,
             passPhraseService: passPhraseService,
             clientConfigurationService: clientConfigurationService,
@@ -83,7 +77,6 @@ class AppContext {
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
-            dataService: dataService,
             keyService: keyService,
             passPhraseService: passPhraseService,
             clientConfigurationService: clientConfigurationService,
@@ -105,8 +98,8 @@ class AppContext {
     @MainActor
     func getOptionalMailProvider() -> MailProvider? {
         guard
-            let currentUser = dataService.currentUser,
-            let currentAuthType = dataService.currentAuthType
+            let currentUser = try? encryptedStorage.activeUser,
+            let currentAuthType = currentUser.authType
         else { return nil }
 
         return MailProvider(
@@ -137,12 +130,12 @@ class AppContext {
 class AppContextWithUser: AppContext {
     let authType: AuthType
     let user: User
+    let userId: UserId
 
     init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
-        dataService: DataServiceType,
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
         clientConfigurationService: ClientConfigurationServiceType,
@@ -152,12 +145,12 @@ class AppContextWithUser: AppContext {
     ) {
         self.authType = authType
         self.user = user
+        self.userId = UserId(email: user.email, name: user.name)
 
         super.init(
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
-            dataService: dataService,
             keyService: keyService,
             passPhraseService: passPhraseService,
             clientConfigurationService: clientConfigurationService,

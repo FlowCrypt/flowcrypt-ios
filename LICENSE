@@ -1,24 +1,20 @@
-FlowCrypt License 1.0
+FlowCrypt License 1.2
 
-Licensor: FlowCrypt Limited
+Licensor: FlowCrypt a. s.
 
-Software: FlowCrypt iOS App. The Software is © 2017-2019 FlowCrypt Limited
+Software: FlowCrypt iOS App. The Software is © 2017-present FlowCrypt a. s.
 
-Use Limitation: This software is free to use with the following limitations:
- - Size of any sent email message including attachments cannot exceed 5MB.
- - Password encrypted messages and attachments have to expire in 3 days.
- - Messages, attachments or files can only be transferred through used email provider or through services provided by Licensor. Never through 3rd party or custom services.
- - Plain-text portion of password encrypted messages must only include a link to a page on flowcrypt.com domain. Recipient cannot be directed to any other place or means of decrypting password encrypted messages.
- - Password encrypted messages cannot link or lead to a web page where encrypted reply is possible.
- - Cannot request attestation of secondary send-from email addresses (email aliases).
- - Limit one re-attestation (change of associated pubkey) per email address.
- - Cannot set up a custom email footer to be included in sent messages (encrypted or not).
- - Maximum 100 email addresses per domain (except gmail.com, outlook.com and other public email service provider domains excluded).
+Applicability: Within this repository except otherwise stated.
+
+Use Limitation: Maximum 100 email addresses per domain (except gmail.com, outlook.com and other public email service provider domains).
+
 _____________________________________________
 
 You are granted limited license to the Software under this FlowCrypt License.  Please read this FlowCrypt License carefully, particularly the Use Limitation set forth above.
 
-Subject to the Use Limitation, Licensor grants you a non-exclusive, worldwide (subject to applicable laws) license to copy, modify, display, use, create derivative works, and redistribute the Software. If your use of the Software exceeds, or will exceed, the foregoing limitations you MUST obtain alternative licensing terms for the Software directly from Licensor, its affiliated entities, or authorized resellers. There are no Use Limitations for non-production purposes.
+Subject to the Use Limitation, Licensor grants you a non-exclusive, worldwide (subject to applicable laws) license to use the Software. If your use of the Software exceeds, or will exceed, the foregoing limitations you MUST obtain alternative licensing terms for the Software directly from Licensor, its affiliated entities, or authorized resellers.
+
+Modification of the Software is permitted for individual non-commercial use. Redistribution of modified copies is not allowed.
 
 All copies of original and modified Software, and derivative works of the Software, are subject to this FlowCrypt License. This FlowCrypt License applies separately for each version of the Software.
 

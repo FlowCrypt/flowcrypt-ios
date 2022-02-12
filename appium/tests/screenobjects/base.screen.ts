@@ -4,7 +4,7 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   ERROR_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Error"`]',
-  OK_BUTTON: '~OK',
+  OK_BUTTON: '~Ok',
   ERROR_FES_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Startup Error"`]',
   RETRY_BUTTON: '~Retry',
   CURRENT_MODAL: '-ios predicate string:type == "XCUIElementTypeAlert"'

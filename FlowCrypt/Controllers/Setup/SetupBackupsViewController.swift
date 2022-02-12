@@ -21,10 +21,9 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     }
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
-    private let appContext: AppContext
+    private let appContext: AppContextWithUser
     private let decorator: SetupViewDecorator
     private let keyMethods: KeyMethodsType
-    private let user: UserId
     private let fetchedEncryptedKeys: [KeyDetails]
 
     private var passPhrase: String?
@@ -41,17 +40,15 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
     }
 
     init(
-        appContext: AppContext,
+        appContext: AppContextWithUser,
         fetchedEncryptedKeys: [KeyDetails],
         decorator: SetupViewDecorator = SetupViewDecorator(),
-        keyMethods: KeyMethodsType = KeyMethods(),
-        user: UserId
+        keyMethods: KeyMethodsType = KeyMethods()
     ) {
         self.appContext = appContext
         self.fetchedEncryptedKeys = fetchedEncryptedKeys
         self.decorator = decorator
         self.keyMethods = keyMethods
-        self.user = user
 
         super.init(node: TableNode())
     }
@@ -141,7 +138,7 @@ extension SetupBackupsViewController {
             keyDetails: Array(matchingKeyBackups),
             passPhrase: storageMethod == .persistent ? passPhrase : nil,
             source: .backup,
-            for: user.email
+            for: appContext.user.email
         )
         moveToMainFlow()
     }
@@ -165,9 +162,12 @@ extension SetupBackupsViewController {
                 try await self.recoverAccount(with: self.fetchedEncryptedKeys, and: passPhrase)
             } catch {
                 hideSpinner()
-                showAlert(error: error, message: "Failed to set up account", onOk: {
-                    // todo - what to do? maybe nothing, since they should now see the same button again that they can press again
-                })
+                showAlert(
+                    error: error,
+                    message: "error_setup_failed".localized,
+                    onOk: {
+                        // todo - what to do? maybe nothing, since they should now see the same button again that they can press again
+                    })
             }
         }
     }

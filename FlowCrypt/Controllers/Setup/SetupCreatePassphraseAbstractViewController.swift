@@ -26,9 +26,8 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         Parts.allCases
     }
 
-    let appContext: AppContext
+    let appContext: AppContextWithUser
     let decorator: SetupViewDecorator
-    let user: UserId
     let fetchedKeysCount: Int
 
     var storageMethod: StorageMethod = .persistent {
@@ -47,14 +46,12 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
     init(
-        appContext: AppContext,
-        user: UserId,
+        appContext: AppContextWithUser,
         fetchedKeysCount: Int = 0,
         router: GlobalRouterType = GlobalRouter(),
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) {
         self.appContext = appContext
-        self.user = user
         self.fetchedKeysCount = fetchedKeysCount
         self.decorator = decorator
         super.init(node: TableNode())
@@ -149,15 +146,14 @@ extension SetupCreatePassphraseAbstractViewController {
         return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
             DispatchQueue.main.async {
                 let alert = UIAlertController(
-                    title: "Pass Phrase",
-                    message: "Confirm Pass Phrase",
+                    title: "setup_pass_phrase_title".localized,
+                    message: "setup_pass_phrase_confirm".localized,
                     preferredStyle: .alert
                 )
                 alert.addTextField { textField in
                     textField.isSecureTextEntry = true
                     textField.accessibilityLabel = "textField"
                 }
-
                 alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
                     return continuation.resume(returning: nil)
                 })

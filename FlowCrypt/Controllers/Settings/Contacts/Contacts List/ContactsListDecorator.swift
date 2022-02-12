@@ -33,9 +33,7 @@ struct ContactsListDecorator {
             darkStyle: .lightGray,
             lightStyle: .darkGray
         )
-
-        let keysCount = "%@ public key(s)".localizeWithArguments(recipient.pubKeys.count)
-
+        let keysCount = "%@ public key(s)".localizePluralsWithArguments(recipient.pubKeys.count)
         return ContactCellNode.Input(
             name: name.attributed(.medium(16)),
             email: recipient.email.attributed(.medium(14)),

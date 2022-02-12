@@ -96,13 +96,13 @@ final class ComposeViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods()
-    ) {
+    ) throws {
         self.appContext = appContext
         self.email = appContext.user.email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        let clientConfiguration = appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.contactsService = contactsService ?? ContactsService(
             localContactsProvider: LocalContactsProvider(
                 encryptedStorage: appContext.encryptedStorage
@@ -795,7 +795,9 @@ extension ComposeViewController {
 
     private func enableGoogleContactsNode() -> ASCellNode {
         TextWithIconNode(input: .init(
-            title: "compose_enable_google_contacts_search".localized.attributed(.regular(16)),
+            title: "compose_enable_google_contacts_search"
+                .localized
+                .attributed(.regular(16)),
             image: UIImage(named: "gmail_icn"))
         )
     }
@@ -942,10 +944,14 @@ extension ComposeViewController {
 extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
-            let localEmails = contactsService.searchLocalContacts(query: query)
-            let cloudEmails = try? await service.searchContacts(query: query)
-            let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
-            updateState(with: .searchEmails(Array(emails)))
+            do {
+                let localEmails = try contactsService.searchLocalContacts(query: query)
+                let cloudEmails = try? await service.searchContacts(query: query)
+                let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
+                updateState(with: .searchEmails(Array(emails)))
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 
@@ -1211,7 +1217,8 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
             let url = url,
             let composeMessageAttachment = MessageAttachment(fileURL: url)
         else {
-            let message = isVideo ? "files_picking_videos_error_message".localized
+            let message = isVideo
+                ? "files_picking_videos_error_message".localized
                 : "files_picking_photos_error_message".localized
             let errorMessage = error.flatMap({ "." + $0.localizedDescription }) ?? ""
             showAlert(message: message + errorMessage)
@@ -1318,7 +1325,7 @@ extension ComposeViewController {
             preferredStyle: .alert
         )
         let okAction = UIAlertAction(
-            title: "OK",
+            title: "ok".localized,
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(
@@ -1340,7 +1347,7 @@ extension ComposeViewController {
             preferredStyle: .alert
         )
         let okAction = UIAlertAction(
-            title: "OK",
+            title: "ok".localized,
             style: .cancel
         ) { _ in }
         let settingsAction = UIAlertAction(

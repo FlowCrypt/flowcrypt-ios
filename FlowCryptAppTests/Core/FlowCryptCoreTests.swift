@@ -69,7 +69,6 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertNil(k0.private)
         XCTAssertNil(k0.isFullyDecrypted)
         XCTAssertNil(k0.isFullyEncrypted)
-        XCTAssertEqual(k0.longid, TestData.k0.longid)
         XCTAssertEqual(k0.lastModified, 1543925225)
         XCTAssertNil(k0.expiration)
         // k1 is private
@@ -77,7 +76,6 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertNotNil(k1.private)
         XCTAssertEqual(k1.isFullyDecrypted, false)
         XCTAssertEqual(k1.isFullyEncrypted, true)
-        XCTAssertEqual(k1.longid, TestData.k1.longid)
         XCTAssertEqual(k1.lastModified, 1563630809)
         XCTAssertNil(k1.expiration)
         // todo - could test user ids

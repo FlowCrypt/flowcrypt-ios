@@ -31,9 +31,13 @@ extension MsgListViewController where Self: UIViewController {
 
     // TODO: uncomment in "sent message from draft" feature
     private func openDraft(appContext: AppContextWithUser, with message: Message) {
-        let controller = ComposeViewController(appContext: appContext)
-        controller.update(with: message)
-        navigationController?.pushViewController(controller, animated: true)
+        do {
+            let controller = try ComposeViewController(appContext: appContext)
+            controller.update(with: message)
+            navigationController?.pushViewController(controller, animated: true)
+        } catch {
+            showAlert(message: error.localizedDescription)
+        }
     }
 
     private func openMsg(appContext: AppContextWithUser, with message: Message, path: String) {
@@ -47,13 +51,17 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     private func openThread(with thread: MessageThread, appContext: AppContextWithUser) {
-        let viewController = ThreadDetailsViewController(
-            appContext: appContext,
-            thread: thread
-        ) { [weak self] (action, message) in
-            self?.handleMessageOperation(with: message, action: action)
+        do {
+            let viewController = try ThreadDetailsViewController(
+                appContext: appContext,
+                thread: thread
+            ) { [weak self] (action, message) in
+                self?.handleMessageOperation(with: message, action: action)
+            }
+            navigationController?.pushViewController(viewController, animated: true)
+        } catch {
+            showAlert(message: error.localizedDescription)
         }
-        navigationController?.pushViewController(viewController, animated: true)
     }
 
     // MARK: Operation
