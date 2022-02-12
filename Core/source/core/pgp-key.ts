@@ -373,7 +373,7 @@ export class PgpKey {
           await selfCertification.verify(key.keyPacket, enums.signature.certGeneric, data);
           allSignatures.push(selfCertification);
         } catch (e) {
-          console.log(e);
+          console.log(`PgpKey.lastSig: Skipping self-certification signature because it is invalid: ${String(e)}`);
         }
       }
     }
@@ -382,7 +382,8 @@ export class PgpKey {
         const latestValidSig = await subKey.verify();
         allSignatures.push(latestValidSig);
       } catch (e) {
-        console.log(e);
+        console.log(`PgpKey.lastSig: Skipping subkey ${subKey.getKeyID().toHex()} ` +
+          `because there is no valid binding signature: ${String(e)}`);
       }
     }
     if (allSignatures.length > 0) {
