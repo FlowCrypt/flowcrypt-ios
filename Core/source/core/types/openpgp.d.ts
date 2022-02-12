@@ -886,14 +886,3 @@ export namespace enums {
     mime = 109
   }
 }
-
-// -----BEGIN ADDED BY FLOWCRYPT-----
-
-export function readToEnd<T extends Data>(input: MaybeStream<T>, concat?: (list: T[]) => T): Promise<T>;
-
-export namespace util {
-  // we can't copy this from openpgp.js into our sources (i.e. util.ts) because of LGPL
-  function uint8ArrayToString(bytes: Uint8Array): string;
-}
-
-// -----END ADDED BY FLOWCRYPT-----
