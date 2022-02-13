@@ -1,8 +1,8 @@
 /* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
 
-'use strict';
+/// - <reference types="./types/web-stream-tools" />
 
-/// <reference types="./types/@openpgp/web-stream-tools/streams.d.ts" />
+'use strict';
 
 import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key';
 import { MsgBlock, MsgBlockType } from './msg-block';
@@ -15,8 +15,10 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
-import { readToEnd } from 'openpgp';
-//import { readToEnd } from '@openpgp/web-stream-tools';
+// this will work for running tests in node with build/ts/test.js as entrypoint
+// a different solution will have to be done for running in iOS
+(global as any)['window'] = (global as any)['window'] || {}; // web-stream-tools needs this
+const { readToEnd } = require('../../bundles/raw/web-stream-tools');
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 
 export namespace PgpMsgMethod {
@@ -140,7 +142,7 @@ export class PgpMsg {
    * Returns signature if detached=true, armored
    */
   public static sign = async (signingPrv: Key, data: string, detached = false): Promise<string> => {
-    const message = await createCleartextMessage({text: data});
+    const message = await createCleartextMessage({ text: data });
     const signRes = await sign({
       message,
       signingKeys: (signingPrv as PrivateKey),
@@ -153,7 +155,7 @@ export class PgpMsg {
   public static verify = async (
     msgOrVerResults: OpenpgpMsgOrCleartext | VerificationResult[],
     pubs: Key[]
-    ): Promise<VerifyRes> => {
+  ): Promise<VerifyRes> => {
     const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
     try {
       // While this looks like bad method API design, it's here to ensure execution order when:
@@ -186,12 +188,12 @@ export class PgpMsg {
   }
 
   public static verifyDetached: PgpMsgMethod.VerifyDetached = async ({ plaintext, sigText, verificationPubkeys }) => {
-    const message = await createMessage({text: Buf.fromUint8(plaintext).toUtfStr()});
+    const message = await createMessage({ text: Buf.fromUint8(plaintext).toUtfStr() });
     await message.appendSignature(Buf.fromUint8(sigText).toUtfStr());
     const keys = await PgpMsg.getSortedKeys([], message);
     if (verificationPubkeys) {
       for (const verificationPubkey of verificationPubkeys) {
-        const k = await readKeys({armoredKeys: verificationPubkey});
+        const k = await readKeys({ armoredKeys: verificationPubkey });
         keys.forVerification.push(...k);
       }
     }
@@ -271,10 +273,10 @@ export class PgpMsg {
     if (!pubkeys && !pwd) {
       throw new Error('no-pubkeys-no-challenge');
     }
-    const message = await createMessage({binary: data, filename, date});
+    const message = await createMessage({ binary: data, filename, date });
     const encryptionKeys = [];
     for (const armoredPubkey of pubkeys) {
-      const publicKeys = await readKeys({armoredKeys: armoredPubkey});
+      const publicKeys = await readKeys({ armoredKeys: armoredPubkey });
       encryptionKeys.push(...publicKeys);
     }
     // Have to keep this "if" here because it doesn't compile if we use
@@ -326,17 +328,17 @@ export class PgpMsg {
     if (decryptedContent.includes('class="cryptup_file"')) {
       decryptedContent = decryptedContent.replace(
         /<a\s+href="([^"]+)"\s+class="cryptup_file"\s+cryptup-data="([^"]+)"\s*>[^<]+<\/a>\n?/gm, (_, url, fcData) => {
-        const a = Str.htmlAttrDecode(String(fcData));
-        if (PgpMsg.isFcAttLinkData(a)) {
-          blocks.push(MsgBlock.fromAtt('encryptedAttLink', '', {
-            type: a.type,
-            name: a.name,
-            length: a.size,
-            url: String(url)
-          }));
-        }
-        return '';
-      });
+          const a = Str.htmlAttrDecode(String(fcData));
+          if (PgpMsg.isFcAttLinkData(a)) {
+            blocks.push(MsgBlock.fromAtt('encryptedAttLink', '', {
+              type: a.type,
+              name: a.name,
+              length: a.size,
+              url: String(url)
+            }));
+          }
+          return '';
+        });
     }
     return decryptedContent;
   }

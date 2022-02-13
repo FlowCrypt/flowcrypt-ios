@@ -51,5 +51,5 @@ node ./tooling/fix-bundles.js
 # concatenate external deps into one bundle
 ( cd ./build/bundles && cat bare-html-sanitize-bundle.js bare-emailjs-bundle.js bare-openpgp-bundle.js bare-zxcvbn-bundle.js bare-encoding-japanese.js > bare-deps-bundle.js )  # bare deps
 
-# create final builds for dev, ios, android
+# create final builds for ios
 node ./tooling/build-final.js
