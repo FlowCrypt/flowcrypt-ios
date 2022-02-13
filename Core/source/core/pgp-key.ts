@@ -372,8 +372,7 @@ export class PgpKey {
       const data = { userID: user.userID, userAttribute: user.userAttribute, key: key };
       for (const selfCert of user.selfCertifications) {
         try {
-          // todo - add proper type in openpgp.d.ts
-          await selfCert.verify(key.keyPacket, enums.signature.certGeneric, data as any); // quick hack
+          await selfCert.verify(key.keyPacket, enums.signature.certGeneric, data as any); // todo https://github.com/FlowCrypt/flowcrypt-ios/issues/1377
           allSignatures.push(selfCert);
         } catch (e) {
           console.log(`PgpKey.lastSig: Skipping self-certification signature because it is invalid: ${String(e)}`);
@@ -400,8 +399,7 @@ export class PgpKey {
   }
 
   public static revoke = async (key: Key): Promise<string | undefined> => {
-    // todo - quick hack to pass tests
-    if (!key.isRevoked(undefined as any as SignaturePacket)) {
+    if (!key.isRevoked(undefined as any as SignaturePacket)) { // todo - https://github.com/FlowCrypt/flowcrypt-ios/issues/1377
       if (!key.isPrivate()) throw Error('Revocation of public key not implemented');
       const keypair = await revokeKey({ key: key as PrivateKey, format: 'object' });
       key = keypair.privateKey;
