@@ -247,7 +247,7 @@ export class PgpMsg {
         };
       }
       const passwords = msgPwd ? [msgPwd] : undefined;
-      const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!) as PrivateKey[];
+      const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!);
       const decrypted = await (prepared.message as Message<Data>).decrypt(privateKeys, passwords);
       // we can only figure out who signed the msg once it's decrypted
       await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
@@ -428,11 +428,11 @@ export class PgpMsg {
       const matchingKeyids = PgpMsg.matchingKeyids(ki.parsed!, encryptedForKeyids);
       const cachedKey = Store.decryptedKeyCacheGet(ki.longid);
       if (cachedKey && PgpMsg.isKeyDecryptedFor(cachedKey, matchingKeyids)) {
-        ki.decrypted = cachedKey;
+        ki.decrypted = cachedKey as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
       } else if (PgpMsg.isKeyDecryptedFor(ki.parsed!, matchingKeyids) || await PgpMsg.decryptKeyFor(ki.parsed!, ki.passphrase!, matchingKeyids) === true) {
         Store.decryptedKeyCacheSet(ki.parsed!);
-        ki.decrypted = ki.parsed!;
+        ki.decrypted = ki.parsed! as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
       } else {
         keys.prvForDecryptWithoutPassphrases.push(ki);

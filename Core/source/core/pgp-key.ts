@@ -35,7 +35,7 @@ export interface PrvKeyInfo {
   private: string;
   longid: string;
   passphrase?: string;
-  decrypted?: Key;  // only for internal use in this file
+  decrypted?: PrivateKey;  // only for internal use in this file
   parsed?: Key;     // only for internal use in this file
 }
 
