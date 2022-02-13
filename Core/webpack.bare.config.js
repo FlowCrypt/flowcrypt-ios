@@ -16,6 +16,6 @@ module.exports = {
   },
   externals: {
     openpgp: 'openpgp',
-    '../../bundles/raw/web-stream-tools': '../..bundles/raw/web-stream-tools'
+    '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools'
   }
 }
