@@ -1,7 +1,5 @@
 /* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
 
-/// - <reference types="./types/web-stream-tools" />
-
 'use strict';
 
 import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key';
