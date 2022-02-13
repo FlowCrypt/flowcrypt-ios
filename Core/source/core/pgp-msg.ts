@@ -15,7 +15,8 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
-import { readToEnd } from '@openpgp/web-stream-tools';
+import { readToEnd } from 'openpgp';
+//import { readToEnd } from '@openpgp/web-stream-tools';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 
 export namespace PgpMsgMethod {

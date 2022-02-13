@@ -2,27 +2,38 @@
 
 set -euxo pipefail
 
-# will remove this when openpgp.js will release all our fixes
+# fix openpgp in node_modules
 echo "Patching openpgp.js v5..."
-cp -fv ./source/core/types/openpgp.d.ts ./node_modules/openpgp/
-echo "Patching openpgp.js v5 - DONE."
-
-# will remove this when @openpgp/web-stream-tools would release their type definitions
-echo "Patching @openpgp/web-stream-tools ..."
-cp -fv ./source/core/types/web-stream-tools.d.ts ./node_modules/@openpgp/web-stream-tools/
-wst_pkg=./node_modules/@openpgp/web-stream-tools/package.json
+for f in openpgp.min.js openpgp.min.js.map openpgp.min.mjs openpgp.min.mjs.map openpgp.mjs;
+do
+  if [ -f ./node_modules/openpgp/dist/$f ]; then rm -f ./node_modules/openpgp/dist/$f ; fi
+  if [ -f ./node_modules/openpgp/dist/node/$f ]; then rm -f ./node_modules/openpgp/dist/node/$f ; fi
+done
+if [ -f ./node_modules/openpgp/dist/openpgp.js ]; then rm -f ./node_modules/openpgp/dist/openpgp.js ; fi
+extra_exports="
+// -----BEGIN ADDED BY FLOWCRYPT----
+exports.readToEnd = readToEnd;
+// -----END ADDED BY FLOWCRYPT-----
+"
+dist_js=./node_modules/openpgp/dist/node/openpgp.js
+tmp_js=${dist_js}.tmp
 set +e
-wst_patched=$(grep -n '"types":' $wst_pkg | wc -l)
+fc_added=$(grep 'BEGIN ADDED BY FLOWCRYPT' ${dist_js} | wc -l)
 set -e
-if [ $wst_patched = 0 ]; then
-    wst_pkg_tmp=${wst_pkg}.tmp
-    n=$(grep -n '"main":' $wst_pkg | cut -f1 -d':')
-    head -$n ${wst_pkg} >${wst_pkg_tmp}
-    echo '  "types": "web-stream-tools.d.ts",' >>${wst_pkg_tmp}
-    tail -n $((n+1)) ${wst_pkg} >>${wst_pkg_tmp}
-    mv -f ${wst_pkg_tmp} ${wst_pkg}
+if [ $fc_added = 0 ]; then
+  n=$(grep -n 'exports.verify' ${dist_js} | cut -f1 -d':')
+  head -$n ${dist_js} >${tmp_js}
+  echo "$extra_exports" >>${tmp_js}
+  tail -n +$((n+1)) ${dist_js} >>${tmp_js}
+  mv -f ${tmp_js} ${dist_js}
 fi
-echo "Patching @openpgp/web-stream-tools - DONE."
+cp -fv ./source/core/types/openpgp.d.ts ./node_modules/openpgp/
+# MacOS sed is old BSD sed w/o "-i" (see https://ss64.com/osx/sed.html)
+sed 's/openpgp.min.js/openpgp.js/g' ./node_modules/openpgp/package.json >./node_modules/openpgp/package.json.tmp
+cp -f ./node_modules/openpgp/package.json.tmp ./node_modules/openpgp/package.json
+sed 's/openpgp.min.mjs/openpgp.mjs/g' ./node_modules/openpgp/package.json >./node_modules/openpgp/package.json.tmp
+cp -f ./node_modules/openpgp/package.json.tmp ./node_modules/openpgp/package.json
+echo "Patching openpgp.js v5 - DONE."
 
 # clean up
 rm -rf ./build/ts ./build/bundles ./build/final/*

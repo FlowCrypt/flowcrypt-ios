@@ -886,3 +886,7 @@ export namespace enums {
     mime = 109
   }
 }
+
+// -----BEGIN ADDED BY FLOWCRYPT-----
+export function readToEnd<T extends Data>(input: MaybeStream<T>, concat?: (list: T[]) => T): Promise<T>;
+// -----END ADDED BY FLOWCRYPT-----
