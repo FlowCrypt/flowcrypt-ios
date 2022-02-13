@@ -7,7 +7,6 @@
 import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key';
 import { MsgBlock, MsgBlockType } from './msg-block';
 import { Str, Value } from './common';
-
 import { Buf } from './buf';
 import { Catch } from '../platform/catch';
 import { FcAttLinkData } from './att';
@@ -15,11 +14,9 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
-// this will work for running tests in node with build/ts/test.js as entrypoint
-// a different solution will have to be done for running in iOS
-(global as any)['window'] = (global as any)['window'] || {}; // web-stream-tools needs this
-const { readToEnd } = require('../../bundles/raw/web-stream-tools');
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
+import { requireStreamReadToEnd } from '../platform/require';
+const readToEnd = requireStreamReadToEnd();
 
 export namespace PgpMsgMethod {
   export namespace Arg {

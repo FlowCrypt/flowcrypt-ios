@@ -10,9 +10,9 @@ import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/util';
 import { AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
-import { readToEnd } from 'openpgp';
-//import { readToEnd } from '@openpgp/web-stream-tools';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
+import { requireStreamReadToEnd } from '../platform/require';
+const readToEnd = requireStreamReadToEnd();
 
 export type Contact = {
   email: string;
@@ -95,7 +95,7 @@ export class PgpKey {
     if (fromCache) {
       return fromCache;
     }
-    const key = await readKey({armoredKey: armoredKey});
+    const key = await readKey({ armoredKey: armoredKey });
     if (key?.isPrivate()) {
       Store.armoredKeyCacheSet(armoredKey, key);
     }
@@ -114,8 +114,8 @@ export class PgpKey {
     const pushKeysAndErrs = async (content: string | Buf, type: 'readArmored' | 'read') => {
       try {
         const keys = type === 'readArmored'
-          ? await readKeys({armoredKeys: content.toString()})
-          : await readKeys({binaryKeys: (typeof content === 'string' ? Buf.fromUtfStr(content) : content)});
+          ? await readKeys({ armoredKeys: content.toString() })
+          : await readKeys({ binaryKeys: (typeof content === 'string' ? Buf.fromUtfStr(content) : content) });
         allKeys.push(...keys);
       } catch (e) {
         allErrs.push(e instanceof Error ? e : new Error(String(e)));
@@ -179,7 +179,7 @@ export class PgpKey {
       throw new Error(`Cannot encrypt a key that has ${encryptedPacketCount} of ` +
         `${secretPackets.length} private packets still encrypted`);
     }
-    await encryptKey({privateKey: (prv as PrivateKey), passphrase});
+    await encryptKey({ privateKey: (prv as PrivateKey), passphrase });
   }
 
   public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[] }> => {
@@ -187,11 +187,11 @@ export class PgpKey {
       let keys: Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
       if (RegExp(PgpArmor.headers('publicKey', 're').begin).test(armored)) {
-        keys = (await readKeys({armoredKeys: armored}));
+        keys = (await readKeys({ armoredKeys: armored }));
       } else if (RegExp(PgpArmor.headers('privateKey', 're').begin).test(armored)) {
-        keys = (await readKeys({armoredKeys: armored}));
+        keys = (await readKeys({ armoredKeys: armored }));
       } else if (RegExp(PgpArmor.headers('encryptedMsg', 're').begin).test(armored)) {
-        const msg = await readMessage({armoredMessage: armored});
+        const msg = await readMessage({ armoredMessage: armored });
         keys = [new PublicKey(msg.packets as PacketList<AnyKeyPacket>)];
       }
       for (const k of keys) {
@@ -265,7 +265,7 @@ export class PgpKey {
     if (!PgpKey.fingerprint(armored)) {
       return false;
     }
-    const pubkey = await readKey({armoredKey: armored});
+    const pubkey = await readKey({ armoredKey: armored });
     if (!pubkey) {
       return false;
     }
@@ -372,7 +372,8 @@ export class PgpKey {
       const data = { userID: user.userID, userAttribute: user.userAttribute, key: key };
       for (const selfCert of user.selfCertifications) {
         try {
-          await selfCert.verify(key.keyPacket, enums.signature.certGeneric, data);
+          // todo - add proper type in openpgp.d.ts
+          await selfCert.verify(key.keyPacket, enums.signature.certGeneric, data as any); // quick hack
           allSignatures.push(selfCert);
         } catch (e) {
           console.log(`PgpKey.lastSig: Skipping self-certification signature because it is invalid: ${String(e)}`);
@@ -389,19 +390,20 @@ export class PgpKey {
       }
     }
     if (allSignatures.length > 0) {
-        allSignatures.sort((a, b) => {
-          return (b.created ? b.created.getTime() : 0) - (a.created ? a.created.getTime() : 0);
-        });
-        const newestSig = allSignatures[0];
-        return newestSig.created ? newestSig.created.getTime() : 0;
+      allSignatures.sort((a, b) => {
+        return (b.created ? b.created.getTime() : 0) - (a.created ? a.created.getTime() : 0);
+      });
+      const newestSig = allSignatures[0];
+      return newestSig.created ? newestSig.created.getTime() : 0;
     }
     throw new Error('No valid signature found in key');
   }
 
   public static revoke = async (key: Key): Promise<string | undefined> => {
-    if (!key.isRevoked()) {
+    // todo - quick hack to pass tests
+    if (!key.isRevoked(undefined as any as SignaturePacket)) {
       if (!key.isPrivate()) throw Error('Revocation of public key not implemented');
-      const keypair = await revokeKey({key: key as PrivateKey, format: 'object'});
+      const keypair = await revokeKey({ key: key as PrivateKey, format: 'object' });
       key = keypair.privateKey;
     }
     const certificate = await key.getRevocationCertificate();
