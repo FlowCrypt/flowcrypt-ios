@@ -53,6 +53,19 @@ final class ComposeViewController: TableNodeViewController {
     private enum Section: Int, CaseIterable {
         case to, cc, bcc, password, compose, attachments
 
+        var recipientType: RecipientType? {
+            switch self {
+            case .to:
+                return .to
+            case .cc:
+                return .cc
+            case .bcc:
+                return .bcc
+            case .password, .compose, .attachments:
+                return nil
+            }
+        }
+
         static func recipientsSection(type: RecipientType) -> Section {
             switch type {
             case .to:
@@ -88,7 +101,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let email: String
     private var isMessagePasswordSupported: Bool {
-        return clientConfiguration.isUsingFes
+        clientConfiguration.isUsingFes
     }
 
     private let search = PassthroughSubject<String, Never>()
@@ -236,12 +249,11 @@ final class ComposeViewController: TableNodeViewController {
 
     private func observeComposeUpdates() {
         composeMessageService.onStateChanged { [weak self] state in
-            DispatchQueue.main.async {
-                self?.updateSpinner(with: state)
-            }
+            self?.updateSpinner(with: state)
         }
     }
 
+    @MainActor
     private func updateSpinner(with state: ComposeMessageService.State) {
         switch state {
         case .progressChanged(let progress):
@@ -595,12 +607,11 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             return ComposePart.allCases.count
         case (.main, Section.attachments.rawValue):
             return contextToSend.attachments.count
-        case (.searchEmails, Section.to.rawValue):
-            return selectedRecipientType == .to ? RecipientPart.allCases.count : 0
-        case (.searchEmails, Section.cc.rawValue):
-            return selectedRecipientType == .cc ? RecipientPart.allCases.count : 0
-        case (.searchEmails, Section.bcc.rawValue):
-            return selectedRecipientType == .bcc ? RecipientPart.allCases.count : 0
+        case (.searchEmails, Section.to.rawValue),
+             (.searchEmails, Section.cc.rawValue),
+             (.searchEmails, Section.bcc.rawValue):
+            let recipientType = Section(rawValue: section)?.recipientType
+            return selectedRecipientType == recipientType ? RecipientPart.allCases.count : 0
         case let (.searchEmails(emails), RecipientType.allCases.count):
             return emails.isNotEmpty ? emails.count + 1 : 2
         case (.searchEmails, RecipientType.allCases.count + 1):
@@ -1002,11 +1013,12 @@ extension ComposeViewController {
         let recipientsSection = Section.recipientsSection(type: recipientType)
 
         guard selectedRecipients.isEmpty else {
+            let sectionsToReload: [Section] = [.to, recipientsSection, .password]
             let notSelectedRecipients = recipients.filter { !$0.state.isSelected }
             contextToSend.set(recipients: notSelectedRecipients, for: recipientType)
 
             node.reloadSections(
-                [recipientsSection.rawValue, Section.password.rawValue],
+                IndexSet(sectionsToReload.map(\.rawValue).unique()),
                 with: .automatic
             )
 
@@ -1019,7 +1031,9 @@ extension ComposeViewController {
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
             node.reloadRows(at: [indexPath], with: .fade)
-            node.reloadSections([Section.password.rawValue], with: .automatic)
+
+            let sectionsToReload: [Section] = [.to, .password]
+            node.reloadSections(IndexSet(sectionsToReload.map(\.rawValue)), with: .automatic)
         } else {
             // dismiss keyboard if no recipients left
             textField.resignFirstResponder()
@@ -1126,20 +1140,18 @@ extension ComposeViewController {
         state: RecipientState,
         keyState: PubKeyState? = nil
     ) {
-        contextToSend.recipients.indices.forEach {
-            guard contextToSend.recipients[$0].email == email else { return }
+        contextToSend.recipients.indices.forEach { index in
+            guard contextToSend.recipients[index].email == email else { return }
 
-            let recipient = contextToSend.recipients[$0]
+            let recipient = contextToSend.recipients[index]
             let needsReload = recipient.state != state || recipient.keyState != keyState
 
-            contextToSend.recipients[$0].state = state
-            contextToSend.recipients[$0].keyState = keyState
+            contextToSend.recipients[index].state = state
+            contextToSend.recipients[index].keyState = keyState
 
             if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
-                let sections: [Section] = [.recipientsSection(type: recipient.type), .password]
-                node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
-                // TODO
-                // node.reloadRows(at: [recipientsIndexPath], with: .automatic)
+                let section = Section.recipientsSection(type: recipient.type)
+                node.reloadSections(IndexSet([section.rawValue]), with: .automatic)
             }
         }
 
@@ -1149,7 +1161,7 @@ extension ComposeViewController {
     private func handleRecipientSelection(with indexPath: IndexPath, type: RecipientType) {
         guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
-        let indexPath = recipientsIndexPath(type: type, part: .list)
+        let listIndexPath = recipientsIndexPath(type: type, part: .list)
         let isSelected = recipient.state.isSelected
         let state = isSelected ? decorator.recipientIdleState : decorator.recipientSelectedState
         contextToSend.update(recipient: recipient.email, type: type, state: state)
@@ -1158,7 +1170,7 @@ extension ComposeViewController {
             evaluate(recipient: recipient)
         }
 
-        node.reloadRows(at: [indexPath], with: .automatic)
+        node.reloadRows(at: [listIndexPath], with: .automatic)
 
         let textField = recipientsTextField(type: type)
         if !(textField?.isFirstResponder() ?? true) {
@@ -1287,34 +1299,29 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
     }
 
     private func handleResults(_ results: [PHPickerResult]) {
-        let itemProvider = results.first?.itemProvider
-        if itemProvider?.hasItemConformingToTypeIdentifier("public.movie") == true {
-            itemProvider?.loadFileRepresentation(
-                forTypeIdentifier: "public.movie",
-                completionHandler: { [weak self] url, error in
-                    DispatchQueue.main.async {
-                        self?.handleRepresentation(
-                            url: url,
-                            error: error,
-                            isVideo: true
-                        )
-                    }
-                }
-            )
-        } else {
-            itemProvider?.loadFileRepresentation(
-                forTypeIdentifier: "public.image",
-                completionHandler: { [weak self] url, error in
-                    DispatchQueue.main.async {
-                        self?.handleRepresentation(
-                            url: url,
-                            error: error,
-                            isVideo: false
-                        )
-                    }
-                }
-            )
+        guard let itemProvider = results.first?.itemProvider else { return }
+
+        enum MediaType: String {
+            case image, movie
+
+            var identifier: String { "public.\(rawValue)" }
         }
+
+        let isVideo = itemProvider.hasItemConformingToTypeIdentifier(MediaType.movie.identifier)
+        let mediaType: MediaType = isVideo ? .movie : .image
+
+        itemProvider.loadFileRepresentation(
+            forTypeIdentifier: mediaType.identifier,
+            completionHandler: { [weak self] url, error in
+                DispatchQueue.main.async {
+                    self?.handleRepresentation(
+                        url: url,
+                        error: error,
+                        isVideo: isVideo
+                    )
+                }
+            }
+        )
     }
 
     private func handleRepresentation(url: URL?, error: Error?, isVideo: Bool) {
