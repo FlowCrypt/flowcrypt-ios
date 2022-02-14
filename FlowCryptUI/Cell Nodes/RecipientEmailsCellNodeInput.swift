@@ -10,7 +10,7 @@ import UIKit
 
 // MARK: Input
 extension RecipientEmailsCellNode {
-    public struct RecipientInput {
+    public struct Input {
         public struct StateContext: Equatable {
             let backgroundColor, borderColor, textColor: UIColor
             let image: UIImage?
@@ -105,14 +105,6 @@ extension RecipientEmailsCellNode {
         ) {
             self.email = email
             self.state = state
-        }
-    }
-
-    public struct TextFieldInput {
-        let placeholder: NSAttributedString
-
-        public init(placeholder: NSAttributedString) {
-            self.placeholder = placeholder
         }
     }
 }

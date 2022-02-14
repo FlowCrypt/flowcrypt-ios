@@ -67,9 +67,9 @@ final public class RecipientEmailsCellNode: CellNode {
         return node
     }()
     private var collectionLayoutHeight: CGFloat
-    private var recipients: [RecipientInput] = []
+    private var recipients: [Input] = []
 
-    public init(recipients: [RecipientInput],
+    public init(recipients: [Input],
                 height: CGFloat,
                 isToggleButtonRotated: Bool,
                 toggleButtonAction: (() -> Void)?) {

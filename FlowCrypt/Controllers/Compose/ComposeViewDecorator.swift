@@ -9,7 +9,7 @@
 import FlowCryptUI
 import UIKit
 
-typealias RecipientStateContext = RecipientEmailsCellNode.RecipientInput.StateContext
+typealias RecipientStateContext = RecipientEmailsCellNode.Input.StateContext
 
 struct ComposeViewDecorator {
     let recipientIdleState: RecipientState = .idle(idleStateContext)
@@ -269,7 +269,7 @@ extension ComposeViewDecorator {
 }
 
 // MARK: - RecipientEmailsCellNode.Input
-extension RecipientEmailsCellNode.RecipientInput {
+extension RecipientEmailsCellNode.Input {
     init(_ recipient: ComposeMessageRecipient) {
         self.init(
             email: recipient.email.lowercased().attributed(

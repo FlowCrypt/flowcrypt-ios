@@ -21,7 +21,7 @@ final class RecipientEmailNode: CellNode {
     }
 
     struct Input {
-        let recipient: RecipientEmailsCellNode.RecipientInput
+        let recipient: RecipientEmailsCellNode.Input
         let width: CGFloat
     }
 

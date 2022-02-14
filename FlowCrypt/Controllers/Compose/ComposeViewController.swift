@@ -230,9 +230,9 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private func evaluateAllRecipients() {
-        contextToSend.recipients.forEach {
-            evaluate(recipient: $0)
-        }
+        for recipient in contextToSend.recipients {
+             evaluate(recipient: recipient)
+         }
     }
 
     func update(with message: Message) {
@@ -778,7 +778,7 @@ extension ComposeViewController {
             && !contextToSend.hasCcOrBccRecipients
 
         return RecipientEmailsCellNode(
-            recipients: recipients.map(RecipientEmailsCellNode.RecipientInput.init),
+            recipients: recipients.map(RecipientEmailsCellNode.Input.init),
             height: recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
             isToggleButtonRotated: shouldShowAllRecipientTypes,
             toggleButtonAction: shouldShowToggleButton ? { [weak self] in

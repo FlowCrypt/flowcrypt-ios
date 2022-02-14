@@ -11,7 +11,7 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 import FlowCryptCommon
 
-typealias RecipientState = RecipientEmailsCellNode.RecipientInput.State
+typealias RecipientState = RecipientEmailsCellNode.Input.State
 
 protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
@@ -78,11 +78,12 @@ final class ComposeMessageService {
     ) async throws -> SendableMsg {
         onStateChanged?(.validatingMessage)
 
-        guard contextToSend.recipients.isNotEmpty else {
+        let recipients = contextToSend.recipients
+        guard recipients.isNotEmpty else {
             throw MessageValidationError.emptyRecipient
         }
 
-        let emails = contextToSend.recipients.map(\.email)
+        let emails = recipients.map(\.email)
         let emptyEmails = emails.filter { !$0.hasContent }
 
         guard emails.isNotEmpty, emptyEmails.isEmpty else {
@@ -111,7 +112,7 @@ final class ComposeMessageService {
                 ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
                 : []
 
-        let recipientsWithPubKeys = try await getRecipientKeys(for: contextToSend.recipients)
+        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
         let validPubKeys = try validate(
             recipients: recipientsWithPubKeys,
             hasMessagePassword: contextToSend.hasMessagePassword

@@ -77,7 +77,10 @@ extension ComposeMessageContext {
     }
 
     mutating func update(recipient: String, type: RecipientType, state: RecipientState) {
-        guard let index = recipients.firstIndex(where: { $0.email == recipient && $0.type == type }) else { return }
+        guard let index = recipients.firstIndex(where: {
+            $0.email == recipient && $0.type == type
+        }) else { return }
+        
         recipients[index].state = state
     }
 
