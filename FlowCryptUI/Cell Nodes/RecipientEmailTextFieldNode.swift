@@ -9,45 +9,55 @@
 import AsyncDisplayKit
 
 public final class RecipientEmailTextFieldNode: TextFieldCellNode {
-    private var buttonAction: (() -> Void)?
+    private var toggleButtonAction: (() -> Void)?
 
-    private lazy var buttonNode: ASButtonNode = {
+    private lazy var toggleButtonNode: ASButtonNode = {
         let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .light)
         let image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
         let button = ASButtonNode()
         button.setImage(image, for: .normal)
         button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
         button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
-        button.addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
+        button.addTarget(self, action: #selector(onToggleButtonTap), forControlEvents: .touchUpInside)
         return button
     }()
 
-    var buttonIsRotated = false {
+    var isToggleButtonRotated = false {
         didSet {
             updateButton()
         }
     }
 
-    public init(input: TextFieldCellNode.Input, action: TextFieldAction? = nil, buttonAction: (() -> Void)?) {
+    public init(
+        input: TextFieldCellNode.Input,
+        action: TextFieldAction? = nil,
+        isToggleButtonRotated: Bool,
+        toggleButtonAction: (() -> Void)?
+    ) {
         super.init(input: input, action: action)
 
-        self.buttonAction = buttonAction
+        self.isToggleButtonRotated = isToggleButtonRotated
+        self.toggleButtonAction = toggleButtonAction
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let textFieldWidth = input.width ?? (constrainedSize.max.width - input.insets.width)
 
-        if buttonAction != nil {
+        if toggleButtonAction != nil {
             let buttonSize = CGSize(width: 40, height: 40)
 
-            buttonNode.style.preferredSize = buttonSize
+            toggleButtonNode.style.preferredSize = buttonSize
             textField.style.preferredSize = CGSize(
                 width: textFieldWidth - buttonSize.width - input.insets.right - 4,
                 height: input.height
             )
 
             let stack = ASStackLayoutSpec.horizontal()
-            stack.children = [textField, buttonNode]
+            stack.children = [textField, toggleButtonNode]
+
+            DispatchQueue.main.async {
+                self.toggleButtonNode.view.transform = CGAffineTransform(rotationAngle: self.isToggleButtonRotated ? .pi : 0)
+            }
 
             return ASInsetLayoutSpec(insets: input.insets, child: stack)
         } else {
@@ -62,13 +72,13 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
 
     private func updateButton() {
         UIView.animate(withDuration: 0.3) {
-            self.buttonNode.view.transform = CGAffineTransform(rotationAngle: self.buttonIsRotated ? .pi : 0)
+            self.toggleButtonNode.view.transform = CGAffineTransform(rotationAngle: self.isToggleButtonRotated ? .pi : 0)
         }
     }
 
-    @objc private func onButtonTap() {
-        buttonIsRotated.toggle()
-        buttonAction?()
+    @objc private func onToggleButtonTap() {
+        isToggleButtonRotated.toggle()
+        toggleButtonAction?()
     }
 
     @discardableResult

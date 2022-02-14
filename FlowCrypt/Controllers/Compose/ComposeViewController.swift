@@ -762,19 +762,19 @@ extension ComposeViewController {
 
     private func recipientsNode(type: RecipientType) -> ASCellNode {
         let recipients = contextToSend.recipients(of: type)
+        let shouldShowToggleButton = type == .to
+            && recipients.isNotEmpty
+            && !contextToSend.hasCcOrBccRecipients
 
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.RecipientInput.init),
             height: recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
-            textFieldInput: RecipientEmailsCellNode.TextFieldInput(
-                placeholder: type.inputPlaceholder.attributed(
-                    .regular(17),
-                    color: .lightGray
-                )
-            ),
-            textFieldAction: { [weak self] action in
-                self?.handle(textFieldAction: action, for: type)
-            })
+            isToggleButtonRotated: shouldShowAllRecipientTypes,
+            toggleButtonAction: shouldShowToggleButton ? { [weak self] in
+                guard type == .to else { return }
+                self?.toggleRecipientsList()
+            } : nil
+        )
             .onLayoutHeightChanged { [weak self] layoutHeight in
                 self?.updateRecipientsNode(
                     layoutHeight: layoutHeight,
@@ -820,6 +820,10 @@ extension ComposeViewController {
     }
 
     private func recipientInput(type: RecipientType) -> ASCellNode {
+        let shouldShowToggleButton = type == .to
+            && contextToSend.recipients(of: .to).isEmpty
+            && !contextToSend.hasCcOrBccRecipients
+
         return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
                 with: type.inputPlaceholder,
@@ -829,7 +833,8 @@ extension ComposeViewController {
             action: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)
             },
-            buttonAction: type == .to && !contextToSend.hasCcOrBccRecipients ? { [weak self] in
+            isToggleButtonRotated: shouldShowAllRecipientTypes,
+            toggleButtonAction: shouldShowToggleButton ? { [weak self] in
                 guard type == .to else { return }
                 self?.toggleRecipientsList()
             } : nil
@@ -934,7 +939,7 @@ extension ComposeViewController {
         let textField = recipientsTextField(type: recipientType)
         textField?.reset()
 
-        // Set all recipients to idle state
+        // Set all selected recipients to idle state
         let idleRecipients: [ComposeMessageRecipient] = recipients.map { recipient in
             var recipient = recipient
             if recipient.state.isSelected {

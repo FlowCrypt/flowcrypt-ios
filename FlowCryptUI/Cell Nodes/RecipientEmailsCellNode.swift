@@ -24,6 +24,24 @@ final public class RecipientEmailsCellNode: CellNode {
 
     private var onAction: RecipientTap?
 
+    private var toggleButtonAction: (() -> Void)?
+    private lazy var toggleButtonNode: ASButtonNode = {
+        let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .light)
+        let image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
+        let button = ASButtonNode()
+        button.setImage(image, for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
+        button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
+        button.addTarget(self, action: #selector(onToggleButtonTap), forControlEvents: .touchUpInside)
+        return button
+    }()
+
+    var isToggleButtonRotated = false {
+        didSet {
+            updateButton()
+        }
+    }
+
     private lazy var layout: LeftAlignedCollectionViewFlowLayout = {
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -51,7 +69,10 @@ final public class RecipientEmailsCellNode: CellNode {
     private var collectionLayoutHeight: CGFloat
     private var recipients: [RecipientInput] = []
 
-    public init(recipients: [RecipientInput], height: CGFloat, textFieldInput: TextFieldInput, textFieldAction: TextFieldAction?) {
+    public init(recipients: [RecipientInput],
+                height: CGFloat,
+                isToggleButtonRotated: Bool,
+                toggleButtonAction: (() -> Void)?) {
         self.recipients = recipients
         self.collectionLayoutHeight = height
         super.init()
@@ -63,16 +84,44 @@ final public class RecipientEmailsCellNode: CellNode {
         }
 
         automaticallyManagesSubnodes = true
+
+        self.isToggleButtonRotated = isToggleButtonRotated
+        self.toggleButtonAction = toggleButtonAction
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         collectionNode.style.preferredSize.height = recipients.isEmpty ? 0 : collectionLayoutHeight
-        collectionNode.style.preferredSize.width = constrainedSize.max.width
 
-        return ASInsetLayoutSpec(
-            insets: .zero, // TODO
-            child: collectionNode
-        )
+        if toggleButtonAction != nil {
+            let buttonSize = CGSize(width: 40, height: 50)
+
+            toggleButtonNode.style.preferredSize = buttonSize
+
+            collectionNode.style.preferredSize.width = constrainedSize.max.width - buttonSize.width - 4
+
+            let stack = ASStackLayoutSpec.horizontal()
+            stack.children = [collectionNode, toggleButtonNode]
+
+            DispatchQueue.main.async {
+                self.toggleButtonNode.view.transform = CGAffineTransform(rotationAngle: self.isToggleButtonRotated ? .pi : 0)
+            }
+
+            return ASInsetLayoutSpec(insets: .zero, child: stack)
+        } else {
+            collectionNode.style.preferredSize.width = constrainedSize.max.width
+            return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
+        }
+    }
+
+    private func updateButton() {
+        UIView.animate(withDuration: 0.3) {
+            self.toggleButtonNode.view.transform = CGAffineTransform(rotationAngle: self.isToggleButtonRotated ? .pi : 0)
+        }
+    }
+
+    @objc private func onToggleButtonTap() {
+        isToggleButtonRotated.toggle()
+        toggleButtonAction?()
     }
 }
 
