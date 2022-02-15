@@ -99,7 +99,7 @@ final class ComposeViewController: TableNodeViewController {
         navigationController?.navigationBar.frame.maxY ?? 0
     }
 
-    private var selectedRecipientType: RecipientType?
+    private var selectedRecipientType: RecipientType? = .to
     private var shouldShowAllRecipientTypes = false
 
     private var sectionsList: [Section] = []
@@ -202,10 +202,6 @@ final class ComposeViewController: TableNodeViewController {
 
         didLayoutSubviews = true
         node.contentInset.top = topContentInset
-
-        if input.isForward || input.isIdle {
-            focusRecipientInput(type: .to)
-        }
     }
 
     deinit {
@@ -664,7 +660,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 file: contextToSend.attachments[indexPath.row],
                 shouldShowDownloadButton: false
             )
-            navigationController?.pushViewController(controller, animated: true )
+            navigationController?.pushViewController(controller, animated: true)
         }
     }
 
@@ -852,6 +848,11 @@ extension ComposeViewController {
         .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
             self?.shouldChange(with: textField, and: character, for: type) ?? true
         }
+        .then {
+            if type == selectedRecipientType {
+                $0.becomeFirstResponder()
+            }
+        }
     }
 
     private func attachmentNode(for index: Int) -> ASCellNode {
@@ -890,14 +891,6 @@ extension ComposeViewController {
 
 // MARK: - Recipients Input
 extension ComposeViewController {
-    private func focusRecipientInput(type: RecipientType) {
-        guard let indexPath = recipientsIndexPath(type: type, part: .input),
-              let inputNode = node.nodeForRow(at: indexPath) as? RecipientEmailTextFieldNode
-        else { return }
-
-        inputNode.textField.becomeFirstResponder()
-    }
-
     private func shouldChange(with textField: UITextField, and character: String, for recipientType: RecipientType) -> Bool {
         func nextResponder() {
             guard let node = node.visibleNodes[safe: ComposePart.subject.rawValue] as? TextFieldCellNode else { return }
@@ -1019,17 +1012,15 @@ extension ComposeViewController {
             return
         }
 
-        if var lastRecipient = recipients.last {
+        if var lastRecipient = recipients.popLast() {
             // select last recipient in a list
             lastRecipient.state = self.decorator.recipientSelectedState
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
 
-            if let indexPath = recipientsIndexPath(type: recipientType, part: .input) {
+            if let indexPath = recipientsIndexPath(type: recipientType, part: .list) {
                 node.reloadRows(at: [indexPath], with: .automatic)
             }
-
-            reload(sections: [.recipients(.to), .password])
         } else {
             // dismiss keyboard if no recipients left
             textField.resignFirstResponder()
@@ -1261,10 +1252,6 @@ extension ComposeViewController {
         case .main:
             sectionsList = Section.recipientsSections + [.password, .compose, .attachments]
             node.reloadData()
-
-            if let recipientType = selectedRecipientType {
-                focusRecipientInput(type: recipientType)
-            }
         case .searchEmails:
             let previousSectionsCount = sectionsList.count
             sectionsList = Section.recipientsSections + [.searchResults, .contacts]

@@ -97,7 +97,7 @@ final public class RecipientEmailsCellNode: CellNode {
 
             toggleButtonNode.style.preferredSize = buttonSize
 
-            collectionNode.style.preferredSize.width = constrainedSize.max.width - buttonSize.width - 4
+            collectionNode.style.preferredSize.width = max(0, constrainedSize.max.width - buttonSize.width - 4)
 
             let stack = ASStackLayoutSpec.horizontal()
             stack.children = [collectionNode, toggleButtonNode]
