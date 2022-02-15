@@ -390,11 +390,7 @@ export class PgpKey {
       }
     }
     if (allSignatures.length > 0) {
-      allSignatures.sort((a, b) => {
-        return (b.created ? b.created.getTime() : 0) - (a.created ? a.created.getTime() : 0);
-      });
-      const newestSig = allSignatures[0];
-      return newestSig.created ? newestSig.created.getTime() : 0;
+      return Math.max(...allSignatures.map(x => x.created ? x.created.getTime() : 0));
     }
     throw new Error('No valid signature found in key');
   }
