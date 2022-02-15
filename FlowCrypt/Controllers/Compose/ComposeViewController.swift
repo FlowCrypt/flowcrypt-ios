@@ -202,6 +202,10 @@ final class ComposeViewController: TableNodeViewController {
 
         didLayoutSubviews = true
         node.contentInset.top = topContentInset
+
+        if input.isForward || input.isIdle {
+            focusRecipientInput(type: .to)
+        }
     }
 
     deinit {
@@ -644,11 +648,13 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         if case let .searchEmails(emails) = state, let recipientType = selectedRecipientType {
-            switch indexPath.section {
-            case RecipientType.allCases.count:
+            guard let section = sectionsList[safe: indexPath.section] else { return }
+
+            switch section {
+            case .searchResults:
                 let selectedEmail = emails[safe: indexPath.row-1]
                 handleEndEditingAction(with: selectedEmail, for: recipientType)
-            case RecipientType.allCases.count + 1:
+            case .contacts:
                 askForContactsPermission()
             default:
                 break
@@ -846,15 +852,6 @@ extension ComposeViewController {
         .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
             self?.shouldChange(with: textField, and: character, for: type) ?? true
         }
-        .then {
-            $0.isLowercased = true
-
-            guard type == .to,
-                  self.input.isForward || self.input.isIdle
-            else { return }
-
-            $0.becomeFirstResponder()
-        }
     }
 
     private func attachmentNode(for index: Int) -> ASCellNode {
@@ -893,6 +890,14 @@ extension ComposeViewController {
 
 // MARK: - Recipients Input
 extension ComposeViewController {
+    private func focusRecipientInput(type: RecipientType) {
+        guard let indexPath = recipientsIndexPath(type: type, part: .input),
+              let inputNode = node.nodeForRow(at: indexPath) as? RecipientEmailTextFieldNode
+        else { return }
+
+        inputNode.textField.becomeFirstResponder()
+    }
+
     private func shouldChange(with textField: UITextField, and character: String, for recipientType: RecipientType) -> Bool {
         func nextResponder() {
             guard let node = node.visibleNodes[safe: ComposePart.subject.rawValue] as? TextFieldCellNode else { return }
@@ -1139,7 +1144,11 @@ extension ComposeViewController {
             contextToSend.recipients[index].keyState = keyState
 
             if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
-                reload(sections: [.recipients(recipient.type), .password])
+                reload(sections: [.password])
+
+                if let listIndexPath = recipientsIndexPath(type: recipient.type, part: .list) {
+                    node.reloadRows(at: [listIndexPath], with: .automatic)
+                }
             }
         }
     }
@@ -1252,18 +1261,31 @@ extension ComposeViewController {
         case .main:
             sectionsList = Section.recipientsSections + [.password, .compose, .attachments]
             node.reloadData()
+
+            if let recipientType = selectedRecipientType {
+                focusRecipientInput(type: recipientType)
+            }
         case .searchEmails:
+            let previousSectionsCount = sectionsList.count
             sectionsList = Section.recipientsSections + [.searchResults, .contacts]
 
-            let sectionsToReload: [Section]
+            let deletedSectionsCount = previousSectionsCount - sectionsList.count
 
+            let sectionsToReload: [Section]
             if let type = selectedRecipientType {
                 sectionsToReload = sectionsList.filter { $0 != .recipients(type) }
             } else {
                 sectionsToReload = sectionsList
             }
 
-            reload(sections: sectionsToReload)
+            node.performBatchUpdates {
+                if deletedSectionsCount > 0 {
+                    let sectionsToDelete = sectionsList.count..<sectionsList.count + deletedSectionsCount
+                    node.deleteSections(IndexSet(sectionsToDelete), with: .none)
+                }
+
+                reload(sections: sectionsToReload)
+            }
         }
     }
 }
@@ -1474,7 +1496,7 @@ extension ComposeViewController {
         Task {
             do {
                 try await router.askForContactsPermission(for: .gmailLogin(self), appContext: appContext)
-                node.reloadSections([2], with: .automatic)
+                reload(sections: [.contacts])
             } catch {
                 handleContactsPermissionError(error)
             }

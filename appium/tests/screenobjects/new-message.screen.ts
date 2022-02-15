@@ -2,7 +2,9 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  ADD_RECIPIENT_FIELD: '~aid-recipient-text-field',
+  ADD_RECIPIENT_FIELD_TO: '~aid-recipient-text-field-to',
+  ADD_RECIPIENT_FIELD_CC: '~aid-recipient-text-field-cc',
+  ADD_RECIPIENT_FIELD_BCC: '~aid-recipient-text-field-bcc',
   SUBJECT_FIELD: '~subjectTextField',
   COMPOSE_SECURITY_MESSAGE: '~messageTextView',
   RECIPIENTS_LIST: '~aid-recipients-list',
@@ -22,11 +24,19 @@ const SELECTORS = {
 
 class NewMessageScreen extends BaseScreen {
   constructor() {
-    super(SELECTORS.ADD_RECIPIENT_FIELD);
+    super(SELECTORS.ADD_RECIPIENT_FIELD_TO);
   }
 
-  get addRecipientField() {
-    return $(SELECTORS.ADD_RECIPIENT_FIELD);
+  get addToRecipientField() {
+    return $(SELECTORS.ADD_RECIPIENT_FIELD_TO);
+  }
+
+  get addCcRecipientField() {
+    return $(SELECTORS.ADD_RECIPIENT_FIELD_CC);
+  }
+
+  get addBccRecipientField() {
+    return $(SELECTORS.ADD_RECIPIENT_FIELD_BCC);
   }
 
   get subjectField() {
@@ -86,7 +96,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   setAddRecipient = async (recipient: string) => {
-    await (await this.addRecipientField).setValue(recipient);
+    await (await this.addToRecipientField).setValue(recipient);
     await browser.pause(500);
     await (await $(SELECTORS.RETURN_BUTTON)).click()
   };
@@ -114,7 +124,7 @@ class NewMessageScreen extends BaseScreen {
 
   setAddRecipientByName = async (name: string, email: string) => {
     await browser.pause(500); // stability fix for transition animation
-    await (await this.addRecipientField).setValue(name);
+    await (await this.addToRecipientField).setValue(name);
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
 
@@ -132,7 +142,7 @@ class NewMessageScreen extends BaseScreen {
   };
 
   checkRecipientsTextFieldIsInvisible = async () => {
-    await ElementHelper.waitElementInvisible(await this.addRecipientField);
+    await ElementHelper.waitElementInvisible(await this.addToRecipientField);
   }
 
   checkRecipientsList = async(recipients: string[]) => {

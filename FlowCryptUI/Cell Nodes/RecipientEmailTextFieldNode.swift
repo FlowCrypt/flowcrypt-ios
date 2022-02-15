@@ -36,6 +36,7 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
     ) {
         super.init(input: input, action: action)
 
+        self.isLowercased = true
         self.isToggleButtonRotated = isToggleButtonRotated
         self.toggleButtonAction = toggleButtonAction
 
