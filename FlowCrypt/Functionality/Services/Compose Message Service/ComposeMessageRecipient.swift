@@ -21,7 +21,7 @@ extension ComposeMessageRecipient: Equatable {
     }
 }
 
-enum RecipientType: String, CaseIterable {
+enum RecipientType: String, CaseIterable, Hashable {
     case to, cc, bcc
 }
 

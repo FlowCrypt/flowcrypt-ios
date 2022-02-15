@@ -18,20 +18,17 @@ import PhotosUI
 final class ComposeViewController: TableNodeViewController {
     private var calculatedRecipientsToPartHeight: CGFloat? {
         didSet {
-            let sections: [Section] = [.to, .password]
-            node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
+            reload(sections: [.recipients(.to), .password])
         }
     }
     private var calculatedRecipientsCcPartHeight: CGFloat? {
         didSet {
-            let sections: [Section] = [.to, .cc, .password]
-            node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
+            reload(sections: [.recipients(.to), .recipients(.cc), .password])
         }
     }
     private var calculatedRecipientsBccPartHeight: CGFloat? {
         didSet {
-            let sections: [Section] = [.to, .bcc, .password]
-            node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
+            reload(sections: [.recipients(.to), .recipients(.bcc), .password])
         }
     }
 
@@ -50,31 +47,11 @@ final class ComposeViewController: TableNodeViewController {
         case main, searchEmails([String])
     }
 
-    private enum Section: Int, CaseIterable {
-        case to, cc, bcc, password, compose, attachments
+    private enum Section: Hashable {
+        case recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
-        var recipientType: RecipientType? {
-            switch self {
-            case .to:
-                return .to
-            case .cc:
-                return .cc
-            case .bcc:
-                return .bcc
-            case .password, .compose, .attachments:
-                return nil
-            }
-        }
-
-        static func recipientsSection(type: RecipientType) -> Section {
-            switch type {
-            case .to:
-                return .to
-            case .cc:
-                return .cc
-            case .bcc:
-                return .bcc
-            }
+        static var recipientsSections: [Section] {
+            RecipientType.allCases.map { Section.recipients($0) }
         }
     }
 
@@ -124,6 +101,8 @@ final class ComposeViewController: TableNodeViewController {
 
     private var selectedRecipientType: RecipientType?
     private var shouldShowAllRecipientTypes = false
+
+    private var sectionsList: [Section] = []
 
     init(
         appContext: AppContextWithUser,
@@ -357,6 +336,8 @@ extension ComposeViewController {
             $0.view.contentInsetAdjustmentBehavior = .never
             $0.view.keyboardDismissMode = .interactive
         }
+
+        updateState(with: .main)
     }
 
     private func setupQuote() {
@@ -592,29 +573,28 @@ extension ComposeViewController {
 
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     func numberOfSections(in _: ASTableNode) -> Int {
-        Section.allCases.count
+        sectionsList.count
     }
 
     func tableNode(_: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        switch (state, section) {
-        case (.main, Section.to.rawValue):
+        guard let sectionItem = sectionsList[safe: section] else { return 0 }
+
+        switch (state, sectionItem) {
+        case (.main, .recipients(.to)):
             return RecipientPart.allCases.count
-        case (.main, Section.cc.rawValue), (.main, Section.bcc.rawValue):
+        case (.main, .recipients(.cc)), (.main, .recipients(.bcc)):
             return shouldShowAllRecipientTypes ? RecipientPart.allCases.count : 0
-        case (.main, Section.password.rawValue):
+        case (.main, .password):
             return isMessagePasswordSupported && contextToSend.hasRecipientsWithoutPubKey ? 1 : 0
-        case (.main, Section.compose.rawValue):
+        case (.main, .compose):
             return ComposePart.allCases.count
-        case (.main, Section.attachments.rawValue):
+        case (.main, .attachments):
             return contextToSend.attachments.count
-        case (.searchEmails, Section.to.rawValue),
-             (.searchEmails, Section.cc.rawValue),
-             (.searchEmails, Section.bcc.rawValue):
-            let recipientType = Section(rawValue: section)?.recipientType
-            return selectedRecipientType == recipientType ? RecipientPart.allCases.count : 0
-        case let (.searchEmails(emails), RecipientType.allCases.count):
+        case (.searchEmails, .recipients(let type)):
+            return selectedRecipientType == type ? RecipientPart.allCases.count : 0
+        case let (.searchEmails(emails), .searchResults):
             return emails.isNotEmpty ? emails.count + 1 : 2
-        case (.searchEmails, RecipientType.allCases.count + 1):
+        case (.searchEmails, .contacts):
             return cloudContactProvider.isContactsScopeEnabled ? 0 : 2
         default:
             return 0
@@ -624,35 +604,37 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self = self,
+                  let section = self.sectionsList[safe: indexPath.section]
+            else { return ASCellNode() }
 
-            switch (self.state, indexPath.section) {
-            case (_, Section.to.rawValue), (_, Section.cc.rawValue), (_, Section.bcc.rawValue):
+            switch (self.state, section) {
+            case (_, .recipients(.to)), (_, .recipients(.cc)), (_, .recipients(.bcc)):
                 let recipientType = RecipientType.allCases[indexPath.section]
                 if indexPath.row == 0 {
                     return self.recipientsNode(type: recipientType)
                 } else {
                     return self.recipientInput(type: recipientType)
                 }
-            case (.main, Section.password.rawValue):
+            case (.main, .password):
                 return self.messagePasswordNode()
-            case (.main, Section.compose.rawValue):
+            case (.main, .compose):
                 guard let part = ComposePart(rawValue: indexPath.row) else { return ASCellNode() }
                 switch part {
                 case .subject: return self.subjectNode()
                 case .text: return self.textNode()
                 case .topDivider, .subjectDivider: return DividerCellNode()
                 }
-            case (.main, Section.attachments.rawValue):
+            case (.main, .attachments):
                 guard !self.contextToSend.attachments.isEmpty else {
                     return ASCellNode()
                 }
                 return self.attachmentNode(for: indexPath.row)
-            case let (.searchEmails(emails), RecipientType.allCases.count):
+            case let (.searchEmails(emails), .searchResults):
                 guard indexPath.row > 0 else { return DividerCellNode() }
                 guard emails.isNotEmpty else { return self.noSearchResultsNode() }
                 return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row-1]))
-            case (.searchEmails, RecipientType.allCases.count + 1):
+            case (.searchEmails, .contacts):
                 return indexPath.row == 0 ? DividerCellNode() : self.enableGoogleContactsNode()
             default:
                 return ASCellNode()
@@ -678,6 +660,14 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             )
             navigationController?.pushViewController(controller, animated: true )
         }
+    }
+
+    private func reload(sections: [Section]) {
+        let indexes = sectionsList.enumerated().compactMap { index, section in
+            sections.contains(section) ? index : nil
+        }
+
+        node.reloadSections(IndexSet(indexes), with: .automatic)
     }
 }
 
@@ -846,7 +836,6 @@ extension ComposeViewController {
             },
             isToggleButtonRotated: shouldShowAllRecipientTypes,
             toggleButtonAction: shouldShowToggleButton ? { [weak self] in
-                guard type == .to else { return }
                 self?.toggleRecipientsList()
             } : nil
         )
@@ -876,7 +865,7 @@ extension ComposeViewController {
             ),
             onDeleteTap: { [weak self] in
                 self?.contextToSend.attachments.safeRemove(at: index)
-                self?.node.reloadSections([Section.attachments.rawValue], with: .automatic)
+                self?.reload(sections: [.attachments])
             }
         )
     }
@@ -945,7 +934,6 @@ extension ComposeViewController {
         else { return }
 
         let recipients = contextToSend.recipients(of: recipientType)
-        let indexPath = recipientsIndexPath(type: recipientType, part: .list)
 
         let textField = recipientsTextField(type: recipientType)
         textField?.reset()
@@ -964,6 +952,8 @@ extension ComposeViewController {
         let newRecipient = ComposeMessageRecipient(email: text, type: recipientType, state: decorator.recipientIdleState)
         let indexOfRecipient: Int
 
+        let indexPath = recipientsIndexPath(type: recipientType, part: .list)
+
         if let index = idleRecipients.firstIndex(where: { $0.email == newRecipient.email }) {
             // recipient already in list
             evaluate(recipient: newRecipient)
@@ -971,20 +961,26 @@ extension ComposeViewController {
         } else {
             // add new recipient
             contextToSend.add(recipient: newRecipient)
-            node.reloadRows(at: [indexPath], with: .automatic)
+
+            if let indexPath = indexPath {
+                node.reloadRows(at: [indexPath], with: .automatic)
+            }
+
             evaluate(recipient: newRecipient)
 
             // scroll to the latest recipient
             indexOfRecipient = recipients.endIndex - 1
         }
 
-        let collectionNode = (node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode)?.collectionNode
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            collectionNode?.scrollToItem(
-                at: IndexPath(row: indexOfRecipient, section: 0),
-                at: .bottom,
-                animated: true
-            )
+        if let indexPath = indexPath,
+           let emailsNode = node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                emailsNode.collectionNode.scrollToItem(
+                    at: IndexPath(row: indexOfRecipient, section: 0),
+                    at: .bottom,
+                    animated: true
+                )
+            }
         }
 
         node.view.keyboardDismissMode = .interactive
@@ -993,13 +989,13 @@ extension ComposeViewController {
         updateState(with: .main)
     }
 
-    private func recipientsIndexPath(type: RecipientType, part: RecipientPart) -> IndexPath {
-        let section = Section.recipientsSection(type: type)
-        return IndexPath(row: part.rawValue, section: section.rawValue)
+    private func recipientsIndexPath(type: RecipientType, part: RecipientPart) -> IndexPath? {
+        guard let section = sectionsList.firstIndex(of: .recipients(type)) else { return nil }
+        return IndexPath(row: part.rawValue, section: section)
     }
 
     private func recipientsTextField(type: RecipientType) -> TextFieldNode? {
-        let indexPath = recipientsIndexPath(type: type, part: .input)
+        guard let indexPath = recipientsIndexPath(type: type, part: .input) else { return nil }
         return (node.nodeForRow(at: indexPath) as? RecipientEmailTextFieldNode)?.textField
     }
 
@@ -1008,19 +1004,12 @@ extension ComposeViewController {
 
         var recipients = contextToSend.recipients(of: recipientType)
 
-        let indexPath = recipientsIndexPath(type: recipientType, part: .input)
         let selectedRecipients = recipients.filter { $0.state.isSelected }
-        let recipientsSection = Section.recipientsSection(type: recipientType)
 
         guard selectedRecipients.isEmpty else {
-            let sectionsToReload: [Section] = [.to, recipientsSection, .password]
             let notSelectedRecipients = recipients.filter { !$0.state.isSelected }
             contextToSend.set(recipients: notSelectedRecipients, for: recipientType)
-
-            node.reloadSections(
-                IndexSet(sectionsToReload.map(\.rawValue).unique()),
-                with: .automatic
-            )
+            reload(sections: [.recipients(.to), .recipients(recipientType), .password])
 
             return
         }
@@ -1030,10 +1019,12 @@ extension ComposeViewController {
             lastRecipient.state = self.decorator.recipientSelectedState
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
-            node.reloadRows(at: [indexPath], with: .fade)
 
-            let sectionsToReload: [Section] = [.to, .password]
-            node.reloadSections(IndexSet(sectionsToReload.map(\.rawValue)), with: .automatic)
+            if let indexPath = recipientsIndexPath(type: recipientType, part: .input) {
+                node.reloadRows(at: [indexPath], with: .automatic)
+            }
+
+            reload(sections: [.recipients(.to), .password])
         } else {
             // dismiss keyboard if no recipients left
             textField.resignFirstResponder()
@@ -1050,10 +1041,8 @@ extension ComposeViewController {
     }
 
     private func toggleRecipientsList() {
-        let sections: [Section] = [.cc, .bcc]
         shouldShowAllRecipientTypes.toggle()
-
-        node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
+        reload(sections: [.recipients(.cc), .recipients(.bcc)])
     }
 }
 
@@ -1150,18 +1139,14 @@ extension ComposeViewController {
             contextToSend.recipients[index].keyState = keyState
 
             if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
-                let section = Section.recipientsSection(type: recipient.type)
-                node.reloadSections(IndexSet([section.rawValue]), with: .automatic)
+                reload(sections: [.recipients(recipient.type), .password])
             }
         }
-
-        node.reloadSections([Section.password.rawValue], with: .automatic)
     }
 
     private func handleRecipientSelection(with indexPath: IndexPath, type: RecipientType) {
         guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
-        let listIndexPath = recipientsIndexPath(type: type, part: .list)
         let isSelected = recipient.state.isSelected
         let state = isSelected ? decorator.recipientIdleState : decorator.recipientSelectedState
         contextToSend.update(recipient: recipient.email, type: type, state: state)
@@ -1170,7 +1155,9 @@ extension ComposeViewController {
             evaluate(recipient: recipient)
         }
 
-        node.reloadRows(at: [listIndexPath], with: .automatic)
+        if let listIndexPath = recipientsIndexPath(type: type, part: .list) {
+            node.reloadRows(at: [listIndexPath], with: .automatic)
+        }
 
         let textField = recipientsTextField(type: type)
         if !(textField?.isFirstResponder() ?? true) {
@@ -1196,9 +1183,11 @@ extension ComposeViewController {
                 )
                 evaluate(recipient: recipient)
             } else {
-                let listIndexPath = recipientsIndexPath(type: type, part: .list)
                 contextToSend.remove(recipient: recipient.email, type: type)
-                node.reloadRows(at: [listIndexPath], with: .automatic)
+
+                if let listIndexPath = recipientsIndexPath(type: type, part: .list) {
+                    node.reloadRows(at: [listIndexPath], with: .automatic)
+                }
             }
         }
     }
@@ -1207,7 +1196,7 @@ extension ComposeViewController {
     private func setMessagePassword() {
         Task {
             contextToSend.messagePassword = await enterMessagePassword()
-            node.reloadSections([Section.password.rawValue], with: .automatic)
+            reload(sections: [.password])
         }
     }
 
@@ -1261,16 +1250,20 @@ extension ComposeViewController {
 
         switch state {
         case .main:
+            sectionsList = Section.recipientsSections + [.password, .compose, .attachments]
             node.reloadData()
         case .searchEmails:
-            let sections: [Section]
+            sectionsList = Section.recipientsSections + [.searchResults, .contacts]
+
+            let sectionsToReload: [Section]
+
             if let type = selectedRecipientType {
-                let selectedRecipientSection = Section.recipientsSection(type: type)
-                sections = Section.allCases.filter { $0 != selectedRecipientSection }
+                sectionsToReload = sectionsList.filter { $0 != .recipients(type) }
             } else {
-                sections = Section.allCases
+                sectionsToReload = sectionsList
             }
-            node.reloadSections(IndexSet(sections.map(\.rawValue)), with: .automatic)
+
+            reload(sections: sectionsToReload)
         }
     }
 }
@@ -1285,7 +1278,7 @@ extension ComposeViewController: UIDocumentPickerDelegate {
             return
         }
         appendAttachmentIfAllowed(attachment)
-        node.reloadSections([Section.attachments.rawValue], with: .automatic)
+        reload(sections: [.attachments])
     }
 }
 
@@ -1338,7 +1331,7 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
         }
 
         appendAttachmentIfAllowed(composeMessageAttachment)
-        node.reloadSections([Section.attachments.rawValue], with: .automatic)
+        reload(sections: [.attachments])
     }
 }
 
@@ -1362,7 +1355,7 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
             return
         }
         appendAttachmentIfAllowed(attachment)
-        node.reloadSections([Section.attachments.rawValue], with: .automatic)
+        reload(sections: [.attachments])
     }
 
     private func appendAttachmentIfAllowed(_ attachment: MessageAttachment) {

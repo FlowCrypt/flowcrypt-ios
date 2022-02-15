@@ -38,6 +38,8 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
 
         self.isToggleButtonRotated = isToggleButtonRotated
         self.toggleButtonAction = toggleButtonAction
+
+        self.textField.accessibilityIdentifier = input.accessibilityIdentifier
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

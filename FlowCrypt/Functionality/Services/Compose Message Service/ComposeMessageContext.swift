@@ -80,7 +80,7 @@ extension ComposeMessageContext {
         guard let index = recipients.firstIndex(where: {
             $0.email == recipient && $0.type == type
         }) else { return }
-        
+
         recipients[index].state = state
     }
 
