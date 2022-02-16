@@ -921,8 +921,8 @@ extension ComposeViewController {
         switch textFieldAction {
         case let .deleteBackward(textField): handleBackspaceAction(with: textField, for: recipientType)
         case let .didEndEditing(text): handleEndEditingAction(with: text, for: recipientType)
-        case let .editingChanged(text): handleEditingChanged(with: text, for: recipientType)
-        case .didBeginEditing: handleDidBeginEditing()
+        case let .editingChanged(text): handleEditingChanged(with: text)
+        case .didBeginEditing: handleDidBeginEditing(recipientType: recipientType)
         }
     }
 
@@ -1007,7 +1007,11 @@ extension ComposeViewController {
         guard selectedRecipients.isEmpty else {
             let notSelectedRecipients = recipients.filter { !$0.state.isSelected }
             contextToSend.set(recipients: notSelectedRecipients, for: recipientType)
-            reload(sections: [.recipients(.to), .recipients(recipientType), .password])
+            reload(sections: [.recipients(.to), .password])
+
+            if let indexPath = recipientsIndexPath(type: recipientType, part: .list) {
+                node.reloadRows(at: [indexPath], with: .automatic)
+            }
 
             return
         }
@@ -1027,12 +1031,12 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEditingChanged(with text: String?, for recipientType: RecipientType) {
-        selectedRecipientType = recipientType
+    private func handleEditingChanged(with text: String?) {
         search.send(text ?? "")
     }
 
-    private func handleDidBeginEditing() {
+    private func handleDidBeginEditing(recipientType: RecipientType) {
+        selectedRecipientType = recipientType
         node.view.keyboardDismissMode = .none
     }
 
