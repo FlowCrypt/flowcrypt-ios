@@ -228,11 +228,12 @@ final class ComposeViewController: TableNodeViewController {
 
     private func observeComposeUpdates() {
         composeMessageService.onStateChanged { [weak self] state in
-            self?.updateSpinner(with: state)
+            DispatchQueue.main.async {
+                self?.updateSpinner(with: state)
+            }
         }
     }
 
-    @MainActor
     private func updateSpinner(with state: ComposeMessageService.State) {
         switch state {
         case .progressChanged(let progress):
