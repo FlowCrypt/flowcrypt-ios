@@ -12,7 +12,7 @@ import FlowCryptCommon
 
 protocol LocalContactsProviderType: PublicKeyProvider {
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys?
-    func searchEmails(query: String) throws -> [String]
+    func searchRecipients(query: String) throws -> [RecipientBase]
     func save(recipient: RecipientWithSortedPubKeys) throws
     func remove(recipient: RecipientWithSortedPubKeys) throws
     func updateKeys(for recipient: RecipientWithSortedPubKeys) throws
@@ -91,10 +91,11 @@ extension LocalContactsProvider: LocalContactsProviderType {
         return try await parseRecipient(from: recipient)
     }
 
-    func searchEmails(query: String) throws -> [String] {
-        try storage.objects(RecipientRealmObject.self)
-            .filter("email contains[c] %@", query)
-            .map(\.email)
+    func searchRecipients(query: String) throws -> [RecipientBase] {
+        let recipients = try storage
+                                .objects(RecipientRealmObject.self)
+                                .filter("email contains[c] %@", query)
+        return Array(recipients)
     }
 
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] {

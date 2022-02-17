@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Recipient {
+struct Recipient: RecipientBase {
     var email: String
     var name: String?
     var lastUsed: Date?

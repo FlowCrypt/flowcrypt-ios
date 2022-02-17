@@ -34,7 +34,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     enum State {
-        case main, searchEmails([String])
+        case main, searchEmails([RecipientBase])
     }
 
     private enum Section: Int, CaseIterable {
@@ -600,10 +600,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                     return ASCellNode()
                 }
                 return self.attachmentNode(for: indexPath.row)
-            case let (.searchEmails(emails), 1):
+            case let (.searchEmails(recipients), 1):
                 guard indexPath.row > 0 else { return DividerCellNode() }
-                guard emails.isNotEmpty else { return self.noSearchResultsNode() }
-                return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row-1]))
+                guard recipients.isNotEmpty else { return self.noSearchResultsNode() }
+                return InfoCellNode(input: self.decorator.styledRecipientInfo(with: recipients[indexPath.row-1].email))
             case (.searchEmails, 2):
                 return indexPath.row == 0 ? DividerCellNode() : self.enableGoogleContactsNode()
             default:
@@ -613,10 +613,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        if case let .searchEmails(emails) = state {
+        if case let .searchEmails(recipients) = state {
             switch indexPath.section {
             case 1:
-                let selectedEmail = emails[safe: indexPath.row-1]
+                let selectedEmail = recipients[safe: indexPath.row-1]?.email
                 handleEndEditingAction(with: selectedEmail)
             case 2:
                 askForContactsPermission()
@@ -945,10 +945,11 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             do {
-                let localEmails = try contactsService.searchLocalContacts(query: query)
-                let cloudEmails = try? await service.searchContacts(query: query)
-                let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
-                updateState(with: .searchEmails(Array(emails)))
+                let localRecipients = try contactsService.searchLocalContacts(query: query)
+                let cloudRecipients = try await service.searchContacts(query: query)
+                let recipients = localRecipients + cloudRecipients
+                // TODO: Add check for unique
+                updateState(with: .searchEmails(recipients))
             } catch {
                 showAlert(message: error.localizedDescription)
             }
@@ -1427,7 +1428,7 @@ private actor ServiceActor {
         )
     }
 
-    func searchContacts(query: String) async throws -> [String] {
+    func searchContacts(query: String) async throws -> [RecipientBase] {
         return try await cloudContactProvider.searchContacts(query: query)
     }
 

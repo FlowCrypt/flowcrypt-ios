@@ -11,7 +11,7 @@ import GoogleAPIClientForREST_PeopleService
 
 protocol CloudContactsProvider {
     var isContactsScopeEnabled: Bool { get }
-    func searchContacts(query: String) async throws -> [String]
+    func searchContacts(query: String) async throws -> [RecipientBase]
 }
 
 enum CloudContactsProviderError: Error {
@@ -81,24 +81,26 @@ final class UserContactsProvider {
 }
 
 extension UserContactsProvider: CloudContactsProvider {
-    func searchContacts(query: String) async -> [String] {
+    func searchContacts(query: String) async -> [RecipientBase] {
         guard isContactsScopeEnabled else { return [] }
         let contacts = await searchUserContacts(query: query, type: .contacts)
         let otherContacts = await searchUserContacts(query: query, type: .other)
-        let emails = Set(contacts + otherContacts)
-        return Array(emails).sorted(by: >)
+        return contacts + otherContacts
+        // TODO
+        // let emails = Set(contacts + otherContacts)
+        // return Array(emails).sorted(by: >)
     }
 }
 
 extension UserContactsProvider {
-    private func searchUserContacts(query: String, type: QueryType) async -> [String] {
+    private func searchUserContacts(query: String, type: QueryType) async -> [RecipientBase] {
         let query = type.query(searchString: query)
 
         guard let emails = try? await perform(query: query) else { return [] }
         return emails
     }
 
-    private func perform(query: GTLRPeopleServiceQuery) async throws -> [String] {
+    private func perform(query: GTLRPeopleServiceQuery) async throws -> [RecipientBase] {
         try await withCheckedThrowingContinuation { continuation in
             self.peopleService.executeQuery(query) { _, data, error in
                 if let error = error {
@@ -113,12 +115,8 @@ extension UserContactsProvider {
                     return continuation.resume(throwing: CloudContactsProviderError.failedToParseData(data))
                 }
 
-                let emails = contacts
-                    .compactMap { $0.person?.emailAddresses }
-                    .flatMap { $0 }
-                    .compactMap { $0.value }
-
-                return continuation.resume(returning: emails)
+                let recipients = contacts.compactMap(\.person).compactMap(CloudContact.init)
+                return continuation.resume(returning: recipients)
             }
         }
     }
