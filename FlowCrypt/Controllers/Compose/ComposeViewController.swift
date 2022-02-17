@@ -50,7 +50,7 @@ final class ComposeViewController: TableNodeViewController {
     private enum Section: Hashable {
         case recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
-        static let recipientsSections: [Section] {
+        static var recipientsSections: [Section] {
             RecipientType.allCases.map { Section.recipients($0) }
         }
     }
