@@ -680,7 +680,7 @@ extension ComposeViewController {
         TextFieldCellNode(
             input: decorator.styledTextFieldInput(
                 with: "compose_subject".localized,
-                accessibilityIdentifier: "subjectTextField"
+                accessibilityIdentifier: "aid-subject-text-field"
             )
         ) { [weak self] event in
             switch event {
@@ -721,7 +721,7 @@ extension ComposeViewController {
         return TextViewCellNode(
             decorator.styledTextViewInput(
                 with: height,
-                accessibilityIdentifier: "messageTextView"
+                accessibilityIdentifier: "aid-message-text-view"
             )
         ) { [weak self] event in
             guard let self = self else { return }
@@ -772,13 +772,13 @@ extension ComposeViewController {
 
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.Input.init),
+            type: type.rawValue,
             height: recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
             isToggleButtonRotated: shouldShowAllRecipientTypes,
             toggleButtonAction: shouldShowToggleButton ? { [weak self] in
                 guard type == .to else { return }
                 self?.toggleRecipientsList()
-            } : nil
-        )
+            } : nil)
             .onLayoutHeightChanged { [weak self] layoutHeight in
                 self?.updateRecipientsNode(
                     layoutHeight: layoutHeight,
@@ -832,7 +832,7 @@ extension ComposeViewController {
             input: decorator.styledTextFieldInput(
                 with: type.inputPlaceholder,
                 keyboardType: .emailAddress,
-                accessibilityIdentifier: "aid-recipient-text-field-\(type.rawValue)"
+                accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)"
             ),
             action: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)

@@ -45,20 +45,25 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
 
     public lazy var collectionNode: ASCollectionNode = {
         let node = ASCollectionNode(collectionViewLayout: layout)
-        node.accessibilityIdentifier = "aid-recipients-list"
+        node.accessibilityIdentifier = "aid-recipients-list-\(type)"
         node.backgroundColor = .clear
         return node
     }()
     private var collectionLayoutHeight: CGFloat
     private var recipients: [Input] = []
+    private let type: String
 
     public init(recipients: [Input],
+                type: String,
                 height: CGFloat,
                 isToggleButtonRotated: Bool,
                 toggleButtonAction: (() -> Void)?) {
         self.recipients = recipients
+        self.type = type
         self.collectionLayoutHeight = height
+
         super.init()
+
         collectionNode.dataSource = self
         collectionNode.delegate = self
 

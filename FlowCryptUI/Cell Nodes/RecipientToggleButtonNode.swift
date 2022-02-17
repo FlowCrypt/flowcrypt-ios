@@ -20,6 +20,7 @@ extension RecipientToggleButtonNode {
         let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .light)
         let image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
         let button = ASButtonNode()
+        button.accessibilityIdentifier = "aid-recipients-toggle-button"
         button.setImage(image, for: .normal)
         button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
         button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
