@@ -55,16 +55,16 @@ extension ComposeMessageContext {
         !hasRecipientsWithoutPubKey || hasMessagePassword
     }
 
-    func recipients(of type: RecipientType) -> [ComposeMessageRecipient] {
+    func recipients(type: RecipientType) -> [ComposeMessageRecipient] {
         recipients.filter { $0.type == type }
     }
 
-    func recipientEmails(of type: RecipientType) -> [String] {
-        recipients(of: type).map(\.email)
+    func recipientEmails(type: RecipientType) -> [String] {
+        recipients(type: type).map(\.email)
     }
 
     func recipient(at index: Int, type: RecipientType) -> ComposeMessageRecipient? {
-        recipients(of: type)[safe: index]
+        recipients(type: type)[safe: index]
     }
 
     mutating func add(recipient: ComposeMessageRecipient) {

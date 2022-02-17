@@ -50,7 +50,7 @@ final class ComposeViewController: TableNodeViewController {
     private enum Section: Hashable {
         case recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
-        static var recipientsSections: [Section] {
+        static let recipientsSections: [Section] {
             RecipientType.allCases.map { Section.recipients($0) }
         }
     }
@@ -78,7 +78,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let email: String
     private var isMessagePasswordSupported: Bool {
-        clientConfiguration.isUsingFes
+        return clientConfiguration.isUsingFes
     }
 
     private let search = PassthroughSubject<String, Never>()
@@ -765,7 +765,8 @@ extension ComposeViewController {
     }
 
     private func recipientsNode(type: RecipientType) -> ASCellNode {
-        let recipients = contextToSend.recipients(of: type)
+        let recipients = contextToSend.recipients(type: type)
+
         let shouldShowToggleButton = type == .to
             && recipients.isNotEmpty
             && !contextToSend.hasCcOrBccRecipients
@@ -825,7 +826,7 @@ extension ComposeViewController {
 
     private func recipientInput(type: RecipientType) -> ASCellNode {
         let shouldShowToggleButton = type == .to
-            && contextToSend.recipients(of: .to).isEmpty
+            && contextToSend.recipients(type: .to).isEmpty
             && !contextToSend.hasCcOrBccRecipients
 
         return RecipientEmailTextFieldNode(
@@ -932,7 +933,7 @@ extension ComposeViewController {
               let text = text, text.isNotEmpty
         else { return }
 
-        let recipients = contextToSend.recipients(of: recipientType)
+        let recipients = contextToSend.recipients(type: recipientType)
 
         let textField = recipientsTextField(type: recipientType)
         textField?.reset()
@@ -1001,7 +1002,7 @@ extension ComposeViewController {
     private func handleBackspaceAction(with textField: UITextField, for recipientType: RecipientType) {
         guard textField.text == "" else { return }
 
-        var recipients = contextToSend.recipients(of: recipientType)
+        var recipients = contextToSend.recipients(type: recipientType)
 
         let selectedRecipients = recipients.filter { $0.state.isSelected }
 
