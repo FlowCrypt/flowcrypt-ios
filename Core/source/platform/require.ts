@@ -2,19 +2,28 @@
 
 'use strict';
 
-/// <reference path="../core/types/openpgp.d.ts" />
+interface BaseStream<T extends Uint8Array | string> extends AsyncIterable<T> { }
 
-export const requireOpenpgp = (): typeof OpenPGP => {
-  // @ts-ignore;
-  if (typeof openpgp !== 'undefined') {
-    // @ts-ignore;
-    return openpgp; // self-contained node-mobile
-  }
-  // running tests on a desktop os node instance
-  // making the require semi-dynamic to surpress Webpack warnings/errors. This line does not rely on webpack at all
-  // if this was webpack, then the `openpgp` variable would be already set, and it would never get down here
-  return require(`${'../../../source/lib/openpgp'}`); // points to flowcrypt-mobile-core/source/lib/openpgp.js
-};
+interface WebStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from lib.dom.d.ts
+  readonly locked: boolean; getReader: Function; pipeThrough: Function; pipeTo: Function; tee: Function;
+  cancel(reason?: any): Promise<void>;
+}
+
+interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from @types/node/index.d.ts
+  readable: boolean; pipe: Function; unpipe: Function; wrap: Function;
+  read(size?: number): string | Uint8Array; setEncoding(encoding: string): this; pause(): this; resume(): this;
+  isPaused(): boolean; unshift(chunk: string | Uint8Array): void;
+}
+
+type ReadToEndFn = <T extends Uint8Array | string>(input: T | WebStream<T> | NodeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
+
+export const requireStreamReadToEnd = (): ReadToEndFn => {
+  // this will work for running tests in node with build/ts/test.js as entrypoint
+  // a different solution will have to be done for running in iOS
+  (global as any)['window'] = (global as any)['window'] || {}; // web-stream-tools needs this
+  const { readToEnd } = require('../../bundles/raw/web-stream-tools');
+  return readToEnd as ReadToEndFn;
+}
 
 export const requireMimeParser = (): any => {
   // @ts-ignore;

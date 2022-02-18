@@ -18,7 +18,8 @@
     "sourceMap": false,
     "checkJs": false,
     "outDir": "./build/ts",
-    "baseUrl": "..",
+    "baseUrl": "./",
+    "traceResolution": false,
     "typeRoots": [
       "./source/core/types/",
       "./node_modules/@types/"
