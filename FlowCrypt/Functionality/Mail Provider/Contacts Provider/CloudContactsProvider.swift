@@ -55,7 +55,7 @@ final class UserContactsProvider {
 
         var readMask: String {
             switch self {
-            case .contacts, .other: return "emailAddresses"
+            case .contacts, .other: return "names,emailAddresses"
             }
         }
     }

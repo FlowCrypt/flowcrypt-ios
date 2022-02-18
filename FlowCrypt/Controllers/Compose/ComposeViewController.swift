@@ -202,7 +202,7 @@ final class ComposeViewController: TableNodeViewController {
     func update(with message: Message) {
         self.contextToSend.subject = message.subject
         self.contextToSend.message = message.raw
-        self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", state: decorator.recipientIdleState)]
+        self.contextToSend.recipients = [ComposeMessageRecipient(email: "tom@flowcrypt.com", name: "Tom", state: decorator.recipientIdleState)]
     }
 
     private func observeComposeUpdates() {
@@ -322,8 +322,12 @@ extension ComposeViewController {
     private func setupQuote() {
         guard input.isQuote else { return }
 
-        input.quoteRecipients.forEach { email in
-            let recipient = ComposeMessageRecipient(email: email, state: decorator.recipientIdleState)
+        input.quoteRecipients.forEach { recipient in
+            let recipient = ComposeMessageRecipient(
+                email: recipient.email,
+                name: recipient.name,
+                state: decorator.recipientIdleState
+            )
             contextToSend.recipients.append(recipient)
             evaluate(recipient: recipient)
         }
@@ -603,7 +607,15 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             case let (.searchEmails(recipients), 1):
                 guard indexPath.row > 0 else { return DividerCellNode() }
                 guard recipients.isNotEmpty else { return self.noSearchResultsNode() }
-                return InfoCellNode(input: self.decorator.styledRecipientInfo(with: recipients[indexPath.row-1].email))
+
+                let recipient = recipients[indexPath.row-1]
+
+                if let name = recipient.name {
+                    return LabelCellNode(input: self.decorator.styledRecipientInfo(with: recipient.email, name: name))
+                } else {
+                    return InfoCellNode(input: self.decorator.styledRecipientInfo(with: recipient.email))
+                }
+
             case (.searchEmails, 2):
                 return indexPath.row == 0 ? DividerCellNode() : self.enableGoogleContactsNode()
             default:
@@ -870,7 +882,7 @@ extension ComposeViewController {
             return recipient
         }
 
-        let newRecipient = ComposeMessageRecipient(email: text, state: decorator.recipientIdleState)
+        let newRecipient = ComposeMessageRecipient(email: text, name: nil, state: decorator.recipientIdleState)
         let indexOfRecipient: Int
 
         if let index = contextToSend.recipients.firstIndex(where: { $0.email == newRecipient.email }) {
@@ -981,6 +993,7 @@ extension ComposeViewController {
 
         let composeRecipient = ComposeMessageRecipient(
             email: recipient.email,
+            name: recipient.name,
             state: state,
             keyState: recipient.keyState
         )

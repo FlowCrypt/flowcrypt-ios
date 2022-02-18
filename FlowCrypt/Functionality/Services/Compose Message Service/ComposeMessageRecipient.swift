@@ -10,6 +10,7 @@ import Foundation
 
 struct ComposeMessageRecipient {
     let email: String
+    let name: String?
     var state: RecipientState
     var keyState: PubKeyState?
 }

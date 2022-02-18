@@ -96,7 +96,7 @@ final class MessageService {
         )
         return try await decryptAndProcessMessage(
             mime: rawMimeData,
-            sender: input.sender,
+            sender: input.sender?.email,
             onlyLocalKeys: onlyLocalKeys
         )
     }

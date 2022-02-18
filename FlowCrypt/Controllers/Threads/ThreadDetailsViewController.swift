@@ -217,14 +217,13 @@ extension ThreadDetailsViewController {
         else { return }
 
         let sender = [input.rawMessage.sender].compactMap { $0 }
-        let recipients: [String] = {
+        let recipients: [MessageRecipient] = {
             switch quoteType {
             case .reply:
                 return sender
             case .replyAll:
-                let recipientEmails = input.rawMessage.recipients.map(\.email)
-                let allRecipients = (recipientEmails + sender).unique()
-                let filteredRecipients = allRecipients.filter { $0 != appContext.user.email }
+                let allRecipients = (input.rawMessage.to + sender).unique()
+                let filteredRecipients = allRecipients.filter { $0.email != appContext.user.email }
                 return filteredRecipients.isEmpty ? sender : filteredRecipients
             case .forward:
                 return []
@@ -426,7 +425,7 @@ extension ThreadDetailsViewController {
                     let sender = input[indexPath.section-1].rawMessage.sender
                     let processedMessage = try await messageService.decryptAndProcessMessage(
                         mime: rawMimeData,
-                        sender: sender,
+                        sender: sender?.email,
                         onlyLocalKeys: false
                     )
                     handleReceived(message: processedMessage, at: indexPath)

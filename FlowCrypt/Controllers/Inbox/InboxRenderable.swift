@@ -37,7 +37,7 @@ extension InboxRenderable {
 extension InboxRenderable {
 
     init(message: Message) {
-        self.title = message.sender ?? "message_unknown_sender".localized
+        self.title = message.sender?.displayName ?? "message_unknown_sender".localized
         self.messageCount = 1
         self.subtitle = message.subject ?? "message_missed_subject".localized
         self.dateString = DateFormatter().formatDate(message.date)
@@ -78,8 +78,7 @@ extension InboxRenderable {
 
         } else {
             return thread.messages
-                .compactMap(\.sender)
-                .compactMap { $0.components(separatedBy: "@").first }
+                .compactMap(\.sender?.displayName)
                 .unique()
                 .joined(separator: ",")
         }

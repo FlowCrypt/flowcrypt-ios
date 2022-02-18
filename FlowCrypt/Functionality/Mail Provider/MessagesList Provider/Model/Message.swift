@@ -13,8 +13,8 @@ import GoogleAPIClientForREST_Gmail
 struct Message: Hashable {
     let identifier: Identifier
     let date: Date
-    let sender: String?
-    let recipients: [MessageRecipient]
+    let sender: MessageRecipient?
+    let to: [MessageRecipient]
     let cc: [MessageRecipient]
     let bcc: [MessageRecipient]
     let subject: String?
@@ -41,7 +41,7 @@ struct Message: Hashable {
     init(
         identifier: Identifier,
         date: Date,
-        sender: String?,
+        sender: MessageRecipient?,
         subject: String?,
         size: Int?,
         labels: [MessageLabel],
@@ -49,7 +49,7 @@ struct Message: Hashable {
         threadId: String? = nil,
         draftIdentifier: String? = nil,
         raw: String? = nil,
-        recipient: String? = nil,
+        to: String? = nil,
         cc: String? = nil,
         bcc: String? = nil
     ) {
@@ -63,7 +63,7 @@ struct Message: Hashable {
         self.threadId = threadId
         self.draftIdentifier = draftIdentifier
         self.raw = raw
-        self.recipients = Message.parseRecipients(recipient)
+        self.to = Message.parseRecipients(to)
         self.cc = Message.parseRecipients(cc)
         self.bcc = Message.parseRecipients(bcc)
     }
@@ -98,7 +98,7 @@ extension Message {
     }
 
     var allRecipients: [MessageRecipient] {
-        [recipients, cc, bcc].flatMap { $0 }
+        [to, cc, bcc].flatMap { $0 }
     }
 }
 
@@ -110,36 +110,4 @@ struct Identifier: Equatable, Hashable {
         self.stringId = stringId
         self.intId = intId
     }
-}
-
-struct MessageRecipient: Hashable {
-    let name: String?
-    let email: String
-
-    init(_ string: String) {
-        let parts = string.components(separatedBy: " ")
-
-        guard parts.count > 1, let email = parts.last else {
-            self.name = nil
-            self.email = string
-            return
-        }
-
-        self.email = email.filter { !["<", ">"].contains($0) }
-        let name = string
-            .replacingOccurrences(of: email, with: "")
-            .replacingOccurrences(of: "\"", with: "")
-            .trimmingCharacters(in: .whitespaces)
-        self.name = name == self.email ? nil : name
-    }
-}
-
-extension MessageRecipient {
-    var displayName: String {
-        name?.components(separatedBy: " ").first ??
-        email.components(separatedBy: "@").first ??
-        "unknown"
-    }
-
-    var rawString: (String?, String) { (name, email) }
 }
