@@ -6,7 +6,8 @@ module.exports = {
     'entrypoint-bare': './build/ts/entrypoint-bare.js',
     'bare-asn1': './node_modules/asn1.js/lib/asn1.js',
     'bare-encoding-japanese': './node_modules/encoding-japanese/encoding.js',
-    'sanitize-html': './node_modules/sanitize-html/index.js'
+    'sanitize-html': './node_modules/sanitize-html/index.js',
+    'web-stream-tools': './node_modules/@openpgp/web-stream-tools/lib/streams.js'
   },
   output: {
     path: __dirname + '/build/bundles/raw',
@@ -14,6 +15,7 @@ module.exports = {
     libraryTarget: 'commonjs2'
   },
   externals: {
-    openpgp: 'openpgp'
+    openpgp: 'openpgp',
+    '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools'
   }
 }

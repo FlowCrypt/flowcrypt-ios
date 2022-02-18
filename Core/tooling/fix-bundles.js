@@ -70,9 +70,10 @@ const replace = (libSrc, regex, replacement) => {
   return libSrc.replace(regex, replacement);
 }
 
-let openpgpLib = fs.readFileSync('source/lib/openpgp.js').toString();
+let openpgpLib = fs.readFileSync('./node_modules/openpgp/dist/node/openpgp.js').toString();
 const openpgpLibNodeDev = openpgpLib; // dev node runs without any host, no modifications needed
 
+/*
 openpgpLib = replace( // rsa decrypt on host
   openpgpLib,
   /[a-z0-9A-Z_]+\.default\.rsa\.decrypt\(c, n, e, d, p, q, u\)/,
@@ -85,9 +86,11 @@ openpgpLib = replace( // rsa verify on host
   const computed = await coreHost.verifyRsaModPow(m.toString(10), e.toString(10), n.toString(10)); // returns empty str if not supported: js fallback below
   const EM = computed ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength()) : await _public_key2.default.rsa.verify(m, n, e);`
 );
+*/
 
 let openpgpLibBare = openpgpLib; // further modify bare code below
 
+/*
 openpgpLibBare = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
   openpgpLibBare,
   /const data = _util2\.default\.concatUint8Array\(\[s2k\.salt, passphrase\]\);/,
@@ -99,6 +102,7 @@ openpgpLibBare = replace( // bare - aes decrypt on host
   /return _cfb\.AES_CFB\.decrypt\(ct, key, iv\);/,
   `return Uint8Array.from(coreHost.decryptAesCfbNoPadding(ct, key, iv));`
 );
+*/
 
 const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
 

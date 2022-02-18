@@ -1,7 +1,5 @@
 /* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
 
-/// <reference path="./core/types/openpgp.d.ts" />
-
 'use strict';
 
 // @ts-ignore - it cannot figure out the types, because we don't want to install them from npm
@@ -13,12 +11,45 @@ import * as ava from 'ava';
 import { AvaContext, getKeypairs, writeFile } from './test/test-utils';
 import { PgpMsg } from './core/pgp-msg';
 import { Xss } from './platform/xss';
-import { openpgp } from './core/pgp';
+import { decryptKey, PrivateKey, readKey } from 'openpgp';
 
 const text = Buffer.from('some\n汉\ntxt');
 const textSpecialChars = Buffer.from('> special <tag> & other\n> second line');
 
-const pubkeys = ['-----BEGIN PGP PUBLIC KEY BLOCK-----\nVersion: FlowCrypt 6.3.5 Gmail Encryption\nComment: Seamlessly send and receive encrypted email\n\nxsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\nZln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\nmbSsF0Ui+oh1//LT1ic6ZnISCA7Q2h2U/DSAPNxDZUMu9kjh9TjkKlR81fiA\nlxuD05ivRxCnmZnzqZtHoUvvCqsENgRjO9a5oWpMwtdItjdRFF7UFKYpfeA+\nct0uUNMRVdPK7MXBEr2FdWiKN1K21dQ1pWiAwj/5cTA8hu5Jue2RcF8FcPfs\nniRihQkNqtLDsfY5no1B3xeSnyO2SES1bAHw8ObXZn/C/6jxFztkn4NbABEB\nAAHNEFRlc3QgPHRAZXN0LmNvbT7CwHUEEAEIACkFAlwBWOEGCwkHCAMCCRA6\nMPTMCpqPEAQVCAoCAxYCAQIZAQIbAwIeAQAA1pMH/R9oEVHaTdEzs/jbsfJk\n6xm2oQ/G7KewtSqawAC6nou0+GKvgICxvkNK+BivMLylut+MJqh2gHuExdzx\nHFNtKH69BzlK7hDBjyyrLuHIxc4YZaxHGe5ny3wF4QkEgfI+C5chH7Bi+jV6\n94L40zEeFO2OhIif8Ti9bRb2Pk6UV5MrsdM0K6J0gTQeTaRecQSg07vO3E8/\nGwfP2Dnq4yHICF/eaop+9QWj8UstEE6nEs7SSTrjIAxwAeZzpkjkXPXTLjz6\nEcS/9EU7B+5v1qwXk1YeW1qerKJn6Qd6hqJ5gkVzq3sy3eODyrEwpNQoAR4J\n8e3VQkKOn9oiAlFTglFeBhfOwE0EXAFY4QEH/2dyWbH3y9+hKk9RxwFzO+5n\nGaqT6Njoh368GEEWgSG11NKlrD8k2y1/R1Nc3xEIWMHSUe1rnWWVONKhupwX\nABTnj8coM5beoxVu9p1oYgum4IwLF0yAtaWll1hjsECm/U33Ok36JDa0iu+d\nRDfXbEo5cX9bzc1QnWdM5tBg2mxRkssbY3eTPXUe4FLcT0WAQ5hjLW0tPneG\nzlu2q9DkmngjDlwGgGhMCa/508wMpgGugE/C4V41EiiTAtOtVzGtdqPGVdoZ\neaYZLc9nTQderaDu8oipaWIwsshYWX4uVVvo7xsx5c5PWXRdI70aUs5IwMRz\nuljbq+SYCNta/uJRYc0AEQEAAcLAXwQYAQgAEwUCXAFY4QkQOjD0zAqajxAC\nGwwAAI03B/9aWF8l1v66Qaw4O8P3VyQn0/PkVWJYVt5KjMW4nexAfM4BlUw6\n97rP5IvfYXNh47Cm8VKqxgcXodzJrouzgwiPFxXmJe5Ug24FOpmeSeIl83Uf\nCzaiIm+B6K5cf2NuHTrr4pElDaQ7RQGH2m2cMcimv4oWU9a0tRjt1e7XQAfQ\nSWoCalUbLBeYORgVAF97MUNqeth6FMT5STjq+AGgnNZ2vdsUnASS/HbQQUUO\naVGVjo29lB6fS+UHT2gV/E/WQInjok5UrUMaFHwpO0VNP057DNyqhZwxaAs5\nBsSgJlOC5hrT+PKlfr9ic75fqnJqmLircB+hVnfhGR9OzH3RCIky\n=VKq5\n-----END PGP PUBLIC KEY BLOCK-----\n'];
+const pubkeys = [
+  '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+  'Version: FlowCrypt 6.3.5 Gmail Encryption\n' +
+  'Comment: Seamlessly send and receive encrypted email\n' +
+  '\n' +
+  'xsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\n' +
+  'Zln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\n' +
+  'mbSsF0Ui+oh1//LT1ic6ZnISCA7Q2h2U/DSAPNxDZUMu9kjh9TjkKlR81fiA\n' +
+  'lxuD05ivRxCnmZnzqZtHoUvvCqsENgRjO9a5oWpMwtdItjdRFF7UFKYpfeA+\n' +
+  'ct0uUNMRVdPK7MXBEr2FdWiKN1K21dQ1pWiAwj/5cTA8hu5Jue2RcF8FcPfs\n' +
+  'niRihQkNqtLDsfY5no1B3xeSnyO2SES1bAHw8ObXZn/C/6jxFztkn4NbABEB\n' +
+  'AAHNEFRlc3QgPHRAZXN0LmNvbT7CwHUEEAEIACkFAlwBWOEGCwkHCAMCCRA6\n' +
+  'MPTMCpqPEAQVCAoCAxYCAQIZAQIbAwIeAQAA1pMH/R9oEVHaTdEzs/jbsfJk\n' +
+  '6xm2oQ/G7KewtSqawAC6nou0+GKvgICxvkNK+BivMLylut+MJqh2gHuExdzx\n' +
+  'HFNtKH69BzlK7hDBjyyrLuHIxc4YZaxHGe5ny3wF4QkEgfI+C5chH7Bi+jV6\n' +
+  '94L40zEeFO2OhIif8Ti9bRb2Pk6UV5MrsdM0K6J0gTQeTaRecQSg07vO3E8/\n' +
+  'GwfP2Dnq4yHICF/eaop+9QWj8UstEE6nEs7SSTrjIAxwAeZzpkjkXPXTLjz6\n' +
+  'EcS/9EU7B+5v1qwXk1YeW1qerKJn6Qd6hqJ5gkVzq3sy3eODyrEwpNQoAR4J\n' +
+  '8e3VQkKOn9oiAlFTglFeBhfOwE0EXAFY4QEH/2dyWbH3y9+hKk9RxwFzO+5n\n' +
+  'GaqT6Njoh368GEEWgSG11NKlrD8k2y1/R1Nc3xEIWMHSUe1rnWWVONKhupwX\n' +
+  'ABTnj8coM5beoxVu9p1oYgum4IwLF0yAtaWll1hjsECm/U33Ok36JDa0iu+d\n' +
+  'RDfXbEo5cX9bzc1QnWdM5tBg2mxRkssbY3eTPXUe4FLcT0WAQ5hjLW0tPneG\n' +
+  'zlu2q9DkmngjDlwGgGhMCa/508wMpgGugE/C4V41EiiTAtOtVzGtdqPGVdoZ\n' +
+  'eaYZLc9nTQderaDu8oipaWIwsshYWX4uVVvo7xsx5c5PWXRdI70aUs5IwMRz\n' +
+  'uljbq+SYCNta/uJRYc0AEQEAAcLAXwQYAQgAEwUCXAFY4QkQOjD0zAqajxAC\n' +
+  'GwwAAI03B/9aWF8l1v66Qaw4O8P3VyQn0/PkVWJYVt5KjMW4nexAfM4BlUw6\n' +
+  '97rP5IvfYXNh47Cm8VKqxgcXodzJrouzgwiPFxXmJe5Ug24FOpmeSeIl83Uf\n' +
+  'CzaiIm+B6K5cf2NuHTrr4pElDaQ7RQGH2m2cMcimv4oWU9a0tRjt1e7XQAfQ\n' +
+  'SWoCalUbLBeYORgVAF97MUNqeth6FMT5STjq+AGgnNZ2vdsUnASS/HbQQUUO\n' +
+  'aVGVjo29lB6fS+UHT2gV/E/WQInjok5UrUMaFHwpO0VNP057DNyqhZwxaAs5\n' +
+  'BsSgJlOC5hrT+PKlfr9ic75fqnJqmLircB+hVnfhGR9OzH3RCIky\n' +
+  '=VKq5\n' +
+  '-----END PGP PUBLIC KEY BLOCK-----\n'
+];
 
 const subject = (t: AvaContext) => t.title.replace(/\.txt$/, '').replace(/-/g, ' ');
 
@@ -142,29 +173,30 @@ ${Xss.escape(text.toString()).replace(/\n/g, '<br>')}
 `.replace(/^\n/, ''));
 
 const write = async (t: AvaContext, fileContent: Buffer | string) => {
-  await writeFile(`./source/assets/compat/${t.title}`, fileContent instanceof Buffer ? fileContent : Buffer.from(fileContent));
+  await writeFile(`./source/assets/compat/${t.title}`,
+    fileContent instanceof Buffer ? fileContent : Buffer.from(fileContent));
 }
 
 ava.default('direct-encrypted-text.txt', async t => {
-  const { data } = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const data = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as string;
   await write(t, data);
   t.pass();
 });
 
 ava.default('direct-encrypted-pgpmime.txt', async t => {
-  const { data } = await PgpMsg.encrypt({ data: mimePgp(t, text), pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const data = await PgpMsg.encrypt({ data: mimePgp(t, text), pubkeys, armor: true }) as string;
   await write(t, data);
   t.pass();
 });
 
 ava.default('direct-encrypted-pgpmime-special-chars.txt', async t => {
-  const { data } = await PgpMsg.encrypt({ data: mimePgp(t, textSpecialChars), pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const data = await PgpMsg.encrypt({ data: mimePgp(t, textSpecialChars), pubkeys, armor: true }) as string;
   await write(t, data);
   t.pass();
 });
 
 ava.default('direct-encrypted-text-special-chars.txt', async t => {
-  const { data } = await PgpMsg.encrypt({ data: textSpecialChars, pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const data = await PgpMsg.encrypt({ data: textSpecialChars, pubkeys, armor: true }) as string;
   await write(t, data);
   t.pass();
 });
@@ -180,19 +212,19 @@ ava.default('mime-email-plain-with-pubkey.txt', async t => {
 });
 
 ava.default('mime-email-encrypted-inline-text.txt', async t => {
-  const { data } = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const data = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as string;
   await write(t, mimeEmail(t, data));
   t.pass();
 });
 
 ava.default('mime-email-encrypted-inline-pgpmime.txt', async t => {
-  const { data } = await PgpMsg.encrypt({ data: mimePgp(t, text), pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const data = await PgpMsg.encrypt({ data: mimePgp(t, text), pubkeys, armor: true }) as string;
   await write(t, mimeEmail(t, data));
   t.pass();
 });
 
 ava.default('mime-email-encrypted-inline-text-2.txt', async t => {
-  const { data } = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const data = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as string;
   await write(t, textEncoderMimeEmail(t, data));
   t.pass();
 });
@@ -204,20 +236,22 @@ ava.default('mime-email-plain-html.txt', async t => {
 
 ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
+  const signingPrv = await readKey({armoredKey: keys[0].private}) as PrivateKey;
   // console.log("rsa1 key fingerprint:" + signingPrv.getFingerprint().toUpperCase());
-  if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
-  const { data } = await PgpMsg.encrypt({ data: text, signingPrv: signingPrv,  pubkeys, armor: true }) as OpenPGP.EncryptArmorResult;
+  const signingPrvDecrypted = await decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
+  if (!signingPrvDecrypted) throw Error('Can\'t decrypt private key');
+  const data = await PgpMsg.encrypt({ data: text, signingPrv: signingPrvDecrypted, pubkeys, armor: true }) as string;
   await write(t, mimeEmail2(t, data));
   t.pass();
 });
 
 ava.default('mime-email-plain-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const signingPrv = (await openpgp.key.readArmored(keys[0].private)).keys[0];
-  if (!(await signingPrv.decrypt(keys[0].passphrase))) throw Error('Can\'t decrypt private key');
+  const signingPrv = await readKey({armoredKey: keys[0].private})  as PrivateKey;
+  const signingPrvDecrypted = await decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
+  if (!signingPrvDecrypted) throw Error('Can\'t decrypt private key');
   const data = text.toString();
-  const signed = await PgpMsg.sign(signingPrv, data);
+  const signed = await PgpMsg.sign(signingPrvDecrypted, data);
   await write(t, mimeEmail2(t, signed));
   t.pass();
 });

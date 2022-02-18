@@ -5,10 +5,10 @@
 import { Buf } from './buf';
 import { ReplaceableMsgBlockType } from './msg-block';
 import { Str } from './common';
-import { openpgp } from './pgp';
+import { CleartextMessage, Data, Message, readCleartextMessage, readMessage } from 'openpgp';
 
-export type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: OpenPGP.cleartext.CleartextMessage }
-  | { isArmored: boolean, isCleartext: false, message: OpenPGP.message.Message };
+export type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: CleartextMessage }
+  | { isArmored: boolean, isCleartext: false, message: Message<Data> };
 
 type CryptoArmorHeaderDefinitions = { readonly [type in ReplaceableMsgBlockType | 'null' | 'signature']: CryptoArmorHeaderDefinition; };
 type CryptoArmorHeaderDefinition = { begin: string, middle?: string, end: string | RegExp, replace: boolean };
@@ -83,11 +83,23 @@ export class PgpArmor {
     const isArmoredSignedOnly = utfChunk.includes(PgpArmor.headers('signedMsg').begin);
     const isArmored = isArmoredEncrypted || isArmoredSignedOnly;
     if (isArmoredSignedOnly) {
-      return { isArmored, isCleartext: true, message: await openpgp.cleartext.readArmored(new Buf(encrypted).toUtfStr()) };
+      return {
+        isArmored,
+        isCleartext: true,
+        message: await readCleartextMessage({cleartextMessage: (new Buf(encrypted)).toUtfStr()})
+      };
     } else if (isArmoredEncrypted) {
-      return { isArmored, isCleartext: false, message: await openpgp.message.readArmored(new Buf(encrypted).toUtfStr()) };
+      return {
+        isArmored,
+        isCleartext: false,
+        message: await readMessage({armoredMessage: (new Buf(encrypted)).toUtfStr()})
+      };
     } else if (encrypted instanceof Uint8Array) {
-      return { isArmored, isCleartext: false, message: await openpgp.message.read(encrypted) };
+      return {
+        isArmored,
+        isCleartext: false,
+        message: await readMessage({binaryMessage: encrypted})
+      };
     }
     throw new Error('Message does not have armor headers');
   }
