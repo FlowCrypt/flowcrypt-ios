@@ -107,8 +107,9 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitClickAndType(await this.composeSecurityMessage, message);
   };
 
-  checkSubject = async (subject: string) => {
-    expect(await this.subjectField).toHaveText(subject);
+  filledSubject = async (subject: string) => {
+    const selector = `**/XCUIElementTypeTextField[\`value == "${subject}"\`]`;
+    return await $(`-ios class chain:${selector}`);
   };
 
   composeEmail = async (recipient: string, subject: string, message: string, cc?: string, bcc?: string) => {
@@ -130,7 +131,9 @@ class NewMessageScreen extends BaseScreen {
 
   checkFilledComposeEmailInfo = async (recipients: string[], subject: string, message: string, attachmentName?: string, cc?: string[], bcc?: string[]) => {
     expect(await this.composeSecurityMessage).toHaveTextContaining(message);
-    await this.checkSubject(subject);
+    
+    const element = await this.filledSubject(subject);
+    await element.waitForDisplayed();
 
     await this.checkRecipientsList(recipients);
 

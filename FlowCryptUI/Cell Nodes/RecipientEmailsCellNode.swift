@@ -82,10 +82,13 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
         let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionNodeHeight)
         let buttonSize = CGSize(width: 40, height: 50)
 
+        var insets = UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0)
+        insets.left -= 8
+
         return createLayout(
             contentNode: collectionNode,
             contentSize: collectionNodeSize,
-            insets: .zero,
+            insets: insets,
             buttonSize: buttonSize
         )
     }
