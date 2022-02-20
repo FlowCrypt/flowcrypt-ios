@@ -22,7 +22,7 @@ extension GmailService: MessagesThreadOperationsProvider {
     func delete(thread: MessageThread) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = thread.identifier else {
-                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
+                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
             let query = GTLRGmailQuery_UsersThreadsDelete.query(
@@ -76,7 +76,7 @@ extension GmailService: MessagesThreadOperationsProvider {
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = thread.identifier else {
-                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
+                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
             let request = GTLRGmail_ModifyThreadRequest()

@@ -11,13 +11,13 @@ import MailCore
 
 enum BackupError: Error {
     /// "Error while fetching folders" no folders on account
-    case missedFolders
+    case missingFolders
     /// "Error while fetching uids"
-    case missedUIDS
+    case missingUIDS
     /// "Error while fetching messages"
-    case missedMessages
+    case missingMessages
     /// "Error while fetching attributes"
-    case missedAttributes
+    case missingAttributes
 }
 
 extension Imap: BackupProvider {
@@ -25,7 +25,7 @@ extension Imap: BackupProvider {
         var folderPaths = (try await fetchFolders()).map(\.path)
 
         guard folderPaths.isNotEmpty else {
-            throw BackupError.missedFolders
+            throw BackupError.missingFolders
         }
 
         if let inbox = folderPaths.firstCaseInsensitive("inbox") {
@@ -42,7 +42,7 @@ extension Imap: BackupProvider {
         }
 
         guard uidsForFolders.isNotEmpty else {
-            throw BackupError.missedUIDS
+            throw BackupError.missingUIDS
         }
 
         var messageContexts: [MsgContext] = []
