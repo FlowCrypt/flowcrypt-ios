@@ -348,7 +348,7 @@ extension ThreadDetailsViewController {
 
         switch error as? MessageServiceError {
         case let .missingPassPhrase(rawMimeData):
-            handleMissedPassPhrase(for: rawMimeData, at: indexPath)
+            handleMissingPassPhrase(for: rawMimeData, at: indexPath)
         case let .wrongPassPhrase(rawMimeData, passPhrase):
             handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
         default:
@@ -389,7 +389,7 @@ extension ThreadDetailsViewController {
         present(alertController, animated: true)
     }
 
-    private func handleMissedPassPhrase(for rawMimeData: Data, at indexPath: IndexPath) {
+    private func handleMissingPassPhrase(for rawMimeData: Data, at indexPath: IndexPath) {
         let alert = AlertsFactory.makePassPhraseAlert(
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)

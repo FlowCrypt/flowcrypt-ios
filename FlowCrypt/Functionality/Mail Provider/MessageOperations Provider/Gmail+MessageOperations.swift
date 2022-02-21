@@ -25,7 +25,7 @@ extension GmailService: MessageOperationsProvider {
     func delete(message: Message, form folderPath: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = message.identifier.stringId else {
-                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
+                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
             let query = GTLRGmailQuery_UsersMessagesDelete.query(
@@ -59,7 +59,7 @@ extension GmailService: MessageOperationsProvider {
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = message.identifier.stringId else {
-                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
+                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
             let request = GTLRGmail_ModifyMessageRequest()
             request.addLabelIds = labelsToAdd.map(\.value)

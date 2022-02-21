@@ -39,7 +39,7 @@ extension InboxRenderable {
     init(message: Message) {
         self.title = message.sender?.displayName ?? "message_unknown_sender".localized
         self.messageCount = 1
-        self.subtitle = message.subject ?? "message_missed_subject".localized
+        self.subtitle = message.subject ?? "message_missing_subject".localized
         self.dateString = DateFormatter().formatDate(message.date)
         self.isRead = message.isMessageRead
         self.date = message.date
@@ -51,7 +51,7 @@ extension InboxRenderable {
         self.title = InboxRenderable.messageTitle(activeUserEmail: activeUserEmail, with: thread, and: folderPath)
 
         self.messageCount = thread.messages.count
-        self.subtitle = thread.subject ?? "message_missed_subject".localized
+        self.subtitle = thread.subject ?? "message_missing_subject".localized
         self.isRead = !thread.messages
             .map(\.isMessageRead)
             .contains(false)
