@@ -178,11 +178,11 @@ extension GoogleUserService: UserServiceType {
         }
         let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
         guard let email = authorization.userEmail else {
-            throw GoogleUserServiceError.inconsistentState("Missed email")
+            throw GoogleUserServiceError.inconsistentState("Missing email")
         }
         self.saveAuth(state: authState, for: email)
         guard let token = authState.lastTokenResponse?.accessToken else {
-            throw GoogleUserServiceError.inconsistentState("Missed token")
+            throw GoogleUserServiceError.inconsistentState("Missing token")
         }
         let user = try await self.fetchGoogleUser(with: authorization)
         return SessionType.google(email, name: user.name, token: token)

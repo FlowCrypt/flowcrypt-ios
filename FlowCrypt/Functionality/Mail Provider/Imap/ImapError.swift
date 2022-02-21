@@ -11,7 +11,7 @@ import Foundation
 enum ImapError: Error {
     case noSession
     case providerError(Error)
-    case missedMessageInfo(String)
+    case missingMessageInfo(String)
 }
 
 extension ImapError: CustomStringConvertible {
@@ -21,7 +21,7 @@ extension ImapError: CustomStringConvertible {
             return "imap_error_no_session".localized
         case .providerError(let error):
             return "imap_error_provider".localizeWithArguments(error.localizedDescription)
-        case .missedMessageInfo(let message):
+        case .missingMessageInfo(let message):
             return "imap_error_msg_info".localizeWithArguments(message)
         }
     }

@@ -175,6 +175,88 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertNotNil(mime.range(of: "Subject: \(msg.subject)")) // has mime Subject header
     }
 
+    func testComposeEmailWithSigningKey() async throws {
+        // arrange
+        let signingKey = PrvKeyInfo(
+            private: TestData.k0.prv,
+            longid: TestData.k0.longid,
+            passphrase: TestData.k0.passphrase,
+            fingerprints: TestData.k0.fingerprints
+        )
+
+        let msg = SendableMsg(
+            text: "this is the message",
+            html: nil,
+            to: ["email@hello.com"], cc: [], bcc: [],
+            from: "sender@hello.com",
+            subject: "Signed email",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: [TestData.k0.pub],
+            signingPrv: signingKey,
+            password: nil
+        )
+
+        // act
+        let r = try await core.composeEmail(msg: msg, fmt: .encryptInline)
+
+        // assert
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: r.mimeEncoded,
+            keys: [signingKey],
+            msgPwd: nil,
+            isEmail: true,
+            verificationPubKeys: [TestData.k0.pub]
+        )
+        guard let verifyResult = decrypted.blocks.first?.verifyRes else {
+            XCTFail("verify result expected")
+            return
+        }
+        XCTAssertTrue(verifyResult.match ?? false)
+        XCTAssertEqual(verifyResult.signer, "063635B3E33EB14C")
+    }
+
+    func testComposeEmailWithSigningKeyWithoutVerificationKey() async throws {
+        // arrange
+        let signingKey = PrvKeyInfo(
+            private: TestData.k0.prv,
+            longid: TestData.k0.longid,
+            passphrase: TestData.k0.passphrase,
+            fingerprints: TestData.k0.fingerprints
+        )
+
+        let msg = SendableMsg(
+            text: "this is the message",
+            html: nil,
+            to: ["email@hello.com"], cc: [], bcc: [],
+            from: "sender@hello.com",
+            subject: "Signed email",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: [TestData.k0.pub],
+            signingPrv: signingKey,
+            password: nil
+        )
+
+        // act
+        let r = try await core.composeEmail(msg: msg, fmt: .encryptInline)
+
+        // assert
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: r.mimeEncoded,
+            keys: [signingKey],
+            msgPwd: nil,
+            isEmail: true,
+            verificationPubKeys: []
+        )
+        guard let verifyResult = decrypted.blocks.first?.verifyRes else {
+            XCTFail("verify result expected")
+            return
+        }
+        XCTAssertNil(verifyResult.match)
+        XCTAssertEqual(verifyResult.signer, "063635B3E33EB14C")
+    }
+
     func testEndToEnd() async throws {
         let passphrase = "some pass phrase test"
         let email = "e2e@domain.com"

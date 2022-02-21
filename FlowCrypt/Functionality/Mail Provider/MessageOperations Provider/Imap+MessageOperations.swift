@@ -13,7 +13,7 @@ extension Imap: MessageOperationsProvider {
 
     func markAsUnread(message: Message, folder: String) async throws {
         guard let identifier = message.identifier.intId else {
-            throw ImapError.missedMessageInfo("intId")
+            throw ImapError.missingMessageInfo("intId")
         }
         try await executeVoid("markAsUnread", { sess, respond in
             sess.storeFlagsOperation(
@@ -27,7 +27,7 @@ extension Imap: MessageOperationsProvider {
 
     func markAsRead(message: Message, folder: String) async throws {
         guard let identifier = message.identifier.intId else {
-            throw ImapError.missedMessageInfo("intId")
+            throw ImapError.missingMessageInfo("intId")
         }
         var flags: MCOMessageFlag = []
         let imapFlagValues = message.labels.map(\.type.imapFlagValue)
@@ -49,10 +49,10 @@ extension Imap: MessageOperationsProvider {
 
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
         guard let identifier = message.identifier.intId else {
-            throw ImapError.missedMessageInfo("intId")
+            throw ImapError.missingMessageInfo("intId")
         }
         guard let trashPath = trashPath else {
-            throw ImapError.missedMessageInfo("trashPath")
+            throw ImapError.missingMessageInfo("trashPath")
         }
         try await moveMsg(with: identifier, folder: folder, destFolder: trashPath)
     }
@@ -69,10 +69,10 @@ extension Imap: MessageOperationsProvider {
 
     func delete(message: Message, form folderPath: String?) async throws {
         guard let identifier = message.identifier.intId else {
-            throw ImapError.missedMessageInfo("intId")
+            throw ImapError.missingMessageInfo("intId")
         }
         guard let folderPath = folderPath else {
-            throw ImapError.missedMessageInfo("folderPath")
+            throw ImapError.missingMessageInfo("folderPath")
         }
         try await pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted)
         try await expungeMsgs(folder: folderPath)
@@ -99,7 +99,7 @@ extension Imap: MessageOperationsProvider {
 
     func archiveMessage(message: Message, folderPath: String) async throws {
         guard let identifier = message.identifier.intId else {
-            throw ImapError.missedMessageInfo("intId")
+            throw ImapError.missingMessageInfo("intId")
         }
         try await pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted)
     }

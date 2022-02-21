@@ -126,19 +126,19 @@ extension Message {
         draftIdentifier: String? = nil
     ) throws {
         guard let payload = message.payload else {
-            throw GmailServiceError.missedMessagePayload
+            throw GmailServiceError.missingMessagePayload
         }
 
         guard let messageHeaders = payload.headers else {
-            throw GmailServiceError.missedMessageInfo("headers")
+            throw GmailServiceError.missingMessageInfo("headers")
         }
 
         guard let internalDate = message.internalDate as? Double else {
-            throw GmailServiceError.missedMessageInfo("date")
+            throw GmailServiceError.missingMessageInfo("date")
         }
 
         guard let identifier = message.identifier else {
-            throw GmailServiceError.missedMessageInfo("id")
+            throw GmailServiceError.missingMessageInfo("id")
         }
 
         let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
