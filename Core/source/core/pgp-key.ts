@@ -135,6 +135,13 @@ export class PgpKey {
     return p instanceof SecretKeyPacket || p instanceof SecretSubkeyPacket;
   }
 
+  public static validateAllDecryptedPackets = async (key: Key): Promise<void> => {
+    const packets = key.toPacketList() as PacketList<SecretKeyPacket>;
+    for (const prvPacket of packets.filter(PgpKey.isPacketPrivate).filter(packet => packet.isDecrypted())) {
+      await (prvPacket as SecretKeyPacket).validate(); // gnu-dummy never raises an exception, invalid keys raise exceptions
+    }
+  };
+
   public static decrypt = async (prv: Key, passphrase: string, optionalKeyid?: KeyID,
     optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED'): Promise<boolean> => {
     if (!prv.isPrivate()) {
@@ -156,6 +163,7 @@ export class PgpKey {
       }
       try {
         await prvPacket.decrypt(passphrase); // throws on password mismatch
+        await prvPacket.validate();
       } catch (e) {
         if (e instanceof Error && e.message.toLowerCase().includes('passphrase')) {
           return false;
