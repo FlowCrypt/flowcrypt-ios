@@ -384,11 +384,11 @@ extension ThreadDetailsViewController {
             preferredStyle: .alert
         )
 
-        let downloadAction = UIAlertAction(title: "download".localized, style: .default) { _ in
-            guard let attachment = self.input[indexPath.section-1].processedMessage?.attachments[indexPath.row-2] else {
+        let downloadAction = UIAlertAction(title: "download".localized, style: .default) { [weak self] _ in
+            guard let attachment = self?.input[indexPath.section-1].processedMessage?.attachments[indexPath.row-2] else {
                 return
             }
-            self.show(attachment: attachment)
+            self?.show(attachment: attachment)
         }
         let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
 
