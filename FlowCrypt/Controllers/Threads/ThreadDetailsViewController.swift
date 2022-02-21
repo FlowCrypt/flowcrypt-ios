@@ -439,9 +439,11 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func retryVerifyingSignatureWithRemotelyFetchedKeys(message: Message,
-                                                                folder: String,
-                                                                indexPath: IndexPath) {
+    private func retryVerifyingSignatureWithRemotelyFetchedKeys(
+        message: Message,
+        folder: String,
+        indexPath: IndexPath
+    ) {
         Task {
             do {
                 let processedMessage = try await messageService.getAndProcessMessage(
@@ -551,11 +553,12 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return MessageSubjectNode(subject.attributed(.medium(18)))
             }
 
-            let message = self.input[indexPath.section - 1]
+            let messageIndex = indexPath.section - 1
+            let message = self.input[messageIndex]
 
             if indexPath.row == 0 {
                 return ThreadMessageInfoCellNode(
-                    input: .init(threadMessage: message),
+                    input: .init(threadMessage: message, index: messageIndex),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
                     onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) },
                     onRecipientsTap: { [weak self] _ in self?.handleRecipientsTap(at: indexPath) }
@@ -567,7 +570,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             guard indexPath.row > 1 else {
-                return MessageTextSubjectNode(processedMessage.attributedMessage)
+                return MessageTextSubjectNode(processedMessage.attributedMessage, index: messageIndex)
             }
 
             let attachmentIndex = indexPath.row - 2

@@ -23,6 +23,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
         public let isExpanded: Bool
         public let shouldShowRecipientsList: Bool
         public let buttonColor: UIColor
+        public let index: Int
 
         public init(
             encryptionBadge: BadgeNode.Input,
@@ -35,7 +36,8 @@ public final class ThreadMessageInfoCellNode: CellNode {
             date: NSAttributedString,
             isExpanded: Bool,
             shouldShowRecipientsList: Bool,
-            buttonColor: UIColor
+            buttonColor: UIColor,
+            index: Int
         ) {
             self.encryptionBadge = encryptionBadge
             self.signatureBadge = signatureBadge
@@ -48,6 +50,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
             self.isExpanded = isExpanded
             self.shouldShowRecipientsList = shouldShowRecipientsList
             self.buttonColor = buttonColor
+            self.index = index
         }
 
         var replyImage: UIImage? { createButtonImage("arrow.turn.up.left") }
@@ -238,10 +241,11 @@ public final class ThreadMessageInfoCellNode: CellNode {
 
     // MARK: - AccessibilityIdentifiers
     private func setupAccessibilityIdentifiers() {
-        senderNode.accessibilityIdentifier = "aid-message-sender-label"
         recipientButtonNode.accessibilityIdentifier = "aid-message-recipients-tappable-area"
-        senderNode.accessibilityIdentifier = "aid-sender-label"
-        dateNode.accessibilityIdentifier = "aid-date-label"
+        
+        expandNode.accessibilityIdentifier = "aid-expand-image-\(input.index)"
+        senderNode.accessibilityIdentifier = "aid-sender-\(input.index)"
+        dateNode.accessibilityIdentifier = "aid-date-\(input.index)"
 
         [senderNode, recipientButtonNode, senderNode, dateNode]
             .forEach { $0.isAccessibilityElement = true }
