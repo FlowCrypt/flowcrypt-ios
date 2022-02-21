@@ -12,6 +12,8 @@ describe('COMPOSE EMAIL: ', () => {
   it('check filled compose email after reopening app and text autoscroll', async () => {
 
     const recipientEmail = CommonData.contact.email;
+    const ccRecipientEmail = CommonData.secondContact.email;
+    const bccRecipientEmail = CommonData.recipient.email;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const longEmailText = CommonData.longEmail.message;
@@ -27,8 +29,8 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.clickBackButton();
     await MailFolderScreen.checkInboxScreen();
     await MailFolderScreen.clickCreateEmail();
-    await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);
-    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail], emailSubject, emailText);
+    await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText, ccRecipientEmail, bccRecipientEmail);
+    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail], emailSubject, emailText, undefined, [ccRecipientEmail], [bccRecipientEmail]);
 
     await driver.background(3);
 

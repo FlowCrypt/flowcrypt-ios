@@ -11,12 +11,23 @@ import Foundation
 struct ComposeMessageRecipient {
     let email: String
     let name: String?
+    let type: RecipientType
     var state: RecipientState
     var keyState: PubKeyState?
 }
 
 extension ComposeMessageRecipient: Equatable {
     static func == (lhs: ComposeMessageRecipient, rhs: ComposeMessageRecipient) -> Bool {
-        return lhs.email == rhs.email
+        return lhs.email == rhs.email && lhs.type == rhs.type
+    }
+}
+
+enum RecipientType: String, CaseIterable, Hashable {
+    case to, cc, bcc
+}
+
+extension RecipientType {
+    var inputPlaceholder: String {
+        "compose_recipient_\(rawValue)".localized
     }
 }

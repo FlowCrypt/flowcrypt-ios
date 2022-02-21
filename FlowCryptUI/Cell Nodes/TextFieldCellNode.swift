@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-public final class TextFieldCellNode: CellNode {
+public class TextFieldCellNode: CellNode {
     public struct Input {
         public var placeholder: NSAttributedString?
         public var isSecureTextEntry = false
@@ -51,7 +51,7 @@ public final class TextFieldCellNode: CellNode {
 
     private var textFieldAction: TextFieldAction?
 
-    private let input: Input
+    let input: Input
 
     public let textField: TextFieldNode
 

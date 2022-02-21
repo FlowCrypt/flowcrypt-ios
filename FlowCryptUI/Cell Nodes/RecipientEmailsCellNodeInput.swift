@@ -97,13 +97,16 @@ extension RecipientEmailsCellNode {
         }
 
         public let email: NSAttributedString
+        public let type: String
         public var state: State
 
         public init(
             email: NSAttributedString,
+            type: String,
             state: State
         ) {
             self.email = email
+            self.type = type
             self.state = state
         }
     }
