@@ -16,7 +16,7 @@ extension GmailService: MessageProvider {
                   progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
             guard let identifier = message.identifier.stringId else {
-                return continuation.resume(throwing: GmailServiceError.missedMessageInfo("id"))
+                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
             Task {
@@ -36,13 +36,13 @@ extension GmailService: MessageProvider {
                           let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                           let raw = dictionary["raw"] as? String
                     else {
-                        return continuation.resume(throwing: GmailServiceError.missedMessageInfo("raw"))
+                        return continuation.resume(throwing: GmailServiceError.missingMessageInfo("raw"))
                     }
 
                     progressHandler?(.decrypt)
 
                     guard let data = GTLRDecodeWebSafeBase64(raw) else {
-                        return continuation.resume(throwing: GmailServiceError.missedMessageInfo("data"))
+                        return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
                     }
 
                     return continuation.resume(returning: data)
@@ -64,7 +64,7 @@ extension GmailService: MessageProvider {
                 }
 
                 guard let sizeEstimate = gmailMessage.sizeEstimate?.floatValue else {
-                    return continuation.resume(throwing: GmailServiceError.missedMessageInfo("sizeEstimate"))
+                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("sizeEstimate"))
                 }
 
                 // google returns smaller estimated size

@@ -43,7 +43,7 @@
 "message_compose_secure" = "Compose Secure Message";
 "message_unknown_sender" = "(unknown sender)";
 "message_no_recipients" = "(no recipients)";
-"message_missed_subject" = "No subject";
+"message_missing_subject" = "No subject";
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved. %@";
@@ -308,7 +308,7 @@
 "gmail_service_missing_message_payload_error_message" = "Missing message payload";
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
 "gmail_service_provider_error_error_message" = "Gmail provider error: %@";
-"gmail_service_missing_back_query_error_message" = "Missed backup query: %@";
+"gmail_service_missing_back_query_error_message" = "Missing backup query: %@";
 "gmail_service_no_access_to_account_message" = "Google login successful.\n Now connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
 // Files picking

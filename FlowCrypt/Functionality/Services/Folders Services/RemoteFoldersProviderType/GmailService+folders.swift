@@ -55,7 +55,7 @@ private extension Folder {
             assertionFailure("Gmail folder \(gmailFolder) doesn't have identifier")
             return nil
         }
-        // folder.identifier is missed for hidden GTLRGmail_Labels
+        // folder.identifier is missing for hidden GTLRGmail_Labels
         if path.isEmpty {
             return nil
         }
