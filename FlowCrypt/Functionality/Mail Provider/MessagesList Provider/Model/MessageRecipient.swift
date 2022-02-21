@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import GoogleAPIClientForREST_PeopleService
 
 struct MessageRecipient: RecipientBase, Hashable {
     let name: String?
@@ -28,14 +29,33 @@ struct MessageRecipient: RecipientBase, Hashable {
             .trimmingCharacters(in: .whitespaces)
         self.name = name == self.email ? nil : name
     }
+
+    init?(person: GTLRPeopleService_Person) {
+        guard let email = person.emailAddresses?.first?.value else { return nil }
+
+        self.email = email
+
+        if let name = person.names?.first {
+            self.name = [name.givenName, name.familyName].compactMap { $0 }.joined(separator: " ")
+        } else {
+            self.name = nil
+        }
+    }
+
+    init(recipient: RecipientBase) {
+        self.name = recipient.name
+        self.email = recipient.email
+    }
+}
+
+extension MessageRecipient: Comparable {
+    static func < (lhs: MessageRecipient, rhs: MessageRecipient) -> Bool {
+        guard let name1 = lhs.name else { return true }
+        guard let name2 = rhs.name else { return false }
+        return name1 < name2
+    }
 }
 
 extension MessageRecipient {
-    var displayName: String {
-        name?.components(separatedBy: " ").first ??
-        email.components(separatedBy: "@").first ??
-        "unknown"
-    }
-
     var rawString: (String?, String) { (name, email) }
 }

@@ -18,4 +18,14 @@ extension RecipientBase {
         guard let name = name else { return email }
         return "\(name) <\(email)>"
     }
+
+    var shortName: String {
+        name?.components(separatedBy: " ").first ??
+        email.components(separatedBy: "@").first ??
+        "unknown"
+    }
+
+    var displayName: String {
+        name ?? email
+    }
 }

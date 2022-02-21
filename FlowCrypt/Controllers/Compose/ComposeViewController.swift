@@ -44,7 +44,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private enum State {
-        case main, searchEmails([RecipientBase])
+        case main, searchEmails([MessageRecipient])
     }
 
     private enum Section: Hashable {
@@ -640,8 +640,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             case let (.searchEmails(recipients), .searchResults):
                 guard indexPath.row > 0 else { return DividerCellNode() }
                 guard recipients.isNotEmpty else { return self.noSearchResultsNode() }
-
-                let recipient = recipients[indexPath.row-1]
+                guard let recipient = recipients[safe: indexPath.row-1] else { return ASCellNode() }
 
                 if let name = recipient.name {
                     return LabelCellNode(input: self.decorator.styledRecipientInfo(with: recipient.email, name: name))
@@ -662,8 +661,8 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
             switch section {
             case .searchResults:
-                let selectedEmail = recipients[safe: indexPath.row-1]?.email
-                handleEndEditingAction(with: selectedEmail, for: recipientType)
+                let recipient = recipients[safe: indexPath.row-1]
+                handleEndEditingAction(with: recipient?.email, name: recipient?.name, for: recipientType)
             case .contacts:
                 askForContactsPermission()
             default:
@@ -941,9 +940,9 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEndEditingAction(with text: String?, for recipientType: RecipientType) {
+    private func handleEndEditingAction(with email: String?, name: String? = nil, for recipientType: RecipientType) {
         guard shouldEvaluateRecipientInput,
-              let text = text, text.isNotEmpty
+              let email = email, email.isNotEmpty
         else { return }
 
         let recipients = contextToSend.recipients(type: recipientType)
@@ -962,7 +961,7 @@ extension ComposeViewController {
 
         contextToSend.set(recipients: idleRecipients, for: recipientType)
 
-        let newRecipient = ComposeMessageRecipient(email: text, name: nil, type: recipientType, state: decorator.recipientIdleState)
+        let newRecipient = ComposeMessageRecipient(email: email, name: name, type: recipientType, state: decorator.recipientIdleState)
         let indexOfRecipient: Int
 
         let indexPath = recipientsIndexPath(type: recipientType, part: .list)
@@ -1066,10 +1065,12 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             do {
-                let localRecipients = try contactsService.searchLocalContacts(query: query)
                 let cloudRecipients = try await service.searchContacts(query: query)
-                let recipients = localRecipients + cloudRecipients
-                // TODO: Add check for unique
+                let cloudEmails = cloudRecipients.map(\.email)
+                let localRecipients = try contactsService.searchLocalContacts(query: query).filter { !cloudEmails.contains($0.email) }
+                let recipients = (localRecipients + cloudRecipients)
+                    .map(MessageRecipient.init)
+                    .unique()
                 updateState(with: .searchEmails(recipients))
             } catch {
                 showAlert(message: error.localizedDescription)

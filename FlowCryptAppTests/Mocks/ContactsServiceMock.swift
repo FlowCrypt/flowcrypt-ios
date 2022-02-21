@@ -38,7 +38,8 @@ final class ContactsServiceMock: ContactsServiceType {
             fatalError()
         }
     }
-    func searchLocalContacts(query: String) -> [String] { [] }
+
+    func searchLocalContacts(query: String) throws -> [RecipientBase] { [] }
 
     func removePubKey(with fingerprint: String, for email: String) {}
 }

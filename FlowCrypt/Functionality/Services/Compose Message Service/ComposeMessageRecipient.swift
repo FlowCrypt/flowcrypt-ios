@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct ComposeMessageRecipient {
+struct ComposeMessageRecipient: RecipientBase {
     let email: String
     let name: String?
     let type: RecipientType

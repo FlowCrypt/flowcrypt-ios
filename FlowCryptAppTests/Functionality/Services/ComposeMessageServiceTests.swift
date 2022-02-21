@@ -16,9 +16,9 @@ class ComposeMessageServiceTests: XCTestCase {
     var sut: ComposeMessageService!
 
     let recipients: [ComposeMessageRecipient] = [
-        ComposeMessageRecipient(email: "test@gmail.com", type: .to, state: recipientIdleState),
-        ComposeMessageRecipient(email: "test2@gmail.com", type: .to, state: recipientIdleState),
-        ComposeMessageRecipient(email: "test3@gmail.com", type: .to, state: recipientIdleState)
+        ComposeMessageRecipient(email: "test@gmail.com", name: "Test", type: .to, state: recipientIdleState),
+        ComposeMessageRecipient(email: "test2@gmail.com", name: nil, type: .to, state: recipientIdleState),
+        ComposeMessageRecipient(email: "test3@gmail.com", name: nil, type: .to, state: recipientIdleState)
     ]
     let validKeyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: nil)
     let keypair = Keypair(
@@ -77,9 +77,9 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testValidateMessageInputWithWhitespaceRecipients() async {
         let recipients: [ComposeMessageRecipient] = [
-            ComposeMessageRecipient(email: "   ", type: .to, state: recipientIdleState),
-            ComposeMessageRecipient(email: " ", type: .to, state: recipientIdleState),
-            ComposeMessageRecipient(email: "sdfff", type: .to, state: recipientIdleState)
+            ComposeMessageRecipient(email: "   ", name: nil, type: .to, state: recipientIdleState),
+            ComposeMessageRecipient(email: " ", name: nil, type: .to, state: recipientIdleState),
+            ComposeMessageRecipient(email: "sdfff", name: nil, type: .to, state: recipientIdleState)
         ]
         do {
             _ = try await sut.validateAndProduceSendableMsg(

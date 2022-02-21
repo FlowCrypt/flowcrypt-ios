@@ -289,7 +289,7 @@ extension ComposeViewDecorator {
 extension RecipientEmailsCellNode.Input {
     init(_ recipient: ComposeMessageRecipient) {
         self.init(
-            email: recipient.email.lowercased().attributed(
+            email: recipient.displayName.attributed(
                 .regular(17),
                 color: recipient.state.textColor,
                 alignment: .left

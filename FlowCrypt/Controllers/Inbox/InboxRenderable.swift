@@ -37,7 +37,7 @@ extension InboxRenderable {
 extension InboxRenderable {
 
     init(message: Message) {
-        self.title = message.sender?.displayName ?? "message_unknown_sender".localized
+        self.title = message.sender?.shortName ?? "message_unknown_sender".localized
         self.messageCount = 1
         self.subtitle = message.subject ?? "message_missing_subject".localized
         self.dateString = DateFormatter().formatDate(message.date)
@@ -71,14 +71,14 @@ extension InboxRenderable {
         if folderPath == MessageLabelType.sent.value {
             let recipients = thread.messages
                 .flatMap(\.allRecipients)
-                .map(\.displayName)
+                .map(\.shortName)
                 .unique()
                 .joined(separator: ", ")
             return "To: \(recipients)"
 
         } else {
             return thread.messages
-                .compactMap(\.sender?.displayName)
+                .compactMap(\.sender?.shortName)
                 .unique()
                 .joined(separator: ",")
         }
