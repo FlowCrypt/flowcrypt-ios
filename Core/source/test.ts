@@ -865,3 +865,71 @@ j+w8FyoMKOrmOAyFTWjJVyVEruMl2a7QDO/CjaWV4sAUt0LMcRdZdTM=
   await t.throwsAsync(() => PgpKey.decrypt(key, '123'), { instanceOf: Error, message: 'Key is invalid' });
   t.pass();
 });
+
+ava.default('decrypt bad unencrypted private key', async t => {
+  const unencryptedCorruptedRsaKey = `-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: FlowCrypt Email Encryption [BUILD_REPLACEABLE_VERSION]
+Comment: Seamlessly send and receive encrypted email
+
+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
+=//ru
+-----END PGP PRIVATE KEY BLOCK-----`;
+  // await PgpKey.parse(unencryptedCorruptedRsaKey) - this will return 'Error: key is invalid'
+  await t.throwsAsync(() => PgpKey.parse(unencryptedCorruptedRsaKey), { instanceOf: Error, message: 'Key is invalid' });
+  t.fail();
+});

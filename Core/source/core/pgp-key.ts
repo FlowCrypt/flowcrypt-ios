@@ -204,6 +204,7 @@ export class PgpKey {
       }
       for (const k of keys) {
         for (const u of k.users) {
+          await PgpKey.validateAllDecryptedPackets(k);
           u.otherCertifications = []; // prevent key bloat
         }
       }
