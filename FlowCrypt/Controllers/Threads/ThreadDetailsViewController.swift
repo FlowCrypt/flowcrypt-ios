@@ -614,7 +614,9 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
         logger.logInfo("Back button. Are all messages read \(isRead)")
-        onComplete(MessageAction.markAsRead(isRead), .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email))
+        onComplete(MessageAction.markAsRead(isRead),
+                    .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email)
+        )
         navigationController?.popViewController(animated: true)
     }
 }

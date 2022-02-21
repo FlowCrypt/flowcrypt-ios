@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 
-final public class RecipientEmailsCellNode: CellNode {
+final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode {
     public typealias RecipientTap = (RecipientEmailTapAction) -> Void
 
     public enum RecipientEmailTapAction {
@@ -24,6 +24,16 @@ final public class RecipientEmailsCellNode: CellNode {
 
     private var onAction: RecipientTap?
 
+    lazy var toggleButtonNode: ASButtonNode = {
+        createToggleButton()
+    }()
+    var toggleButtonAction: (() -> Void)?
+    var isToggleButtonRotated = false {
+        didSet {
+            updateToggleButton(animated: true)
+        }
+    }
+
     private lazy var layout: LeftAlignedCollectionViewFlowLayout = {
         let layout = LeftAlignedCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -35,18 +45,25 @@ final public class RecipientEmailsCellNode: CellNode {
 
     public lazy var collectionNode: ASCollectionNode = {
         let node = ASCollectionNode(collectionViewLayout: layout)
-        node.accessibilityIdentifier = "aid-recipients-list"
+        node.accessibilityIdentifier = "aid-recipients-list-\(type)"
         node.backgroundColor = .clear
         return node
     }()
-
     private var collectionLayoutHeight: CGFloat
     private var recipients: [Input] = []
+    private let type: String
 
-    public init(recipients: [Input], height: CGFloat) {
+    public init(recipients: [Input],
+                type: String,
+                height: CGFloat,
+                isToggleButtonRotated: Bool,
+                toggleButtonAction: (() -> Void)?) {
         self.recipients = recipients
+        self.type = type
         self.collectionLayoutHeight = height
+
         super.init()
+
         collectionNode.dataSource = self
         collectionNode.delegate = self
 
@@ -55,20 +72,30 @@ final public class RecipientEmailsCellNode: CellNode {
         }
 
         automaticallyManagesSubnodes = true
+
+        self.isToggleButtonRotated = isToggleButtonRotated
+        self.toggleButtonAction = toggleButtonAction
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        guard recipients.isNotEmpty else {
-            return ASInsetLayoutSpec(insets: .zero, child: collectionNode)
-        }
+        let collectionNodeHeight = recipients.isEmpty ? 0 : collectionLayoutHeight
+        let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionNodeHeight)
+        let buttonSize = CGSize(width: 40, height: 50)
 
-        collectionNode.style.preferredSize.height = collectionLayoutHeight
-        collectionNode.style.preferredSize.width = constrainedSize.max.width
+        var insets = UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0)
+        insets.left -= 8
 
-        return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8),
-            child: collectionNode
+        return createLayout(
+            contentNode: collectionNode,
+            contentSize: collectionNodeSize,
+            insets: insets,
+            buttonSize: buttonSize
         )
+    }
+
+    func onToggleButtonTap() {
+        isToggleButtonRotated.toggle()
+        toggleButtonAction?()
     }
 }
 

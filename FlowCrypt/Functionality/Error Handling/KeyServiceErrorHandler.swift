@@ -26,7 +26,12 @@ extension CreateKeyError: CustomStringConvertible {
     var description: String {
         switch self {
         case .weakPassPhrase(let strength):
-            return "Pass phrase strength: \(strength.word.word)\ncrack time: \(strength.time)\n\nWe recommend to use 5-6 unrelated words as your Pass Phrase."
+            return """
+            Pass phrase strength: \(strength.word.word)
+            crack time: \(strength.time)
+
+            We recommend to use 5-6 unrelated words as your Pass Phrase.
+            """
         case .missingUserEmail:
             return "backupServiceError_email".localized
         case .missingUserName:

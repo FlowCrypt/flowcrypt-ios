@@ -134,9 +134,9 @@ final class ComposeMessageService {
         return SendableMsg(
             text: text,
             html: nil,
-            to: recipients.map(\.email),
-            cc: [],
-            bcc: [],
+            to: contextToSend.recipientEmails(type: .to),
+            cc: contextToSend.recipientEmails(type: .cc),
+            bcc: contextToSend.recipientEmails(type: .bcc),
             from: sender,
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
