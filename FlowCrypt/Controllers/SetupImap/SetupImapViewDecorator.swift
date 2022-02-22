@@ -74,11 +74,11 @@ struct SetupImapViewDecorator {
             case .email:
                 placeholder = "setup_imap_email".localized
                 keyboardType = .emailAddress
-                accessibilityIdentifier = "Email"
+                accessibilityIdentifier = "aid-email-textfield"
             case .password:
                 placeholder = "setup_imap_password".localized
                 isSecure = true
-                accessibilityIdentifier = "Password"
+                accessibilityIdentifier = "aid-password-textfield"
             case .username:
                 placeholder = "setup_imap_username".localized
             case .title:
