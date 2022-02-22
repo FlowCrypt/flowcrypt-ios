@@ -56,12 +56,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
                 moveToMainFlow()
             } catch {
                 hideSpinner()
-
-                let isErrorHandled = handleCommon(error: error)
-
-                if !isErrorHandled {
-                    showAlert(error: error, message: "error_setup_try_again".localized)
-                }
+                showAlert(message: error.errorMessage)
             }
         }
     }

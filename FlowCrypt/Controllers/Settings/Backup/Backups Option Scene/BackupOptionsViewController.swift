@@ -113,7 +113,7 @@ extension BackupOptionsViewController {
                 hideSpinner()
                 navigationController?.popToRootViewController(animated: true)
             } catch {
-                handleCommon(error: error)
+                showAlert(message: error.errorMessage)
             }
         }
     }

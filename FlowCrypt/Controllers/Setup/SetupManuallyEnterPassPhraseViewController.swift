@@ -171,7 +171,7 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                         do {
                             try await self.handleContinueAction()
                         } catch {
-                            self.handleCommon(error: error)
+                            self.showAlert(message: error.errorMessage)
                         }
                     }
                 }

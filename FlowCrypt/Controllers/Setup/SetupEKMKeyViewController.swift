@@ -55,11 +55,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
                 moveToMainFlow()
             } catch {
                 hideSpinner()
-
-                let isErrorHandled = self.handleCommon(error: error)
-                if !isErrorHandled {
-                    showAlert(error: error, message: "error_setup_try_again".localized)
-                }
+                showAlert(message: error.errorMessage)
             }
         }
     }
