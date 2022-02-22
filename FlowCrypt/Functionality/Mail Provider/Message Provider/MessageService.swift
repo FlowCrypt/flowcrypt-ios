@@ -96,14 +96,14 @@ final class MessageService {
         )
         return try await decryptAndProcessMessage(
             mime: rawMimeData,
-            sender: input.sender?.email,
+            sender: input.sender,
             onlyLocalKeys: onlyLocalKeys
         )
     }
 
     func decryptAndProcessMessage(
         mime rawMimeData: Data,
-        sender: String?,
+        sender: Recipient?,
         onlyLocalKeys: Bool
     ) async throws -> ProcessedMessage {
         let keys = try await keyService.getPrvKeyInfo()
@@ -149,7 +149,7 @@ final class MessageService {
 
     private func processMessage(
         rawMimeData: Data,
-        sender: String?,
+        sender: Recipient?,
         with decrypted: CoreRes.ParseDecryptMsg,
         keys: [PrvKeyInfo]
     ) async throws -> ProcessedMessage {
@@ -229,13 +229,13 @@ final class MessageService {
 
 // MARK: - Message verification
 extension MessageService {
-    private func fetchVerificationPubKeys(for email: String?, onlyLocal: Bool) async throws -> [String] {
-        guard let email = email else { return [] }
+    private func fetchVerificationPubKeys(for sender: Recipient?, onlyLocal: Bool) async throws -> [String] {
+        guard let sender = sender else { return [] }
 
-        let pubKeys = try contactsService.retrievePubKeys(for: email)
+        let pubKeys = try contactsService.retrievePubKeys(for: sender.email)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
-        guard let contact = try? await contactsService.fetchContact(with: email)
+        guard let contact = try? await contactsService.fetchContact(sender)
         else { return [] }
 
         return contact.pubKeys.map(\.armored)

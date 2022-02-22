@@ -115,7 +115,7 @@ extension UserContactsProvider {
                     return continuation.resume(throwing: CloudContactsProviderError.failedToParseData(data))
                 }
 
-                let recipients = contacts.compactMap(\.person).compactMap(MessageRecipient.init)
+                let recipients = contacts.compactMap(\.person).compactMap(Recipient.init)
                 return continuation.resume(returning: recipients)
             }
         }

@@ -7,7 +7,7 @@
 //
 
 protocol PubLookupType {
-    func lookup(email: String) async throws -> RecipientWithSortedPubKeys
+    func lookup(recipient: Recipient) async throws -> RecipientWithSortedPubKeys
 }
 
 class PubLookup: PubLookupType {
@@ -33,14 +33,14 @@ class PubLookup: PubLookupType {
         self.attesterApi = attesterApi ?? AttesterApi(clientConfiguration: clientConfiguration)
     }
 
-    func lookup(email: String) async throws -> RecipientWithSortedPubKeys {
+    func lookup(recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
         let results: [LookupResult] = try await withThrowingTaskGroup(of: LookupResult.self) { tg in
             var results: [LookupResult] = []
             tg.addTask {
-                LookupResult(keys: try await self.wkd.lookup(email: email), source: .wkd)
+                LookupResult(keys: try await self.wkd.lookup(email: recipient.email), source: .wkd)
             }
             tg.addTask {
-                LookupResult(keys: try await self.attesterApi.lookup(email: email), source: .attester)
+                LookupResult(keys: try await self.attesterApi.lookup(email: recipient.email), source: .attester)
             }
             for try await result in tg {
                 results.append(result)
@@ -56,10 +56,10 @@ class PubLookup: PubLookupType {
         if !wkdResult.keys.isEmpty {
             // WKD keys are preferred. The trust level is higher because the recipient
             //  controls the distribution of the keys themselves on their own domain
-            return RecipientWithSortedPubKeys(email: email, keyDetails: wkdResult.keys)
+            return RecipientWithSortedPubKeys(recipient: recipient, keyDetails: wkdResult.keys)
         }
         // Attester keys are less preferred because they come from less trustworthy source
         //   (the FlowCrypt server)
-        return RecipientWithSortedPubKeys(email: email, keyDetails: attesterResult.keys)
+        return RecipientWithSortedPubKeys(recipient: recipient, keyDetails: attesterResult.keys)
     }
 }

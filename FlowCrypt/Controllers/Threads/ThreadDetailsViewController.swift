@@ -225,7 +225,7 @@ extension ThreadDetailsViewController {
         else { return }
 
         let sender = [input.rawMessage.sender].compactMap { $0 }
-        let recipients: [MessageRecipient] = {
+        let recipients: [Recipient] = {
             switch quoteType {
             case .reply:
                 return sender
@@ -433,7 +433,7 @@ extension ThreadDetailsViewController {
                     let sender = input[indexPath.section-1].rawMessage.sender
                     let processedMessage = try await messageService.decryptAndProcessMessage(
                         mime: rawMimeData,
-                        sender: sender?.email,
+                        sender: sender,
                         onlyLocalKeys: false
                     )
                     handleReceived(message: processedMessage, at: indexPath)

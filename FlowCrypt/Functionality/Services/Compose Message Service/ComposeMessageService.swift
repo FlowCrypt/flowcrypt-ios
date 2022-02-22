@@ -152,7 +152,8 @@ final class ComposeMessageService {
         for recipient in recipients {
             let armoredPubkeys = try contactsService.retrievePubKeys(for: recipient.email).joined(separator: "\n")
             let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
-            recipientsWithKeys.append(RecipientWithSortedPubKeys(email: recipient.email, keyDetails: parsed.keyDetails))
+            let recipient = Recipient(recipient: recipient) // TODO:
+            recipientsWithKeys.append(RecipientWithSortedPubKeys(recipient: recipient, keyDetails: parsed.keyDetails))
         }
         return recipientsWithKeys
     }

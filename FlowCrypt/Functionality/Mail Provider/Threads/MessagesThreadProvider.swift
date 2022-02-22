@@ -145,7 +145,7 @@ extension Message {
         let labelTypes: [MessageLabelType] = message.labelIds?.map(MessageLabelType.init) ?? []
         let labels = labelTypes.map(MessageLabel.init)
 
-        var sender: MessageRecipient?
+        var sender: Recipient?
         var subject: String?
         var to: String?
         var cc: String?
@@ -157,7 +157,7 @@ extension Message {
             else { return }
 
             switch name {
-            case .from: sender = MessageRecipient(value)
+            case .from: sender = Recipient(value)
             case .subject: subject = value
             case .to: to = value
             case .cc: cc = value

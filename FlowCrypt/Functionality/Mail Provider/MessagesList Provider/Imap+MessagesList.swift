@@ -49,9 +49,9 @@ extension Message {
     init(imapMessage: MCOIMAPMessage) {
         // swiftlint:disable compiler_protocol_init
         let labels = Array(arrayLiteral: imapMessage.flags).map(MessageLabelType.init).map(MessageLabel.init)
-        var sender: MessageRecipient?
+        var sender: Recipient?
         if let senderString = imapMessage.header.from ?? imapMessage.header.sender {
-            sender = MessageRecipient(senderString.nonEncodedRFC822String())
+            sender = Recipient(senderString.nonEncodedRFC822String())
         }
 
         self.init(

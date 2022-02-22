@@ -44,7 +44,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private enum State {
-        case main, searchEmails([MessageRecipient])
+        case main, searchEmails([Recipient])
     }
 
     private enum Section: Hashable {
@@ -1067,9 +1067,9 @@ extension ComposeViewController {
             do {
                 let cloudRecipients = try await service.searchContacts(query: query)
                 let localRecipients = try contactsService.searchLocalContacts(query: query)
-                
+
                 let recipients = (localRecipients + cloudRecipients)
-                    .map(MessageRecipient.init)
+                    .map(Recipient.init)
                     .unique()
                     .sorted()
 
@@ -1095,7 +1095,8 @@ extension ComposeViewController {
                     handleEvaluation(for: contact)
                 }
 
-                let contactWithFetchedKeys = try await service.fetchContact(with: recipient.email)
+                let recipient = Recipient(recipient: recipient)
+                let contactWithFetchedKeys = try await service.fetchContact(recipient)
                 handleEvaluation(for: contactWithFetchedKeys)
             } catch {
                 handleEvaluation(error: error, with: recipient.email)
@@ -1573,7 +1574,7 @@ private actor ServiceActor {
         return try await contactsService.findLocalContact(with: email)
     }
 
-    func fetchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
-        return try await contactsService.fetchContact(with: email)
+    func fetchContact(_ contact: Recipient) async throws -> RecipientWithSortedPubKeys {
+        return try await contactsService.fetchContact(contact)
     }
 }

@@ -33,9 +33,9 @@ extension RecipientWithSortedPubKeys {
 }
 
 extension RecipientWithSortedPubKeys {
-    init(email: String, keyDetails: [KeyDetails]) {
-        self.email = email
-        self.name = keyDetails.first?.users.first ?? email
+    init(recipient: Recipient, keyDetails: [KeyDetails]) {
+        self.email = recipient.email
+        self.name = recipient.name ?? keyDetails.first?.users.first ?? email
         self.lastUsed = nil
         self._pubKeys = keyDetails.map(PubKey.init)
     }

@@ -13,10 +13,10 @@ import GoogleAPIClientForREST_Gmail
 struct Message: Hashable {
     let identifier: Identifier
     let date: Date
-    let sender: MessageRecipient?
-    let to: [MessageRecipient]
-    let cc: [MessageRecipient]
-    let bcc: [MessageRecipient]
+    let sender: Recipient?
+    let to: [Recipient]
+    let cc: [Recipient]
+    let bcc: [Recipient]
     let subject: String?
     let size: Int?
     let attachmentIds: [String]
@@ -41,7 +41,7 @@ struct Message: Hashable {
     init(
         identifier: Identifier,
         date: Date,
-        sender: MessageRecipient?,
+        sender: Recipient?,
         subject: String?,
         size: Int?,
         labels: [MessageLabel],
@@ -80,8 +80,8 @@ extension Message: Equatable, Comparable {
 }
 
 extension Message {
-    static func parseRecipients(_ string: String?) -> [MessageRecipient] {
-        string?.components(separatedBy: ", ").map(MessageRecipient.init) ?? []
+    static func parseRecipients(_ string: String?) -> [Recipient] {
+        string?.components(separatedBy: ", ").map(Recipient.init) ?? []
     }
 }
 
@@ -97,7 +97,7 @@ extension Message {
         return copy
     }
 
-    var allRecipients: [MessageRecipient] {
+    var allRecipients: [Recipient] {
         [to, cc, bcc].flatMap { $0 }
     }
 }
