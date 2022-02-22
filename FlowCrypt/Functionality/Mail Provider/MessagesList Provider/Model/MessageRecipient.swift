@@ -9,7 +9,7 @@
 import Foundation
 import GoogleAPIClientForREST_PeopleService
 
-struct MessageRecipient: RecipientBase, Hashable {
+struct MessageRecipient: RecipientBase {
     let name: String?
     let email: String
 
@@ -48,14 +48,26 @@ struct MessageRecipient: RecipientBase, Hashable {
     }
 }
 
+extension MessageRecipient {
+    var rawString: (String?, String) { (name, email) }
+}
+
 extension MessageRecipient: Comparable {
     static func < (lhs: MessageRecipient, rhs: MessageRecipient) -> Bool {
-        guard let name1 = lhs.name else { return true }
-        guard let name2 = rhs.name else { return false }
+        guard let name1 = lhs.name else { return false }
+        guard let name2 = rhs.name else { return true }
         return name1 < name2
     }
 }
 
-extension MessageRecipient {
-    var rawString: (String?, String) { (name, email) }
+extension MessageRecipient: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(email)
+    }
+}
+
+extension MessageRecipient: Equatable {
+    static func == (lhs: MessageRecipient, rhs: MessageRecipient) -> Bool {
+        lhs.email == rhs.email
+    }
 }

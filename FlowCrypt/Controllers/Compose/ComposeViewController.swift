@@ -1066,11 +1066,13 @@ extension ComposeViewController {
         Task {
             do {
                 let cloudRecipients = try await service.searchContacts(query: query)
-                let cloudEmails = cloudRecipients.map(\.email)
-                let localRecipients = try contactsService.searchLocalContacts(query: query).filter { !cloudEmails.contains($0.email) }
+                let localRecipients = try contactsService.searchLocalContacts(query: query)
+                
                 let recipients = (localRecipients + cloudRecipients)
                     .map(MessageRecipient.init)
                     .unique()
+                    .sorted()
+
                 updateState(with: .searchEmails(recipients))
             } catch {
                 showAlert(message: error.localizedDescription)
