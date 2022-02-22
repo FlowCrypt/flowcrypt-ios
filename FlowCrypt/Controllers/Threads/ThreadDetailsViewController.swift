@@ -179,9 +179,12 @@ extension ThreadDetailsViewController {
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {
+        showSpinner()
+
         Task {
             do {
                 let attachment = try await getAttachment(at: indexPath)
+                hideSpinner()
                 show(attachment: attachment)
             } catch {
                 handleAttachmentDecryptError(error, at: indexPath)
@@ -190,18 +193,23 @@ extension ThreadDetailsViewController {
     }
 
     private func getAttachment(at indexPath: IndexPath) async throws -> MessageAttachment {
+        let trace = Trace(id: "Attachment")
         let section = input[indexPath.section-1]
         let attachmentIndex = indexPath.row - 2
 
-        guard let attachment = section.processedMessage?.attachments[attachmentIndex]
-        else { throw MessageServiceError.attachmentNotFound }
+        guard let attachment = section.processedMessage?.attachments[attachmentIndex] else {
+            throw MessageServiceError.attachmentNotFound
+        }
 
         if attachment.isEncrypted {
             let decryptedAttachment = try await messageService.decrypt(attachment: attachment)
+            logger.logInfo("Got encrypted attachment - \(trace.finish())")
+
             input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
             node.reloadRows(at: [indexPath], with: .automatic)
             return decryptedAttachment
         } else {
+            logger.logInfo("Got not encrypted attachment - \(trace.finish())")
             return attachment
         }
     }
@@ -366,6 +374,7 @@ extension ThreadDetailsViewController {
     }
 
     private func handleAttachmentDecryptError(_ error: Error, at indexPath: IndexPath) {
+        hideSpinner()
         let message = "message_attachment_corrupted_file".localized
 
         let alertController = UIAlertController(
@@ -375,11 +384,10 @@ extension ThreadDetailsViewController {
         )
 
         let downloadAction = UIAlertAction(title: "download".localized, style: .default) { [weak self] _ in
-            guard let self = self,
-                  let attachment = self.input[indexPath.section-1].processedMessage?.attachments[indexPath.row-2]
-            else { return }
-
-            self.show(attachment: attachment)
+            guard let attachment = self?.input[indexPath.section-1].processedMessage?.attachments[indexPath.row-2] else {
+                return
+            }
+            self?.show(attachment: attachment)
         }
         let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
 

@@ -10,7 +10,6 @@ def app_pods
   pod 'Texture'
   pod 'SwiftyRSA'
   pod 'SwiftLint' # todo - add linting rules
-  pod 'SwiftFormat/CLI'
 end
 
 def ui_pods
