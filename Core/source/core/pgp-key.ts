@@ -9,7 +9,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/util';
-import { AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
+import { AnyKeyPacket, BaseSecretKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { requireStreamReadToEnd } from '../platform/require';
 const readToEnd = requireStreamReadToEnd();
@@ -136,9 +136,10 @@ export class PgpKey {
   }
 
   public static validateAllDecryptedPackets = async (key: Key): Promise<void> => {
-    const packets = key.toPacketList() as PacketList<SecretKeyPacket>;
-    for (const prvPacket of packets.filter(PgpKey.isPacketPrivate).filter(packet => packet.isDecrypted())) {
-      await (prvPacket as SecretKeyPacket).validate(); // gnu-dummy never raises an exception, invalid keys raise exceptions
+    for (const prvPacket of key.toPacketList()) {
+      if (prvPacket instanceof SecretKeyPacket) {
+        await (prvPacket as BaseSecretKeyPacket).validate(); // gnu-dummy never raises an exception, invalid keys raise exceptions
+      }
     }
   };
 
@@ -190,7 +191,7 @@ export class PgpKey {
     await encryptKey({ privateKey: (prv as PrivateKey), passphrase });
   }
 
-  public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[] }> => {
+  public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[], exception: string }> => {
     try {
       let keys: Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
@@ -208,10 +209,10 @@ export class PgpKey {
           u.otherCertifications = []; // prevent key bloat
         }
       }
-      return { normalized: keys.map(k => k.armor()).join('\n'), keys };
+      return { normalized: keys.map(k => k.armor()).join('\n'), keys, exception: '' };
     } catch (error) {
       Catch.reportErr(error);
-      return { normalized: '', keys: [] };
+      return { normalized: '', keys: [], exception: error.message };
     }
   }
 
@@ -324,9 +325,9 @@ export class PgpKey {
     return undefined;
   }
 
-  public static parse = async (armored: string): Promise<{ original: string, normalized: string, keys: KeyDetails[] }> => {
-    const { normalized, keys } = await PgpKey.normalize(armored);
-    return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)) };
+  public static parse = async (armored: string): Promise<{ original: string, normalized: string, keys: KeyDetails[], exception: string }> => {
+    const { normalized, keys, exception } = await PgpKey.normalize(armored);
+    return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)), exception };
   }
 
   public static details = async (k: Key): Promise<KeyDetails> => {

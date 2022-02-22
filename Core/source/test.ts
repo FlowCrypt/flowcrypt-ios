@@ -929,7 +929,6 @@ FraCqKUj088pjlLZsORJCsLOgugt7y4O9lf7fNiRo3I81LZsqegqdzcvCeK9
 PBcqDCjq5jgMhU1oyVclRK7jJdmu0Azvwo2lleLAFLdCzHEXWXUz
 =//ru
 -----END PGP PRIVATE KEY BLOCK-----`;
-  // await PgpKey.parse(unencryptedCorruptedRsaKey) - this will return 'Error: key is invalid'
-  await t.throwsAsync(() => PgpKey.parse(unencryptedCorruptedRsaKey), { instanceOf: Error, message: 'Key is invalid' });
-  t.fail();
+  expect((await PgpKey.parse(unencryptedCorruptedRsaKey)).exception).to.equals('Key is invalid');
+  t.pass();
 });
