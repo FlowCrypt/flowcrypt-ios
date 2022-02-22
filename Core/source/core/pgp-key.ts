@@ -9,7 +9,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/util';
-import { AnyKeyPacket, BaseSecretKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
+import { AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { requireStreamReadToEnd } from '../platform/require';
 const readToEnd = requireStreamReadToEnd();
@@ -137,8 +137,8 @@ export class PgpKey {
 
   public static validateAllDecryptedPackets = async (key: Key): Promise<void> => {
     for (const prvPacket of key.toPacketList()) {
-      if (prvPacket instanceof SecretKeyPacket) {
-        await (prvPacket as BaseSecretKeyPacket).validate(); // gnu-dummy never raises an exception, invalid keys raise exceptions
+      if (prvPacket instanceof SecretKeyPacket && prvPacket.isDecrypted()) {
+        await prvPacket.validate(); // gnu-dummy never raises an exception, invalid keys raise exceptions
       }
     }
   };
