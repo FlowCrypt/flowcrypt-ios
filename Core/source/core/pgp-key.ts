@@ -9,7 +9,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/util';
-import { AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
+import { AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { requireStreamReadToEnd } from '../platform/require';
 const readToEnd = requireStreamReadToEnd();
@@ -131,13 +131,13 @@ export class PgpKey {
     return { keys: allKeys, errs: allErrs };
   }
 
-  public static isPacketPrivate = (p: AnyKeyPacket): p is PrvPacket => {
+  public static isPacketPrivate = (p: AllowedKeyPackets): p is PrvPacket => {
     return p instanceof SecretKeyPacket || p instanceof SecretSubkeyPacket;
   }
 
   public static validateAllDecryptedPackets = async (key: Key): Promise<void> => {
-    for (const prvPacket of key.toPacketList()) {
-      if (prvPacket instanceof SecretKeyPacket && prvPacket.isDecrypted()) {
+    for (const prvPacket of key.toPacketList().filter(PgpKey.isPacketPrivate)) {
+      if (prvPacket.isDecrypted()) {
         await prvPacket.validate(); // gnu-dummy never raises an exception, invalid keys raise exceptions
       }
     }
