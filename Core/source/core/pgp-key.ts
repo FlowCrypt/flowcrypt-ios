@@ -131,8 +131,8 @@ export class PgpKey {
     return { keys: allKeys, errs: allErrs };
   }
 
-  public static isPacketPrivate = (p: AllowedKeyPackets): p is PrvPacket => {
-    return p instanceof SecretKeyPacket || p instanceof SecretSubkeyPacket;
+  public static isPacketPrivate = (packet: AllowedKeyPackets): packet is PrvPacket => {
+    return packet instanceof SecretKeyPacket || packet instanceof SecretSubkeyPacket;
   }
 
   public static validateAllDecryptedPackets = async (key: Key): Promise<void> => {
