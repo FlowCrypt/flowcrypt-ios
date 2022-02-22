@@ -242,7 +242,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
     // MARK: - AccessibilityIdentifiers
     private func setupAccessibilityIdentifiers() {
         recipientButtonNode.accessibilityIdentifier = "aid-message-recipients-tappable-area"
-        
+
         expandNode.accessibilityIdentifier = "aid-expand-image-\(input.index)"
         senderNode.accessibilityIdentifier = "aid-sender-\(input.index)"
         dateNode.accessibilityIdentifier = "aid-date-\(input.index)"

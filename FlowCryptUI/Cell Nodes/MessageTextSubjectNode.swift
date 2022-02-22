@@ -16,6 +16,7 @@ public final class MessageTextSubjectNode: CellNode {
         textNode.attributedText = text
         textNode.isAccessibilityElement = true
         textNode.accessibilityIdentifier = "aid-message-\(index)"
+        textNode.accessibilityValue = text?.string
 
         DispatchQueue.main.async {
             self.textNode.textView.isSelectable = true
