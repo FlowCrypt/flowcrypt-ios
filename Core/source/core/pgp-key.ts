@@ -191,7 +191,7 @@ export class PgpKey {
     await encryptKey({ privateKey: (prv as PrivateKey), passphrase });
   }
 
-  public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[], exception: string }> => {
+  public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[], error?: string | undefined }> => {
     try {
       let keys: Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
@@ -209,10 +209,10 @@ export class PgpKey {
           u.otherCertifications = []; // prevent key bloat
         }
       }
-      return { normalized: keys.map(k => k.armor()).join('\n'), keys, exception: '' };
+      return { normalized: keys.map(k => k.armor()).join('\n'), keys };
     } catch (error) {
       Catch.reportErr(error);
-      return { normalized: '', keys: [], exception: error.message };
+      return { normalized: '', keys: [], error: error.message };
     }
   }
 
@@ -325,9 +325,9 @@ export class PgpKey {
     return undefined;
   }
 
-  public static parse = async (armored: string): Promise<{ original: string, normalized: string, keys: KeyDetails[], exception: string }> => {
-    const { normalized, keys, exception } = await PgpKey.normalize(armored);
-    return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)), exception };
+  public static parse = async (armored: string): Promise<{ original: string, normalized: string, keys: KeyDetails[], error?: string | undefined }> => {
+    const { normalized, keys, error } = await PgpKey.normalize(armored);
+    return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)), error };
   }
 
   public static details = async (k: Key): Promise<KeyDetails> => {

@@ -929,6 +929,6 @@ FraCqKUj088pjlLZsORJCsLOgugt7y4O9lf7fNiRo3I81LZsqegqdzcvCeK9
 PBcqDCjq5jgMhU1oyVclRK7jJdmu0Azvwo2lleLAFLdCzHEXWXUz
 =//ru
 -----END PGP PRIVATE KEY BLOCK-----`;
-  expect((await PgpKey.parse(unencryptedCorruptedRsaKey)).exception).to.equals('Key is invalid');
+  expect((await PgpKey.parse(unencryptedCorruptedRsaKey)).error).to.equals('Key is invalid');
   t.pass();
 });
