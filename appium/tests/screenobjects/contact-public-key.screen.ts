@@ -78,7 +78,7 @@ class ContactPublicKeyScreen extends BaseScreen {
   }
 
   checkPgpUserId = async (email: string, name?: string) => {
-    const value = name ? `${name} <${email}>` : email
+    const value = name ? `${name} <${email}>` : email;
     await (await this.trashButton).waitForDisplayed();
     await (await this.pgpUserIdLabel).waitForDisplayed();
     expect(await (await this.pgpUserIdEmailValue).getAttribute('value')).toContain(value);

@@ -56,10 +56,10 @@ class PubLookup: PubLookupType {
         if !wkdResult.keys.isEmpty {
             // WKD keys are preferred. The trust level is higher because the recipient
             //  controls the distribution of the keys themselves on their own domain
-            return RecipientWithSortedPubKeys(recipient: recipient, keyDetails: wkdResult.keys)
+            return RecipientWithSortedPubKeys(recipient, keyDetails: wkdResult.keys)
         }
         // Attester keys are less preferred because they come from less trustworthy source
         //   (the FlowCrypt server)
-        return RecipientWithSortedPubKeys(recipient: recipient, keyDetails: attesterResult.keys)
+        return RecipientWithSortedPubKeys(recipient, keyDetails: attesterResult.keys)
     }
 }

@@ -74,6 +74,6 @@ class RecipientTests: XCTestCase {
             revoked: isKeyRevoked
         )
         let recipient = Recipient(email: "test@flowcrypt.com")
-        return RecipientWithSortedPubKeys(recipient: recipient, keyDetails: [keyDetails])
+        return RecipientWithSortedPubKeys(recipient, keyDetails: [keyDetails])
     }
 }

@@ -9,7 +9,7 @@
 import Foundation
 import RealmSwift
 
-final class RecipientRealmObject: Object, RecipientBase {
+final class RecipientRealmObject: Object {
     @Persisted(primaryKey: true) var email: String
     @Persisted var name: String?
     @Persisted var lastUsed: Date?

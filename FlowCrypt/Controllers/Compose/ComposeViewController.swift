@@ -643,9 +643,14 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 guard let recipient = recipients[safe: indexPath.row-1] else { return ASCellNode() }
 
                 if let name = recipient.name {
-                    return LabelCellNode(input: self.decorator.styledRecipientInfo(with: recipient.email, name: name))
+                    let input = self.decorator.styledRecipientInfo(
+                        with: recipient.email,
+                        name: name
+                    )
+                    return LabelCellNode(input: input)
                 } else {
-                    return InfoCellNode(input: self.decorator.styledRecipientInfo(with: recipient.email))
+                    let input = self.decorator.styledRecipientInfo(with: recipient.email)
+                    return InfoCellNode(input: input)
                 }
             case (.searchEmails, .contacts):
                 return indexPath.row == 0 ? DividerCellNode() : self.enableGoogleContactsNode()
@@ -961,7 +966,13 @@ extension ComposeViewController {
 
         contextToSend.set(recipients: idleRecipients, for: recipientType)
 
-        let newRecipient = ComposeMessageRecipient(email: email, name: name, type: recipientType, state: decorator.recipientIdleState)
+        let newRecipient = ComposeMessageRecipient(
+            email: email,
+            name: name,
+            type: recipientType,
+            state: decorator.recipientIdleState
+        )
+
         let indexOfRecipient: Int
 
         let indexPath = recipientsIndexPath(type: recipientType, part: .list)
@@ -1069,9 +1080,8 @@ extension ComposeViewController {
                 let localRecipients = try contactsService.searchLocalContacts(query: query)
 
                 let recipients = (cloudRecipients + localRecipients)
-                    .map(Recipient.init)
-                    .unique()
-                    .sorted()
+                                    .unique()
+                                    .sorted()
 
                 updateState(with: .searchEmails(recipients))
             } catch {
@@ -1096,7 +1106,7 @@ extension ComposeViewController {
                 }
 
                 let contact = Recipient(recipient: recipient)
-                let contactWithFetchedKeys = try await service.fetch(contact: contact)
+                let contactWithFetchedKeys = try await service.fetchPubKeys(for: contact)
                 handleEvaluation(for: contactWithFetchedKeys)
             } catch {
                 handleEvaluation(error: error, with: recipient.email)
@@ -1566,7 +1576,7 @@ private actor ServiceActor {
         )
     }
 
-    func searchContacts(query: String) async throws -> [RecipientBase] {
+    func searchContacts(query: String) async throws -> [Recipient] {
         return try await cloudContactProvider.searchContacts(query: query)
     }
 
@@ -1574,7 +1584,7 @@ private actor ServiceActor {
         return try await contactsService.findLocalContact(with: email)
     }
 
-    func fetch(contact: Recipient) async throws -> RecipientWithSortedPubKeys {
-        return try await contactsService.fetch(contact: contact)
+    func fetchPubKeys(for recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
+        return try await contactsService.fetchPubKeys(for: recipient)
     }
 }

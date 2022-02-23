@@ -11,7 +11,7 @@ import GoogleAPIClientForREST_PeopleService
 
 protocol CloudContactsProvider {
     var isContactsScopeEnabled: Bool { get }
-    func searchContacts(query: String) async throws -> [RecipientBase]
+    func searchContacts(query: String) async throws -> [Recipient]
 }
 
 enum CloudContactsProviderError: Error {
@@ -81,26 +81,27 @@ final class UserContactsProvider {
 }
 
 extension UserContactsProvider: CloudContactsProvider {
-    func searchContacts(query: String) async -> [RecipientBase] {
+    func searchContacts(query: String) async -> [Recipient] {
         guard isContactsScopeEnabled else { return [] }
         let contacts = await searchUserContacts(query: query, type: .contacts)
         let otherContacts = await searchUserContacts(query: query, type: .other)
-        return contacts + otherContacts
-        // TODO
-        // let emails = Set(contacts + otherContacts)
-        // return Array(emails).sorted(by: >)
+        let allRecipients = (contacts + otherContacts)
+            .map(Recipient.init)
+            .unique()
+            .sorted()
+        return allRecipients
     }
 }
 
 extension UserContactsProvider {
-    private func searchUserContacts(query: String, type: QueryType) async -> [RecipientBase] {
+    private func searchUserContacts(query: String, type: QueryType) async -> [Recipient] {
         let query = type.query(searchString: query)
 
         guard let emails = try? await perform(query: query) else { return [] }
         return emails
     }
 
-    private func perform(query: GTLRPeopleServiceQuery) async throws -> [RecipientBase] {
+    private func perform(query: GTLRPeopleServiceQuery) async throws -> [Recipient] {
         try await withCheckedThrowingContinuation { continuation in
             self.peopleService.executeQuery(query) { _, data, error in
                 if let error = error {

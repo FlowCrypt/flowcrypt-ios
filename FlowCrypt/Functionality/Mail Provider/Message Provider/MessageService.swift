@@ -235,7 +235,7 @@ extension MessageService {
         let pubKeys = try contactsService.retrievePubKeys(for: sender.email)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
-        guard let contact = try? await contactsService.fetch(contact: sender)
+        guard let contact = try? await contactsService.fetchPubKeys(for: sender)
         else { return [] }
 
         return contact.pubKeys.map(\.armored)

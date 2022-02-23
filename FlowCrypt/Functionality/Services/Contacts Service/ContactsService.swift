@@ -18,8 +18,8 @@ protocol ContactsServiceType: PublicKeyProvider, ContactsProviderType {
 
 protocol ContactsProviderType {
     func findLocalContact(with email: String) async throws -> RecipientWithSortedPubKeys?
-    func searchLocalContacts(query: String) throws -> [RecipientBase]
-    func fetch(contact: Recipient) async throws -> RecipientWithSortedPubKeys
+    func searchLocalContacts(query: String) throws -> [Recipient]
+    func fetchPubKeys(for recipient: Recipient) async throws -> RecipientWithSortedPubKeys
 }
 
 protocol PublicKeyProvider {
@@ -47,12 +47,12 @@ extension ContactsService: ContactsProviderType {
         return try await localContactsProvider.searchRecipient(with: email)
     }
 
-    func searchLocalContacts(query: String) throws -> [RecipientBase] {
+    func searchLocalContacts(query: String) throws -> [Recipient] {
         try localContactsProvider.searchRecipients(query: query)
     }
 
-    func fetch(contact: Recipient) async throws -> RecipientWithSortedPubKeys {
-        let lookupRecipient = try await pubLookup.lookup(recipient: contact)
+    func fetchPubKeys(for recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
+        let lookupRecipient = try await pubLookup.lookup(recipient: recipient)
         try localContactsProvider.updateKeys(for: lookupRecipient)
         return lookupRecipient
     }

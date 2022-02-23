@@ -16,7 +16,7 @@ final class ContactsServiceMock: ContactsServiceType {
     }
 
     var fetchContactResult: Result<RecipientWithSortedPubKeys, Error>!
-    func fetch(contact: Recipient) async throws -> RecipientWithSortedPubKeys {
+    func fetchPubKeys(for recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
         switch fetchContactResult {
         case .success(let result):
             return result
@@ -39,7 +39,7 @@ final class ContactsServiceMock: ContactsServiceType {
         }
     }
 
-    func searchLocalContacts(query: String) throws -> [RecipientBase] { [] }
+    func searchLocalContacts(query: String) throws -> [Recipient] { [] }
 
     func removePubKey(with fingerprint: String, for email: String) {}
 }
