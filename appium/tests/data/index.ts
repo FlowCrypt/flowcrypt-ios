@@ -28,7 +28,7 @@ export const CommonData = {
         '\n' +
         'On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
         ' > first message',
-    thirdThreadMessage: 'Third thread rendering message' +
+    thirdThreadMessage: 'Third thread rendering message\n' +
         '\n' +
         'On 2022-02-07 at 06:56, e2e.enterprise.test@flowcrypt.com wrote:\n' +
         '> Second thread rendering message\n' +
@@ -141,14 +141,6 @@ export const CommonData = {
     weakPasswordMessage: 'Error\nPassword didn\'t comply with company policy, which requires at least:\n\n- one uppercase - one lowercase - one number - one special character eg &/#"-\'_%-@,;:!*() - 8 characters length\n\nPlease update the password and re-send.',
     passphrasePasswordErrorMessage: 'Error\nPlease do not use your private key pass phrase as a password for this message.\n\nYou should come up with some other unique password that you can share with recipient.',
     subjectPasswordErrorMessage: 'Error\nPlease do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don\'t need a password.'
-  },
-  threadMessage: {
-    senderEmail: 'dmitry@flowcrypt.com',
-    subject: 'test thread rendering',
-    firstThreadMessage: 'first message',
-    secondTreadMessage: 'Second thread rendering message',
-    thirdThreadMessage: 'Third thread rendering message',
-
   },
   recipientWithExpiredPublicKey: {
     email: 'expired@flowcrypt.com'

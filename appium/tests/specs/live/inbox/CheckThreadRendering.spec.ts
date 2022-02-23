@@ -4,7 +4,6 @@ import {
   MailFolderScreen,
   EmailScreen
 } from '../../../screenobjects/all-screens';
-
 import { CommonData } from '../../../data';
 
 describe('INBOX: ', () => {

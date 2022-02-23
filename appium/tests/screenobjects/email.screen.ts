@@ -122,7 +122,9 @@ class EmailScreen extends BaseScreen {
   }
 
   checkEmailAddress = async (email: string, index: number = 0)=> {
-    await ElementHelper.checkStaticText(await this.senderEmail(index), email);
+    const element = await this.senderEmail(index);
+    await (await element).waitForDisplayed();
+    await expect(await (await element).getValue()).toEqual(email);
   }
 
   checkEmailSubject = async (subject: string) => {
@@ -131,10 +133,12 @@ class EmailScreen extends BaseScreen {
   }
 
   checkEmailText = async (text: string, index: number = 0) => {
-    const selector = `~aid-message-${index}`;
-    await (await $(selector)).waitForDisplayed();
-    await expect(await $(selector)).toHaveTextContaining(text)
-  }
+        const selector = `~aid-message-${index}`;
+        await (await $(selector)).waitForDisplayed();
+        console.log(await $(selector).getValue());
+
+        await expect(await $(selector).getValue()).toContain(text)
+    }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
     await this.checkEmailAddress(email);
@@ -143,8 +147,8 @@ class EmailScreen extends BaseScreen {
   }
 
   checkThreadMessage = async (email: string, subject: string, text: string, date: string, index: number = 0)=> {
-      await this.checkEmailAddress(email, index);
       await this.checkEmailSubject(subject);
+      await this.checkEmailAddress(email, index);
       await this.clickExpandButtonByIndex(index);
       await this.checkEmailText(text, index);
       await this.checkDate(date, index);
@@ -158,8 +162,9 @@ class EmailScreen extends BaseScreen {
   }
 
   checkDate = async (date: string, index: number) => {
-    const element = await $(`~aid-date-${index}`);
-    await ElementHelper.checkStaticText(await element, date);
+    const element = `~aid-date-${index}`;
+    await (await $(element)).waitForDisplayed();
+    await expect(await $(element).getValue()).toEqual(date)
   }
 
   clickBackButton = async () => {
