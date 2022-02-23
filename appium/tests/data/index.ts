@@ -22,6 +22,7 @@ export const CommonData = {
   },
   sender: {
     email: 'dmitry@flowcrypt.com',
+    name: 'Dmitry at FlowCrypt'
   },
   contact: {
     email: 'dmitry@flowcrypt.com',
@@ -91,11 +92,13 @@ export const CommonData = {
     subject: 'message encrypted for another public key (only one pubkey used)',
     message: 'key_mismatch: Missing appropriate key',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility'
   },
   wrongChecksumEmail: {
     subject: 'wrong checksum',
     message: 'format: Error: Ascii armor integrity check on message failed: \'FdCC\' should be \'FddK\'',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility'
   },
   notIntegrityProtected: {
     subject: 'not integrity protected - should show a warning and not decrypt automatically',
@@ -106,6 +109,7 @@ export const CommonData = {
     subject: 'key mismatch unexpectedly produces a modal',
     message: 'Here are the images for testing compatibility.',
     senderEmail: 'sunitnandi834@gmail.com',
+    senderName: 'Sunit Kumar Nandi',
     encryptedBadgeText: 'encrypted',
     signatureBadgeText: 'not signed',
     firstAttachmentName: 'Screenshot_20180422_125217.png.asc',

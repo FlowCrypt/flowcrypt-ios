@@ -11,7 +11,7 @@ import UIKit
 
 extension ThreadMessageInfoCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input) {
-        let sender = threadMessage.rawMessage.sender?.shortName ?? "message_unknown_sender".localized
+        let sender = threadMessage.rawMessage.sender?.displayName ?? "message_unknown_sender".localized
         let recipientPrefix = "to".localized
         let recipientsList = threadMessage.rawMessage
             .allRecipients

@@ -121,8 +121,8 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.ATTACHMENT_TEXT_VIEW);
   }
 
-  checkEmailAddress = async (email: string) => {
-    await ElementHelper.checkStaticText(await this.senderEmail, email);
+  checkEmailSender = async (sender: string) => {
+    await ElementHelper.checkStaticText(await this.senderEmail, sender);
   }
 
   checkEmailSubject = async (subject: string) => {
@@ -136,7 +136,7 @@ class EmailScreen extends BaseScreen {
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
-    await this.checkEmailAddress(email);
+    await this.checkEmailSender(email);
     await this.checkEmailSubject(subject);
     await this.checkEmailText(text);
   }
