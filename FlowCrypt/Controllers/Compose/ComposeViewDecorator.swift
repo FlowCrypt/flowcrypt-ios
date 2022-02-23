@@ -277,6 +277,7 @@ extension RecipientEmailsCellNode.Input {
                 color: recipient.state.textColor,
                 alignment: .left
             ),
+            type: recipient.type.rawValue,
             state: recipient.state
         )
     }

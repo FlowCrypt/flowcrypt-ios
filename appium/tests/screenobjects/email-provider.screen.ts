@@ -6,8 +6,8 @@ const SELECTORS = {
   BACK_BTN: '~aid-back-button',
   EMAIL_PROVIDER_HEADER: '~navigationItemEmail Provider',
   CONNECT_BUTTON: '~Connect',
-  EMAIL_FIELD: '-ios class chain:**/XCUIElementTypeTextField[`name == "Email"`]',
-  PASSWORD_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField[`name == "Password"`]',
+  EMAIL_FIELD: '~aid-email-textfield',
+  PASSWORD_FIELD: '~aid-password-textfield',
   RETURN_BUTTON: '~Return',
 };
 
