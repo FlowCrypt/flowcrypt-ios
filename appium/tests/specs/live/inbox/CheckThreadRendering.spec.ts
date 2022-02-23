@@ -2,7 +2,7 @@ import {
   SplashScreen,
   SetupKeyScreen,
   MailFolderScreen,
-  EmailScreen,
+  EmailScreen
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -10,7 +10,6 @@ import { CommonData } from '../../../data';
 describe('INBOX: ', () => {
 
   it('check thread rendering', async () => {
-
     const senderEmail = CommonData.threadMessage.sender;
     const emailSubject = CommonData.threadMessage.subject;
     const firstMessage = CommonData.threadMessage.firstThreadMessage;
