@@ -25,7 +25,7 @@ export const CommonData = {
   },
   contact: {
     email: 'dmitry@flowcrypt.com',
-    name: 'Dima'
+    name: 'Dima Flowcrypt'
   },
   secondContact: {
     email: 'demo@flowcrypt.com',

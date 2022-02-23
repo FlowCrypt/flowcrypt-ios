@@ -33,7 +33,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private enum Constants {
-        static let endTypingCharacters = [",", " ", "\n", ";"]
+        static let endTypingCharacters = [",", "\n", ";"]
         static let minRecipientsPartHeight: CGFloat = 44
     }
 

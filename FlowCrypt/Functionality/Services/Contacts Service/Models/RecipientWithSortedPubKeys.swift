@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RecipientWithSortedPubKeys {
+struct RecipientWithSortedPubKeys: RecipientBase {
     let email: String
     /// name if known
     let name: String?
