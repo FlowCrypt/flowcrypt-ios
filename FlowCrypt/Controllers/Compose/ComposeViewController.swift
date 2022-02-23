@@ -1068,7 +1068,7 @@ extension ComposeViewController {
                 let cloudRecipients = try await service.searchContacts(query: query)
                 let localRecipients = try contactsService.searchLocalContacts(query: query)
 
-                let recipients = (localRecipients + cloudRecipients)
+                let recipients = (cloudRecipients + localRecipients)
                     .map(Recipient.init)
                     .unique()
                     .sorted()
@@ -1095,8 +1095,8 @@ extension ComposeViewController {
                     handleEvaluation(for: contact)
                 }
 
-                let recipient = Recipient(recipient: recipient)
-                let contactWithFetchedKeys = try await service.fetchContact(recipient)
+                let contact = Recipient(recipient: recipient)
+                let contactWithFetchedKeys = try await service.fetch(contact: contact)
                 handleEvaluation(for: contactWithFetchedKeys)
             } catch {
                 handleEvaluation(error: error, with: recipient.email)
@@ -1574,7 +1574,7 @@ private actor ServiceActor {
         return try await contactsService.findLocalContact(with: email)
     }
 
-    func fetchContact(_ contact: Recipient) async throws -> RecipientWithSortedPubKeys {
-        return try await contactsService.fetchContact(contact)
+    func fetch(contact: Recipient) async throws -> RecipientWithSortedPubKeys {
+        return try await contactsService.fetch(contact: contact)
     }
 }

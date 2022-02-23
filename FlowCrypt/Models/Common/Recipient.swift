@@ -54,8 +54,13 @@ extension Recipient {
     }
 
     init(recipient: RecipientBase) {
-        self.name = recipient.name
         self.email = recipient.email
+        self.name = recipient.name
+    }
+
+    init(email: String, name: String? = nil) {
+        self.email = email
+        self.name = name
     }
 }
 

@@ -18,7 +18,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     const firstContactEmail = CommonData.contact.email;
     const firstContactName = CommonData.contact.name;
-    const firstContactItemName = 'Dmitry at FlowCrypt';
+    const firstContactItemName = 'Dima Flowcrypt';
 
     const secondContactEmail = CommonData.secondContact.email;
     const secondContactName = CommonData.secondContact.name;
