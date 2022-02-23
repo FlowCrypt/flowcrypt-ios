@@ -24,7 +24,7 @@ class OldVersionAppScreen extends BaseScreen {
   }
 
   clickBackButton = async () => {
-    await ElementHelper.waitAndClick(await this.backButton);
+    await ElementHelper.waitAndClick(await this.backButton, 500);
   }
 
   checkEmailAddress = async (email: string) => {

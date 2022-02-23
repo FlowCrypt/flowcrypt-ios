@@ -20,6 +20,25 @@ export const CommonData = {
     message: 'test email from gmail',
     sender: 'e2e.enterprise.test@flowcrypt.com'
   },
+  threadMessage: {
+    subject: 'test thread rendering',
+    sender: 'dmitry@flowcrypt.com',
+    firstThreadMessage: 'first message',
+    secondThreadMessage: 'Second thread rendering message\n' +
+        '\n' +
+        'On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
+        ' > first message',
+    thirdThreadMessage: 'Third thread rendering message' +
+        '\n' +
+        'On 2022-02-07 at 06:56, e2e.enterprise.test@flowcrypt.com wrote:\n' +
+        '> Second thread rendering message\n' +
+        '>\n' +
+        '> On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
+        '>  > first message',
+    firstDate: 'Feb 04',
+    secondDate: 'Feb 07',
+    thirdDate: 'Feb 08',
+  },
   sender: {
     email: 'dmitry@flowcrypt.com',
   },

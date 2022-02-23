@@ -105,10 +105,6 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.CANCEL_BUTTON);
   }
 
-  get senderEmail() {
-    return $(SELECTORS.SENDER_EMAIL);
-  }
-
   get encryptionBadge() {
     return $(SELECTORS.ENCRYPTION_BADGE);
   }
@@ -121,8 +117,12 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.ATTACHMENT_TEXT_VIEW);
   }
 
-  checkEmailAddress = async (email: string) => {
-    await ElementHelper.checkStaticText(await this.senderEmail, email);
+  senderEmail = async (index: number = 0) =>{
+      return $(`~aid-sender-${index}`)
+  }
+
+  checkEmailAddress = async (email: string, index: number = 0)=> {
+    await ElementHelper.checkStaticText(await this.senderEmail(index), email);
   }
 
   checkEmailSubject = async (subject: string) => {
@@ -130,15 +130,36 @@ class EmailScreen extends BaseScreen {
     await (await $(selector)).waitForDisplayed();
   }
 
-  checkEmailText = async (text: string) => {
-    const selector = `~${text}`;
+  checkEmailText = async (text: string, index: number = 0) => {
+    const selector = `~aid-message-${index}`;
     await (await $(selector)).waitForDisplayed();
+    await expect(await $(selector)).toHaveTextContaining(text)
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
     await this.checkEmailAddress(email);
     await this.checkEmailSubject(subject);
     await this.checkEmailText(text);
+  }
+
+  checkThreadMessage = async (email: string, subject: string, text: string, date: string, index: number = 0)=> {
+      await this.checkEmailAddress(email, index);
+      await this.checkEmailSubject(subject);
+      await this.clickExpandButtonByIndex(index);
+      await this.checkEmailText(text, index);
+      await this.checkDate(date, index);
+  }
+
+  clickExpandButtonByIndex = async (index: number) => {
+    const element = (`~aid-expand-image-${index}`);
+    if(await (await $(element)).isDisplayed()) {
+      await ElementHelper.waitAndClick(await $(element));
+    }
+  }
+
+  checkDate = async (date: string, index: number) => {
+    const element = await $(`~aid-date-${index}`);
+    await ElementHelper.checkStaticText(await element, date);
   }
 
   clickBackButton = async () => {
