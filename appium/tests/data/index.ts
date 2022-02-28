@@ -50,6 +50,7 @@ export const CommonData = {
   },
   emailWithMultipleRecipients: {
     sender: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
     recipient: 'robot@flowcrypt.com',
     subject: 'Message with multiple recipients and attachment',
     message: 'This email has multiple recipients and attachment',
@@ -76,6 +77,7 @@ export const CommonData = {
   },
   recipientsListEmail: {
     sender: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
     subject: 'CC and BCC test',
     message: 'Test message for CC and BCC recipients',
     recipients: 'to Robot, robot+cc, e2e.enterprise.test',

@@ -14,6 +14,7 @@ describe('INBOX: ', () => {
   it('user is able to reply or forward email and check info from composed email', async () => {
 
     const senderEmail = CommonData.emailWithMultipleRecipients.sender;
+    const senderName = CommonData.emailWithMultipleRecipients.senderName;
     const recipientEmail = CommonData.emailWithMultipleRecipients.recipient;
     const emailSubject = CommonData.emailWithMultipleRecipients.subject;
     const emailText = CommonData.emailWithMultipleRecipients.message;
@@ -29,17 +30,17 @@ describe('INBOX: ', () => {
 
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
 
     // check reply message
     await EmailScreen.clickReplyButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo([senderEmail], replySubject, quoteText);
+    await NewMessageScreen.checkFilledComposeEmailInfo([senderName], replySubject, quoteText);
     await NewMessageScreen.clickBackButton();
 
     // check reply all message
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickReplyAllButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail, senderEmail], replySubject, quoteText);
+    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail, senderName], replySubject, quoteText);
     await NewMessageScreen.clickBackButton();
 
     // check forwarded message
