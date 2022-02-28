@@ -81,7 +81,7 @@ extension BackupViewController {
                     ? .noBackups
                     : .backups(keys)
             } catch {
-                handleCommon(error: error)
+                showAlert(message: error.errorMessage)
             }
         }
     }

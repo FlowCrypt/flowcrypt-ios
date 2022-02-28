@@ -1,5 +1,5 @@
 //
-//  KeyServiceErrorHandler.swift
+//  CreateKeyError.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 27.11.2020.
@@ -45,30 +45,5 @@ extension CreateKeyError: CustomStringConvertible {
         case .conformingPassPhraseError:
             return ""
         }
-    }
-}
-
-// KeyServiceError
-struct KeyServiceErrorHandler: ErrorHandler {
-    func handle(error: Error, for viewController: UIViewController) -> Bool {
-        let errorMessage: String?
-        switch error as? KeyServiceError {
-        case .retrieve:
-            errorMessage = "keyServiceError_retrieve_error"
-        case .parsingError:
-            errorMessage = "keyServiceError_retrieve_parse"
-        case .unexpected:
-            errorMessage = "keyServiceError_retrieve_unexpected"
-        case .missingCurrentUserEmail:
-            errorMessage = "keyServiceError_missing_current_email"
-        default:
-            errorMessage = nil
-        }
-
-        guard let message = errorMessage else { return false }
-
-        viewController.showAlert(message: message.localized)
-
-        return true
     }
 }
