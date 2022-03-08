@@ -16,21 +16,6 @@ import PhotosUI
  * - Or from *ThreadDetailsViewController* controller by tapping on *reply* or *forward*
  **/
 final class ComposeViewController: TableNodeViewController {
-    private var calculatedRecipientsToPartHeight: CGFloat? {
-        didSet {
-            reload(sections: [.recipients(.to), .password])
-        }
-    }
-    private var calculatedRecipientsCcPartHeight: CGFloat? {
-        didSet {
-            reload(sections: [.recipients(.to), .recipients(.cc), .password])
-        }
-    }
-    private var calculatedRecipientsBccPartHeight: CGFloat? {
-        didSet {
-            reload(sections: [.recipients(.to), .recipients(.bcc), .password])
-        }
-    }
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
@@ -47,7 +32,7 @@ final class ComposeViewController: TableNodeViewController {
         case main, searchEmails([String])
     }
 
-    private enum Section: Hashable {
+    enum Section: Hashable {
         case recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
         static var recipientsSections: [Section] {
@@ -66,7 +51,7 @@ final class ComposeViewController: TableNodeViewController {
     private let appContext: AppContextWithUser
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
-    private let decorator: ComposeViewDecorator
+    private var decorator: ComposeViewDecorator
     private let contactsService: ContactsServiceType
     private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
@@ -774,16 +759,21 @@ extension ComposeViewController {
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.Input.init),
             type: type.rawValue,
-            height: recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
+            height: decorator.recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
             isToggleButtonRotated: shouldShowAllRecipientTypes,
             toggleButtonAction: shouldShowToggleButton ? { [weak self] in
                 guard type == .to else { return }
                 self?.toggleRecipientsList()
             } : nil)
             .onLayoutHeightChanged { [weak self] layoutHeight in
-                self?.updateRecipientsNode(
+                self?.decorator.updateRecipientsNode(
                     layoutHeight: layoutHeight,
-                    type: type
+                    type: type,
+                    reload: { sections in
+                        DispatchQueue.main.async {
+                            self?.reload(sections: sections)
+                        }
+                    }
                 )
             }
             .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
@@ -794,34 +784,6 @@ extension ComposeViewController {
                     self?.handleRecipientSelection(with: indexPath, type: type)
                 }
             }
-    }
-
-    private func recipientsNodeHeight(type: RecipientType) -> CGFloat? {
-        switch type {
-        case .to:
-            return calculatedRecipientsToPartHeight
-        case .cc:
-            return calculatedRecipientsCcPartHeight
-        case .bcc:
-            return calculatedRecipientsBccPartHeight
-        }
-    }
-
-    private func updateRecipientsNode(layoutHeight: CGFloat, type: RecipientType) {
-        let currentHeight = self.recipientsNodeHeight(type: type)
-
-        guard currentHeight != layoutHeight, layoutHeight > 0 else {
-            return
-        }
-
-        switch type {
-        case .to:
-            self.calculatedRecipientsToPartHeight = layoutHeight
-        case .cc:
-            self.calculatedRecipientsCcPartHeight = layoutHeight
-        case .bcc:
-            self.calculatedRecipientsBccPartHeight = layoutHeight
-        }
     }
 
     private func recipientInput(type: RecipientType) -> ASCellNode {
