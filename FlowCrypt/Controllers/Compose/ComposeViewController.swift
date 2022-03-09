@@ -803,7 +803,7 @@ extension ComposeViewController {
 
         return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
-                with: type.inputPlaceholder,
+                with: "",
                 keyboardType: .emailAddress,
                 accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)"
             ),

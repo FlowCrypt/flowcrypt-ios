@@ -15,6 +15,10 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode, RecipientTogg
         createToggleButton()
     }()
 
+    lazy var textNode: ASTextNode2 = {
+        createNodeLabel()
+    }()
+
     var isToggleButtonRotated = false {
         didSet {
             updateToggleButton(animated: true)

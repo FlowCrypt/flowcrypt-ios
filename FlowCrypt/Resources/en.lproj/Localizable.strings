@@ -116,9 +116,9 @@
 "compose_message_sent" = "Message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
-"compose_recipient_to" = "Add Recipient";
-"compose_recipient_cc" = "Add CC Recipient";
-"compose_recipient_bcc" = "Add BCC Recipient";
+"compose_recipient_to" = "To";
+"compose_recipient_cc" = "Cc";
+"compose_recipient_bcc" = "Bcc";
 "compose_subject" = "Subject";
 "compose_enable_google_contacts_search" = "Enable Google Contact Search";
 "compose_no_contacts_found" = "No contacts found";

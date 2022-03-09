@@ -28,6 +28,14 @@ extension RecipientToggleButtonNode {
         return button
     }
 
+    func createNodeLabel() -> ASTextNode2 {
+        let textNode = ASTextNode2()
+        textNode.attributedText = "To".attributed()
+        textNode.isAccessibilityElement = true
+        textNode.style.preferredSize.width = 30
+        return textNode
+    }
+
     func updateToggleButton(animated: Bool) {
         func rotateButton(angle: CGFloat) {
             toggleButtonNode.view.transform = CGAffineTransform(rotationAngle: angle)
