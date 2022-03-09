@@ -13,6 +13,7 @@ struct ComposeMessageInput: Equatable {
 
     struct MessageQuoteInfo: Equatable {
         let recipients: [String]
+        let ccRecipients: [String]
         let sender: String?
         let subject: String?
         let mime: Data?
@@ -35,6 +36,13 @@ struct ComposeMessageInput: Equatable {
             return []
         }
         return info.recipients
+    }
+
+    var quoteCCRecipients: [String] {
+        guard case .reply(let info) = type else {
+            return []
+        }
+        return info.ccRecipients
     }
 
     var subject: String? {
