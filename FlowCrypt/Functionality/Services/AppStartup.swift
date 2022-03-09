@@ -152,7 +152,18 @@ struct AppStartup {
         ) { _ in
             self.initializeApp(window: window)
         }
+        let logout = UIAlertAction(
+            title: "log_out".localized,
+            style: .default
+        ) { _ in
+            do {
+                try appContext.globalRouter.signOut(appContext: appContext)
+            } catch let logoutError {
+                Logger.logError("Logout failed due to \(logoutError.localizedDescription)")
+            }
+        }
         alert.addAction(retry)
+        alert.addAction(logout)
         window.rootViewController?.present(alert, animated: true, completion: nil)
     }
 
