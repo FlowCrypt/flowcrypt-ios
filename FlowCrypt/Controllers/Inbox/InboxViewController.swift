@@ -177,6 +177,7 @@ extension InboxViewController {
     private func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
         Task {
             do {
+                state = .fetching
                 let context = try await service.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
@@ -184,6 +185,7 @@ extension InboxViewController {
                         pagination: currentMessagesListPagination()
                     ), userEmail: appContext.user.email
                 )
+                state = .refresh
                 handleEndFetching(with: context, context: batchContext)
             } catch {
                 handle(error: error)
