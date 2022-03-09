@@ -276,12 +276,8 @@ extension InboxViewController {
     }
 
     private func handleNew(_ input: InboxContext) {
-        if input.data.isEmpty {
-            state = .empty
-        } else {
-            inboxInput = input.data
-            state = .fetched(input.pagination)
-        }
+        inboxInput = input.data
+        state = .fetched(input.pagination)
         refreshControl.endRefreshing()
         tableNode.reloadData()
     }
