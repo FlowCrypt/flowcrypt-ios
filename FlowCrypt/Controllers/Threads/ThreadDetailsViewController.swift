@@ -225,6 +225,7 @@ extension ThreadDetailsViewController {
         else { return }
 
         let sender = [input.rawMessage.sender].compactMap { $0 }
+        let ccRecipients = quoteType == .replyAll ? input.rawMessage.cc.map(\.email) : []
         let recipients: [String] = {
             switch quoteType {
             case .reply:
@@ -248,6 +249,7 @@ extension ThreadDetailsViewController {
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
+            ccRecipients: ccRecipients,
             sender: input.rawMessage.sender,
             subject: [quoteType.subjectPrefix, subject].joined(),
             mime: processedMessage.rawMimeData,

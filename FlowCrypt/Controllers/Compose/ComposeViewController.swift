@@ -334,6 +334,16 @@ extension ComposeViewController {
             contextToSend.add(recipient: recipient)
             evaluate(recipient: recipient)
         }
+
+        input.quoteCCRecipients.forEach { email in
+            let recipient = ComposeMessageRecipient(email: email, type: .cc, state: decorator.recipientIdleState)
+            contextToSend.add(recipient: recipient)
+            evaluate(recipient: recipient)
+        }
+
+        if input.quoteCCRecipients.isNotEmpty {
+            shouldShowAllRecipientTypes.toggle()
+        }
     }
 }
 
