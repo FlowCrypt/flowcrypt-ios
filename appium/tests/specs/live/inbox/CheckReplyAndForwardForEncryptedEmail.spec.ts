@@ -34,19 +34,33 @@ describe('INBOX: ', () => {
 
     // check reply message
     await EmailScreen.clickReplyButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo([senderEmail], replySubject, quoteText);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [senderEmail],
+      subject: emailSubject,
+      message: quoteText
+    });
     await NewMessageScreen.clickBackButton();
 
     // check reply all message
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickReplyAllButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail, senderEmail], replySubject, quoteText, undefined, [ccEmail]);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [recipientEmail],
+      subject: replySubject,
+      message: quoteText,
+      cc: [ccEmail]
+    });
     await NewMessageScreen.clickBackButton();
 
     // check forwarded message
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickForwardButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo([], forwardSubject, quoteText, encryptedAttachmentName);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [],
+      subject: forwardSubject,
+      message: quoteText,
+      attachmentName: encryptedAttachmentName
+    });
     await NewMessageScreen.deleteAttachment();
   });
 });

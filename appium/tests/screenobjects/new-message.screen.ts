@@ -20,6 +20,15 @@ const SELECTORS = {
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'"
 };
 
+interface ComposeEmailInfoInterface {
+  recipients: string[];
+  subject: string;
+  message: string;
+  attachmentName?: string;
+  cc?: string[];
+  bcc?: string[];
+}
+
 class NewMessageScreen extends BaseScreen {
   constructor() {
     super(SELECTORS.RECIPIENTS_LIST);
@@ -129,24 +138,24 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
 
-  checkFilledComposeEmailInfo = async (recipients: string[], subject: string, message: string, attachmentName?: string, cc?: string[], bcc?: string[]) => {
-    expect(await this.composeSecurityMessage).toHaveTextContaining(message);
-    
-    const element = await this.filledSubject(subject);
+  checkFilledComposeEmailInfo = async (emailInfo: ComposeEmailInfoInterface) => {
+    expect(await this.composeSecurityMessage).toHaveTextContaining(emailInfo.message);
+
+    const element = await this.filledSubject(emailInfo.subject);
     await element.waitForDisplayed();
 
-    await this.checkRecipientsList(recipients);
+    await this.checkRecipientsList(emailInfo.recipients);
 
-    if (cc) {
-      await this.checkRecipientsList(cc, 'cc');
+    if (emailInfo.cc) {
+      await this.checkRecipientsList(emailInfo.cc, 'cc');
     }
 
-    if (bcc) {
-      await this.checkRecipientsList(bcc, 'bcc');
+    if (emailInfo.bcc) {
+      await this.checkRecipientsList(emailInfo.bcc, 'bcc');
     }
 
-    if (attachmentName !== undefined) {
-      await this.checkAddedAttachment(attachmentName);
+    if (emailInfo.attachmentName !== undefined) {
+      await this.checkAddedAttachment(emailInfo.attachmentName);
     }
   };
 

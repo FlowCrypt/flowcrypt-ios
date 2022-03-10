@@ -30,10 +30,20 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkInboxScreen();
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText, ccRecipientEmail, bccRecipientEmail);
-    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail], emailSubject, emailText, undefined, [ccRecipientEmail], [bccRecipientEmail]);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [recipientEmail],
+      subject: emailSubject,
+      message: emailSubject,
+      cc: [ccRecipientEmail],
+      bcc: [bccRecipientEmail]
+    });
 
     await driver.background(3);
 
-    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail], emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [recipientEmail],
+      subject: emailSubject,
+      message: emailText
+    });
   });
 });

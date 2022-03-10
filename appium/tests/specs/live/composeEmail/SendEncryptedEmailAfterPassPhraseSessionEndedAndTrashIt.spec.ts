@@ -35,7 +35,11 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkInboxScreen();
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(contactEmail, emailSubject, emailText);
-    await NewMessageScreen.checkFilledComposeEmailInfo([contactEmail], emailSubject, emailText);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [contactEmail],
+      subject: emailSubject,
+      message: emailText
+    });
     //Set wrong pass phrase and check error
     await NewMessageScreen.clickSendButton();
     await EmailScreen.enterPassPhrase(wrongPassPhrase);
