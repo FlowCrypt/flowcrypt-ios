@@ -91,8 +91,12 @@ final class InboxViewContainerController: TableNodeViewController {
         case .loading, .empty:
             node.reloadData()
         case let .error(error):
-            handleCommon(error: error)
-            node.reloadData()
+            showAlert(
+                message: error.errorMessage,
+                onOk: { [node] in
+                    node?.reloadData()
+                }
+            )
         case .loadedFolders(let folders):
             let folder = folders
                 .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })

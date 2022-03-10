@@ -323,11 +323,9 @@ extension SearchViewController: UISearchResultsUpdating {
     private func updateState() {
         switch state {
         case .empty, .error:
-            searchController.dismiss(animated: true, completion: nil)
             node.reloadData()
             node.bounces = false
         case .fetched(_, nil):
-            searchController.dismiss(animated: true, completion: nil)
             node.reloadData()
             node.bounces = true
         case let .fetched(_, .added(index)):

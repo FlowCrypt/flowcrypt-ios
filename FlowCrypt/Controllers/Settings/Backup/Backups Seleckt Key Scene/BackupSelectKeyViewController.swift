@@ -93,7 +93,7 @@ extension BackupSelectKeyViewController {
                 hideSpinner()
                 navigationController?.popToRootViewController(animated: true)
             } catch {
-                handleCommon(error: error)
+                showAlert(message: error.errorMessage)
             }
         }
     }

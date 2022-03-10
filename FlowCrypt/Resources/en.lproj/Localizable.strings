@@ -85,6 +85,7 @@
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
 "keyServiceError_retrieve_parse" = "Could not parse keys from storage. Please reinstall the app.";
 "keyServiceError_retrieve_unexpected" = "Could not import key. Please try to relogin.";
+"keyServiceError_retrieve_private" = "Could not import private key. Please try to relogin.";
 "keyServiceError_missing_current_email" = "Missing current email. Please restart the app and try again.";
 
 "backupServiceError_parse" = "Key can't be parsed";

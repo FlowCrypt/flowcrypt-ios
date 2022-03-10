@@ -21,6 +21,10 @@ struct ComposeViewDecorator {
     let recipientInvalidEmailState: RecipientState = .invalidEmail(invalidEmailStateContext)
     let recipientErrorStateRetry: RecipientState = .error(errorStateContextWithRetry, true)
 
+    private var calculatedRecipientsToPartHeight: CGFloat?
+    private var calculatedRecipientsCcPartHeight: CGFloat?
+    private var calculatedRecipientsBccPartHeight: CGFloat?
+
     func styledTextViewInput(with height: CGFloat, accessibilityIdentifier: String? = nil) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
             placeholder: "message_compose_secure"
@@ -116,6 +120,41 @@ struct ComposeViewDecorator {
             color: .main,
             imageName: "checkmark.circle"
         )
+    }
+
+    func recipientsNodeHeight(type: RecipientType) -> CGFloat? {
+        switch type {
+        case .to:
+            return calculatedRecipientsToPartHeight
+        case .cc:
+            return calculatedRecipientsCcPartHeight
+        case .bcc:
+            return calculatedRecipientsBccPartHeight
+        }
+    }
+
+    mutating func updateRecipientsNode(
+        layoutHeight: CGFloat,
+        type: RecipientType,
+        reload: (([ComposeViewController.Section]) -> Void)? = nil
+    ) {
+        let currentHeight = self.recipientsNodeHeight(type: type)
+
+        guard currentHeight != layoutHeight, layoutHeight > 0 else {
+            return
+        }
+
+        switch type {
+        case .to:
+            self.calculatedRecipientsToPartHeight = layoutHeight
+            reload?([.recipients(.to), .password])
+        case .cc:
+            self.calculatedRecipientsCcPartHeight = layoutHeight
+            reload?([.recipients(.to), .recipients(.cc), .password])
+        case .bcc:
+            self.calculatedRecipientsBccPartHeight = layoutHeight
+            reload?([.recipients(.to), .recipients(.bcc), .password])
+        }
     }
 
     private func messagePasswordInput(
