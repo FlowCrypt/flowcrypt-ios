@@ -36,7 +36,7 @@ describe('INBOX: ', () => {
     await EmailScreen.clickReplyButton();
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [senderEmail],
-      subject: emailSubject,
+      subject: replySubject,
       message: quoteText
     });
     await NewMessageScreen.clickBackButton();
@@ -45,7 +45,7 @@ describe('INBOX: ', () => {
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickReplyAllButton();
     await NewMessageScreen.checkFilledComposeEmailInfo({
-      recipients: [recipientEmail],
+      recipients: [recipientEmail, senderEmail],
       subject: replySubject,
       message: quoteText,
       cc: [ccEmail]
