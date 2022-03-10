@@ -32,7 +32,7 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [recipient],
       subject: emailSubject,
-      message: emailText,
+      message: emailText
     });
     await NewMessageScreen.clickSendButton();
     await BaseScreen.checkModalMessage(passwordModalMessage);

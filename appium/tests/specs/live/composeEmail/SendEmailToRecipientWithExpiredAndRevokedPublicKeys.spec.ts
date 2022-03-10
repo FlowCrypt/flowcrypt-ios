@@ -29,8 +29,8 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [expiredPublicKey],
       subject: emailSubject,
-      message: emailText }
-    );
+      message: emailText
+    });
     await NewMessageScreen.clickSendButton();
 
     await BaseScreen.checkModalMessage(expiredPublicKeyError);
@@ -44,7 +44,7 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [revokedpublicKey],
       subject: emailSubject,
-      message: emailText,
+      message: emailText
     });
     await NewMessageScreen.clickSendButton();
 
