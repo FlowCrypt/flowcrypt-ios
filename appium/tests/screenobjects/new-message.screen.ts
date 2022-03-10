@@ -20,7 +20,7 @@ const SELECTORS = {
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'"
 };
 
-interface ComposeEmailInfoInterface {
+interface ComposeEmailInfo {
   recipients: string[];
   subject: string;
   message: string;
@@ -138,7 +138,7 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
 
-  checkFilledComposeEmailInfo = async (emailInfo: ComposeEmailInfoInterface) => {
+  checkFilledComposeEmailInfo = async (emailInfo: ComposeEmailInfo) => {
     expect(await this.composeSecurityMessage).toHaveTextContaining(emailInfo.message);
 
     const element = await this.filledSubject(emailInfo.subject);
