@@ -33,7 +33,7 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [recipientEmail],
       subject: emailSubject,
-      message: emailSubject,
+      message: emailText,
       cc: [ccRecipientEmail],
       bcc: [bccRecipientEmail]
     });
