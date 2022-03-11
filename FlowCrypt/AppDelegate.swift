@@ -14,13 +14,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssion
     var blurViewController: BlurViewController?
     var googleAuthSession: OIDExternalUserAgentSession?
     let window = UIWindow(frame: UIScreen.main.bounds)
-    private var cancellable = Set<AnyCancellable>()
+    private var waitingForProtectedDataCancellable = Set<AnyCancellable>()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if application.isRunningTests {
             return true
         }
-        // Avoid race condition where the app might try to access keychain data before the device has decrypted it
+        // When trying to initialize storage before protected data is available, existing storage may get corrupted due to a lost db encryption key. See https://github.com/FlowCrypt/flowcrypt-ios/issues/1373
         guard UIApplication.shared.isProtectedDataAvailable else {
             NotificationCenter
                  .default
@@ -28,7 +28,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssion
                  .first()
                  .sink { _ in
                      GlobalRouter().proceed()
-                 }.store(in: &cancellable)
+                 }.store(in: &waitingForProtectedDataCancellable)
             return true
         }
         GlobalRouter().proceed()
@@ -46,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssion
 
 extension AppDelegate: BlursTopView {
     func applicationWillResignActive(_ application: UIApplication) {
-        cancellable.forEach { $0.cancel() }
+        waitingForProtectedDataCancellable.forEach { $0.cancel() }
         if !isBlurViewShowing() {
             coverTopViewWithBlurView()
         }
