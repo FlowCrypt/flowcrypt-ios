@@ -358,7 +358,6 @@ extension ComposeViewController {
                 return query
             }
             .sink(receiveValue: { [weak self] in
-                guard $0.isNotEmpty else { return }
                 self?.searchEmail(with: $0)
             })
             .store(in: &cancellable)
@@ -1025,6 +1024,10 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             do {
+                guard query.isNotEmpty && query.isValidEmail else {
+                    updateState(with: .main) // Hide search contacts view and show normal compose view
+                    return
+                }
                 let localEmails = try contactsService.searchLocalContacts(query: query)
                 let cloudEmails = try? await service.searchContacts(query: query)
                 let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
