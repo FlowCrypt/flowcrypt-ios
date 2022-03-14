@@ -180,6 +180,10 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn")) { [weak self] in
                 self?.toggleSideMenuView()
             }
+            // Hide side bar menu button for InboxViewContainerController
+            if viewController is InboxViewContainerController {
+                navigationButton.customView?.isHidden = true
+            }
         default:
             sideMenu?.allowPanGesture = false
             sideMenu?.allowLeftSwipe = false
