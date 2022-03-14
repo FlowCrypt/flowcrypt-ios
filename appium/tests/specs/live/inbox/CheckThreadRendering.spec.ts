@@ -24,8 +24,8 @@ describe('INBOX: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    await EmailScreen.checkThreadMessage(senderEmail, emailSubject, thirdMessage, dateThird, "2");
-    await EmailScreen.checkThreadMessage(userEmail, emailSubject, secondMessage, dateSecond, "1");
+    await EmailScreen.checkThreadMessage(senderEmail, emailSubject, thirdMessage, dateThird, 2);
+    await EmailScreen.checkThreadMessage(userEmail, emailSubject, secondMessage, dateSecond, 1);
     await EmailScreen.checkThreadMessage(senderEmail, emailSubject, firstMessage, dateFirst);
   });
 });
