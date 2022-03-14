@@ -66,11 +66,12 @@ export const CommonData = {
     attachmentName: 'image.png',
     encryptedAttachmentName: 'image.png.pgp'
   },
-  emailWithMultipleRecipients: {
-    sender: 'flowcrypt.compatibility@gmail.com',
+  emailWithMultipleRecipientsWithCC: {
+    sender: 'ioan@flowcrypt.com',
     recipient: 'robot@flowcrypt.com',
-    subject: 'Message with multiple recipients and attachment',
-    message: 'This email has multiple recipients and attachment',
+    cc: 'robot+cc@flowcrypt.com',
+    subject: 'Message with cc and multiple recipients and attachment',
+    message: 'This email has cc and multiple recipients and attachment',
     attachmentName: 'image.png',
     encryptedAttachmentName: 'image.png.pgp',
   },
