@@ -1049,15 +1049,17 @@ extension ComposeViewController {
         }
 
         Task {
+            var localContact: RecipientWithSortedPubKeys?
             do {
                 if let contact = try await service.findLocalContact(with: recipient.email) {
+                    localContact = contact
                     handleEvaluation(for: contact)
                 }
 
                 let contactWithFetchedKeys = try await service.fetchContact(with: recipient.email)
                 handleEvaluation(for: contactWithFetchedKeys)
             } catch {
-                handleEvaluation(error: error, with: recipient.email)
+                handleEvaluation(error: error, with: recipient.email, localContact: localContact)
             }
         }
     }
@@ -1085,8 +1087,11 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEvaluation(error: Error, with email: String) {
+    private func handleEvaluation(error: Error, with email: String, localContact: RecipientWithSortedPubKeys?) {
         let recipientState: RecipientState = {
+            if let _localContact = localContact {
+                return getRecipientState(from: _localContact)
+            }
             switch error {
             case ContactsError.keyMissing:
                 return self.decorator.recipientKeyNotFoundState
