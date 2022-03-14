@@ -1,6 +1,7 @@
 import BaseScreen from './base.screen';
 import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
+import moment from "moment";
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -164,7 +165,8 @@ class EmailScreen extends BaseScreen {
   checkDate = async (date: string, index: any) => {
     const element = `~aid-date-${index}`;
     await (await $(element)).waitForDisplayed();
-    await expect(await $(element).getValue()).toEqual(date)
+    const convertedDate = moment(await $(element).getValue()).utcOffset(0).format('MMM DD');
+    await expect(convertedDate).toEqual(date)
   }
 
   clickBackButton = async () => {
