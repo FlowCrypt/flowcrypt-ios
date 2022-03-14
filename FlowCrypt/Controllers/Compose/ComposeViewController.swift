@@ -68,6 +68,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let search = PassthroughSubject<String, Never>()
     private var cancellable = Set<AnyCancellable>()
+    private var isPreviousSearchStateEmpty = false
 
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
@@ -354,7 +355,10 @@ extension ComposeViewController {
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()
             .map { [weak self] query -> String in
-                if query.isEmpty { self?.updateState(with: .main) }
+                if query.isEmpty {
+                    self?.isPreviousSearchStateEmpty = true
+                    self?.updateState(with: .main)
+                }
                 return query
             }
             .sink(receiveValue: { [weak self] in
@@ -1224,6 +1228,11 @@ extension ComposeViewController {
 // MARK: - State Handling
 extension ComposeViewController {
     private func updateState(with newState: State) {
+        if case .searchEmails = newState, self.isPreviousSearchStateEmpty {
+            self.isPreviousSearchStateEmpty = false
+            return
+        }
+
         state = newState
 
         switch state {
