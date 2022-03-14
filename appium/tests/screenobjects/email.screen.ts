@@ -117,11 +117,11 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.ATTACHMENT_TEXT_VIEW);
   }
 
-  senderEmail = async (index: number = 0) =>{
+  senderEmail = async (index: string = "0") =>{
       return $(`~aid-sender-${index}`)
   }
 
-  checkEmailAddress = async (email: string, index: number = 0)=> {
+  checkEmailAddress = async (email: string, index: string = "0")=> {
     const element = await this.senderEmail(index);
     await (await element).waitForDisplayed();
     await expect(await (await element).getValue()).toEqual(email);
@@ -132,13 +132,13 @@ class EmailScreen extends BaseScreen {
     await (await $(selector)).waitForDisplayed();
   }
 
-  checkEmailText = async (text: string, index: number = 0) => {
-        const selector = `~aid-message-${index}`;
-        await (await $(selector)).waitForDisplayed();
-        console.log(await $(selector).getValue());
+  checkEmailText = async (text: string, index: string = "0") => {
+    const selector = `~aid-message-${index}`;
+    await (await $(selector)).waitForDisplayed();
+    console.log(await $(selector).getValue());
 
-        await expect(await $(selector).getValue()).toContain(text)
-    }
+    await expect(await $(selector).getValue()).toContain(text)
+  }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
     await this.checkEmailAddress(email);
@@ -146,7 +146,7 @@ class EmailScreen extends BaseScreen {
     await this.checkEmailText(text);
   }
 
-  checkThreadMessage = async (email: string, subject: string, text: string, date: string, index: number = 0)=> {
+  checkThreadMessage = async (email: string, subject: string, text: string, date: string, index: string = "0")=> {
       await this.checkEmailSubject(subject);
       await this.checkEmailAddress(email, index);
       await this.clickExpandButtonByIndex(index);
@@ -154,14 +154,14 @@ class EmailScreen extends BaseScreen {
       await this.checkDate(date, index);
   }
 
-  clickExpandButtonByIndex = async (index: number) => {
+  clickExpandButtonByIndex = async (index: string) => {
     const element = (`~aid-expand-image-${index}`);
     if(await (await $(element)).isDisplayed()) {
       await ElementHelper.waitAndClick(await $(element));
     }
   }
 
-  checkDate = async (date: string, index: number) => {
+  checkDate = async (date: string, index: string) => {
     const element = `~aid-date-${index}`;
     await (await $(element)).waitForDisplayed();
     await expect(await $(element).getValue()).toEqual(date)
