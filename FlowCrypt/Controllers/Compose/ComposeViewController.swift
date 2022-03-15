@@ -801,6 +801,7 @@ extension ComposeViewController {
     }
 
     private func recipientInput(type: RecipientType) -> ASCellNode {
+        let recipients = contextToSend.recipients(type: type)
         let shouldShowToggleButton = type == .to
             && contextToSend.recipients(type: .to).isEmpty
             && !contextToSend.hasCcOrBccRecipients
@@ -811,6 +812,8 @@ extension ComposeViewController {
                 keyboardType: .emailAddress,
                 accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)"
             ),
+            hasRecipients: recipients.isNotEmpty,
+            type: type.rawValue,
             action: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)
             },

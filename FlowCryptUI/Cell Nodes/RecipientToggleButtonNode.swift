@@ -28,11 +28,12 @@ extension RecipientToggleButtonNode {
         return button
     }
 
-    func createNodeLabel() -> ASTextNode2 {
+    func createNodeLabel(type: String, isEmpty: Bool) -> ASTextNode2 {
         let textNode = ASTextNode2()
-        textNode.attributedText = "To".attributed()
+        let textTitle = isEmpty ? "" : "compose_recipient_\(type)".localized
+        textNode.attributedText = textTitle.attributed(.regular(17), color: .gray, alignment: .left)
         textNode.isAccessibilityElement = true
-        textNode.style.preferredSize.width = 30
+        textNode.style.preferredSize.width = 35
         return textNode
     }
 
@@ -51,7 +52,20 @@ extension RecipientToggleButtonNode {
         }
     }
 
-    func createLayout(contentNode: ASDisplayNode, contentSize: CGSize, insets: UIEdgeInsets, buttonSize: CGSize) -> ASInsetLayoutSpec {
+    func createLayout(
+        contentNode: ASDisplayNode,
+        textNodeStack: ASInsetLayoutSpec,
+        contentSize: CGSize,
+        insets: UIEdgeInsets,
+        buttonSize: CGSize
+    ) -> ASInsetLayoutSpec {
+
+        contentNode.style.flexGrow = 1
+        contentNode.style.preferredSize.height = contentSize.height
+
+        let stack = ASStackLayoutSpec.horizontal()
+        stack.children = [textNodeStack, contentNode]
+
         if toggleButtonAction != nil {
             toggleButtonNode.style.preferredSize = buttonSize
 
@@ -59,18 +73,9 @@ extension RecipientToggleButtonNode {
                 self.updateToggleButton(animated: false)
             }
 
-            let contentWidth = contentSize.width - buttonSize.width - insets.width / 2 - 4
-            contentNode.style.preferredSize = CGSize(
-                width: max(0, contentWidth),
-                height: contentSize.height
-            )
-
-            let stack = ASStackLayoutSpec.horizontal()
-            stack.children = [contentNode, toggleButtonNode]
-            return ASInsetLayoutSpec(insets: insets, child: stack)
-        } else {
-            contentNode.style.preferredSize = contentSize
-            return ASInsetLayoutSpec(insets: insets, child: contentNode)
+            stack.children?.append(toggleButtonNode)
         }
+
+        return ASInsetLayoutSpec(insets: insets, child: stack)
     }
 }

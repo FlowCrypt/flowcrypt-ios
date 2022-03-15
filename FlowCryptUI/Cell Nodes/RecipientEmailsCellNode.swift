@@ -24,6 +24,9 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
 
     private var onAction: RecipientTap?
 
+    lazy var textNode: ASTextNode2 = {
+        createNodeLabel(type: type, isEmpty: recipients.isEmpty)
+    }()
     lazy var toggleButtonNode: ASButtonNode = {
         createToggleButton()
     }()
@@ -82,11 +85,13 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
         let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionNodeHeight)
         let buttonSize = CGSize(width: 40, height: 50)
 
-        var insets = UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0)
-        insets.left -= 8
+        let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0)
+
+        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0), child: textNode)
 
         return createLayout(
             contentNode: collectionNode,
+            textNodeStack: textNodeStack,
             contentSize: collectionNodeSize,
             insets: insets,
             buttonSize: buttonSize
