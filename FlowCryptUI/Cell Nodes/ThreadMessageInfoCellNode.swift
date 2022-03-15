@@ -23,6 +23,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
         public let isExpanded: Bool
         public let shouldShowRecipientsList: Bool
         public let buttonColor: UIColor
+        public let index: Int
 
         public init(
             encryptionBadge: BadgeNode.Input,
@@ -35,7 +36,8 @@ public final class ThreadMessageInfoCellNode: CellNode {
             date: NSAttributedString,
             isExpanded: Bool,
             shouldShowRecipientsList: Bool,
-            buttonColor: UIColor
+            buttonColor: UIColor,
+            index: Int
         ) {
             self.encryptionBadge = encryptionBadge
             self.signatureBadge = signatureBadge
@@ -48,6 +50,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
             self.isExpanded = isExpanded
             self.shouldShowRecipientsList = shouldShowRecipientsList
             self.buttonColor = buttonColor
+            self.index = index
         }
 
         var replyImage: UIImage? { createButtonImage("arrow.turn.up.left") }
@@ -138,23 +141,15 @@ public final class ThreadMessageInfoCellNode: CellNode {
     public private(set) var menuNode = ASButtonNode()
     public private(set) var expandNode = ASImageNode()
 
-    private lazy var recipientsListNode: ASDisplayNode = {
-        MessageRecipientsNode(
-            input: .init(
-                recipients: input.recipients,
-                ccRecipients: input.ccRecipients,
-                bccRecipients: input.bccRecipients
-            )
+    private lazy var recipientsListNode: ASDisplayNode = MessageRecipientsNode(
+        input: .init(
+            recipients: input.recipients,
+            ccRecipients: input.ccRecipients,
+            bccRecipients: input.bccRecipients
         )
-    }()
-
-    private lazy var encryptionNode: BadgeNode = {
-        BadgeNode(input: input.encryptionBadge)
-    }()
-
-    private lazy var signatureNode: BadgeNode? = {
-        input.signatureBadge.map(BadgeNode.init)
-    }()
+    )
+    private lazy var encryptionNode = BadgeNode(input: input.encryptionBadge)
+    private lazy var signatureNode: BadgeNode? = input.signatureBadge.map(BadgeNode.init)
 
     // MARK: - Properties
     private let input: ThreadMessageInfoCellNode.Input
@@ -170,10 +165,12 @@ public final class ThreadMessageInfoCellNode: CellNode {
     }
 
     // MARK: - Init
-    public init(input: ThreadMessageInfoCellNode.Input,
-                onReplyTap: ((ThreadMessageInfoCellNode) -> Void)?,
-                onMenuTap: ((ThreadMessageInfoCellNode) -> Void)?,
-                onRecipientsTap: ((ThreadMessageInfoCellNode) -> Void)?) {
+    public init(
+        input: ThreadMessageInfoCellNode.Input,
+        onReplyTap: ((ThreadMessageInfoCellNode) -> Void)?,
+        onMenuTap: ((ThreadMessageInfoCellNode) -> Void)?,
+        onRecipientsTap: ((ThreadMessageInfoCellNode) -> Void)?
+    ) {
         self.input = input
         self.onReplyTap = onReplyTap
         self.onMenuTap = onMenuTap
@@ -183,14 +180,13 @@ public final class ThreadMessageInfoCellNode: CellNode {
         automaticallyManagesSubnodes = true
 
         senderNode.attributedText = input.sender
-        senderNode.accessibilityIdentifier = "aid-message-sender-label"
-
         dateNode.attributedText = input.date
 
         setupRecipientButton()
         setupReplyNode()
         setupMenuNode()
         setupExpandNode()
+        setupAccessibilityIdentifiers()
     }
 
     // MARK: - Setup
@@ -205,7 +201,6 @@ public final class ThreadMessageInfoCellNode: CellNode {
         recipientButtonNode.contentSpacing = 4
 
         recipientButtonNode.addTarget(self, action: #selector(onRecipientsNodeTap), forControlEvents: .touchUpInside)
-        recipientButtonNode.accessibilityIdentifier = "aid-message-recipients-tappable-area"
     }
 
     private func setupReplyNode() {
@@ -242,6 +237,18 @@ public final class ThreadMessageInfoCellNode: CellNode {
         expandNode.image = input.expandImage
         expandNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(input.buttonColor)
         expandNode.contentMode = .center
+    }
+
+    // MARK: - AccessibilityIdentifiers
+    private func setupAccessibilityIdentifiers() {
+        recipientButtonNode.accessibilityIdentifier = "aid-message-recipients-tappable-area"
+
+        expandNode.accessibilityIdentifier = "aid-expand-image-\(input.index)"
+        senderNode.accessibilityIdentifier = "aid-sender-\(input.index)"
+        dateNode.accessibilityIdentifier = "aid-date-\(input.index)"
+
+        [senderNode, recipientButtonNode, senderNode, dateNode]
+            .forEach { $0.isAccessibilityElement = true }
     }
 
     // MARK: - Callbacks

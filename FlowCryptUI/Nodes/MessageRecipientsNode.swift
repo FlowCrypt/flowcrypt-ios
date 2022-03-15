@@ -39,7 +39,6 @@ public final class MessageRecipientsNode: ASDisplayNode {
         super.init()
 
         automaticallyManagesSubnodes = true
-
         setupBorder()
     }
 
