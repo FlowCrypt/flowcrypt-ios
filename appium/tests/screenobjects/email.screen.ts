@@ -1,6 +1,7 @@
 import BaseScreen from './base.screen';
 import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
+import moment from "moment";
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -105,10 +106,6 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.CANCEL_BUTTON);
   }
 
-  get senderEmail() {
-    return $(SELECTORS.SENDER_EMAIL);
-  }
-
   get encryptionBadge() {
     return $(SELECTORS.ENCRYPTION_BADGE);
   }
@@ -121,8 +118,14 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.ATTACHMENT_TEXT_VIEW);
   }
 
-  checkEmailAddress = async (email: string) => {
-    await ElementHelper.checkStaticText(await this.senderEmail, email);
+  senderEmail = async (index = 0) =>{
+      return $(`~aid-sender-${index}`)
+  }
+
+  checkEmailAddress = async (email: string, index = 0)=> {
+    const element = await this.senderEmail(index);
+    await (await element).waitForDisplayed();
+    await expect(await (await element).getValue()).toEqual(email);
   }
 
   checkEmailSubject = async (subject: string) => {
@@ -130,15 +133,40 @@ class EmailScreen extends BaseScreen {
     await (await $(selector)).waitForDisplayed();
   }
 
-  checkEmailText = async (text: string) => {
-    const selector = `~${text}`;
+  checkEmailText = async (text: string, index = 0) => {
+    const selector = `~aid-message-${index}`;
     await (await $(selector)).waitForDisplayed();
+    console.log(await $(selector).getValue());
+
+    await expect(await $(selector).getValue()).toContain(text)
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
     await this.checkEmailAddress(email);
     await this.checkEmailSubject(subject);
     await this.checkEmailText(text);
+  }
+
+  checkThreadMessage = async (email: string, subject: string, text: string, date: string, index = 0) => {
+      await this.checkEmailSubject(subject);
+      await this.checkEmailAddress(email, index);
+      await this.clickExpandButtonByIndex(index);
+      await this.checkEmailText(text, index);
+      await this.checkDate(date, index);
+  }
+
+  clickExpandButtonByIndex = async (index: any) => {
+    const element = (`~aid-expand-image-${index}`);
+    if(await (await $(element)).isDisplayed()) {
+      await ElementHelper.waitAndClick(await $(element));
+    }
+  }
+
+  checkDate = async (date: string, index: any) => {
+    const element = `~aid-date-${index}`;
+    await (await $(element)).waitForDisplayed();
+    const convertedDate = moment(await $(element).getValue()).utcOffset(0).format('MMM DD');
+    await expect(convertedDate).toEqual(date)
   }
 
   clickBackButton = async () => {
