@@ -33,7 +33,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     enum Section: Hashable {
-        case recipients(RecipientType), password, compose, attachments, searchResults, contacts
+        case recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
         static var recipientsSections: [Section] {
             RecipientType.allCases.map { Section.recipients($0) }
@@ -48,6 +48,7 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
+    private var shouldShowEmailRecipientsLabel = false
     private let appContext: AppContextWithUser
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
@@ -580,10 +581,12 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         guard let sectionItem = sectionsList[safe: section] else { return 0 }
 
         switch (state, sectionItem) {
+        case (.main, .recipientsLabel):
+            return shouldShowEmailRecipientsLabel ? RecipientPart.allCases.count : 0
         case (.main, .recipients(.to)):
-            return RecipientPart.allCases.count
+            return shouldShowEmailRecipientsLabel ? 0 : RecipientPart.allCases.count
         case (.main, .recipients(.cc)), (.main, .recipients(.bcc)):
-            return shouldShowAllRecipientTypes ? RecipientPart.allCases.count : 0
+            return !shouldShowEmailRecipientsLabel && shouldShowAllRecipientTypes ? RecipientPart.allCases.count : 0
         case (.main, .password):
             return isMessagePasswordSupported && contextToSend.hasRecipientsWithoutPubKey ? 1 : 0
         case (.main, .compose):
@@ -616,6 +619,11 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 } else {
                     return self.recipientInput(type: recipientType)
                 }
+            case (.main, .recipientsLabel):
+                if indexPath.row > 0 {
+                    return ASCellNode()
+                }
+                return self.recipientTextNode()
             case (.main, .password):
                 return self.messagePasswordNode()
             case (.main, .compose):
@@ -675,6 +683,30 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
 // MARK: - Nodes
 extension ComposeViewController {
+    private func recipientTextNode() -> ComposeRecipientCellNode {
+        let recipients = contextToSend.recipients.map(\.email).joined(separator: ", ")
+        let textNode = ComposeRecipientCellNode(
+            input: ComposeRecipientCellNode.Input(recipients: recipients),
+            tapAction: { [weak self] in
+                self?.hideRecipientLabel()
+            }
+        )
+        return textNode
+    }
+
+    private func showRecipientLabel() {
+        let shouldShowEmailRecipientsLabel = self.contextToSend.recipients.isNotEmpty
+        if shouldShowEmailRecipientsLabel && !self.shouldShowEmailRecipientsLabel {
+            self.shouldShowEmailRecipientsLabel = true
+            self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+        }
+    }
+
+    private func hideRecipientLabel() {
+        self.shouldShowEmailRecipientsLabel = false
+        self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+    }
+
     private func subjectNode() -> ASCellNode {
         TextFieldCellNode(
             input: decorator.styledTextFieldInput(
@@ -685,7 +717,9 @@ extension ComposeViewController {
             switch event {
             case .editingChanged(let text), .didEndEditing(let text):
                 self?.contextToSend.subject = text
-            case .didBeginEditing, .deleteBackward:
+            case .didBeginEditing:
+                self?.showRecipientLabel()
+            case .deleteBackward:
                 return
             }
         }
@@ -726,7 +760,7 @@ extension ComposeViewController {
             guard let self = self else { return }
             switch event {
             case .didBeginEditing:
-                break
+                self.showRecipientLabel()
             case .editingChanged(let text), .didEndEditing(let text):
                 self.contextToSend.message = text?.string
             case .heightChanged(let textView):
@@ -990,8 +1024,9 @@ extension ComposeViewController {
             contextToSend.set(recipients: notSelectedRecipients, for: recipientType)
             reload(sections: [.recipients(.to), .password])
 
-            if let indexPath = recipientsIndexPath(type: recipientType, part: .list) {
-                node.reloadRows(at: [indexPath], with: .automatic)
+            if let indexPath = recipientsIndexPath(type: recipientType, part: .list),
+               let inputIndexPath = recipientsIndexPath(type: recipientType, part: .input) {
+                node.reloadRows(at: [indexPath, inputIndexPath], with: .automatic)
             }
 
             return
@@ -1240,7 +1275,7 @@ extension ComposeViewController {
 
         switch state {
         case .main:
-            sectionsList = Section.recipientsSections + [.password, .compose, .attachments]
+            sectionsList = Section.recipientsSections + [.recipientsLabel, .password, .compose, .attachments]
             node.reloadData()
         case .searchEmails:
             let previousSectionsCount = sectionsList.count
