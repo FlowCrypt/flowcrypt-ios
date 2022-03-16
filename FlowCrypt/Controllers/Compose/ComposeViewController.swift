@@ -684,9 +684,10 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 // MARK: - Nodes
 extension ComposeViewController {
     private func recipientTextNode() -> ComposeRecipientCellNode {
-        let recipients = contextToSend.recipients.map(\.email).joined(separator: ", ")
+        let recipients = contextToSend.recipients.map(RecipientEmailsCellNode.Input.init)
         let textNode = ComposeRecipientCellNode(
             input: ComposeRecipientCellNode.Input(recipients: recipients),
+            titleNodeBackgroundColorSelected: .titleNodeBackgroundColorSelected,
             tapAction: { [weak self] in
                 self?.hideRecipientLabel()
             }

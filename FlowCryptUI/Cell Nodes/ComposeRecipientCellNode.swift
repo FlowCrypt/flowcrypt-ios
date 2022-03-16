@@ -11,10 +11,10 @@ import UIKit
 
 public final class ComposeRecipientCellNode: CellNode {
     public struct Input {
-        public let recipients: String
+        public let recipients: [RecipientEmailsCellNode.Input]
 
         public init(
-            recipients: String
+            recipients: [RecipientEmailsCellNode.Input]
         ) {
             self.recipients = recipients
         }
@@ -23,11 +23,22 @@ public final class ComposeRecipientCellNode: CellNode {
     private var tapAction: (() -> Void)?
     private let recipientNode = ASTextNode2()
 
-    public init(input: Input, tapAction: (() -> Void)? = nil) {
+    public init(input: Input, titleNodeBackgroundColorSelected: UIColor, tapAction: (() -> Void)? = nil) {
         super.init()
-        recipientNode.attributedText = input.recipients.attributed(.regular(17), color: .gray, alignment: .left)
         self.tapAction = tapAction
         recipientNode.addTarget(self, action: #selector(onTextNodeTap), forControlEvents: .touchUpInside)
+
+        recipientNode.attributedText = input.recipients.map { (recipient) -> NSAttributedString in
+            // Use black text color for gray bubbles
+            let textColor = recipient.state.backgroundColor == titleNodeBackgroundColorSelected ? .black : recipient.state.backgroundColor
+            return recipient.email.string.attributed(.regular(17), color: textColor, alignment: .left)
+        }.reduce(NSMutableAttributedString()) { (r, e) in
+            if r.length > 0 {
+                r.append(NSAttributedString(", "))
+            }
+            r.append(e)
+            return r
+        }
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
