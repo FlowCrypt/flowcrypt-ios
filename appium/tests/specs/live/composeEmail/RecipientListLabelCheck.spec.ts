@@ -12,11 +12,11 @@ describe('COMPOSE EMAIL: ', () => {
 
   it('should toggle recipient list label and show correct email addresses ', async () => {
 
-    let recipientEmail = CommonData.recipient.email;
-    let ccRecipientEmail = CommonData.recipientWithExpiredPublicKey.email;
-    let bccRecipientEmail = CommonData.recipientWithoutPublicKey.email;
-    let subject = "Test recipient list label subject"
-    let message= "Test recipient list label message"
+    const recipientEmail = CommonData.recipient.email;
+    const ccRecipientEmail = CommonData.recipientWithExpiredPublicKey.email;
+    const bccRecipientEmail = CommonData.recipientWithoutPublicKey.email;
+    const subject = "Test recipient list label subject"
+    const message= "Test recipient list label message"
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
