@@ -31,7 +31,7 @@ extension RecipientToggleButtonNode {
     func createNodeLabel(type: String, isEmpty: Bool) -> ASTextNode2 {
         let textNode = ASTextNode2()
         let textTitle = isEmpty ? "" : "compose_recipient_\(type)".localized
-        textNode.attributedText = textTitle.attributed(.regular(17), color: .gray, alignment: .left)
+        textNode.attributedText = textTitle.attributed(.regular(17), color: .lightGray, alignment: .left)
         textNode.isAccessibilityElement = true
         textNode.style.preferredSize.width = 35
         return textNode
