@@ -22,7 +22,7 @@ extension RecipientToggleButtonNode {
         let button = ASButtonNode()
         button.accessibilityIdentifier = "aid-recipients-toggle-button"
         button.setImage(image, for: .normal)
-        button.contentEdgeInsets = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
+        button.contentEdgeInsets = UIEdgeInsets(top: 3, left: 0, bottom: 0, right: 0)
         button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
         button.addTarget(self, action: #selector(RecipientToggleButtonNode.onToggleButtonTap), forControlEvents: .touchUpInside)
         return button

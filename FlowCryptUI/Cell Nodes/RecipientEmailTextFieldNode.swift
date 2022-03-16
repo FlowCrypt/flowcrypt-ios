@@ -49,7 +49,7 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode, RecipientTogg
         let textFieldSize = CGSize(width: textFieldWidth, height: input.height)
         let buttonSize = CGSize(width: input.height, height: input.height)
 
-        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0), child: textNode)
+        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 6, left: 0, bottom: 0, right: 0), child: textNode)
 
         return createLayout(
             contentNode: textField,

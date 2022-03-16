@@ -19,7 +19,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private enum Constants {
         static let endTypingCharacters = [",", " ", "\n", ";"]
-        static let minRecipientsPartHeight: CGFloat = 44
+        static let minRecipientsPartHeight: CGFloat = 32
     }
 
     private struct ComposedDraft: Equatable {

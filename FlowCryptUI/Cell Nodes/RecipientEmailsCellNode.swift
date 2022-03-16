@@ -18,7 +18,7 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
     }
 
     private enum Constants {
-        static let sectionInset = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
+        static let sectionInset = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
         static let minimumLineSpacing: CGFloat = 4
     }
 
@@ -83,11 +83,11 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let collectionNodeHeight = recipients.isEmpty ? 0 : collectionLayoutHeight
         let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionNodeHeight)
-        let buttonSize = CGSize(width: 40, height: 50)
+        let buttonSize = CGSize(width: 40, height: 32)
 
         let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0)
 
-        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0), child: textNode)
+        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0), child: textNode)
 
         return createLayout(
             contentNode: collectionNode,
