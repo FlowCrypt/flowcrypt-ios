@@ -168,10 +168,14 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(await this.getRecipientsTextField(type));
   }
 
-  checkRecipientsList = async(recipients: string[], type = 'to') => {
+  showRecipientInputIfNeeded = async() => {
     if (await this.recipientListLabel.isDisplayed()) {
       await this.recipientListLabel.click();
     }
+  }
+
+  checkRecipientsList = async(recipients: string[], type = 'to') => {
+    await this.showRecipientInputIfNeeded();
     if (recipients.length === 0) {
       await ElementHelper.waitElementInvisible(await $(`~aid-${type}-0-label`));
     } else {
@@ -182,6 +186,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkAddedRecipient = async (recipient: string, order = 0, type = 'to') => {
+    await this.showRecipientInputIfNeeded();
     const recipientCell = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitElementVisible(recipientCell);
     const name = await recipientCell.getValue();
@@ -195,6 +200,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   deleteAddedRecipient = async (order: number, type = 'to') => {
+    await this.showRecipientInputIfNeeded();
     const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitAndClick(addedRecipientEl);
     await driver.sendKeys(['\b']); // backspace
