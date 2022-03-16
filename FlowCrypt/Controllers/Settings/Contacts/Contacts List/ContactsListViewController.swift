@@ -83,14 +83,19 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
-            return ContactCellNode(
-                input: self.decorator.contactNodeInput(with: self.recipients[indexPath.row]),
-                action: { [weak self] in
-                    self?.handleDeleteButtonTap(with: indexPath)
-                }
+            let cellNode = ContactCellNode(
+                input: self.decorator.contactNodeInput(with: self.recipients[indexPath.row])
             ).then {
                 $0.accessibilityLabel = "\(indexPath.row)"
             }
+            cellNode.action = { [weak self] in
+                // Get actual indexPath as above indexPath would be wrong if user deletes existing rows.
+                guard let self = self, let actualIndexPath = self.node.indexPath(for: cellNode) else {
+                    return
+                }
+                self.delete(contact: self.recipients[actualIndexPath.row])
+            }
+            return cellNode
         }
     }
 
@@ -100,9 +105,6 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
 }
 
 extension ContactsListViewController {
-    private func handleDeleteButtonTap(with indexPath: IndexPath) {
-        delete(with: .right(indexPath))
-    }
 
     private func proceedToContactDetail(with indexPath: IndexPath) {
         let contactDetailViewController = ContactDetailViewController(
@@ -113,30 +115,21 @@ extension ContactsListViewController {
                 assertionFailure("Action is not implemented")
                 return
             }
-            self?.delete(with: .left(contact))
+            self?.delete(contact: contact)
         }
         selectedIndexPath = indexPath
         navigationController?.pushViewController(contactDetailViewController, animated: true)
     }
 
-    private func delete(with context: Either<RecipientWithSortedPubKeys, IndexPath>) {
-        let recipientToRemove: RecipientWithSortedPubKeys
-        let indexPathToRemove: IndexPath
-        switch context {
-        case .left(let recipient):
-            recipientToRemove = recipient
-            guard let index = recipients.firstIndex(where: { $0 == recipient }) else {
-                assertionFailure("Can't find index of the contact")
-                return
-            }
-            indexPathToRemove = IndexPath(row: index, section: 0)
-        case .right(let indexPath):
-            indexPathToRemove = indexPath
-            recipientToRemove = recipients[indexPath.row]
+    private func delete(contact: RecipientWithSortedPubKeys) {
+        guard let index = recipients.firstIndex(where: { $0 == contact }) else {
+            assertionFailure("Can't find index of the contact")
+            return
         }
+        let indexPathToRemove = IndexPath(row: index, section: 0)
 
         do {
-            try localContactsProvider.remove(recipient: recipientToRemove)
+            try localContactsProvider.remove(recipient: contact)
             recipients.remove(at: indexPathToRemove.row)
             node.deleteRows(at: [indexPathToRemove], with: .left)
         } catch {
