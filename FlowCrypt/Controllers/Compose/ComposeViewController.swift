@@ -48,6 +48,8 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
+    private var isRecipientLoading = false
+    private var userTappedOutSideRecipientsArea = false
     private var shouldShowEmailRecipientsLabel = false
     private let appContext: AppContextWithUser
     private let composeMessageService: ComposeMessageService
@@ -695,10 +697,15 @@ extension ComposeViewController {
         return textNode
     }
 
-    private func showRecipientLabel() {
-        let shouldShowEmailRecipientsLabel = self.contextToSend.recipients.isNotEmpty
-        if shouldShowEmailRecipientsLabel && !self.shouldShowEmailRecipientsLabel {
+    private func showRecipientLabelIfNecessary() {
+        guard !self.isRecipientLoading,
+              self.contextToSend.recipients.isNotEmpty,
+              self.userTappedOutSideRecipientsArea else {
+            return
+        }
+        if !self.shouldShowEmailRecipientsLabel {
             self.shouldShowEmailRecipientsLabel = true
+            self.userTappedOutSideRecipientsArea = false
             self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
         }
     }
@@ -719,7 +726,8 @@ extension ComposeViewController {
             case .editingChanged(let text), .didEndEditing(let text):
                 self?.contextToSend.subject = text
             case .didBeginEditing:
-                self?.showRecipientLabel()
+                self?.userTappedOutSideRecipientsArea = true
+                self?.showRecipientLabelIfNecessary()
             case .deleteBackward:
                 return
             }
@@ -761,7 +769,8 @@ extension ComposeViewController {
             guard let self = self else { return }
             switch event {
             case .didBeginEditing:
-                self.showRecipientLabel()
+                self.userTappedOutSideRecipientsArea = true
+                self.showRecipientLabelIfNecessary()
             case .editingChanged(let text), .didEndEditing(let text):
                 self.contextToSend.message = text?.string
             case .heightChanged(let textView):
@@ -1088,6 +1097,7 @@ extension ComposeViewController {
         }
 
         Task {
+            isRecipientLoading = true
             var localContact: RecipientWithSortedPubKeys?
             do {
                 if let contact = try await service.findLocalContact(with: recipient.email) {
@@ -1097,8 +1107,12 @@ extension ComposeViewController {
 
                 let contactWithFetchedKeys = try await service.fetchContact(with: recipient.email)
                 handleEvaluation(for: contactWithFetchedKeys)
+                isRecipientLoading = false
+                showRecipientLabelIfNecessary()
             } catch {
                 handleEvaluation(error: error, with: recipient.email, contact: localContact)
+                isRecipientLoading = false
+                showRecipientLabelIfNecessary()
             }
         }
     }
