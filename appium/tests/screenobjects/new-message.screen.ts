@@ -137,6 +137,11 @@ class NewMessageScreen extends BaseScreen {
     await this.setSubject(subject);
   };
 
+  checkRecipientLabel = async (recipientList: string[]) => {
+    await this.showRecipientLabelIfNeeded();
+    expect(await this.recipientListLabel.getValue()).toBe(recipientList.join(", "));
+  }
+
   setAddRecipientByName = async (name: string, email: string, type = 'to') => {
     await browser.pause(500); // stability fix for transition animation
     await (await this.getRecipientsTextField(type)).setValue(name);
@@ -168,9 +173,16 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(await this.getRecipientsTextField(type));
   }
 
-  showRecipientInputIfNeeded = async() => {
+  showRecipientInputIfNeeded = async () => {
     if (await this.recipientListLabel.isDisplayed()) {
       await this.recipientListLabel.click();
+    }
+  }
+
+  showRecipientLabelIfNeeded = async () => {
+    if (!await this.recipientListLabel.isDisplayed()) {
+      await this.subjectField.click();
+      await ElementHelper.waitElementVisible(await this.recipientListLabel);
     }
   }
 
