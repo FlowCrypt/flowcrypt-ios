@@ -105,7 +105,9 @@ class MailFolderScreen extends BaseScreen {
 
   scrollUpToFirstEmail = async () => {
     const elem = await this.inboxList[0];
-    await TouchHelper.scrollUpToElement(elem);
+    if (elem) {
+      await TouchHelper.scrollUpToElement(elem);
+    }
   }
 
   checkInboxScreen = async () => {

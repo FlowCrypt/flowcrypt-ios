@@ -194,6 +194,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkAddedRecipientColor = async (recipient: string, order: number, color: string, type = 'to') => {
+    await this.showRecipientInputIfNeeded();
     const addedRecipientEl = await $(`~aid-${type}-${order}-${color}`);
     await ElementHelper.waitElementVisible(addedRecipientEl);
     await this.checkAddedRecipient(recipient, order);
