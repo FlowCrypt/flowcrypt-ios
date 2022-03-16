@@ -2,6 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
+  RECIPIENT_LIST_LABEL: '~aid-recipient-list-text',
   TOGGLE_RECIPIENTS_BUTTON: '~aid-recipients-toggle-button',
   SUBJECT_FIELD: '~aid-subject-text-field',
   COMPOSE_SECURITY_MESSAGE: '~aid-message-text-view',
@@ -36,6 +37,10 @@ class NewMessageScreen extends BaseScreen {
 
   get toggleRecipientsButton() {
     return $(SELECTORS.TOGGLE_RECIPIENTS_BUTTON);
+  }
+
+  get recipientListLabel() {
+    return $(SELECTORS.RECIPIENT_LIST_LABEL);
   }
 
   get subjectField() {
@@ -164,6 +169,9 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkRecipientsList = async(recipients: string[], type = 'to') => {
+    if (await this.recipientListLabel.isDisplayed()) {
+      await this.recipientListLabel.click();
+    }
     if (recipients.length === 0) {
       await ElementHelper.waitElementInvisible(await $(`~aid-${type}-0-label`));
     } else {

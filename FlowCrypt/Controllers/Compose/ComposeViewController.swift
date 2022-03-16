@@ -690,6 +690,7 @@ extension ComposeViewController {
         let recipients = contextToSend.recipients.map(RecipientEmailsCellNode.Input.init)
         let textNode = ComposeRecipientCellNode(
             input: ComposeRecipientCellNode.Input(recipients: recipients),
+            accessibilityIdentifier: "aid-recipient-list-text",
             titleNodeBackgroundColorSelected: .titleNodeBackgroundColorSelected,
             tapAction: { [weak self] in
                 self?.hideRecipientLabel()

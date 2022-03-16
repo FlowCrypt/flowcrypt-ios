@@ -23,11 +23,17 @@ public final class ComposeRecipientCellNode: CellNode {
     private var tapAction: (() -> Void)?
     private let recipientNode = ASTextNode2()
 
-    public init(input: Input, titleNodeBackgroundColorSelected: UIColor, tapAction: (() -> Void)? = nil) {
+    public init(
+        input: Input,
+        accessibilityIdentifier: String,
+        titleNodeBackgroundColorSelected: UIColor,
+        tapAction: (() -> Void)? = nil
+    ) {
         super.init()
         self.tapAction = tapAction
         recipientNode.addTarget(self, action: #selector(onTextNodeTap), forControlEvents: .touchUpInside)
 
+        recipientNode.accessibilityIdentifier = accessibilityIdentifier
         recipientNode.attributedText = input.recipients.map { (recipient) -> NSAttributedString in
             // Use black text color for gray bubbles
             let textColor = recipient.state.backgroundColor == titleNodeBackgroundColorSelected ? .black : recipient.state.backgroundColor
