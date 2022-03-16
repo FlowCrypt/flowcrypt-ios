@@ -48,6 +48,7 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
+    private var userFinishedSearching = false
     private var isRecipientLoading = false
     private var userTappedOutSideRecipientsArea = false
     private var shouldShowEmailRecipientsLabel = false
@@ -1008,6 +1009,7 @@ extension ComposeViewController {
 
         node.view.keyboardDismissMode = .interactive
         search.send("")
+        userFinishedSearching = true
 
         updateState(with: .main)
     }
@@ -1286,8 +1288,9 @@ extension ComposeViewController {
 // MARK: - State Handling
 extension ComposeViewController {
     private func updateState(with newState: State) {
-        if case .searchEmails = newState, self.isPreviousSearchStateEmpty {
+        if case .searchEmails = newState, self.isPreviousSearchStateEmpty || self.userFinishedSearching {
             self.isPreviousSearchStateEmpty = false
+            self.userFinishedSearching = false
             return
         }
 
