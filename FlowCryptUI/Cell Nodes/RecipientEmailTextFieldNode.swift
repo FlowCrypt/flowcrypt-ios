@@ -15,6 +15,12 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode, RecipientTogg
         createToggleButton()
     }()
 
+    private let type: String
+    private let hasRecipients: Bool
+    lazy var textNode: ASTextNode2 = {
+        createNodeLabel(type: type, isEmpty: hasRecipients)
+    }()
+
     var isToggleButtonRotated = false {
         didSet {
             updateToggleButton(animated: true)
@@ -23,10 +29,14 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode, RecipientTogg
 
     public init(
         input: TextFieldCellNode.Input,
+        hasRecipients: Bool,
+        type: String,
         action: TextFieldAction? = nil,
         isToggleButtonRotated: Bool,
         toggleButtonAction: (() -> Void)?
     ) {
+        self.type = type
+        self.hasRecipients = hasRecipients
         super.init(input: input, action: action)
 
         self.isLowercased = true
@@ -39,8 +49,11 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode, RecipientTogg
         let textFieldSize = CGSize(width: textFieldWidth, height: input.height)
         let buttonSize = CGSize(width: input.height, height: input.height)
 
+        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 6, left: 0, bottom: 0, right: 0), child: textNode)
+
         return createLayout(
             contentNode: textField,
+            textNodeStack: textNodeStack,
             contentSize: textFieldSize,
             insets: input.insets,
             buttonSize: buttonSize

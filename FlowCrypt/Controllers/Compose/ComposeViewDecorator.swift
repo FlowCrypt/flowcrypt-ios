@@ -54,7 +54,7 @@ struct ComposeViewDecorator {
             isSecureTextEntry: false,
             textAlignment: .left,
             insets: .deviceSpecificTextInsets(top: 0, bottom: 0),
-            height: 40,
+            height: 32,
             width: UIScreen.main.bounds.width,
             keyboardType: keyboardType,
             accessibilityIdentifier: accessibilityIdentifier
