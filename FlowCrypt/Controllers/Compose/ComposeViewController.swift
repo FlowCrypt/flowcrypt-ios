@@ -56,7 +56,7 @@ final class ComposeViewController: TableNodeViewController {
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
     private var decorator: ComposeViewDecorator
-    private let contactsService: ContactsServiceType
+    private let localContactsProvider: LocalContactsProviderType
     private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
@@ -100,7 +100,6 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         cloudContactProvider: CloudContactsProvider? = nil,
-        contactsService: ContactsServiceType? = nil,
         composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
@@ -112,11 +111,8 @@ final class ComposeViewController: TableNodeViewController {
         self.input = input
         self.decorator = decorator
         let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
-        self.contactsService = contactsService ?? ContactsService(
-            localContactsProvider: LocalContactsProvider(
-                encryptedStorage: appContext.encryptedStorage
-            ),
-            clientConfiguration: clientConfiguration
+        self.localContactsProvider = LocalContactsProvider(
+            encryptedStorage: appContext.encryptedStorage
         )
         let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
             userService: GoogleUserService(
@@ -137,7 +133,8 @@ final class ComposeViewController: TableNodeViewController {
         self.keyMethods = keyMethods
         self.service = ServiceActor(
             composeMessageService: self.composeMessageService,
-            contactsService: self.contactsService,
+            localContactsProvider: localContactsProvider,
+            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: self.localContactsProvider),
             cloudContactProvider: cloudContactProvider
         )
         self.router = appContext.globalRouter
@@ -1080,7 +1077,7 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             do {
-                let localEmails = try contactsService.searchLocalContacts(query: query)
+                let localEmails = try localContactsProvider.searchEmails(query: query)
                 let cloudEmails = try? await service.searchContacts(query: query)
                 let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
                 updateState(with: .searchEmails(Array(emails)))
@@ -1573,14 +1570,17 @@ extension ComposeViewController: FilesManagerPresenter {}
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
     let composeMessageService: ComposeMessageService
-    private let contactsService: ContactsServiceType
+    private let pubLookup: PubLookupType
+    private let localContactsProvider: LocalContactsProviderType
     private let cloudContactProvider: CloudContactsProvider
 
     init(composeMessageService: ComposeMessageService,
-         contactsService: ContactsServiceType,
+         localContactsProvider: LocalContactsProviderType,
+         pubLookup: PubLookupType,
          cloudContactProvider: CloudContactsProvider) {
         self.composeMessageService = composeMessageService
-        self.contactsService = contactsService
+        self.localContactsProvider = localContactsProvider
+        self.pubLookup = pubLookup
         self.cloudContactProvider = cloudContactProvider
     }
 
@@ -1596,10 +1596,10 @@ private actor ServiceActor {
     }
 
     func findLocalContact(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        return try await contactsService.findLocalContact(with: email)
+        return try await localContactsProvider.searchRecipient(with: email)
     }
 
     func fetchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
-        return try await contactsService.fetchContact(with: email)
+        return try await pubLookup.fetchRemoteUpdateLocal(with: email)
     }
 }

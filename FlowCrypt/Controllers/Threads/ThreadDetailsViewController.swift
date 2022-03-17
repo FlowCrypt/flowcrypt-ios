@@ -53,13 +53,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
     ) throws {
         self.appContext = appContext
         let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        let localContactsProvider = LocalContactsProvider(
+            encryptedStorage: appContext.encryptedStorage
+        )
         self.messageService = messageService ?? MessageService(
-            contactsService: ContactsService(
-                localContactsProvider: LocalContactsProvider(
-                    encryptedStorage: appContext.encryptedStorage
-                ),
-                clientConfiguration: clientConfiguration
-            ),
+            localContactsProvider: localContactsProvider,
+            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
             keyService: appContext.keyService,
             messageProvider: appContext.getRequiredMailProvider().messageProvider,
             passPhraseService: appContext.passPhraseService
