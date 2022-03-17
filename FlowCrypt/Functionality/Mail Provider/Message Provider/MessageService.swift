@@ -51,13 +51,13 @@ final class MessageService {
     private let logger: Logger
     private let keyService: KeyServiceType
     private let passPhraseService: PassPhraseServiceType
-    private let pubLookUp: PubLookupType
+    private let pubLookup: PubLookupType
 
     init(
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
         localContactsProvider: LocalContactsProviderType,
-        pubLookUp: PubLookupType,
+        pubLookup: PubLookupType,
         keyService: KeyServiceType,
         messageProvider: MessageProvider,
         passPhraseService: PassPhraseServiceType
@@ -69,7 +69,7 @@ final class MessageService {
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
         self.keyMethods = keyMethods
         self.localContactsProvider = localContactsProvider
-        self.pubLookUp = pubLookUp
+        self.pubLookup = pubLookup
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
@@ -238,7 +238,7 @@ extension MessageService {
         let pubKeys = try localContactsProvider.retrievePubKeys(for: email)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
-        guard let contact = try? await pubLookUp.fetchRemoteUpdateLocal(with: email)
+        guard let contact = try? await pubLookup.fetchRemoteUpdateLocal(with: email)
         else { return [] }
 
         return contact.pubKeys.map(\.armored)

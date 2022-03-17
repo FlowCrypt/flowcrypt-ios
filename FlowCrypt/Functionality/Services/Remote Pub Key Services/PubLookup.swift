@@ -14,7 +14,7 @@ protocol PubLookupType {
 class PubLookup: PubLookupType {
     private let wkd: WkdApiType
     private let attesterApi: AttesterApiType
-    private let localContactsProvider: LocalContactsProviderType?
+    private let localContactsProvider: LocalContactsProviderType
 
     private enum LookupSource {
         case attester
@@ -28,7 +28,7 @@ class PubLookup: PubLookupType {
 
     init(
         clientConfiguration: ClientConfiguration,
-        localContactsProvider: LocalContactsProviderType? = nil,
+        localContactsProvider: LocalContactsProviderType,
         wkd: WkdApiType = WkdApi(),
         attesterApi: AttesterApiType? = nil
     ) {
@@ -69,9 +69,6 @@ class PubLookup: PubLookupType {
 
     func fetchRemoteUpdateLocal(with email: String) async throws -> RecipientWithSortedPubKeys {
         let recipient = try await self.lookup(email: email)
-        guard let localContactsProvider = localContactsProvider else {
-            throw AppErr.general("LocalContactsProvider not initialized in PubLookup")
-        }
         try localContactsProvider.updateKeys(for: recipient)
         return recipient
     }
