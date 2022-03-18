@@ -10,6 +10,16 @@ import Foundation
 import RealmSwift
 import FlowCryptCommon
 
+enum ContactsError: Error {
+    case keyMissing
+    case unexpected(String)
+}
+
+protocol PublicKeyProvider {
+    func retrievePubKeys(for email: String) throws -> [String]
+    func removePubKey(with fingerprint: String, for email: String) throws
+}
+
 protocol LocalContactsProviderType: PublicKeyProvider {
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys?
     func searchEmails(query: String) throws -> [String]
