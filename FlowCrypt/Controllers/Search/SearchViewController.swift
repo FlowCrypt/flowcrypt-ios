@@ -135,29 +135,25 @@ extension SearchViewController: MsgListViewController {
             state = .empty
             return
         }
-        switch state {
-        case .fetched(.byNumber(let total)):
-            let newTotalNumber = (total ?? 0) - 1
-            if newTotalNumber == 0 {
-                state = .empty
-            } else {
-                state = .fetched(.byNumber(total: newTotalNumber))
-                do {
+        do {
+            switch state {
+            case .fetched(.byNumber(let total)):
+                let newTotalNumber = (total ?? 0) - 1
+                if newTotalNumber == 0 {
+                    state = .empty
+                } else {
+                    state = .fetched(.byNumber(total: newTotalNumber))
                     try ObjcException.catch {
                         self.node.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
                     }
-                } catch {
-                    showAlert(message: "Failed to remove message at \(index) in fetched state: \(error)")
                 }
-            }
-        default:
-            do {
+            default:
                 try ObjcException.catch {
                     self.node.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
                 }
-            } catch {
-                showAlert(message: "Failed to remove message at \(index) in \(state): \(error)")
             }
+        } catch {
+            showAlert(message: "Failed to remove message at \(index) in fetched state: \(error)")
         }
     }
 }
@@ -225,15 +221,12 @@ extension SearchViewController {
 
     private func updateState() {
         switch state {
-        case .empty, .error:
+        case .empty, .error, .fetching, .idle:
             node.reloadData()
             node.bounces = false
         case .fetched:
             node.reloadData()
             node.bounces = true
-        case .fetching, .idle:
-            node.reloadData()
-            node.bounces = false
         default:
             break
         }
