@@ -20,6 +20,12 @@ extension InboxViewController {
         case refresh
         /// Fetched messages
         case fetched(_ pagination: MessagesListPagination)
+        // Search started
+        case searchStart
+        // Searching emails
+        case searching
+        // Empty search result
+        case searchEmpty
         /// error state with description message
         case error(_ message: String)
 
