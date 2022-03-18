@@ -23,6 +23,7 @@ final class InboxViewController: ViewController {
         self?.btnComposeTap()
     }
 
+    private let inboxDataProvider: InboxDataProvider
     private let viewModel: InboxViewModel
     private var inboxInput: [InboxRenderable] = []
     private var state: InboxViewController.State = .idle
@@ -43,6 +44,7 @@ final class InboxViewController: ViewController {
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
+        self.inboxDataProvider = provider
 
         self.service = ServiceActor(inboxDataProvider: provider)
         self.draftsListProvider = draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
@@ -318,7 +320,11 @@ extension InboxViewController {
     }
 
     private func handleSearchTap() {
-        let viewController = SearchViewController(appContext: appContext, folderPath: viewModel.path)
+        let viewController = SearchViewController(
+            appContext: appContext,
+            provider: self.inboxDataProvider,
+            folderPath: viewModel.path
+        )
         navigationController?.pushViewController(viewController, animated: false)
     }
 

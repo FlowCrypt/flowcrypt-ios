@@ -17,26 +17,11 @@ import UIKit
  */
 final class SearchViewController: TableNodeViewController {
     private lazy var logger = Logger.nested(Self.self)
-    private enum Constants {
-        // TODO: - Ticket - Add pagination for SearchViewController
-        static let messageCount = 100
-    }
-    enum State {
-        enum FetchedUpdates {
-            case added(Int), removed(Int)
-        }
 
-        case idle, startFetching, empty, fetched([Message], FetchedUpdates?), error(String)
-
-        var messages: [Message] {
-            guard case let .fetched(messages, _) = self else { return [] }
-            return messages
-        }
-    }
-
-    private var state: State = .idle {
+    private var state: InboxViewController.State = .idle {
         didSet { updateState() }
     }
+    private var searchResults: [InboxRenderable] = []
 
     // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Adopt to gmail threads
     private let service: ServiceActor
@@ -45,17 +30,18 @@ final class SearchViewController: TableNodeViewController {
     private let searchController = UISearchController(searchResultsController: nil)
     private let folderPath: String
     private var searchedExpression: String = ""
+    private let decorator: InboxViewDecorator
+    private let numberOfInboxItemsToLoad = 100
 
     init(
         appContext: AppContextWithUser,
-        searchProvider: MessageSearchProvider? = nil,
+        provider: InboxDataProvider,
         folderPath: String
     ) {
         self.appContext = appContext
-        self.service = ServiceActor(
-            searchProvider: searchProvider ?? appContext.getRequiredMailProvider().messageSearchProvider
-        )
+        self.service = ServiceActor(inboxDataProvider: provider)
         self.folderPath = folderPath
+        self.decorator = InboxViewDecorator()
         super.init(node: TableNode())
     }
 
@@ -117,29 +103,62 @@ extension SearchViewController {
 extension SearchViewController: MsgListViewController {
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
-        guard let message = message.wrappedMessage else {
-            return nil
-        }
-        return state.messages.firstIndex(of: message)
+        let index = searchResults.firstIndex(where: {
+            $0.title == message.title
+            && $0.subtitle == message.subtitle
+        })
+        logger.logInfo("Try to update message at \(String(describing: index))")
+        return index
     }
 
     func updateMessage(isRead: Bool, at index: Int) {
-        guard let messageToUpdate = state.messages[safe: index] else {
+        guard var input = searchResults[safe: index] else {
             return
         }
         logger.logInfo("Mark as read \(isRead) at \(index)")
-        var updatedMessages = state.messages
-        updatedMessages[safe: index] = messageToUpdate.markAsRead(isRead)
-        state = .fetched(updatedMessages, .added(index))
+
+        input.isRead = isRead
+        searchResults[index] = input
+        let animationDuration = 0.3
+        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
+            self?.node.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+        }
     }
 
     func removeMessage(at index: Int) {
-        var updatedMessages = state.messages
-        guard updatedMessages[safe: index] != nil else { return }
-        updatedMessages.remove(at: index)
-        state = updatedMessages.isEmpty
-            ? .empty
-            : .fetched(updatedMessages, .removed(index))
+        guard searchResults[safe: index] != nil else { return }
+        logger.logInfo("Try to remove at \(index)")
+
+        searchResults.remove(at: index)
+
+        guard searchResults.isNotEmpty else {
+            state = .empty
+            return
+        }
+        switch state {
+        case .fetched(.byNumber(let total)):
+            let newTotalNumber = (total ?? 0) - 1
+            if newTotalNumber == 0 {
+                state = .empty
+            } else {
+                state = .fetched(.byNumber(total: newTotalNumber))
+                do {
+                    try ObjcException.catch {
+                        self.node.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+                    }
+                } catch {
+                    showAlert(message: "Failed to remove message at \(index) in fetched state: \(error)")
+                }
+            }
+        default:
+            do {
+                try ObjcException.catch {
+                    self.node.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+                }
+            } catch {
+                showAlert(message: "Failed to remove message at \(index) in \(state): \(error)")
+            }
+        }
     }
 }
 
@@ -148,56 +167,39 @@ extension SearchViewController: MsgListViewController {
 extension SearchViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
-        case .fetched:
-            return state.messages.count
-        default:
+        case .empty, .idle, .error, .fetching:
             return 1
+        case .fetched, .refresh:
+            return searchResults.count
         }
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        let height = tableNode.frame.size.height
-            - (navigationController?.navigationBar.frame.size.height ?? 0.0)
-            - safeAreaWindowInsets.top
-            - safeAreaWindowInsets.bottom
+        cellNode(for: indexPath, and: visibleSize(for: tableNode))
+    }
 
-        let size = CGSize(width: tableNode.frame.size.width, height: height)
+    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        tableNode.deselectRow(at: indexPath, animated: true)
+        open(with: searchResults[indexPath.row], path: folderPath, appContext: appContext)
+    }
+
+    private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
 
             switch self.state {
             case .empty:
-                return TextCellNode(
-                    input: TextCellNode.Input(
-                        backgroundColor: .backgroundColor,
-                        title: "search_empty".localized,
-                        withSpinner: false,
-                        size: size
-                    )
-                )
-            case .startFetching:
-                return TextCellNode(
-                    input: TextCellNode.Input(
-                        backgroundColor: .backgroundColor,
-                        title: "",
-                        withSpinner: true,
-                        size: size
-                    )
-                )
+                return TextCellNode(input: self.decorator.emptyStateNodeInput(for: size, title: "search_empty".localized))
             case .idle:
-                return TextCellNode(
-                    input: TextCellNode.Input(
-                        backgroundColor: .backgroundColor,
-                        title: "",
-                        withSpinner: false,
-                        size: size
-                    )
-                )
-            case .fetched:
-                return InboxCellNode(
-                    input: .init((InboxRenderable(message: self.state.messages[indexPath.row])))
-                )
+                return TextCellNode(input: self.decorator.initialNodeInput(for: size, withSpinner: false))
+            case .fetched, .refresh:
+                return InboxCellNode(input: .init((self.searchResults[indexPath.row])))
                     .then { $0.backgroundColor = .backgroundColor }
+            case .fetching:
+                guard let input = self.searchResults[safe: indexPath.row] else {
+                    return TextCellNode.loading
+                }
+                return InboxCellNode(input: .init(input))
             case let .error(message):
                 return TextCellNode(
                     input: TextCellNode.Input(
@@ -211,12 +213,50 @@ extension SearchViewController: ASTableDataSource, ASTableDelegate {
         }
     }
 
-    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        tableNode.deselectRow(at: indexPath, animated: false)
-        guard let message = state.messages[safe: indexPath.row] else { return }
+    private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
+        appContext
+            .getRequiredMailProvider()
+            .currentMessagesListPagination(from: number, token: state.token)
+    }
+}
 
-        // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 - cleanup
-        open(with: .init(message: message), path: folderPath, appContext: appContext)
+// MARK: - Functionality Input
+extension SearchViewController {
+
+    private func updateState() {
+        switch state {
+        case .empty, .error:
+            node.reloadData()
+            node.bounces = false
+        case .fetched:
+            node.reloadData()
+            node.bounces = true
+        case .fetching, .idle:
+            node.reloadData()
+            node.bounces = false
+        default:
+            break
+        }
+    }
+
+    private func handleFetched(_ input: InboxContext) {
+        if input.data.isEmpty {
+            state = .empty
+        } else {
+            searchResults.append(contentsOf: input.data)
+            state = .fetched(input.pagination)
+        }
+    }
+
+    private func handle(error: Error) {
+        let appError = AppErr(error)
+        switch appError {
+        case .connection, .general:
+            state = .error(appError.errorMessage)
+        default:
+            showAlert(error: error, message: "message_failed_load".localized)
+        }
+        node.reloadData()
     }
 }
 
@@ -290,68 +330,38 @@ extension SearchViewController: UISearchResultsUpdating {
     }
 
     private func search(for searchText: String) {
-        state = .startFetching
         searchedExpression = searchText
+        searchResults = []
 
         Task {
             do {
+                state = .fetching
                 let messages = try await service.searchExpression(
-                    using: MessageSearchContext(
-                        expression: searchText,
-                        count: Constants.messageCount
-                    )
+                    using: FetchMessageContext(
+                        folderPath: self.folderPath,
+                        count: numberOfInboxItemsToLoad,
+                        searchQuery: "\(searchText) OR subject:\(searchText)",
+                        pagination: currentMessagesListPagination()
+                    ),
+                    userEmail: appContext.user.email
                 )
-                handleProcessedMessage(with: messages)
+                handleFetched(messages)
             } catch {
-                handleError(with: error)
+                handle(error: error)
             }
-        }
-    }
-
-    private func handleProcessedMessage(with messages: [Message]) {
-        if messages.isEmpty {
-            state = .empty
-        } else {
-            state = .fetched(messages, nil)
-        }
-    }
-
-    private func handleError(with _: Error) {
-        state = .error("search_empty".localized)
-    }
-
-    private func updateState() {
-        switch state {
-        case .empty, .error:
-            node.reloadData()
-            node.bounces = false
-        case .fetched(_, nil):
-            node.reloadData()
-            node.bounces = true
-        case let .fetched(_, .added(index)):
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-                self?.node.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
-            }
-        case let .fetched(_, .removed(index)):
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
-                self?.node.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
-            }
-        case .startFetching, .idle:
-            node.reloadData()
-            node.bounces = false
         }
     }
 }
 
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
-    private let searchProvider: MessageSearchProvider
+    private let inboxDataProvider: InboxDataProvider
 
-    init(searchProvider: MessageSearchProvider) {
-        self.searchProvider = searchProvider
+    init(inboxDataProvider: InboxDataProvider) {
+        self.inboxDataProvider = inboxDataProvider
     }
 
-    func searchExpression(using context: MessageSearchContext) async throws -> [Message] {
-        return try await searchProvider.searchExpression(using: context)
+    func searchExpression(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+        return try await inboxDataProvider.fetchInboxItems(using: context, userEmail: userEmail)
     }
 }

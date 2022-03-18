@@ -57,11 +57,11 @@ struct InboxViewDecorator {
         )
     }
 
-    func initialNodeInput(for size: CGSize) -> TextCellNode.Input {
+    func initialNodeInput(for size: CGSize, withSpinner: Bool = true) -> TextCellNode.Input {
         TextCellNode.Input(
             backgroundColor: .backgroundColor,
             title: "",
-            withSpinner: true,
+            withSpinner: withSpinner,
             size: size
         )
     }
