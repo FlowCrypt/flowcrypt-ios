@@ -8,7 +8,7 @@ import FlowCryptUI
 import Foundation
 
 @MainActor
-final class InboxViewController: ViewController {
+class InboxViewController: ViewController {
     private lazy var logger = Logger.nested(Self.self)
 
     private let numberOfInboxItemsToLoad: Int
@@ -18,19 +18,24 @@ final class InboxViewController: ViewController {
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
     private let refreshControl = UIRefreshControl()
-    private let tableNode: ASTableNode
+    internal let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
 
+    private let inboxDataProvider: InboxDataProvider
     private let viewModel: InboxViewModel
-    private var inboxInput: [InboxRenderable] = []
-    private var state: InboxViewController.State = .idle
+    internal var inboxInput: [InboxRenderable] = []
+    internal var state: InboxViewController.State = .idle
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
     }
 
     var path: String { viewModel.path }
+
+    // Search related varaibles
+    internal var isSearch: Bool = false
+    internal var searchedExpression: String = ""
 
     init(
         appContext: AppContextWithUser,
@@ -38,16 +43,19 @@ final class InboxViewController: ViewController {
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
         draftsListProvider: DraftsListProvider? = nil,
-        decorator: InboxViewDecorator = InboxViewDecorator()
+        decorator: InboxViewDecorator = InboxViewDecorator(),
+        isSearch: Bool = false
     ) {
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
+        self.inboxDataProvider = provider
 
         self.service = ServiceActor(inboxDataProvider: provider)
         self.draftsListProvider = draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
+        self.isSearch = isSearch
 
         super.init(node: ASDisplayNode())
     }
@@ -60,8 +68,10 @@ final class InboxViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupUI()
-        setupNavigationBar()
+        if !self.isSearch {
+            setupUI()
+            setupNavigationBar()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -71,6 +81,11 @@ final class InboxViewController: ViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        tableNode.frame = node.bounds
+
+        if isSearch {
+            return
+        }
         let offset: CGFloat = 16
         let size = CGSize(width: 50, height: 50)
 
@@ -81,7 +96,6 @@ final class InboxViewController: ViewController {
             height: size.height
         )
         composeButton.cornerRadius = size.width / 2
-        tableNode.frame = node.bounds
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -92,10 +106,16 @@ final class InboxViewController: ViewController {
 
 // MARK: - UI
 extension InboxViewController {
-    private func setupUI() {
+    func setupUI() {
         title = inboxTitle
         navigationItem.setAccessibility(id: inboxTitle)
 
+        setupTableNode()
+        node.addSubnode(composeButton)
+        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
+    }
+
+    internal func setupTableNode() {
         tableNode.do {
             $0.delegate = self
             $0.dataSource = self
@@ -104,9 +124,6 @@ extension InboxViewController {
             $0.view.refreshControl = refreshControl
             node.addSubnode($0)
         }
-
-        node.addSubnode(composeButton)
-        refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
     }
 
     private func setupNavigationBar() {
@@ -174,14 +191,28 @@ extension InboxViewController {
         }
     }
 
-    private func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
+    internal func getSearchQuery() -> String? {
+        var searchQuery: String?
+        if searchedExpression.isNotEmpty {
+            searchQuery = "\(searchedExpression) OR subject:\(searchedExpression)"
+        }
+        return searchQuery
+    }
+
+    internal func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
         Task {
             do {
-                state = .fetching
+                if isSearch {
+                    state = .searching
+                    await self.tableNode.reloadData()
+                } else {
+                    state = .fetching
+                }
                 let context = try await service.fetchInboxItems(
                     using: FetchMessageContext(
-                        folderPath: viewModel.path,
+                        folderPath: isSearch ? nil : viewModel.path, // pass nil in search screen to search for all folders
                         count: numberOfInboxItemsToLoad,
+                        searchQuery: getSearchQuery(),
                         pagination: currentMessagesListPagination()
                     ), userEmail: appContext.user.email
                 )
@@ -253,7 +284,9 @@ extension InboxViewController {
                 return
             }
             fetchAndRenderEmails(context)
-        case .error:
+        case .searching, .searchStart, .searchEmpty:
+            context?.completeBatchFetching(true)
+        default:
             break
         }
     }
@@ -277,7 +310,11 @@ extension InboxViewController {
 
     private func handleNew(_ input: InboxContext) {
         inboxInput = input.data
-        state = .fetched(input.pagination)
+        if inboxInput.isEmpty && isSearch {
+            state = .searchEmpty
+        } else {
+            state = .fetched(input.pagination)
+        }
         refreshControl.endRefreshing()
         tableNode.reloadData()
     }
@@ -318,7 +355,12 @@ extension InboxViewController {
     }
 
     private func handleSearchTap() {
-        let viewController = SearchViewController(appContext: appContext, folderPath: viewModel.path)
+        let viewController = SearchViewController(
+            appContext: appContext,
+            viewModel: viewModel,
+            provider: self.inboxDataProvider,
+            isSearch: true
+        )
         navigationController?.pushViewController(viewController, animated: false)
     }
 
@@ -349,7 +391,7 @@ extension InboxViewController: Refreshable {
 extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
         switch state {
-        case .empty, .idle, .error:
+        case .empty, .idle, .searchStart, .searching, .searchEmpty, .error:
             return 1
         case .fetching, .fetched, .refresh:
             return inboxInput.count
@@ -372,6 +414,12 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             switch self.state {
             case .empty:
                 return TextCellNode(input: self.decorator.emptyStateNodeInput(for: size, title: self.inboxTitle))
+            case .searchStart:
+                return TextCellNode(input: self.decorator.initialNodeInput(for: size, withSpinner: false))
+            case .searchEmpty:
+                return TextCellNode(input: self.decorator.searchEmptyStateNodeInput(for: size))
+            case .searching:
+                return TextCellNode.loading
             case .idle:
                 return TextCellNode(input: self.decorator.initialNodeInput(for: size))
             case .fetched, .refresh:

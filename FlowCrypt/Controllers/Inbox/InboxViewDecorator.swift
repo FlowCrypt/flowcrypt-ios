@@ -57,11 +57,20 @@ struct InboxViewDecorator {
         )
     }
 
-    func initialNodeInput(for size: CGSize) -> TextCellNode.Input {
+    func searchEmptyStateNodeInput(for size: CGSize) -> TextCellNode.Input {
+        TextCellNode.Input(
+            backgroundColor: .backgroundColor,
+            title: "search_empty".localized,
+            withSpinner: false,
+            size: size
+        )
+    }
+
+    func initialNodeInput(for size: CGSize, withSpinner: Bool = true) -> TextCellNode.Input {
         TextCellNode.Input(
             backgroundColor: .backgroundColor,
             title: "",
-            withSpinner: true,
+            withSpinner: withSpinner,
             size: size
         )
     }
