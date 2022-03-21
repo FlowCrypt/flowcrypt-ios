@@ -23,6 +23,7 @@ export const CommonData = {
   threadMessage: {
     subject: 'test thread rendering',
     sender: 'dmitry@flowcrypt.com',
+    senderName: 'Dmitry at FlowCrypt',
     firstThreadMessage: 'first message',
     secondThreadMessage: 'Second thread rendering message\n' +
         '\n' +
