@@ -6,6 +6,8 @@
         "typescript"
     ],
     "editor.rulers": [
+        80,
+        100,
         120
     ]
 }
