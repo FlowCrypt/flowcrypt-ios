@@ -16,25 +16,10 @@ import PhotosUI
  * - Or from *ThreadDetailsViewController* controller by tapping on *reply* or *forward*
  **/
 final class ComposeViewController: TableNodeViewController {
-    private var calculatedRecipientsToPartHeight: CGFloat? {
-        didSet {
-            reload(sections: [.recipients(.to), .password])
-        }
-    }
-    private var calculatedRecipientsCcPartHeight: CGFloat? {
-        didSet {
-            reload(sections: [.recipients(.to), .recipients(.cc), .password])
-        }
-    }
-    private var calculatedRecipientsBccPartHeight: CGFloat? {
-        didSet {
-            reload(sections: [.recipients(.to), .recipients(.bcc), .password])
-        }
-    }
 
     private enum Constants {
         static let endTypingCharacters = [",", "\n", ";"]
-        static let minRecipientsPartHeight: CGFloat = 44
+        static let minRecipientsPartHeight: CGFloat = 32
     }
 
     private struct ComposedDraft: Equatable {
@@ -47,8 +32,8 @@ final class ComposeViewController: TableNodeViewController {
         case main, searchEmails([Recipient])
     }
 
-    private enum Section: Hashable {
-        case recipients(RecipientType), password, compose, attachments, searchResults, contacts
+    enum Section: Hashable {
+        case recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
         static var recipientsSections: [Section] {
             RecipientType.allCases.map { Section.recipients($0) }
@@ -63,11 +48,15 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
+    private var userFinishedSearching = false
+    private var isRecipientLoading = false
+    private var userTappedOutSideRecipientsArea = false
+    private var shouldShowEmailRecipientsLabel = false
     private let appContext: AppContextWithUser
     private let composeMessageService: ComposeMessageService
     private let notificationCenter: NotificationCenter
-    private let decorator: ComposeViewDecorator
-    private let contactsService: ContactsServiceType
+    private var decorator: ComposeViewDecorator
+    private let localContactsProvider: LocalContactsProviderType
     private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
@@ -83,6 +72,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private let search = PassthroughSubject<String, Never>()
     private var cancellable = Set<AnyCancellable>()
+    private var isPreviousSearchStateEmpty = false
 
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
@@ -110,7 +100,6 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         cloudContactProvider: CloudContactsProvider? = nil,
-        contactsService: ContactsServiceType? = nil,
         composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
@@ -122,11 +111,8 @@ final class ComposeViewController: TableNodeViewController {
         self.input = input
         self.decorator = decorator
         let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
-        self.contactsService = contactsService ?? ContactsService(
-            localContactsProvider: LocalContactsProvider(
-                encryptedStorage: appContext.encryptedStorage
-            ),
-            clientConfiguration: clientConfiguration
+        self.localContactsProvider = LocalContactsProvider(
+            encryptedStorage: appContext.encryptedStorage
         )
         let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
             userService: GoogleUserService(
@@ -147,7 +133,8 @@ final class ComposeViewController: TableNodeViewController {
         self.keyMethods = keyMethods
         self.service = ServiceActor(
             composeMessageService: self.composeMessageService,
-            contactsService: self.contactsService,
+            localContactsProvider: localContactsProvider,
+            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: self.localContactsProvider),
             cloudContactProvider: cloudContactProvider
         )
         self.router = appContext.globalRouter
@@ -355,6 +342,21 @@ extension ComposeViewController {
             contextToSend.add(recipient: recipient)
             evaluate(recipient: recipient)
         }
+
+        input.quoteCCRecipients.forEach { recipient in
+            let recipient = ComposeMessageRecipient(
+                email: recipient.email,
+                name: recipient.name,
+                type: .cc,
+                state: decorator.recipientIdleState
+            )
+            contextToSend.add(recipient: recipient)
+            evaluate(recipient: recipient)
+        }
+
+        if input.quoteCCRecipients.isNotEmpty {
+            shouldShowAllRecipientTypes.toggle()
+        }
     }
 }
 
@@ -365,7 +367,10 @@ extension ComposeViewController {
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()
             .map { [weak self] query -> String in
-                if query.isEmpty { self?.updateState(with: .main) }
+                if query.isEmpty {
+                    self?.isPreviousSearchStateEmpty = true
+                    self?.updateState(with: .main)
+                }
                 return query
             }
             .sink(receiveValue: { [weak self] in
@@ -587,10 +592,12 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         guard let sectionItem = sectionsList[safe: section] else { return 0 }
 
         switch (state, sectionItem) {
+        case (.main, .recipientsLabel):
+            return shouldShowEmailRecipientsLabel ? RecipientPart.allCases.count : 0
         case (.main, .recipients(.to)):
-            return RecipientPart.allCases.count
+            return shouldShowEmailRecipientsLabel ? 0 : RecipientPart.allCases.count
         case (.main, .recipients(.cc)), (.main, .recipients(.bcc)):
-            return shouldShowAllRecipientTypes ? RecipientPart.allCases.count : 0
+            return !shouldShowEmailRecipientsLabel && shouldShowAllRecipientTypes ? RecipientPart.allCases.count : 0
         case (.main, .password):
             return isMessagePasswordSupported && contextToSend.hasRecipientsWithoutPubKey ? 1 : 0
         case (.main, .compose):
@@ -623,6 +630,11 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 } else {
                     return self.recipientInput(type: recipientType)
                 }
+            case (.main, .recipientsLabel):
+                if indexPath.row > 0 {
+                    return ASCellNode()
+                }
+                return self.recipientTextNode()
             case (.main, .password):
                 return self.messagePasswordNode()
             case (.main, .compose):
@@ -693,6 +705,37 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
 // MARK: - Nodes
 extension ComposeViewController {
+    private func recipientTextNode() -> ComposeRecipientCellNode {
+        let recipients = contextToSend.recipients.map(RecipientEmailsCellNode.Input.init)
+        let textNode = ComposeRecipientCellNode(
+            input: ComposeRecipientCellNode.Input(recipients: recipients),
+            accessibilityIdentifier: "aid-recipient-list-text",
+            titleNodeBackgroundColorSelected: .titleNodeBackgroundColorSelected,
+            tapAction: { [weak self] in
+                self?.hideRecipientLabel()
+            }
+        )
+        return textNode
+    }
+
+    private func showRecipientLabelIfNecessary() {
+        guard !self.isRecipientLoading,
+              self.contextToSend.recipients.isNotEmpty,
+              self.userTappedOutSideRecipientsArea else {
+            return
+        }
+        if !self.shouldShowEmailRecipientsLabel {
+            self.shouldShowEmailRecipientsLabel = true
+            self.userTappedOutSideRecipientsArea = false
+            self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+        }
+    }
+
+    private func hideRecipientLabel() {
+        self.shouldShowEmailRecipientsLabel = false
+        self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+    }
+
     private func subjectNode() -> ASCellNode {
         TextFieldCellNode(
             input: decorator.styledTextFieldInput(
@@ -703,7 +746,10 @@ extension ComposeViewController {
             switch event {
             case .editingChanged(let text), .didEndEditing(let text):
                 self?.contextToSend.subject = text
-            case .didBeginEditing, .deleteBackward:
+            case .didBeginEditing:
+                self?.userTappedOutSideRecipientsArea = true
+                self?.showRecipientLabelIfNecessary()
+            case .deleteBackward:
                 return
             }
         }
@@ -744,7 +790,8 @@ extension ComposeViewController {
             guard let self = self else { return }
             switch event {
             case .didBeginEditing:
-                break
+                self.userTappedOutSideRecipientsArea = true
+                self.showRecipientLabelIfNecessary()
             case .editingChanged(let text), .didEndEditing(let text):
                 self.contextToSend.message = text?.string
             case .heightChanged(let textView):
@@ -791,16 +838,21 @@ extension ComposeViewController {
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.Input.init),
             type: type.rawValue,
-            height: recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
+            height: decorator.recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
             isToggleButtonRotated: shouldShowAllRecipientTypes,
             toggleButtonAction: shouldShowToggleButton ? { [weak self] in
                 guard type == .to else { return }
                 self?.toggleRecipientsList()
             } : nil)
             .onLayoutHeightChanged { [weak self] layoutHeight in
-                self?.updateRecipientsNode(
+                self?.decorator.updateRecipientsNode(
                     layoutHeight: layoutHeight,
-                    type: type
+                    type: type,
+                    reload: { sections in
+                        DispatchQueue.main.async {
+                            self?.reload(sections: sections)
+                        }
+                    }
                 )
             }
             .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
@@ -813,45 +865,20 @@ extension ComposeViewController {
             }
     }
 
-    private func recipientsNodeHeight(type: RecipientType) -> CGFloat? {
-        switch type {
-        case .to:
-            return calculatedRecipientsToPartHeight
-        case .cc:
-            return calculatedRecipientsCcPartHeight
-        case .bcc:
-            return calculatedRecipientsBccPartHeight
-        }
-    }
-
-    private func updateRecipientsNode(layoutHeight: CGFloat, type: RecipientType) {
-        let currentHeight = self.recipientsNodeHeight(type: type)
-
-        guard currentHeight != layoutHeight, layoutHeight > 0 else {
-            return
-        }
-
-        switch type {
-        case .to:
-            self.calculatedRecipientsToPartHeight = layoutHeight
-        case .cc:
-            self.calculatedRecipientsCcPartHeight = layoutHeight
-        case .bcc:
-            self.calculatedRecipientsBccPartHeight = layoutHeight
-        }
-    }
-
     private func recipientInput(type: RecipientType) -> ASCellNode {
+        let recipients = contextToSend.recipients(type: type)
         let shouldShowToggleButton = type == .to
             && contextToSend.recipients(type: .to).isEmpty
             && !contextToSend.hasCcOrBccRecipients
 
         return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
-                with: type.inputPlaceholder,
+                with: "",
                 keyboardType: .emailAddress,
                 accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)"
             ),
+            hasRecipients: recipients.isNotEmpty,
+            type: type.rawValue,
             action: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)
             },
@@ -1008,6 +1035,7 @@ extension ComposeViewController {
 
         node.view.keyboardDismissMode = .interactive
         search.send("")
+        userFinishedSearching = true
 
         updateState(with: .main)
     }
@@ -1034,8 +1062,9 @@ extension ComposeViewController {
             contextToSend.set(recipients: notSelectedRecipients, for: recipientType)
             reload(sections: [.recipients(.to), .password])
 
-            if let indexPath = recipientsIndexPath(type: recipientType, part: .list) {
-                node.reloadRows(at: [indexPath], with: .automatic)
+            if let indexPath = recipientsIndexPath(type: recipientType, part: .list),
+               let inputIndexPath = recipientsIndexPath(type: recipientType, part: .input) {
+                node.reloadRows(at: [indexPath, inputIndexPath], with: .automatic)
             }
 
             return
@@ -1077,7 +1106,7 @@ extension ComposeViewController {
         Task {
             do {
                 let cloudRecipients = try await service.searchContacts(query: query)
-                let localRecipients = try contactsService.searchLocalContacts(query: query)
+                let localRecipients = try localContactsProvider.searchRecipients(query: query)
 
                 let recipients = (cloudRecipients + localRecipients)
                                     .unique()
@@ -1100,16 +1129,23 @@ extension ComposeViewController {
         }
 
         Task {
+            isRecipientLoading = true
+            var localContact: RecipientWithSortedPubKeys?
             do {
                 if let contact = try await service.findLocalContact(with: recipient.email) {
+                    localContact = contact
                     handleEvaluation(for: contact)
                 }
 
                 let contact = Recipient(recipient: recipient)
                 let contactWithFetchedKeys = try await service.fetchPubKeys(for: contact)
                 handleEvaluation(for: contactWithFetchedKeys)
+                isRecipientLoading = false
+                showRecipientLabelIfNecessary()
             } catch {
-                handleEvaluation(error: error, with: recipient.email)
+                handleEvaluation(error: error, with: recipient.email, contact: localContact)
+                isRecipientLoading = false
+                showRecipientLabelIfNecessary()
             }
         }
     }
@@ -1137,8 +1173,11 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEvaluation(error: Error, with email: String) {
+    private func handleEvaluation(error: Error, with email: String, contact: RecipientWithSortedPubKeys?) {
         let recipientState: RecipientState = {
+            if let contact = contact, contact.keyState == .active {
+                return getRecipientState(from: contact)
+            }
             switch error {
             case ContactsError.keyMissing:
                 return self.decorator.recipientKeyNotFoundState
@@ -1280,11 +1319,17 @@ extension ComposeViewController {
 // MARK: - State Handling
 extension ComposeViewController {
     private func updateState(with newState: State) {
+        if case .searchEmails = newState, self.isPreviousSearchStateEmpty || self.userFinishedSearching {
+            self.isPreviousSearchStateEmpty = false
+            self.userFinishedSearching = false
+            return
+        }
+
         state = newState
 
         switch state {
         case .main:
-            sectionsList = Section.recipientsSections + [.password, .compose, .attachments]
+            sectionsList = Section.recipientsSections + [.recipientsLabel, .password, .compose, .attachments]
             node.reloadData()
         case .searchEmails:
             let previousSectionsCount = sectionsList.count
@@ -1558,14 +1603,17 @@ extension ComposeViewController: FilesManagerPresenter {}
 // TODO temporary solution for background execution problem
 private actor ServiceActor {
     let composeMessageService: ComposeMessageService
-    private let contactsService: ContactsServiceType
+    private let pubLookup: PubLookupType
+    private let localContactsProvider: LocalContactsProviderType
     private let cloudContactProvider: CloudContactsProvider
 
     init(composeMessageService: ComposeMessageService,
-         contactsService: ContactsServiceType,
+         localContactsProvider: LocalContactsProviderType,
+         pubLookup: PubLookupType,
          cloudContactProvider: CloudContactsProvider) {
         self.composeMessageService = composeMessageService
-        self.contactsService = contactsService
+        self.localContactsProvider = localContactsProvider
+        self.pubLookup = pubLookup
         self.cloudContactProvider = cloudContactProvider
     }
 
@@ -1581,10 +1629,10 @@ private actor ServiceActor {
     }
 
     func findLocalContact(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        return try await contactsService.findLocalContact(with: email)
+        return try await localContactsProvider.searchRecipient(with: email)
     }
 
     func fetchPubKeys(for recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
-        return try await contactsService.fetchPubKeys(for: recipient)
+        return try await pubLookup.fetchRemoteUpdateLocal(with: recipient)
     }
 }

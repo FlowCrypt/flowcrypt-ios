@@ -15,10 +15,6 @@ protocol KeyServiceType {
     func getSigningKey() async throws -> PrvKeyInfo?
 }
 
-enum KeyServiceError: Error {
-    case unexpected, parsingError, retrieve, missingCurrentUserEmail, expectedPrivateGotPublic
-}
-
 final class KeyService: KeyServiceType {
 
     let coreService: Core = .shared

@@ -8,11 +8,13 @@
 
 protocol PubLookupType {
     func lookup(recipient: Recipient) async throws -> RecipientWithSortedPubKeys
+    func fetchRemoteUpdateLocal(with recipient: Recipient) async throws -> RecipientWithSortedPubKeys
 }
 
 class PubLookup: PubLookupType {
     private let wkd: WkdApiType
     private let attesterApi: AttesterApiType
+    private let localContactsProvider: LocalContactsProviderType
 
     private enum LookupSource {
         case attester
@@ -26,10 +28,12 @@ class PubLookup: PubLookupType {
 
     init(
         clientConfiguration: ClientConfiguration,
+        localContactsProvider: LocalContactsProviderType,
         wkd: WkdApiType = WkdApi(),
         attesterApi: AttesterApiType? = nil
     ) {
         self.wkd = wkd
+        self.localContactsProvider = localContactsProvider
         self.attesterApi = attesterApi ?? AttesterApi(clientConfiguration: clientConfiguration)
     }
 
@@ -61,5 +65,11 @@ class PubLookup: PubLookupType {
         // Attester keys are less preferred because they come from less trustworthy source
         //   (the FlowCrypt server)
         return RecipientWithSortedPubKeys(recipient, keyDetails: attesterResult.keys)
+    }
+
+    func fetchRemoteUpdateLocal(with recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
+        let recipient = try await self.lookup(recipient: recipient)
+        try localContactsProvider.updateKeys(for: recipient)
+        return recipient
     }
 }

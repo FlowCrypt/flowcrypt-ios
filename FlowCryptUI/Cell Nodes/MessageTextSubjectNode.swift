@@ -11,9 +11,13 @@ import AsyncDisplayKit
 public final class MessageTextSubjectNode: CellNode {
     private let textNode = ASEditableTextNode()
 
-    public init(_ text: NSAttributedString?) {
+    public init(_ text: NSAttributedString?, index: Int) {
         super.init()
         textNode.attributedText = text
+        textNode.isAccessibilityElement = true
+        textNode.accessibilityIdentifier = "aid-message-\(index)"
+        textNode.accessibilityValue = text?.string
+
         DispatchQueue.main.async {
             self.textNode.textView.isSelectable = true
             self.textNode.textView.isEditable = false

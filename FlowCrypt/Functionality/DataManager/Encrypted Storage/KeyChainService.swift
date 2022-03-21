@@ -9,6 +9,7 @@
 import FlowCryptCommon
 import Foundation
 import Security
+import UIKit
 
 /// keychain is used to generate and retrieve encryption key which is used to encrypt local DB
 /// it does not contain any actual data or keys other than the db encryption key
@@ -21,6 +22,13 @@ actor KeyChainService {
     /// this dynamic keychainIndex ensures that we use a different keychain index
     ///   after deleting the app, because keychain entries survive app uninstall
     @MainActor private func getKeychainIndex() throws -> String {
+        guard UIApplication.shared.isProtectedDataAvailable else {
+            // when not available, UserDefaults is empty and a new index would be wrongly generated
+            // which would cause new database encryption key to get generated
+            // and that would corrupt existing storage
+            // https://github.com/FlowCrypt/flowcrypt-ios/issues/1373
+            throw AppErr.general("KeyChainService: protected data is not available")
+        }
         let dynamicPartIndex = "indexSecureKeychainPrefix"
         if let storedDynamicPart = UserDefaults.standard.string(forKey: dynamicPartIndex) {
             return constructKeychainIndex(dynamicPart: storedDynamicPart)

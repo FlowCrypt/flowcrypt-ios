@@ -33,7 +33,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
     var core = CoreComposeMessageMock()
     var encryptedStorage = EncryptedStorageMock()
-    var contactsService = ContactsServiceMock()
+    var localContactsProvider = LocalContactsProviderMock()
 
     override func setUp() {
         super.setUp()
@@ -45,7 +45,7 @@ class ComposeMessageServiceTests: XCTestCase {
             messageGateway: MessageGatewayMock(),
             passPhraseService: PassPhraseServiceMock(),
             draftGateway: DraftGatewayMock(),
-            contactsService: contactsService,
+            localContactsProvider: localContactsProvider,
             sender: "some@gmail.com",
             core: core
         )
@@ -208,7 +208,7 @@ class ComposeMessageServiceTests: XCTestCase {
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
         encryptedStorage.getKeypairsResult = [keypair]
         recipients.forEach { recipient in
-            contactsService.retrievePubKeysResult = { _ in
+            localContactsProvider.retrievePubKeysResult = { _ in
                 []
             }
         }
@@ -235,7 +235,7 @@ class ComposeMessageServiceTests: XCTestCase {
         }
         encryptedStorage.getKeypairsResult = [keypair]
         recipients.forEach { recipient in
-            contactsService.retrievePubKeysResult = { _ in
+            localContactsProvider.retrievePubKeysResult = { _ in
                 ["pubKey"]
             }
         }
@@ -262,7 +262,7 @@ class ComposeMessageServiceTests: XCTestCase {
         }
         encryptedStorage.getKeypairsResult = [keypair]
         recipients.forEach { recipient in
-            contactsService.retrievePubKeysResult = { _ in
+            localContactsProvider.retrievePubKeysResult = { _ in
                 ["pubKey"]
             }
         }
@@ -301,7 +301,7 @@ class ComposeMessageServiceTests: XCTestCase {
         }
         encryptedStorage.getKeypairsResult = [keypair]
         recipients.forEach { recipient in
-            contactsService.retrievePubKeysResult = { _ in
+            localContactsProvider.retrievePubKeysResult = { _ in
                 ["revoked", "expired", "valid"]
             }
         }
@@ -347,7 +347,7 @@ class ComposeMessageServiceTests: XCTestCase {
         encryptedStorage.getKeypairsResult = [keypair]
         let recWithoutPubKey = recipients[0].email
         recipients.forEach { _ in
-            contactsService.retrievePubKeysResult = { recipient in
+            localContactsProvider.retrievePubKeysResult = { recipient in
                 if recipient == recWithoutPubKey {
                     return []
                 }
@@ -374,7 +374,7 @@ class ComposeMessageServiceTests: XCTestCase {
     func testSuccessfulMessageValidation() async throws {
         encryptedStorage.getKeypairsResult = [keypair]
         recipients.enumerated().forEach { element, index in
-            contactsService.retrievePubKeysResult = { recipient in
+            localContactsProvider.retrievePubKeysResult = { recipient in
                 ["pubKey"]
             }
         }

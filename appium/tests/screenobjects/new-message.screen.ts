@@ -2,6 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
+  RECIPIENT_LIST_LABEL: '~aid-recipient-list-text',
   TOGGLE_RECIPIENTS_BUTTON: '~aid-recipients-toggle-button',
   SUBJECT_FIELD: '~aid-subject-text-field',
   COMPOSE_SECURITY_MESSAGE: '~aid-message-text-view',
@@ -20,6 +21,15 @@ const SELECTORS = {
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'"
 };
 
+interface ComposeEmailInfo {
+  recipients: string[];
+  subject: string;
+  message: string;
+  attachmentName?: string;
+  cc?: string[];
+  bcc?: string[];
+}
+
 class NewMessageScreen extends BaseScreen {
   constructor() {
     super(SELECTORS.RECIPIENTS_LIST);
@@ -27,6 +37,10 @@ class NewMessageScreen extends BaseScreen {
 
   get toggleRecipientsButton() {
     return $(SELECTORS.TOGGLE_RECIPIENTS_BUTTON);
+  }
+
+  get recipientListLabel() {
+    return $(SELECTORS.RECIPIENT_LIST_LABEL);
   }
 
   get subjectField() {
@@ -123,30 +137,35 @@ class NewMessageScreen extends BaseScreen {
     await this.setSubject(subject);
   };
 
+  checkRecipientLabel = async (recipientList: string[]) => {
+    await this.showRecipientLabelIfNeeded();
+    expect(await this.recipientListLabel.getValue()).toBe(recipientList.join(", "));
+  }
+
   setAddRecipientByName = async (name: string, email: string, type = 'to') => {
     await browser.pause(500); // stability fix for transition animation
     await (await this.getRecipientsTextField(type)).setValue(name);
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
 
-  checkFilledComposeEmailInfo = async (recipients: string[], subject: string, message: string, attachmentName?: string, cc?: string[], bcc?: string[]) => {
-    expect(await this.composeSecurityMessage).toHaveTextContaining(message);
-    
-    const element = await this.filledSubject(subject);
+  checkFilledComposeEmailInfo = async (emailInfo: ComposeEmailInfo) => {
+    expect(await this.composeSecurityMessage).toHaveTextContaining(emailInfo.message);
+
+    const element = await this.filledSubject(emailInfo.subject);
     await element.waitForDisplayed();
 
-    await this.checkRecipientsList(recipients);
+    await this.checkRecipientsList(emailInfo.recipients);
 
-    if (cc) {
-      await this.checkRecipientsList(cc, 'cc');
+    if (emailInfo.cc) {
+      await this.checkRecipientsList(emailInfo.cc, 'cc');
     }
 
-    if (bcc) {
-      await this.checkRecipientsList(bcc, 'bcc');
+    if (emailInfo.bcc) {
+      await this.checkRecipientsList(emailInfo.bcc, 'bcc');
     }
 
-    if (attachmentName !== undefined) {
-      await this.checkAddedAttachment(attachmentName);
+    if (emailInfo.attachmentName !== undefined) {
+      await this.checkAddedAttachment(emailInfo.attachmentName);
     }
   };
 
@@ -154,7 +173,21 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(await this.getRecipientsTextField(type));
   }
 
+  showRecipientInputIfNeeded = async () => {
+    if (await this.recipientListLabel.isDisplayed()) {
+      await this.recipientListLabel.click();
+    }
+  }
+
+  showRecipientLabelIfNeeded = async () => {
+    if (!await this.recipientListLabel.isDisplayed()) {
+      await this.subjectField.click();
+      await ElementHelper.waitElementVisible(await this.recipientListLabel);
+    }
+  }
+
   checkRecipientsList = async(recipients: string[], type = 'to') => {
+    await this.showRecipientInputIfNeeded();
     if (recipients.length === 0) {
       await ElementHelper.waitElementInvisible(await $(`~aid-${type}-0-label`));
     } else {
@@ -165,6 +198,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkAddedRecipient = async (recipient: string, order = 0, type = 'to') => {
+    await this.showRecipientInputIfNeeded();
     const recipientCell = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitElementVisible(recipientCell);
     const name = await recipientCell.getValue();
@@ -172,12 +206,14 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkAddedRecipientColor = async (recipient: string, order: number, color: string, type = 'to') => {
+    await this.showRecipientInputIfNeeded();
     const addedRecipientEl = await $(`~aid-${type}-${order}-${color}`);
     await ElementHelper.waitElementVisible(addedRecipientEl);
     await this.checkAddedRecipient(recipient, order);
   }
 
   deleteAddedRecipient = async (order: number, type = 'to') => {
+    await this.showRecipientInputIfNeeded();
     const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitAndClick(addedRecipientEl);
     await driver.sendKeys(['\b']); // backspace

@@ -137,7 +137,7 @@ extension SetupInitialViewController {
     }
 
     private func handle(error: Error) {
-        handleCommon(error: error)
+        showAlert(message: error.errorMessage)
         state = .error(error)
     }
 

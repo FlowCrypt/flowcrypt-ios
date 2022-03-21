@@ -18,7 +18,8 @@ class PubLookupTest: XCTestCase {
         let pubLookup = PubLookup(
             clientConfiguration: ClientConfiguration(
                 raw: RawClientConfiguration()
-            )
+            ),
+            localContactsProvider: LocalContactsProviderMock()
         )
         let r = try await pubLookup.lookup(recipient: Recipient(email: "different.uid@recipient.test"))
         XCTAssertTrue(r.pubKeys.isNotEmpty, "expected pubkeys not empty")

@@ -63,7 +63,7 @@ final class KeySettingsViewController: TableNodeViewController {
             do {
                 try await loadKeysFromStorageAndRender()
             } catch {
-                handleCommon(error: error)
+                showAlert(message: error.errorMessage)
             }
         }
     }

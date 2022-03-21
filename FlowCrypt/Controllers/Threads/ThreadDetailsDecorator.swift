@@ -10,7 +10,7 @@ import FlowCryptUI
 import UIKit
 
 extension ThreadMessageInfoCellNode.Input {
-    init(threadMessage: ThreadDetailsViewController.Input) {
+    init(threadMessage: ThreadDetailsViewController.Input, index: Int) {
         let sender = threadMessage.rawMessage.sender?.displayName ?? "message_unknown_sender".localized
         let recipientPrefix = "to".localized
         let recipientsList = threadMessage.rawMessage
@@ -40,7 +40,8 @@ extension ThreadMessageInfoCellNode.Input {
             date: .text(from: date, style: style, color: dateColor),
             isExpanded: threadMessage.isExpanded,
             shouldShowRecipientsList: threadMessage.shouldShowRecipientsList,
-            buttonColor: .colorFor(darkStyle: .white, lightStyle: .main)
+            buttonColor: .colorFor(darkStyle: .white, lightStyle: .main),
+            index: index
         )
     }
 }

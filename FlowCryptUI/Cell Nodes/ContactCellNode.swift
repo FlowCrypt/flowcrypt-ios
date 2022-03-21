@@ -37,11 +37,10 @@ public final class ContactCellNode: CellNode {
     private let buttonNode = ASButtonNode()
 
     private let input: Input
-    private let action: (() -> Void)?
+    public var action: (() -> Void)?
 
-    public init(input: Input, action: (() -> Void)?) {
+    public init(input: Input) {
         self.input = input
-        self.action = action
         super.init()
 
         nameNode.attributedText = input.name

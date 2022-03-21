@@ -20,6 +20,25 @@ export const CommonData = {
     message: 'test email from gmail',
     sender: 'e2e.enterprise.test@flowcrypt.com'
   },
+  threadMessage: {
+    subject: 'test thread rendering',
+    sender: 'dmitry@flowcrypt.com',
+    firstThreadMessage: 'first message',
+    secondThreadMessage: 'Second thread rendering message\n' +
+        '\n' +
+        'On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
+        ' > first message',
+    thirdThreadMessage: 'Third thread rendering message\n' +
+        '\n' +
+        'On 2022-02-07 at 06:56, e2e.enterprise.test@flowcrypt.com wrote:\n' +
+        '> Second thread rendering message\n' +
+        '>\n' +
+        '> On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
+        '>  > first message',
+    firstDate: 'Feb 04',
+    secondDate: 'Feb 06',
+    thirdDate: 'Feb 07',
+  },
   sender: {
     email: 'dmitry@flowcrypt.com',
     name: 'Dmitry at FlowCrypt'
@@ -48,12 +67,13 @@ export const CommonData = {
     attachmentName: 'image.png',
     encryptedAttachmentName: 'image.png.pgp'
   },
-  emailWithMultipleRecipients: {
-    sender: 'flowcrypt.compatibility@gmail.com',
+  emailWithMultipleRecipientsWithCC: {
+    sender: 'ioan@flowcrypt.com',
     senderName: 'FlowCrypt Compatibility',
     recipient: 'robot@flowcrypt.com',
-    subject: 'Message with multiple recipients and attachment',
-    message: 'This email has multiple recipients and attachment',
+    cc: 'robot+cc@flowcrypt.com',
+    subject: 'Message with cc and multiple recipients and attachment',
+    message: 'This email has cc and multiple recipients and attachment',
     attachmentName: 'image.png',
     encryptedAttachmentName: 'image.png.pgp',
   },

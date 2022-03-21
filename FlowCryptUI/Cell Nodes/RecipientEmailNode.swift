@@ -13,7 +13,7 @@ import UIKit
 final class RecipientEmailNode: CellNode {
     enum Constants {
         static let titleInsets = UIEdgeInsets(top: 2, left: 2, bottom: 2, right: 2)
-        static let layoutInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+        static let layoutInsets = UIEdgeInsets(top: 3, left: 6, bottom: 3, right: 6)
     }
 
     enum Tap {

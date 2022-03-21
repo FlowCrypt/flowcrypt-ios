@@ -13,12 +13,13 @@ describe('INBOX: ', () => {
 
   it('user is able to reply or forward email and check info from composed email', async () => {
 
-    const senderEmail = CommonData.emailWithMultipleRecipients.sender;
-    const senderName = CommonData.emailWithMultipleRecipients.senderName;
-    const recipientEmail = CommonData.emailWithMultipleRecipients.recipient;
-    const emailSubject = CommonData.emailWithMultipleRecipients.subject;
-    const emailText = CommonData.emailWithMultipleRecipients.message;
-    const encryptedAttachmentName = CommonData.emailWithMultipleRecipients.encryptedAttachmentName;
+    const senderEmail = CommonData.emailWithMultipleRecipientsWithCC.sender;
+    const senderName = CommonData.emailWithMultipleRecipientsWithCC.senderName;
+    const recipientEmail = CommonData.emailWithMultipleRecipientsWithCC.recipient;
+    const ccEmail = CommonData.emailWithMultipleRecipientsWithCC.cc;
+    const emailSubject = CommonData.emailWithMultipleRecipientsWithCC.subject;
+    const emailText = CommonData.emailWithMultipleRecipientsWithCC.message;
+    const encryptedAttachmentName = CommonData.emailWithMultipleRecipientsWithCC.encryptedAttachmentName;
 
     const replySubject = `Re: ${emailSubject}`;
     const forwardSubject = `Fwd: ${emailSubject}`;
@@ -34,19 +35,33 @@ describe('INBOX: ', () => {
 
     // check reply message
     await EmailScreen.clickReplyButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo([senderName], replySubject, quoteText);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [senderName],
+      subject: replySubject,
+      message: quoteText
+    });
     await NewMessageScreen.clickBackButton();
 
     // check reply all message
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickReplyAllButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo([recipientEmail, senderName], replySubject, quoteText);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [recipientEmail, senderName],
+      subject: replySubject,
+      message: quoteText,
+      cc: [ccEmail]
+    });
     await NewMessageScreen.clickBackButton();
 
     // check forwarded message
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickForwardButton();
-    await NewMessageScreen.checkFilledComposeEmailInfo([], forwardSubject, quoteText, encryptedAttachmentName);
+    await NewMessageScreen.checkFilledComposeEmailInfo({
+      recipients: [],
+      subject: forwardSubject,
+      message: quoteText,
+      attachmentName: encryptedAttachmentName
+    });
     await NewMessageScreen.deleteAttachment();
   });
 });

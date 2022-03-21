@@ -24,7 +24,7 @@ final class ComposeMessageService {
     private let messageGateway: MessageGateway
     private let passPhraseService: PassPhraseServiceType
     private let storage: EncryptedStorageType
-    private let contactsService: ContactsServiceType
+    private let localContactsProvider: LocalContactsProviderType
     private let core: CoreComposeMessageType & KeyParser
     private let enterpriseServer: EnterpriseServerApiType
     private let draftGateway: DraftGateway?
@@ -45,7 +45,7 @@ final class ComposeMessageService {
         messageGateway: MessageGateway,
         passPhraseService: PassPhraseServiceType,
         draftGateway: DraftGateway? = nil,
-        contactsService: ContactsServiceType? = nil,
+        localContactsProvider: LocalContactsProviderType? = nil,
         sender: String,
         core: CoreComposeMessageType & KeyParser = Core.shared,
         enterpriseServer: EnterpriseServerApiType = EnterpriseServerApi()
@@ -54,10 +54,7 @@ final class ComposeMessageService {
         self.passPhraseService = passPhraseService
         self.draftGateway = draftGateway
         self.storage = encryptedStorage
-        self.contactsService = contactsService ?? ContactsService(
-            localContactsProvider: LocalContactsProvider(encryptedStorage: encryptedStorage),
-            clientConfiguration: clientConfiguration
-        )
+        self.localContactsProvider = localContactsProvider ?? LocalContactsProvider(encryptedStorage: encryptedStorage)
         self.core = core
         self.enterpriseServer = enterpriseServer
         self.sender = sender
@@ -151,7 +148,7 @@ final class ComposeMessageService {
         let recipients = composeRecipients.map(Recipient.init)
         var recipientsWithKeys: [RecipientWithSortedPubKeys] = []
         for recipient in recipients {
-            let armoredPubkeys = try contactsService.retrievePubKeys(for: recipient.email).joined(separator: "\n")
+            let armoredPubkeys = try localContactsProvider.retrievePubKeys(for: recipient.email).joined(separator: "\n")
             let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
             recipientsWithKeys.append(
                 RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)

@@ -46,16 +46,18 @@ final class MessageService {
 
     private let messageProvider: MessageProvider
     private let keyMethods: KeyMethodsType
-    private let contactsService: ContactsServiceType
+    private let localContactsProvider: LocalContactsProviderType
     private let core: Core
     private let logger: Logger
     private let keyService: KeyServiceType
     private let passPhraseService: PassPhraseServiceType
+    private let pubLookup: PubLookupType
 
     init(
         core: Core = Core.shared,
         keyMethods: KeyMethodsType = KeyMethods(),
-        contactsService: ContactsServiceType,
+        localContactsProvider: LocalContactsProviderType,
+        pubLookup: PubLookupType,
         keyService: KeyServiceType,
         messageProvider: MessageProvider,
         passPhraseService: PassPhraseServiceType
@@ -66,7 +68,8 @@ final class MessageService {
         self.core = core
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
         self.keyMethods = keyMethods
-        self.contactsService = contactsService
+        self.localContactsProvider = localContactsProvider
+        self.pubLookup = pubLookup
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
@@ -232,10 +235,10 @@ extension MessageService {
     private func fetchVerificationPubKeys(for sender: Recipient?, onlyLocal: Bool) async throws -> [String] {
         guard let sender = sender else { return [] }
 
-        let pubKeys = try contactsService.retrievePubKeys(for: sender.email)
+        let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
-        guard let contact = try? await contactsService.fetchPubKeys(for: sender)
+        guard let contact = try? await pubLookup.fetchRemoteUpdateLocal(with: sender)
         else { return [] }
 
         return contact.pubKeys.map(\.armored)
