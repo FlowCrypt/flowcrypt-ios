@@ -49,7 +49,7 @@ module.exports = {
   },
   overrides: [
     {
-      'files': ['./extension/**/*.ts', './test/**/*.ts'],
+      'files': ['./source/**/*.ts'],
       'rules': {
         'header/header': ['error', 'block', ' ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com ']
       }
