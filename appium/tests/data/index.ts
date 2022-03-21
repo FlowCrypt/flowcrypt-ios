@@ -69,7 +69,7 @@ export const CommonData = {
   },
   emailWithMultipleRecipientsWithCC: {
     sender: 'ioan@flowcrypt.com',
-    senderName: 'FlowCrypt Compatibility',
+    senderName: 'Ioan at FlowCrypt',
     recipient: 'robot@flowcrypt.com',
     cc: 'robot+cc@flowcrypt.com',
     subject: 'Message with cc and multiple recipients and attachment',
