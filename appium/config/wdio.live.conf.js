@@ -21,9 +21,6 @@ config.suites = {
   ],
   update: [
     './tests/specs/live/update/*.spec.ts'
-  ],
-  test: [
-    './tests/specs/live/inbox/CheckThreadRendering.spec.ts'
   ]
 };
 

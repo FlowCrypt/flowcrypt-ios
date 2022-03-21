@@ -64,7 +64,7 @@ describe('INBOX: ', () => {
 
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
     await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
-    await EmailScreen.checkAttachment(attachmentName);
+    await EmailScreen.checkAttachment(encryptedAttachmentName);
     await EmailScreen.clickOnAttachmentCell();
 
     await AttachmentScreen.checkAttachment(attachmentName);
