@@ -185,5 +185,14 @@ export const CommonData = {
   appPath: {
     old: path.join(process.cwd(), './FlowCryptOld.app'),
     new: path.join(process.cwd(), './FlowCrypt.app')
+  },
+  validUser: {
+     email: 'valid@domain.test'
+  },
+  expiredUser: {
+    email: 'expired@domain.test'
+  },
+  revokedUser: {
+    email: 'revoked@domain.test'
   }
 };
