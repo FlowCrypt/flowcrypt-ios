@@ -118,7 +118,7 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.ATTACHMENT_TEXT_VIEW);
   }
 
-  checkEmailSender = async (sender: string, index: number = 0) => {
+  checkEmailSender = async (sender: string, index = 0) => {
     const element = await this.senderEmail(index);
     await (await element).waitForDisplayed();
     await expect(await (await element).getValue()).toEqual(sender);
