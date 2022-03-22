@@ -26,7 +26,7 @@ struct RecipientWithSortedPubKeys: RecipientBase {
 extension RecipientWithSortedPubKeys {
     init(_ recipient: Recipient, keyDetails: [KeyDetails] = []) {
         self.email = recipient.email
-        self.name = recipient.name ?? keyDetails.first?.users.first ?? email
+        self.name = recipient.name ?? keyDetails.first?.users.first
         self.lastUsed = recipient.lastUsed
         self._pubKeys = keyDetails.map(PubKey.init)
     }
