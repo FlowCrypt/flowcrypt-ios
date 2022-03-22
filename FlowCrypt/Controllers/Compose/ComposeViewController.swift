@@ -225,7 +225,7 @@ final class ComposeViewController: TableNodeViewController {
         contextToSend.add(recipient: recipient)
         evaluate(recipient: recipient)
     }
-    
+
     private func observeComposeUpdates() {
         composeMessageService.onStateChanged { [weak self] state in
             DispatchQueue.main.async {

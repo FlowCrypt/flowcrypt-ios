@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MailCore
 import GoogleAPIClientForREST_PeopleService
 
 struct Recipient: RecipientBase {
@@ -25,20 +26,13 @@ extension Recipient {
     }
 
     init(_ string: String) {
-        let parts = string.components(separatedBy: " ")
-
-        guard parts.count > 1, let email = parts.last else {
+        guard let address = MCOAddress.init(nonEncodedRFC822String: string) else {
             self.name = nil
             self.email = string
             return
         }
-
-        self.email = email.filter { !["<", ">"].contains($0) }
-        let name = string
-            .replacingOccurrences(of: email, with: "")
-            .replacingOccurrences(of: "\"", with: "")
-            .trimmingCharacters(in: .whitespaces)
-        self.name = name == self.email ? nil : name
+        self.name = address.displayName
+        self.email = address.mailbox
     }
 
     init?(person: GTLRPeopleService_Person) {
