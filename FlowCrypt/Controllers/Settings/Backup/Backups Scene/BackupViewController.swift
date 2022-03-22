@@ -36,7 +36,6 @@ final class BackupViewController: TableNodeViewController {
 
     private let appContext: AppContextWithUser
     private let decorator: BackupViewDecorator
-    private let service: ServiceActor
     private var state: State = .idle { didSet { updateState() } }
 
     init(
@@ -45,7 +44,6 @@ final class BackupViewController: TableNodeViewController {
     ) {
         self.appContext = appContext
         self.decorator = decorator
-        self.service = ServiceActor(backupService: appContext.getBackupService())
         super.init(node: TableNode())
     }
 
@@ -76,7 +74,7 @@ extension BackupViewController {
     private func fetchBackups() {
         Task {
             do {
-                let keys = try await service.fetchBackupsFromInbox(for: appContext.userId)
+                let keys = try await fetchBackupsFromInbox(for: appContext.userId)
                 state = keys.isEmpty
                     ? .noBackups
                     : .backups(keys)
@@ -88,6 +86,11 @@ extension BackupViewController {
 
     private func updateState() {
         node.reloadData()
+    }
+
+    @MainActor
+    private func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        return try await appContext.getBackupService().fetchBackupsFromInbox(for: userId)
     }
 }
 
@@ -135,18 +138,5 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
             userId: appContext.userId
         )
         navigationController?.pushViewController(optionsScreen, animated: true)
-    }
-}
-
-// TODO temporary solution for background execution problem
-private actor ServiceActor {
-    private let backupProvider: BackupServiceType
-
-    init(backupService: BackupServiceType) {
-        self.backupProvider = backupService
-    }
-
-    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
-        return try await backupProvider.fetchBackupsFromInbox(for: userId)
     }
 }

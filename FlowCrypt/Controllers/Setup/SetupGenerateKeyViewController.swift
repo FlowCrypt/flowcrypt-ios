@@ -19,7 +19,6 @@ import FlowCryptUI
 final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewController {
 
     private let attester: AttesterApiType
-    private let service: Service
 
     init(
         appContext: AppContextWithUser,
@@ -27,10 +26,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     ) throws {
         self.attester = AttesterApi(
             clientConfiguration: try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
-        )
-        self.service = Service(
-            appContext: appContext,
-            attester: self.attester
         )
         super.init(
             appContext: appContext,
@@ -47,10 +42,9 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         showSpinner()
         Task {
             do {
-                try await service.setupAccount(
+                try await setupAccount(
                     passPhrase: passphrase,
-                    storageMethod: storageMethod,
-                    viewController: self
+                    storageMethod: storageMethod
                 )
                 hideSpinner()
                 moveToMainFlow()
@@ -60,29 +54,13 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
             }
         }
     }
-}
 
-// TODO temporary solution for background execution problem
-private actor Service {
-    typealias ViewController = SetupCreatePassphraseAbstractViewController
-
-    private let appContext: AppContextWithUser
-    private let attester: AttesterApiType
-
-    init(
-        appContext: AppContextWithUser,
-        attester: AttesterApiType
-    ) {
-        self.appContext = appContext
-        self.attester = attester
-    }
-
+    @MainActor
     func setupAccount(
         passPhrase: String,
-        storageMethod: StorageMethod,
-        viewController: ViewController
+        storageMethod: StorageMethod
     ) async throws {
-        try await viewController.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
+        try await validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
         let encryptedPrv = try await Core.shared.generateKey(
             passphrase: passPhrase,
@@ -119,6 +97,7 @@ private actor Service {
         )
     }
 
+    @MainActor
     // todo - there is a similar method in EnterpriseServierApi
     //   this should be put somewhere general
     private func getIdToken(for user: User) async throws -> String? {
@@ -133,6 +112,7 @@ private actor Service {
         }
     }
 
+    @MainActor
     private func submitKeyToAttester(
         user: User,
         publicKey: String

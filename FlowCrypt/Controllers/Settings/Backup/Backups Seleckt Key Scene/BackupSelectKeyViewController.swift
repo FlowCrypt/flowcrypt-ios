@@ -13,7 +13,6 @@ import Foundation
 final class BackupSelectKeyViewController: TableNodeViewController {
 
     private let appContext: AppContext
-    private let service: ServiceActor
     private let decorator: BackupSelectKeyDecoratorType
     private var backupsContext: [(KeyDetails, Bool)]
     private let selectedOption: BackupOption
@@ -29,7 +28,6 @@ final class BackupSelectKeyViewController: TableNodeViewController {
         self.decorator = decorator
         // set all selected by default
         self.backupsContext = backups.map { ($0, true) }
-        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.selectedOption = selectedOption
         self.userId = userId
         self.appContext = appContext
@@ -89,7 +87,7 @@ extension BackupSelectKeyViewController {
 
         Task {
             do {
-                try await service.backupToInbox(keys: backupsToSave, for: userId)
+                try await backupToInbox(keys: backupsToSave, for: userId)
                 hideSpinner()
                 navigationController?.popToRootViewController(animated: true)
             } catch {
@@ -98,8 +96,14 @@ extension BackupSelectKeyViewController {
         }
     }
 
+    @MainActor
     private func backupAsFile() {
-        service.backupService.backupAsFile(keys: backupsContext.map(\.0), for: self)
+        appContext.getBackupService().backupAsFile(keys: backupsContext.map(\.0), for: self)
+    }
+
+    @MainActor
+    func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
+        try await appContext.getBackupService().backupToInbox(keys: keys, for: userId)
     }
 }
 
@@ -128,18 +132,5 @@ extension BackupSelectKeyViewController: ASTableDelegate, ASTableDataSource {
         let backup = self.backupsContext[indexPath.row]
         backupsContext[indexPath.row] = (backup.0, !backup.1)
         tableNode.reloadRows(at: [indexPath], with: .fade)
-    }
-}
-
-// TODO temporary solution for background execution problem
-private actor ServiceActor {
-    let backupService: BackupServiceType
-
-    init(backupService: BackupServiceType) {
-        self.backupService = backupService
-    }
-
-    func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
-        try await backupService.backupToInbox(keys: keys, for: userId)
     }
 }

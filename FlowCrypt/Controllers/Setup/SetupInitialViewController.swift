@@ -51,7 +51,6 @@ final class SetupInitialViewController: TableNodeViewController {
         .default
     }
 
-    private let service: ServiceActor
     private let decorator: SetupViewDecorator
     private let clientConfiguration: ClientConfiguration
     private let emailKeyManagerApi: EmailKeyManagerApiType
@@ -65,7 +64,6 @@ final class SetupInitialViewController: TableNodeViewController {
         emailKeyManagerApi: EmailKeyManagerApiType? = nil
     ) throws {
         self.appContext = appContext
-        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.decorator = decorator
         let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
         self.emailKeyManagerApi = emailKeyManagerApi ?? EmailKeyManagerApi(clientConfiguration: clientConfiguration)
@@ -120,7 +118,7 @@ extension SetupInitialViewController {
 
         Task {
             do {
-                let keys = try await service.fetchBackupsFromInbox(for: appContext.userId)
+                let keys = try await fetchBackupsFromInbox(for: appContext.userId)
                 proceedToSetupWith(keys: keys)
             } catch {
                 handle(error: error)
@@ -198,6 +196,11 @@ extension SetupInitialViewController {
                 })
             }
         }
+    }
+
+    @MainActor
+    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
+        return try await appContext.getBackupService().fetchBackupsFromInbox(for: userId)
     }
 }
 
@@ -355,18 +358,5 @@ extension SetupInitialViewController {
             let viewController = SetupBackupsViewController(appContext: appContext, fetchedEncryptedKeys: keys)
             navigationController?.pushViewController(viewController, animated: true)
         }
-    }
-}
-
-// TODO temporary solution for background execution problem
-private actor ServiceActor {
-    private let backupService: BackupServiceType
-
-    init(backupService: BackupServiceType) {
-        self.backupService = backupService
-    }
-
-    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
-        return try await backupService.fetchBackupsFromInbox(for: userId)
     }
 }
