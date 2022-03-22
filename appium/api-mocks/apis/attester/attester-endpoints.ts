@@ -31,8 +31,8 @@ export const getMockAttesterEndpoints = (
   return {
     '/attester/pub/?': async ({ body }, req) => {
       const email = req.url!.split('/').pop()!.toLowerCase().trim();
-        throwErrorIfConfigSaysSo(attesterConfig);
-        if (isGet(req)) {
+      throwErrorIfConfigSaysSo(attesterConfig);
+      if (isGet(req)) {
         const pubkey = (attesterConfig.servedPubkeys || {})[email];
         if (pubkey) {
           return pubkey;
@@ -55,7 +55,7 @@ export const getMockAttesterEndpoints = (
     '/attester/test/welcome': async ({ body }, req) => {
       throwErrorIfConfigSaysSo(attesterConfig);
 
-        if (!attesterConfig.enableTestWelcome) {
+      if (!attesterConfig.enableTestWelcome) {
         throw new AttesterErr('Mock Attester received unexpected /test/welcome request', 405);
       }
       if (!isPost(req)) {
@@ -73,9 +73,9 @@ export const getMockAttesterEndpoints = (
   };
 }
 const throwErrorIfConfigSaysSo = (config: AttesterConfig) => {
-    if (config.returnError) {
-        throw new AttesterErr(config.returnError.message, config.returnError.code);
-    }
+  if (config.returnError) {
+    throw new AttesterErr(config.returnError.message, config.returnError.code);
+  }
 }
 
 export const attesterPublicKeySamples = {
@@ -232,7 +232,7 @@ dSL33ptMlhwRCKHGiKcVmKwucxYkk6apFQEA018565fZcvtb339L2s/IIxLs
 4621FX8Sy6kpR7mAzQo=
 =3UnZ
 -----END PGP PUBLIC KEY BLOCK-----`,
-    keyNewerVersion: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+  keyNewerVersion: `-----BEGIN PGP PUBLIC KEY BLOCK-----
 
 xjMEYd8pKhYJKwYBBAHaRw8BAQdAXQ9bBzlYPwy3mQD5MIQSkuOyEomESHHo
 AAiUi0enB77NKFVwZGF0aW5nIGtleSA8dXBkYXRpbmcua2V5QGV4YW1wbGUu
@@ -248,7 +248,7 @@ CgkQx8mQwaLqeN3PWwD9ErvC+ufnX0O2AmZDz67QfFH6tA1t1/wUEHgzBXEe
 gc8BAMaYm3AlSGbX1rJYgUtCWukkLuURdECIzerG2UuP87ID
 =dQen
 -----END PGP PUBLIC KEY BLOCK-----`,
-    revoked: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+  revoked: `-----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: FlowCrypt iOS 0.2 Gmail Encryption
 Comment: Seamlessly send and receive encrypted email
 

@@ -6,7 +6,7 @@ import {
   SplashScreen
 } from '../../../screenobjects/all-screens';
 
-import {CommonData} from '../../../data';
+import { CommonData } from '../../../data';
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -16,7 +16,7 @@ describe('COMPOSE EMAIL: ', () => {
     const ccRecipientEmail = CommonData.recipientWithExpiredPublicKey.email;
     const bccRecipientEmail = CommonData.recipientWithoutPublicKey.email;
     const subject = "Test recipient list label subject"
-    const message= "Test recipient list label message"
+    const message = "Test recipient list label message"
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
