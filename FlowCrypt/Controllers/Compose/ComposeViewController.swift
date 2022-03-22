@@ -204,16 +204,28 @@ final class ComposeViewController: TableNodeViewController {
     func update(with message: Message) {
         self.contextToSend.subject = message.subject
         self.contextToSend.message = message.raw
-        self.contextToSend.recipients = [
-            ComposeMessageRecipient(
-                email: "tom@flowcrypt.com",
-                name: "Tom",
-                type: .to,
-                state: decorator.recipientIdleState
-            )
-        ]
+        message.to.forEach { recipient in
+            evaluateMessage(recipient: recipient, type: .to)
+        }
+        message.cc.forEach { recipient in
+            evaluateMessage(recipient: recipient, type: .cc)
+        }
+        message.bcc.forEach { recipient in
+            evaluateMessage(recipient: recipient, type: .bcc)
+        }
     }
 
+    func evaluateMessage(recipient: Recipient, type: RecipientType) {
+        let recipient = ComposeMessageRecipient(
+            email: recipient.email,
+            name: recipient.name,
+            type: .to,
+            state: decorator.recipientIdleState
+        )
+        contextToSend.add(recipient: recipient)
+        evaluate(recipient: recipient)
+    }
+    
     private func observeComposeUpdates() {
         composeMessageService.onStateChanged { [weak self] state in
             DispatchQueue.main.async {
@@ -333,25 +345,11 @@ extension ComposeViewController {
         guard input.isQuote else { return }
 
         input.quoteRecipients.forEach { recipient in
-            let recipient = ComposeMessageRecipient(
-                email: recipient.email,
-                name: recipient.name,
-                type: .to,
-                state: decorator.recipientIdleState
-            )
-            contextToSend.add(recipient: recipient)
-            evaluate(recipient: recipient)
+            evaluateMessage(recipient: recipient, type: .to)
         }
 
         input.quoteCCRecipients.forEach { recipient in
-            let recipient = ComposeMessageRecipient(
-                email: recipient.email,
-                name: recipient.name,
-                type: .cc,
-                state: decorator.recipientIdleState
-            )
-            contextToSend.add(recipient: recipient)
-            evaluate(recipient: recipient)
+            evaluateMessage(recipient: recipient, type: .cc)
         }
 
         if input.quoteCCRecipients.isNotEmpty {
