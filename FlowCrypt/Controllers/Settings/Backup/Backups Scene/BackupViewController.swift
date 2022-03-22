@@ -88,7 +88,6 @@ extension BackupViewController {
         node.reloadData()
     }
 
-    @MainActor
     private func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
         return try await appContext.getBackupService().fetchBackupsFromInbox(for: userId)
     }

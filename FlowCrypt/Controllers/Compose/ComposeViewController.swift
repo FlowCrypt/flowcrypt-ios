@@ -1069,7 +1069,6 @@ extension ComposeViewController {
 
 // MARK: - Action Handling
 extension ComposeViewController {
-    @MainActor
     func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
         try await composeMessageService.encryptAndSend(
             message: message,
@@ -1077,17 +1076,14 @@ extension ComposeViewController {
         )
     }
 
-    @MainActor
     func searchContacts(query: String) async throws -> [String] {
         return try await cloudContactProvider.searchContacts(query: query)
     }
 
-    @MainActor
     func findLocalContact(with email: String) async throws -> RecipientWithSortedPubKeys? {
         return try await localContactsProvider.searchRecipient(with: email)
     }
 
-    @MainActor
     func fetchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
         return try await pubLookup.fetchRemoteUpdateLocal(with: email)
     }

@@ -245,7 +245,6 @@ extension InboxViewController {
         }
     }
 
-    @MainActor
     func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         return try await inboxDataProvider.fetchInboxItems(using: context, userEmail: userEmail)
     }

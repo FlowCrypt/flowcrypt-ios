@@ -116,12 +116,10 @@ extension BackupOptionsViewController {
         }
     }
 
-    @MainActor
     private func backupAsFile() {
         appContext.getBackupService().backupAsFile(keys: backups, for: self)
     }
 
-    @MainActor
     private func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
         try await appContext.getBackupService().backupToInbox(keys: keys, for: userId)
     }

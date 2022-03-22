@@ -55,7 +55,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         }
     }
 
-    @MainActor
     func setupAccount(
         passPhrase: String,
         storageMethod: StorageMethod
@@ -87,7 +86,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
     }
 
-    @MainActor
     private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: StorageMethod, passPhrase: String) throws {
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
@@ -97,7 +95,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
     }
 
-    @MainActor
     // todo - there is a similar method in EnterpriseServierApi
     //   this should be put somewhere general
     private func getIdToken(for user: User) async throws -> String? {
@@ -112,7 +109,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         }
     }
 
-    @MainActor
     private func submitKeyToAttester(
         user: User,
         publicKey: String

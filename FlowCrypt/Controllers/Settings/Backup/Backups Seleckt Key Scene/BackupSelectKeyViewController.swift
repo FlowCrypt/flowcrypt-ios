@@ -96,12 +96,10 @@ extension BackupSelectKeyViewController {
         }
     }
 
-    @MainActor
     private func backupAsFile() {
         appContext.getBackupService().backupAsFile(keys: backupsContext.map(\.0), for: self)
     }
 
-    @MainActor
     func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
         try await appContext.getBackupService().backupToInbox(keys: keys, for: userId)
     }
