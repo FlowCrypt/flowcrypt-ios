@@ -4,18 +4,17 @@ import {
   MailFolderScreen,
   NewMessageScreen,
 } from '../../../screenobjects/all-screens';
-
 import { CommonData } from '../../../data';
-import {MockApi} from "../../../../api-mocks/mock";
-import {attesterPublicKeySamples} from "../../../../api-mocks/apis/attester/attester-endpoints";
+import { MockApi } from "../../../../api-mocks/mock";
+import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
 
 describe('COMPOSE EMAIL: ', () => {
 
   it('check valid, revoked and expired recipients in offline mode', async () => {
 
-    const validEmail = CommonData.validUser.email;
-    const expiredEmail = CommonData.expiredUser.email;
-    const revokedEmail = CommonData.revokedUser.email;
+    const validEmail = CommonData.validMockUser.email;
+    const expiredEmail = CommonData.expiredMockUser.email;
+    const revokedEmail = CommonData.revokedMockUser.email;
 
 
       const mockApi = new MockApi();

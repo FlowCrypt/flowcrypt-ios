@@ -4,8 +4,7 @@ import { HandlersDefinition, HttpErr, Status } from '../../lib/api';
 import { Dict } from '../../core/common';
 import { isPost, isGet } from '../../lib/mock-util';
 import { oauth } from '../../lib/oauth';
-import {AttesterConfig, MockConfig} from '../../lib/configuration-types';
-import {FesHttpErr} from "../fes/fes-endpoints";
+import { AttesterConfig, MockConfig } from '../../lib/configuration-types';
 
 export class AttesterErr extends HttpErr {
   public formatted = (): unknown => {
@@ -33,7 +32,6 @@ export const getMockAttesterEndpoints = (
     '/attester/pub/?': async ({ body }, req) => {
       const email = req.url!.split('/').pop()!.toLowerCase().trim();
         throwErrorIfConfigSaysSo(attesterConfig);
-
         if (isGet(req)) {
         const pubkey = (attesterConfig.servedPubkeys || {})[email];
         if (pubkey) {
@@ -76,7 +74,7 @@ export const getMockAttesterEndpoints = (
 }
 const throwErrorIfConfigSaysSo = (config: AttesterConfig) => {
     if (config.returnError) {
-        throw new FesHttpErr(config.returnError.message, config.returnError.code);
+        throw new AttesterErr(config.returnError.message, config.returnError.code);
     }
 }
 
