@@ -1,8 +1,8 @@
 import { MockApi } from 'api-mocks/mock';
 import {
-    SplashScreen,
+  SplashScreen,
 } from '../../../screenobjects/all-screens';
-import {attesterPublicKeySamples} from "../../../../api-mocks/apis/attester/attester-endpoints";
+import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
 import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
@@ -18,9 +18,9 @@ describe('SETUP: ', () => {
       }
     };
     mockApi.attesterConfig = {
-        servedPubkeys: {
-            'available.on@attester.test': attesterPublicKeySamples.valid
-        }
+      servedPubkeys: {
+        'available.on@attester.test': attesterPublicKeySamples.valid
+      }
     };
     await mockApi.withMockedApis(async () => {
       await SplashScreen.login();

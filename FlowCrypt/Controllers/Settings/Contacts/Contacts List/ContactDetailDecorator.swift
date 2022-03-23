@@ -14,7 +14,7 @@ struct ContactDetailDecorator {
 
     func userNodeInput(with contact: RecipientWithSortedPubKeys) -> ContactUserCellNode.Input {
         ContactUserCellNode.Input(
-            user: (contact.name ?? contact.email).attributed(.regular(16))
+            user: contact.formatted.attributed(.regular(16))
         )
     }
 

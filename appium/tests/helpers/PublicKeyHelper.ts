@@ -39,7 +39,7 @@ class PublicKeyHelper {
    // Add first contact
    await MailFolderScreen.clickCreateEmail();
    await NewMessageScreen.setAddRecipientByName(userName, userEmail);
-   await NewMessageScreen.checkAddedRecipientColor(userEmail, 0, 'green');
+   await NewMessageScreen.checkAddedRecipientColor(userName, 0, 'green');
    await NewMessageScreen.clickBackButton();
 
    // Go to Contacts screen

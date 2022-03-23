@@ -12,7 +12,7 @@ describe('INBOX: ', () => {
 
   it('user is able to see encrypted email with pass phrase after restart app', async () => {
 
-    const senderEmail = CommonData.sender.email;
+    const senderName = CommonData.sender.name;
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
     const wrongPassPhrase = 'wrong';
@@ -27,7 +27,7 @@ describe('INBOX: ', () => {
 
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
 
     await driver.terminateApp(bundleId);
     await driver.activateApp(bundleId);
@@ -44,11 +44,11 @@ describe('INBOX: ', () => {
     //check email after setting correct pass phrase
     await EmailScreen.enterPassPhrase(correctPassPhrase);
     await EmailScreen.clickOkButton();
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
 
     //reopen email without pass phrase
     await EmailScreen.clickBackButton();
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
   });
 });

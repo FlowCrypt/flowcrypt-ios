@@ -144,12 +144,15 @@ final class ComposeMessageService {
         )
     }
 
-    private func getRecipientKeys(for recipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
+    private func getRecipientKeys(for composeRecipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
+        let recipients = composeRecipients.map(Recipient.init)
         var recipientsWithKeys: [RecipientWithSortedPubKeys] = []
         for recipient in recipients {
             let armoredPubkeys = try localContactsProvider.retrievePubKeys(for: recipient.email).joined(separator: "\n")
             let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
-            recipientsWithKeys.append(RecipientWithSortedPubKeys(email: recipient.email, keyDetails: parsed.keyDetails))
+            recipientsWithKeys.append(
+                RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
+            )
         }
         return recipientsWithKeys
     }

@@ -11,11 +11,11 @@ import UIKit
 
 extension ThreadMessageInfoCellNode.Input {
     init(threadMessage: ThreadDetailsViewController.Input, index: Int) {
-        let sender = threadMessage.rawMessage.sender ?? "message_unknown_sender".localized
+        let sender = threadMessage.rawMessage.sender?.displayName ?? "message_unknown_sender".localized
         let recipientPrefix = "to".localized
         let recipientsList = threadMessage.rawMessage
             .allRecipients
-            .map(\.displayName)
+            .map(\.shortName)
             .joined(separator: ", ")
         let recipientLabel = [recipientPrefix, recipientsList].joined(separator: " ")
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
@@ -34,7 +34,7 @@ extension ThreadMessageInfoCellNode.Input {
             signatureBadge: makeSignatureBadge(threadMessage),
             sender: .text(from: sender, style: style, color: .label),
             recipientLabel: .text(from: recipientLabel, style: style, color: .secondaryLabel),
-            recipients: threadMessage.rawMessage.recipients.map(\.rawString),
+            recipients: threadMessage.rawMessage.to.map(\.rawString),
             ccRecipients: threadMessage.rawMessage.cc.map(\.rawString),
             bccRecipients: threadMessage.rawMessage.bcc.map(\.rawString),
             date: .text(from: date, style: style, color: dateColor),

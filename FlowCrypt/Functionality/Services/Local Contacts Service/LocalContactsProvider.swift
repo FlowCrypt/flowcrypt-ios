@@ -22,7 +22,7 @@ protocol PublicKeyProvider {
 
 protocol LocalContactsProviderType: PublicKeyProvider {
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys?
-    func searchEmails(query: String) throws -> [String]
+    func searchRecipients(query: String) throws -> [Recipient]
     func save(recipient: RecipientWithSortedPubKeys) throws
     func remove(recipient: RecipientWithSortedPubKeys) throws
     func updateKeys(for recipient: RecipientWithSortedPubKeys) throws
@@ -101,10 +101,11 @@ extension LocalContactsProvider: LocalContactsProviderType {
         return try await parseRecipient(from: recipient)
     }
 
-    func searchEmails(query: String) throws -> [String] {
-        try storage.objects(RecipientRealmObject.self)
+    func searchRecipients(query: String) throws -> [Recipient] {
+        try storage
+            .objects(RecipientRealmObject.self)
             .filter("email contains[c] %@", query)
-            .map(\.email)
+            .map(Recipient.init)
     }
 
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] {

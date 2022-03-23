@@ -118,14 +118,14 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.ATTACHMENT_TEXT_VIEW);
   }
 
-  senderEmail = async (index = 0) =>{
-      return $(`~aid-sender-${index}`)
-  }
-
-  checkEmailAddress = async (email: string, index = 0)=> {
+  checkEmailSender = async (sender: string, index = 0) => {
     const element = await this.senderEmail(index);
     await (await element).waitForDisplayed();
-    await expect(await (await element).getValue()).toEqual(email);
+    await expect(await (await element).getValue()).toEqual(sender);
+  }
+
+  senderEmail = async (index = 0) =>{
+      return $(`~aid-sender-${index}`)
   }
 
   checkEmailSubject = async (subject: string) => {
@@ -142,14 +142,14 @@ class EmailScreen extends BaseScreen {
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
-    await this.checkEmailAddress(email);
+    await this.checkEmailSender(email);
     await this.checkEmailSubject(subject);
     await this.checkEmailText(text);
   }
 
   checkThreadMessage = async (email: string, subject: string, text: string, date: string, index = 0) => {
       await this.checkEmailSubject(subject);
-      await this.checkEmailAddress(email, index);
+      await this.checkEmailSender(email, index);
       await this.clickExpandButtonByIndex(index);
       await this.checkEmailText(text, index);
       await this.checkDate(date, index);

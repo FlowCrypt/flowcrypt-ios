@@ -22,12 +22,12 @@ describe('INBOX: ', () => {
 
     //  Const for message encrypted for another public key
     const encryptedForAnotherPublicKeySubject = CommonData.encryptedForAnotherPublicKeyEmail.subject;
-    const encryptedForAnotherPublicKeyEmail = CommonData.encryptedForAnotherPublicKeyEmail.senderEmail;
+    const encryptedForAnotherPublicKeyName = CommonData.encryptedForAnotherPublicKeyEmail.senderName;
     const encryptedForAnotherPublicKeyText = CommonData.encryptedForAnotherPublicKeyEmail.message;
 
     //  Const for encrypted for a wrong checksum message
     const wrongChecksumSubject = CommonData.wrongChecksumEmail.subject;
-    const wrongChecksumEmail = CommonData.wrongChecksumEmail.senderEmail;
+    const wrongChecksumName = CommonData.wrongChecksumEmail.senderName;
     const wrongChecksumText = CommonData.wrongChecksumEmail.message;
 
     const notIntegrityProtectedSubject = CommonData.notIntegrityProtected.subject;
@@ -35,7 +35,7 @@ describe('INBOX: ', () => {
     const notIntegrityProtectedText = CommonData.notIntegrityProtected.message;
 
     const keyMismatchSubject = CommonData.keyMismatch.subject;
-    const keyMismatchEmail = CommonData.keyMismatch.senderEmail;
+    const keyMismatchName = CommonData.keyMismatch.senderName;
     const keyMismatchText = CommonData.keyMismatch.message;
     const keyMismatchEncryptedBadge = CommonData.keyMismatch.encryptedBadgeText;
     const keyMismatchSignatureBadge= CommonData.keyMismatch.signatureBadgeText;
@@ -60,7 +60,7 @@ describe('INBOX: ', () => {
     // Checking error message encrypted for another public key
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(encryptedForAnotherPublicKeySubject);
-    await EmailScreen.checkOpenedEmail(encryptedForAnotherPublicKeyEmail, encryptedForAnotherPublicKeySubject, encryptedForAnotherPublicKeyText);
+    await EmailScreen.checkOpenedEmail(encryptedForAnotherPublicKeyName, encryptedForAnotherPublicKeySubject, encryptedForAnotherPublicKeyText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
     await EmailScreen.clickBackButton();
@@ -70,7 +70,7 @@ describe('INBOX: ', () => {
     // Checking error for wrong checksum message
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(wrongChecksumSubject);
-    await EmailScreen.checkOpenedEmail(wrongChecksumEmail, wrongChecksumSubject, wrongChecksumText);
+    await EmailScreen.checkOpenedEmail(wrongChecksumName, wrongChecksumSubject, wrongChecksumText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
     // Checking error for integrity protected message
@@ -92,7 +92,7 @@ describe('INBOX: ', () => {
 
     await SearchScreen.searchAndClickEmailBySubject(keyMismatchSubject);
     await MailFolderScreen.clickOnEmailBySubject(keyMismatchSubject);
-    await EmailScreen.checkOpenedEmail(keyMismatchEmail, keyMismatchSubject, keyMismatchText);
+    await EmailScreen.checkOpenedEmail(keyMismatchName, keyMismatchSubject, keyMismatchText);
     await EmailScreen.checkEncryptionBadge(keyMismatchEncryptedBadge);
     await EmailScreen.checkSignatureBadge(keyMismatchSignatureBadge);
     await EmailScreen.checkAttachment(firstAttachmentName);

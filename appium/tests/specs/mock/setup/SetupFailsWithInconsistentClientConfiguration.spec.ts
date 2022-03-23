@@ -19,5 +19,4 @@ describe('SETUP: ', () => {
       await BaseScreen.checkModalMessage('Error\n' + 'Please check if key manager url set correctly');
     });
   });
-
 });

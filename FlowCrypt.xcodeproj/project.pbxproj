@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
 		04127DFD27E3097E009DF86C /* LocalContactsProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */; };
 		04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
@@ -64,6 +65,7 @@
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
 		51074E6427BD0C5800FBB124 /* RecipientToggleButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51074E6327BD0C5800FBB124 /* RecipientToggleButtonNode.swift */; };
 		5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */; };
+		510BB63527BE92CC00B1011F /* RecipientBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510BB63427BE92CC00B1011F /* RecipientBase.swift */; };
 		511D07E12769FBBA0050417B /* MessagePasswordCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */; };
 		511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */; };
 		512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */ = {isa = PBXBuildFile; productRef = 512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */; };
@@ -142,7 +144,6 @@
 		9F3861A227A18AAF00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A127A18AAF00851419 /* .swiftformat */; };
 		9F3861A427A18ABA00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A327A18ABA00851419 /* .swiftformat */; };
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
-		9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */; };
 		9F3EF33123B1785600FA0CEF /* MsgListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF33023B1785600FA0CEF /* MsgListViewController.swift */; };
 		9F4163B8265ED61C00106194 /* SetupInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */; };
 		9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163E5266520B600106194 /* CommonNodesInputs.swift */; };
@@ -424,6 +425,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProviderMock.swift; sourceTree = "<group>"; };
 		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeypairRealmObject.swift; sourceTree = "<group>"; };
@@ -505,6 +507,7 @@
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
 		51074E6327BD0C5800FBB124 /* RecipientToggleButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientToggleButtonNode.swift; sourceTree = "<group>"; };
 		5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
+		510BB63427BE92CC00B1011F /* RecipientBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientBase.swift; sourceTree = "<group>"; };
 		511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePasswordCellNode.swift; sourceTree = "<group>"; };
 		511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithPaddingNode.swift; sourceTree = "<group>"; };
 		5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailViewController.swift; sourceTree = "<group>"; };
@@ -592,7 +595,6 @@
 		9F3861A327A18ABA00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
 		9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelper.swift; sourceTree = "<group>"; };
 		9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelperTest.swift; sourceTree = "<group>"; };
-		9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		9F3EF33023B1785600FA0CEF /* MsgListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MsgListViewController.swift; sourceTree = "<group>"; };
 		9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupInitialViewController.swift; sourceTree = "<group>"; };
 		9F4163E5266520B600106194 /* CommonNodesInputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonNodesInputs.swift; sourceTree = "<group>"; };
@@ -990,6 +992,7 @@
 				2C141B2E274578C20038A3F8 /* Keypair.swift */,
 				5180CB9227357B67001FC7EF /* RawClientConfiguration.swift */,
 				2C141B2B274572D50038A3F8 /* Recipient.swift */,
+				510BB63427BE92CC00B1011F /* RecipientBase.swift */,
 				2CC50FAE27440B2C0051629A /* Session.swift */,
 				9F0C3C132316E69300299985 /* User.swift */,
 			);
@@ -2003,7 +2006,7 @@
 		D29AFFF02409300600C1387D /* Search */ = {
 			isa = PBXGroup;
 			children = (
-				9F3EF32E23B172D300FA0CEF /* SearchViewController.swift */,
+				0435F35827E499CA008AEEF6 /* SearchViewController.swift */,
 			);
 			path = Search;
 			sourceTree = "<group>";
@@ -2643,7 +2646,6 @@
 				21489B80267CC39E00BDE4AC /* ClientConfigurationService.swift in Sources */,
 				D28655932423B4EE0066F52E /* MyMenuViewDecorator.swift in Sources */,
 				04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */,
-				9F3EF32F23B172D300FA0CEF /* SearchViewController.swift in Sources */,
 				F191F621272511790053833E /* BlurViewController.swift in Sources */,
 				D2F6D147243506DA00DB4065 /* MailSettingsCredentials.swift in Sources */,
 				9F9361A52573CE260009912F /* MessageProvider.swift in Sources */,
@@ -2713,6 +2715,7 @@
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
 				D2891AC224C59EFA008918E3 /* KeyService.swift in Sources */,
 				D269E02724103A20000495C3 /* ComposeViewControllerInput.swift in Sources */,
+				510BB63527BE92CC00B1011F /* RecipientBase.swift in Sources */,
 				9FAFD75D2714A06400321FA4 /* InboxProviders.swift in Sources */,
 				2C141B2C274572D50038A3F8 /* Recipient.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
@@ -2765,6 +2768,7 @@
 				9FFC7E5A260C946100282FCE /* CloudContactsProvider.swift in Sources */,
 				D2F6D1332433753100DB4065 /* IMAPConnectionParameters.swift in Sources */,
 				9F003DB625EA92BC00EB38C0 /* LogOutHandler.swift in Sources */,
+				0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */,
 				D20D3C6E2520AB3900D4AA9A /* BackupViewDecorator.swift in Sources */,
 				9F268891237DC55600428A94 /* SetupManuallyImportKeyViewController.swift in Sources */,
 				D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */,

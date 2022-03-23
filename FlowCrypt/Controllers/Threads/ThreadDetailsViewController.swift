@@ -224,15 +224,15 @@ extension ThreadDetailsViewController {
         else { return }
 
         let sender = [input.rawMessage.sender].compactMap { $0 }
-        let ccRecipients = quoteType == .replyAll ? input.rawMessage.cc.map(\.email) : []
-        let recipients: [String] = {
+
+        let ccRecipients = quoteType == .replyAll ? input.rawMessage.cc : []
+        let recipients: [Recipient] = {
             switch quoteType {
             case .reply:
                 return sender
             case .replyAll:
-                let recipientEmails = input.rawMessage.recipients.map(\.email)
-                let allRecipients = (recipientEmails + sender).unique()
-                let filteredRecipients = allRecipients.filter { $0 != appContext.user.email }
+                let allRecipients = (input.rawMessage.to + sender).unique()
+                let filteredRecipients = allRecipients.filter { $0.email != appContext.user.email }
                 return filteredRecipients.isEmpty ? sender : filteredRecipients
             case .forward:
                 return []
