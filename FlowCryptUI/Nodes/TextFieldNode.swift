@@ -28,9 +28,10 @@ final class TextField: UITextField {
 
 public final class TextFieldNode: ASDisplayNode {
     public typealias ShouldChangeAction = ((UITextField, String) -> (Bool))
+    public typealias ShouldEndEditingAction = (UITextField) -> (Bool)
     public typealias ShouldReturnAction = (UITextField) -> (Bool)
 
-    public var shouldEndEditing: ((UITextField) -> (Bool))?
+    public var shouldEndEditing: ShouldEndEditingAction?
 
     // swiftlint:disable force_cast
     private var textField: TextField {

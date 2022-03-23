@@ -26,7 +26,7 @@ describe('COMPOSE EMAIL: ', () => {
     await PublicKeyHelper.addRecipientAndCheckFetchedKey(contactName, contactEmail);
 
     await PublicKeyDetailsScreen.clickTrashButton();
-    await ContactPublicKeyScreen.checkPgpUserId(contactEmail);
+    await ContactPublicKeyScreen.checkPgpUserId(contactEmail, contactName);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotDisplayed();
     await ContactPublicKeyScreen.clickBackButton();
 

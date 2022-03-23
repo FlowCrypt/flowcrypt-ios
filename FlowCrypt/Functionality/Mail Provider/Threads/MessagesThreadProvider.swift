@@ -145,29 +145,26 @@ extension Message {
         let labelTypes: [MessageLabelType] = message.labelIds?.map(MessageLabelType.init) ?? []
         let labels = labelTypes.map(MessageLabel.init)
 
-        var sender: String?
+        var sender: Recipient?
         var subject: String?
-        var recipient: String?
+        var to: String?
         var cc: String?
         var bcc: String?
 
         messageHeaders.compactMap { $0 }.forEach {
-            guard let name = $0.name?.lowercased() else { return }
-            let value = $0.value
+            guard let name = $0.name?.lowercased(),
+                  let value = $0.value
+            else { return }
+
             switch name {
-            case .from: sender = value
+            case .from: sender = Recipient(value)
             case .subject: subject = value
-            case .to: recipient = value
+            case .to: to = value
             case .cc: cc = value
             case .bcc: bcc = value
             default: break
             }
         }
-
-        // TODO: - Tom 3
-        // Gmail returns sender string as "Google security <googleaccount-noreply@gmail.com>"
-        // slice it to previous format, like "googleaccount-noreply@gmail.com"
-        sender = sender?.slice(from: "<", to: ">") ?? sender
 
         self.init(
             identifier: Identifier(stringId: identifier),
@@ -182,7 +179,7 @@ extension Message {
             threadId: message.threadId,
             draftIdentifier: draftIdentifier,
             raw: message.raw,
-            recipient: recipient,
+            to: to,
             cc: cc,
             bcc: bcc
         )

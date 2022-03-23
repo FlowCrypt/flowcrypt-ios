@@ -9,7 +9,7 @@ import { CommonData } from '../../../data';
 describe('INBOX: ', () => {
 
   it('check thread rendering', async () => {
-    const senderEmail = CommonData.threadMessage.sender;
+    const senderName = CommonData.threadMessage.senderName;
     const emailSubject = CommonData.threadMessage.subject;
     const firstMessage = CommonData.threadMessage.firstThreadMessage;
     const secondMessage = CommonData.threadMessage.secondThreadMessage;
@@ -24,8 +24,8 @@ describe('INBOX: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    await EmailScreen.checkThreadMessage(senderEmail, emailSubject, thirdMessage, dateThird, 2);
+    await EmailScreen.checkThreadMessage(senderName, emailSubject, thirdMessage, dateThird, 2);
     await EmailScreen.checkThreadMessage(userEmail, emailSubject, secondMessage, dateSecond, 1);
-    await EmailScreen.checkThreadMessage(senderEmail, emailSubject, firstMessage, dateFirst);
+    await EmailScreen.checkThreadMessage(senderName, emailSubject, firstMessage, dateFirst);
   });
 });

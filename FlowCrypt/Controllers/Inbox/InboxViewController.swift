@@ -14,7 +14,6 @@ class InboxViewController: ViewController {
     private let numberOfInboxItemsToLoad: Int
 
     private let appContext: AppContextWithUser
-    private let service: ServiceActor
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
     private let refreshControl = UIRefreshControl()
@@ -51,7 +50,6 @@ class InboxViewController: ViewController {
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
         self.inboxDataProvider = provider
 
-        self.service = ServiceActor(inboxDataProvider: provider)
         self.draftsListProvider = draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
@@ -208,7 +206,7 @@ extension InboxViewController {
                 } else {
                     state = .fetching
                 }
-                let context = try await service.fetchInboxItems(
+                let context = try await inboxDataProvider.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: isSearch ? nil : viewModel.path, // pass nil in search screen to search for all folders
                         count: numberOfInboxItemsToLoad,
@@ -232,7 +230,7 @@ extension InboxViewController {
                 let pagination = currentMessagesListPagination(from: inboxInput.count)
                 state = .fetching
 
-                let context = try await service.fetchInboxItems(
+                let context = try await inboxDataProvider.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
@@ -246,7 +244,7 @@ extension InboxViewController {
             }
         }
     }
-
+    
     func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
         context.beginBatchFetching()
         handleBeginFetching(context)
@@ -509,18 +507,5 @@ extension InboxViewController: MsgListViewController {
                 showAlert(message: "Failed to remove message at \(index) in \(state): \(error)")
             }
         }
-    }
-}
-
-// TODO temporary solution for background execution problem
-private actor ServiceActor {
-    private let inboxDataProvider: InboxDataProvider
-
-    init(inboxDataProvider: InboxDataProvider) {
-        self.inboxDataProvider = inboxDataProvider
-    }
-
-    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
-        return try await inboxDataProvider.fetchInboxItems(using: context, userEmail: userEmail)
     }
 }

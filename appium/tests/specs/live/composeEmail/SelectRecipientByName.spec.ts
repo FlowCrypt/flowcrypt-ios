@@ -18,11 +18,9 @@ describe('COMPOSE EMAIL: ', () => {
 
     const firstContactEmail = CommonData.contact.email;
     const firstContactName = CommonData.contact.name;
-    const firstContactItemName = 'Dmitry at FlowCrypt';
 
     const secondContactEmail = CommonData.secondContact.email;
     const secondContactName = CommonData.secondContact.name;
-    const secondContactItemName = 'Demo key 2';
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
@@ -47,13 +45,13 @@ describe('COMPOSE EMAIL: ', () => {
     // Add first contact
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.setAddRecipientByName(firstContactName, firstContactEmail);
-    await NewMessageScreen.checkAddedRecipient(firstContactEmail);
+    await NewMessageScreen.checkAddedRecipient(firstContactName);
     await NewMessageScreen.clickBackButton();
 
     // Add second contact
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.setAddRecipientByName(secondContactName, secondContactEmail);
-    await NewMessageScreen.checkAddedRecipient(secondContactEmail);
+    await NewMessageScreen.checkAddedRecipient(secondContactName);
     await NewMessageScreen.clickBackButton();
 
     // Go to Contacts screen
@@ -65,13 +63,13 @@ describe('COMPOSE EMAIL: ', () => {
     await SettingsScreen.clickOnSettingItem('Contacts');
 
     await ContactScreen.checkContactScreen();
-    await ContactScreen.checkContact(firstContactItemName);
-    await ContactScreen.checkContact(secondContactItemName);
+    await ContactScreen.checkContact(firstContactName);
+    await ContactScreen.checkContact(secondContactName);
 
     // Go to Contact screen
-    await ContactScreen.clickOnContact(firstContactItemName);
+    await ContactScreen.clickOnContact(firstContactName);
 
-    await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
+    await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail, firstContactName);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
     await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();

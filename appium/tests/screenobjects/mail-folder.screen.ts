@@ -72,7 +72,7 @@ class MailFolderScreen extends BaseScreen {
 
   clickOnEmailBySubject = async (subject: string) => {
     const selector = `~${subject}`;
-    if (await (await $(selector)).isDisplayed() !== true) {
+    if (!await (await $(selector)).isDisplayed()) {
       await TouchHelper.scrollDownToElement(await $(selector));
     }
     await ElementHelper.waitAndClick(await $(selector), 500);
