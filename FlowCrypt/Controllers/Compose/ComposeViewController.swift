@@ -865,9 +865,18 @@ extension ComposeViewController {
                 self?.toggleRecipientsList()
             } : nil
         )
-        .onShouldReturn {
-            $0.resignFirstResponder()
-            return true
+        .onShouldReturn { [weak self] textField -> (Bool) in
+            if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
+                textField.resignFirstResponder()
+                return true
+            }
+            return false
+        }
+        .onShouldEndEditing { [weak self] textField -> (Bool) in
+            if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
+                return true
+            }
+            return false
         }
         .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
             self?.shouldChange(with: textField, and: character, for: type) ?? true
@@ -877,6 +886,14 @@ extension ComposeViewController {
                 $0.becomeFirstResponder()
             }
         }
+    }
+
+    private func showAlertIfTextFieldNotValidEmail(textField: UITextField) -> Bool {
+        if let text = textField.text, text.isEmpty || text.isValidEmail {
+            return true
+        }
+        showAlert(title: "compose_invalid_recipient_title".localized, message: "compose_invalid_recipient_message".localized)
+        return false
     }
 
     private func attachmentNode(for index: Int) -> ASCellNode {
@@ -927,18 +944,19 @@ extension ComposeViewController {
             // Pasted string
             let characterSet = CharacterSet(charactersIn: Constants.endTypingCharacters.joined())
             let recipients = character.components(separatedBy: characterSet)
-            guard recipients.count > 1 else { return true }
-            recipients.forEach {
+            let validRecipients = recipients.filter { $0.isValidEmail }
+            guard validRecipients.count > 1 else { return true }
+            validRecipients.forEach {
                 handleEndEditingAction(with: $0, for: recipientType)
             }
             return false
-        } else if Constants.endTypingCharacters.contains(character) {
+        } else if Constants.endTypingCharacters.contains(character),
+                  self.showAlertIfTextFieldNotValidEmail(textField: textField) {
             handleEndEditingAction(with: textField.text, for: recipientType)
             nextResponder()
             return false
-        } else {
-            return true
         }
+        return true
     }
 
     private func handle(textFieldAction: TextFieldActionType, for recipientType: RecipientType) {
