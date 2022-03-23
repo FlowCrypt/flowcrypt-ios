@@ -206,7 +206,7 @@ extension InboxViewController {
                 } else {
                     state = .fetching
                 }
-                let context = try await fetchInboxItems(
+                let context = try await inboxDataProvider.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: isSearch ? nil : viewModel.path, // pass nil in search screen to search for all folders
                         count: numberOfInboxItemsToLoad,
@@ -230,7 +230,7 @@ extension InboxViewController {
                 let pagination = currentMessagesListPagination(from: inboxInput.count)
                 state = .fetching
 
-                let context = try await fetchInboxItems(
+                let context = try await inboxDataProvider.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
@@ -244,11 +244,7 @@ extension InboxViewController {
             }
         }
     }
-
-    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
-        return try await inboxDataProvider.fetchInboxItems(using: context, userEmail: userEmail)
-    }
-
+    
     func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
         context.beginBatchFetching()
         handleBeginFetching(context)

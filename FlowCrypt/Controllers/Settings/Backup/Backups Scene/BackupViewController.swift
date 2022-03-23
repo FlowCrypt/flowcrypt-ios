@@ -74,7 +74,7 @@ extension BackupViewController {
     private func fetchBackups() {
         Task {
             do {
-                let keys = try await fetchBackupsFromInbox(for: appContext.userId)
+                let keys = try await appContext.getBackupService().fetchBackupsFromInbox(for: appContext.userId)
                 state = keys.isEmpty
                     ? .noBackups
                     : .backups(keys)
@@ -86,10 +86,6 @@ extension BackupViewController {
 
     private func updateState() {
         node.reloadData()
-    }
-
-    private func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
-        return try await appContext.getBackupService().fetchBackupsFromInbox(for: userId)
     }
 }
 

@@ -118,7 +118,7 @@ extension SetupInitialViewController {
 
         Task {
             do {
-                let keys = try await fetchBackupsFromInbox(for: appContext.userId)
+                let keys = try await appContext.getBackupService().fetchBackupsFromInbox(for: appContext.userId)
                 proceedToSetupWith(keys: keys)
             } catch {
                 handle(error: error)
@@ -196,11 +196,6 @@ extension SetupInitialViewController {
                 })
             }
         }
-    }
-
-    @MainActor
-    func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
-        return try await appContext.getBackupService().fetchBackupsFromInbox(for: userId)
     }
 }
 

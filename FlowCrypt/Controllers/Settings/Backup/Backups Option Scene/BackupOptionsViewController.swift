@@ -107,7 +107,7 @@ extension BackupOptionsViewController {
 
         Task {
             do {
-                try await backupToInbox(keys: backups, for: userId)
+                try await appContext.getBackupService().backupToInbox(keys: backups, for: userId)
                 hideSpinner()
                 navigationController?.popToRootViewController(animated: true)
             } catch {
@@ -118,10 +118,6 @@ extension BackupOptionsViewController {
 
     private func backupAsFile() {
         appContext.getBackupService().backupAsFile(keys: backups, for: self)
-    }
-
-    private func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
-        try await appContext.getBackupService().backupToInbox(keys: keys, for: userId)
     }
 }
 

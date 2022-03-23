@@ -523,7 +523,7 @@ extension ComposeViewController {
             signingPrv: signingKey
         )
         UIApplication.shared.isIdleTimerDisabled = true
-        try await encryptAndSend(
+        try await composeMessageService.encryptAndSend(
             message: sendableMsg,
             threadId: input.threadId
         )
@@ -1069,30 +1069,11 @@ extension ComposeViewController {
 
 // MARK: - Action Handling
 extension ComposeViewController {
-    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
-        try await composeMessageService.encryptAndSend(
-            message: message,
-            threadId: threadId
-        )
-    }
-
-    func searchContacts(query: String) async throws -> [String] {
-        return try await cloudContactProvider.searchContacts(query: query)
-    }
-
-    func findLocalContact(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        return try await localContactsProvider.searchRecipient(with: email)
-    }
-
-    func fetchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
-        return try await pubLookup.fetchRemoteUpdateLocal(with: email)
-    }
-
     private func searchEmail(with query: String) {
         Task {
             do {
                 let localEmails = try localContactsProvider.searchEmails(query: query)
-                let cloudEmails = try? await searchContacts(query: query)
+                let cloudEmails = try? await cloudContactProvider.searchContacts(query: query)
                 let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
                 updateState(with: .searchEmails(Array(emails)))
             } catch {
@@ -1114,12 +1095,12 @@ extension ComposeViewController {
             isRecipientLoading = true
             var localContact: RecipientWithSortedPubKeys?
             do {
-                if let contact = try await findLocalContact(with: recipient.email) {
+                if let contact = try await localContactsProvider.searchRecipient(with: recipient.email) {
                     localContact = contact
                     handleEvaluation(for: contact)
                 }
 
-                let contactWithFetchedKeys = try await fetchContact(with: recipient.email)
+                let contactWithFetchedKeys = try await pubLookup.fetchRemoteUpdateLocal(with: recipient.email)
                 handleEvaluation(for: contactWithFetchedKeys)
                 isRecipientLoading = false
                 showRecipientLabelIfNecessary()
