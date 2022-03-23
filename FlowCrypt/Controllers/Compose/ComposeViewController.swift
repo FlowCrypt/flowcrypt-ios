@@ -218,7 +218,7 @@ final class ComposeViewController: TableNodeViewController {
         let recipient = ComposeMessageRecipient(
             email: recipient.email,
             name: recipient.name,
-            type: .to,
+            type: type,
             state: decorator.recipientIdleState
         )
         contextToSend.add(recipient: recipient)
