@@ -57,11 +57,11 @@ final class ComposeViewController: TableNodeViewController {
     private let notificationCenter: NotificationCenter
     private var decorator: ComposeViewDecorator
     private let localContactsProvider: LocalContactsProviderType
+    private let pubLookup: PubLookupType
     private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyMethods: KeyMethodsType
-    private let service: ServiceActor
     private let router: GlobalRouterType
     private let clientConfiguration: ClientConfiguration
 
@@ -131,12 +131,7 @@ final class ComposeViewController: TableNodeViewController {
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.keyMethods = keyMethods
-        self.service = ServiceActor(
-            composeMessageService: self.composeMessageService,
-            localContactsProvider: localContactsProvider,
-            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: self.localContactsProvider),
-            cloudContactProvider: cloudContactProvider
-        )
+        self.pubLookup = PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: self.localContactsProvider)
         self.router = appContext.globalRouter
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
@@ -528,7 +523,7 @@ extension ComposeViewController {
             signingPrv: signingKey
         )
         UIApplication.shared.isIdleTimerDisabled = true
-        try await service.encryptAndSend(
+        try await composeMessageService.encryptAndSend(
             message: sendableMsg,
             threadId: input.threadId
         )
@@ -1096,7 +1091,7 @@ extension ComposeViewController {
         Task {
             do {
                 let localEmails = try localContactsProvider.searchEmails(query: query)
-                let cloudEmails = try? await service.searchContacts(query: query)
+                let cloudEmails = try? await cloudContactProvider.searchContacts(query: query)
                 let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
                 updateState(with: .searchEmails(Array(emails)))
             } catch {
@@ -1118,12 +1113,12 @@ extension ComposeViewController {
             isRecipientLoading = true
             var localContact: RecipientWithSortedPubKeys?
             do {
-                if let contact = try await service.findLocalContact(with: recipient.email) {
+                if let contact = try await localContactsProvider.searchRecipient(with: recipient.email) {
                     localContact = contact
                     handleEvaluation(for: contact)
                 }
 
-                let contactWithFetchedKeys = try await service.fetchContact(with: recipient.email)
+                let contactWithFetchedKeys = try await pubLookup.fetchRemoteUpdateLocal(with: recipient.email)
                 handleEvaluation(for: contactWithFetchedKeys)
                 isRecipientLoading = false
                 showRecipientLabelIfNecessary()
@@ -1584,40 +1579,3 @@ extension ComposeViewController {
 }
 
 extension ComposeViewController: FilesManagerPresenter {}
-
-// TODO temporary solution for background execution problem
-private actor ServiceActor {
-    let composeMessageService: ComposeMessageService
-    private let pubLookup: PubLookupType
-    private let localContactsProvider: LocalContactsProviderType
-    private let cloudContactProvider: CloudContactsProvider
-
-    init(composeMessageService: ComposeMessageService,
-         localContactsProvider: LocalContactsProviderType,
-         pubLookup: PubLookupType,
-         cloudContactProvider: CloudContactsProvider) {
-        self.composeMessageService = composeMessageService
-        self.localContactsProvider = localContactsProvider
-        self.pubLookup = pubLookup
-        self.cloudContactProvider = cloudContactProvider
-    }
-
-    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
-        try await composeMessageService.encryptAndSend(
-            message: message,
-            threadId: threadId
-        )
-    }
-
-    func searchContacts(query: String) async throws -> [String] {
-        return try await cloudContactProvider.searchContacts(query: query)
-    }
-
-    func findLocalContact(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        return try await localContactsProvider.searchRecipient(with: email)
-    }
-
-    func fetchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
-        return try await pubLookup.fetchRemoteUpdateLocal(with: email)
-    }
-}
