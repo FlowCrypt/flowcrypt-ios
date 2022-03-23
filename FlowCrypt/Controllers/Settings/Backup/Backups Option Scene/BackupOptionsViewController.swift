@@ -31,7 +31,6 @@ final class BackupOptionsViewController: TableNodeViewController {
     private var selectedOption: BackupOption = .email {
         didSet { handleOptionChange() }
     }
-    private let service: ServiceActor
     private let userId: UserId
     private let appContext: AppContext
 
@@ -44,7 +43,6 @@ final class BackupOptionsViewController: TableNodeViewController {
         self.appContext = appContext
         self.decorator = decorator
         self.backups = backups
-        self.service = ServiceActor(backupService: appContext.getBackupService())
         self.userId = userId
         super.init(node: TableNode())
     }
@@ -109,7 +107,7 @@ extension BackupOptionsViewController {
 
         Task {
             do {
-                try await service.backupToInbox(keys: backups, for: userId)
+                try await appContext.getBackupService().backupToInbox(keys: backups, for: userId)
                 hideSpinner()
                 navigationController?.popToRootViewController(animated: true)
             } catch {
@@ -119,7 +117,7 @@ extension BackupOptionsViewController {
     }
 
     private func backupAsFile() {
-        service.backupService.backupAsFile(keys: backups, for: self)
+        appContext.getBackupService().backupAsFile(keys: backups, for: self)
     }
 }
 
@@ -175,18 +173,5 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
         case .action: handleButtonTap()
         case .info: break
         }
-    }
-}
-
-// TODO temporary solution for background execution problem
-private actor ServiceActor {
-    let backupService: BackupServiceType
-
-    init(backupService: BackupServiceType) {
-        self.backupService = backupService
-    }
-
-    func backupToInbox(keys: [KeyDetails], for userId: UserId) async throws {
-        try await backupService.backupToInbox(keys: keys, for: userId)
     }
 }
