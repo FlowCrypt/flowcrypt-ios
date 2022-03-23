@@ -78,6 +78,23 @@ struct ComposeViewDecorator {
         )
     }
 
+    func styledRecipientInfo(with email: String, name: String) -> LabelCellNode.Input {
+        LabelCellNode.Input(
+            title: name.attributed(
+                .medium(17),
+                color: .mainTextColor.withAlphaComponent(0.8),
+                alignment: .left
+            ),
+            text: email.attributed(
+                .regular(15),
+                color: .mainTextColor.withAlphaComponent(0.5),
+                alignment: .left
+            ),
+            insets: .deviceSpecificTextInsets(top: 8, bottom: 8),
+            spacing: 0
+        )
+    }
+
     func styledMessage(with text: String) -> NSAttributedString {
         text.attributed(.regular(17))
     }
@@ -95,7 +112,7 @@ struct ComposeViewDecorator {
         dateFormatter.timeStyle = .short
         let time = dateFormatter.string(from: info.sentDate)
 
-        let from = info.sender ?? "unknown sender"
+        let from = info.sender?.email ?? "unknown sender"
 
         let text: String = "\n\n"
             + "compose_quote_from".localizeWithArguments(date, time, from)
@@ -162,9 +179,9 @@ struct ComposeViewDecorator {
         color: UIColor,
         imageName: String
     ) -> MessagePasswordCellNode.Input {
-            .init(
-                text: text.attributed(.regular(14), color: color),
-                color: color,
+        .init(
+            text: text.attributed(.regular(14), color: color),
+            color: color,
             image: UIImage(systemName: imageName)?.tinted(color)
         )
     }
@@ -311,7 +328,7 @@ extension ComposeViewDecorator {
 extension RecipientEmailsCellNode.Input {
     init(_ recipient: ComposeMessageRecipient) {
         self.init(
-            email: recipient.email.lowercased().attributed(
+            email: recipient.displayName.attributed(
                 .regular(17),
                 color: recipient.state.textColor,
                 alignment: .left

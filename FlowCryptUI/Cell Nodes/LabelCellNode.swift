@@ -14,17 +14,20 @@ public final class LabelCellNode: CellNode {
         let title: NSAttributedString
         let text: NSAttributedString
         let insets: UIEdgeInsets
+        let spacing: CGFloat
         let accessibilityIdentifier: String?
 
         public init(
             title: NSAttributedString,
             text: NSAttributedString,
             insets: UIEdgeInsets = .deviceSpecificTextInsets(top: 8, bottom: 8),
-            accessibilityIdentifier: String?
+            spacing: CGFloat = 4,
+            accessibilityIdentifier: String? = nil
         ) {
             self.title = title
             self.text = text
             self.insets = insets
+            self.spacing = spacing
             self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
@@ -47,7 +50,7 @@ public final class LabelCellNode: CellNode {
             insets: input.insets,
             child: ASStackLayoutSpec(
                 direction: .vertical,
-                spacing: 4,
+                spacing: input.spacing,
                 justifyContent: .start,
                 alignItems: .start,
                 children: [titleNode, textNode]

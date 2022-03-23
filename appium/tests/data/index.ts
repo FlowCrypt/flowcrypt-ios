@@ -23,6 +23,7 @@ export const CommonData = {
   threadMessage: {
     subject: 'test thread rendering',
     sender: 'dmitry@flowcrypt.com',
+    senderName: 'Dmitry at FlowCrypt',
     firstThreadMessage: 'first message',
     secondThreadMessage: 'Second thread rendering message\n' +
         '\n' +
@@ -41,10 +42,11 @@ export const CommonData = {
   },
   sender: {
     email: 'dmitry@flowcrypt.com',
+    name: 'Dmitry at FlowCrypt'
   },
   contact: {
     email: 'dmitry@flowcrypt.com',
-    name: 'Dima'
+    name: 'Dima Flowcrypt'
   },
   secondContact: {
     email: 'demo@flowcrypt.com',
@@ -68,6 +70,7 @@ export const CommonData = {
   },
   emailWithMultipleRecipientsWithCC: {
     sender: 'ioan@flowcrypt.com',
+    senderName: 'Ioan at FlowCrypt',
     recipient: 'robot@flowcrypt.com',
     cc: 'robot+cc@flowcrypt.com',
     subject: 'Message with cc and multiple recipients and attachment',
@@ -95,6 +98,7 @@ export const CommonData = {
   },
   recipientsListEmail: {
     sender: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
     subject: 'CC and BCC test',
     message: 'Test message for CC and BCC recipients',
     recipients: 'to Robot, robot+cc, e2e.enterprise.test',
@@ -111,11 +115,13 @@ export const CommonData = {
     subject: 'message encrypted for another public key (only one pubkey used)',
     message: 'key_mismatch: Missing appropriate key',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility'
   },
   wrongChecksumEmail: {
     subject: 'wrong checksum',
     message: 'format: Error: Ascii armor integrity check on message failed: \'FdCC\' should be \'FddK\'',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility'
   },
   notIntegrityProtected: {
     subject: 'not integrity protected - should show a warning and not decrypt automatically',
@@ -126,6 +132,7 @@ export const CommonData = {
     subject: 'key mismatch unexpectedly produces a modal',
     message: 'Here are the images for testing compatibility.',
     senderEmail: 'sunitnandi834@gmail.com',
+    senderName: 'Sunit Kumar Nandi',
     encryptedBadgeText: 'encrypted',
     signatureBadgeText: 'not signed',
     firstAttachmentName: 'Screenshot_20180422_125217.png.asc',

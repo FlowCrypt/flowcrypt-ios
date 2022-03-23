@@ -60,7 +60,7 @@ extension ComposeMessageContext {
     }
 
     func recipientEmails(type: RecipientType) -> [String] {
-        recipients(type: type).map(\.email)
+        recipients(type: type).map(\.formatted)
     }
 
     func recipient(at index: Int, type: RecipientType) -> ComposeMessageRecipient? {
