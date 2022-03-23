@@ -36,6 +36,7 @@
     "pretest": "npm run-script build",
     "test": "npx ava build/ts/test.js --verbose",
     "test_eslint": "npx eslint --ext ts source tooling",
+    "test_tslint": "npx tslint --project ./tsconfig.json --config ./conf/tslint.yaml",
     "pregenCompatAssets": "npm run-script build",
     "genCompatAssets": "./node_modules/.bin/ava build/ts/gen-compat-assets.js --verbose",
     "preupdateCore": "rm -rf source/core source/lib",
