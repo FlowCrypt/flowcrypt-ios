@@ -184,7 +184,8 @@ export const CommonData = {
     attachmentDecryptKeyMismatchError: 'Error decrypting attachment\n' +
       ' Missing appropriate key\n' +
       '\n' +
-      'This will likely download a corrupted file. Download anyway?'
+      'This will likely download a corrupted file. Download anyway?',
+    invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
