@@ -49,7 +49,6 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private var userFinishedSearching = false
-    private var isRecipientLoading = false
     private var userTappedOutSideRecipientsArea = false
     private var shouldShowEmailRecipientsLabel = false
     private let appContext: AppContextWithUser
@@ -197,7 +196,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private func evaluateAllRecipients() {
         for recipient in contextToSend.recipients {
-             evaluate(recipient: recipient, showRecipientLabelFlag: false)
+             evaluate(recipient: recipient)
          }
     }
 
@@ -717,7 +716,8 @@ extension ComposeViewController {
     }
 
     private func showRecipientLabelIfNecessary() {
-        guard !self.isRecipientLoading,
+        let isRecipientLoading = self.contextToSend.recipients.filter { $0.state == decorator.recipientIdleState }.isNotEmpty
+        guard !isRecipientLoading,
               self.contextToSend.recipients.isNotEmpty,
               self.userTappedOutSideRecipientsArea else {
             return
@@ -1117,7 +1117,7 @@ extension ComposeViewController {
         }
     }
 
-    private func evaluate(recipient: ComposeMessageRecipient, showRecipientLabelFlag: Bool = true) {
+    private func evaluate(recipient: ComposeMessageRecipient) {
         guard recipient.email.isValidEmail else {
             updateRecipient(
                 email: recipient.email,
@@ -1127,7 +1127,6 @@ extension ComposeViewController {
         }
 
         Task {
-            isRecipientLoading = true
             var localContact: RecipientWithSortedPubKeys?
             do {
                 if let contact = try await service.findLocalContact(with: recipient.email) {
@@ -1138,16 +1137,10 @@ extension ComposeViewController {
                 let contact = Recipient(recipient: recipient)
                 let contactWithFetchedKeys = try await service.fetchPubKeys(for: contact)
                 handleEvaluation(for: contactWithFetchedKeys)
-                isRecipientLoading = false
-                if showRecipientLabelFlag {
-                    showRecipientLabelIfNecessary()
-                }
+                showRecipientLabelIfNecessary()
             } catch {
                 handleEvaluation(error: error, with: recipient.email, contact: localContact)
-                isRecipientLoading = false
-                if showRecipientLabelFlag {
-                    showRecipientLabelIfNecessary()
-                }
+                showRecipientLabelIfNecessary()
             }
         }
     }
