@@ -944,8 +944,9 @@ extension ComposeViewController {
             // Pasted string
             let characterSet = CharacterSet(charactersIn: Constants.endTypingCharacters.joined())
             let recipients = character.components(separatedBy: characterSet)
-            guard recipients.count > 1 else { return true }
-            recipients.forEach {
+            let validRecipients = recipients.filter { $0.isValidEmail }
+            guard validRecipients.count > 1 else { return true }
+            validRecipients.forEach {
                 handleEndEditingAction(with: $0, for: recipientType)
             }
             return false
