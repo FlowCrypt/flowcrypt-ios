@@ -1,19 +1,19 @@
 import {
-    SplashScreen,
-    SetupKeyScreen,
-    MenuBarScreen,
-    MailFolderScreen,
-    EmailScreen,
-    OldVersionAppScreen,
-    SettingsScreen,
-    KeysScreen,
-    PublicKeyScreen,
-    ContactScreen,
-    ContactPublicKeyScreen,
-    SearchScreen,
-    PublicKeyDetailsScreen
+  SplashScreen,
+  SetupKeyScreen,
+  MenuBarScreen,
+  MailFolderScreen,
+  EmailScreen,
+  OldVersionAppScreen,
+  SettingsScreen,
+  KeysScreen,
+  PublicKeyScreen,
+  ContactScreen,
+  ContactPublicKeyScreen,
+  SearchScreen,
+  PublicKeyDetailsScreen
 } from '../../../screenobjects/all-screens';
-import {CommonData} from "../../../data";
+import { CommonData } from "../../../data";
 
 describe('UPDATE: ', () => {
 

@@ -31,6 +31,7 @@ export const getMockAttesterEndpoints = (
   return {
     '/attester/pub/?': async ({ body }, req) => {
       const email = req.url!.split('/').pop()!.toLowerCase().trim();
+      throwErrorIfConfigSaysSo(attesterConfig);
       if (isGet(req)) {
         const pubkey = (attesterConfig.servedPubkeys || {})[email];
         if (pubkey) {
@@ -52,6 +53,8 @@ export const getMockAttesterEndpoints = (
       }
     },
     '/attester/test/welcome': async ({ body }, req) => {
+      throwErrorIfConfigSaysSo(attesterConfig);
+
       if (!attesterConfig.enableTestWelcome) {
         throw new AttesterErr('Mock Attester received unexpected /test/welcome request', 405);
       }
@@ -68,6 +71,11 @@ export const getMockAttesterEndpoints = (
       return { sent: true };
     },
   };
+}
+const throwErrorIfConfigSaysSo = (config: AttesterConfig) => {
+  if (config.returnError) {
+    throw new AttesterErr(config.returnError.message, config.returnError.code);
+  }
 }
 
 export const attesterPublicKeySamples = {
@@ -224,7 +232,7 @@ dSL33ptMlhwRCKHGiKcVmKwucxYkk6apFQEA018565fZcvtb339L2s/IIxLs
 4621FX8Sy6kpR7mAzQo=
 =3UnZ
 -----END PGP PUBLIC KEY BLOCK-----`,
-    keyNewerVersion: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+  keyNewerVersion: `-----BEGIN PGP PUBLIC KEY BLOCK-----
 
 xjMEYd8pKhYJKwYBBAHaRw8BAQdAXQ9bBzlYPwy3mQD5MIQSkuOyEomESHHo
 AAiUi0enB77NKFVwZGF0aW5nIGtleSA8dXBkYXRpbmcua2V5QGV4YW1wbGUu
@@ -240,4 +248,20 @@ CgkQx8mQwaLqeN3PWwD9ErvC+ufnX0O2AmZDz67QfFH6tA1t1/wUEHgzBXEe
 gc8BAMaYm3AlSGbX1rJYgUtCWukkLuURdECIzerG2UuP87ID
 =dQen
 -----END PGP PUBLIC KEY BLOCK-----`,
+  revoked: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: FlowCrypt iOS 0.2 Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+xjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7
+uXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK
+ACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7
+EFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY
+DKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA
+BgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW
+RBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN
+FXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ
+oXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS
+zZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==
+=bMwq
+-----END PGP PUBLIC KEY BLOCK-----`
 };

@@ -28,7 +28,8 @@ export type FesConfig = {
 export type AttesterConfig = {
   enableSubmittingPubkeys?: boolean,
   enableTestWelcome?: boolean,
-  servedPubkeys?: Dict<string>
+  servedPubkeys?: Dict<string>,
+  returnError?: { code: number, message: string },
 };
 
 export type GoogleConfig = {
