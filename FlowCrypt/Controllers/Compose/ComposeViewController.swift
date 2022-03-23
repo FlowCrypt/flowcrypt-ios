@@ -197,7 +197,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private func evaluateAllRecipients() {
         for recipient in contextToSend.recipients {
-             evaluate(recipient: recipient)
+             evaluate(recipient: recipient, showRecipientLabelFlag: false)
          }
     }
 
@@ -1117,7 +1117,7 @@ extension ComposeViewController {
         }
     }
 
-    private func evaluate(recipient: ComposeMessageRecipient) {
+    private func evaluate(recipient: ComposeMessageRecipient, showRecipientLabelFlag: Bool = true) {
         guard recipient.email.isValidEmail else {
             updateRecipient(
                 email: recipient.email,
@@ -1139,11 +1139,15 @@ extension ComposeViewController {
                 let contactWithFetchedKeys = try await service.fetchPubKeys(for: contact)
                 handleEvaluation(for: contactWithFetchedKeys)
                 isRecipientLoading = false
-                showRecipientLabelIfNecessary()
+                if showRecipientLabelFlag {
+                    showRecipientLabelIfNecessary()
+                }
             } catch {
                 handleEvaluation(error: error, with: recipient.email, contact: localContact)
                 isRecipientLoading = false
-                showRecipientLabelIfNecessary()
+                if showRecipientLabelFlag {
+                    showRecipientLabelIfNecessary()
+                }
             }
         }
     }
