@@ -866,14 +866,14 @@ extension ComposeViewController {
             } : nil
         )
         .onShouldReturn { [weak self] textField -> (Bool) in
-            if let isValid = self?.isTextFieldValidEmail(textField: textField), isValid {
+            if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
                 textField.resignFirstResponder()
                 return true
             }
             return false
         }
         .onShouldEndEditing { [weak self] textField -> (Bool) in
-            if let isValid = self?.isTextFieldValidEmail(textField: textField), isValid {
+            if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
                 return true
             }
             return false
@@ -888,7 +888,7 @@ extension ComposeViewController {
         }
     }
 
-    private func isTextFieldValidEmail(textField: UITextField) -> Bool {
+    private func showAlertIfTextFieldNotValidEmail(textField: UITextField) -> Bool {
         if let text = textField.text, text.isEmpty || text.isValidEmail {
             return true
         }
@@ -950,7 +950,8 @@ extension ComposeViewController {
                 handleEndEditingAction(with: $0, for: recipientType)
             }
             return false
-        } else if Constants.endTypingCharacters.contains(character), self.isTextFieldValidEmail(textField: textField) {
+        } else if Constants.endTypingCharacters.contains(character),
+                  self.showAlertIfTextFieldNotValidEmail(textField: textField) {
             handleEndEditingAction(with: textField.text, for: recipientType)
             nextResponder()
             return false
