@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -23,7 +23,7 @@ export const requireStreamReadToEnd = (): ReadToEndFn => {
   (global as any)['window'] = (global as any)['window'] || {}; // web-stream-tools needs this
   const { readToEnd } = require('../../bundles/raw/web-stream-tools');
   return readToEnd as ReadToEndFn;
-}
+};
 
 export const requireMimeParser = (): any => {
   // @ts-ignore;

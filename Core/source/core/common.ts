@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -24,7 +24,7 @@ export class Str {
       email = undefined;
     }
     return { email, name, full };
-  }
+  };
 
   public static rmSpecialCharsKeepUtf = (str: string, mode: 'ALLOW-SOME' | 'ALLOW-NONE'): string => {
     // not a whitelist because we still want utf chars
@@ -33,23 +33,23 @@ export class Str {
       return str;
     }
     return str.replace(/[.~!$%^*=?]/gi, '');
-  }
+  };
 
   public static prettyPrint = (obj: any) => {
     return (typeof obj === 'object') ? JSON.stringify(obj, undefined, 2).replace(/ /g, '&nbsp;').replace(/\n/g, '<br />') : String(obj);
-  }
+  };
 
   public static normalizeSpaces = (str: string) => {
     return str.replace(RegExp(String.fromCharCode(160), 'g'), String.fromCharCode(32));
-  }
+  };
 
   public static normalizeDashes = (str: string) => {
     return str.replace(/^—–|—–$/gm, '-----');
-  }
+  };
 
   public static normalize = (str: string) => {
     return Str.normalizeSpaces(Str.normalizeDashes(str));
-  }
+  };
 
   public static numberFormat = (number: number) => {
     const nStr: string = number + '';
@@ -61,18 +61,18 @@ export class Str {
       x1 = x1.replace(rgx, '$1' + ',' + '$2');
     }
     return x1 + x2;
-  }
+  };
 
   public static isEmailValid = (email: string) => {
     if (email.indexOf(' ') !== -1) {
       return false;
     }
     return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(email);
-  }
+  };
 
   public static monthName = (monthIndex: number) => {
     return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][monthIndex];
-  }
+  };
 
   public static sloppyRandom = (length: number = 5) => {
     let id = '';
@@ -81,19 +81,19 @@ export class Str {
       id += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return id;
-  }
+  };
 
   public static regexEscape = (toBeUsedInRegex: string) => {
     return toBeUsedInRegex.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
+  };
 
   public static asEscapedHtml = (text: string) => {
     return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\//g, '&#x2F;').replace(/\n/g, '<br />');
-  }
+  };
 
   public static htmlAttrEncode = (values: Dict<any>): string => {
     return Str.base64urlUtfEncode(JSON.stringify(values));
-  }
+  };
 
   public static htmlAttrDecode = (encoded: string): any => {
     try {
@@ -101,27 +101,27 @@ export class Str {
     } catch (e) {
       return undefined;
     }
-  }
+  };
 
   public static capitalize = (string: string): string => {
     return string.trim().split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
-  }
+  };
 
   public static pluralize = (count: number, noun: string, suffix: string = 's'): string => {
     return `${count} ${noun}${count > 1 ? suffix : ''}`;
-  }
+  };
 
   public static toUtcTimestamp = (datetimeStr: string, asStr: boolean = false) => {
     return asStr ? String(Date.parse(datetimeStr)) : Date.parse(datetimeStr);
-  }
+  };
 
   public static datetimeToDate = (date: string) => {
     return date.substr(0, 10).replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;');
-  }
+  };
 
   public static fromDate = (date: Date) => {
     return date.toISOString().replace(/T/, ' ').replace(/:[^:]+$/, '');
-  }
+  };
 
   private static base64urlUtfEncode = (str: string) => {
     // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
@@ -130,7 +130,7 @@ export class Str {
     }
     return base64encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(parseInt(String(p1), 16))))
       .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  }
+  };
 
   private static base64urlUtfDecode = (str: string) => {
     // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
@@ -141,7 +141,7 @@ export class Str {
     return decodeURIComponent(Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
-  }
+  };
 
 }
 
@@ -217,7 +217,7 @@ export class Url {
       processedParams[expectedKey] = Url.findAndProcessUrlParam(expectedKey, rawParamNameDict, rawParams);
     }
     return processedParams;
-  }
+  };
 
   public static create = (link: string, params: UrlParams) => {
     for (const key of Object.keys(params)) {
@@ -228,7 +228,7 @@ export class Url {
       }
     }
     return link;
-  }
+  };
 
   public static removeParamsFromUrl = (url: string, paramsToDelete: string[]) => {
     const urlParts = url.split('?');
@@ -242,15 +242,15 @@ export class Url {
       params.delete(p);
     }
     return `${urlParts[0]}?${params.toString()}`;
-  }
+  };
 
   private static snakeCaseToCamelCase = (s: string) => {
     return s.replace(/_[a-z]/g, boundary => boundary[1].toUpperCase());
-  }
+  };
 
   private static camelCaseToSnakeCase = (s: string) => {
     return s.replace(/[a-z][A-Z]/g, boundary => `${boundary[0]}_${boundary[1].toLowerCase()}`);
-  }
+  };
 
   private static findAndProcessUrlParam = (expectedParamName: string, rawParamNameDict: Dict<string>, rawParms: Dict<string>): UrlParam => {
     if (typeof rawParamNameDict[expectedParamName] === 'undefined') {
@@ -264,7 +264,7 @@ export class Url {
       return Url.URL_PARAM_DICT[rawValue]; // raw value was converted using a value dict to get proper: true, false, undefined, null
     }
     return decodeURIComponent(rawValue);
-  }
+  };
 
   private static fillPossibleUrlParamNameVariations = (urlParamName: string, rawParamNameDict: Dict<string>) => {
     rawParamNameDict[urlParamName] = urlParamName;
@@ -273,6 +273,6 @@ export class Url {
     const shortened = urlParamName.replace('account', 'acct').replace('message', 'msg').replace('attachment', 'att');
     rawParamNameDict[Url.snakeCaseToCamelCase(shortened)] = urlParamName;
     rawParamNameDict[Url.camelCaseToSnakeCase(shortened)] = urlParamName;
-  }
+  };
 
 }

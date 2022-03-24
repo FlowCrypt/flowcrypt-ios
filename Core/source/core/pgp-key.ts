@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -85,7 +85,7 @@ export class PgpKey {
       rsaBits: (variant === 'curve25519' ? undefined : (variant === 'rsa2048' ? 2048 : 4096))
     });
     return { public: k.publicKey, private: k.privateKey, revCert: k.revocationCertificate };
-  }
+  };
 
   /**
    * used only for keys that we ourselves parsed / formatted before, eg from local storage, because no err handling
@@ -100,7 +100,7 @@ export class PgpKey {
       Store.armoredKeyCacheSet(armoredKey, key);
     }
     return key;
-  }
+  };
 
   /**
    * Read many keys, could be armored or binary, in single armor or separately,
@@ -129,11 +129,11 @@ export class PgpKey {
       await pushKeysAndErrs(fileData, 'read');
     }
     return { keys: allKeys, errs: allErrs };
-  }
+  };
 
   public static isPacketPrivate = (packet: AllowedKeyPackets): packet is PrvPacket => {
     return packet instanceof SecretKeyPacket || packet instanceof SecretSubkeyPacket;
-  }
+  };
 
   public static validateAllDecryptedPackets = async (key: Key): Promise<void> => {
     for (const prvPacket of key.toPacketList().filter(PgpKey.isPacketPrivate)) {
@@ -173,7 +173,7 @@ export class PgpKey {
       }
     }
     return true;
-  }
+  };
 
   public static encrypt = async (prv: Key, passphrase: string) => {
     if (!passphrase || passphrase === 'undefined' || passphrase === 'null') {
@@ -189,7 +189,7 @@ export class PgpKey {
         `${secretPackets.length} private packets still encrypted`);
     }
     await encryptKey({ privateKey: (prv as PrivateKey), passphrase });
-  }
+  };
 
   public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[], error?: string | undefined }> => {
     try {
@@ -214,7 +214,7 @@ export class PgpKey {
       Catch.reportErr(error);
       return { normalized: '', keys: [], error: error.message };
     }
-  }
+  };
 
   public static fingerprint = async (key: Key | string, formatting: "default" | "spaced" = 'default'):
     Promise<string | undefined> => {
@@ -245,7 +245,7 @@ export class PgpKey {
         return undefined;
       }
     }
-  }
+  };
 
   public static longid = async (keyOrFingerprintOrBytes: string | Key | undefined): Promise<string | undefined> => {
     if (!keyOrFingerprintOrBytes) {
@@ -258,7 +258,7 @@ export class PgpKey {
       return keyOrFingerprintOrBytes.replace(/ /g, '').substr(-16);
     }
     return await PgpKey.longid(await PgpKey.fingerprint(keyOrFingerprintOrBytes));
-  }
+  };
 
   public static longids = async (keyIds: KeyID[]) => {
     const longids: string[] = [];
@@ -269,7 +269,7 @@ export class PgpKey {
       }
     }
     return longids;
-  }
+  };
 
   public static usable = async (armored: string) => { // is pubkey usable for encrytion?
     if (!PgpKey.fingerprint(armored)) {
@@ -283,7 +283,7 @@ export class PgpKey {
       return true; // good key - cannot be expired
     }
     return await PgpKey.usableButExpired(pubkey);
-  }
+  };
 
   public static expired = async (key: Key): Promise<boolean> => {
     if (!key) {
@@ -297,7 +297,7 @@ export class PgpKey {
       return Date.now() > exp.getTime();
     }
     throw new Error(`Got unexpected value for expiration: ${exp}`); // exp must be either null, Infinity or a Date
-  }
+  };
 
   public static usableButExpired = async (key: Key): Promise<boolean> => {
     if (!key) {
@@ -312,7 +312,7 @@ export class PgpKey {
     }
     // try to see if the key was usable just before expiration
     return Boolean(await key.getEncryptionKey(undefined, oneSecondBeforeExpiration));
-  }
+  };
 
   public static dateBeforeExpiration = async (key: Key | string): Promise<Date | undefined> => {
     const openPgpKey = typeof key === 'string' ? await PgpKey.read(key) : key;
@@ -323,12 +323,12 @@ export class PgpKey {
       return new Date(expires.getTime() - 1000);
     }
     return undefined;
-  }
+  };
 
   public static parse = async (armored: string): Promise<{ original: string, normalized: string, keys: KeyDetails[], error?: string | undefined }> => {
     const { normalized, keys, error } = await PgpKey.normalize(armored);
     return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)), error };
-  }
+  };
 
   public static details = async (k: Key): Promise<KeyDetails> => {
     const keys = k.getKeys();
@@ -368,7 +368,7 @@ export class PgpKey {
       lastModified,
       revoked: k.revocationSignatures.length > 0
     };
-  }
+  };
 
   /**
    * Get latest self-signature date, in utc millis.
@@ -402,7 +402,7 @@ export class PgpKey {
       return Math.max(...allSignatures.map(x => x.created ? x.created.getTime() : 0));
     }
     throw new Error('No valid signature found in key');
-  }
+  };
 
   public static revoke = async (key: Key): Promise<string | undefined> => {
     if (!key.isRevoked()) {
@@ -416,5 +416,5 @@ export class PgpKey {
     } else {
       return await readToEnd(certificate);
     }
-  }
+  };
 }

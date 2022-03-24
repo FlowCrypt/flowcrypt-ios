@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -17,15 +17,15 @@ export class MsgBlock {
 
   public static fromContent = (type: MsgBlockType, content: string | Buf, missingEnd = false): MsgBlock => {
     return new MsgBlock(type, content, !missingEnd);
-  }
+  };
 
   public static fromKeyDetails = (type: MsgBlockType, content: string, keyDetails: KeyDetails): MsgBlock => {
     return new MsgBlock(type, content, true, undefined, keyDetails);
-  }
+  };
 
   public static fromAtt = (type: MsgBlockType, content: string, attMeta: AttMeta): MsgBlock => {
     return new MsgBlock(type, content, true, undefined, undefined, attMeta);
-  }
+  };
 
   constructor(
     public type: MsgBlockType,

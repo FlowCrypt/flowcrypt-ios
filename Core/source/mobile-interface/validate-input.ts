@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -9,9 +9,9 @@ type Obj = { [k: string]: any };
 export namespace NodeRequest {
   type PrvKeyInfo = { private: string; longid: string, passphrase: string | undefined };
   type Attachment = { name: string; type: string; base64: string };
-  interface composeEmailBase { text: string, html?: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] };
-  export interface composeEmailPlain extends composeEmailBase { format: 'plain' };
-  export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo | undefined };
+  interface composeEmailBase { text: string, html?: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] }
+  export interface composeEmailPlain extends composeEmailBase { format: 'plain' }
+  export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo | undefined }
 
   export type generateKey = { passphrase: string, variant: 'rsa2048' | 'rsa4096' | 'curve25519', userIds: { name: string, email: string }[] };
   export type composeEmail = composeEmailPlain | composeEmailEncrypted;
@@ -34,14 +34,14 @@ export class ValidateInput {
       return v as NodeRequest.generateKey;
     }
     throw new Error('Wrong request structure for NodeRequest.generateKey');
-  }
+  };
 
   public static encryptMsg = (v: any): NodeRequest.encryptMsg => {
     if (isObj(v) && hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'msgPwd', 'string?')) {
       return v as NodeRequest.encryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.encryptMsg');
-  }
+  };
 
   public static composeEmail = (v: any): NodeRequest.composeEmail => {
     if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'html', 'string?') && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string') && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {
@@ -57,35 +57,35 @@ export class ValidateInput {
       return v as NodeRequest.composeEmailPlain;
     }
     throw new Error('Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encrypt-inline OR format:plain allowed');
-  }
+  };
 
   public static parseDecryptMsg = (v: any): NodeRequest.parseDecryptMsg => {
     if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?') && hasProp(v, 'isEmail', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')) {
       return v as NodeRequest.parseDecryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.parseDecryptMsg');
-  }
+  };
 
   public static encryptFile = (v: any): NodeRequest.encryptFile => {
     if (isObj(v) && hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'name', 'string')) {
       return v as NodeRequest.encryptFile;
     }
     throw new Error('Wrong request structure for NodeRequest.encryptFile');
-  }
+  };
 
   public static decryptFile = (v: any): NodeRequest.decryptFile => {
     if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?')) {
       return v as NodeRequest.decryptFile;
     }
     throw new Error('Wrong request structure for NodeRequest.decryptFile');
-  }
+  };
 
   public static parseDateStr = (v: any): NodeRequest.parseDateStr => {
     if (isObj(v) && hasProp(v, 'dateStr', 'string')) {
       return v as NodeRequest.parseDateStr;
     }
     throw new Error('Wrong request structure for NodeRequest.dateStrParse');
-  }
+  };
 
   public static zxcvbnStrengthBar = (v: any): NodeRequest.zxcvbnStrengthBar => {
     if (isObj(v) && hasProp(v, 'guesses', 'number') && hasProp(v, 'purpose', 'string') && v.purpose === 'passphrase') {
@@ -95,41 +95,41 @@ export class ValidateInput {
       return v as NodeRequest.zxcvbnStrengthBar;
     }
     throw new Error('Wrong request structure for NodeRequest.zxcvbnStrengthBar');
-  }
+  };
 
   public static gmailBackupSearch = (v: any): NodeRequest.gmailBackupSearch => {
     if (isObj(v) && hasProp(v, 'acctEmail', 'string')) {
       return v as NodeRequest.gmailBackupSearch;
     }
     throw new Error('Wrong request structure for NodeRequest.gmailBackupSearchQuery');
-  }
+  };
 
   public static isEmailValid = (v: any): NodeRequest.isEmailValid => {
     if (isObj(v) && hasProp(v, 'email', 'string')) {
       return v as NodeRequest.isEmailValid;
     }
     throw new Error('Wrong request structure for NodeRequest.isEmailValid');
-  }
+  };
 
   public static decryptKey = (v: any): NodeRequest.decryptKey => {
     if (isObj(v) && hasProp(v, 'armored', 'string') && hasProp(v, 'passphrases', 'string[]')) {
       return v as NodeRequest.decryptKey;
     }
     throw new Error('Wrong request structure for NodeRequest.decryptKey');
-  }
+  };
 
   public static encryptKey = (v: any): NodeRequest.encryptKey => {
     if (isObj(v) && hasProp(v, 'armored', 'string') && hasProp(v, 'passphrase', 'string')) {
       return v as NodeRequest.encryptKey;
     }
     throw new Error('Wrong request structure for NodeRequest.encryptKey');
-  }
+  };
 
 }
 
 const isObj = (v: any): v is Obj => {
   return v && typeof v === 'object';
-}
+};
 
 const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object' | 'string' | 'number' | 'string?' | 'boolean?' | 'PrvKeyInfo?' | 'PrvKeyInfo[]' | 'Userid[]' | 'Attachment[]?' ): boolean => {
   if (!isObj(v)) {
@@ -175,7 +175,7 @@ const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object'
     return isObj(value);
   }
   return false;
-}
+};
 
 export const readArmoredKeyOrThrow = async (armored: string) => {
   const key = await readKey({armoredKey: armored});
@@ -183,4 +183,4 @@ export const readArmoredKeyOrThrow = async (armored: string) => {
     throw new Error('No key found');
   }
   return key;
-}
+};

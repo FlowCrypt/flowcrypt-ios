@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -30,14 +30,14 @@ const fmtMsgContentBlockAsHtml = (dirtyContent: string, frameColor: 'green' | 'g
     frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #989898;border-right: none;`;
   }
   return `<div class="MsgBlock ${frameColor}" style="${generalCss}${frameCss}">${Xss.htmlSanitizeKeepBasicTags(dirtyContent)}</div><!-- next MsgBlock -->\n`;
-}
+};
 
 export const stripHtmlRootTags = (html: string) => { // todo - this is very rudimentary, use a proper parser
   html = html.replace(/<\/?html[^>]*>/g, ''); // remove opening and closing html tags
-  html = html.replace(/<head[^>]*>.*<\/head>/g, '') // remove the whole head section
+  html = html.replace(/<head[^>]*>.*<\/head>/g, ''); // remove the whole head section
   html = html.replace(/<\/?body[^>]*>/g, ''); // remove opening and closing body tags
   return html.trim();
-}
+};
 
 /**
  * replace content of imgs: <img src="cid:16c7a8c3c6a8d4ab1e01">
@@ -47,7 +47,7 @@ const fillInlineHtmlImgs = (htmlContent: string, inlineImgsByCid: { [cid: string
     const img = inlineImgsByCid[cid];
     if (img) {
       // in current usage, as used by `endpoints.ts`: `block.attMeta!.data` actually contains base64 encoded data, not Uint8Array as the type claims
-      let alteredSrcAttr = `src="data:${img.attMeta!.type};base64,${img.attMeta!.data}"`;
+      const alteredSrcAttr = `src="data:${img.attMeta!.type};base64,${img.attMeta!.data}"`;
       // delete to find out if any imgs were unused
       // later we can add the unused ones at the bottom
       // (though as implemented will cause issues if the same cid is reused in several places in html - which is theoretically valid - only first will get replaced)
@@ -57,15 +57,15 @@ const fillInlineHtmlImgs = (htmlContent: string, inlineImgsByCid: { [cid: string
       return originalSrcAttr;
     }
   });
-}
+};
 
 export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: MsgBlock, text: string } => {
   let msgContentAsHtml = '';
   let msgContentAsText = '';
-  const contentBlocks = allContentBlocks.filter(b => !Mime.isPlainImgAtt(b))
+  const contentBlocks = allContentBlocks.filter(b => !Mime.isPlainImgAtt(b));
   const imgsAtTheBottom: MsgBlock[] = [];
   const inlineImgsByCid: { [cid: string]: MsgBlock } = {};
-  for (let plainImgBlock of allContentBlocks.filter(b => Mime.isPlainImgAtt(b))) {
+  for (const plainImgBlock of allContentBlocks.filter(b => Mime.isPlainImgAtt(b))) {
     if (plainImgBlock.attMeta!.cid) {
       inlineImgsByCid[plainImgBlock.attMeta!.cid.replace(/>$/, '').replace(/^</, '')] = plainImgBlock;
     } else {
@@ -122,9 +122,9 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
   }
 
   for (const inlineImg of imgsAtTheBottom.concat(Object.values(inlineImgsByCid))) { // render any images we did not insert into content, at the bottom
-    let alt = `${inlineImg.attMeta!.name || '(unnamed image)'} - ${inlineImg.attMeta!.length! / 1024}kb`;
+    const alt = `${inlineImg.attMeta!.name || '(unnamed image)'} - ${inlineImg.attMeta!.length! / 1024}kb`;
     // in current usage, as used by `endpoints.ts`: `block.attMeta!.data` actually contains base64 encoded data, not Uint8Array as the type claims
-    let inlineImgTag = `<img src="data:${inlineImg.attMeta!.type};base64,${inlineImg.attMeta!.data}" alt="${Xss.escape(alt)} " />`;
+    const inlineImgTag = `<img src="data:${inlineImg.attMeta!.type};base64,${inlineImg.attMeta!.data}" alt="${Xss.escape(alt)} " />`;
     msgContentAsHtml += fmtMsgContentBlockAsHtml(inlineImgTag, 'plain');
     msgContentAsText += `[image: ${alt}]\n`;
   }
@@ -145,14 +145,14 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
   const contentBlock = MsgBlock.fromContent('plainHtml', msgContentAsHtml);
   contentBlock.verifyRes = verifyRes;
   return { contentBlock: contentBlock, text: msgContentAsText.trim() };
-}
+};
 
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
   return {
     json: JSON.stringify(response),
     data: data || new Uint8Array(0)
   };
-}
+};
 
 export const fmtErr = (e: any): EndpointRes => {
   return fmtRes({
@@ -161,7 +161,7 @@ export const fmtErr = (e: any): EndpointRes => {
       stack: e && typeof e === 'object' ? e.stack || '' : ''
     }
   });
-}
+};
 
 export const printReplayTestDefinition = (endpoint: string, request: {}, data: Buf) => {
   console.log(`
@@ -173,5 +173,5 @@ ava.test.only('replaying', async t => {
   console.log('response: ', json, '\n\n\n-------- begin res data ---------', Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
   t.pass();
 });
-  `)
-}
+  `);
+};

@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -31,7 +31,7 @@ export class PgpArmor {
       return (match && match.length) ? match[0] : undefined;
     }
     return undefined;
-  }
+  };
 
   public static headers = (blockType: ReplaceableMsgBlockType | 'null', format = 'string'): CryptoArmorHeaderDefinition => {
     const h = PgpArmor.ARMOR_HEADER_DICT[blockType];
@@ -40,7 +40,7 @@ export class PgpArmor {
       end: (typeof h.end === 'string' && format === 're') ? h.end.replace(/ /g, '\\s') : h.end,
       replace: h.replace,
     };
-  }
+  };
 
   public static normalize = (armored: string, type: ReplaceableMsgBlockType | 'key') => {
     armored = Str.normalize(armored).replace(/\n /g, '\n');
@@ -72,7 +72,7 @@ export class PgpArmor {
       }
     }
     return armored;
-  }
+  };
 
   public static cryptoMsgPrepareForDecrypt = async (encrypted: Uint8Array): Promise<PreparedForDecrypt> => {
     if (!encrypted.length) {
@@ -102,6 +102,6 @@ export class PgpArmor {
       };
     }
     throw new Error('Message does not have armor headers');
-  }
+  };
 
 }

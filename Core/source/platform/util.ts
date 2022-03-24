@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -13,24 +13,24 @@ declare const dereq_encoding_japanese : {
 
 export const secureRandomBytes = (length: number): Uint8Array => {
   return randomBytes(length);
-}
+};
 
 export const base64encode = (binary: string): string => {
   return Buffer.from(binary, 'binary').toString('base64');
-}
+};
 
 export const base64decode = (b64tr: string): string => {
   return Buffer.from(b64tr, 'base64').toString('binary');
-}
+};
 
 export const setGlobals = () => {
   (global as any).btoa = base64encode;
   (global as any).atob = base64decode;
-}
+};
 
 export const iso2022jpToUtf = (content: Buf) => {
   return dereq_encoding_japanese.convert(content, { to: 'UTF8', from: 'JIS', type: 'string' });
-}
+};
 
 /**
  * Create hex string from a binary.
@@ -55,7 +55,7 @@ export const str_to_hex = (str: string): string => {
     r.push("" + h);
   }
   return r.join('');
-}
+};
 
 const maxDate = (dates: (Date | null)[]): Date | null => {
   let res: Date | null = null;
@@ -65,21 +65,21 @@ const maxDate = (dates: (Date | null)[]): Date | null => {
     }
   }
   return res;
-}
+};
 
 const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
   const bindingCreated = maxDate(subkey.bindingSignatures.map(b => b.created));
   const binding = subkey.bindingSignatures.filter(b => b.created === bindingCreated)[0];
   return binding.getExpirationTime();
-}
+};
 
 // Attempt to backport from openpgp.js v4
 export const getKeyExpirationTimeForCapabilities = async (
-    key: Key,
-    capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
-    keyId?: KeyID | undefined,
-    userId?: UserID | undefined
-  ): Promise<Date | null | typeof Infinity> => {
+  key: Key,
+  capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
+  keyId?: KeyID | undefined,
+  userId?: UserID | undefined
+): Promise<Date | null | typeof Infinity> => {
   const primaryUser = await key.getPrimaryUser(undefined, userId, undefined);
   if (!primaryUser) throw new Error('Could not find primary user');
   const keyExpiry = await key.getExpirationTime(userId);
@@ -109,4 +109,4 @@ export const getKeyExpirationTimeForCapabilities = async (
     if (signatureKeyExpiry < expiry) expiry = signatureKeyExpiry;
   }
   return expiry;
-}
+};

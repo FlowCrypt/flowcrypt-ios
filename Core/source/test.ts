@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -106,7 +106,7 @@ Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 
 orig message
-------sinikael-?=_1-15535259519270.930031460416217--`
+------sinikael-?=_1-15535259519270.930031460416217--`;
   const req = { format: 'plain', text: 'replying', to: ['some@to.com'], cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original', replyToMimeMsg };
   const { data: mimeMsgReply, json } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(json);

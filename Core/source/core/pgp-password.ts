@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -52,7 +52,7 @@ export class PgpPwd {
       }
     }
     throw Error('(thrown) estimate_strength: got to end without any result');
-  }
+  };
 
   public static weakWords = () => {
     return [
@@ -63,7 +63,7 @@ export class PgpPwd {
       'lossofthispassphrase', 'cannotberecovered', 'noteitdown', 'onapaper',
       'setpassword', 'set password', 'set pass word', 'setpassphrase', 'set pass phrase', 'set passphrase'
     ];
-  }
+  };
 
   private static readableCrackTime = (totalSeconds: number) => {
     // See http://stackoverflow.com/questions/8211744/convert-time-interval-given-in-seconds-into-more-human-readable-form
@@ -106,5 +106,5 @@ export class PgpPwd {
       return seconds + ' second' + numberWordEnding(seconds);
     }
     return 'less than a second';
-  }
+  };
 }

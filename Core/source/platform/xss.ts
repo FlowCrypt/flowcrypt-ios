@@ -1,3 +1,4 @@
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 import { Str } from '../core/common';
 
 type Attributes = { [attr: string]: string };
@@ -89,7 +90,7 @@ export class Xss {
     }
     cleanHtml = cleanHtml.replace(new RegExp(imgContentReplaceable, 'g'), `<font color="#D14836" face="monospace">[img]</font>`);
     return cleanHtml;
-  }
+  };
 
   public static htmlSanitizeAndStripAllTags = (dirtyHtml: string, outputNl: string): string => {
     let html = Xss.htmlSanitizeKeepBasicTags(dirtyHtml);
@@ -122,11 +123,11 @@ export class Xss {
       text = text.replace(/\n/g, outputNl);
     }
     return text;
-  }
+  };
 
   public static escape = (str: string) => {
     return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\//g, '&#x2F;');
-  }
+  };
 
   public static escapeTextAsRenderableHtml = (text: string) => {
     return Xss.escape(text)
@@ -134,11 +135,11 @@ export class Xss {
       .replace(/^ +/gm, spaces => spaces.replace(/ /g, '&nbsp;'))
       .replace(/^\t+/gm, tabs => tabs.replace(/\t/g, '&#9;'))
       .replace(/\n/g, ''); // strip newlines, already have <br>
-  }
+  };
 
   public static htmlUnescape = (str: string) => {
     // the &nbsp; at the end is replaced with an actual NBSP character, not a space character. IDE won't show you the difference. Do not change.
     return str.replace(/&#x2F;/g, '/').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
-  }
+  };
 
 }

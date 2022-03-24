@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -38,7 +38,7 @@ export class MsgBlockParser {
         startAt = r.continueAt;
       }
     }
-  }
+  };
 
   public static fmtDecryptedAsSanitizedHtmlBlocks = async (decryptedContent: Uint8Array, signature?: VerifyRes, imgHandling: SanitizeImgHandling = 'IMG-TO-LINK'): Promise<SanitizedBlocks> => {
     const blocks: MsgBlock[] = [];
@@ -80,7 +80,7 @@ export class MsgBlockParser {
       }
     }
     return { blocks, subject: decoded.subject, isRichText };
-  }
+  };
 
   private static detectBlockNext = (origText: string, startAt: number) => {
     const result: { found: MsgBlock[], continueAt?: number } = { found: [] as MsgBlock[] };
@@ -140,7 +140,7 @@ export class MsgBlockParser {
       }
     }
     return result;
-  }
+  };
 
   private static pushArmoredPubkeysToBlocks = async (armoredPubkeys: string[], blocks: MsgBlock[]): Promise<void> => {
     for (const armoredPubkey of armoredPubkeys) {
@@ -149,6 +149,6 @@ export class MsgBlockParser {
         blocks.push(MsgBlock.fromKeyDetails('publicKey', keyDetails.public, keyDetails));
       }
     }
-  }
+  };
 
 }

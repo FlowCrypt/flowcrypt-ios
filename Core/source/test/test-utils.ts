@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import { config, expect } from 'chai';
 import { Buf } from '../core/buf';
 import { EndpointRes } from '../mobile-interface/format-output';
-config.truncateThreshold = 0
+config.truncateThreshold = 0;
 
 export type AvaContext = ava.ExecutionContext<any>;
 type JsonDict = { [k: string]: any };
@@ -16,7 +16,7 @@ type TestKey = { pubKey: string, private: string, decrypted: string, passphrase:
 
 export const parseResponse = (response: EndpointRes) => {
   return { json: JSON.parse(response.json), data: response.data };
-}
+};
 
 export const httpGet = async (url: string): Promise<Buf> => {
   return await new Promise((resolve, reject) => {
@@ -36,16 +36,16 @@ export const httpGet = async (url: string): Promise<Buf> => {
     req.on('error', reject);
     req.end();
   });
-}
+};
 
 export const expectEmptyJson = (json: JsonDict) => {
   expect(Object.keys(json)).to.have.property('length').that.equals(0);
-}
+};
 
 export const expectNoData = (data: Uint8Array) => {
   expect(data).to.be.instanceof(Uint8Array);
   expect(data).to.have.property('length').that.equals(0);
-}
+};
 
 export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' | 'binary', details?: any[] | Buffer) => {
   expect(_data).to.be.instanceof(Uint8Array);
@@ -95,7 +95,7 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
   } else if (typeof details !== 'undefined') {
     throw Error("Unknown test type");
   }
-}
+};
 
 const TEST_KEYS: { [name: string]: TestKey } = {
   'rsa1': {
@@ -149,7 +149,7 @@ const TEST_KEYS: { [name: string]: TestKey } = {
     passphrase: 'London blueBARREY capi',
     longid: 'ADAC279C95093207'
   }
-}
+};
 
 type KeypairName = 'rsa1' | 'rsa2' | 'ecc' | 'gpg-dummy' | 'expired' | 'revoked' | 'flowcrypt.compatibility';
 
@@ -162,18 +162,18 @@ export const getKeypairs = (...names: KeypairName[]) => {
     decrypted: names.map(name => TEST_KEYS[name].decrypted),
     longids: names.map(name => TEST_KEYS[name].longid),
   };
-}
+};
 
 export const getCompatAsset = async (name: string) => {
   return await readFile(`source/assets/compat/${name}.txt`);
-}
+};
 
 export const getHtmlAsset = async (name: string) => {
   return await readFile(`source/assets/html/${name}.html`);
-}
+};
 
-export let readFile = (path: string): Promise<Buffer> => new Promise((resolve, reject) => fs.readFile(path, (e, data) => e ? reject(e) : resolve(data)));
+export const readFile = (path: string): Promise<Buffer> => new Promise((resolve, reject) => fs.readFile(path, (e, data) => e ? reject(e) : resolve(data)));
 
-export let writeFile = (path: string, data: Buffer): Promise<void> => new Promise((resolve, reject) => fs.writeFile(path, data, e => e ? reject(e) : resolve()));
+export const writeFile = (path: string, data: Buffer): Promise<void> => new Promise((resolve, reject) => fs.writeFile(path, data, e => e ? reject(e) : resolve()));
 
-export let wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -32,7 +32,7 @@ export class Att {
 
   public static keyinfoAsPubkeyAtt = (ki: { public: string, longid: string }) => {
     return new Att({ data: Buf.fromUtfStr(ki.public), type: 'application/pgp-keys', name: `0x${ki.longid}.asc` });
-  }
+  };
 
   constructor({ data, type, name, length, url, inline, id, msgId, treatAs, cid, contentDescription }: AttMeta) {
     if (typeof data === 'undefined' && typeof url === 'undefined' && typeof id === 'undefined') {
@@ -60,14 +60,14 @@ export class Att {
 
   public hasData = () => {
     return this.bytes instanceof Uint8Array;
-  }
+  };
 
   public setData = (bytes: Uint8Array) => {
     if (this.hasData()) {
       throw new Error('Att bytes already set');
     }
     this.bytes = bytes;
-  }
+  };
 
   public getData = (): Buf => {
     if (this.bytes instanceof Buf) {
@@ -77,7 +77,7 @@ export class Att {
       return new Buf(this.bytes);
     }
     throw new Error('Att has no data set');
-  }
+  };
 
   public treatAs = (): Att$treatAs => {
     if (this.treatAsValue) { // pre-set
@@ -107,6 +107,6 @@ export class Att {
     } else {
       return 'plainFile';
     }
-  }
+  };
 
 }

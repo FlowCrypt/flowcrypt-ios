@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -135,7 +135,7 @@ Content-Type: text/plain; charset="UTF-8"
 
 ${orig}${text.toString()}
 `.replace(/^\n/, ''));
-}
+};
 
 const mimePgp = (t: AvaContext, text: string | Buffer) => Buffer.from(`
 Content-Type: multipart/mixed; boundary="PpujspXwR9sayhr0t4sBaTxoXX6dlYhLU";
@@ -175,7 +175,7 @@ ${Xss.escape(text.toString()).replace(/\n/g, '<br>')}
 const write = async (t: AvaContext, fileContent: Buffer | string) => {
   await writeFile(`./source/assets/compat/${t.title}`,
     fileContent instanceof Buffer ? fileContent : Buffer.from(fileContent));
-}
+};
 
 ava.default('direct-encrypted-text.txt', async t => {
   const data = await PgpMsg.encrypt({ data: text, pubkeys, armor: true }) as string;

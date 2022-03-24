@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -130,7 +130,7 @@ export class PgpMsg {
       return { armored: true, type: blocks[0].type };
     }
     return undefined;
-  }
+  };
 
   /**
    * Returns signed data if detached=false, armored
@@ -145,7 +145,7 @@ export class PgpMsg {
       format: 'armored'
     });
     return signRes;
-  }
+  };
 
   public static verify = async (
     msgOrVerResults: OpenpgpMsgOrCleartext | VerificationResult[],
@@ -180,7 +180,7 @@ export class PgpMsg {
       }
     }
     return sig;
-  }
+  };
 
   public static verifyDetached: PgpMsgMethod.VerifyDetached = async ({ plaintext, sigText, verificationPubkeys }) => {
     const message = await createMessage({ text: Buf.fromUint8(plaintext).toUtfStr() });
@@ -193,7 +193,7 @@ export class PgpMsg {
       }
     }
     return await PgpMsg.verify(message, keys.forVerification);
-  }
+  };
 
   public static decrypt: PgpMsgMethod.Decrypt = async ({ kisWithPp, encryptedData, msgPwd, verificationPubkeys }) => {
     let prepared: PreparedForDecrypt;
@@ -262,7 +262,7 @@ export class PgpMsg {
     } catch (e) {
       return { success: false, error: PgpMsg.cryptoMsgDecryptCategorizeErr(e, msgPwd), message: prepared.message, longids, isEncrypted };
     }
-  }
+  };
 
   public static encrypt: PgpMsgMethod.Encrypt = async ({ pubkeys, signingPrv, pwd, data, filename, armor, date }) => {
     if (!pubkeys && !pwd) {
@@ -295,7 +295,7 @@ export class PgpMsg {
         signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
       });
     }
-  }
+  };
 
   public static diagnosePubkeys: PgpMsgMethod.DiagnosePubkeys = async ({ privateKis, message }) => {
     const m = await readMessage({ armoredMessage: Buf.fromUint8(message).toUtfStr() });
@@ -314,7 +314,7 @@ export class PgpMsg {
       }
     }
     return diagnosis;
-  }
+  };
 
   public static extractFcAtts = (decryptedContent: string, blocks: MsgBlock[]) => {
     // these tags were created by FlowCrypt exclusively, so the structure is fairly rigid
@@ -336,7 +336,7 @@ export class PgpMsg {
         });
     }
     return decryptedContent;
-  }
+  };
 
   public static stripPublicKeys = (decryptedContent: string, foundPublicKeys: string[]) => {
     let { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent); // tslint:disable-line:prefer-const
@@ -348,7 +348,7 @@ export class PgpMsg {
       }
     }
     return normalized;
-  }
+  };
 
   // public static extractFcReplyToken =  (decryptedContent: string) => {
   //   // todo - used exclusively on the web - move to a web package
@@ -363,17 +363,17 @@ export class PgpMsg {
 
   public static stripFcTeplyToken = (decryptedContent: string) => {
     return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
-  }
+  };
 
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {
     return o && typeof o === 'object' && typeof (o as FcAttLinkData).name !== 'undefined'
       && typeof (o as FcAttLinkData).size !== 'undefined' && typeof (o as FcAttLinkData).type !== 'undefined';
-  }
+  };
 
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {
     keys.signedBy = Value.arr.unique(await PgpKey.longids(
       msg.getSigningKeyIDs ? msg.getSigningKeyIDs() : []));
-  }
+  };
 
   private static populateKeysForVerification = async (keys: SortedKeysForDecrypt,
     verificationPubkeys?: string[]) => {
@@ -384,7 +384,7 @@ export class PgpMsg {
         keys.forVerification.push(...keysForVerification);
       }
     }
-  }
+  };
 
   private static getSortedKeys = async (kiWithPp: PrvKeyInfo[], msg: OpenpgpMsgOrCleartext, verificationPubkeys?: string[]): Promise<SortedKeysForDecrypt> => {
     const keys: SortedKeysForDecrypt = {
@@ -437,12 +437,12 @@ export class PgpMsg {
       }
     }
     return keys;
-  }
+  };
 
   private static matchingKeyids = (key: Key, encryptedFor: KeyID[]): KeyID[] => {
     const msgKeyidBytesArr = (encryptedFor || []).map(kid => kid.bytes);
     return key.getKeyIDs().filter(kid => msgKeyidBytesArr.includes((kid as KeyID).bytes));
-  }
+  };
 
   private static decryptKeyFor = async (prv: Key, passphrase: string, matchingKeyIds: KeyID[]): Promise<boolean> => {
     if (!matchingKeyIds.length) { // we don't know which keyids match, decrypt all key packets
@@ -454,7 +454,7 @@ export class PgpMsg {
       }
     }
     return true;
-  }
+  };
 
   private static isKeyDecryptedFor = (prv: Key, msgKeyIds: KeyID[]): boolean => {
     if (isFullyDecrypted(prv)) {
@@ -468,7 +468,7 @@ export class PgpMsg {
     }
     // test if all needed key packets are decrypted
     return msgKeyIds.filter(kid => isPacketDecrypted(prv, kid)).length === msgKeyIds.length;
-  }
+  };
 
   private static cryptoMsgDecryptCategorizeErr = (decryptErr: any, msgPwd?: string): DecryptError$error => {
     const e = String(decryptErr).replace('Error: ', '').replace('Error decrypting message: ', '');
@@ -487,6 +487,6 @@ export class PgpMsg {
     } else {
       return { type: DecryptErrTypes.other, message: e };
     }
-  }
+  };
 
 }
