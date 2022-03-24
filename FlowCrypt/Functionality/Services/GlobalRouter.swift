@@ -111,7 +111,8 @@ extension GlobalRouter: GlobalRouterType {
                 )
                 let session = try await googleService.signIn(
                     in: viewController,
-                    scopes: GeneralConstants.Gmail.contactsScope
+                    scopes: GeneralConstants.Gmail.contactsScope,
+                    userEmail: appContext.user.email
                 )
                 try appContext.userAccountService.startSessionFor(session: session)
                 // todo? - no need to update context itself with new session?
