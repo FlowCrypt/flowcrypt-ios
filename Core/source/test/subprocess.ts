@@ -22,14 +22,17 @@ export class Subprocess {
   /**
    * user to replace this with a callback
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static onStdout = (r: { stdout: Buffer, cmd: string, args: string[] }): void => undefined;
 
   /**
    * user to replace this with a callback
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public static onStderr = (r: { stderr: Buffer, cmd: string, args: string[] }): void => undefined;
 
-  public static spawn = (cmd: string, rawArgs: (string | number)[], readiness_indicator?: string, env?: { [k: string]: string }): Promise<child_process.ChildProcess> => new Promise((resolve, reject) => {
+  public static spawn = (cmd: string, rawArgs: (string | number)[], readiness_indicator?: string,
+    env?: { [k: string]: string }): Promise<child_process.ChildProcess> => new Promise((resolve, reject) => {
     let ready = false;
     const args = rawArgs.map(String);
     const p: child_process.ChildProcess = child_process.spawn(cmd, args, { env });
@@ -76,9 +79,9 @@ export class Subprocess {
       }
     }
   };
-
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 setNodeCleanupCb((exit_code, signal) => {
   Subprocess.killall('SIGTERM');
   return undefined;

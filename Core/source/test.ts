@@ -623,7 +623,11 @@ ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
   expect(decryptJson.text).to.contain(msg);
   expect(decryptJson.subject).to.eq('New Message from App Store Review Regarding Enterprise FlowCrypt');
   expect(decryptJson.replyType).to.eq('plain');
-  const html = '<p>Dear Tomas,</p> <p>We\'ve sent you a new message about your app, Enterprise FlowCrypt, app Apple ID: 1591462989. To view or reply to the message, go to <a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">Resolution Center</a> in App Store Connect.</p> <p>Best regards,<br /> App Store Review</p>';
+  const html = '<p>Dear Tomas,</p> <p>We\'ve sent you a new message about your app, Enterprise FlowCrypt, ' +
+    'app Apple ID: 1591462989. To view or reply to the message, ' +
+    'go to <a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa' +
+    '/ra/ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">' +
+    'Resolution Center</a> in App Store Connect.</p> <p>Best regards,<br /> App Store Review</p>';
   const blocksObj = JSON.parse(blocks.toString().replace(/\\n/g, '').replace(/\s+/g, ' '));
   expect(blocksObj.type).eq('plainHtml');
   expect(blocksObj.complete).eq(true);
