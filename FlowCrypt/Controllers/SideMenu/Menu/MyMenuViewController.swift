@@ -178,7 +178,7 @@ extension MyMenuViewController {
         showSpinner()
         Task {
             do {
-                let folders = try await foldersService.fetchFolders(isForceReload: true, for: appContext.user)
+                let folders = try await foldersService.fetchFolders(isForceReload: false, for: appContext.user)
                 handleNewFolders(with: folders)
             } catch {
                 handleError(with: error)
@@ -343,7 +343,6 @@ extension MyMenuViewController {
 // MARK: - SideMenuViewController
 extension MyMenuViewController: SideMenuViewController {
     func didOpen() {
-        tableNode.reloadData()
         fetchFolders()
     }
 }
