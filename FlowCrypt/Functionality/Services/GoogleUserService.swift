@@ -193,13 +193,17 @@ extension GoogleUserService: UserServiceType {
 extension GoogleUserService {
 
     private func makeAuthorizationRequest(scopes: [GoogleScope]) -> OIDAuthorizationRequest {
-        OIDAuthorizationRequest(
+        var additionalParameters = ["include_granted_scopes": "true"]
+        if let currentUserEmail = currentUserEmail {
+            additionalParameters["login_hint"] = currentUserEmail
+        }
+        return OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
             scopes: scopes.map(\.value),
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
-            additionalParameters: ["include_granted_scopes": "true"]
+            additionalParameters: additionalParameters
         )
     }
 
