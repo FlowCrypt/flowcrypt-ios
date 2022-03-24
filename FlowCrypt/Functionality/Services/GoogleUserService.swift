@@ -13,7 +13,7 @@ import GTMAppAuth
 import RealmSwift
 
 protocol UserServiceType {
-    func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType
+    func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String?) async throws -> SessionType
     func renewSession() async throws
 }
 
@@ -78,6 +78,7 @@ protocol AppDelegateGoogleSesssionContainer {
 // todo - should be refactored to not require currentUserEmail
 final class GoogleUserService: NSObject, GoogleUserServiceType {
 
+    @available(*, deprecated, message: "This variable will be removed in the near future.")
     let currentUserEmail: String?
     var appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer?
 
@@ -119,9 +120,9 @@ extension GoogleUserService: UserServiceType {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
     }
 
-    @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType {
+    @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String? = nil) async throws -> SessionType {
         return try await withCheckedThrowingContinuation { continuation in
-            let request = self.makeAuthorizationRequest(scopes: scopes)
+            let request = self.makeAuthorizationRequest(scopes: scopes, userEmail: userEmail)
             let googleDelegateSess = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
@@ -192,10 +193,10 @@ extension GoogleUserService: UserServiceType {
 // MARK: - Convenience
 extension GoogleUserService {
 
-    private func makeAuthorizationRequest(scopes: [GoogleScope]) -> OIDAuthorizationRequest {
+    private func makeAuthorizationRequest(scopes: [GoogleScope], userEmail: String? = nil) -> OIDAuthorizationRequest {
         var additionalParameters = ["include_granted_scopes": "true"]
-        if let currentUserEmail = currentUserEmail {
-            additionalParameters["login_hint"] = currentUserEmail
+        if let userEmail = userEmail {
+            additionalParameters["login_hint"] = userEmail
         }
         return OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
