@@ -244,15 +244,17 @@ extension SetupManuallyEnterPassPhraseViewController {
         )
 
         if storageMethod == .memory {
-            for newPassPhrase in (keysToUpdate.map {
+            let updatedPassPhrases = keysToUpdate.map {
                 PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
-            }) {
-                try appContext.passPhraseService.updatePassPhrase(with: newPassPhrase, storageMethod: storageMethod)
+            }
+            for updatedPassPhrase in updatedPassPhrases {
+                try appContext.passPhraseService.updatePassPhrase(with: updatedPassPhrase, storageMethod: storageMethod)
             }
 
-            for newPassPhrase in (newKeysToAdd.map {
+            let newPassPhrases = newKeysToAdd.map {
                 PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
-            }){
+            }
+            for newPassPhrase in newPassPhrases {
                 try appContext.passPhraseService.savePassPhrase(with: newPassPhrase, storageMethod: storageMethod)
             }
         }

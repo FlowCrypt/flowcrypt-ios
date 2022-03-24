@@ -88,6 +88,8 @@ final class InMemoryPassPhraseProvider: InMemoryPassPhraseProviderType {
     }
 
     func remove(passPhrases passPhrasesToDelete: Set<PassPhrase>) {
-        for passPhraseToDelete in passPhrasesToDelete { passPhrases.remove(passPhraseToDelete) }
+        for passPhraseToDelete in passPhrasesToDelete {
+            passPhrases.remove(passPhraseToDelete)
+        }
     }
 }
