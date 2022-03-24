@@ -188,7 +188,7 @@ extension MyMenuViewController {
 
     private func handleNewFolders(with folders: [FolderViewModel]) {
         hideSpinner()
-        self.folders = folders.sorted(
+        let updatedFolders = folders.sorted(
             by: { left, _ in
                 if left.path.caseInsensitiveCompare(Constants.inbox) == .orderedSame {
                     return true
@@ -198,7 +198,11 @@ extension MyMenuViewController {
                 return false
             }
         )
-        tableNode.reloadData()
+        // Only reload table node when folder items changed
+        if updatedFolders != self.folders {
+            self.folders = updatedFolders
+            tableNode.reloadData()
+        }
     }
 
     private func handleError(with error: Error) {

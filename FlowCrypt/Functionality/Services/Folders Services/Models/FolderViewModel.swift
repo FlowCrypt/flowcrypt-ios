@@ -45,3 +45,9 @@ extension FolderViewModel {
         )
     }
 }
+
+extension FolderViewModel: Equatable {
+    static func == (lhs: FolderViewModel, rhs: FolderViewModel) -> Bool {
+        return lhs.name == rhs.name && lhs.path == rhs.path
+    }
+}
