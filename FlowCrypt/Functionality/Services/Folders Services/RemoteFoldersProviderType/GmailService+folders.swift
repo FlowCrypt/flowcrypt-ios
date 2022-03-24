@@ -62,7 +62,7 @@ private extension Folder {
 
         self.init(
             path: path,
-            name: name,
+            name: name.capitalized,
             image: nil
         )
     }
