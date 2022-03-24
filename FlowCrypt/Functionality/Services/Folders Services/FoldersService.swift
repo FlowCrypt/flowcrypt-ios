@@ -41,10 +41,8 @@ final class FoldersService: FoldersServiceType {
         let localFolders = try localFoldersProvider.fetchFolders(for: user.email)
         if localFolders.isEmpty {
             return try await getAndSaveFolders(for: user)
-        } else {
-            try await getAndSaveFolders(for: user)
-            return localFolders
         }
+        return localFolders
     }
 
     @discardableResult

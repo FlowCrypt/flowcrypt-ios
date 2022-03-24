@@ -134,6 +134,16 @@
 "folder_all_inbox" = "Inbox";
 "folder_add_account" = "Add account";
 "folder_settings" = "Settings";
+"folder_INBOX" = "Inbox";
+"folder_CHAT" = "Chat";
+"folder_SENT" = "Sent";
+"folder_IMPORTANT" = "Important";
+"folder_TRASH" = "Trash";
+"folder_DRAFT" = "Draft";
+"folder_SPAM" = "Spam";
+"folder_STARRED" = "Starred";
+"folder_UNREAD" = "Unread";
+"folder_ALL_MAIL" = "All Mail";
 
 // Sign in
 "sign_in_privacy" = "Privacy";

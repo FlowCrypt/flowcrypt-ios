@@ -38,10 +38,16 @@ extension FolderViewModel {
 extension FolderViewModel {
     init(_ object: FolderRealmObject) {
         self.init(
-            name: object.name.capitalized,
+            name: object.name,
             path: object.path,
             image: object.image.flatMap(UIImage.init),
             itemType: ItemType(rawValue: object.itemType) ?? .folder
         )
+    }
+}
+
+extension FolderViewModel: Equatable {
+    static func == (lhs: FolderViewModel, rhs: FolderViewModel) -> Bool {
+        return lhs.name == rhs.name && lhs.path == rhs.path
     }
 }
