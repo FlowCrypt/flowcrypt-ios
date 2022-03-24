@@ -123,10 +123,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
         let keys = try find(with: email)?
             .pubKeys
             .filter { $0.primaryFingerprint == fingerprint }
-        guard let keys = keys else {
-            return
-        }
-        for key in keys {
+        for key in keys ?? [] {
             try storage.write {
                 storage.delete(key)
             }

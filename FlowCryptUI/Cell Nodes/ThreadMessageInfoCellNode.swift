@@ -248,7 +248,9 @@ public final class ThreadMessageInfoCellNode: CellNode {
         dateNode.accessibilityIdentifier = "aid-date-\(input.index)"
 
         let nodes = [senderNode, recipientButtonNode, senderNode, dateNode]
-        for node in nodes { node.isAccessibilityElement = true }
+        for node in nodes {
+            node.isAccessibilityElement = true
+        }
     }
 
     // MARK: - Callbacks
