@@ -821,8 +821,14 @@ ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
           "-----END PGP PUBLIC KEY BLOCK-----\n",
         "users": ["Test <t@est.com>"],
         "ids": [
-          { "fingerprint": "E76853E128A0D376CAE47C143A30F4CC0A9A8F10", "longid": "3A30F4CC0A9A8F10", "shortid": "0A9A8F10", "keywords": "DEMAND MARBLE CREDIT BENEFIT POTTERY CAPITAL" },
-          { "fingerprint": "9EF2F8F36A841C0D5FAB8B0F0BAB9C018B265D22", "longid": "0BAB9C018B265D22", "shortid": "8B265D22", "keywords": "ARM FRIEND ABOUT BIND GRAPE CATTLE" }
+          {
+            "fingerprint": "E76853E128A0D376CAE47C143A30F4CC0A9A8F10", "longid": "3A30F4CC0A9A8F10",
+            "shortid": "0A9A8F10", "keywords": "DEMAND MARBLE CREDIT BENEFIT POTTERY CAPITAL"
+          },
+          {
+            "fingerprint": "9EF2F8F36A841C0D5FAB8B0F0BAB9C018B265D22", "longid": "0BAB9C018B265D22",
+            "shortid": "8B265D22", "keywords": "ARM FRIEND ABOUT BIND GRAPE CATTLE"
+          }
         ],
         "algo": { "algorithm": "rsaEncryptSign", "bits": 2047, "algorithmId": 1 },
         "created": 1543592161,
@@ -872,7 +878,9 @@ ava.default('can process dirty html without throwing', async t => {
 
 ava.default('verify encrypted+signed message by providing it correct public key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+    { keys, isEmail: true, verificationPubkeys: pubKeys },
+    [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   expect(decryptJson.replyType).equals('encrypted');
   expect(decryptJson.subject).equals('mime email encrypted inline text signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -887,7 +895,9 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
   const allPubKeys = [];
   for (const pubkey of pubKeys2) allPubKeys.push(pubkey);
   for (const pubkey of pubKeys) allPubKeys.push(pubkey);
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+    { keys, isEmail: true, verificationPubkeys: pubKeys },
+    [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   expect(decryptJson.replyType).equals('encrypted');
   expect(decryptJson.subject).equals('mime email encrypted inline text signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -899,7 +909,9 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
 ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)', async t => {
   const { keys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+    { keys, isEmail: true, verificationPubkeys: pubKeys2 },
+    [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   expect(decryptJson.replyType).equals('encrypted');
   expect(decryptJson.subject).equals('mime email encrypted inline text signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -910,7 +922,9 @@ ava.default('verify encrypted+signed message by providing it only a wrong public
 
 ava.default('verify plain-text signed message by providing it correct key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+    { keys, isEmail: true, verificationPubkeys: pubKeys },
+    [await getCompatAsset('mime-email-plain-signed')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
