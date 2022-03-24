@@ -40,7 +40,9 @@ export class MsgBlockParser {
     }
   };
 
-  public static fmtDecryptedAsSanitizedHtmlBlocks = async (decryptedContent: Uint8Array, signature?: VerifyRes, imgHandling: SanitizeImgHandling = 'IMG-TO-LINK'): Promise<SanitizedBlocks> => {
+  public static fmtDecryptedAsSanitizedHtmlBlocks = async (
+    decryptedContent: Uint8Array, signature?: VerifyRes,
+    imgHandling: SanitizeImgHandling = 'IMG-TO-LINK'): Promise<SanitizedBlocks> => {
     const blocks: MsgBlock[] = [];
     let isRichText = false;
     if (!Mime.resemblesMsg(decryptedContent)) {
