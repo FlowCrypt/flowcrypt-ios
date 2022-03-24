@@ -1149,7 +1149,7 @@ extension ComposeViewController {
 
                 let contact = Recipient(recipient: recipient)
                 let contactWithFetchedKeys = try await pubLookup.fetchRemoteUpdateLocal(with: contact)
-                
+
                 handleEvaluation(for: contactWithFetchedKeys)
                 showRecipientLabelIfNecessary()
             } catch {

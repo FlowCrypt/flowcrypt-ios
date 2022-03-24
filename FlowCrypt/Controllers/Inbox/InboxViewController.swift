@@ -244,7 +244,7 @@ extension InboxViewController {
             }
         }
     }
-    
+
     func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
         context.beginBatchFetching()
         handleBeginFetching(context)
