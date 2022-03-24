@@ -134,8 +134,8 @@ extension SideMenuNavigationController {
 
     private func updateNavigationItems(isShown: Bool) {
         guard let items = topViewController?.navigationItem.rightBarButtonItems else { return }
-        items.forEach {
-            $0.isEnabled = isShown
+        for item in items {
+            item.isEnabled = isShown
         }
 
         UIView.animate(
@@ -143,8 +143,8 @@ extension SideMenuNavigationController {
             delay: 0,
             options: [.beginFromCurrentState],
             animations: {
-                items.forEach {
-                    $0.customView?.alpha = isShown ? 1.0 : 0.3
+                for item in items {
+                    item.customView?.alpha = isShown ? 1.0 : 0.3
                 }
             }, completion: nil
         )

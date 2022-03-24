@@ -165,9 +165,9 @@ public extension UIViewController {
 
     @MainActor
     func hideSpinner() {
-        self.view.subviews
-            .compactMap { $0 as? MBProgressHUD }
-            .forEach { $0.hide(animated: true) }
+        for subview in (self.view.subviews.compactMap { $0 as? MBProgressHUD }) {
+            subview.hide(animated: true)
+        }
         self.view.isUserInteractionEnabled = true
     }
 

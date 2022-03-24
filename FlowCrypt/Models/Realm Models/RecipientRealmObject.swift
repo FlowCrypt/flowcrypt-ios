@@ -28,9 +28,11 @@ extension RecipientRealmObject {
         self.name = name ?? ""
         self.lastUsed = lastUsed
 
-        keys
+        let realmKeys = keys
             .compactMap { try? PubKeyRealmObject($0) }
-            .forEach { self.pubKeys.append($0) }
+        for realmKey in realmKeys {
+            self.pubKeys.append(realmKey)
+        }
     }
 }
 

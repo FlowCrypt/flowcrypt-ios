@@ -85,10 +85,10 @@ extension ComposeMessageContext {
     }
 
     mutating func updateRecipient(email: String, state: RecipientState, keyState: PubKeyState?) {
-        recipients.indices.forEach {
-            guard recipients[$0].email == email else { return }
-            recipients[$0].state = state
-            recipients[$0].keyState = keyState
+        for index in recipients.indices {
+            guard recipients[index].email == email else { return }
+            recipients[index].state = state
+            recipients[index].keyState = keyState
         }
     }
 
@@ -97,11 +97,11 @@ extension ComposeMessageContext {
     }
 
     mutating func update(recipient: String, state: RecipientState, keyState: PubKeyState?) {
-        recipients.indices.forEach {
-            guard recipients[$0].email == recipient else { return }
+        for index in recipients.indices {
+            guard recipients[index].email == recipient else { return }
 
-            recipients[$0].state = state
-            recipients[$0].keyState = keyState
+            recipients[index].state = state
+            recipients[index].keyState = keyState
         }
     }
 }

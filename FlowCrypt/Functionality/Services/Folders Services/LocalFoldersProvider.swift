@@ -40,8 +40,8 @@ extension LocalFoldersProvider: LocalFoldersProviderType {
         let objects = folders.map { FolderRealmObject(folder: $0, user: user) }
         let storage = try storage
         try storage.write {
-            objects.forEach {
-                storage.add($0, update: .modified)
+            for object in objects {
+                storage.add(object, update: .modified)
             }
         }
     }

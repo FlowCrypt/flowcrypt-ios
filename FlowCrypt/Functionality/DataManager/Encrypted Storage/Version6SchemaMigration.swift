@@ -95,7 +95,7 @@ extension SchemaMigration {
                 Properties.Keypair.allFingerprints,
                 Properties.Keypair.allLongids
             ]
-            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
+            for property in primitiveProperties { newObject[property] = oldObject[property] }
 
             guard
                 let oldUserObject = oldObject[Properties.Keypair.user] as? Object,

@@ -244,21 +244,17 @@ extension SetupManuallyEnterPassPhraseViewController {
         )
 
         if storageMethod == .memory {
-            try keysToUpdate
-                .map {
-                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
-                }
-                .forEach {
-                    try appContext.passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
-                }
+            for newPassPhrase in (keysToUpdate.map {
+                PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
+            }) {
+                try appContext.passPhraseService.updatePassPhrase(with: newPassPhrase, storageMethod: storageMethod)
+            }
 
-            try newKeysToAdd
-                .map {
-                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
-                }
-                .forEach {
-                    try appContext.passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
-                }
+            for newPassPhrase in (newKeysToAdd.map {
+                PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
+            }){
+                try appContext.passPhraseService.savePassPhrase(with: newPassPhrase, storageMethod: storageMethod)
+            }
         }
 
         hideSpinner()

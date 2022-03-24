@@ -170,7 +170,9 @@ final class ComposeViewController: TableNodeViewController {
             return
         }
 
-        cancellable.forEach { $0.cancel() }
+        for cancellable in cancellable {
+            cancellable.cancel()
+        }
         setupSearch()
 
         evaluateAllRecipients()
@@ -198,13 +200,13 @@ final class ComposeViewController: TableNodeViewController {
     func update(with message: Message) {
         self.contextToSend.subject = message.subject
         self.contextToSend.message = message.raw
-        message.to.forEach { recipient in
+        for recipient in message.to {
             evaluateMessage(recipient: recipient, type: .to)
         }
-        message.cc.forEach { recipient in
+        for recipient in message.cc {
             evaluateMessage(recipient: recipient, type: .cc)
         }
-        message.bcc.forEach { recipient in
+        for recipient in message.bcc {
             evaluateMessage(recipient: recipient, type: .bcc)
         }
     }
@@ -338,11 +340,11 @@ extension ComposeViewController {
     private func setupQuote() {
         guard input.isQuote else { return }
 
-        input.quoteRecipients.forEach { recipient in
+        for recipient in input.quoteRecipients {
             evaluateMessage(recipient: recipient, type: .to)
         }
 
-        input.quoteCCRecipients.forEach { recipient in
+        for recipient in input.quoteCCRecipients {
             evaluateMessage(recipient: recipient, type: .cc)
         }
 
@@ -961,8 +963,8 @@ extension ComposeViewController {
             let recipients = character.components(separatedBy: characterSet)
             let validRecipients = recipients.filter { $0.isValidEmail }
             guard validRecipients.count > 1 else { return true }
-            validRecipients.forEach {
-                handleEndEditingAction(with: $0, for: recipientType)
+            for recipient in validRecipients {
+                handleEndEditingAction(with: recipient, for: recipientType)
             }
             return false
         } else if Constants.endTypingCharacters.contains(character),
@@ -1207,7 +1209,7 @@ extension ComposeViewController {
         state: RecipientState,
         keyState: PubKeyState? = nil
     ) {
-        contextToSend.recipients.indices.forEach { index in
+        for index in contextToSend.recipients.indices {
             guard contextToSend.recipients[index].email == email else { return }
 
             let recipient = contextToSend.recipients[index]

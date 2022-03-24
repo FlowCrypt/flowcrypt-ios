@@ -30,7 +30,7 @@ class ImapHelperTest: XCTestCase {
         let countExpectation = XCTestExpectation()
         countExpectation.expectedFulfillmentCount = 12
 
-        indexSet?.forEach { _ in
+        for _ in indexSet ?? [] {
             countExpectation.fulfill()
         }
 

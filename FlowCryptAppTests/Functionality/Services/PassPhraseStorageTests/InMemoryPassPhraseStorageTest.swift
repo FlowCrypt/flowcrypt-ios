@@ -26,16 +26,16 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     func testSavePassPhraseUpdatesDate() {
         let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.save(passPhrase: pass)
-        passPhraseProvider.passPhrases.forEach {
-            XCTAssertNotNil($0.date)
+        for passPhrase in passPhraseProvider.passPhrases {
+            XCTAssertNotNil(passPhrase.date)
         }
     }
 
     func testUpdatePassPhraseUpdatesDate() {
         let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.update(passPhrase: pass)
-        passPhraseProvider.passPhrases.forEach {
-            XCTAssertNotNil($0.date)
+        for passPhrase in passPhraseProvider.passPhrases {
+            XCTAssertNotNil(passPhrase.date)
         }
     }
 
@@ -74,6 +74,6 @@ class InMemoryPassPhraseProviderMock: InMemoryPassPhraseProviderType {
     }
 
     func remove(passPhrases passPhrasesToDelete: Set<PassPhrase>) {
-        passPhrasesToDelete.forEach { passPhrases.remove($0) }
+        for passPhraseToDelete in passPhrasesToDelete { passPhrases.remove(passPhraseToDelete) }
     }
 }

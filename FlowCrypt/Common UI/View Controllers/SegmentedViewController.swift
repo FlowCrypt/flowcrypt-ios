@@ -112,8 +112,8 @@ final class SegmentedViewController: ASDKViewController<ASDisplayNode> {
             width: node.view.frame.width,
             height: node.view.frame.height - style.height
         )
-        segmentView.view.subviews.forEach {
-            $0.frame = segmentView.bounds
+        for subview in segmentView.view.subviews {
+            subview.frame = segmentView.bounds
         }
     }
 }
@@ -156,14 +156,18 @@ extension SegmentedViewController {
         UIView.animate(
             withDuration: 0.2,
             animations: {
-                self.segmentView.view.subviews.forEach { $0.alpha = 0 }
+                for subview in self.segmentView.view.subviews {
+                    subview.alpha = 0
+                }
             },
             completion: { _ in
-                self.segmentView.view.subviews.forEach { $0.removeFromSuperview() }
+                for subview in self.segmentView.view.subviews {
+                    subview.removeFromSuperview()
+                }
 
-                self.children.forEach {
-                    $0.removeFromParent()
-                    $0.didMove(toParent: nil)
+                for child in self.children {
+                    child.removeFromParent()
+                    child.didMove(toParent: nil)
                 }
 
                 self.addChild(viewController)
