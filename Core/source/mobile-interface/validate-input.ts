@@ -9,11 +9,31 @@ type Obj = { [k: string]: any };
 export namespace NodeRequest {
   type PrvKeyInfo = { private: string; longid: string, passphrase: string | undefined };
   type Attachment = { name: string; type: string; base64: string };
-  interface composeEmailBase { text: string, html?: string, to: string[], cc: string[], bcc: string[], from: string, subject: string, replyToMimeMsg: string, atts?: Attachment[] }
-  export interface composeEmailPlain extends composeEmailBase { format: 'plain' }
-  export interface composeEmailEncrypted extends composeEmailBase { format: 'encrypt-inline' | 'encrypt-pgpmime', pubKeys: string[], signingPrv: PrvKeyInfo | undefined }
+  interface composeEmailBase {
+    text: string,
+    html?: string,
+    to: string[],
+    cc: string[],
+    bcc: string[],
+    from: string,
+    subject: string,
+    replyToMimeMsg: string,
+    atts?: Attachment[]
+  }
 
-  export type generateKey = { passphrase: string, variant: 'rsa2048' | 'rsa4096' | 'curve25519', userIds: { name: string, email: string }[] };
+  export interface composeEmailPlain extends composeEmailBase { format: 'plain' }
+  export interface composeEmailEncrypted extends composeEmailBase {
+    format: 'encrypt-inline' | 'encrypt-pgpmime',
+    pubKeys: string[],
+    signingPrv: PrvKeyInfo | undefined
+  }
+
+  export type generateKey = {
+    passphrase: string,
+    variant: 'rsa2048' | 'rsa4096' | 'curve25519',
+    userIds: { name: string, email: string }[]
+  };
+
   export type composeEmail = composeEmailPlain | composeEmailEncrypted;
   export type encryptMsg = { pubKeys: string[], msgPwd?: string };
   export type encryptFile = { pubKeys: string[], name: string };
@@ -44,13 +64,17 @@ export class ValidateInput {
   };
 
   public static composeEmail = (v: any): NodeRequest.composeEmail => {
-    if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'html', 'string?') && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string') && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {
-      throw new Error('Wrong request structure for NodeRequest.composeEmail, need: text,from,subject,to,cc,bcc,atts (can use empty arr for cc/bcc, and can skip atts)');
+    if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'html', 'string?')
+      && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string')
+      && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {
+      throw new Error('Wrong request structure for NodeRequest.composeEmail, ' +
+        'need: text,from,subject,to,cc,bcc,atts (can use empty arr for cc/bcc, and can skip atts)');
     }
     if (!hasProp(v, 'atts', 'Attachment[]?')) {
       throw new Error('Wrong atts structure for NodeRequest.composeEmail, need: {name, type, base64}');
     }
-    if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?') && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
+    if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?')
+      && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
       return v as NodeRequest.composeEmailEncrypted;
     }
     if (!v.pubKeys && v.format === 'plain') {
@@ -60,7 +84,8 @@ export class ValidateInput {
   };
 
   public static parseDecryptMsg = (v: any): NodeRequest.parseDecryptMsg => {
-    if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?') && hasProp(v, 'isEmail', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')) {
+    if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?')
+      && hasProp(v, 'isEmail', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')) {
       return v as NodeRequest.parseDecryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.parseDecryptMsg');
@@ -131,7 +156,11 @@ const isObj = (v: any): v is Obj => {
   return v && typeof v === 'object';
 };
 
-const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object' | 'string' | 'number' | 'string?' | 'boolean?' | 'PrvKeyInfo?' | 'PrvKeyInfo[]' | 'Userid[]' | 'Attachment[]?' ): boolean => {
+const hasProp = (
+  v: Obj,
+  name: string,
+  type: 'string[]' | 'string[]?' | 'object' | 'string' | 'number' | 'string?' | 'boolean?' | 'PrvKeyInfo?'
+    | 'PrvKeyInfo[]' | 'Userid[]' | 'Attachment[]?'): boolean => {
   if (!isObj(v)) {
     return false;
   }
@@ -150,26 +179,32 @@ const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object'
     return typeof value === 'string' || typeof value === 'undefined';
   }
   if (type === 'Attachment[]?') {
-    return typeof value === 'undefined' || (Array.isArray(value) && value.filter((x: any) => hasProp(x, 'name', 'string') && hasProp(x, 'type', 'string') && hasProp(x, 'base64', 'string')).length === value.length);
+    return typeof value === 'undefined' ||
+      (Array.isArray(value) && value.filter((x: any) => hasProp(x, 'name', 'string')
+        && hasProp(x, 'type', 'string') && hasProp(x, 'base64', 'string')).length === value.length);
   }
   if (type === 'string[]') {
     return Array.isArray(value) && value.filter((x: any) => typeof x === 'string').length === value.length;
   }
   if (type === 'string[]?') {
-    return typeof value === 'undefined' || Array.isArray(value) && value.filter((x: any) => typeof x === 'string').length === value.length;
+    return typeof value === 'undefined' || Array.isArray(value)
+      && value.filter((x: any) => typeof x === 'string').length === value.length;
   }
   if (type === 'PrvKeyInfo?') {
     if (value === null) {
       v[name] = undefined;
       return true;
     }
-    return typeof value === 'undefined' || hasProp(value, 'private', 'string') && hasProp(value, 'longid', 'string') && hasProp(value, 'passphrase', 'string?');
+    return typeof value === 'undefined' || hasProp(value, 'private', 'string')
+      && hasProp(value, 'longid', 'string') && hasProp(value, 'passphrase', 'string?');
   }
   if (type === 'PrvKeyInfo[]') {
-    return Array.isArray(value) && value.filter((ki: any) => hasProp(ki, 'private', 'string') && hasProp(ki, 'longid', 'string') && hasProp(ki, 'passphrase', 'string?')).length === value.length;
+    return Array.isArray(value) && value.filter((ki: any) => hasProp(ki, 'private', 'string')
+      && hasProp(ki, 'longid', 'string') && hasProp(ki, 'passphrase', 'string?')).length === value.length;
   }
   if (type === 'Userid[]') {
-    return Array.isArray(value) && value.filter((ui: any) => hasProp(ui, 'name', 'string') && hasProp(ui, 'email', 'string')).length === value.length;
+    return Array.isArray(value) && value.filter((ui: any) => hasProp(ui, 'name', 'string')
+      && hasProp(ui, 'email', 'string')).length === value.length;
   }
   if (type === 'object') {
     return isObj(value);
@@ -178,7 +213,7 @@ const hasProp = (v: Obj, name: string, type: 'string[]' | 'string[]?' | 'object'
 };
 
 export const readArmoredKeyOrThrow = async (armored: string) => {
-  const key = await readKey({armoredKey: armored});
+  const key = await readKey({ armoredKey: armored });
   if (!key) {
     throw new Error('No key found');
   }

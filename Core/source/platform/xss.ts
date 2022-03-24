@@ -45,7 +45,7 @@ export class Xss {
    * used whenever untrusted remote content (eg html email) is rendered, but we still want to preserve html
    * imgToLink is ignored on Node. Remote links are replaced with <a>, and local imgs are preserved
    */
-  public static htmlSanitizeKeepBasicTags = (dirtyHtml: string, imgToLink?: SanitizeImgHandling): string => {
+  public static htmlSanitizeKeepBasicTags = (dirtyHtml: string): string => {
     const imgContentReplaceable = `IMG_ICON_${Str.sloppyRandom()}`;
     let remoteContentReplacedWithLink = false;
     let cleanHtml = dereq_sanitize_html(dirtyHtml, {
