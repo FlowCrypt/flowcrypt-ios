@@ -7,10 +7,12 @@
 //
 
 import AppAuth
+import Combine
 import FlowCryptCommon
 import Foundation
 import GTMAppAuth
 import RealmSwift
+import GoogleAPIClientForREST_Oauth2
 
 protocol UserServiceType {
     func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType
@@ -185,7 +187,7 @@ extension GoogleUserService: UserServiceType {
             throw GoogleUserServiceError.inconsistentState("Missing token")
         }
         let user = try await self.fetchGoogleUser(with: authorization)
-        return SessionType.google(email, name: user.name, token: token)
+        return SessionType.google(email, name: user.name ?? "", token: token)
     }
 }
 
@@ -219,27 +221,22 @@ extension GoogleUserService {
         return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
     }
 
-    // todo - isn't this call supported by Google client library?
     private func fetchGoogleUser(
         with authorization: GTMAppAuthFetcherAuthorization
-    ) async throws -> GoogleUser {
-        guard let url = URL(string: Constants.userInfoUrl) else {
-            throw AppErr.unexpected("URL(Constants.userInfoUrl) nil")
-        }
-        let fetcherService = GTMSessionFetcherService()
-        fetcherService.authorizer = authorization
-        do {
-            let data = try await fetcherService.fetcher(with: url).beginFetch()
-            return try JSONDecoder().decode(GoogleUser.self, from: data)
-        } catch {
-            let isTokenErr = (error as NSError).isEqual(OIDOAuthTokenErrorDomain)
-            if isTokenErr, let email = currentUserEmail {
-                self.logger.logError("Authorization error during token refresh, clearing state. \(error)")
-                // removes any authorisation information which was stored in Keychain, the same happens on logout.
-                // if any error happens during token refresh then user will be signed out automatically.
-                GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+    ) async throws -> GTLROauth2_Userinfo {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLROauth2_Userinfo, Error>) in
+            let query = GTLROauth2Query_UserinfoGet.query()
+            let authService = GTLROauth2Service()
+            authService.authorizer = authorization
+            authService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    return continuation.resume(throwing: error)
+                }
+                guard let googleUser = data as? GTLROauth2_Userinfo else {
+                    return continuation.resume(throwing: AppErr.cast("GTLROauth2_UserinfoResponse"))
+                }
+                return continuation.resume(returning: googleUser)
             }
-            throw error
         }
     }
 

@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
+		040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */ = {isa = PBXBuildFile; productRef = 040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */; };
 		04127DFD27E3097E009DF86C /* LocalContactsProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */; };
+		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
 		04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
@@ -425,8 +426,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProviderMock.swift; sourceTree = "<group>"; };
+		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeypairRealmObject.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuViewController.swift; sourceTree = "<group>"; };
@@ -831,6 +832,7 @@
 				51C0C1EF271982A1000C9738 /* MailCore in Frameworks */,
 				51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */,
 				5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */,
+				040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
@@ -2214,6 +2216,7 @@
 				51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */,
 				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
 				51C0C1EE271982A1000C9738 /* MailCore */,
+				040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -3871,6 +3874,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
+			productName = GoogleAPIClientForREST_Oauth2;
+		};
 		512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
