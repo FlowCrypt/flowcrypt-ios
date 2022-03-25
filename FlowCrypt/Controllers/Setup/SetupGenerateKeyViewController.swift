@@ -95,20 +95,6 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
     }
 
-    // todo - there is a similar method in EnterpriseServierApi
-    //   this should be put somewhere general
-    private func getIdToken(for user: User) async throws -> String? {
-        switch user.authType {
-        case .oAuthGmail:
-            return try await GoogleUserService(
-                currentUserEmail: user.email,
-                appDelegateGoogleSessionContainer: nil // needed only when signing in/out
-            ).getCachedOrRefreshedIdToken()
-        default:
-            return Imap(user: user).imapSess?.oAuth2Token
-        }
-    }
-
     private func submitKeyToAttester(
         user: User,
         publicKey: String
@@ -117,7 +103,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
             _ = try await attester.replace(
                 email: user.email,
                 pubkey: publicKey,
-                idToken: try await getIdToken(for: user)
+                idToken: try await IdTokenUtils.getIdToken(user: user)
             )
         } catch {
             throw CreateKeyError.submitKey(error)
