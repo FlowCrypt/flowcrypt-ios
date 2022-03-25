@@ -154,7 +154,7 @@ extension Message {
         for messageHeader in messageHeaders.compactMap({ $0 }) {
             guard let name = messageHeader.name?.lowercased(),
                   let value = messageHeader.value
-            else { break }
+            else { continue }
 
             switch name {
             case .from: sender = Recipient(value)
