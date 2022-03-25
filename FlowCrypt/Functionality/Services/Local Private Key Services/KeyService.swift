@@ -10,9 +10,9 @@ import Foundation
 import FlowCryptCommon
 
 protocol KeyServiceType {
-    func getPrvKeyDetails() async throws -> [KeyDetails]
-    func getPrvKeyInfo() async throws -> [PrvKeyInfo]
-    func getSigningKey() async throws -> PrvKeyInfo?
+    func getPrvKeyDetails(email: String) async throws -> [KeyDetails]
+    func getPrvKeyInfo(email: String) async throws -> [PrvKeyInfo]
+    func getSigningKey(email: String) async throws -> PrvKeyInfo?
 }
 
 final class KeyService: KeyServiceType {
@@ -20,25 +20,19 @@ final class KeyService: KeyServiceType {
     let coreService: Core = .shared
     let storage: EncryptedStorageType
     let passPhraseService: PassPhraseServiceType
-    let currentUserEmail: () -> (String?)
     let logger: Logger
 
     init(
         storage: EncryptedStorageType,
-        passPhraseService: PassPhraseServiceType,
-        currentUserEmail: @escaping () -> (String?)
+        passPhraseService: PassPhraseServiceType
     ) {
         self.storage = storage
         self.passPhraseService = passPhraseService
-        self.currentUserEmail = currentUserEmail
         self.logger = Logger.nested(in: Self.self, with: "KeyService")
     }
 
     /// Use to get list of keys (including missing pass phrases keys)
-    func getPrvKeyDetails() async throws -> [KeyDetails] {
-        guard let email = currentUserEmail() else {
-            throw KeyServiceError.missingCurrentUserEmail
-        }
+    func getPrvKeyDetails(email: String) async throws -> [KeyDetails] {
         let privateKeys = try storage.getKeypairs(by: email).map(\.private)
         let parsed = try await coreService.parseKeys(
             armoredOrBinary: privateKeys.joined(separator: "\n").data()
@@ -50,11 +44,7 @@ final class KeyService: KeyServiceType {
     }
 
     /// Use to get list of PrvKeyInfo
-    func getPrvKeyInfo() async throws -> [PrvKeyInfo] {
-        guard let email = currentUserEmail() else {
-            throw KeyServiceError.missingCurrentUserEmail
-        }
-
+    func getPrvKeyInfo(email: String) async throws -> [PrvKeyInfo] {
         let storedPassPhrases = try passPhraseService.getPassPhrases()
         let privateKeys = try storage.getKeypairs(by: email)
             .map { keypair -> PrvKeyInfo in
@@ -67,12 +57,7 @@ final class KeyService: KeyServiceType {
         return privateKeys
     }
 
-    func getSigningKey() async throws -> PrvKeyInfo? {
-        guard let email = currentUserEmail() else {
-            logger.logError("no current user email")
-            throw AppErr.noCurrentUser
-        }
-
+    func getSigningKey(email: String) async throws -> PrvKeyInfo? {
         let keysInfo = try storage.getKeypairs(by: email)
         guard let foundKey = try await findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
             return nil

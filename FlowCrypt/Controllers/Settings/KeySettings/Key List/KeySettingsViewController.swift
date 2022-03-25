@@ -71,7 +71,7 @@ final class KeySettingsViewController: TableNodeViewController {
 
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() async throws {
-        self.keys = try await appContext.keyService.getPrvKeyDetails()
+        self.keys = try await appContext.keyService.getPrvKeyDetails(email: appContext.user.email)
         await node.reloadData()
     }
 }

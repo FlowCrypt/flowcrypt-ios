@@ -53,12 +53,11 @@ final class KeyServiceTests: XCTestCase {
 
         let keyService = KeyService(
             storage: keyStorage,
-            passPhraseService: passPhraseService,
-            currentUserEmail: { "bill@test.com" }
+            passPhraseService: passPhraseService
         )
 
         // act
-        let result = try await keyService.getSigningKey()
+        let result = try await keyService.getSigningKey(email: "bill@test.com")
 
         // assert
         XCTAssertEqual(result?.private, Self.privateKey2)
@@ -82,12 +81,11 @@ final class KeyServiceTests: XCTestCase {
 
         let keyService = KeyService(
             storage: keyStorage,
-            passPhraseService: PassPhraseServiceMock(),
-            currentUserEmail: { "bill@test.com" }
+            passPhraseService: PassPhraseServiceMock()
         )
 
         // act
-        let result = try await keyService.getSigningKey()
+        let result = try await keyService.getSigningKey(email: "bill@test.com")
 
         // assert
         XCTAssertEqual(result?.private, Self.privateKey1)
