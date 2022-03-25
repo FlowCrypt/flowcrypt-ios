@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
+		040FDF1027EDF23000CB936A /* IdTokenUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040FDF0F27EDF23000CB936A /* IdTokenUtils.swift */; };
 		04127DFD27E3097E009DF86C /* LocalContactsProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */; };
+		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
 		04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
@@ -425,8 +426,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		040FDF0F27EDF23000CB936A /* IdTokenUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenUtils.swift; sourceTree = "<group>"; };
 		04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProviderMock.swift; sourceTree = "<group>"; };
+		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeypairRealmObject.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuViewController.swift; sourceTree = "<group>"; };
@@ -1191,6 +1193,7 @@
 				D27B911724EFE787002DF0A1 /* Local Contacts Service */,
 				A381F24F271C1CA300A3D13C /* Remote Private Key Services */,
 				A381F24D271C1C1100A3D13C /* Remote Pub Key Services */,
+				040FDF0F27EDF23000CB936A /* IdTokenUtils.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -2797,6 +2800,7 @@
 				514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */,
 				2CAF25342756C3A6005C7C7C /* ImapSessionProvider.swift in Sources */,
 				9F2AC5B1267BDED100F6149B /* GmailSearchExpressionGenerator.swift in Sources */,
+				040FDF1027EDF23000CB936A /* IdTokenUtils.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
