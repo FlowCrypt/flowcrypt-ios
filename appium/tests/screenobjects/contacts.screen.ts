@@ -58,6 +58,21 @@ class ContactsScreen extends BaseScreen {
   clickOnContact = async (name: string) => {
     await ElementHelper.waitAndClick(await this.contactName(name));
   }
+
+  checkContactOrder = async (email: string, order: number) => {
+    const user = `-ios class chain:**/XCUIElementTypeOther[\`label == "${order}"\`]/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
+    await ElementHelper.waitElementVisible(await $(user));
+  }
+
+  checkContractIsNotDispalyed = async (email: string, order: number) => {
+    const user = `-ios class chain:**/XCUIElementTypeOther[\`label == "${order}"\`]/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
+    await ElementHelper.waitElementInvisible(await $(user));
+  }
+
+  clickRemoveButton = async (order: number) => {
+    const removeButton = `-ios class chain:**/XCUIElementTypeOther[\`label == "${order}"\`]/XCUIElementTypeButton`;
+    await ElementHelper.waitAndClick(await $(removeButton))
+  }
 }
 
 export default new ContactsScreen();
