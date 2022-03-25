@@ -21,9 +21,9 @@ public class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
         var prevMaxY: CGFloat = 0
         var leftMargin = sectionInset.left
 
-        attributes?.forEach { layoutAttribute in
+        for layoutAttribute in attributes ?? [] {
             guard layoutAttribute.representedElementCategory == .cell else {
-                return
+                continue
             }
 
             if layoutAttribute.frame.origin.y >= prevMaxY {

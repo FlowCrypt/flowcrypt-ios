@@ -50,10 +50,8 @@ extension LocalStorage: LogOutHandler {
     }
 
     func cleanup() {
-        Constants.allCases
-            .map(\.rawValue)
-            .forEach {
-                storage.removeObject(forKey: $0)
-            }
+        for key in Constants.allCases.map(\.rawValue) {
+            storage.removeObject(forKey: key)
+        }
     }
 }

@@ -96,8 +96,8 @@ public extension URLRequest {
         var request = URLRequest(url: url)
         request.httpMethod = method.rawValue
         request.httpBody = body
-        headers.forEach {
-            request.addValue($0.value, forHTTPHeaderField: $0.httpHeaderField)
+        for header in headers {
+            request.addValue(header.value, forHTTPHeaderField: header.httpHeaderField)
         }
         return request
     }

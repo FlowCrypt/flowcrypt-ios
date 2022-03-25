@@ -15,7 +15,9 @@ struct MultipartDataRequest {
     let httpBody = NSMutableData()
 
     init(items: [MultipartDataItem]) {
-        items.forEach(append)
+        for item in items {
+            append(item: item)
+        }
         appendBoundary()
     }
 

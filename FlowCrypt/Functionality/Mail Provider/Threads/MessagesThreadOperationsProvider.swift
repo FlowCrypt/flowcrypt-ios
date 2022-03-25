@@ -53,7 +53,7 @@ extension GmailService: MessagesThreadOperationsProvider {
 
     func mark(thread: MessageThread, asRead: Bool, in folder: String) async throws {
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-            thread.messages.forEach { message in
+            for message in thread.messages {
                 taskGroup.addTask {
                     asRead
                     ? try await self.markAsRead(message: message, folder: folder)

@@ -151,10 +151,10 @@ extension Message {
         var cc: String?
         var bcc: String?
 
-        messageHeaders.compactMap { $0 }.forEach {
-            guard let name = $0.name?.lowercased(),
-                  let value = $0.value
-            else { return }
+        for messageHeader in messageHeaders.compactMap({ $0 }) {
+            guard let name = messageHeader.name?.lowercased(),
+                  let value = messageHeader.value
+            else { continue }
 
             switch name {
             case .from: sender = Recipient(value)
