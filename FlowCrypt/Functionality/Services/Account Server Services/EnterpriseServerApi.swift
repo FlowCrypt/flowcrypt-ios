@@ -158,16 +158,6 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         return response.url
     }
 
-    // MARK: - Helpers
-    private func getIdToken(email: String) async throws -> String {
-        let googleService = GoogleUserService(
-            currentUserEmail: email,
-            appDelegateGoogleSessionContainer: nil
-        )
-
-        return try await googleService.getCachedOrRefreshedIdToken()
-    }
-
     private func isExpectedFesServiceResponse(responseData: Data) -> Bool {
         // "try?" because unsure what server is running there, want to test without failing
         guard let responseDictionary = try? responseData.toDict() else { return false }
@@ -228,7 +218,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         var headers = headers
 
         if withAuthorization {
-            let idToken = try await getIdToken(email: email)
+            let idToken = try await IdTokenUtils.getIdToken(userEmail: email)
             let authorizationHeader = URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")
             headers.append(authorizationHeader)
         }
