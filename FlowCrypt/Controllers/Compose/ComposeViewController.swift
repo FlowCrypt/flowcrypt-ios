@@ -1209,21 +1209,21 @@ extension ComposeViewController {
         state: RecipientState,
         keyState: PubKeyState? = nil
     ) {
-        for index in contextToSend.recipients.indices {
-            guard contextToSend.recipients[index].email == email else { return }
+        guard let index = contextToSend.recipients.firstIndex(where: { $0.email == email }) else {
+            return
+        }
 
-            let recipient = contextToSend.recipients[index]
-            let needsReload = recipient.state != state || recipient.keyState != keyState
+        let recipient = contextToSend.recipients[index]
+        let needsReload = recipient.state != state || recipient.keyState != keyState
 
-            contextToSend.recipients[index].state = state
-            contextToSend.recipients[index].keyState = keyState
+        contextToSend.recipients[index].state = state
+        contextToSend.recipients[index].keyState = keyState
 
-            if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
-                reload(sections: [.password])
+        if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
+            reload(sections: [.password])
 
-                if let listIndexPath = recipientsIndexPath(type: recipient.type, part: .list) {
-                    node.reloadRows(at: [listIndexPath], with: .automatic)
-                }
+            if let listIndexPath = recipientsIndexPath(type: recipient.type, part: .list) {
+                node.reloadRows(at: [listIndexPath], with: .automatic)
             }
         }
     }
