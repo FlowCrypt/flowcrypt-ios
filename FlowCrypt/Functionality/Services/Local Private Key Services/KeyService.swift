@@ -17,7 +17,7 @@ protocol KeyServiceType {
 
 final class KeyService: KeyServiceType {
 
-    let coreService: Core = .shared
+    let core: Core = .shared
     let storage: EncryptedStorageType
     let passPhraseService: PassPhraseServiceType
     let logger: Logger
@@ -34,7 +34,7 @@ final class KeyService: KeyServiceType {
     /// Use to get list of keys (including missing pass phrases keys)
     func getPrvKeyDetails(email: String) async throws -> [KeyDetails] {
         let privateKeys = try storage.getKeypairs(by: email).map(\.private)
-        let parsed = try await coreService.parseKeys(
+        let parsed = try await core.parseKeys(
             armoredOrBinary: privateKeys.joined(separator: "\n").data()
         )
         guard parsed.keyDetails.count == privateKeys.count else {
@@ -77,7 +77,7 @@ final class KeyService: KeyServiceType {
         logger.logDebug("findKeyByUserEmail: found \(keysInfo.count) candidate prvs in storage, searching by:\(email)")
         var keys: [(Keypair, KeyDetails)] = []
         for keyInfo in keysInfo {
-            let parsedKeys = try await coreService.parseKeys(
+            let parsedKeys = try await core.parseKeys(
                 armoredOrBinary: keyInfo.`private`.data()
             )
             guard let parsedKey = parsedKeys.keyDetails.first else {
