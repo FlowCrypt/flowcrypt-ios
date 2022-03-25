@@ -12,9 +12,9 @@ struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
     struct MessageQuoteInfo: Equatable {
-        let recipients: [String]
-        let ccRecipients: [String]
-        let sender: String?
+        let recipients: [Recipient]
+        let ccRecipients: [Recipient]
+        let sender: Recipient?
         let subject: String?
         let mime: Data?
         let sentDate: Date
@@ -31,14 +31,14 @@ struct ComposeMessageInput: Equatable {
 
     let type: InputType
 
-    var quoteRecipients: [String] {
+    var quoteRecipients: [Recipient] {
         guard case .reply(let info) = type else {
             return []
         }
         return info.recipients
     }
 
-    var quoteCCRecipients: [String] {
+    var quoteCCRecipients: [Recipient] {
         guard case .reply(let info) = type else {
             return []
         }

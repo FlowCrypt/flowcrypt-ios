@@ -104,6 +104,11 @@ public class TextFieldCellNode: CellNode {
 }
 
 public extension TextFieldCellNode {
+    func onShouldEndEditing(_ action: TextFieldNode.ShouldEndEditingAction?) -> Self {
+        textField.shouldEndEditing = action
+        return self
+    }
+
     func onShouldReturn(_ action: TextFieldNode.ShouldReturnAction?) -> Self {
         textField.shouldReturn = action
         return self

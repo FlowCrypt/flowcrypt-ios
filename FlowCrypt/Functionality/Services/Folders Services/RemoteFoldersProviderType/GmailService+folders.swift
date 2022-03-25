@@ -50,7 +50,7 @@ extension GmailService: RemoteFoldersProviderType {
 // MARK: - Convenience
 private extension Folder {
     init?(with gmailFolder: GTLRGmail_Label) {
-        guard let name = gmailFolder.name else { return nil }
+        guard var name = gmailFolder.name else { return nil }
         guard let path = gmailFolder.identifier else {
             assertionFailure("Gmail folder \(gmailFolder) doesn't have identifier")
             return nil
@@ -60,6 +60,21 @@ private extension Folder {
             return nil
         }
 
+        let standardGmailLabels = [
+            "INBOX",
+            "CHAT",
+            "SENT",
+            "IMPORTANT",
+            "TRASH",
+            "DRAFT",
+            "SPAM",
+            "STARRED",
+            "UNREAD",
+            "ALL MAIL"
+        ]
+        if standardGmailLabels.contains(name) {
+            name = "folder_\(name.replacingOccurrences(of: " ", with: "_"))".localized
+        }
         self.init(
             path: path,
             name: name,

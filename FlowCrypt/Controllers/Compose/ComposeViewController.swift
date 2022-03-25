@@ -18,7 +18,7 @@ import PhotosUI
 final class ComposeViewController: TableNodeViewController {
 
     private enum Constants {
-        static let endTypingCharacters = [",", " ", "\n", ";"]
+        static let endTypingCharacters = [",", "\n", ";"]
         static let minRecipientsPartHeight: CGFloat = 32
     }
 
@@ -29,7 +29,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private enum State {
-        case main, searchEmails([String])
+        case main, searchEmails([Recipient])
     }
 
     enum Section: Hashable {
@@ -49,7 +49,6 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private var userFinishedSearching = false
-    private var isRecipientLoading = false
     private var userTappedOutSideRecipientsArea = false
     private var shouldShowEmailRecipientsLabel = false
     private let appContext: AppContextWithUser
@@ -57,11 +56,11 @@ final class ComposeViewController: TableNodeViewController {
     private let notificationCenter: NotificationCenter
     private var decorator: ComposeViewDecorator
     private let localContactsProvider: LocalContactsProviderType
+    private let pubLookup: PubLookupType
     private let cloudContactProvider: CloudContactsProvider
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyMethods: KeyMethodsType
-    private let service: ServiceActor
     private let router: GlobalRouterType
     private let clientConfiguration: ClientConfiguration
 
@@ -131,12 +130,7 @@ final class ComposeViewController: TableNodeViewController {
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.keyMethods = keyMethods
-        self.service = ServiceActor(
-            composeMessageService: self.composeMessageService,
-            localContactsProvider: localContactsProvider,
-            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: self.localContactsProvider),
-            cloudContactProvider: cloudContactProvider
-        )
+        self.pubLookup = PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: self.localContactsProvider)
         self.router = appContext.globalRouter
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
@@ -204,13 +198,26 @@ final class ComposeViewController: TableNodeViewController {
     func update(with message: Message) {
         self.contextToSend.subject = message.subject
         self.contextToSend.message = message.raw
-        self.contextToSend.recipients = [
-            ComposeMessageRecipient(
-                email: "tom@flowcrypt.com",
-                type: .to,
-                state: decorator.recipientIdleState
-            )
-        ]
+        message.to.forEach { recipient in
+            evaluateMessage(recipient: recipient, type: .to)
+        }
+        message.cc.forEach { recipient in
+            evaluateMessage(recipient: recipient, type: .cc)
+        }
+        message.bcc.forEach { recipient in
+            evaluateMessage(recipient: recipient, type: .bcc)
+        }
+    }
+
+    func evaluateMessage(recipient: Recipient, type: RecipientType) {
+        let recipient = ComposeMessageRecipient(
+            email: recipient.email,
+            name: recipient.name,
+            type: type,
+            state: decorator.recipientIdleState
+        )
+        contextToSend.add(recipient: recipient)
+        evaluate(recipient: recipient)
     }
 
     private func observeComposeUpdates() {
@@ -331,16 +338,12 @@ extension ComposeViewController {
     private func setupQuote() {
         guard input.isQuote else { return }
 
-        input.quoteRecipients.forEach { email in
-            let recipient = ComposeMessageRecipient(email: email, type: .to, state: decorator.recipientIdleState)
-            contextToSend.add(recipient: recipient)
-            evaluate(recipient: recipient)
+        input.quoteRecipients.forEach { recipient in
+            evaluateMessage(recipient: recipient, type: .to)
         }
 
-        input.quoteCCRecipients.forEach { email in
-            let recipient = ComposeMessageRecipient(email: email, type: .cc, state: decorator.recipientIdleState)
-            contextToSend.add(recipient: recipient)
-            evaluate(recipient: recipient)
+        input.quoteCCRecipients.forEach { recipient in
+            evaluateMessage(recipient: recipient, type: .cc)
         }
 
         if input.quoteCCRecipients.isNotEmpty {
@@ -528,7 +531,7 @@ extension ComposeViewController {
             signingPrv: signingKey
         )
         UIApplication.shared.isIdleTimerDisabled = true
-        try await service.encryptAndSend(
+        try await composeMessageService.encryptAndSend(
             message: sendableMsg,
             threadId: input.threadId
         )
@@ -638,10 +641,21 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                     return ASCellNode()
                 }
                 return self.attachmentNode(for: indexPath.row)
-            case let (.searchEmails(emails), .searchResults):
+            case let (.searchEmails(recipients), .searchResults):
                 guard indexPath.row > 0 else { return DividerCellNode() }
-                guard emails.isNotEmpty else { return self.noSearchResultsNode() }
-                return InfoCellNode(input: self.decorator.styledRecipientInfo(with: emails[indexPath.row-1]))
+                guard recipients.isNotEmpty else { return self.noSearchResultsNode() }
+                guard let recipient = recipients[safe: indexPath.row-1] else { return ASCellNode() }
+
+                if let name = recipient.name {
+                    let input = self.decorator.styledRecipientInfo(
+                        with: recipient.email,
+                        name: name
+                    )
+                    return LabelCellNode(input: input)
+                } else {
+                    let input = self.decorator.styledRecipientInfo(with: recipient.email)
+                    return InfoCellNode(input: input)
+                }
             case (.searchEmails, .contacts):
                 return indexPath.row == 0 ? DividerCellNode() : self.enableGoogleContactsNode()
             default:
@@ -651,13 +665,13 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        if case let .searchEmails(emails) = state, let recipientType = selectedRecipientType {
+        if case let .searchEmails(recipients) = state, let recipientType = selectedRecipientType {
             guard let section = sectionsList[safe: indexPath.section] else { return }
 
             switch section {
             case .searchResults:
-                let selectedEmail = emails[safe: indexPath.row-1]
-                handleEndEditingAction(with: selectedEmail, for: recipientType)
+                let recipient = recipients[safe: indexPath.row-1]
+                handleEndEditingAction(with: recipient?.email, name: recipient?.name, for: recipientType)
             case .contacts:
                 askForContactsPermission()
             default:
@@ -697,7 +711,8 @@ extension ComposeViewController {
     }
 
     private func showRecipientLabelIfNecessary() {
-        guard !self.isRecipientLoading,
+        let isRecipientLoading = self.contextToSend.recipients.filter { $0.state == decorator.recipientIdleState }.isNotEmpty
+        guard !isRecipientLoading,
               self.contextToSend.recipients.isNotEmpty,
               self.userTappedOutSideRecipientsArea else {
             return
@@ -865,9 +880,18 @@ extension ComposeViewController {
                 self?.toggleRecipientsList()
             } : nil
         )
-        .onShouldReturn {
-            $0.resignFirstResponder()
-            return true
+        .onShouldReturn { [weak self] textField -> (Bool) in
+            if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
+                textField.resignFirstResponder()
+                return true
+            }
+            return false
+        }
+        .onShouldEndEditing { [weak self] textField -> (Bool) in
+            if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
+                return true
+            }
+            return false
         }
         .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
             self?.shouldChange(with: textField, and: character, for: type) ?? true
@@ -877,6 +901,14 @@ extension ComposeViewController {
                 $0.becomeFirstResponder()
             }
         }
+    }
+
+    private func showAlertIfTextFieldNotValidEmail(textField: UITextField) -> Bool {
+        if let text = textField.text, text.isEmpty || text.isValidEmail {
+            return true
+        }
+        showAlert(title: "compose_invalid_recipient_title".localized, message: "compose_invalid_recipient_message".localized)
+        return false
     }
 
     private func attachmentNode(for index: Int) -> ASCellNode {
@@ -927,18 +959,19 @@ extension ComposeViewController {
             // Pasted string
             let characterSet = CharacterSet(charactersIn: Constants.endTypingCharacters.joined())
             let recipients = character.components(separatedBy: characterSet)
-            guard recipients.count > 1 else { return true }
-            recipients.forEach {
+            let validRecipients = recipients.filter { $0.isValidEmail }
+            guard validRecipients.count > 1 else { return true }
+            validRecipients.forEach {
                 handleEndEditingAction(with: $0, for: recipientType)
             }
             return false
-        } else if Constants.endTypingCharacters.contains(character) {
+        } else if Constants.endTypingCharacters.contains(character),
+                  self.showAlertIfTextFieldNotValidEmail(textField: textField) {
             handleEndEditingAction(with: textField.text, for: recipientType)
             nextResponder()
             return false
-        } else {
-            return true
         }
+        return true
     }
 
     private func handle(textFieldAction: TextFieldActionType, for recipientType: RecipientType) {
@@ -950,9 +983,9 @@ extension ComposeViewController {
         }
     }
 
-    private func handleEndEditingAction(with text: String?, for recipientType: RecipientType) {
+    private func handleEndEditingAction(with email: String?, name: String? = nil, for recipientType: RecipientType) {
         guard shouldEvaluateRecipientInput,
-              let text = text, text.isNotEmpty
+              let email = email, email.isNotEmpty
         else { return }
 
         let recipients = contextToSend.recipients(type: recipientType)
@@ -971,7 +1004,13 @@ extension ComposeViewController {
 
         contextToSend.set(recipients: idleRecipients, for: recipientType)
 
-        let newRecipient = ComposeMessageRecipient(email: text, type: recipientType, state: decorator.recipientIdleState)
+        let newRecipient = ComposeMessageRecipient(
+            email: email,
+            name: name,
+            type: recipientType,
+            state: decorator.recipientIdleState
+        )
+
         let indexOfRecipient: Int
 
         let indexPath = recipientsIndexPath(type: recipientType, part: .list)
@@ -1077,10 +1116,14 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             do {
-                let localEmails = try localContactsProvider.searchEmails(query: query)
-                let cloudEmails = try? await service.searchContacts(query: query)
-                let emails = Set([localEmails, cloudEmails].compactMap { $0 }.flatMap { $0 })
-                updateState(with: .searchEmails(Array(emails)))
+                let cloudRecipients = try await cloudContactProvider.searchContacts(query: query)
+                let localRecipients = try localContactsProvider.searchRecipients(query: query)
+
+                let recipients = (cloudRecipients + localRecipients)
+                                    .unique()
+                                    .sorted()
+
+                updateState(with: .searchEmails(recipients))
             } catch {
                 showAlert(message: error.localizedDescription)
             }
@@ -1097,21 +1140,20 @@ extension ComposeViewController {
         }
 
         Task {
-            isRecipientLoading = true
             var localContact: RecipientWithSortedPubKeys?
             do {
-                if let contact = try await service.findLocalContact(with: recipient.email) {
+                if let contact = try await localContactsProvider.searchRecipient(with: recipient.email) {
                     localContact = contact
                     handleEvaluation(for: contact)
                 }
 
-                let contactWithFetchedKeys = try await service.fetchContact(with: recipient.email)
+                let contact = Recipient(recipient: recipient)
+                let contactWithFetchedKeys = try await pubLookup.fetchRemoteUpdateLocal(with: contact)
+
                 handleEvaluation(for: contactWithFetchedKeys)
-                isRecipientLoading = false
                 showRecipientLabelIfNecessary()
             } catch {
                 handleEvaluation(error: error, with: recipient.email, contact: localContact)
-                isRecipientLoading = false
                 showRecipientLabelIfNecessary()
             }
         }
@@ -1566,40 +1608,3 @@ extension ComposeViewController {
 }
 
 extension ComposeViewController: FilesManagerPresenter {}
-
-// TODO temporary solution for background execution problem
-private actor ServiceActor {
-    let composeMessageService: ComposeMessageService
-    private let pubLookup: PubLookupType
-    private let localContactsProvider: LocalContactsProviderType
-    private let cloudContactProvider: CloudContactsProvider
-
-    init(composeMessageService: ComposeMessageService,
-         localContactsProvider: LocalContactsProviderType,
-         pubLookup: PubLookupType,
-         cloudContactProvider: CloudContactsProvider) {
-        self.composeMessageService = composeMessageService
-        self.localContactsProvider = localContactsProvider
-        self.pubLookup = pubLookup
-        self.cloudContactProvider = cloudContactProvider
-    }
-
-    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
-        try await composeMessageService.encryptAndSend(
-            message: message,
-            threadId: threadId
-        )
-    }
-
-    func searchContacts(query: String) async throws -> [String] {
-        return try await cloudContactProvider.searchContacts(query: query)
-    }
-
-    func findLocalContact(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        return try await localContactsProvider.searchRecipient(with: email)
-    }
-
-    func fetchContact(with email: String) async throws -> RecipientWithSortedPubKeys {
-        return try await pubLookup.fetchRemoteUpdateLocal(with: email)
-    }
-}

@@ -13,7 +13,7 @@ describe('INBOX: ', () => {
 
   it('user is able to view encrypted email with attachment', async () => {
 
-    const senderEmail = CommonData.sender.email;
+    const senderName = CommonData.sender.name;
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
     const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
@@ -29,7 +29,7 @@ describe('INBOX: ', () => {
 
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
     await EmailScreen.checkAttachment(encryptedAttachmentName);
 
     await driver.terminateApp(bundleId);
@@ -47,7 +47,7 @@ describe('INBOX: ', () => {
     //check attachment after setting correct pass phrase
     await EmailScreen.enterPassPhrase(correctPassPhrase);
     await EmailScreen.clickOkButton();
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
     await EmailScreen.checkAttachment(encryptedAttachmentName);
     await EmailScreen.clickOnAttachmentCell();
     await AttachmentScreen.checkAttachment(attachmentName);
@@ -63,7 +63,7 @@ describe('INBOX: ', () => {
     await EmailScreen.clickBackButton();
 
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
     await EmailScreen.checkAttachment(encryptedAttachmentName);
     await EmailScreen.clickOnAttachmentCell();
 

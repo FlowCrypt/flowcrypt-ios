@@ -12,7 +12,7 @@ describe('INBOX: ', () => {
 
   it('user is able to view text email and recipients list', async () => {
 
-    const senderEmail = CommonData.recipientsListEmail.sender;
+    const senderName = CommonData.recipientsListEmail.senderName;
     const emailSubject = CommonData.recipientsListEmail.subject;
     const emailText = CommonData.recipientsListEmail.message;
     const recipientsButton = CommonData.recipientsListEmail.recipients;
@@ -27,7 +27,7 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
 
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
     await EmailScreen.checkRecipientsButton(recipientsButton);
     await EmailScreen.clickRecipientsButton();
     await EmailScreen.checkRecipientsList(toLabel, ccLabel, bccLabel);

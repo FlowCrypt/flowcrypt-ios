@@ -77,10 +77,11 @@ class ContactPublicKeyScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(await this.expiresValue);
   }
 
-  checkPgpUserId = async (email: string) => {
+  checkPgpUserId = async (email: string, name?: string) => {
+    const value = name ? `${name} <${email}>` : email;
     await (await this.trashButton).waitForDisplayed();
     await (await this.pgpUserIdLabel).waitForDisplayed();
-    expect(await (await this.pgpUserIdEmailValue).getAttribute('value')).toContain(email);
+    expect(await (await this.pgpUserIdEmailValue).getAttribute('value')).toContain(value);
   }
 
   clickOnFingerPrint = async () => {

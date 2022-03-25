@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct RecipientWithSortedPubKeys {
+struct RecipientWithSortedPubKeys: RecipientBase {
     let email: String
     /// name if known
     let name: String?
@@ -26,17 +26,8 @@ struct RecipientWithSortedPubKeys {
 extension RecipientWithSortedPubKeys {
     init(_ recipient: Recipient, keyDetails: [KeyDetails] = []) {
         self.email = recipient.email
-        self.name = recipient.name
+        self.name = recipient.name ?? keyDetails.first?.users.first
         self.lastUsed = recipient.lastUsed
-        self._pubKeys = keyDetails.map(PubKey.init)
-    }
-}
-
-extension RecipientWithSortedPubKeys {
-    init(email: String, keyDetails: [KeyDetails]) {
-        self.email = email
-        self.name = keyDetails.first?.users.first ?? email
-        self.lastUsed = nil
         self._pubKeys = keyDetails.map(PubKey.init)
     }
 }

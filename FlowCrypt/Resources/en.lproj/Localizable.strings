@@ -126,12 +126,24 @@
 "compose_sent" = "Sent";
 "compose_missing_contacts_scopes" = "To enable contacts search, please allow this device to access %@ of your Google account";
 "compose_password_link" = "%@ has sent you a password-encrypted email.\n\nTo open message copy and paste the following link: %@";
+"compose_invalid_recipient_title" = "Invalid recipient";
+"compose_invalid_recipient_message" = "Please enter a valid email address.";
 
 // Folders
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";
 "folder_add_account" = "Add account";
 "folder_settings" = "Settings";
+"folder_INBOX" = "Inbox";
+"folder_CHAT" = "Chat";
+"folder_SENT" = "Sent";
+"folder_IMPORTANT" = "Important";
+"folder_TRASH" = "Trash";
+"folder_DRAFT" = "Draft";
+"folder_SPAM" = "Spam";
+"folder_STARRED" = "Starred";
+"folder_UNREAD" = "Unread";
+"folder_ALL_MAIL" = "All Mail";
 
 // Sign in
 "sign_in_privacy" = "Privacy";

@@ -13,7 +13,7 @@ final class LocalContactsProviderMock: LocalContactsProviderType {
 
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? { nil }
 
-    func searchEmails(query: String) throws -> [String] { [] }
+    func searchRecipients(query: String) throws -> [Recipient] { [] }
 
     func save(recipient: RecipientWithSortedPubKeys) throws {}
 

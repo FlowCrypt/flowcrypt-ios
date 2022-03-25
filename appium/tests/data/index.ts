@@ -23,28 +23,30 @@ export const CommonData = {
   threadMessage: {
     subject: 'test thread rendering',
     sender: 'dmitry@flowcrypt.com',
+    senderName: 'Dmitry at FlowCrypt',
     firstThreadMessage: 'first message',
     secondThreadMessage: 'Second thread rendering message\n' +
-        '\n' +
-        'On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
-        ' > first message',
+      '\n' +
+      'On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
+      ' > first message',
     thirdThreadMessage: 'Third thread rendering message\n' +
-        '\n' +
-        'On 2022-02-07 at 06:56, e2e.enterprise.test@flowcrypt.com wrote:\n' +
-        '> Second thread rendering message\n' +
-        '>\n' +
-        '> On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
-        '>  > first message',
+      '\n' +
+      'On 2022-02-07 at 06:56, e2e.enterprise.test@flowcrypt.com wrote:\n' +
+      '> Second thread rendering message\n' +
+      '>\n' +
+      '> On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
+      '>  > first message',
     firstDate: 'Feb 04',
     secondDate: 'Feb 06',
     thirdDate: 'Feb 07',
   },
   sender: {
     email: 'dmitry@flowcrypt.com',
+    name: 'Dmitry at FlowCrypt'
   },
   contact: {
     email: 'dmitry@flowcrypt.com',
-    name: 'Dima'
+    name: 'Dima Flowcrypt'
   },
   secondContact: {
     email: 'demo@flowcrypt.com',
@@ -68,6 +70,7 @@ export const CommonData = {
   },
   emailWithMultipleRecipientsWithCC: {
     sender: 'ioan@flowcrypt.com',
+    senderName: 'Ioan at FlowCrypt',
     recipient: 'robot@flowcrypt.com',
     cc: 'robot+cc@flowcrypt.com',
     subject: 'Message with cc and multiple recipients and attachment',
@@ -85,7 +88,7 @@ export const CommonData = {
   updateRecipientPublicKey: {
     email: 'updating.key@example.test',
     oldSignatureDate: '12 Jan 2022, 07:16:58 PM',//in UTC
-    newSignatureDate:  '12 Jan 2022, 07:27:20 PM',//in UTC
+    newSignatureDate: '12 Jan 2022, 07:27:20 PM',//in UTC
     oldFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0',
     newFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0, 40E4EE0325E38F717737889AC54F277266650211'
   },
@@ -95,6 +98,7 @@ export const CommonData = {
   },
   recipientsListEmail: {
     sender: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
     subject: 'CC and BCC test',
     message: 'Test message for CC and BCC recipients',
     recipients: 'to Robot, robot+cc, e2e.enterprise.test',
@@ -111,11 +115,13 @@ export const CommonData = {
     subject: 'message encrypted for another public key (only one pubkey used)',
     message: 'key_mismatch: Missing appropriate key',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility'
   },
   wrongChecksumEmail: {
     subject: 'wrong checksum',
     message: 'format: Error: Ascii armor integrity check on message failed: \'FdCC\' should be \'FddK\'',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility'
   },
   notIntegrityProtected: {
     subject: 'not integrity protected - should show a warning and not decrypt automatically',
@@ -126,6 +132,7 @@ export const CommonData = {
     subject: 'key mismatch unexpectedly produces a modal',
     message: 'Here are the images for testing compatibility.',
     senderEmail: 'sunitnandi834@gmail.com',
+    senderName: 'Sunit Kumar Nandi',
     encryptedBadgeText: 'encrypted',
     signatureBadgeText: 'not signed',
     firstAttachmentName: 'Screenshot_20180422_125217.png.asc',
@@ -177,7 +184,8 @@ export const CommonData = {
     attachmentDecryptKeyMismatchError: 'Error decrypting attachment\n' +
       ' Missing appropriate key\n' +
       '\n' +
-      'This will likely download a corrupted file. Download anyway?'
+      'This will likely download a corrupted file. Download anyway?',
+    invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
@@ -185,5 +193,14 @@ export const CommonData = {
   appPath: {
     old: path.join(process.cwd(), './FlowCryptOld.app'),
     new: path.join(process.cwd(), './FlowCrypt.app')
+  },
+  validMockUser: {
+    email: 'valid@domain.test'
+  },
+  expiredMockUser: {
+    email: 'expired@domain.test'
+  },
+  revokedMockUser: {
+    email: 'revoked@domain.test'
   }
 };

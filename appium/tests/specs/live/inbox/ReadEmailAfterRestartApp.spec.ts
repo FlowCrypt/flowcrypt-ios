@@ -12,7 +12,7 @@ describe('INBOX: ', () => {
 
   it('user is able to see plain email without setting pass phrase after restart app', async () => {
 
-    const senderEmail = CommonData.sender.email;
+    const senderName = CommonData.sender.name;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
 
@@ -22,7 +22,7 @@ describe('INBOX: ', () => {
 
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
 
     await driver.terminateApp(CommonData.bundleId.id);
     await driver.activateApp(CommonData.bundleId.id);
@@ -31,6 +31,6 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
 
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
   });
 });

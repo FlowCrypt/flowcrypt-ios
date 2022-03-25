@@ -1,19 +1,19 @@
 import {
-    SplashScreen,
-    SetupKeyScreen,
-    MenuBarScreen,
-    MailFolderScreen,
-    EmailScreen,
-    OldVersionAppScreen,
-    SettingsScreen,
-    KeysScreen,
-    PublicKeyScreen,
-    ContactScreen,
-    ContactPublicKeyScreen,
-    SearchScreen,
-    PublicKeyDetailsScreen
+  SplashScreen,
+  SetupKeyScreen,
+  MenuBarScreen,
+  MailFolderScreen,
+  EmailScreen,
+  OldVersionAppScreen,
+  SettingsScreen,
+  KeysScreen,
+  PublicKeyScreen,
+  ContactScreen,
+  ContactPublicKeyScreen,
+  SearchScreen,
+  PublicKeyDetailsScreen
 } from '../../../screenobjects/all-screens';
-import {CommonData} from "../../../data";
+import { CommonData } from "../../../data";
 
 describe('UPDATE: ', () => {
 
@@ -26,6 +26,7 @@ describe('UPDATE: ', () => {
     const firstContactItemName = 'Dmitry at FlowCrypt';
     const firstContactEmail = CommonData.contact.email;
     const senderEmail = CommonData.sender.email;
+    const senderName = CommonData.sender.name;
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
 
@@ -124,6 +125,6 @@ describe('UPDATE: ', () => {
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
     await EmailScreen.enterPassPhrase(correctPassPhrase);
     await EmailScreen.clickOkButton();
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
   });
 });
