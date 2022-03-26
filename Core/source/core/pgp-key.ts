@@ -13,6 +13,7 @@ import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/uti
 import { AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { requireStreamReadToEnd } from '../platform/require';
+import { Str } from './common';
 const readToEnd = requireStreamReadToEnd();
 
 export type Contact = {
@@ -81,7 +82,7 @@ export class PgpKey {
   public static create = async (userIds: UserID[], variant: KeyAlgo, passphrase: string):
     Promise<{ private: string, public: string, revCert: string }> => {
     const k = await generateKey({
-      userIDs: userIds, passphrase: passphrase, format: 'armored',
+      userIDs: userIds, passphrase, format: 'armored',
       curve: (variant === 'curve25519' ? 'curve25519' : undefined),
       rsaBits: (variant === 'curve25519' ? undefined : (variant === 'rsa2048' ? 2048 : 4096))
     });
@@ -96,7 +97,7 @@ export class PgpKey {
     if (fromCache) {
       return fromCache;
     }
-    const key = await readKey({ armoredKey: armoredKey });
+    const key = await readKey({ armoredKey });
     if (key?.isPrivate()) {
       Store.armoredKeyCacheSet(armoredKey, key);
     }
@@ -213,7 +214,7 @@ export class PgpKey {
       return { normalized: keys.map(k => k.armor()).join('\n'), keys };
     } catch (error) {
       Catch.reportErr(error);
-      return { normalized: '', keys: [], error: error.message };
+      return { normalized: '', keys: [], error: Str.extractErrorMessage(error.message) };
     }
   };
 
@@ -380,7 +381,7 @@ export class PgpKey {
     // discussion is in progress: https://github.com/openpgpjs/openpgpjs/discussions/1491
     const allSignatures: SignaturePacket[] = [];
     for (const user of key.users) {
-      const data = { userID: user.userID, userAttribute: user.userAttribute, key: key };
+      const data = { userID: user.userID, userAttribute: user.userAttribute, key };
       for (const selfCert of user.selfCertifications) {
         try {
           await selfCert.verify(key.keyPacket, enums.signature.certGeneric, data);

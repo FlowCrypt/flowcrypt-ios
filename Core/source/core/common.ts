@@ -11,6 +11,12 @@ export type PromiseCancellation = { cancel: boolean };
 
 export class Str {
 
+  public static extractErrorMessage = (e: any): string | undefined => {
+    if (typeof e.message === 'undefined') return undefined;
+    if (typeof e.message === 'string') return e.message;
+    return JSON.stringify(e);
+  };
+
   public static parseEmail = (full: string, flag: 'VALIDATE' | 'DO-NOT-VALIDATE' = 'VALIDATE') => {
     let email: string | undefined;
     let name: string | undefined;

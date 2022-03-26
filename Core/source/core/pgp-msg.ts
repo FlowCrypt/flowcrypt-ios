@@ -366,8 +366,11 @@ export class PgpMsg {
   };
 
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {
-    return o && typeof o === 'object' && typeof (o as FcAttLinkData).name !== 'undefined'
-      && typeof (o as FcAttLinkData).size !== 'undefined' && typeof (o as FcAttLinkData).type !== 'undefined';
+    return o
+      && typeof o === 'object'
+      && typeof (o as FcAttLinkData).name !== 'undefined'
+      && typeof (o as FcAttLinkData).size !== 'undefined'
+      && typeof (o as FcAttLinkData).type !== 'undefined';
   };
 
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {

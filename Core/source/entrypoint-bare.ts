@@ -9,7 +9,9 @@ declare const global: any;
 
 const endpoints = new Endpoints();
 
-global.handleRequestFromHost = (endpointName: string, callbackId: string, request: string, data: Uint8Array, cb: (key: string, response: EndpointRes) => void): void => {
+global.handleRequestFromHost = (
+  endpointName: string, callbackId: string, request: string,
+  data: Uint8Array, cb: (key: string, response: EndpointRes) => void): void => {
   try {
     const handler = endpoints[endpointName];
     if (!handler) {
