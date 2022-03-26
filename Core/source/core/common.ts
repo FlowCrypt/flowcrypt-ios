@@ -12,6 +12,7 @@ export type PromiseCancellation = { cancel: boolean };
 export class Str {
 
   public static extractErrorMessage = (e: any): string | undefined => {
+    if (typeof e !== 'object') return undefined;
     if (typeof e.message === 'undefined') return undefined;
     if (typeof e.message === 'string') return e.message;
     return JSON.stringify(e);
