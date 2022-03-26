@@ -849,10 +849,10 @@ export const getHtmlAsset = async (name: string) => {
 
 export const readFile = (path: string): Promise<Buffer> => {
   return new Promise((resolve, reject) => fs.readFile(path, (e, data) => e ? reject(e) : resolve(data)));
-}
+};
 
 export const writeFile = (path: string, data: Buffer): Promise<void> => {
   return new Promise((resolve, reject) => fs.writeFile(path, data, e => e ? reject(e) : resolve()));
-}
+};
 
 export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
