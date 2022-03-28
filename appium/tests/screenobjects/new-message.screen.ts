@@ -206,8 +206,8 @@ class NewMessageScreen extends BaseScreen {
   }
 
   getActiveElementId = async () => {
-    // @ts-ignore
-    return (await driver.getActiveElement()).ELEMENT;
+    const activeElement = (await driver.getActiveElement()) as unknown as { ELEMENT: string};
+    return activeElement.ELEMENT;
   }
 
   checkMessageFieldFocus = async() => {
