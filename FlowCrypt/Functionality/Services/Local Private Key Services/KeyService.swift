@@ -32,14 +32,9 @@ final class KeyService: KeyServiceType {
 
     /// Use to get list of PrvKeyInfo
     func getPrvKeyInfo(email: String) async throws -> [PrvKeyInfo] {
-        let storedPassPhrases = try passPhraseService.getPassPhrases()
         let privateKeys = try storage.getKeypairs(by: email)
             .map { keypair -> PrvKeyInfo in
-                let passphrase = storedPassPhrases
-                    .filter(\.value.isNotEmpty)
-                    .first(where: { $0.primaryFingerprintOfAssociatedKey == keypair.primaryFingerprint })?
-                    .value
-                return PrvKeyInfo(keypair: keypair, passphrase: passphrase)
+                return try self.getPrvKeyInfo(keyPair: keypair)
             }
         return privateKeys
     }
@@ -50,13 +45,17 @@ final class KeyService: KeyServiceType {
             return nil
         }
 
+        return try self.getPrvKeyInfo(keyPair: foundKey)
+    }
+
+    // Get Private Key Info from KeyPair
+    private func getPrvKeyInfo(keyPair: Keypair) throws -> PrvKeyInfo {
         let storedPassPhrases = try passPhraseService.getPassPhrases()
         let passphrase = storedPassPhrases
             .filter { $0.value.isNotEmpty }
-            .first(where: { $0.primaryFingerprintOfAssociatedKey == foundKey.primaryFingerprint })?
+            .first(where: { $0.primaryFingerprintOfAssociatedKey == keyPair.primaryFingerprint })?
             .value
-
-        return PrvKeyInfo(keypair: foundKey, passphrase: passphrase)
+        return PrvKeyInfo(keypair: keyPair, passphrase: passphrase)
     }
 
     private func findKeyByUserEmail(keysInfo: [Keypair], email: String) async throws -> Keypair? {
