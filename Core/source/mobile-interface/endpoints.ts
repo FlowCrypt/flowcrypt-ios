@@ -48,7 +48,7 @@ export class Endpoints {
         .split('\n\n')[0] || '') + `\n\nno content`));
       const replyHeaders = Mime.replyHeaders(previousMsg);
       mimeHeaders['in-reply-to'] = replyHeaders['in-reply-to'];
-      mimeHeaders['references'] = replyHeaders['references'];
+      mimeHeaders.references = replyHeaders.references;
     }
     if (req.format === 'plain') {
       const atts = (req.atts || []).map(({ name, type, base64 }) =>
@@ -101,11 +101,11 @@ export class Endpoints {
   public parseDecryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd, isEmail, verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data
-    let rawSigned: string | undefined = undefined;
-    let subject: string | undefined = undefined;
+    let rawSigned: string | undefined;
+    let subject: string | undefined;
     if (isEmail) {
       const { blocks, rawSignedContent, headers } = await Mime.process(Buf.concat(data));
-      subject = String(headers['subject']);
+      subject = String(headers.subject);
       rawSigned = rawSignedContent;
       rawBlocks.push(...blocks);
     } else {
@@ -117,7 +117,7 @@ export class Endpoints {
         const verify = await PgpMsg.verifyDetached({
           sigText: Buf.fromUtfStr(rawBlock.signature),
           plaintext: Buf.with(rawSigned || rawBlock.content),
-          verificationPubkeys: verificationPubkeys
+          verificationPubkeys
         });
         if (rawBlock.type === 'signedHtml') {
           sequentialProcessedBlocks.push({
@@ -172,8 +172,8 @@ export class Endpoints {
           });
         }
       } else if (rawBlock.type === 'encryptedAtt'
-          && rawBlock.attMeta
-          && /^(0x)?[A-Fa-f0-9]{16,40}\.asc\.pgp$/.test(rawBlock.attMeta.name || '')) {
+        && rawBlock.attMeta
+        && /^(0x)?[A-Fa-f0-9]{16,40}\.asc\.pgp$/.test(rawBlock.attMeta.name || '')) {
         // encrypted pubkey attached
         const decryptRes = await PgpMsg.decrypt({
           kisWithPp,
@@ -254,7 +254,7 @@ export class Endpoints {
   };
 
   public decryptFile = async (uncheckedReq: any, data: Buffers, verificationPubkeys?: string[]):
-      Promise<EndpointRes> => {
+    Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
     const decryptRes = await PgpMsg.decrypt({
       kisWithPp,
@@ -318,11 +318,11 @@ export class Endpoints {
       return fmtRes({ format: 'armored', keyDetails });
     }
     // binary
-    const openPgpKeys = await readKeys({binaryKeys: allData});
+    const openPgpKeys = await readKeys({ binaryKeys: allData });
     for (const openPgpKey of openPgpKeys) {
       keyDetails.push(await PgpKey.details(openPgpKey));
     }
-    return fmtRes({ format: 'binary', keyDetails: keyDetails });
+    return fmtRes({ format: 'binary', keyDetails });
   };
 
   public isEmailValid = async (uncheckedReq: any): Promise<EndpointRes> => {
@@ -342,7 +342,7 @@ export class Endpoints {
     if (await PgpKey.decrypt(key, passphrases[0])) {
       return fmtRes({ decryptedKey: key.armor() });
     }
-    return fmtRes({ decryptedKey: null });
+    return fmtRes({ decryptedKey: undefined });
   };
 
   public encryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
@@ -355,7 +355,7 @@ export class Endpoints {
         'Pass phrase length seems way too low! ' +
         'Pass phrase strength should be properly checked before encrypting a key.');
     }
-    const encryptedKey = await encryptKey({privateKey, passphrase});
+    const encryptedKey = await encryptKey({ privateKey, passphrase });
     return fmtRes({ encryptedKey: encryptedKey.armor() });
   };
 
@@ -365,7 +365,7 @@ export class Endpoints {
   };
 }
 
-export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Promise<Key | undefined> => {
+export const getSigningPrv = async (req: NodeRequest.ComposeEmailEncrypted): Promise<Key | undefined> => {
   if (!req.signingPrv) {
     return undefined;
   }

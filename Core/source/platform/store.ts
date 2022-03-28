@@ -3,26 +3,26 @@
 'use strict';
 
 import { Key } from 'openpgp';
-import { str_to_hex } from './util';
+import { strToHex } from './util';
 
 let KEY_CACHE: { [longidOrArmoredKey: string]: Key } = {};
 let KEY_CACHE_WIPE_TIMEOUT: NodeJS.Timeout;
 
-const keyLongid = (k: Key) => str_to_hex(k.getKeyID().bytes).toUpperCase();
+const keyLongid = (k: Key) => strToHex(k.getKeyID().bytes).toUpperCase();
 
 export class Store {
 
-  static decryptedKeyCacheSet = (k: Key) => {
+  public static decryptedKeyCacheSet = (k: Key) => {
     Store.keyCacheRenewExpiry();
     KEY_CACHE[keyLongid(k)] = k;
   };
 
-  static decryptedKeyCacheGet = (longid: string): Key | undefined => {
+  public static decryptedKeyCacheGet = (longid: string): Key | undefined => {
     Store.keyCacheRenewExpiry();
     return KEY_CACHE[longid];
   };
 
-  static armoredKeyCacheSet = (armored: string, k: Key) => {
+  public static armoredKeyCacheSet = (armored: string, k: Key) => {
     Store.keyCacheRenewExpiry();
     KEY_CACHE[armored] = k;
   };
@@ -32,7 +32,7 @@ export class Store {
     return KEY_CACHE[armored];
   };
 
-  static keyCacheWipe = () => {
+  public static keyCacheWipe = () => {
     KEY_CACHE = {};
   };
 

@@ -7,7 +7,7 @@ import { randomBytes } from 'crypto';
 import { ConvertStringOptions } from 'encoding-japanese';
 import { Key, KeyID, Subkey, UserID } from 'openpgp';
 
-declare const dereq_encoding_japanese : {
+declare const dereq_encoding_japanese: {
   convert: (data: Uint8Array, options: ConvertStringOptions) => string;
 };
 
@@ -39,7 +39,7 @@ export const iso2022jpToUtf = (content: Buf) => {
  * @note This method, brought from OpenPGP.js project is, unlike the rest of the codebase,
  *       licensed under LGPL. See original license file: https://github.com/openpgpjs/openpgpjs/blob/main/LICENSE
  */
-export const str_to_hex = (str: string): string => {
+export const strToHex = (str: string): string => {
   if (str === null) {
     return "";
   }
@@ -89,8 +89,8 @@ export const getKeyExpirationTimeForCapabilities = async (
   const sigExpiry = selfCert.getExpirationTime();
   let expiry = keyExpiry < sigExpiry ? keyExpiry : sigExpiry;
   if (capabilities === 'encrypt' || capabilities === 'encrypt_sign') {
-    const encryptionKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => {}))
-      || (await key.getEncryptionKey(keyId, null, userId).catch(() => {}));
+    const encryptionKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => { }))
+      || (await key.getEncryptionKey(keyId, null, userId).catch(() => { }));
     if (!encryptionKey) return null;
     // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
     const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
@@ -99,8 +99,8 @@ export const getKeyExpirationTimeForCapabilities = async (
     if (encryptionKeyExpiry < expiry) expiry = encryptionKeyExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
-    const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => {}))
-      || (await key.getSigningKey(keyId, null, userId).catch(() => {}));
+    const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => { }))
+      || (await key.getSigningKey(keyId, null, userId).catch(() => { }));
     if (!signatureKey) return null;
     // could be the same as above, so checking for property instead of using "instanceof"
     const signatureKeyExpiry = 'bindingSignatures' in signatureKey

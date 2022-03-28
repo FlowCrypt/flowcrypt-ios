@@ -9,7 +9,7 @@ type Obj = { [k: string]: any };
 export namespace NodeRequest {
   type PrvKeyInfo = { private: string; longid: string, passphrase: string | undefined };
   type Attachment = { name: string; type: string; base64: string };
-  interface composeEmailBase {
+  interface ComposeEmailBase {
     text: string,
     html?: string,
     to: string[],
@@ -21,8 +21,9 @@ export namespace NodeRequest {
     atts?: Attachment[]
   }
 
-  export interface composeEmailPlain extends composeEmailBase { format: 'plain' }
-  export interface composeEmailEncrypted extends composeEmailBase {
+  export interface ComposeEmailPlain extends ComposeEmailBase { format: 'plain' }
+
+  export interface ComposeEmailEncrypted extends ComposeEmailBase {
     format: 'encrypt-inline' | 'encrypt-pgpmime',
     pubKeys: string[],
     signingPrv: PrvKeyInfo | undefined
@@ -34,7 +35,7 @@ export namespace NodeRequest {
     userIds: { name: string, email: string }[]
   };
 
-  export type composeEmail = composeEmailPlain | composeEmailEncrypted;
+  export type composeEmail = ComposeEmailPlain | ComposeEmailEncrypted;
   export type encryptMsg = { pubKeys: string[], msgPwd?: string };
   export type encryptFile = { pubKeys: string[], name: string };
   export type parseDecryptMsg = { keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean, verificationPubkeys?: string[] };
@@ -75,10 +76,10 @@ export class ValidateInput {
     }
     if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?')
       && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
-      return v as NodeRequest.composeEmailEncrypted;
+      return v as NodeRequest.ComposeEmailEncrypted;
     }
     if (!v.pubKeys && v.format === 'plain') {
-      return v as NodeRequest.composeEmailPlain;
+      return v as NodeRequest.ComposeEmailPlain;
     }
     throw new Error('Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encrypt-inline OR format:plain allowed');
   };

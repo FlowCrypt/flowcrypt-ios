@@ -88,9 +88,9 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     }
   }
 
-  var verifyRes: (VerifyRes | undefined) = undefined;
-  var mixedSignatures = false;
-  var signedBlockCount = 0;
+  let verifyRes: VerifyRes | undefined;
+  let mixedSignatures = false;
+  let signedBlockCount = 0;
   for (const block of contentBlocks) {
     if (block.verifyRes) {
       ++signedBlockCount;
@@ -131,7 +131,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     if (mixedSignatures) {
       verifyRes.mixed = true;
     }
-    if (signedBlockCount > 0 && signedBlockCount != contentBlocks.length) {
+    if (signedBlockCount > 0 && signedBlockCount !== contentBlocks.length) {
       verifyRes.partial = true;
     }
   }
@@ -159,7 +159,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
   </html>`;
   const contentBlock = MsgBlock.fromContent('plainHtml', msgContentAsHtml);
   contentBlock.verifyRes = verifyRes;
-  return { contentBlock: contentBlock, text: msgContentAsText.trim() };
+  return { contentBlock, text: msgContentAsText.trim() };
 };
 
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {

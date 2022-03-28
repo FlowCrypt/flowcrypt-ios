@@ -4,7 +4,7 @@
 
 // @ts-ignore - it cannot figure out the types, because we don't want to install them from npm
 // nodejs-mobile expects it as global, but this test runs as standard Nodejs
-//global.openpgp = require('openpgp'); // remove it and you'll see what I mean
+// global.openpgp = require('openpgp'); // remove it and you'll see what I mean
 
 import * as ava from 'ava';
 
@@ -236,9 +236,9 @@ ava.default('mime-email-plain-html.txt', async t => {
 
 ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const signingPrv = await readKey({armoredKey: keys[0].private}) as PrivateKey;
+  const signingPrv = await readKey({ armoredKey: keys[0].private }) as PrivateKey;
   // console.log("rsa1 key fingerprint:" + signingPrv.getFingerprint().toUpperCase());
-  const signingPrvDecrypted = await decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
+  const signingPrvDecrypted = await decryptKey({ privateKey: signingPrv, passphrase: keys[0].passphrase });
   if (!signingPrvDecrypted) throw Error('Can\'t decrypt private key');
   const data = await PgpMsg.encrypt({ data: text, signingPrv: signingPrvDecrypted, pubkeys, armor: true }) as string;
   await write(t, mimeEmail2(t, data));
@@ -247,8 +247,8 @@ ava.default('mime-email-encrypted-inline-text-signed.txt', async t => {
 
 ava.default('mime-email-plain-signed.txt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const signingPrv = await readKey({armoredKey: keys[0].private})  as PrivateKey;
-  const signingPrvDecrypted = await decryptKey({privateKey: signingPrv, passphrase: keys[0].passphrase});
+  const signingPrv = await readKey({ armoredKey: keys[0].private }) as PrivateKey;
+  const signingPrvDecrypted = await decryptKey({ privateKey: signingPrv, passphrase: keys[0].passphrase });
   if (!signingPrvDecrypted) throw Error('Can\'t decrypt private key');
   const data = text.toString();
   const signed = await PgpMsg.sign(signingPrvDecrypted, data);

@@ -4,12 +4,18 @@
 
 interface BaseStream<T extends Uint8Array | string> extends AsyncIterable<T> { }
 
-interface WebStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from lib.dom.d.ts
-  readonly locked: boolean; getReader: Function; pipeThrough: Function; pipeTo: Function; tee: Function;
+// copied+simplified version of ReadableStream from lib.dom.d.ts
+interface WebStream<T extends Uint8Array | string> extends BaseStream<T> {
+  readonly locked: boolean;
+  getReader: () => void;
+  pipeThrough: () => void;
+  pipeTo: () => void;
+  tee: () => void;
   cancel(reason?: any): Promise<void>;
 }
 
-interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from @types/node/index.d.ts
+// copied+simplified version of ReadableStream from @types/node/index.d.ts
+interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> {
   readable: boolean; pipe: Function; unpipe: Function; wrap: Function;
   read(size?: number): string | Uint8Array; setEncoding(encoding: string): this; pause(): this; resume(): this;
   isPaused(): boolean; unshift(chunk: string | Uint8Array): void;
@@ -20,7 +26,7 @@ type ReadToEndFn = <T extends Uint8Array | string>(input: T | WebStream<T> | Nod
 export const requireStreamReadToEnd = (): ReadToEndFn => {
   // this will work for running tests in node with build/ts/test.js as entrypoint
   // a different solution will have to be done for running in iOS
-  (global as any)['window'] = (global as any)['window'] || {}; // web-stream-tools needs this
+  (global as any).window = (global as any).window || {}; // web-stream-tools needs this
   const { readToEnd } = require('../../bundles/raw/web-stream-tools');
   return readToEnd as ReadToEndFn;
 };
