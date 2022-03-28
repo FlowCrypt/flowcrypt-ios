@@ -18,7 +18,6 @@ class AppContext {
     let userAccountService: SessionServiceType
     let keyService: KeyServiceType
     let passPhraseService: PassPhraseServiceType
-    let clientConfigurationService: ClientConfigurationServiceType
 
     init(
         encryptedStorage: EncryptedStorageType,
@@ -26,7 +25,6 @@ class AppContext {
         userAccountService: SessionServiceType,
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
-        clientConfigurationService: ClientConfigurationServiceType,
         globalRouter: GlobalRouterType
     ) {
         self.encryptedStorage = encryptedStorage
@@ -34,12 +32,11 @@ class AppContext {
         self.userAccountService = userAccountService
         self.keyService = keyService
         self.passPhraseService = passPhraseService
-        self.clientConfigurationService = clientConfigurationService
         self.globalRouter = globalRouter
     }
 
     @MainActor
-    static func setUpAppContext(globalRouter: GlobalRouterType) throws -> AppContext {
+    static func setup(globalRouter: GlobalRouterType) throws -> AppContext {
         let keyChainService = KeyChainService()
         let encryptedStorage = EncryptedStorage(
             storageEncryptionKey: try keyChainService.getStorageEncryptionKey()
@@ -49,11 +46,6 @@ class AppContext {
             storage: encryptedStorage,
             passPhraseService: passPhraseService,
             currentUserEmail: { try? encryptedStorage.activeUser?.email }
-        )
-        let clientConfigurationService = ClientConfigurationService(
-            local: LocalClientConfiguration(
-                encryptedStorage: encryptedStorage
-            )
         )
         return AppContext(
             encryptedStorage: encryptedStorage,
@@ -67,19 +59,17 @@ class AppContext {
             ),
             keyService: keyService,
             passPhraseService: passPhraseService,
-            clientConfigurationService: clientConfigurationService,
             globalRouter: globalRouter
         )
     }
 
-    func withSession(session: SessionType?, authType: AuthType, user: User) -> AppContextWithUser {
+    func with(session: SessionType?, authType: AuthType, user: User) -> AppContextWithUser {
         return AppContextWithUser(
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
             keyService: keyService,
             passPhraseService: passPhraseService,
-            clientConfigurationService: clientConfigurationService,
             globalRouter: globalRouter,
             authType: authType,
             user: user
@@ -130,7 +120,13 @@ class AppContext {
 class AppContextWithUser: AppContext {
     let authType: AuthType
     let user: User
-    let userId: UserId
+
+    let enterpriseServer: EnterpriseServerApiType
+    let clientConfigurationService: ClientConfigurationServiceType
+
+    var userId: UserId {
+        UserId(email: user.email, name: user.name)
+    }
 
     init(
         encryptedStorage: EncryptedStorageType,
@@ -138,14 +134,19 @@ class AppContextWithUser: AppContext {
         userAccountService: SessionServiceType,
         keyService: KeyServiceType,
         passPhraseService: PassPhraseServiceType,
-        clientConfigurationService: ClientConfigurationServiceType,
         globalRouter: GlobalRouterType,
         authType: AuthType,
         user: User
     ) {
         self.authType = authType
         self.user = user
-        self.userId = UserId(email: user.email, name: user.name)
+        self.enterpriseServer = EnterpriseServerApi(email: user.email)
+        self.clientConfigurationService = ClientConfigurationService(
+            server: enterpriseServer,
+            local: LocalClientConfiguration(
+                encryptedStorage: encryptedStorage
+            )
+        )
 
         super.init(
             encryptedStorage: encryptedStorage,
@@ -153,7 +154,6 @@ class AppContextWithUser: AppContext {
             userAccountService: userAccountService,
             keyService: keyService,
             passPhraseService: passPhraseService,
-            clientConfigurationService: clientConfigurationService,
             globalRouter: globalRouter
         )
     }

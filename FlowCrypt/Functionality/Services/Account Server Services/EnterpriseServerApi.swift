@@ -9,9 +9,9 @@
 import FlowCryptCommon
 
 protocol EnterpriseServerApiType {
-    func getActiveFesUrl(for email: String) async throws -> String?
-    func getClientConfiguration(for email: String) async throws -> RawClientConfiguration
-    func getReplyToken(for email: String) async throws -> String
+    func getActiveFesUrl() async throws -> String?
+    func getClientConfiguration() async throws -> RawClientConfiguration
+    func getReplyToken() async throws -> String
     func upload(message: Data, details: MessageUploadDetails, progressHandler: ((Float) -> Void)?) async throws -> String
 }
 
@@ -57,7 +57,13 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
 
     private var messageUploadProgressHandler: ((Float) -> Void)?
 
-    func getActiveFesUrl(for email: String) async throws -> String? {
+    private let email: String
+
+    init(email: String) {
+        self.email = email
+    }
+
+    func getActiveFesUrl() async throws -> String? {
         do {
             guard let userDomain = email.emailParts?.domain,
                   !EnterpriseServerApi.publicEmailProviderDomains.contains(userDomain) else {
@@ -93,7 +99,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         }
     }
 
-    func getClientConfiguration(for email: String) async throws -> RawClientConfiguration {
+    func getClientConfiguration() async throws -> RawClientConfiguration {
         guard let userDomain = email.emailParts?.domain else {
             throw EnterpriseServerApiError.emailFormat
         }
@@ -114,7 +120,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         }
     }
 
-    func getReplyToken(for email: String) async throws -> String {
+    func getReplyToken() async throws -> String {
         let response: MessageReplyTokenResponse = try await performRequest(
             email: email,
             url: "/api/v1/message/new-reply-token"
@@ -211,7 +217,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         withAuthorization: Bool = true,
         delegate: URLSessionTaskDelegate? = nil
     ) async throws -> T {
-        guard let fesUrl = try await getActiveFesUrl(for: email) else {
+        guard let fesUrl = try await getActiveFesUrl() else {
             throw EnterpriseServerApiError.noActiveFesUrl
         }
 

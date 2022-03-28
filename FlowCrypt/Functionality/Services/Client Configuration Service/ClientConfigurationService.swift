@@ -20,7 +20,7 @@ final class ClientConfigurationService {
     private let local: LocalClientConfigurationType
 
     init(
-        server: EnterpriseServerApiType = EnterpriseServerApi(),
+        server: EnterpriseServerApiType,
         local: LocalClientConfigurationType
     ) {
         self.server = server
@@ -33,8 +33,8 @@ extension ClientConfigurationService: ClientConfigurationServiceType {
 
     func fetch(for user: User) async throws -> ClientConfiguration {
         do {
-            let raw = try await server.getClientConfiguration(for: user.email)
-            let fesUrl = try await server.getActiveFesUrl(for: user.email)
+            let raw = try await server.getClientConfiguration()
+            let fesUrl = try await server.getActiveFesUrl()
             try local.save(for: user, raw: raw, fesUrl: fesUrl)
             return ClientConfiguration(raw: raw)
         } catch {

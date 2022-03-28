@@ -45,7 +45,7 @@ extension GlobalRouter: GlobalRouterType {
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
         do {
-            let appContext = try AppContext.setUpAppContext(globalRouter: self)
+            let appContext = try AppContext.setup(globalRouter: self)
             do {
                 try appContext.encryptedStorage.validate()
                 proceed(with: appContext)
@@ -171,7 +171,7 @@ extension GlobalRouter: GlobalRouterType {
             return
         }
 
-        let appContextWithUser = appContext.withSession(session: session, authType: authType, user: user)
+        let appContextWithUser = appContext.with(session: session, authType: authType, user: user)
         AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
     }
 
