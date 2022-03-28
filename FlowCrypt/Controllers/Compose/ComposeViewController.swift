@@ -802,7 +802,7 @@ extension ComposeViewController {
                 $0.textView.attributedText = mutableString
                 let textView = $0
                 if input.isReply {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                         textView.becomeFirstResponder()
                     }
                 }

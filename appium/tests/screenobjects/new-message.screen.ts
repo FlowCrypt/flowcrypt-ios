@@ -205,6 +205,22 @@ class NewMessageScreen extends BaseScreen {
     expect(name).toEqual(`  ${recipient}  `);
   }
 
+  getActiveElementId = async () => {
+    // @ts-ignore
+    return (await driver.getActiveElement()).ELEMENT;
+  }
+
+  checkMessageFieldFocus = async() => {
+    await ElementHelper.waitElementVisible(await this.recipientListLabel);
+    const messageElementId = (await this.composeSecurityMessage).elementId;
+    expect(messageElementId).toBe(await this.getActiveElementId());
+  }
+
+  checkRecipientTextFieldFocus = async() => {
+    const recipientElementId = (await this.getRecipientsTextField('to')).elementId;
+    expect(recipientElementId).toBe(await this.getActiveElementId());
+  }
+
   checkAddedRecipientColor = async (recipient: string, order: number, color: string, type = 'to') => {
     await this.showRecipientInputIfNeeded();
     const addedRecipientEl = await $(`~aid-${type}-${order}-${color}`);
