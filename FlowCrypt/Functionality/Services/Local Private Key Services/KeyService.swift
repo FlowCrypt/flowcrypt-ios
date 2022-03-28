@@ -10,7 +10,6 @@ import Foundation
 import FlowCryptCommon
 
 protocol KeyServiceType {
-    func getPrvKeyDetails(email: String) async throws -> [KeyDetails]
     func getPrvKeyInfo(email: String) async throws -> [PrvKeyInfo]
     func getSigningKey(email: String) async throws -> PrvKeyInfo?
 }
@@ -29,18 +28,6 @@ final class KeyService: KeyServiceType {
         self.storage = storage
         self.passPhraseService = passPhraseService
         self.logger = Logger.nested(in: Self.self, with: "KeyService")
-    }
-
-    /// Use to get list of keys (including missing pass phrases keys)
-    func getPrvKeyDetails(email: String) async throws -> [KeyDetails] {
-        let privateKeys = try storage.getKeypairs(by: email).map(\.private)
-        let parsed = try await core.parseKeys(
-            armoredOrBinary: privateKeys.joined(separator: "\n").data()
-        )
-        guard parsed.keyDetails.count == privateKeys.count else {
-            throw KeyServiceError.parsingError
-        }
-        return parsed.keyDetails
     }
 
     /// Use to get list of PrvKeyInfo

@@ -222,7 +222,8 @@ extension SetupManuallyEnterPassPhraseViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        let keyDetails = try await appContext.keyService.getPrvKeyDetails(email: email)
+        let privateKeys = try appContext.encryptedStorage.getKeypairs(by: email).map(\.private)
+        let keyDetails = try await keyMethods.parseKeys(armored: privateKeys)
         try importKeys(with: keyDetails, and: passPhrase)
     }
 
