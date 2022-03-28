@@ -16,9 +16,16 @@ interface WebStream<T extends Uint8Array | string> extends BaseStream<T> {
 
 // copied+simplified version of ReadableStream from @types/node/index.d.ts
 interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> {
-  readable: boolean; pipe: Function; unpipe: Function; wrap: Function;
-  read(size?: number): string | Uint8Array; setEncoding(encoding: string): this; pause(): this; resume(): this;
-  isPaused(): boolean; unshift(chunk: string | Uint8Array): void;
+  readable: boolean;
+  pipe: () => void;
+  unpipe: () => void;
+  wrap: () => void;
+  read(size?: number): string | Uint8Array;
+  setEncoding(encoding: string): this;
+  pause(): this;
+  resume(): this;
+  isPaused(): boolean;
+  unshift(chunk: string | Uint8Array): void;
 }
 
 type ReadToEndFn = <T extends Uint8Array | string>(input: T | WebStream<T> | NodeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
@@ -45,5 +52,5 @@ export const requireMimeBuilder = (): any => {
 
 export const requireIso88592 = (): any => {
   // @ts-ignore
-  return global['iso88592'];
+  return global.iso88592;
 };

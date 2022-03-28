@@ -58,13 +58,13 @@ export const strToHex = (str: string): string => {
 };
 
 const maxDate = (dates: (Date | null)[]): Date | null => {
-  let res: Date | null = null;
+  let res: Date | undefined;
   for (const date of dates) {
-    if (res == null || (date != null && date > res)) {
+    if (date != null && (res === undefined || date > res)) {
       res = date;
     }
   }
-  return res;
+  return res === undefined ? null : res;
 };
 
 const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {

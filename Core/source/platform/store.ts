@@ -27,7 +27,7 @@ export class Store {
     KEY_CACHE[armored] = k;
   };
 
-  static armoredKeyCacheGet = (armored: string): Key | undefined => {
+  public static armoredKeyCacheGet = (armored: string): Key | undefined => {
     Store.keyCacheRenewExpiry();
     return KEY_CACHE[armored];
   };

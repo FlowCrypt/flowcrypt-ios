@@ -2,6 +2,7 @@
 
 'use strict';
 
+/* tslint:disable */
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_sanitize_html = require("sanitize-html");
 // @ts-ignore - this way we can test ISO-2201-JP encoding
@@ -9,6 +10,7 @@ global.dereq_encoding_japanese = require("encoding-japanese");
 (global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder');
 (global as any)["emailjs-mime-parser"] = require('../../source/lib/emailjs/emailjs-mime-parser');
 (global as any)["iso88592"] = require('../../source/lib/iso-8859-2');
+/* tslint:enable */
 
 import * as ava from 'ava';
 
