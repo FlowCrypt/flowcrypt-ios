@@ -800,8 +800,11 @@ extension ComposeViewController {
                 let mutableString = NSMutableAttributedString(attributedString: messageText)
                 mutableString.append(styledQuote)
                 $0.textView.attributedText = mutableString
+                let textView = $0
                 if input.isReply {
-                    $0.becomeFirstResponder()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        textView.becomeFirstResponder()
+                    }
                 }
             } else {
                 $0.textView.attributedText = messageText
