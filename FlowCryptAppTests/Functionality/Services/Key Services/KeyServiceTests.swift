@@ -24,7 +24,7 @@ final class KeyServiceTests: XCTestCase {
 
     func testGetSigningKeyFirstEmail() async throws {
         // arrange
-        let userObject = UserRealmObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
+        let userObject = UserRealmObject(name: "Bill", email: "bill@example.test", imap: nil, smtp: nil)
 
         guard let key1 = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
             XCTFail("key details expected")
@@ -57,7 +57,7 @@ final class KeyServiceTests: XCTestCase {
         )
 
         // act
-        let result = try await keyService.getSigningKey(email: "bill@test.com")
+        let result = try await keyService.getSigningKey(email: "bill@example.test")
 
         // assert
         XCTAssertEqual(result?.private, Self.privateKey2)
@@ -66,7 +66,7 @@ final class KeyServiceTests: XCTestCase {
 
     func testGetSigningKeyNotFirstEmail() async throws {
         // arrange
-        let userObject = UserRealmObject(name: "Bill", email: "bill@test.com", imap: nil, smtp: nil)
+        let userObject = UserRealmObject(name: "Bill", email: "bill@example.test", imap: nil, smtp: nil)
 
         guard let key = try await Core.shared.parseKeys(armoredOrBinary: Self.privateKey1.data()).keyDetails.first else {
             XCTFail("key details expected")
@@ -85,7 +85,7 @@ final class KeyServiceTests: XCTestCase {
         )
 
         // act
-        let result = try await keyService.getSigningKey(email: "bill@test.com")
+        let result = try await keyService.getSigningKey(email: "bill@example.test")
 
         // assert
         XCTAssertEqual(result?.private, Self.privateKey1)
