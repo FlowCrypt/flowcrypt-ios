@@ -147,6 +147,8 @@ class AppContextWithUser: AppContext {
             )
         )
 
+        _ = try await self.clientConfigurationService.fetch(for: user)
+
         super.init(
             encryptedStorage: encryptedStorage,
             session: session,
