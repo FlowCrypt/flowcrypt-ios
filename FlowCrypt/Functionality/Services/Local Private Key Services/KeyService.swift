@@ -10,81 +10,52 @@ import Foundation
 import FlowCryptCommon
 
 protocol KeyServiceType {
-    func getPrvKeyDetails() async throws -> [KeyDetails]
-    func getPrvKeyInfo() async throws -> [PrvKeyInfo]
-    func getSigningKey() async throws -> PrvKeyInfo?
+    func getPrvKeyInfo(email: String) async throws -> [PrvKeyInfo]
+    func getSigningKey(email: String) async throws -> PrvKeyInfo?
 }
 
 final class KeyService: KeyServiceType {
 
-    let coreService: Core = .shared
+    let core: Core = .shared
     let storage: EncryptedStorageType
     let passPhraseService: PassPhraseServiceType
-    let currentUserEmail: () -> (String?)
     let logger: Logger
 
     init(
         storage: EncryptedStorageType,
-        passPhraseService: PassPhraseServiceType,
-        currentUserEmail: @escaping () -> (String?)
+        passPhraseService: PassPhraseServiceType
     ) {
         self.storage = storage
         self.passPhraseService = passPhraseService
-        self.currentUserEmail = currentUserEmail
         self.logger = Logger.nested(in: Self.self, with: "KeyService")
     }
 
-    /// Use to get list of keys (including missing pass phrases keys)
-    func getPrvKeyDetails() async throws -> [KeyDetails] {
-        guard let email = currentUserEmail() else {
-            throw KeyServiceError.missingCurrentUserEmail
-        }
-        let privateKeys = try storage.getKeypairs(by: email).map(\.private)
-        let parsed = try await coreService.parseKeys(
-            armoredOrBinary: privateKeys.joined(separator: "\n").data()
-        )
-        guard parsed.keyDetails.count == privateKeys.count else {
-            throw KeyServiceError.parsingError
-        }
-        return parsed.keyDetails
-    }
-
     /// Use to get list of PrvKeyInfo
-    func getPrvKeyInfo() async throws -> [PrvKeyInfo] {
-        guard let email = currentUserEmail() else {
-            throw KeyServiceError.missingCurrentUserEmail
-        }
-
-        let storedPassPhrases = try passPhraseService.getPassPhrases()
+    func getPrvKeyInfo(email: String) async throws -> [PrvKeyInfo] {
         let privateKeys = try storage.getKeypairs(by: email)
             .map { keypair -> PrvKeyInfo in
-                let passphrase = storedPassPhrases
-                    .filter(\.value.isNotEmpty)
-                    .first(where: { $0.primaryFingerprintOfAssociatedKey == keypair.primaryFingerprint })?
-                    .value
-                return PrvKeyInfo(keypair: keypair, passphrase: passphrase)
+                return try self.getPrvKeyInfo(keyPair: keypair)
             }
         return privateKeys
     }
 
-    func getSigningKey() async throws -> PrvKeyInfo? {
-        guard let email = currentUserEmail() else {
-            logger.logError("no current user email")
-            throw AppErr.noCurrentUser
-        }
-
+    func getSigningKey(email: String) async throws -> PrvKeyInfo? {
         let keysInfo = try storage.getKeypairs(by: email)
         guard let foundKey = try await findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
             return nil
         }
 
+        return try self.getPrvKeyInfo(keyPair: foundKey)
+    }
+
+    // Get Private Key Info from KeyPair
+    private func getPrvKeyInfo(keyPair: Keypair) throws -> PrvKeyInfo {
         let storedPassPhrases = try passPhraseService.getPassPhrases()
         let passphrase = storedPassPhrases
             .filter { $0.value.isNotEmpty }
-            .first(where: { $0.primaryFingerprintOfAssociatedKey == foundKey.primaryFingerprint })?
+            .first(where: { $0.primaryFingerprintOfAssociatedKey == keyPair.primaryFingerprint })?
             .value
-
-        return PrvKeyInfo(keypair: foundKey, passphrase: passphrase)
+        return PrvKeyInfo(keypair: keyPair, passphrase: passphrase)
     }
 
     private func findKeyByUserEmail(keysInfo: [Keypair], email: String) async throws -> Keypair? {
@@ -92,7 +63,7 @@ final class KeyService: KeyServiceType {
         logger.logDebug("findKeyByUserEmail: found \(keysInfo.count) candidate prvs in storage, searching by:\(email)")
         var keys: [(Keypair, KeyDetails)] = []
         for keyInfo in keysInfo {
-            let parsedKeys = try await coreService.parseKeys(
+            let parsedKeys = try await core.parseKeys(
                 armoredOrBinary: keyInfo.`private`.data()
             )
             guard let parsedKey = parsedKeys.keyDetails.first else {

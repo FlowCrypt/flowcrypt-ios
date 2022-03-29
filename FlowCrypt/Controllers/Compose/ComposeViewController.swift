@@ -455,7 +455,7 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
-        guard let signingKey = try await appContext.keyService.getSigningKey() else {
+        guard let signingKey = try await appContext.keyService.getSigningKey(email: appContext.user.email) else {
             throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
 
@@ -497,7 +497,7 @@ extension ComposeViewController {
     private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await appContext.keyService.getPrvKeyInfo()
+        let allKeys = try await appContext.keyService.getPrvKeyInfo(email: appContext.user.email)
         guard allKeys.isNotEmpty else {
             // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
             //   I copied it from another usage, but has to be changed
