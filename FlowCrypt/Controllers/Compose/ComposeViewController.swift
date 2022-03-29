@@ -57,7 +57,7 @@ final class ComposeViewController: TableNodeViewController {
     private var decorator: ComposeViewDecorator
     private let localContactsProvider: LocalContactsProviderType
     private let pubLookup: PubLookupType
-    private let cloudContactProvider: CloudContactsProvider
+    private let googleUserService: GoogleUserServiceType
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyMethods: KeyMethodsType
@@ -98,7 +98,6 @@ final class ComposeViewController: TableNodeViewController {
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
-        cloudContactProvider: CloudContactsProvider? = nil,
         composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
@@ -113,13 +112,10 @@ final class ComposeViewController: TableNodeViewController {
         self.localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
-        let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
-            userService: GoogleUserService(
-                currentUserEmail: appContext.user.email,
-                appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
-            )
+        self.googleUserService = GoogleUserService(
+            currentUserEmail: appContext.user.email,
+            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
         )
-        self.cloudContactProvider = cloudContactProvider
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
             clientConfiguration: clientConfiguration,
             encryptedStorage: appContext.encryptedStorage,
@@ -603,7 +599,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case let (.searchEmails(emails), .searchResults):
             return emails.isNotEmpty ? emails.count + 1 : 2
         case (.searchEmails, .contacts):
-            return cloudContactProvider.isContactsScopeEnabled ? 0 : 2
+            return googleUserService.isContactsScopeEnabled ? 0 : 2
         default:
             return 0
         }
@@ -1118,7 +1114,7 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             do {
-                let cloudRecipients = try await cloudContactProvider.searchContacts(query: query)
+                let cloudRecipients = try await googleUserService.searchContacts(query: query)
                 let localRecipients = try localContactsProvider.searchRecipients(query: query)
 
                 let recipients = (cloudRecipients + localRecipients)

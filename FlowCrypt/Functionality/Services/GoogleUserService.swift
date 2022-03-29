@@ -70,6 +70,8 @@ enum IdTokenError: Error, CustomStringConvertible {
 protocol GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
     func renewSession() async throws
+    var isContactsScopeEnabled: Bool { get }
+    func searchContacts(query: String) async throws -> [Recipient]
 }
 
 // this is here so that we don't have to include AppDelegate in test target
@@ -90,6 +92,8 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
     ) {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
+        super.init()
+        self.runWarmupQuery()
     }
 
     private enum Constants {
@@ -97,7 +101,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         static let userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo"
     }
 
-    private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
+    internal lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
     private var tokenResponse: OIDTokenResponse? {
         authorization?.authState.lastTokenResponse
