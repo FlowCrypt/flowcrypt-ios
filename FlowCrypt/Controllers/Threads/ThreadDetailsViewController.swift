@@ -201,7 +201,7 @@ extension ThreadDetailsViewController {
         }
 
         if attachment.isEncrypted {
-            let decryptedAttachment = try await messageService.decrypt(attachment: attachment)
+            let decryptedAttachment = try await messageService.decrypt(attachment: attachment, userEmail: appContext.user.email)
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
             input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
@@ -309,6 +309,7 @@ extension ThreadDetailsViewController {
                     with: message,
                     folder: thread.path,
                     onlyLocalKeys: true,
+                    userEmail: appContext.user.email,
                     progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
                 if case .missingPubkey = processedMessage.signature {
@@ -430,13 +431,17 @@ extension ThreadDetailsViewController {
 
         Task {
             do {
-                let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(passPhrase)
+                let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(
+                    passPhrase,
+                    userEmail: appContext.user.email
+                )
                 if matched {
                     let sender = input[indexPath.section-1].rawMessage.sender
                     let processedMessage = try await messageService.decryptAndProcessMessage(
                         mime: rawMimeData,
                         sender: sender,
-                        onlyLocalKeys: false
+                        onlyLocalKeys: false,
+                        userEmail: appContext.user.email
                     )
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
@@ -459,6 +464,7 @@ extension ThreadDetailsViewController {
                     with: message,
                     folder: thread.path,
                     onlyLocalKeys: false,
+                    userEmail: appContext.user.email,
                     progressHandler: { _ in }
                 )
                 handleReceived(message: processedMessage, at: indexPath)
