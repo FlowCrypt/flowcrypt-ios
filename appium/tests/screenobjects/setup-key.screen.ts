@@ -8,7 +8,8 @@ const SELECTORS = {
   OK_BUTTON: '~Ok',
   CONFIRM_PASS_PHRASE_FIELD: '~textField',
   LOAD_ACCOUNT_BUTTON: '~load_account',
-  CREATE_NEW_KEY_BUTTON: '~Create a new key'
+  CREATE_NEW_KEY_BUTTON: '~Create a new key',
+  IMPORT_MY_KEY_BUTTON: '~Import my key'
 };
 
 class SetupKeyScreen extends BaseScreen {
@@ -38,6 +39,10 @@ class SetupKeyScreen extends BaseScreen {
 
   get createNewKeyButton () {
     return $(SELECTORS.CREATE_NEW_KEY_BUTTON)
+  }
+
+  get importMyKeyButton () {
+    return $(SELECTORS.IMPORT_MY_KEY_BUTTON)
   }
 
   setPassPhrase = async (text: string = CommonData.account.passPhrase) => {
@@ -81,7 +86,6 @@ class SetupKeyScreen extends BaseScreen {
     }
   }
 
-
   fillPassPhrase = async (passPhrase: string) => {
     await ElementHelper.waitClickAndType(await this.enterPassPhraseField, passPhrase);
   }
@@ -101,6 +105,11 @@ class SetupKeyScreen extends BaseScreen {
 
   clickCreateNewKeyButton = async () => {
     await ElementHelper.waitAndClick(await this.createNewKeyButton);
+  }
+
+  checkNoBackupsFoundScreen = async () => {
+    await ElementHelper.waitElementVisible(await this.createNewKeyButton);
+    await ElementHelper.waitElementVisible(await this.importMyKeyButton);
   }
 }
 
