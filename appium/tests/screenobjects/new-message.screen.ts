@@ -206,6 +206,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   getActiveElementId = async () => {
+    await browser.pause(500);
     const activeElement = (await driver.getActiveElement()) as unknown as { ELEMENT: string };
     return activeElement.ELEMENT;
   }
