@@ -12,6 +12,7 @@ import Foundation
 protocol KeyMethodsType {
     func filterByPassPhraseMatch(keys: [KeyDetails], passPhrase: String) async throws -> [KeyDetails]
     func filterByPassPhraseMatch(keys: [PrvKeyInfo], passPhrase: String) async throws -> [PrvKeyInfo]
+    func parseKeys(armored: [String]) async throws -> [KeyDetails]
 }
 
 final class KeyMethods: KeyMethodsType {
@@ -55,5 +56,15 @@ final class KeyMethods: KeyMethodsType {
             }
         }
         return matching
+    }
+
+    func parseKeys(armored: [String]) async throws -> [KeyDetails] {
+        let parsed = try await Core.shared.parseKeys(
+            armoredOrBinary: armored.joined(separator: "\n").data()
+        )
+        guard parsed.keyDetails.count == armored.count else {
+            throw KeyServiceError.parsingError
+        }
+        return parsed.keyDetails
     }
 }

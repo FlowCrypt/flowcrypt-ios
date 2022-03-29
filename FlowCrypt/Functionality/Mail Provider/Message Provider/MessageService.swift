@@ -72,8 +72,8 @@ final class MessageService {
         self.pubLookup = pubLookup
     }
 
-    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String) async throws -> Bool {
-        let keys = try await keyService.getPrvKeyInfo()
+    func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String, userEmail: String) async throws -> Bool {
+        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
@@ -90,6 +90,7 @@ final class MessageService {
         with input: Message,
         folder: String,
         onlyLocalKeys: Bool,
+        userEmail: String,
         progressHandler: ((MessageFetchState) -> Void)?
     ) async throws -> ProcessedMessage {
         let rawMimeData = try await messageProvider.fetchMsg(
@@ -100,16 +101,18 @@ final class MessageService {
         return try await decryptAndProcessMessage(
             mime: rawMimeData,
             sender: input.sender,
-            onlyLocalKeys: onlyLocalKeys
+            onlyLocalKeys: onlyLocalKeys,
+            userEmail: userEmail
         )
     }
 
     func decryptAndProcessMessage(
         mime rawMimeData: Data,
         sender: Recipient?,
-        onlyLocalKeys: Bool
+        onlyLocalKeys: Bool,
+        userEmail: String
     ) async throws -> ProcessedMessage {
-        let keys = try await keyService.getPrvKeyInfo()
+        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
@@ -133,10 +136,10 @@ final class MessageService {
         )
     }
 
-    func decrypt(attachment: MessageAttachment) async throws -> MessageAttachment {
+    func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
         guard attachment.isEncrypted else { return attachment }
 
-        let keys = try await keyService.getPrvKeyInfo()
+        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
         let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys, msgPwd: nil)
 
         if let decryptErr = decrypted.decryptErr {
