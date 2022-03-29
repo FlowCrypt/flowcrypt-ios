@@ -9,7 +9,8 @@
 import FlowCryptCommon
 
 protocol EnterpriseServerApiType {
-    func getActiveFesUrl() async throws -> String?
+    var fesUrl: String? { get }
+
     func getClientConfiguration() async throws -> RawClientConfiguration
     func getReplyToken() async throws -> String
     func upload(message: Data, details: MessageUploadDetails, progressHandler: ((Float) -> Void)?) async throws -> String
@@ -58,12 +59,17 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
     private var messageUploadProgressHandler: ((Float) -> Void)?
 
     private let email: String
+    private(set) var fesUrl: String?
 
-    init(email: String) {
+    init(email: String) async throws {
         self.email = email
+
+        super.init()
+
+        self.fesUrl = try await getActiveFesUrl()
     }
 
-    func getActiveFesUrl() async throws -> String? {
+    private func getActiveFesUrl() async throws -> String? {
         do {
             guard let userDomain = email.emailParts?.domain,
                   !EnterpriseServerApi.publicEmailProviderDomains.contains(userDomain) else {
@@ -217,7 +223,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         withAuthorization: Bool = true,
         delegate: URLSessionTaskDelegate? = nil
     ) async throws -> T {
-        guard let fesUrl = try await getActiveFesUrl() else {
+        guard let fesUrl = fesUrl else {
             throw EnterpriseServerApiError.noActiveFesUrl
         }
 

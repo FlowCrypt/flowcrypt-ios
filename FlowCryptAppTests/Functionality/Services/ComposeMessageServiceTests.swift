@@ -34,6 +34,7 @@ class ComposeMessageServiceTests: XCTestCase {
     var core = CoreComposeMessageMock()
     var encryptedStorage = EncryptedStorageMock()
     var localContactsProvider = LocalContactsProviderMock()
+    var enterpriseServerMock = EnterpriseServerApiMock()
 
     override func setUp() {
         super.setUp()
@@ -46,6 +47,7 @@ class ComposeMessageServiceTests: XCTestCase {
             passPhraseService: PassPhraseServiceMock(),
             draftGateway: DraftGatewayMock(),
             localContactsProvider: localContactsProvider,
+            enterpriseServer: enterpriseServerMock,
             sender: "some@gmail.com",
             core: core
         )
@@ -207,7 +209,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
         encryptedStorage.getKeypairsResult = [keypair]
-        for recipient in recipients {
+        for _ in recipients {
             localContactsProvider.retrievePubKeysResult = { _ in
                 []
             }
@@ -234,7 +236,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        for recipient in recipients {
+        for _ in recipients {
             localContactsProvider.retrievePubKeysResult = { _ in
                 ["pubKey"]
             }
@@ -261,7 +263,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        for recipient in recipients {
+        for _ in recipients {
             localContactsProvider.retrievePubKeysResult = { _ in
                 ["pubKey"]
             }
@@ -300,7 +302,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: allKeyDetails)
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        for recipient in recipients {
+        for _ in recipients {
             localContactsProvider.retrievePubKeysResult = { _ in
                 ["revoked", "expired", "valid"]
             }

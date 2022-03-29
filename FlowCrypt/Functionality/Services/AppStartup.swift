@@ -185,7 +185,7 @@ struct AppStartup {
             return
         }
 
-        let contextWithUser = appContext.with(session: session, authType: authType, user: user)
+        let contextWithUser = try await appContext.with(session: session, authType: authType, user: user)
         _ = try await contextWithUser.clientConfigurationService.fetch(for: contextWithUser.user)
         callback(contextWithUser)
     }

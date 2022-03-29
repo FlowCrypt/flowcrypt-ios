@@ -62,8 +62,8 @@ class AppContext {
         )
     }
 
-    func with(session: SessionType?, authType: AuthType, user: User) -> AppContextWithUser {
-        return AppContextWithUser(
+    func with(session: SessionType?, authType: AuthType, user: User) async throws -> AppContextWithUser {
+        return try await AppContextWithUser(
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
@@ -136,10 +136,10 @@ class AppContextWithUser: AppContext {
         globalRouter: GlobalRouterType,
         authType: AuthType,
         user: User
-    ) {
+    ) async throws {
         self.authType = authType
         self.user = user
-        self.enterpriseServer = EnterpriseServerApi(email: user.email)
+        self.enterpriseServer = try await EnterpriseServerApi(email: user.email)
         self.clientConfigurationService = ClientConfigurationService(
             server: enterpriseServer,
             local: LocalClientConfiguration(

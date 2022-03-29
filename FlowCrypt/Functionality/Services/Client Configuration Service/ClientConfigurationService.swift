@@ -34,8 +34,7 @@ extension ClientConfigurationService: ClientConfigurationServiceType {
     func fetch(for user: User) async throws -> ClientConfiguration {
         do {
             let raw = try await server.getClientConfiguration()
-            let fesUrl = try await server.getActiveFesUrl()
-            try local.save(for: user, raw: raw, fesUrl: fesUrl)
+            try local.save(for: user, raw: raw, fesUrl: server.fesUrl)
             return ClientConfiguration(raw: raw)
         } catch {
             guard let raw = try local.load(for: user.email) else {

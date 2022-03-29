@@ -171,8 +171,10 @@ extension GlobalRouter: GlobalRouterType {
             return
         }
 
-        let appContextWithUser = appContext.with(session: session, authType: authType, user: user)
-        AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
+        Task {
+            let appContextWithUser = try await appContext.with(session: session, authType: authType, user: user)
+            AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
+        }
     }
 
     @MainActor

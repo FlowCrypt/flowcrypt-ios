@@ -69,7 +69,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 
         try await submitKeyToAttester(user: appContext.user, publicKey: encryptedPrv.key.public)
         try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: appContext.userId)
-        try await putKeypairsInEncryptedStorage(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
+        try putKeypairsInEncryptedStorage(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
 
         if storageMethod == .memory {
             let passPhrase = PassPhrase(
