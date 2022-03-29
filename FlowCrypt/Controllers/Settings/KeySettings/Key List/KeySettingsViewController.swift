@@ -21,14 +21,17 @@ final class KeySettingsViewController: TableNodeViewController {
     private var keys: [KeyDetails] = []
     private let decorator: KeySettingsViewDecorator
     private let isUsingKeyManager: Bool
+    private let keyMethods: KeyMethodsType
 
     init(
         appContext: AppContextWithUser,
-        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator()
+        decorator: KeySettingsViewDecorator = KeySettingsViewDecorator(),
+        keyMethods: KeyMethodsType = KeyMethods()
     ) throws {
         self.appContext = appContext
         self.decorator = decorator
         self.isUsingKeyManager = try appContext.clientConfigurationService.getSaved(for: appContext.user.email).isUsingKeyManager
+        self.keyMethods = keyMethods
         super.init(node: TableNode())
     }
 
@@ -71,7 +74,8 @@ final class KeySettingsViewController: TableNodeViewController {
 
 extension KeySettingsViewController {
     private func loadKeysFromStorageAndRender() async throws {
-        self.keys = try await appContext.keyService.getPrvKeyDetails()
+        let privateKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email).map(\.private)
+        self.keys = try await keyMethods.parseKeys(armored: privateKeys)
         await node.reloadData()
     }
 }

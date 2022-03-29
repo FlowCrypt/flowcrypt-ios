@@ -44,8 +44,7 @@ class AppContext {
         let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
         let keyService = KeyService(
             storage: encryptedStorage,
-            passPhraseService: passPhraseService,
-            currentUserEmail: { try? encryptedStorage.activeUser?.email }
+            passPhraseService: passPhraseService
         )
         return AppContext(
             encryptedStorage: encryptedStorage,
