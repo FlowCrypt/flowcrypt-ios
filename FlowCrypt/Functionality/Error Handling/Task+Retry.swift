@@ -22,8 +22,6 @@ extension Task where Failure == Error {
                     let oneMillisecond = UInt64(1_000_000)
                     let delay = oneMillisecond * retryDelayMs
                     try await Task<Never, Never>.sleep(nanoseconds: delay)
-
-                    continue
                 }
             }
 
