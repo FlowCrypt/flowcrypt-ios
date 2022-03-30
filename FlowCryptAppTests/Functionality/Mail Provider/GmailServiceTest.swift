@@ -48,7 +48,7 @@ class GoogleUserServiceMock: GoogleUserServiceType {
     func renewSession() async throws {
         try await Task.sleep(nanoseconds: 1_000_000_000)
     }
-    
+
     var isContactsScopeEnabled = true
     func searchContacts(query: String) async throws -> [Recipient] {
         return []
