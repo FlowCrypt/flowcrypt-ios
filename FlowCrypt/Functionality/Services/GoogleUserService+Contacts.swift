@@ -1,37 +1,30 @@
 //
-//  ContactsProvider.swift
+//  GoogleUserService+Contacts.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 25.03.2021.
+//  Created by Ioan Moldovan on 3/29/22
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptCommon
 import GoogleAPIClientForREST_PeopleService
 
-protocol CloudContactsProvider {
-    var isContactsScopeEnabled: Bool { get }
-    func searchContacts(query: String) async throws -> [Recipient]
-}
-
-enum CloudContactsProviderError: Error {
+enum ContactsProviderError: Error {
     /// People API response parsing
     case failedToParseData(Any?)
     /// Provider Error
     case providerError(Error)
 }
 
-final class UserContactsProvider {
-    private let logger = Logger.nested("UserContactsProvider")
-    private let userService: GoogleUserServiceType & UserServiceType
+extension GoogleUserService {
     private var peopleService: GTLRPeopleServiceService {
         let service = GTLRPeopleServiceService()
 
-        if userService.authorization == nil {
+        if authorization == nil {
             logger.logWarning("authorization for current user is nil")
         }
 
-        service.authorizer = userService.authorization
+        service.authorizer = authorization
         return service
     }
 
@@ -61,18 +54,13 @@ final class UserContactsProvider {
     }
 
     var isContactsScopeEnabled: Bool {
-        guard let currentScopeString = userService.authorization?.authState.scope else { return false }
+        guard let currentScopeString = authorization?.authState.scope else { return false }
         let currentScope = currentScopeString.split(separator: " ").map(String.init)
         let contactsScope = GeneralConstants.Gmail.contactsScope.map(\.value)
         return contactsScope.allSatisfy(currentScope.contains)
     }
 
-    init(userService: GoogleUserServiceType & UserServiceType) {
-        self.userService = userService
-        runWarmupQuery()
-    }
-
-    private func runWarmupQuery() {
+    internal func runWarmupQuery() {
         Task {
             // Warmup query for google contacts cache
             _ = await searchContacts(query: "")
@@ -80,7 +68,7 @@ final class UserContactsProvider {
     }
 }
 
-extension UserContactsProvider: CloudContactsProvider {
+extension GoogleUserService {
     func searchContacts(query: String) async -> [Recipient] {
         guard isContactsScopeEnabled else { return [] }
         let contacts = await searchUserContacts(query: query, type: .contacts)
@@ -93,7 +81,7 @@ extension UserContactsProvider: CloudContactsProvider {
     }
 }
 
-extension UserContactsProvider {
+extension GoogleUserService {
     private func searchUserContacts(query: String, type: QueryType) async -> [Recipient] {
         let query = type.query(searchString: query)
 
@@ -105,7 +93,7 @@ extension UserContactsProvider {
         try await withCheckedThrowingContinuation { continuation in
             self.peopleService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    return continuation.resume(throwing: CloudContactsProviderError.providerError(error))
+                    return continuation.resume(throwing: ContactsProviderError.providerError(error))
                 }
 
                 guard let response = data as? GTLRPeopleService_SearchResponse else {
@@ -113,7 +101,7 @@ extension UserContactsProvider {
                 }
 
                 guard let contacts = response.results else {
-                    return continuation.resume(throwing: CloudContactsProviderError.failedToParseData(data))
+                    return continuation.resume(throwing: ContactsProviderError.failedToParseData(data))
                 }
 
                 let recipients = contacts.compactMap(\.person).compactMap(Recipient.init)
