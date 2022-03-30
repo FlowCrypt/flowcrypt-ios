@@ -11,7 +11,7 @@ extension Task where Failure == Error {
     static func retrying(
         priority: TaskPriority? = nil,
         maxRetryCount: Int = 2,
-        retryDelay: TimeInterval = 1,
+        retryDelayMs: UInt64 = 1000,
         operation: @Sendable @escaping () async throws -> Success
     ) -> Task {
         Task(priority: priority) {
@@ -19,8 +19,8 @@ extension Task where Failure == Error {
                 do {
                     return try await operation()
                 } catch {
-                    let oneSecond = TimeInterval(1_000_000_000)
-                    let delay = UInt64(oneSecond * retryDelay)
+                    let oneMillisecond = UInt64(1_000_000)
+                    let delay = oneMillisecond * retryDelayMs
                     try await Task<Never, Never>.sleep(nanoseconds: delay)
 
                     continue
