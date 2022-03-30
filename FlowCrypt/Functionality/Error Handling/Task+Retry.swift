@@ -15,7 +15,7 @@ extension Task where Failure == Error {
         operation: @Sendable @escaping () async throws -> Success
     ) -> Task {
         Task(priority: priority) {
-            for _ in 0..<maxRetryCount {
+            for _ in 0 ..< maxRetryCount {
                 do {
                     return try await operation()
                 } catch {
