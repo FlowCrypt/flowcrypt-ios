@@ -218,8 +218,11 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkRecipientTextFieldFocus = async() => {
-    const recipientElementId = (await this.getRecipientsTextField('to')).elementId;
-    expect(recipientElementId).toBe(await this.getActiveElementId());
+    const toTextField = await this.getRecipientsTextField('to');
+    await ElementHelper.waitElementVisible(toTextField);
+    const toTextFieldActiveElementId = ((await toTextField.getActiveElement()) as unknown as { ELEMENT: string }).ELEMENT;
+    const activeElementId = await this.getActiveElementId();
+    expect(toTextFieldActiveElementId).toBe(activeElementId);
   }
 
   checkAddedRecipientColor = async (recipient: string, order: number, color: string, type = 'to') => {
