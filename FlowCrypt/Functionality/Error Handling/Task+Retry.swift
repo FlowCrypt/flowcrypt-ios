@@ -10,7 +10,7 @@ extension Task where Failure == Error {
     @discardableResult
     static func retrying(
         priority: TaskPriority? = nil,
-        maxRetryCount: Int = 3,
+        maxRetryCount: Int = 2,
         retryDelay: TimeInterval = 1,
         operation: @Sendable @escaping () async throws -> Success
     ) -> Task {
