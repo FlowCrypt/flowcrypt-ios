@@ -48,7 +48,7 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
-    private var userFinishedSearching = false
+    private var isSearchEnabled = false
     private var userTappedOutSideRecipientsArea = false
     private var shouldShowEmailRecipientsLabel = false
     private let appContext: AppContextWithUser
@@ -71,7 +71,6 @@ final class ComposeViewController: TableNodeViewController {
 
     private let search = PassthroughSubject<String, Never>()
     private var cancellable = Set<AnyCancellable>()
-    private var isPreviousSearchStateEmpty = false
 
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
@@ -358,16 +357,12 @@ extension ComposeViewController {
             .removeDuplicates()
             .map { [weak self] query -> String in
                 if query.isEmpty {
-                    self?.isPreviousSearchStateEmpty = true
                     self?.updateState(with: .main)
                 }
                 return query
             }
             .sink(receiveValue: { [weak self] in
-                guard $0.isNotEmpty else {
-                    self?.isPreviousSearchStateEmpty = true
-                    return
-                }
+                guard $0.isNotEmpty else { return }
                 self?.searchEmail(with: $0)
             })
             .store(in: &cancellable)
@@ -1084,7 +1079,6 @@ extension ComposeViewController {
 
         node.view.keyboardDismissMode = .interactive
         search.send("")
-        userFinishedSearching = true
 
         updateState(with: .main)
     }
@@ -1135,13 +1129,12 @@ extension ComposeViewController {
     }
 
     private func handleEditingChanged(with text: String?) {
+        isSearchEnabled = text != ""
         search.send(text ?? "")
     }
 
     private func handleDidBeginEditing(recipientType: RecipientType) {
         selectedRecipientType = recipientType
-        userFinishedSearching = false
-        isPreviousSearchStateEmpty = false
         node.view.keyboardDismissMode = .none
     }
 
@@ -1368,12 +1361,11 @@ extension ComposeViewController {
 // MARK: - State Handling
 extension ComposeViewController {
     private func updateState(with newState: State) {
-        if case .searchEmails = newState, self.isPreviousSearchStateEmpty || self.userFinishedSearching {
-            self.isPreviousSearchStateEmpty = false
-            self.userFinishedSearching = false
+        if case .searchEmails = newState, !self.isSearchEnabled {
             return
         }
 
+        isSearchEnabled = false
         state = newState
 
         switch state {
