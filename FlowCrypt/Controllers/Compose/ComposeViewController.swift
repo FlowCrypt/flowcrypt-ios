@@ -869,12 +869,14 @@ extension ComposeViewController {
         guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
         let popoverVC = ComposeRecipientPopupViewController(
-            recipient: recipient
+            recipient: recipient,
+            type: type
         )
         popoverVC.modalPresentationStyle = .popover
         popoverVC.popoverPresentationController?.sourceView = sender.view
         popoverVC.popoverPresentationController?.permittedArrowDirections = .up
         popoverVC.popoverPresentationController?.delegate = self
+        popoverVC.delegate = self
         self.present(popoverVC, animated: true, completion: nil)
     }
 
@@ -962,6 +964,19 @@ extension ComposeViewController {
                 .attributed(.regular(16)),
             image: UIImage(named: "gmail_icn"))
         )
+    }
+}
+
+extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
+    func removeRecipient(email: String, type: RecipientType) {
+        self.contextToSend.remove(recipient: email, type: type)
+        reload(sections: [.password])
+        if contextToSend.recipients(type: type).count < 1 {
+            reload(sections: [.recipients(type)])
+        }
+        if let listIndexPath = recipientsIndexPath(type: type, part: .list) {
+            node.reloadRows(at: [listIndexPath], with: .automatic)
+        }
     }
 }
 
@@ -1122,6 +1137,8 @@ extension ComposeViewController {
 
     private func handleDidBeginEditing(recipientType: RecipientType) {
         selectedRecipientType = recipientType
+        userFinishedSearching = false
+        isPreviousSearchStateEmpty = false
         node.view.keyboardDismissMode = .none
     }
 

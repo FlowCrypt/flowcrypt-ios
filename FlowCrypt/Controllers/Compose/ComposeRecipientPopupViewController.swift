@@ -10,6 +10,10 @@ import Foundation
 import AsyncDisplayKit
 import FlowCryptUI
 
+@MainActor
+protocol ComposeRecipientPopupViewControllerProtocol {
+    func removeRecipient(email: String, type: RecipientType)
+}
 /**
  * View controller to display recipient popup
  * - User can be redirected here from *ComposeViewController* by tapping on any added recipients
@@ -25,9 +29,15 @@ final class ComposeRecipientPopupViewController: TableNodeViewController {
     }
 
     private let recipient: ComposeMessageRecipient
+    private let type: RecipientType
+    var delegate: ComposeRecipientPopupViewControllerProtocol?
 
-    init(recipient: ComposeMessageRecipient) {
+    init(
+        recipient: ComposeMessageRecipient,
+        type: RecipientType
+    ) {
         self.recipient = recipient
+        self.type = type
         super.init(node: TableNode())
 
         preferredContentSize = CGSize(width: 300, height: 240)
@@ -70,6 +80,14 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        let part = self.parts[indexPath.row]
+        switch part {
+        case .remove:
+            self.delegate?.removeRecipient(email: recipient.email, type: type)
+            self.dismiss(animated: true, completion: nil)
+        default:
+            break
+        }
     }
 }
 
