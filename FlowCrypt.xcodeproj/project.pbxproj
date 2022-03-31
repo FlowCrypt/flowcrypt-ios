@@ -10,6 +10,7 @@
 		040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */ = {isa = PBXBuildFile; productRef = 040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */; };
 		040FDF1227EDFC5C00CB936A /* IdTokenUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040FDF1127EDFC5C00CB936A /* IdTokenUtils.swift */; };
 		04127DFD27E3097E009DF86C /* LocalContactsProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */; };
+		042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */; };
 		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
 		0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
 		04A1724A27F2FD2F00B79559 /* GoogleUserService+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */; };
@@ -430,6 +431,7 @@
 /* Begin PBXFileReference section */
 		040FDF1127EDFC5C00CB936A /* IdTokenUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenUtils.swift; sourceTree = "<group>"; };
 		04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProviderMock.swift; sourceTree = "<group>"; };
+		042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRecipientPopupViewController.swift; sourceTree = "<group>"; };
 		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		0443C85D27F4A6D700A432AA /* Task+Retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+Retry.swift"; sourceTree = "<group>"; };
 		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
@@ -892,6 +894,7 @@
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
 				D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */,
 				9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */,
+				042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */,
 			);
 			path = Compose;
 			sourceTree = "<group>";
@@ -2718,6 +2721,7 @@
 				9F93623F2573D16F0009912F /* Gmail+Message.swift in Sources */,
 				51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */,
 				9F7ECCA9272C47DB008A1770 /* InboxRenderable.swift in Sources */,
+				042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */,
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
 				5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */,

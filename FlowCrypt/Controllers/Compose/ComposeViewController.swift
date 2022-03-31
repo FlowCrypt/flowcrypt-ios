@@ -693,6 +693,12 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 }
 
+extension ComposeViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return .none
+    }
+}
+
 // MARK: - Nodes
 extension ComposeViewController {
     private func recipientTextNode() -> ComposeRecipientCellNode {
@@ -853,10 +859,23 @@ extension ComposeViewController {
                 switch action {
                 case let .imageTap(indexPath):
                     self?.handleRecipientAction(with: indexPath, type: type)
-                case let .select(indexPath):
-                    self?.handleRecipientSelection(with: indexPath, type: type)
+                case let .select(indexPath, sender):
+                    self?.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
                 }
             }
+    }
+
+    private func displayRecipientPopOver(with indexPath: IndexPath, type: RecipientType, sender: CellNode) {
+        guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
+
+        let popoverVC = ComposeRecipientPopupViewController(
+            recipient: recipient
+        )
+        popoverVC.modalPresentationStyle = .popover
+        popoverVC.popoverPresentationController?.sourceView = sender.view
+        popoverVC.popoverPresentationController?.permittedArrowDirections = .up
+        popoverVC.popoverPresentationController?.delegate = self
+        self.present(popoverVC, animated: true, completion: nil)
     }
 
     private func recipientInput(type: RecipientType) -> ASCellNode {
