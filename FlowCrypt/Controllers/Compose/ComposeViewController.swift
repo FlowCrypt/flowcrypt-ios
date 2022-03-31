@@ -364,7 +364,10 @@ extension ComposeViewController {
                 return query
             }
             .sink(receiveValue: { [weak self] in
-                guard $0.isNotEmpty else { return }
+                guard $0.isNotEmpty else {
+                    self?.isPreviousSearchStateEmpty = true
+                    return
+                }
                 self?.searchEmail(with: $0)
             })
             .store(in: &cancellable)
