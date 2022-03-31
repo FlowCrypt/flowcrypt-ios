@@ -17,6 +17,7 @@
 		04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
 		04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */; };
+		04CF208227F5ABE100BC4E3D /* ComposeRecipientPopupNameNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CF208127F5ABE100BC4E3D /* ComposeRecipientPopupNameNode.swift */; };
 		04DE04DD27E098010055CB86 /* ComposeRecipientCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DE04DC27E098010055CB86 /* ComposeRecipientCellNode.swift */; };
 		211392A5266511E6009202EC /* PubLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 211392A4266511E6009202EC /* PubLookup.swift */; };
 		2133D51826A1E45400CC686F /* DecryptedPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */; };
@@ -439,6 +440,7 @@
 		04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeypairRealmObject.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuViewController.swift; sourceTree = "<group>"; };
 		04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideMenuNavigationController.swift; sourceTree = "<group>"; };
+		04CF208127F5ABE100BC4E3D /* ComposeRecipientPopupNameNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRecipientPopupNameNode.swift; sourceTree = "<group>"; };
 		04DE04DC27E098010055CB86 /* ComposeRecipientCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRecipientCellNode.swift; sourceTree = "<group>"; };
 		0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.release.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.release.xcconfig"; sourceTree = "<group>"; };
 		1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.enterprise.xcconfig"; sourceTree = "<group>"; };
@@ -2053,6 +2055,7 @@
 				9F1797652368EE50002BF770 /* SetupTitleNode.swift */,
 				5A39F433239EC61C001F4607 /* TitleCellNode.swift */,
 				5180CB9027356D48001FC7EF /* MessageSubjectNode.swift */,
+				04CF208127F5ABE100BC4E3D /* ComposeRecipientPopupNameNode.swift */,
 				9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */,
 				511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */,
 				5180CB96273724E9001FC7EF /* ThreadMessageInfoCellNode.swift */,
@@ -2853,6 +2856,7 @@
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
 				D2E26F7224F26FFF00612AF1 /* ContactUserCellNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,
+				04CF208227F5ABE100BC4E3D /* ComposeRecipientPopupNameNode.swift in Sources */,
 				9F65B0B9278346F8005CD19C /* UIConstants.swift in Sources */,
 				D28A1CBD2525C141003B760B /* CheckBoxTextNode.swift in Sources */,
 				D2A9CA3B242619A400E1D898 /* SignInImageNode.swift in Sources */,

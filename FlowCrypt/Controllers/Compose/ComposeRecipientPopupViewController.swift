@@ -30,6 +30,8 @@ final class ComposeRecipientPopupViewController: TableNodeViewController {
         self.recipient = recipient
         super.init(node: TableNode())
 
+        preferredContentSize = CGSize(width: 300, height: 240)
+
         node.delegate = self
         node.dataSource = self
         node.reloadData()
@@ -60,7 +62,7 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
             case .copy, .copyAll, .remove:
                 return InfoCellNode(input: .getFromCellType(type: part))
             case .nameEmail:
-                return ASCellNode()
+                return ComposeRecipientPopupNameNode(name: self.recipient.name, email: self.recipient.email)
             case .divider:
                 return DividerCellNode()
             }
