@@ -21,11 +21,11 @@ protocol ComposeRecipientPopupViewControllerProtocol {
 final class ComposeRecipientPopupViewController: TableNodeViewController {
 
     enum Parts {
-        case nameEmail, divider, copy, copyAll, remove
+        case nameEmail, divider, copy, remove
     }
 
     var parts: [Parts] {
-        return [.nameEmail, .divider, .copy, .copyAll, .divider, .remove]
+        return [.nameEmail, .divider, .copy, .divider, .remove]
     }
 
     private let recipient: ComposeMessageRecipient
@@ -69,7 +69,7 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
 
             let part = self.parts[indexPath.row]
             switch part {
-            case .copy, .copyAll, .remove:
+            case .copy, .remove:
                 return InfoCellNode(input: .getFromCellType(type: part))
             case .nameEmail:
                 return ComposeRecipientPopupNameNode(name: self.recipient.name, email: self.recipient.email)
@@ -85,7 +85,8 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
         case .remove:
             self.delegate?.removeRecipient(email: recipient.email, type: type)
             self.dismiss(animated: true, completion: nil)
-        case .copy, .copyAll:
+        case .copy:
+            UIPasteboard.general.string = recipient.email
             self.dismiss(animated: true, completion: nil)
         default:
             break
@@ -99,7 +100,7 @@ extension InfoCellNode.Input {
             switch type {
             case .remove:
                 return "trash"
-            case .copy, .copyAll:
+            case .copy:
                 return "copy"
             default:
                 return ""
