@@ -91,12 +91,7 @@ final class InboxViewContainerController: TableNodeViewController {
         case .loading, .empty:
             node.reloadData()
         case let .error(error):
-            showAlert(
-                message: error.errorMessage,
-                onOk: { [node] in
-                    node?.reloadData()
-                }
-            )
+            handle(error: error)
         case .loadedFolders(let folders):
             let folder = folders
                 .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
@@ -111,6 +106,22 @@ final class InboxViewContainerController: TableNodeViewController {
                 viewModel: input
             )
             navigationController?.setViewControllers([inboxViewController], animated: false)
+        }
+    }
+
+    private func handle(error: Error) {
+        node.reloadData()
+
+        switch error {
+        case GmailServiceError.invalidGrant:
+            return
+        default:
+            showAlert(
+                message: error.errorMessage,
+                onOk: { [node] in
+                    node?.reloadData()
+                }
+            )
         }
     }
 }
@@ -147,24 +158,42 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
 
-            // Retry Button
-            if indexPath.row == 1 {
-                return ButtonCellNode(
-                    input: ButtonCellNode.Input(
-                        title: self.decorator.retryActionTitle()
-                    )
-                ) {
-                    self.fetchInboxFolder()
-                }
-            }
-
             switch self.state {
             case .loading:
                 return TextCellNode.loading
             case .error(let error):
-                return TextCellNode(
-                    input: self.decorator.errorInput(with: descriptionSize, error: error)
-                )
+                switch indexPath.row {
+                case 1:
+                    switch error {
+                    case GmailServiceError.invalidGrant:
+                        return ButtonCellNode(
+                            input: ButtonCellNode.Input(
+                                title: self.decorator.continueActionTitle()
+                            )
+                        ) { [weak self] in
+                            guard let self = self else { return }
+                            Task {
+                                await self.appContext.globalRouter.reauthorize(
+                                    appContext: self.appContext,
+                                    route: .gmailLogin(self)
+                                )
+                            }
+                        }
+                    default:
+                        return ButtonCellNode(
+                            input: ButtonCellNode.Input(
+                                title: self.decorator.retryActionTitle()
+                            )
+                        ) {
+                            self.fetchInboxFolder()
+                        }
+                    }
+
+                default:
+                    return TextCellNode(
+                        input: self.decorator.errorInput(with: descriptionSize, error: error)
+                    )
+                }
             case .empty:
                 return TextCellNode(
                     input: self.decorator.emptyFoldersInput(with: size)

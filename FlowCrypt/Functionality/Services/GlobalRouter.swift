@@ -13,6 +13,7 @@ import UIKit
 protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType) async
+    func reauthorize(appContext: AppContext, route: GlobalRoutingType) async
     func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws
     func switchActive(user: User, appContext: AppContext) throws
     func signOut(appContext: AppContext) throws
@@ -84,6 +85,38 @@ extension GlobalRouter: GlobalRouterType {
                 viewController.hideSpinner()
             }
             logger.logError("Failed to sign in due to \(error.localizedDescription)")
+            handleSignInError(error: error, appContext: appContext)
+        }
+    }
+
+    func reauthorize(appContext: AppContext, route: GlobalRoutingType) async {
+        logger.logInfo("Reauthorize with \(route)")
+        do {
+            switch route {
+            case .gmailLogin(let viewController):
+                viewController.showSpinner()
+
+                let email = try appContext.encryptedStorage.activeUser?.email
+                let googleService = GoogleUserService(
+                    currentUserEmail: email,
+                    appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+                )
+                let session = try await googleService.signIn(
+                    in: viewController,
+                    scopes: GeneralConstants.Gmail.contactsScope,
+                    userEmail: email
+                )
+                try appContext.userAccountService.startSessionFor(session: session)
+                viewController.hideSpinner()
+                try proceed(with: appContext, session: session)
+            case .other:
+                break
+            }
+        } catch {
+            if case .gmailLogin(let viewController) = route {
+                viewController.hideSpinner()
+            }
+            logger.logError("Failed to reauthorize due to \(error.errorMessage)")
             handleSignInError(error: error, appContext: appContext)
         }
     }

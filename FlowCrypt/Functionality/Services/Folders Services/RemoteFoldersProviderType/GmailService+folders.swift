@@ -19,7 +19,14 @@ extension GmailService: RemoteFoldersProviderType {
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    let nsError = error as NSError
+
+                    switch nsError.code {
+                    case -10: // invalid_grant error code
+                        return continuation.resume(throwing: GmailServiceError.invalidGrant(error))
+                    default:
+                        return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    }
                 }
                 guard let listLabels = data as? GTLRGmail_ListLabelsResponse else {
                     return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListLabelsResponse"))

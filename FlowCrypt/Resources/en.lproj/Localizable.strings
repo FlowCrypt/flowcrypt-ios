@@ -323,6 +323,7 @@
 "gmail_service_missing_message_payload_error_message" = "Missing message payload";
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
 "gmail_service_provider_error_error_message" = "Gmail provider error: %@";
+"gmail_service_invalid_grant_error_message" = "Please reconnect the app to Gmail";
 "gmail_service_missing_back_query_error_message" = "Missing backup query: %@";
 "gmail_service_no_access_to_account_message" = "Google login successful.\n Now connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
