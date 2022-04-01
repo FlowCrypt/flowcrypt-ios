@@ -48,7 +48,7 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
-    private var isSearchEnabled = false
+    private var shouldDisplaySearchResult = false
     private var userTappedOutSideRecipientsArea = false
     private var shouldShowEmailRecipientsLabel = false
     private let appContext: AppContextWithUser
@@ -1129,7 +1129,7 @@ extension ComposeViewController {
     }
 
     private func handleEditingChanged(with text: String?) {
-        isSearchEnabled = text != ""
+        shouldDisplaySearchResult = text != ""
         search.send(text ?? "")
     }
 
@@ -1361,11 +1361,11 @@ extension ComposeViewController {
 // MARK: - State Handling
 extension ComposeViewController {
     private func updateState(with newState: State) {
-        if case .searchEmails = newState, !self.isSearchEnabled {
+        if case .searchEmails = newState, !self.shouldDisplaySearchResult {
             return
         }
 
-        isSearchEnabled = false
+        shouldDisplaySearchResult = false
         state = newState
 
         switch state {
