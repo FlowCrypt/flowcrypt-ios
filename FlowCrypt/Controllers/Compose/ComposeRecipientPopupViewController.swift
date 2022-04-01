@@ -40,7 +40,7 @@ final class ComposeRecipientPopupViewController: TableNodeViewController {
         self.type = type
         super.init(node: TableNode())
 
-        preferredContentSize = CGSize(width: 300, height: 240)
+        preferredContentSize = CGSize(width: 300, height: 190)
 
         node.delegate = self
         node.dataSource = self
@@ -107,13 +107,25 @@ extension InfoCellNode.Input {
             }
         }()
 
+        let accessibilityIdentifier: String = {
+            switch type {
+            case .remove:
+                return "aid-recipient-popup-remove-button"
+            case .copy:
+                return "aid-recipient-popup-copy-button"
+            default:
+                return ""
+            }
+        }()
+
         return .init(
             attributedText: "compose_recipient_\(type)"
                 .localized
                 .attributed(.regular(17), color: .mainTextColor),
             image: #imageLiteral(resourceName: icon).tinted(.mainTextColor),
             insets: .side(16),
-            backgroundColor: .backgroundColor
+            backgroundColor: .backgroundColor,
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 }

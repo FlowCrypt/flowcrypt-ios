@@ -18,7 +18,9 @@ const SELECTORS = {
   SEND_BUTTON: '~aid-compose-send',
   MESSAGE_PASSWORD_MODAL: '~aid-message-password-modal',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
-  ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'"
+  ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
+  RECIPIENT_POPUP_COPY_BUTTON: '~aid-recipient-popup-copy-button',
+  RECIPIENT_POPUP_REMOVE_BUTTON: '~aid-recipient-popup-remove-button',
 };
 
 interface ComposeEmailInfo {
@@ -93,6 +95,14 @@ class NewMessageScreen extends BaseScreen {
 
   get cancelButton() {
     return $(SELECTORS.CANCEL_BUTTON);
+  }
+
+  get recipientPopupCopyButton() {
+    return $(SELECTORS.RECIPIENT_POPUP_COPY_BUTTON);
+  }
+
+  get recipientPopupRemoveButton() {
+    return $(SELECTORS.RECIPIENT_POPUP_REMOVE_BUTTON);
   }
 
   getRecipientsList = async (type: string) => {
@@ -236,7 +246,7 @@ class NewMessageScreen extends BaseScreen {
     await this.showRecipientInputIfNeeded();
     const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitAndClick(addedRecipientEl);
-    await driver.sendKeys(['\b']); // backspace
+    await ElementHelper.waitAndClick(await this.recipientPopupRemoveButton);
   }
 
   checkAddedAttachment = async (name: string) => {
