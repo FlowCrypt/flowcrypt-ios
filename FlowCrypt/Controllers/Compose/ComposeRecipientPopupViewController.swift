@@ -85,6 +85,8 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
         case .remove:
             self.delegate?.removeRecipient(email: recipient.email, type: type)
             self.dismiss(animated: true, completion: nil)
+        case .copy, .copyAll:
+            self.dismiss(animated: true, completion: nil)
         default:
             break
         }
