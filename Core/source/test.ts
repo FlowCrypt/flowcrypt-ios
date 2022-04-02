@@ -1148,7 +1148,6 @@ PBcqDCjq5jgMhU1oyVclRK7jJdmu0Azvwo2lleLAFLdCzHEXWXUz
 =//ru
 -----END PGP PRIVATE KEY BLOCK-----`;
   const res = await PgpKey.parse(unencryptedCorruptedRsaKey);
-  console.log("\n====== result ===== \n" + JSON.stringify(res) + "\n====== result ===== \n");
   expect(res.error).to.equals('Key is invalid');
   t.pass();
 });

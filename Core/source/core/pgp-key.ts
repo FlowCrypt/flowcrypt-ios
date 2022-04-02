@@ -214,7 +214,7 @@ export class PgpKey {
       return { normalized: keys.map(k => k.armor()).join('\n'), keys };
     } catch (error) {
       Catch.reportErr(error);
-      return { normalized: '', keys: [], error: Str.extractErrorMessage(error.message) };
+      return { normalized: '', keys: [], error: Str.extractErrorMessage(error) };
     }
   };
 
