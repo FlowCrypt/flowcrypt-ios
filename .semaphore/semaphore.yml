@@ -78,8 +78,8 @@ blocks:
         - name: Code quality
           commands:
             - cd Core
-            - ../.custom-npm/node_modules/.bin/npm run-script tslint
-            - ../.custom-npm/node_modules/.bin/npm run-script eslint
+            - ../.custom-npm/node_modules/.bin/npm run tslint
+            - ../.custom-npm/node_modules/.bin/npm run eslint
 after_pipeline:
   task:
     jobs:
