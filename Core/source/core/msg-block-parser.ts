@@ -3,7 +3,7 @@
 'use strict';
 
 import { MsgBlock, ReplaceableMsgBlockType } from './msg-block';
-import { SanitizeImgHandling, Xss } from '../platform/xss';
+import { Xss } from '../platform/xss';
 
 import { Buf } from './buf';
 import { Catch } from '../platform/catch';
@@ -41,8 +41,7 @@ export class MsgBlockParser {
   };
 
   public static fmtDecryptedAsSanitizedHtmlBlocks = async (
-    decryptedContent: Uint8Array, signature?: VerifyRes,
-    imgHandling: SanitizeImgHandling = 'IMG-TO-LINK'): Promise<SanitizedBlocks> => {
+    decryptedContent: Uint8Array, signature?: VerifyRes): Promise<SanitizedBlocks> => {
     const blocks: MsgBlock[] = [];
     let isRichText = false;
     if (!Mime.resemblesMsg(decryptedContent)) {
@@ -59,7 +58,7 @@ export class MsgBlockParser {
     }
     const decoded = await Mime.decode(decryptedContent);
     if (typeof decoded.html !== 'undefined') {
-      const block = MsgBlock.fromContent('decryptedHtml', Xss.htmlSanitizeKeepBasicTags(decoded.html, imgHandling));
+      const block = MsgBlock.fromContent('decryptedHtml', Xss.htmlSanitizeKeepBasicTags(decoded.html));
       block.verifyRes = signature;
       blocks.push(block); // sanitized html
       isRichText = true;

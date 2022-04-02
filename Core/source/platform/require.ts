@@ -2,10 +2,10 @@
 
 'use strict';
 
-interface BaseStream<T extends Uint8Array | string> extends AsyncIterable<T> { }
+export interface BaseStream<T extends Uint8Array | string> extends AsyncIterable<T> { }
 
 // copied+simplified version of ReadableStream from lib.dom.d.ts
-interface WebStream<T extends Uint8Array | string> extends BaseStream<T> {
+export interface WebStream<T extends Uint8Array | string> extends BaseStream<T> {
   readonly locked: boolean;
   getReader: () => void;
   pipeThrough: () => void;
@@ -15,7 +15,7 @@ interface WebStream<T extends Uint8Array | string> extends BaseStream<T> {
 }
 
 // copied+simplified version of ReadableStream from @types/node/index.d.ts
-interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> {
+export interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> {
   readable: boolean;
   pipe: () => void;
   unpipe: () => void;
@@ -28,7 +28,9 @@ interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> {
   unshift(chunk: string | Uint8Array): void;
 }
 
-type ReadToEndFn = <T extends Uint8Array | string>(input: T | WebStream<T> | NodeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
+export type MaybeStream<T extends Uint8Array | string> = T | WebStream<T> | NodeStream<T>;
+
+type ReadToEndFn = <T extends Uint8Array | string>(input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
 
 export const requireStreamReadToEnd = (): ReadToEndFn => {
   // this will work for running tests in node with build/ts/test.js as entrypoint
