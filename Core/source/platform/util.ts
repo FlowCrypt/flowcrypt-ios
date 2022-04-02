@@ -57,6 +57,7 @@ export const strToHex = (str: string): string => {
   return r.join('');
 };
 
+/* tslint:disable:no-null-keyword */
 const maxDate = (dates: (Date | null)[]): Date | null => {
   let res: Date | undefined;
   for (const date of dates) {
@@ -66,6 +67,7 @@ const maxDate = (dates: (Date | null)[]): Date | null => {
   }
   return res === undefined ? null : res;
 };
+/* tslint:enable:no-null-keyword */
 
 const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
   const bindingCreated = maxDate(subkey.bindingSignatures.map(b => b.created));
@@ -74,6 +76,7 @@ const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
 };
 
 // Attempt to backport from openpgp.js v4
+/* tslint:disable:no-null-keyword */
 export const getKeyExpirationTimeForCapabilities = async (
   key: Key,
   capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
@@ -89,8 +92,9 @@ export const getKeyExpirationTimeForCapabilities = async (
   const sigExpiry = selfCert.getExpirationTime();
   let expiry = keyExpiry < sigExpiry ? keyExpiry : sigExpiry;
   if (capabilities === 'encrypt' || capabilities === 'encrypt_sign') {
-    const encryptionKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => { }))
-      || (await key.getEncryptionKey(keyId, null, userId).catch(() => { }));
+    const encryptionKey =
+      (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => { return undefined; }))
+      || (await key.getEncryptionKey(keyId, null, userId).catch(() => { return undefined; }));
     if (!encryptionKey) return null;
     // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
     const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
@@ -99,8 +103,9 @@ export const getKeyExpirationTimeForCapabilities = async (
     if (encryptionKeyExpiry < expiry) expiry = encryptionKeyExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
-    const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => { }))
-      || (await key.getSigningKey(keyId, null, userId).catch(() => { }));
+    const signatureKey =
+      (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => { return undefined; }))
+      || (await key.getSigningKey(keyId, null, userId).catch(() => { return undefined; }));
     if (!signatureKey) return null;
     // could be the same as above, so checking for property instead of using "instanceof"
     const signatureKeyExpiry = 'bindingSignatures' in signatureKey
@@ -110,3 +115,4 @@ export const getKeyExpirationTimeForCapabilities = async (
   }
   return expiry;
 };
+/* tslint:enable:no-null-keyword */

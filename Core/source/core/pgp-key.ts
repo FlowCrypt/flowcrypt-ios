@@ -8,7 +8,7 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
-import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/util';
+import { getKeyExpirationTimeForCapabilities, strToHex } from '../platform/util';
 // eslint-disable-next-line max-len
 import { AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
@@ -253,7 +253,7 @@ export class PgpKey {
     if (!keyOrFingerprintOrBytes) {
       return undefined;
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 8) {
-      return str_to_hex(keyOrFingerprintOrBytes).toUpperCase();
+      return strToHex(keyOrFingerprintOrBytes).toUpperCase();
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 40) {
       return keyOrFingerprintOrBytes.substr(-16);
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 49) {

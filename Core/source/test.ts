@@ -12,6 +12,8 @@ global.dereq_encoding_japanese = require("encoding-japanese");
 (global as any)["iso88592"] = require('../../source/lib/iso-8859-2');
 /* tslint:enable */
 
+/* tslint:disable:no-unused-expression */
+
 import * as ava from 'ava';
 
 import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, parseResponse } from './test/test-utils';
@@ -48,7 +50,7 @@ ava.default('generateKey', async t => {
   t.pass();
 });
 
-for (const keypairName of allKeypairNames.filter(name => name != 'expired' && name != 'revoked')) {
+for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && name !== 'revoked')) {
   ava.default(`encryptMsg -> parseDecryptMsg (${keypairName})`, async t => {
     const content = 'hello\nwrld';
     const { pubKeys, keys } = getKeypairs(keypairName);
@@ -65,12 +67,16 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired' && na
 ava.default(`encryptMsg -> parseDecryptMsg (with password)`, async t => {
   const content = 'hello\nwrld';
   const msgPwd = '123';
-  const { data: encryptedMsg, json: encryptJson } = parseResponse(await endpoints.encryptMsg({ pubKeys: [], msgPwd: msgPwd }, [Buffer.from(content, 'utf8')]));
+  const { data: encryptedMsg, json: encryptJson } = parseResponse(
+    await endpoints.encryptMsg({ pubKeys: [], msgPwd }, [Buffer.from(content, 'utf8')]));
   expectEmptyJson(encryptJson);
   expectData(encryptedMsg, 'armoredMsg');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys: [], msgPwd: msgPwd }, [encryptedMsg]));
+  const { data: blocks, json: decryptJson } = parseResponse(
+    await endpoints.parseDecryptMsg({ keys: [], msgPwd }, [encryptedMsg]));
   expect(decryptJson).to.deep.equal({ text: content, replyType: 'encrypted' });
-  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
+  expectData(blocks, 'msgBlocks', [
+    { rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }
+  ]);
   t.pass();
 });
 
@@ -315,11 +321,12 @@ ava.default('composeEmail format:encrypt-inline with attachment', async t => {
   expect(encryptedMimeStr).contains('To: encrypted@to.com');
   expect(encryptedMimeStr).contains('MIME-Version: 1.0');
   expect(encryptedMimeStr).contains('topsecret.txt.pgp');
-  expectData(encryptedMimeMsg, 'armoredMsg'); // armored msg block should be contained in the mime message
+  // armored msg block should be contained in the mime message
+  expectData(encryptedMimeMsg, 'armoredMsg');
   t.pass();
 });
 
-for (const keypairName of allKeypairNames.filter(name => name != 'expired' && name != 'revoked')) {
+for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && name !== 'revoked')) {
   ava.default(`encryptFile -> decryptFile ${keypairName}`, async t => {
     const { pubKeys, keys } = getKeypairs(keypairName);
     const name = 'myfile.txt';
@@ -563,7 +570,7 @@ ava.default('encryptKey', async t => {
   expect(isFullyDecrypted(encryptedKey)).to.be.false;
   expect(await decryptKey({
     privateKey: (encryptedKey as PrivateKey),
-    passphrase: passphrase
+    passphrase
   })).is.not.null;
   expectNoData(data);
   t.pass();
@@ -918,7 +925,9 @@ ava.default('verify encrypted+signed message by providing it only a wrong public
   expect(decryptJson.subject).equals('mime email encrypted inline text signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
+  /* tslint:disable:no-null-keyword */
   expect(parsedDecryptData.verifyRes.match).equals(null);
+  /* tslint:enable:no-null-keyword */
   t.pass();
 });
 
@@ -962,7 +971,9 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
+  /* tslint:disable:no-null-keyword */
   expect(parsedDecryptData.verifyRes.match).equals(null);
+  /* tslint:enable:no-null-keyword */
   t.pass();
 });
 
