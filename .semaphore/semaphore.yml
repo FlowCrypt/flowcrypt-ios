@@ -68,15 +68,16 @@ blocks:
           - checkout && cd ~/git/flowcrypt-ios/
           - cache restore && make dependencies && cache store
           - sem-version node 16 && mkdir .custom-npm && cd .custom-npm && npm install npm@8.1.2 && cd ..
+          - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules )
       jobs:
-        - name: code quality
-          commands:
-            - npm run-script tslint
-            - npm run-script eslint
         - name: TypeScript + Swift tests
           commands:
-            - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
+            - ( cd Core && ../.custom-npm/node_modules/.bin/npm test )
             - bundle exec fastlane test
+        - name: Code quality
+          commands:
+            - ( cd Core && ../.custom-npm/node_modules/.bin/npm run-script tslint )
+            - ../.custom-npm/node_modules/.bin/npm run-script eslint
   task:
     jobs:
       - name: Publish Results
