@@ -247,8 +247,8 @@ extension EncryptedStorage {
 
         try storage.write {
             // Mark all users as inactive
-            storage.objects(UserRealmObject.self).forEach {
-                $0.isActive = false
+            for storageObject in storage.objects(UserRealmObject.self) {
+                storageObject.isActive = false
             }
 
             let object = UserRealmObject(user)

@@ -152,19 +152,10 @@ extension SetupInitialViewController {
         }
     }
 
-    private func getIdToken() async throws -> String {
-        let googleService = GoogleUserService(
-            currentUserEmail: appContext.user.email,
-            appDelegateGoogleSessionContainer: nil
-        )
-
-        return try await googleService.getCachedOrRefreshedIdToken()
-    }
-
     private func fetchKeysFromEKM() {
         Task {
             do {
-                let idToken = try await getIdToken()
+                let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
                 let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 switch result {
                 case .success(keys: let keys):

@@ -46,54 +46,58 @@ extension GmailService: MessagesThreadProvider {
 
     private func getThreadsList(using context: FetchMessageContext) async throws -> GTLRGmail_ListThreadsResponse {
         let query = makeQuery(using: context)
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListThreadsResponse, Error>) in
-            self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
-                }
+        return try await Task.retrying {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListThreadsResponse, Error>) in
+                self.gmailService.executeQuery(query) { _, data, error in
+                    if let error = error {
+                        return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    }
 
-                guard let threadsResponse = data as? GTLRGmail_ListThreadsResponse else {
-                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListThreadsResponse"))
+                    guard let threadsResponse = data as? GTLRGmail_ListThreadsResponse else {
+                        return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListThreadsResponse"))
+                    }
+                    return continuation.resume(returning: threadsResponse)
                 }
-                return continuation.resume(returning: threadsResponse)
             }
-        }
+        }.value
     }
 
     private func getThread(with identifier: String, snippet: String?, path: String) async throws -> MessageThread {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
-            self.gmailService.executeQuery(
-                GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
-            ) { (_, data, error) in
-                if let error = error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
-                }
+        return try await Task.retrying {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
+                self.gmailService.executeQuery(
+                    GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
+                ) { (_, data, error) in
+                    if let error = error {
+                        return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    }
 
-                guard let thread = data as? GTLRGmail_Thread else {
-                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Thread"))
-                }
+                    guard let thread = data as? GTLRGmail_Thread else {
+                        return continuation.resume(throwing: AppErr.cast("GTLRGmail_Thread"))
+                    }
 
-                guard let threadMsg = thread.messages else {
-                    let empty = MessageThread(
-                        identifier: identifier,
+                    guard let threadMsg = thread.messages else {
+                        let empty = MessageThread(
+                            identifier: identifier,
+                            snippet: snippet,
+                            path: path,
+                            messages: []
+                        )
+                        return continuation.resume(returning: empty)
+                    }
+
+                    let messages = threadMsg.compactMap { try? Message($0, draftIdentifier: nil) }
+
+                    let result = MessageThread(
+                        identifier: thread.identifier,
                         snippet: snippet,
                         path: path,
-                        messages: []
+                        messages: messages
                     )
-                    return continuation.resume(returning: empty)
+                    return continuation.resume(returning: result)
                 }
-
-                let messages = threadMsg.compactMap { try? Message($0, draftIdentifier: nil) }
-
-                let result = MessageThread(
-                    identifier: thread.identifier,
-                    snippet: snippet,
-                    path: path,
-                    messages: messages
-                )
-                return continuation.resume(returning: result)
             }
-        }
+        }.value
     }
 
     private func makeQuery(using context: FetchMessageContext) -> GTLRGmailQuery_UsersThreadsList {
@@ -151,10 +155,10 @@ extension Message {
         var cc: String?
         var bcc: String?
 
-        messageHeaders.compactMap { $0 }.forEach {
-            guard let name = $0.name?.lowercased(),
-                  let value = $0.value
-            else { return }
+        for messageHeader in messageHeaders.compactMap({ $0 }) {
+            guard let name = messageHeader.name?.lowercased(),
+                  let value = messageHeader.value
+            else { continue }
 
             switch name {
             case .from: sender = Recipient(value)

@@ -156,8 +156,8 @@ extension ViewController {
                 .filter { !Constants.endTypingCharacters.contains($0) }
 
             guard recipients.isNotEmpty else { return true }
-            recipients.forEach {
-                handleEndEditingAction(with: $0)
+            for recipient in recipients {
+                handleEndEditingAction(with: recipient)
             }
             return false
         } else if Constants.endTypingCharacters.contains(character) {

@@ -86,14 +86,13 @@ extension LocalContactsProvider: LocalContactsProviderType {
             return
         }
 
-        try recipient.pubKeys
-            .forEach { pubKey in
-                if let index = recipientObject.pubKeys.firstIndex(where: { $0.primaryFingerprint == pubKey.fingerprint }) {
-                    try update(pubKey: pubKey, for: recipientObject, at: index)
-                } else {
-                    try add(pubKey: pubKey, to: recipientObject)
-                }
+        for pubKey in recipient.pubKeys {
+            if let index = recipientObject.pubKeys.firstIndex(where: { $0.primaryFingerprint == pubKey.fingerprint }) {
+                try update(pubKey: pubKey, for: recipientObject, at: index)
+            } else {
+                try add(pubKey: pubKey, to: recipientObject)
             }
+        }
     }
 
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? {
@@ -121,14 +120,17 @@ extension LocalContactsProvider: LocalContactsProviderType {
     func removePubKey(with fingerprint: String, for email: String) throws {
         let storage = try storage
 
-        try find(with: email)?
+        let keys = try find(with: email)?
             .pubKeys
             .filter { $0.primaryFingerprint == fingerprint }
-            .forEach { key in
-                try storage.write {
-                    storage.delete(key)
-                }
+        guard let keys = keys else {
+            return
+        }
+        for key in keys {
+            try storage.write {
+                storage.delete(key)
             }
+        }
     }
 }
 

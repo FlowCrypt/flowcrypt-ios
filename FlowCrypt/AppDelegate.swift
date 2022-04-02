@@ -46,7 +46,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssion
 
 extension AppDelegate: BlursTopView {
     func applicationWillResignActive(_ application: UIApplication) {
-        waitingForProtectedDataCancellable.forEach { $0.cancel() }
+        for cancellable in waitingForProtectedDataCancellable {
+            cancellable.cancel()
+        }
         if !isBlurViewShowing() {
             coverTopViewWithBlurView()
         }

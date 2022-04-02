@@ -207,7 +207,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
         encryptedStorage.getKeypairsResult = [keypair]
-        recipients.forEach { recipient in
+        for recipient in recipients {
             localContactsProvider.retrievePubKeysResult = { _ in
                 []
             }
@@ -234,7 +234,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        recipients.forEach { recipient in
+        for recipient in recipients {
             localContactsProvider.retrievePubKeysResult = { _ in
                 ["pubKey"]
             }
@@ -261,7 +261,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        recipients.forEach { recipient in
+        for recipient in recipients {
             localContactsProvider.retrievePubKeysResult = { _ in
                 ["pubKey"]
             }
@@ -300,7 +300,7 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: allKeyDetails)
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        recipients.forEach { recipient in
+        for recipient in recipients {
             localContactsProvider.retrievePubKeysResult = { _ in
                 ["revoked", "expired", "valid"]
             }
@@ -346,13 +346,12 @@ class ComposeMessageServiceTests: XCTestCase {
     func testValidateMessageInputWithoutOneRecipientPubKey() async throws {
         encryptedStorage.getKeypairsResult = [keypair]
         let recWithoutPubKey = recipients[0].email
-        recipients.forEach { _ in
-            localContactsProvider.retrievePubKeysResult = { recipient in
-                if recipient == recWithoutPubKey {
-                    return []
-                }
-                return ["recipient pub key"]
+
+        localContactsProvider.retrievePubKeysResult = { recipient in
+            if recipient == recWithoutPubKey {
+                return []
             }
+            return ["recipient pub key"]
         }
 
         do {
@@ -373,11 +372,11 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testSuccessfulMessageValidation() async throws {
         encryptedStorage.getKeypairsResult = [keypair]
-        recipients.enumerated().forEach { element, index in
-            localContactsProvider.retrievePubKeysResult = { recipient in
-                ["pubKey"]
-            }
+
+        localContactsProvider.retrievePubKeysResult = { recipient in
+            ["pubKey"]
         }
+
         let message = "some message"
         let subject = "Some subject"
         let email = "some@gmail.com"

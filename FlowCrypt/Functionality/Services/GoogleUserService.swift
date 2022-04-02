@@ -7,13 +7,15 @@
 //
 
 import AppAuth
+import Combine
 import FlowCryptCommon
 import Foundation
 import GTMAppAuth
 import RealmSwift
+import GoogleAPIClientForREST_Oauth2
 
 protocol UserServiceType {
-    func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType
+    func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String?) async throws -> SessionType
     func renewSession() async throws
 }
 
@@ -68,6 +70,8 @@ enum IdTokenError: Error, CustomStringConvertible {
 protocol GoogleUserServiceType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
     func renewSession() async throws
+    var isContactsScopeEnabled: Bool { get }
+    func searchContacts(query: String) async throws -> [Recipient]
 }
 
 // this is here so that we don't have to include AppDelegate in test target
@@ -78,6 +82,7 @@ protocol AppDelegateGoogleSesssionContainer {
 // todo - should be refactored to not require currentUserEmail
 final class GoogleUserService: NSObject, GoogleUserServiceType {
 
+    @available(*, deprecated, message: "This variable will be removed in the near future.")
     let currentUserEmail: String?
     var appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer?
 
@@ -87,6 +92,8 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
     ) {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
+        super.init()
+        self.runWarmupQuery()
     }
 
     private enum Constants {
@@ -94,7 +101,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         static let userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo"
     }
 
-    private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
+    internal lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
     private var tokenResponse: OIDTokenResponse? {
         authorization?.authState.lastTokenResponse
@@ -119,9 +126,9 @@ extension GoogleUserService: UserServiceType {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
     }
 
-    @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope]) async throws -> SessionType {
+    @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String? = nil) async throws -> SessionType {
         return try await withCheckedThrowingContinuation { continuation in
-            let request = self.makeAuthorizationRequest(scopes: scopes)
+            let request = self.makeAuthorizationRequest(scopes: scopes, userEmail: userEmail)
             let googleDelegateSess = OIDAuthState.authState(
                 byPresenting: request,
                 presenting: viewController
@@ -185,21 +192,25 @@ extension GoogleUserService: UserServiceType {
             throw GoogleUserServiceError.inconsistentState("Missing token")
         }
         let user = try await self.fetchGoogleUser(with: authorization)
-        return SessionType.google(email, name: user.name, token: token)
+        return SessionType.google(email, name: user.name ?? "", token: token)
     }
 }
 
 // MARK: - Convenience
 extension GoogleUserService {
 
-    private func makeAuthorizationRequest(scopes: [GoogleScope]) -> OIDAuthorizationRequest {
-        OIDAuthorizationRequest(
+    private func makeAuthorizationRequest(scopes: [GoogleScope], userEmail: String? = nil) -> OIDAuthorizationRequest {
+        var additionalParameters = ["include_granted_scopes": "true"]
+        if let userEmail = userEmail {
+            additionalParameters["login_hint"] = userEmail
+        }
+        return OIDAuthorizationRequest(
             configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
             clientId: GeneralConstants.Gmail.clientID,
             scopes: scopes.map(\.value),
             redirectURL: GeneralConstants.Gmail.redirectURL,
             responseType: OIDResponseTypeCode,
-            additionalParameters: ["include_granted_scopes": "true"]
+            additionalParameters: additionalParameters
         )
     }
 
@@ -219,27 +230,22 @@ extension GoogleUserService {
         return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
     }
 
-    // todo - isn't this call supported by Google client library?
     private func fetchGoogleUser(
         with authorization: GTMAppAuthFetcherAuthorization
-    ) async throws -> GoogleUser {
-        guard let url = URL(string: Constants.userInfoUrl) else {
-            throw AppErr.unexpected("URL(Constants.userInfoUrl) nil")
-        }
-        let fetcherService = GTMSessionFetcherService()
-        fetcherService.authorizer = authorization
-        do {
-            let data = try await fetcherService.fetcher(with: url).beginFetch()
-            return try JSONDecoder().decode(GoogleUser.self, from: data)
-        } catch {
-            let isTokenErr = (error as NSError).isEqual(OIDOAuthTokenErrorDomain)
-            if isTokenErr, let email = currentUserEmail {
-                self.logger.logError("Authorization error during token refresh, clearing state. \(error)")
-                // removes any authorisation information which was stored in Keychain, the same happens on logout.
-                // if any error happens during token refresh then user will be signed out automatically.
-                GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+    ) async throws -> GTLROauth2_Userinfo {
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLROauth2_Userinfo, Error>) in
+            let query = GTLROauth2Query_UserinfoGet.query()
+            let authService = GTLROauth2Service()
+            authService.authorizer = authorization
+            authService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    return continuation.resume(throwing: error)
+                }
+                guard let googleUser = data as? GTLROauth2_Userinfo else {
+                    return continuation.resume(throwing: AppErr.cast("GTLROauth2_UserinfoResponse"))
+                }
+                return continuation.resume(returning: googleUser)
             }
-            throw error
         }
     }
 

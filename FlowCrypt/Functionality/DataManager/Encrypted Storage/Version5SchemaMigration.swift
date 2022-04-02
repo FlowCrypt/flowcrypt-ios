@@ -35,7 +35,7 @@ extension SchemaMigration {
                 ("PubKeyObject", renamePubKeyObject),
                 ("RecipientObject", renameRecipientObject)
             ]
-            objects.forEach { object in
+            for object in objects {
                 migration.enumerateObjects(ofType: object.0) { oldObject, newObject in
                     guard
                         lastError == nil,
@@ -74,7 +74,9 @@ extension SchemaMigration {
                 Properties.User.name,
                 Properties.User.email
             ]
-            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
+            for property in primitiveProperties {
+                newObject[property] = oldObject[property]
+            }
 
             setSession(oldObject: oldObject, newObject: newObject, property: Properties.User.imap)
             setSession(oldObject: oldObject, newObject: newObject, property: Properties.User.smtp)
@@ -94,7 +96,9 @@ extension SchemaMigration {
                 Properties.Folder.image,
                 Properties.Folder.itemType
             ]
-            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
+            for property in primitiveProperties {
+                newObject[property] = oldObject[property]
+            }
 
             try setUser(oldObject: oldObject, newObject: newObject, property: Properties.Folder.user)
         }
@@ -111,7 +115,9 @@ extension SchemaMigration {
                 Properties.ClientConfiguration.enforceKeygenExpireMonths,
                 Properties.ClientConfiguration.userEmail
             ]
-            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
+            for property in primitiveProperties {
+                newObject[property] = oldObject[property]
+            }
 
             try setUser(oldObject: oldObject, newObject: newObject, property: Properties.ClientConfiguration.user)
         }
@@ -128,7 +134,9 @@ extension SchemaMigration {
                 Properties.Keypair.allFingerprints,
                 Properties.Keypair.allLongids
             ]
-            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
+            for property in primitiveProperties {
+                newObject[property] = oldObject[property]
+            }
 
             try setUser(
                 oldObject: oldObject,
@@ -151,7 +159,9 @@ extension SchemaMigration {
                 Properties.PubKey.fingerprints,
                 Properties.PubKey.created
             ]
-            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
+            for property in primitiveProperties {
+                newObject[property] = oldObject[property]
+            }
 
             guard let primaryKey = oldObject[Properties.PubKey.primaryFingerprint] as? String else {
                 throw AppErr.unexpected("Wrong PubKeyObject primary key")
@@ -167,8 +177,8 @@ extension SchemaMigration {
                 Properties.Recipient.name,
                 Properties.Recipient.lastUsed
             ]
-            primitiveProperties.forEach {
-                newObject[$0] = oldObject[$0]
+            for property in primitiveProperties {
+                newObject[property] = oldObject[property]
             }
 
             guard let oldPubKeys = oldObject[Properties.Recipient.pubKeys] as? List<MigrationObject> else {
@@ -196,7 +206,7 @@ extension SchemaMigration {
                 return
             }
 
-            [
+            let types = [
                 "ClientConfigurationObject",
                 "FolderObject",
                 "KeyInfo",
@@ -204,9 +214,10 @@ extension SchemaMigration {
                 "SessionObject",
                 "RecipientObject",
                 "PubKeyObject"
-            ].forEach {
-                if !migration.deleteData(forType: $0) {
-                    logger.logWarning("fail to delete data for type \($0)")
+            ]
+            for type in types {
+                if !migration.deleteData(forType: type) {
+                    logger.logWarning("fail to delete data for type \(type)")
                 }
             }
         }
@@ -231,7 +242,9 @@ extension SchemaMigration {
                 Properties.Session.connectionType,
                 Properties.Session.email
             ]
-            primitiveProperties.forEach { newObject[$0] = oldObject[$0] }
+            for property in primitiveProperties {
+                newObject[property] = oldObject[property]
+            }
 
             return newObject
         }

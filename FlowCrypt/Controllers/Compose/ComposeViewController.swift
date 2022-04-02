@@ -57,7 +57,7 @@ final class ComposeViewController: TableNodeViewController {
     private var decorator: ComposeViewDecorator
     private let localContactsProvider: LocalContactsProviderType
     private let pubLookup: PubLookupType
-    private let cloudContactProvider: CloudContactsProvider
+    private let googleUserService: GoogleUserServiceType
     private let filesManager: FilesManagerType
     private let photosManager: PhotosManagerType
     private let keyMethods: KeyMethodsType
@@ -98,7 +98,6 @@ final class ComposeViewController: TableNodeViewController {
         notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
-        cloudContactProvider: CloudContactsProvider? = nil,
         composeMessageService: ComposeMessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
@@ -113,13 +112,10 @@ final class ComposeViewController: TableNodeViewController {
         self.localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
-        let cloudContactProvider = cloudContactProvider ?? UserContactsProvider(
-            userService: GoogleUserService(
-                currentUserEmail: appContext.user.email,
-                appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
-            )
+        self.googleUserService = GoogleUserService(
+            currentUserEmail: appContext.user.email,
+            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
         )
-        self.cloudContactProvider = cloudContactProvider
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
             clientConfiguration: clientConfiguration,
             encryptedStorage: appContext.encryptedStorage,
@@ -170,7 +166,9 @@ final class ComposeViewController: TableNodeViewController {
             return
         }
 
-        cancellable.forEach { $0.cancel() }
+        for cancellable in cancellable {
+            cancellable.cancel()
+        }
         setupSearch()
 
         evaluateAllRecipients()
@@ -198,13 +196,13 @@ final class ComposeViewController: TableNodeViewController {
     func update(with message: Message) {
         self.contextToSend.subject = message.subject
         self.contextToSend.message = message.raw
-        message.to.forEach { recipient in
+        for recipient in message.to {
             evaluateMessage(recipient: recipient, type: .to)
         }
-        message.cc.forEach { recipient in
+        for recipient in message.cc {
             evaluateMessage(recipient: recipient, type: .cc)
         }
-        message.bcc.forEach { recipient in
+        for recipient in message.bcc {
             evaluateMessage(recipient: recipient, type: .bcc)
         }
     }
@@ -338,11 +336,11 @@ extension ComposeViewController {
     private func setupQuote() {
         guard input.isQuote else { return }
 
-        input.quoteRecipients.forEach { recipient in
+        for recipient in input.quoteRecipients {
             evaluateMessage(recipient: recipient, type: .to)
         }
 
-        input.quoteCCRecipients.forEach { recipient in
+        for recipient in input.quoteCCRecipients {
             evaluateMessage(recipient: recipient, type: .cc)
         }
 
@@ -453,7 +451,7 @@ extension ComposeViewController {
 
 extension ComposeViewController {
     private func prepareSigningKey() async throws -> PrvKeyInfo {
-        guard let signingKey = try await appContext.keyService.getSigningKey() else {
+        guard let signingKey = try await appContext.keyService.getSigningKey(email: appContext.user.email) else {
             throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
         }
 
@@ -495,7 +493,7 @@ extension ComposeViewController {
     private func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await appContext.keyService.getPrvKeyInfo()
+        let allKeys = try await appContext.keyService.getPrvKeyInfo(email: appContext.user.email)
         guard allKeys.isNotEmpty else {
             // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
             //   I copied it from another usage, but has to be changed
@@ -601,7 +599,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case let (.searchEmails(emails), .searchResults):
             return emails.isNotEmpty ? emails.count + 1 : 2
         case (.searchEmails, .contacts):
-            return cloudContactProvider.isContactsScopeEnabled ? 0 : 2
+            return googleUserService.isContactsScopeEnabled ? 0 : 2
         default:
             return 0
         }
@@ -798,8 +796,11 @@ extension ComposeViewController {
                 let mutableString = NSMutableAttributedString(attributedString: messageText)
                 mutableString.append(styledQuote)
                 $0.textView.attributedText = mutableString
+                let textView = $0
                 if input.isReply {
-                    $0.becomeFirstResponder()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        textView.becomeFirstResponder()
+                    }
                 }
             } else {
                 $0.textView.attributedText = messageText
@@ -961,8 +962,8 @@ extension ComposeViewController {
             let recipients = character.components(separatedBy: characterSet)
             let validRecipients = recipients.filter { $0.isValidEmail }
             guard validRecipients.count > 1 else { return true }
-            validRecipients.forEach {
-                handleEndEditingAction(with: $0, for: recipientType)
+            for recipient in validRecipients {
+                handleEndEditingAction(with: recipient, for: recipientType)
             }
             return false
         } else if Constants.endTypingCharacters.contains(character),
@@ -1116,7 +1117,7 @@ extension ComposeViewController {
     private func searchEmail(with query: String) {
         Task {
             do {
-                let cloudRecipients = try await cloudContactProvider.searchContacts(query: query)
+                let cloudRecipients = try await googleUserService.searchContacts(query: query)
                 let localRecipients = try localContactsProvider.searchRecipients(query: query)
 
                 let recipients = (cloudRecipients + localRecipients)
@@ -1149,7 +1150,7 @@ extension ComposeViewController {
 
                 let contact = Recipient(recipient: recipient)
                 let contactWithFetchedKeys = try await pubLookup.fetchRemoteUpdateLocal(with: contact)
-                
+
                 handleEvaluation(for: contactWithFetchedKeys)
                 showRecipientLabelIfNecessary()
             } catch {
@@ -1207,21 +1208,21 @@ extension ComposeViewController {
         state: RecipientState,
         keyState: PubKeyState? = nil
     ) {
-        contextToSend.recipients.indices.forEach { index in
-            guard contextToSend.recipients[index].email == email else { return }
+        guard let index = contextToSend.recipients.firstIndex(where: { $0.email == email }) else {
+            return
+        }
 
-            let recipient = contextToSend.recipients[index]
-            let needsReload = recipient.state != state || recipient.keyState != keyState
+        let recipient = contextToSend.recipients[index]
+        let needsReload = recipient.state != state || recipient.keyState != keyState
 
-            contextToSend.recipients[index].state = state
-            contextToSend.recipients[index].keyState = keyState
+        contextToSend.recipients[index].state = state
+        contextToSend.recipients[index].keyState = keyState
 
-            if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
-                reload(sections: [.password])
+        if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
+            reload(sections: [.password])
 
-                if let listIndexPath = recipientsIndexPath(type: recipient.type, part: .list) {
-                    node.reloadRows(at: [listIndexPath], with: .automatic)
-                }
+            if let listIndexPath = recipientsIndexPath(type: recipient.type, part: .list) {
+                node.reloadRows(at: [listIndexPath], with: .automatic)
             }
         }
     }

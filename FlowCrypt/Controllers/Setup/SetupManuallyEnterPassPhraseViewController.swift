@@ -222,7 +222,8 @@ extension SetupManuallyEnterPassPhraseViewController {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
-        let keyDetails = try await appContext.keyService.getPrvKeyDetails()
+        let privateKeys = try appContext.encryptedStorage.getKeypairs(by: email).map(\.private)
+        let keyDetails = try await keyMethods.parseKeys(armored: privateKeys)
         try importKeys(with: keyDetails, and: passPhrase)
     }
 
@@ -244,21 +245,19 @@ extension SetupManuallyEnterPassPhraseViewController {
         )
 
         if storageMethod == .memory {
-            try keysToUpdate
-                .map {
-                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
-                }
-                .forEach {
-                    try appContext.passPhraseService.updatePassPhrase(with: $0, storageMethod: storageMethod)
-                }
+            let updatedPassPhrases = keysToUpdate.map {
+                PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
+            }
+            for updatedPassPhrase in updatedPassPhrases {
+                try appContext.passPhraseService.updatePassPhrase(with: updatedPassPhrase, storageMethod: storageMethod)
+            }
 
-            try newKeysToAdd
-                .map {
-                    PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
-                }
-                .forEach {
-                    try appContext.passPhraseService.savePassPhrase(with: $0, storageMethod: storageMethod)
-                }
+            let newPassPhrases = newKeysToAdd.map {
+                PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
+            }
+            for newPassPhrase in newPassPhrases {
+                try appContext.passPhraseService.savePassPhrase(with: newPassPhrase, storageMethod: storageMethod)
+            }
         }
 
         hideSpinner()

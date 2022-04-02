@@ -31,7 +31,9 @@ public final class LinkButtonNode: CellNode {
         }
         super.init()
         automaticallyManagesSubnodes = true
-        buttons.forEach { $0.addTarget(self, action: #selector(onTap(_:)), forControlEvents: .touchUpInside) }
+        for button in buttons {
+            button.addTarget(self, action: #selector(onTap(_:)), forControlEvents: .touchUpInside)
+        }
         selectionStyle = .none
     }
 
