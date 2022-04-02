@@ -99,7 +99,8 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
 
 const TEST_KEYS: { [name: string]: TestKey } = {
   'rsa1': {
-    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' + 'Version: FlowCrypt 6.3.5 Gmail Encryption\n' +
+    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+      'Version: FlowCrypt 6.3.5 Gmail Encryption\n' +
       'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
       'xsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\n' +
@@ -132,7 +133,7 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       '-----END PGP PUBLIC KEY BLOCK-----\n',
     private: '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
       'Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\n' +
-      'Comment: Seamlessly send and receive encrypted email\n-' +
+      'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
       'xcMGBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\n' +
       'Zln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\n' +

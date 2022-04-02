@@ -242,7 +242,7 @@ Ee3KQbcx28SsnZi9LNO/6/wBmhVJ7HDmOd4AAAAASUVORK5CYII=
       '9hAAAABHNCSVQICAgIfAhkiAAAAMFJREFUOE+lU9sRg0AIZDNpym9rSAumJm0hNfidsgic5w1wGJ1kZ3zgwvI4AQtIAHrq4zKY5uJ715sGP7C44BdP' +
       'nZj1gaRVERBPpYJfUSpoGLeyir2Glg64mxMQg9f6xQbU94zrBDBWgVCBBmecbyGWbcrLgpX+OkR+L4ShPw3bdtdCnMmZfSig2a' +
       '+gtcD1R0LyA1mh6OdmsJNnmW0Sfwp75LYevQ5AsUI3g0aKI+llEe3KQbcx28SsnZi9LNO/6/wBmhVJ7HDmOd4AAAAASUVORK5C' +
-      'YII=" alt="image.png" /><br /></div></div><div>Above<br /></div></div>'
+      'YII=" alt="image.png" />\n<br /></div></div><div>Above<br /></div></div>'
   }]);
   t.pass();
 });
@@ -1147,6 +1147,8 @@ FraCqKUj088pjlLZsORJCsLOgugt7y4O9lf7fNiRo3I81LZsqegqdzcvCeK9
 PBcqDCjq5jgMhU1oyVclRK7jJdmu0Azvwo2lleLAFLdCzHEXWXUz
 =//ru
 -----END PGP PRIVATE KEY BLOCK-----`;
-  expect((await PgpKey.parse(unencryptedCorruptedRsaKey)).error).to.equals('Key is invalid');
+  const res = await PgpKey.parse(unencryptedCorruptedRsaKey);
+  console.log("\n====== result ===== \n" + JSON.stringify(res) + "\n====== result ===== \n");
+  expect(res.error).to.equals('Key is invalid');
   t.pass();
 });
