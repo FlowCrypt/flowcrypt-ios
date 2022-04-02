@@ -119,13 +119,10 @@ class AppContext {
 class AppContextWithUser: AppContext {
     let authType: AuthType
     let user: User
+    let userId: UserId
 
     let enterpriseServer: EnterpriseServerApiType
     let clientConfigurationService: ClientConfigurationServiceType
-
-    var userId: UserId {
-        UserId(email: user.email, name: user.name)
-    }
 
     init(
         encryptedStorage: EncryptedStorageType,
@@ -139,6 +136,7 @@ class AppContextWithUser: AppContext {
     ) async throws {
         self.authType = authType
         self.user = user
+        self.userId = UserId(email: user.email, name: user.name)
         self.enterpriseServer = try await EnterpriseServerApi(email: user.email)
         self.clientConfigurationService = ClientConfigurationService(
             server: enterpriseServer,

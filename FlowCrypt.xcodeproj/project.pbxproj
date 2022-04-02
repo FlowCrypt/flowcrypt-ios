@@ -74,6 +74,7 @@
 		5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */; };
 		5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */; };
 		5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6732716E5EA00C95463 /* LabelCellNode.swift */; };
+		5137CB1427F8E0A900AEF895 /* EnterpriseServerApiHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5137CB1327F8E0A900AEF895 /* EnterpriseServerApiHelper.swift */; };
 		514C34DB276CE19C00FCAB79 /* ComposeMessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */; };
 		514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */; };
 		514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */; };
@@ -517,6 +518,7 @@
 		5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailViewController.swift; sourceTree = "<group>"; };
 		5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailDecorator.swift; sourceTree = "<group>"; };
 		5133B6732716E5EA00C95463 /* LabelCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCellNode.swift; sourceTree = "<group>"; };
+		5137CB1327F8E0A900AEF895 /* EnterpriseServerApiHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApiHelper.swift; sourceTree = "<group>"; };
 		514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageContext.swift; sourceTree = "<group>"; };
 		514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageRecipient.swift; sourceTree = "<group>"; };
 		514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeMessageService+State.swift"; sourceTree = "<group>"; };
@@ -1687,6 +1689,7 @@
 			children = (
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
 				21C7DF08266C0D8F00C44800 /* EnterpriseServerApi.swift */,
+				5137CB1327F8E0A900AEF895 /* EnterpriseServerApiHelper.swift */,
 				517C2E312779F91300FECF32 /* Models */,
 			);
 			path = "Account Server Services";
@@ -2809,6 +2812,7 @@
 				9F2AC5B1267BDED100F6149B /* GmailSearchExpressionGenerator.swift in Sources */,
 				040FDF1227EDFC5C00CB936A /* IdTokenUtils.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
+				5137CB1427F8E0A900AEF895 /* EnterpriseServerApiHelper.swift in Sources */,
 				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
 				9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */,

@@ -209,11 +209,8 @@ class ComposeMessageServiceTests: XCTestCase {
 
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
         encryptedStorage.getKeypairsResult = [keypair]
-        for _ in recipients {
-            localContactsProvider.retrievePubKeysResult = { _ in
-                []
-            }
-        }
+        localContactsProvider.retrievePubKeysResult = { _ in [] }
+
         do {
             _ = try await sut.validateAndProduceSendableMsg(
                 input: ComposeMessageInput(type: .idle),
@@ -236,11 +233,8 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        for _ in recipients {
-            localContactsProvider.retrievePubKeysResult = { _ in
-                ["pubKey"]
-            }
-        }
+        localContactsProvider.retrievePubKeysResult = { _ in ["pubKey"] }
+
         do {
             _ = try await sut.validateAndProduceSendableMsg(
                 input: ComposeMessageInput(type: .idle),
@@ -263,11 +257,8 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        for _ in recipients {
-            localContactsProvider.retrievePubKeysResult = { _ in
-                ["pubKey"]
-            }
-        }
+        localContactsProvider.retrievePubKeysResult = { _ in ["pubKey"] }
+
         do {
             _ = try await sut.validateAndProduceSendableMsg(
                 input: ComposeMessageInput(type: .idle),
@@ -302,11 +293,10 @@ class ComposeMessageServiceTests: XCTestCase {
             return CoreRes.ParseKeys(format: .armored, keyDetails: allKeyDetails)
         }
         encryptedStorage.getKeypairsResult = [keypair]
-        for _ in recipients {
-            localContactsProvider.retrievePubKeysResult = { _ in
-                ["revoked", "expired", "valid"]
-            }
+        localContactsProvider.retrievePubKeysResult = { _ in
+            ["revoked", "expired", "valid"]
         }
+
         let message = "some message"
         let subject = "Some subject"
         let email = "some@gmail.com"
