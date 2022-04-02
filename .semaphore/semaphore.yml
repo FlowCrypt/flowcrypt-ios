@@ -72,11 +72,13 @@ blocks:
       jobs:
         - name: TypeScript + Swift tests
           commands:
-            - ( cd Core && ../.custom-npm/node_modules/.bin/npm test )
+            - cd Core
+            - ../.custom-npm/node_modules/.bin/npm test
             - bundle exec fastlane test
         - name: Code quality
           commands:
-            - ( cd Core && ../.custom-npm/node_modules/.bin/npm run-script tslint )
+            - cd Core
+            - ../.custom-npm/node_modules/.bin/npm run-script tslint
             - ../.custom-npm/node_modules/.bin/npm run-script eslint
 after_pipeline:
   task:
