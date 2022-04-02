@@ -78,6 +78,7 @@ blocks:
           commands:
             - ( cd Core && ../.custom-npm/node_modules/.bin/npm run-script tslint )
             - ../.custom-npm/node_modules/.bin/npm run-script eslint
+after_pipeline:
   task:
     jobs:
       - name: Publish Results
