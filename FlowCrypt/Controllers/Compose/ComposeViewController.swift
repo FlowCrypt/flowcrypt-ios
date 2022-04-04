@@ -875,12 +875,7 @@ extension ComposeViewController {
         self.present(popoverVC, animated: true, completion: nil)
     }
 
-    private func recipientInput(type: RecipientType) -> ASCellNode {
-        let recipients = contextToSend.recipients(type: type)
-        let shouldShowToggleButton = type == .to
-            && contextToSend.recipients(type: .to).isEmpty
-            && !contextToSend.hasCcOrBccRecipients
-
+    private func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
         return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
                 with: "",
@@ -963,7 +958,7 @@ extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
         if contextToSend.recipients(type: type).count < 1 {
             reload(sections: [.recipients(type)])
         }
-        if let listIndexPath = recipientsIndexPath(type: type, part: .list) {
+        if let listIndexPath = recipientsIndexPath(type: type) {
             node.reloadRows(at: [listIndexPath], with: .automatic)
         }
     }
