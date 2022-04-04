@@ -179,7 +179,7 @@ struct AppStartup {
             }
 
             window.rootViewController?.showAlert(
-                title: "error".localized,
+                title: "error_startup".localized,
                 message: message,
                 onOk: { fatalError() }
             )

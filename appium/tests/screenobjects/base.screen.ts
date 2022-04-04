@@ -3,10 +3,7 @@ import ElementHelper from "../helpers/ElementHelper";
 
 
 const SELECTORS = {
-  ERROR_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Error"`]',
   OK_BUTTON: '~Ok',
-  ERROR_FES_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Startup Error"`]',
-  RETRY_BUTTON: '~Retry',
   CURRENT_MODAL: '-ios predicate string:type == "XCUIElementTypeAlert"'
 };
 
@@ -33,7 +30,7 @@ export default class BaseScreen {
   }
 
   static checkModalMessage = async (message: string) => {
-    await expect(await this.currentModal).toBeDisplayed();
+    await ElementHelper.waitElementVisible(await this.currentModal);
     const alertText = await driver.getAlertText();
     expect(alertText).toEqual(message);
   }
