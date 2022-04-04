@@ -20,7 +20,7 @@ struct Recipient: RecipientBase {
 extension Recipient {
     init(_ recipientObject: RecipientRealmObject) {
         self.email = recipientObject.email
-        if let address = MCOAddress.init(nonEncodedRFC822String: recipientObject.name) {
+        if let address = MCOAddress.init(nonEncodedRFC822String: recipientObject.name), address.displayName != nil {
             self.name = address.displayName
         } else {
             self.name = recipientObject.name
