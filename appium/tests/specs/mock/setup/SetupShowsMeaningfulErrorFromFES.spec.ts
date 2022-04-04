@@ -17,7 +17,7 @@ describe('SETUP: ', () => {
     };
     await mockApi.withMockedApis(async () => {
       await SplashScreen.login();
-      await BaseScreen.checkModalMessage('Startup Error\n' +
+      await BaseScreen.checkModalMessage('Login Error\n' +
           'EnterpriseServerApi 400 message:some client err get http://127.0.0.1:8001/fes/api/');
     });
   });

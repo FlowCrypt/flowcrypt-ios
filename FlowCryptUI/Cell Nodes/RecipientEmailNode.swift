@@ -29,7 +29,7 @@ final class RecipientEmailNode: CellNode {
     let input: Input
     let imageNode = ASImageNode()
 
-    private var onTap: ((Tap) -> Void)?
+    public var onTap: ((Tap) -> Void)?
 
     init(input: Input, index: Int) {
         self.input = input

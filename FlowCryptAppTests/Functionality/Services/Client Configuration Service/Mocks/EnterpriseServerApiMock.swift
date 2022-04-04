@@ -10,6 +10,9 @@
 import Foundation
 
 final class EnterpriseServerApiMock: EnterpriseServerApiType {
+    var email = "example@flowcrypt.test"
+    var fesUrl: String?
+
     var getActiveFesUrlInvoked = false
     var getActiveFesUrlInvokedCount = 0
     var getActiveFesUrlCall: (String) -> String? = { _ in
@@ -18,7 +21,7 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
     func getActiveFesUrl(for email: String) async throws -> String? {
         getActiveFesUrlInvoked = true
         getActiveFesUrlInvokedCount += 1
-        return try getActiveFesUrlCall(email)
+        return getActiveFesUrlCall(email)
     }
 
     var getActiveFesUrlForCurrentUserInvoked = false
@@ -37,7 +40,7 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getClientConfigurationCall: (String) throws -> RawClientConfiguration = { _ in
         throw OrganisationalRulesServiceError.getClientConfigurationCall
     }
-    func getClientConfiguration(for email: String) async throws -> RawClientConfiguration {
+    func getClientConfiguration() async throws -> RawClientConfiguration {
         getClientConfigurationInvoked = true
         getClientConfigurationCount += 1
         return try getClientConfigurationCall(email)
@@ -54,7 +57,7 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
         return try getClientConfigurationForCurrentUserCall()
     }
 
-    func getReplyToken(for email: String) async throws -> String {
+    func getReplyToken() async throws -> String {
         return ""
     }
 

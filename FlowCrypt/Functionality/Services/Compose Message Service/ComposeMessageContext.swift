@@ -93,7 +93,7 @@ extension ComposeMessageContext {
     }
 
     mutating func remove(recipient: String, type: RecipientType) {
-        recipients = recipients.filter { $0.email != recipient && $0.type != type }
+        recipients.removeAll(where: { $0.email == recipient && $0.type == type })
     }
 
     mutating func update(recipient: String, state: RecipientState, keyState: PubKeyState?) {

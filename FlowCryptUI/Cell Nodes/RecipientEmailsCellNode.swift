@@ -13,7 +13,7 @@ final public class RecipientEmailsCellNode: CellNode {
     public typealias RecipientTap = (RecipientEmailTapAction) -> Void
 
     public enum RecipientEmailTapAction {
-        case select(IndexPath)
+        case select(IndexPath, CellNode)
         case imageTap(IndexPath)
     }
 
@@ -137,16 +137,17 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
         return { [weak self] in
             guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
 
-            return RecipientEmailNode(
+            let cell = RecipientEmailNode(
                 input: RecipientEmailNode.Input(recipient: recipient, width: width),
                 index: indexPath.row
             )
-                .onTapAction { [weak self] action in
-                    switch action {
-                    case .image: self?.onAction?(.imageTap(indexPath))
-                    case .text: self?.onAction?(.select(indexPath))
-                    }
+            cell.onTap = { [weak self] action in
+                switch action {
+                case .image: self?.onAction?(.imageTap(indexPath))
+                case .text: self?.onAction?(.select(indexPath, cell))
                 }
+            }
+            return cell
         }
     }
 }
