@@ -247,6 +247,16 @@ class NewMessageScreen extends BaseScreen {
     const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitAndClick(addedRecipientEl);
     await ElementHelper.waitAndClick(await this.recipientPopupRemoveButton);
+    await ElementHelper.waitElementInvisible(addedRecipientEl);
+  }
+
+  checkCopyForAddedRecipient = async (email: string, order: number, type = 'to') => {
+    await this.showRecipientInputIfNeeded();
+    const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
+    await ElementHelper.waitAndClick(addedRecipientEl);
+    await ElementHelper.waitAndClick(await this.recipientPopupCopyButton);
+    const base64Encoded = new Buffer(email).toString('base64');
+    expect(await driver.getClipboard('plaintext')).toEqual(base64Encoded);
   }
 
   checkAddedAttachment = async (name: string) => {
