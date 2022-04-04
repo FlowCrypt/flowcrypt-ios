@@ -46,9 +46,9 @@ final class ComposeMessageService {
         passPhraseService: PassPhraseServiceType,
         draftGateway: DraftGateway? = nil,
         localContactsProvider: LocalContactsProviderType? = nil,
+        enterpriseServer: EnterpriseServerApiType,
         sender: String,
-        core: CoreComposeMessageType & KeyParser = Core.shared,
-        enterpriseServer: EnterpriseServerApiType = EnterpriseServerApi()
+        core: CoreComposeMessageType & KeyParser = Core.shared
     ) {
         self.messageGateway = messageGateway
         self.passPhraseService = passPhraseService
@@ -291,7 +291,7 @@ extension ComposeMessageService {
     }
 
     private func prepareAndUploadPwdEncryptedMsg(message: SendableMsg) async throws -> String {
-        let replyToken = try await enterpriseServer.getReplyToken(for: message.from)
+        let replyToken = try await enterpriseServer.getReplyToken()
 
         let bodyWithReplyToken = try getPwdMsgBodyWithReplyToken(
             message: message,

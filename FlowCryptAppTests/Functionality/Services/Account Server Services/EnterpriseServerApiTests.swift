@@ -11,25 +11,15 @@ import XCTest
 
 final class EnterpriseServerApiTests: XCTestCase {
 
-    func testGetActiveFesUrlWithUnknownDomain() async throws {
-        // arrange
-        let service = EnterpriseServerApi()
-
-        // act
-        let result = try? await service.getActiveFesUrl(for: "user@nonexistentdomain.test")
-
-        // assert
-        XCTAssertNil(result)
+    func testGetClientConfigurationWithUnknownDomain() async throws {
+        let service = try await EnterpriseServerApi(email: "user@nonexistentdomain.test")
+        let configuration = try await service.getClientConfiguration()
+        XCTAssertEqual(configuration, .empty)
     }
 
     func testGetClientConfigurationWithoutActiveFesUrl() async throws {
-        // arrange
-        let service = EnterpriseServerApi()
-
-        // act
-        let result = try await service.getClientConfiguration(for: "user@gmail.com")
-
-        // assert
-        XCTAssertEqual(result, .empty)
+        let service = try await EnterpriseServerApi(email: "user@gmail.com")
+        let configuration = try await service.getClientConfiguration()
+        XCTAssertEqual(configuration, .empty)
     }
 }
