@@ -26,7 +26,7 @@ final public class RecipientEmailsCellNode: CellNode {
 
     lazy var textNode: ASTextNode2 = {
         let textNode = ASTextNode2()
-        let textTitle = recipients.isEmpty ? "" : "compose_recipient_\(type)".localized
+        let textTitle = "compose_recipient_\(type)".localized
         textNode.attributedText = textTitle.attributed(.regular(17), color: .lightGray, alignment: .left)
         textNode.isAccessibilityElement = true
         textNode.style.preferredSize.width = 35
@@ -187,12 +187,14 @@ extension RecipientEmailsCellNode {
         buttonSize: CGSize
     ) -> ASInsetLayoutSpec {
 
-        let mainStack = ASStackLayoutSpec.horizontal()
-        mainStack.style.flexGrow = 1
-
         contentNode.style.preferredSize.height = contentSize.height
+        contentNode.style.flexGrow = 1
 
-        mainStack.children = [contentNode, recipientInput]
+        let recipientInset = UIEdgeInsets(top: CGFloat.infinity, left: 100, bottom: 2, right: CGFloat.infinity)
+        let recipientInsetSpec = ASInsetLayoutSpec(insets: recipientInset, child: recipientInput)
+
+        let mainStack = ASOverlayLayoutSpec.init(child: contentNode, overlay: recipientInsetSpec)
+        mainStack.style.flexGrow = 1
 
         let stack = ASStackLayoutSpec.horizontal()
         stack.children = [textNodeStack, mainStack]

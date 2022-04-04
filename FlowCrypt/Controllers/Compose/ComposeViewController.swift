@@ -852,7 +852,7 @@ extension ComposeViewController {
             }
     }
 
-    private func recipientInput(type: RecipientType) -> ASCellNode {
+    private func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
         return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
                 with: "",
