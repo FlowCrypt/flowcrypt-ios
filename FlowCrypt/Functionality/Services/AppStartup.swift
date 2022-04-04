@@ -135,7 +135,7 @@ struct AppStartup {
     private func showErrorAlert(of error: Error, on window: UIWindow) {
         let alert = UIAlertController(
             title: "error_startup".localized,
-            message: "\(error.localizedDescription)",
+            message: error.errorMessage,
             preferredStyle: .alert
         )
         let retry = UIAlertAction(
@@ -148,10 +148,12 @@ struct AppStartup {
             title: "log_out".localized,
             style: .default
         ) { _ in
-            do {
-                try appContext.globalRouter.signOut(appContext: appContext)
-            } catch let logoutError {
-                Logger.logError("Logout failed due to \(logoutError.localizedDescription)")
+            Task {
+                do {
+                    try await appContext.globalRouter.signOut(appContext: appContext)
+                } catch let logoutError {
+                    Logger.logError("Logout failed due to \(logoutError.localizedDescription)")
+                }
             }
         }
         alert.addAction(retry)

@@ -14,8 +14,8 @@ protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType) async
     func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws
-    func switchActive(user: User, appContext: AppContext) throws
-    func signOut(appContext: AppContext) throws
+    func switchActive(user: User, appContext: AppContext) async throws
+    func signOut(appContext: AppContext) async throws
 }
 
 enum GlobalRoutingType {
@@ -74,10 +74,10 @@ extension GlobalRouter: GlobalRouterType {
                 )
                 try appContext.userAccountService.startSessionFor(session: session)
                 viewController.hideSpinner()
-                try proceed(with: appContext, session: session)
+                try await proceed(with: appContext, session: session)
             case .other(let session):
                 try appContext.userAccountService.startSessionFor(session: session)
-                try proceed(with: appContext, session: session)
+                try await proceed(with: appContext, session: session)
             }
         } catch {
             if case .gmailLogin(let viewController) = route {
@@ -88,10 +88,10 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func signOut(appContext: AppContext) throws {
+    func signOut(appContext: AppContext) async throws {
         if let session = try appContext.userAccountService.startActiveSessionForNextUser() {
             logger.logInfo("Start session for another email user \(session)")
-            try proceed(with: appContext, session: session)
+            try await proceed(with: appContext, session: session)
         } else {
             logger.logInfo("Sign out")
             try appContext.userAccountService.cleanup()
@@ -125,13 +125,13 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func switchActive(user: User, appContext: AppContext) throws {
+    func switchActive(user: User, appContext: AppContext) async throws {
         logger.logInfo("Switching active user \(user)")
         guard let session = try appContext.userAccountService.switchActiveSessionFor(user: user) else {
             logger.logWarning("Can't switch active user with \(user.email)")
             return
         }
-        try proceed(with: appContext, session: session)
+        try await proceed(with: appContext, session: session)
     }
 
     @MainActor
@@ -153,7 +153,7 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func proceed(with appContext: AppContext, session: SessionType) throws {
+    private func proceed(with appContext: AppContext, session: SessionType) async throws {
         logger.logInfo("proceed for session: \(session.description)")
         guard
             let user = try appContext.encryptedStorage.activeUser,
@@ -171,10 +171,8 @@ extension GlobalRouter: GlobalRouterType {
             return
         }
 
-        Task {
-            let appContextWithUser = try await appContext.with(session: session, authType: authType, user: user)
-            AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
-        }
+        let appContextWithUser = try await appContext.with(session: session, authType: authType, user: user)
+        AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
     }
 
     @MainActor
@@ -197,7 +195,7 @@ extension GlobalRouter: GlobalRouterType {
 
         keyWindow.rootViewController?.showAlert(
             title: "error".localized,
-            message: error.localizedDescription,
+            message: error.errorMessage,
             onOk: { [weak self] in self?.proceed() }
         )
     }
