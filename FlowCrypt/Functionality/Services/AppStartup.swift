@@ -79,7 +79,7 @@ struct AppStartup {
                     let controller = try SetupInitialViewController(appContext: context)
                     window.rootViewController = MainNavigationController(rootViewController: controller)
                 } catch {
-                    window.rootViewController?.showAlert(message: error.localizedDescription)
+                    window.rootViewController?.showAlert(message: error.errorMessage)
                 }
             }
         }
@@ -179,7 +179,7 @@ struct AppStartup {
             }
 
             window.rootViewController?.showAlert(
-                title: "error_startup".localized,
+                title: "error".localized,
                 message: message,
                 onOk: { fatalError() }
             )

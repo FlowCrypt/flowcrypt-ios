@@ -83,7 +83,7 @@ extension GlobalRouter: GlobalRouterType {
             if case .gmailLogin(let viewController) = route {
                 viewController.hideSpinner()
             }
-            logger.logError("Failed to sign in due to \(error.localizedDescription)")
+            logger.logError("Failed to sign in due to \(error.errorMessage)")
             handleSignInError(error: error, appContext: appContext)
         }
     }
@@ -194,7 +194,7 @@ extension GlobalRouter: GlobalRouterType {
         }
 
         keyWindow.rootViewController?.showAlert(
-            title: "error".localized,
+            title: "error_login".localized,
             message: error.errorMessage,
             onOk: { [weak self] in self?.proceed() }
         )
