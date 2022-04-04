@@ -33,8 +33,7 @@ struct AppStartup {
             do {
                 await setupCore()
                 try await setupSession()
-                try await getUserOrgRulesIfNeeded()
-                try chooseView(for: window)
+                try await chooseView(for: window)
             } catch {
                 showErrorAlert(of: error, on: window)
             }
@@ -60,10 +59,10 @@ struct AppStartup {
     }
 
     @MainActor
-    private func chooseView(for window: UIWindow) throws {
+    private func chooseView(for window: UIWindow) async throws {
         switch try entryPointForUser() {
         case .mainFlow:
-            startWithUserContext(appContext: appContext, window: window) { context in
+            try await startWithUserContext(appContext: appContext, window: window) { context in
                 let controller = InboxViewContainerController(appContext: context)
                 window.rootViewController = SideMenuNavigationController(
                     appContext: context,
@@ -75,12 +74,12 @@ struct AppStartup {
                 rootViewController: SignInViewController(appContext: appContext)
             )
         case .setupFlow:
-            startWithUserContext(appContext: appContext, window: window) { context in
+            try await startWithUserContext(appContext: appContext, window: window) { context in
                 do {
                     let controller = try SetupInitialViewController(appContext: context)
                     window.rootViewController = MainNavigationController(rootViewController: controller)
                 } catch {
-                    window.rootViewController?.showAlert(message: error.localizedDescription)
+                    window.rootViewController?.showAlert(message: error.errorMessage)
                 }
             }
         }
@@ -102,13 +101,6 @@ struct AppStartup {
             logger.logInfo("User is not signed in -> mainFlow")
             return .signIn
         }
-    }
-
-    private func getUserOrgRulesIfNeeded() async throws {
-        guard let currentUser = try appContext.encryptedStorage.activeUser else {
-            return
-        }
-        _ = try await appContext.clientConfigurationService.fetch(for: currentUser)
     }
 
     private func makeUserIdForSetup(session: SessionType) throws -> UserId? {
@@ -143,7 +135,7 @@ struct AppStartup {
     private func showErrorAlert(of error: Error, on window: UIWindow) {
         let alert = UIAlertController(
             title: "error_startup".localized,
-            message: "\(error.localizedDescription)",
+            message: error.errorMessage,
             preferredStyle: .alert
         )
         let retry = UIAlertAction(
@@ -156,10 +148,12 @@ struct AppStartup {
             title: "log_out".localized,
             style: .default
         ) { _ in
-            do {
-                try appContext.globalRouter.signOut(appContext: appContext)
-            } catch let logoutError {
-                Logger.logError("Logout failed due to \(logoutError.localizedDescription)")
+            Task {
+                do {
+                    try await appContext.globalRouter.signOut(appContext: appContext)
+                } catch let logoutError {
+                    Logger.logError("Logout failed due to \(logoutError.localizedDescription)")
+                }
             }
         }
         alert.addAction(retry)
@@ -168,14 +162,16 @@ struct AppStartup {
     }
 
     @MainActor
-    private func startWithUserContext(appContext: AppContext, window: UIWindow, callback: (AppContextWithUser) -> Void) {
+    private func startWithUserContext(appContext: AppContext, window: UIWindow, callback: (AppContextWithUser) -> Void) async throws {
         let session = appContext.session
 
         guard
             let user = try? appContext.encryptedStorage.activeUser,
             let authType = user.authType
         else {
-            let message = "Wrong application state. User not found for session \(session?.description ?? "nil")"
+            let sessionName = appContext.session?.description ?? "nil"
+            let message = "error_wrong_app_state".localizeWithArguments(sessionName)
+
             logger.logError(message)
 
             if window.rootViewController == nil {
@@ -191,6 +187,7 @@ struct AppStartup {
             return
         }
 
-        callback(appContext.withSession(session: session, authType: authType, user: user))
+        let contextWithUser = try await appContext.with(session: session, authType: authType, user: user)
+        callback(contextWithUser)
     }
 }

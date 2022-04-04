@@ -30,12 +30,10 @@ class KeyInfoTests: XCTestCase {
             revoked: false
         )
 
-        var thrownError: Error?
-        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
-            thrownError = error
-        }
-
-        XCTAssertTrue(thrownError is KeyInfoError)
+        assert(
+            try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
+            throws: KeyInfoError.missingPrivateKey("storing pubkey as private")
+        )
     }
 
     func testKeyInfoInitNotFullyEcryptedThrowsError() {
@@ -55,12 +53,10 @@ class KeyInfoTests: XCTestCase {
             revoked: false
         )
 
-        var thrownError: Error?
-        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
-            thrownError = error
-        }
-
-        XCTAssertTrue(thrownError is KeyInfoError)
+        assert(
+            try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
+            throws: KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
+        )
     }
 
     func testKeyInfoWithEmptyKeyIdsThrowsError() {
@@ -78,12 +74,10 @@ class KeyInfoTests: XCTestCase {
             revoked: false
         )
 
-        var thrownError: Error?
-        XCTAssertThrowsError(try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user)) { error in
-            thrownError = error
-        }
-
-        XCTAssertTrue(thrownError is KeyInfoError)
+        assert(
+            try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
+            throws: KeyInfoError.missingKeyIds
+        )
     }
 
     func testKeyInfoInit() throws {

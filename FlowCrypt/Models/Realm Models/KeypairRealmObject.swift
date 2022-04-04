@@ -13,7 +13,7 @@ enum KeySource: String {
     case ekm
 }
 
-enum KeyInfoError: Error {
+enum KeyInfoError: Error, Equatable {
     case missingPrivateKey(String)
     case notEncrypted(String)
     case missingKeyIds

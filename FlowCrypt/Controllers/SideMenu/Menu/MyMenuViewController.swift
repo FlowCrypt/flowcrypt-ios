@@ -227,10 +227,12 @@ extension MyMenuViewController {
             return
         }
 
-        do {
-            try appContext.globalRouter.switchActive(user: account, appContext: appContext)
-        } catch {
-            showAlert(message: error.localizedDescription)
+        Task {
+            do {
+                try await appContext.globalRouter.switchActive(user: account, appContext: appContext)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 }
@@ -309,10 +311,12 @@ extension MyMenuViewController {
                 showAlert(message: error.localizedDescription)
             }
         case .logOut:
-            do {
-                try appContext.globalRouter.signOut(appContext: appContext)
-            } catch {
-                showAlert(message: error.localizedDescription)
+            Task {
+                do {
+                    try await appContext.globalRouter.signOut(appContext: appContext)
+                } catch {
+                    showAlert(message: error.localizedDescription)
+                }
             }
         }
     }

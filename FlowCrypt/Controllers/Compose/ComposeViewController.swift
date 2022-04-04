@@ -121,12 +121,16 @@ final class ComposeViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage,
             messageGateway: appContext.getRequiredMailProvider().messageSender,
             passPhraseService: appContext.passPhraseService,
+            enterpriseServer: appContext.enterpriseServer,
             sender: appContext.user.email
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.keyMethods = keyMethods
-        self.pubLookup = PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: self.localContactsProvider)
+        self.pubLookup = PubLookup(
+            clientConfiguration: clientConfiguration,
+            localContactsProvider: self.localContactsProvider
+        )
         self.router = appContext.globalRouter
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
