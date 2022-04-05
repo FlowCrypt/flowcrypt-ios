@@ -103,11 +103,11 @@ extension InfoCellNode.Input {
         let icon: String = {
             switch type {
             case .remove:
-                return "trash"
+                return "trash.slash"
             case .copy:
-                return "copy"
+                return "doc.on.doc"
             case .edit:
-                return "edit"
+                return "pencil.circle"
             default:
                 return ""
             }
@@ -117,7 +117,7 @@ extension InfoCellNode.Input {
             attributedText: "compose_recipient_\(type)"
                 .localized
                 .attributed(.regular(17), color: .mainTextColor),
-            image: #imageLiteral(resourceName: icon).tinted(.mainTextColor),
+            image: UIImage(systemName: icon)?.tinted(.mainTextColor) ?? UIImage(),
             insets: .side(16),
             backgroundColor: .backgroundColor,
             accessibilityIdentifier: "aid-recipient-popup-\(type)-button"
