@@ -193,7 +193,8 @@ export class PgpKey {
     await encryptKey({ privateKey: (prv as PrivateKey), passphrase });
   };
 
-  public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[], error?: string | undefined }> => {
+  public static normalize = async (armored: string):
+    Promise<{ normalized: string, keys: Key[], error?: string | undefined }> => {
     try {
       let keys: Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
@@ -327,7 +328,8 @@ export class PgpKey {
     return undefined;
   };
 
-  public static parse = async (armored: string): Promise<{ original: string, normalized: string, keys: KeyDetails[], error?: string | undefined }> => {
+  public static parse = async (armored: string):
+    Promise<{ original: string, normalized: string, keys: KeyDetails[], error?: string | undefined }> => {
     const { normalized, keys, error } = await PgpKey.normalize(armored);
     return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)), error };
   };
