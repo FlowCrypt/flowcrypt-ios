@@ -32,45 +32,52 @@ export class Subprocess {
   public static onStderr = (r: { stderr: Buffer, cmd: string, args: string[] }): void => undefined;
 
   public static spawn = (cmd: string, rawArgs: (string | number)[], readiness_indicator?: string,
-    env?: { [k: string]: string }): Promise<child_process.ChildProcess> => new Promise((resolve, reject) => {
-    let ready = false;
-    const args = rawArgs.map(String);
-    const p: child_process.ChildProcess = child_process.spawn(cmd, args, { env });
-    PROCESSES.push(p);
-    if (p.stdout) {
-      p.stdout.on('data', (stdout: Buffer) => {
-        Subprocess.onStdout({ cmd, args, stdout: stdout });
-        if (readiness_indicator && !ready && stdout.indexOf(readiness_indicator) !== -1) {
-          ready = true;
-          resolve(p);
-        }
-      });
-    }
-    if (p.stderr) {
-      p.stderr.on('data', (stderr: Buffer) => {
-        Subprocess.onStderr({ cmd, args, stderr: stderr });
-        if (readiness_indicator && !ready && stderr.indexOf(readiness_indicator) !== -1) {
-          ready = true;
-          resolve(p);
-        }
-      });
-    }
-    if (readiness_indicator) {
-      setTimeout(() => {
-        if (!ready) {
-          reject(new ProcessNotReady(`Process did not become ready in ${SPAWN_READINESS_TIMEOUT} by outputting <${readiness_indicator}>`, [cmd].concat(rawArgs as string[])));
-          p.kill();
-        }
-      }, SPAWN_READINESS_TIMEOUT);
-    } else {
-      resolve(p);
-    }
-  });
+    env?: { [k: string]: string }): Promise<child_process.ChildProcess> => {
+    return new Promise((resolve, reject) => {
+      let ready = false;
+      const args = rawArgs.map(String);
+      const p: child_process.ChildProcess = child_process.spawn(cmd, args, { env });
+      PROCESSES.push(p);
+      if (p.stdout) {
+        p.stdout.on('data', (stdout: Buffer) => {
+          Subprocess.onStdout({ cmd, args, stdout: stdout });
+          if (readiness_indicator && !ready && stdout.indexOf(readiness_indicator) !== -1) {
+            ready = true;
+            resolve(p);
+          }
+        });
+      }
+      if (p.stderr) {
+        p.stderr.on('data', (stderr: Buffer) => {
+          Subprocess.onStderr({ cmd, args, stderr: stderr });
+          if (readiness_indicator && !ready && stderr.indexOf(readiness_indicator) !== -1) {
+            ready = true;
+            resolve(p);
+          }
+        });
+      }
+      if (readiness_indicator) {
+        setTimeout(() => {
+          if (!ready) {
+            reject(new ProcessNotReady(
+              `Process did not become ready in ${SPAWN_READINESS_TIMEOUT} ` +
+              `by outputting <${readiness_indicator}>`, [cmd].concat(rawArgs as string[])));
+            p.kill();
+          }
+        }, SPAWN_READINESS_TIMEOUT);
+      } else {
+        resolve(p);
+      }
+    });
+  };
 
-  public static exec = (file: string, ...args: (string | number)[]): Promise<{ stdout: string, stderr: string }> => new Promise((resolve, reject) => {
-    const p = child_process.execFile(file, args.map(String), (err, stdout, stderr) => err ? reject(err) : resolve({ stdout, stderr }));
-    PROCESSES.push(p);
-  });
+  public static exec = (file: string, ...args: (string | number)[]): Promise<{ stdout: string, stderr: string }> => {
+    return new Promise((resolve, reject) => {
+      const p = child_process.execFile(file, args.map(String), (err, stdout, stderr) =>
+        err ? reject(err) : resolve({ stdout, stderr }));
+      PROCESSES.push(p);
+    });
+  };
 
   public static killall = (signal: 'SIGINT' | 'SIGKILL' | 'SIGTERM' = 'SIGTERM') => {
     for (const p of PROCESSES) {

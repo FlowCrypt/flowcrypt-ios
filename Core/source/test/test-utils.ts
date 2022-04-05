@@ -47,7 +47,8 @@ export const expectNoData = (data: Uint8Array) => {
   expect(data).to.have.property('length').that.equals(0);
 };
 
-export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' | 'binary', details?: any[] | Buffer) => {
+export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' | 'binary',
+  details?: any[] | Buffer) => {
   expect(_data).to.be.instanceof(Uint8Array);
   const data = Buffer.from(_data);
   expect(data).to.have.property('length').that.does.not.equal(0);
@@ -60,7 +61,8 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     expect(details).to.be.instanceOf(Array);
     const expectedBlocks = details as any[];
     expect(blocks).to.have.property('length').which.is.greaterThan(0);
-    expect(blocks[0]).to.have.property('type').which.equals('plainHtml'); // todo plainHtml - should be renambed - legacy compat reasons
+    // todo plainHtml - should be renambed - legacy compat reasons
+    expect(blocks[0]).to.have.property('type').which.equals('plainHtml');
     const renderedContentBlocksBlock = blocks.shift();
     const [head, body, foot] = renderedContentBlocksBlock.content.split(/<\/?body>/g);
     expect(head).to.contain('<!DOCTYPE html><html>');
@@ -76,7 +78,10 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
         const m = (renderedContentBlock as string).match(
           /<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/);
         if (m === null) {
-          blocks.unshift({ error: "TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT", content: renderedContentBlock });
+          blocks.unshift({
+            error: "TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT",
+            content: renderedContentBlock
+          });
         } else {
           blocks.unshift({ rendered: true, frameColor: m[1], htmlContent: m[2] });
         }
