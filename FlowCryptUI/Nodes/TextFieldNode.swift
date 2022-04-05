@@ -79,7 +79,12 @@ public final class TextFieldNode: ASDisplayNode {
     }
 
     public var text: String {
-        textField.text ?? ""
+        get {
+            textField.text ?? ""
+        }
+        set {
+            textField.text = newValue
+        }
     }
 
     public var attributedText: NSAttributedString? {
