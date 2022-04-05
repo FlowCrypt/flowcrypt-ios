@@ -22,7 +22,9 @@ export class Str {
     let email: string | undefined;
     let name: string | undefined;
     if (full.includes('<') && full.includes('>')) {
-      email = full.substr(full.indexOf('<') + 1, full.indexOf('>') - full.indexOf('<') - 1).replace(/["']/g, '').trim().toLowerCase();
+      const openArrow = full.indexOf('<');
+      const closeArrow = full.indexOf('>');
+      email = full.substr(openArrow + 1, openArrow - closeArrow - 1).replace(/["']/g, '').trim().toLowerCase();
       name = full.substr(0, full.indexOf('<')).replace(/["']/g, '').trim();
     } else {
       email = full.replace(/["']/g, '').trim().toLowerCase();
@@ -43,7 +45,9 @@ export class Str {
   };
 
   public static prettyPrint = (obj: any) => {
-    return (typeof obj === 'object') ? JSON.stringify(obj, undefined, 2).replace(/ /g, '&nbsp;').replace(/\n/g, '<br />') : String(obj);
+    return (typeof obj === 'object')
+      ? JSON.stringify(obj, undefined, 2).replace(/ /g, '&nbsp;').replace(/\n/g, '<br />')
+      : String(obj);
   };
 
   public static normalizeSpaces = (str: string) => {
@@ -74,11 +78,16 @@ export class Str {
     if (email.indexOf(' ') !== -1) {
       return false;
     }
+    // eslint-disable-next-line max-len
     return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(email);
   };
 
   public static monthName = (monthIndex: number) => {
-    return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][monthIndex];
+    return [
+      'January', 'February', 'March',
+      'April', 'May', 'June',
+      'July', 'August', 'September',
+      'October', 'November', 'December'][monthIndex];
   };
 
   public static sloppyRandom = (length: number = 5) => {
@@ -95,7 +104,9 @@ export class Str {
   };
 
   public static asEscapedHtml = (text: string) => {
-    return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\//g, '&#x2F;').replace(/\n/g, '<br />');
+    return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\//g, '&#x2F;').replace(/\n/g, '<br />');
   };
 
   public static htmlAttrEncode = (values: Dict<any>): string => {
@@ -131,23 +142,27 @@ export class Str {
   };
 
   private static base64urlUtfEncode = (str: string) => {
+    // eslint-disable-next-line max-len
     // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     if (typeof str === 'undefined') {
       return str;
     }
-    return base64encode(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(parseInt(String(p1), 16))))
+    return base64encode(encodeURIComponent(str)
+      .replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(parseInt(String(p1), 16))))
       .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   };
 
   private static base64urlUtfDecode = (str: string) => {
+    // eslint-disable-next-line max-len
     // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     if (typeof str === 'undefined') {
       return str;
     }
     // tslint:disable-next-line:no-unsafe-any
-    return decodeURIComponent(Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+    return decodeURIComponent(
+      Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
   };
 
 }
@@ -174,7 +189,9 @@ export class Value {
       }
       return result;
     },
-    contains: <T>(arr: T[] | string, value: T): boolean => Boolean(arr && typeof arr.indexOf === 'function' && (arr as any[]).indexOf(value) !== -1),
+    contains: <T>(arr: T[] | string, value: T): boolean => {
+      return Boolean(arr && typeof arr.indexOf === 'function' && (arr as any[]).indexOf(value) !== -1);
+    },
     sum: (arr: number[]) => arr.reduce((a, b) => a + b, 0),
     average: (arr: number[]) => Value.arr.sum(arr) / arr.length,
     zeroes: (length: number): number[] => new Array(length).map(() => 0)
@@ -203,7 +220,9 @@ export class Value {
 
 export class Url {
 
-  private static URL_PARAM_DICT: Dict<boolean | null> = { '___cu_true___': true, '___cu_false___': false, '___cu_null___': null }; // tslint:disable-line:no-null-keyword
+  private static URL_PARAM_DICT: Dict<boolean | null> = {
+    '___cu_true___': true, '___cu_false___': false, '___cu_null___': null
+  }; // tslint:disable-line:no-null-keyword
 
   /**
    * will convert result to desired format: camelCase or snake_case, based on what was supplied in expectedKeys
@@ -231,7 +250,10 @@ export class Url {
       const value = params[key];
       if (typeof value !== 'undefined') {
         const transformed = Value.obj.keyByValue(Url.URL_PARAM_DICT, value);
-        link += (link.includes('?') ? '&' : '?') + encodeURIComponent(key) + '=' + encodeURIComponent(String(typeof transformed !== 'undefined' ? transformed : value));
+        link += (link.includes('?') ? '&' : '?')
+          + encodeURIComponent(key)
+          + '='
+          + encodeURIComponent(String(typeof transformed !== 'undefined' ? transformed : value));
       }
     }
     return link;
@@ -259,7 +281,8 @@ export class Url {
     return s.replace(/[a-z][A-Z]/g, boundary => `${boundary[0]}_${boundary[1].toLowerCase()}`);
   };
 
-  private static findAndProcessUrlParam = (expectedParamName: string, rawParamNameDict: Dict<string>, rawParms: Dict<string>): UrlParam => {
+  private static findAndProcessUrlParam = (
+    expectedParamName: string, rawParamNameDict: Dict<string>, rawParms: Dict<string>): UrlParam => {
     if (typeof rawParamNameDict[expectedParamName] === 'undefined') {
       return undefined; // param name not found in param name dict
     }
@@ -268,7 +291,8 @@ export class Url {
       return undefined; // original param name not found in raw params
     }
     if (typeof Url.URL_PARAM_DICT[rawValue] !== 'undefined') {
-      return Url.URL_PARAM_DICT[rawValue]; // raw value was converted using a value dict to get proper: true, false, undefined, null
+      // raw value was converted using a value dict to get proper: true, false, undefined, null
+      return Url.URL_PARAM_DICT[rawValue];
     }
     return decodeURIComponent(rawValue);
   };

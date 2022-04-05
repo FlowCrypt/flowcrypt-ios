@@ -40,7 +40,9 @@ export class Buf extends Uint8Array {
   };
 
   public static fromUtfStr = (utfStr: string): Buf => {
-    // adapted from https://github.com/feross/buffer/blob/master/index.js see https://github.com/feross/buffer/blob/master/LICENSE (MIT as of Jan 2018)
+    // eslint-disable-next-line max-len
+    // adapted from https://github.com/feross/buffer/blob/master/index.js see https://github.com/feross/buffer/blob/master/LICENSE
+    // (MIT as of Jan 2018)
     let codePoint;
     const length = utfStr.length;
     let leadSurrogate: number | undefined;
@@ -77,7 +79,11 @@ export class Buf extends Uint8Array {
       } else if (codePoint < 0x10000) {
         bytes.push(codePoint >> 0xC | 0xE0, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
       } else if (codePoint < 0x110000) {
-        bytes.push(codePoint >> 0x12 | 0xF0, codePoint >> 0xC & 0x3F | 0x80, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
+        bytes.push(
+          codePoint >> 0x12 | 0xF0,
+          codePoint >> 0xC & 0x3F | 0x80,
+          codePoint >> 0x6 & 0x3F | 0x80,
+          codePoint & 0x3F | 0x80);
       } else {
         throw new Error('Invalid code point');
       }
@@ -104,7 +110,8 @@ export class Buf extends Uint8Array {
     let binaryChar = '';
     for (let i = 0; i < length; i++) {
       if (this[i] < 128) {
-        if (bytesLeftInChar) { // utf-8 continuation byte missing, assuming the last character was an 8-bit ASCII character
+        if (bytesLeftInChar) {
+          // utf-8 continuation byte missing, assuming the last character was an 8-bit ASCII character
           utf8string += String.fromCharCode(this[i - 1]);
         }
         bytesLeftInChar = 0;

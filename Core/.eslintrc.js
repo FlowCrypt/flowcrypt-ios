@@ -24,7 +24,7 @@ module.exports = {
     '@typescript-eslint/no-unused-vars': ['error'],
     '@typescript-eslint/semi': ['error'],
     'indent': ['error', 2, { SwitchCase: 1 }],
-    'max-len': ['error', { code: 190 }],
+    'max-len': ['error', { code: 120 }],
     'no-constant-condition': 0,
     'no-prototype-builtins': 0,
     'no-unused-vars': 0,

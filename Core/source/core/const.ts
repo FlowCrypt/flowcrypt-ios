@@ -12,9 +12,11 @@ export const BACKEND_API_HOST = '[BUILD_REPLACEABLE_BACKEND_API_HOST]';
  * Only put constants below if:
  *   - they are useful across web/extension/Nodejs environments, AND
  *   - the only other reasonable place to put them would be OUTSIDE of the /core folder
- *   - example: A Google query below would normally go in Google class, but that's outside of /core and we also need it on Android
+ *   - example: A Google query below would normally go in Google class,
+ *     but that's outside of /core and we also need it on Android
  *
- * For any constants that are not expected to be reused that widely, just put them as private or public static props in relevant class.
+ * For any constants that are not expected to be reused that widely,
+ * just put them as private or public static props in relevant class.
  */
 
 export const GMAIL_RECOVERY_EMAIL_SUBJECTS = [
