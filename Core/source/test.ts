@@ -818,15 +818,21 @@ ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
       [await getCompatAsset('mime-email-plain-html')]));
   expectData(blocks, 'msgBlocks', [{
     frameColor: 'plain',
-    htmlContent: '<p>paragraph 1</p><p>paragraph 2 with <b>bold</b></p><p>paragraph 3 with <em style="color:red">red i</em></p>', rendered: true
+    htmlContent: '<p>paragraph 1</p><p>paragraph 2 with <b>bold</b></p><p>paragraph 3 with ' +
+      '<em style="color:red">red i</em></p>', rendered: true
   }]);
-  expect(decryptJson).to.deep.equal({ text: `paragraph 1\nparagraph 2 with bold\nparagraph 3 with red i`, replyType: 'plain', subject: 'mime email plain html' });
+  expect(decryptJson).to.deep.equal({
+    text: `paragraph 1\nparagraph 2 with bold\nparagraph 3 with red i`,
+    replyType: 'plain', subject: 'mime email plain html'
+  });
   t.pass();
 });
 
 ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-pubkey')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-plain-with-pubkey')]));
   const expected = [
     { rendered: true, frameColor: 'plain', htmlContent },
     {
@@ -920,7 +926,9 @@ ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
 
 ava.default('parseDecryptMsg plainAtt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-attachment')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-plain-with-attachment')]));
   expectData(blocks, 'msgBlocks', [
     { rendered: true, frameColor: 'plain', htmlContent },
     {
@@ -982,21 +990,22 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
   t.pass();
 });
 
-ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)', async t => {
-  const { keys } = getKeypairs('rsa1');
-  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
-    { keys, isEmail: true, verificationPubkeys: pubKeys2 },
-    [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
-  expect(decryptJson.replyType).equals('encrypted');
-  expect(decryptJson.subject).equals('mime email encrypted inline text signed');
-  const parsedDecryptData = JSON.parse(decryptData.toString());
-  expect(!!parsedDecryptData.verifyRes).equals(true);
-  /* tslint:disable:no-null-keyword */
-  expect(parsedDecryptData.verifyRes.match).equals(null);
-  /* tslint:enable:no-null-keyword */
-  t.pass();
-});
+ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)',
+  async t => {
+    const { keys } = getKeypairs('rsa1');
+    const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+    const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+      { keys, isEmail: true, verificationPubkeys: pubKeys2 },
+      [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+    expect(decryptJson.replyType).equals('encrypted');
+    expect(decryptJson.subject).equals('mime email encrypted inline text signed');
+    const parsedDecryptData = JSON.parse(decryptData.toString());
+    expect(!!parsedDecryptData.verifyRes).equals(true);
+    /* tslint:disable:no-null-keyword */
+    expect(parsedDecryptData.verifyRes.match).equals(null);
+    /* tslint:enable:no-null-keyword */
+    t.pass();
+  });
 
 ava.default('verify plain-text signed message by providing it correct key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
@@ -1044,6 +1053,7 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
   t.pass();
 });
 
+// eslint-disable-next-line max-len
 ava.default('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(

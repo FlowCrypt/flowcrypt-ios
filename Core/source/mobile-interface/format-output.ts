@@ -13,7 +13,10 @@ import { VerifyRes } from '../core/pgp-msg';
 export type Buffers = (Buf | Uint8Array)[];
 export type EndpointRes = { json: string, data: Buf | Uint8Array };
 
-export const isContentBlock = (t: MsgBlockType) => t === 'plainText' || t === 'decryptedText' || t === 'plainHtml' || t === 'decryptedHtml' || t === 'signedMsg' || t === 'verifiedMsg';
+export const isContentBlock = (t: MsgBlockType) => {
+  return t === 'plainText' || t === 'decryptedText' || t === 'plainHtml'
+    || t === 'decryptedHtml' || t === 'signedMsg' || t === 'verifiedMsg';
+};
 
 const seamlessLockBg = 'iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAMAAAAPdrEwAAAAh1BMVEXw8PD////' +
   'w8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8' +
@@ -44,7 +47,8 @@ const fmtMsgContentBlockAsHtml = (dirtyContent: string, frameColor: 'green' | 'g
   } else { // gray
     frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #989898;border-right: none;`;
   }
-  return `<div class="MsgBlock ${frameColor}" style="${generalCss}${frameCss}">${Xss.htmlSanitizeKeepBasicTags(dirtyContent)}</div><!-- next MsgBlock -->\n`;
+  return `<div class="MsgBlock ${frameColor}" style="${generalCss}${frameCss}">` +
+    `${Xss.htmlSanitizeKeepBasicTags(dirtyContent)}</div><!-- next MsgBlock -->\n`;
 };
 
 export const stripHtmlRootTags = (html: string) => { // todo - this is very rudimentary, use a proper parser
@@ -61,11 +65,13 @@ const fillInlineHtmlImgs = (htmlContent: string, inlineImgsByCid: { [cid: string
   return htmlContent.replace(/src="cid:([^"]+)"/g, (originalSrcAttr, cid) => {
     const img = inlineImgsByCid[cid];
     if (img) {
-      // in current usage, as used by `endpoints.ts`: `block.attMeta!.data` actually contains base64 encoded data, not Uint8Array as the type claims
+      // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
+      // actually contains base64 encoded data, not Uint8Array as the type claims
       const alteredSrcAttr = `src="data:${img.attMeta!.type};base64,${img.attMeta!.data}"`;
       // delete to find out if any imgs were unused
       // later we can add the unused ones at the bottom
-      // (though as implemented will cause issues if the same cid is reused in several places in html - which is theoretically valid - only first will get replaced)
+      // (though as implemented will cause issues if the same cid is reused
+      // in several places in html - which is theoretically valid - only first will get replaced)
       delete inlineImgsByCid[cid];
       return alteredSrcAttr;
     } else {
@@ -136,10 +142,13 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     }
   }
 
-  for (const inlineImg of imgsAtTheBottom.concat(Object.values(inlineImgsByCid))) { // render any images we did not insert into content, at the bottom
+  for (const inlineImg of imgsAtTheBottom.concat(Object.values(inlineImgsByCid))) {
+    // render any images we did not insert into content, at the bottom
     const alt = `${inlineImg.attMeta!.name || '(unnamed image)'} - ${inlineImg.attMeta!.length! / 1024}kb`;
-    // in current usage, as used by `endpoints.ts`: `block.attMeta!.data` actually contains base64 encoded data, not Uint8Array as the type claims
-    const inlineImgTag = `<img src="data:${inlineImg.attMeta!.type};base64,${inlineImg.attMeta!.data}" alt="${Xss.escape(alt)} " />`;
+    // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
+    // actually contains base64 encoded data, not Uint8Array as the type claims
+    const inlineImgTag = `<img src="data:${inlineImg.attMeta!.type};` +
+      `base64,${inlineImg.attMeta!.data}" alt="${Xss.escape(alt)} " />`;
     msgContentAsHtml += fmtMsgContentBlockAsHtml(inlineImgTag, 'plain');
     msgContentAsText += `[image: ${alt}]\n`;
   }
@@ -182,10 +191,12 @@ export const printReplayTestDefinition = (endpoint: string, request: {}, data: B
   console.log(`
 ava.test.only('replaying', async t => {
   const reqData = Buf.fromBase64Str('${Buf.fromUint8(data).toBase64Str()}');
-  console.log('replay ${endpoint}: ', ${JSON.stringify(request)}, '-------- begin req data ---------', reqData.toString(), '--------- end req data ---------');
+  console.log('replay ${endpoint}: ', ${JSON.stringify(request)},
+    '-------- begin req data ---------', reqData.toString(), '--------- end req data ---------');
   const { data, json } = parseResponse(await endpoints.${endpoint}(${JSON.stringify(request)},
     [Buffer.from(reqData)]));
-  console.log('response: ', json, '\n\n\n-------- begin res data ---------', Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
+  console.log('response: ', json, '\n\n\n-------- begin res data ---------',
+    Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
   t.pass();
 });
   `);

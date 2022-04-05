@@ -38,10 +38,16 @@ export namespace NodeRequest {
   export type composeEmail = ComposeEmailPlain | ComposeEmailEncrypted;
   export type encryptMsg = { pubKeys: string[], msgPwd?: string };
   export type encryptFile = { pubKeys: string[], name: string };
-  export type parseDecryptMsg = { keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean, verificationPubkeys?: string[] };
+  export type parseDecryptMsg = {
+    keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean, verificationPubkeys?: string[]
+  };
   export type decryptFile = { keys: PrvKeyInfo[], msgPwd?: string };
   export type parseDateStr = { dateStr: string };
-  export type zxcvbnStrengthBar = { guesses: number, purpose: 'passphrase', value: undefined } | { value: string, purpose: 'passphrase', guesses: undefined };
+  export type zxcvbnStrengthBar = {
+    guesses: number, purpose: 'passphrase', value: undefined
+  } | {
+    value: string, purpose: 'passphrase', guesses: undefined
+  };
   export type gmailBackupSearch = { acctEmail: string };
   export type isEmailValid = { email: string };
   export type decryptKey = { armored: string, passphrases: string[] };
@@ -51,7 +57,8 @@ export namespace NodeRequest {
 export class ValidateInput {
 
   public static generateKey = (v: any): NodeRequest.generateKey => {
-    if (isObj(v) && hasProp(v, 'userIds', 'Userid[]') && v.userIds.length && hasProp(v, 'passphrase', 'string') && ['rsa2048', 'rsa4096', 'curve25519'].includes(v.variant)) {
+    if (isObj(v) && hasProp(v, 'userIds', 'Userid[]') && v.userIds.length
+      && hasProp(v, 'passphrase', 'string') && ['rsa2048', 'rsa4096', 'curve25519'].includes(v.variant)) {
       return v as NodeRequest.generateKey;
     }
     throw new Error('Wrong request structure for NodeRequest.generateKey');
@@ -81,7 +88,8 @@ export class ValidateInput {
     if (!v.pubKeys && v.format === 'plain') {
       return v as NodeRequest.ComposeEmailPlain;
     }
-    throw new Error('Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encrypt-inline OR format:plain allowed');
+    throw new Error(
+      'Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encrypt-inline OR format:plain allowed');
   };
 
   public static parseDecryptMsg = (v: any): NodeRequest.parseDecryptMsg => {

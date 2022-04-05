@@ -43,7 +43,8 @@ export class PgpPwd {
     { match: '', word: 'weak', bar: 10, color: 'red', pass: false },
   ];
 
-  public static estimateStrength = (zxcvbnResultGuesses: number, type: 'passphrase' | 'pwd' = 'passphrase'): PwdStrengthResult => {
+  public static estimateStrength = (zxcvbnResultGuesses: number,
+    type: 'passphrase' | 'pwd' = 'passphrase'): PwdStrengthResult => {
     const timeToCrack = zxcvbnResultGuesses / PgpPwd.CRACK_GUESSES_PER_SECOND;
     for (const word of type === 'pwd' ? PgpPwd.CRACK_TIME_WORDS_PWD : PgpPwd.CRACK_TIME_WORDS_PASS_PHRASE) {
       const readableTime = PgpPwd.readableCrackTime(timeToCrack);
@@ -66,6 +67,7 @@ export class PgpPwd {
   };
 
   private static readableCrackTime = (totalSeconds: number) => {
+    // eslint-disable-next-line max-len
     // See http://stackoverflow.com/questions/8211744/convert-time-interval-given-in-seconds-into-more-human-readable-form
     const numberWordEnding = (n: number) => (n > 1) ? 's' : '';
     totalSeconds = Math.round(totalSeconds);

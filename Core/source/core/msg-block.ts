@@ -10,8 +10,9 @@ import { KeyDetails } from './pgp-key';
 
 export type KeyBlockType = 'publicKey' | 'privateKey';
 export type ReplaceableMsgBlockType = KeyBlockType | 'signedMsg' | 'encryptedMsg' | 'encryptedMsgLink';
-export type MsgBlockType = ReplaceableMsgBlockType | 'plainText' | 'decryptedText' | 'plainHtml' | 'decryptedHtml' | 'plainAtt' | 'encryptedAtt'
-  | 'decryptedAtt' | 'encryptedAttLink' | 'decryptErr' | 'verifiedMsg' | 'signedHtml';
+export type MsgBlockType = ReplaceableMsgBlockType | 'plainText' | 'decryptedText'
+  | 'plainHtml' | 'decryptedHtml' | 'plainAtt' | 'encryptedAtt' | 'decryptedAtt'
+  | 'encryptedAttLink' | 'decryptErr' | 'verifiedMsg' | 'signedHtml';
 
 export class MsgBlock {
 
@@ -32,8 +33,11 @@ export class MsgBlock {
     public content: string | Buf,
     public complete: boolean,
     public signature?: string,
-    public keyDetails?: KeyDetails, // only in publicKey when returned to Android (could eventually be made mandatory, done straight in detectBlocks?)
-    public attMeta?: AttMeta, // only in plainAtt, encryptedAtt, decryptedAtt, encryptedAttLink (not sure if always)
+    // only in publicKey when returned to Android
+    // (could eventually be made mandatory, done straight in detectBlocks?)
+    public keyDetails?: KeyDetails,
+    // only in plainAtt, encryptedAtt, decryptedAtt, encryptedAttLink (not sure if always)
+    public attMeta?: AttMeta,
     public decryptErr?: DecryptError, // only in decryptErr block, always
     public verifyRes?: VerifyRes,
   ) {
