@@ -221,8 +221,9 @@ export class Value {
 export class Url {
 
   private static URL_PARAM_DICT: Dict<boolean | null> = {
+    // tslint:disable-next-line:no-null-keyword
     '___cu_true___': true, '___cu_false___': false, '___cu_null___': null
-  }; // tslint:disable-line:no-null-keyword
+  };
 
   /**
    * will convert result to desired format: camelCase or snake_case, based on what was supplied in expectedKeys
