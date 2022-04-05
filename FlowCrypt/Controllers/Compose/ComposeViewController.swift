@@ -983,7 +983,7 @@ extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
 
     func editRecipient(email: String, type: RecipientType) {
         removeRecipient(email: email, type: type)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
             if let textField = self.recipientsTextField(type: type) {
                 textField.text = email
                 if !textField.isFirstResponder() {
