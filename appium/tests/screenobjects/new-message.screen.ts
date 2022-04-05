@@ -21,6 +21,7 @@ const SELECTORS = {
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
   RECIPIENT_POPUP_COPY_BUTTON: '~aid-recipient-popup-copy-button',
   RECIPIENT_POPUP_REMOVE_BUTTON: '~aid-recipient-popup-remove-button',
+  RECIPIENT_POPUP_EDIT_BUTTON: '~aid-recipient-popup-edit-button'
 };
 
 interface ComposeEmailInfo {
@@ -103,6 +104,10 @@ class NewMessageScreen extends BaseScreen {
 
   get recipientPopupRemoveButton() {
     return $(SELECTORS.RECIPIENT_POPUP_REMOVE_BUTTON);
+  }
+
+  get recipientPopupEditButton() {
+    return $(SELECTORS.RECIPIENT_POPUP_EDIT_BUTTON);
   }
 
   getRecipientsList = async (type: string) => {
@@ -257,6 +262,17 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.recipientPopupCopyButton);
     const base64Encoded = new Buffer(email).toString('base64');
     expect(await driver.getClipboard('plaintext')).toEqual(base64Encoded);
+  }
+
+  checkEditRecipient = async (order: number, type = 'to', recipient: string, recipientCount: number) => {
+    await this.showRecipientInputIfNeeded();
+    const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
+    await ElementHelper.waitAndClick(addedRecipientEl);
+    await ElementHelper.waitAndClick(await this.recipientPopupEditButton);
+    await browser.pause(1000); // Wait for added element to be deleted and text field to be set
+    await (await $(SELECTORS.RETURN_BUTTON)).click();
+    // Edited element will be placed at the end
+    await this.checkAddedRecipient(recipient, recipientCount - 1, type);
   }
 
   checkAddedAttachment = async (name: string) => {

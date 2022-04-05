@@ -22,6 +22,8 @@ describe('COMPOSE EMAIL: ', () => {
 
     await NewMessageScreen.checkCopyForAddedRecipient(recipient1, 0);
 
+    await NewMessageScreen.checkEditRecipient(0, 'to', recipient1, 3);
+
     await NewMessageScreen.deleteAddedRecipient(2);
     await NewMessageScreen.deleteAddedRecipient(1);
     await NewMessageScreen.deleteAddedRecipient(0);

@@ -13,6 +13,7 @@ import FlowCryptUI
 @MainActor
 protocol ComposeRecipientPopupViewControllerProtocol {
     func removeRecipient(email: String, type: RecipientType)
+    func editRecipient(email: String, type: RecipientType)
 }
 /**
  * View controller to display recipient popup
@@ -21,11 +22,11 @@ protocol ComposeRecipientPopupViewControllerProtocol {
 final class ComposeRecipientPopupViewController: TableNodeViewController {
 
     enum Parts {
-        case nameEmail, divider, copy, remove
+        case nameEmail, divider, copy, edit, remove
     }
 
     var parts: [Parts] {
-        return [.nameEmail, .divider, .copy, .divider, .remove]
+        return [.nameEmail, .divider, .copy, .edit, .divider, .remove]
     }
 
     private let recipient: ComposeMessageRecipient
@@ -40,7 +41,7 @@ final class ComposeRecipientPopupViewController: TableNodeViewController {
         self.type = type
         super.init(node: TableNode())
 
-        preferredContentSize = CGSize(width: 300, height: 190)
+        preferredContentSize = CGSize(width: 300, height: 240)
 
         node.delegate = self
         node.dataSource = self
@@ -69,7 +70,7 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
 
             let part = self.parts[indexPath.row]
             switch part {
-            case .copy, .remove:
+            case .copy, .remove, .edit:
                 return InfoCellNode(input: .getFromCellType(type: part))
             case .nameEmail:
                 return ComposeRecipientPopupNameNode(name: self.recipient.name, email: self.recipient.email)
@@ -85,6 +86,9 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
         case .remove:
             self.delegate?.removeRecipient(email: recipient.email, type: type)
             self.dismiss(animated: true, completion: nil)
+        case .edit:
+            self.delegate?.editRecipient(email: recipient.email, type: type)
+            self.dismiss(animated: true, completion: nil)
         case .copy:
             UIPasteboard.general.string = recipient.email
             self.dismiss(animated: true, completion: nil)
@@ -99,20 +103,11 @@ extension InfoCellNode.Input {
         let icon: String = {
             switch type {
             case .remove:
-                return "trash"
+                return "trash.slash"
             case .copy:
-                return "copy"
-            default:
-                return ""
-            }
-        }()
-
-        let accessibilityIdentifier: String = {
-            switch type {
-            case .remove:
-                return "aid-recipient-popup-remove-button"
-            case .copy:
-                return "aid-recipient-popup-copy-button"
+                return "doc.on.doc"
+            case .edit:
+                return "pencil.circle"
             default:
                 return ""
             }
@@ -122,10 +117,10 @@ extension InfoCellNode.Input {
             attributedText: "compose_recipient_\(type)"
                 .localized
                 .attributed(.regular(17), color: .mainTextColor),
-            image: #imageLiteral(resourceName: icon).tinted(.mainTextColor),
+            image: UIImage(systemName: icon)?.tinted(.mainTextColor) ?? UIImage(),
             insets: .side(16),
             backgroundColor: .backgroundColor,
-            accessibilityIdentifier: accessibilityIdentifier
+            accessibilityIdentifier: "aid-recipient-popup-\(type)-button"
         )
     }
 }
