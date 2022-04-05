@@ -986,6 +986,9 @@ extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3, execute: {
             if let textField = self.recipientsTextField(type: type) {
                 textField.text = email
+                if !textField.isFirstResponder() {
+                    textField.becomeFirstResponder()
+                }
             }
         })
     }
