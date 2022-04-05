@@ -21,7 +21,8 @@ for (const v of Object.values(obj)) { } // get values, no need obj.hasOwnPropert
 for (const v of Object.keys(obj)) { } // get keys, no need obj.hasOwnProperty`;
 
 const DO_NOT_USE_EACH = `Using .each for looping is heavily discouraged. ${DO_USE_LOOPS}`;
-const DO_NOT_USE_MAP_EXPR_STMT = `Use .map() when you want to transform an array, not as a substitute for loops. ${DO_USE_LOOPS}`;
+const DO_NOT_USE_MAP_EXPR_STMT = 'Use .map() when you want to transform an array,' +
+  ' not as a substitute for loops. ${DO_USE_LOOPS}';
 
 export class Rule extends tslint.Rules.AbstractRule {
 
@@ -35,9 +36,11 @@ class Walker extends tslint.RuleWalker {
   public visitCallExpression(node: ts.CallExpression) {
     if (ts.isPropertyAccessExpression(node.expression)) {
       if (node.expression.name.escapedText === 'each' || node.expression.name.escapedText === 'forEach') {
-        this.addFailure(this.createFailure(node.getStart(this.getSourceFile()), node.getWidth(this.getSourceFile()), DO_NOT_USE_EACH));
+        this.addFailure(this.createFailure(
+          node.getStart(this.getSourceFile()), node.getWidth(this.getSourceFile()), DO_NOT_USE_EACH));
       } else if (node.expression.name.escapedText === 'map' && ts.isExpressionStatement(node.parent)) {
-        this.addFailure(this.createFailure(node.getStart(this.getSourceFile()), node.getWidth(this.getSourceFile()), DO_NOT_USE_MAP_EXPR_STMT));
+        this.addFailure(this.createFailure(
+          node.getStart(this.getSourceFile()), node.getWidth(this.getSourceFile()), DO_NOT_USE_MAP_EXPR_STMT));
       }
     }
   }

@@ -5,7 +5,8 @@ const DO_NOT_USE_EMPTY_LINES_IN_FUNC = `Do not leave empty lines in a function b
 
 Function too long? Consider splitting it into smaller functions.
 
-Function too dense? If it's really that dense, consider explaining what is going on. Use a comment line instead of an empty line.
+Function too dense? If it's really that dense, consider explaining what is going on.
+Use a comment line instead of an empty line.
 `;
 
 export class Rule extends tslint.Rules.AbstractRule {
@@ -36,12 +37,15 @@ class Walker extends tslint.RuleWalker {
   private lintFunctionBodyEmptyLines(node: ts.FunctionBody | ts.ConciseBody | undefined) {
     if (node && (node as ts.FunctionBody).statements && (node as ts.FunctionBody).statements.length) {
       const body = (node as ts.FunctionBody);
-      if (ts.isArrowFunction(body.parent) && (ts.isCallExpression(body.parent.parent) || ts.isCallExpression(body.parent.parent.parent))) {
+      if (ts.isArrowFunction(body.parent)
+        && (ts.isCallExpression(body.parent.parent) || ts.isCallExpression(body.parent.parent.parent))) {
         return; // does not apply to root async function, this should be good enough approximation
       }
-      const text = body.getText(this.getSourceFile()).replace(/\/\*[\s\S]*?\*\/\n/g, ''); // remove multiline comments first
+      // remove multiline comments first
+      const text = body.getText(this.getSourceFile()).replace(/\/\*[\s\S]*?\*\/\n/g, '');
       if (/\n *\n/.test(text)) { // check for double lines
-        this.addFailure(this.createFailure(body.getStart(this.getSourceFile()), body.getWidth(this.getSourceFile()), DO_NOT_USE_EMPTY_LINES_IN_FUNC));
+        this.addFailure(this.createFailure(
+          body.getStart(this.getSourceFile()), body.getWidth(this.getSourceFile()), DO_NOT_USE_EMPTY_LINES_IN_FUNC));
       }
     }
   }

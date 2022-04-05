@@ -3,6 +3,7 @@ import * as tslint from "tslint";
 
 import { isIdentifier } from 'tsutils';
 
+// eslint-disable-next-line max-len
 const AWAIT_RETURNED_PROMISE = `must explicitly await returned promise (see https://github.com/FlowCrypt/flowcrypt-browser/pull/2349)`;
 
 export class Rule extends tslint.Rules.TypedRule {

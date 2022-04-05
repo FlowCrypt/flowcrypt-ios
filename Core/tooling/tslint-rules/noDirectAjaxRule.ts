@@ -18,7 +18,9 @@ class Walker extends tslint.RuleWalker {
   public visitCallExpression(node: ts.CallExpression) {
     if (ts.isPropertyAccessExpression(node.expression)) {
       if (node.expression.name.escapedText === 'ajax') {
-        this.addFailure(this.createFailure(node.getStart(this.getSourceFile()), node.getWidth(this.getSourceFile()), DO_NOT_USE_AJAX));
+        this.addFailure(
+          this.createFailure(
+            node.getStart(this.getSourceFile()), node.getWidth(this.getSourceFile()), DO_NOT_USE_AJAX));
       }
     }
   }

@@ -1,5 +1,7 @@
 /**
- * // heavily modified version of https://github.com/palantir/tslint/blob/master/src/rules/typedefRule.ts with original license below
+ * heavily modified version of the
+ * https://github.com/palantir/tslint/blob/master/src/rules/typedefRule.ts
+ * with original license below
  *
  * @license
  * Copyright 2013 Palantir Technologies, Inc.
@@ -76,10 +78,13 @@ class Walker extends tslint.AbstractWalker<void> {
     }
   }
 
-  private checkReturnType(location: ts.Node | ts.NodeArray<ts.Node>, typeAnnotation: ts.TypeNode | undefined, node: InterestingNode, name?: ts.Node): void {
+  private checkReturnType(location: ts.Node | ts.NodeArray<ts.Node>,
+    typeAnnotation: ts.TypeNode | undefined, node: InterestingNode, name?: ts.Node): void {
     const inferredType = this.checker.getTypeAtLocation(node);
     if (typeAnnotation === undefined && potentiallyReturnsUndeclaredAny(this.checker, inferredType)) {
-      const nameStr = name === undefined ? this.checker.getFullyQualifiedName(inferredType.getSymbol()!) : name.getText();
+      const nameStr = name === undefined
+        ? this.checker.getFullyQualifiedName(inferredType.getSymbol()!)
+        : name.getText();
       const failure = `${nameStr || 'function'} must clarify return type. Implicit any is dangerous`;
       if (isNodeArray(location)) {
         this.addFailure(location.pos - 1, location.end + 1, failure);
