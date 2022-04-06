@@ -87,6 +87,7 @@ export const CommonData = {
   },
   updateRecipientPublicKey: {
     email: 'updating.key@example.test',
+    name: 'Updating key',
     oldSignatureDate: '12 Jan 2022, 07:16:58 PM',//in UTC
     newSignatureDate: '12 Jan 2022, 07:27:20 PM',//in UTC
     oldFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0',
@@ -195,12 +196,15 @@ export const CommonData = {
     new: path.join(process.cwd(), './FlowCrypt.app')
   },
   validMockUser: {
-    email: 'valid@domain.test'
+    email: 'valid@domain.test',
+    name: 'Tom James Holub'
   },
   expiredMockUser: {
-    email: 'expired@domain.test'
+    email: 'expired@domain.test',
+    name: 'expired.on.attester@domain.com'
   },
   revokedMockUser: {
-    email: 'revoked@domain.test'
+    email: 'revoked@domain.test',
+    name: 'revoekd@flowcrypt.com'
   }
 };
