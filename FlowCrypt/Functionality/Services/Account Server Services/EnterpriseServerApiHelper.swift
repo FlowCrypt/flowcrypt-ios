@@ -25,7 +25,13 @@ struct EnterpriseServerApiHelper {
         return "https://fes.\(emailDomain)" // live
     }
 
-    func getActiveFesUrl(for email: String) async throws -> String? {
+    private(set) var fesUrl: String?
+
+    init(email: String) async throws {
+        self.fesUrl = try await getActiveFesUrl(for: email)
+    }
+
+    private func getActiveFesUrl(for email: String) async throws -> String? {
         do {
             guard let userDomain = email.emailParts?.domain,
                   !EnterpriseServerApi.publicEmailProviderDomains.contains(userDomain) else {

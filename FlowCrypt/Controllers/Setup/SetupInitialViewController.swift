@@ -62,10 +62,10 @@ final class SetupInitialViewController: TableNodeViewController {
         appContext: AppContextWithUser,
         decorator: SetupViewDecorator = SetupViewDecorator(),
         emailKeyManagerApi: EmailKeyManagerApiType? = nil
-    ) throws {
+    ) async throws {
         self.appContext = appContext
         self.decorator = decorator
-        let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        let clientConfiguration = try await appContext.clientConfigurationService.configuration
         self.emailKeyManagerApi = emailKeyManagerApi ?? EmailKeyManagerApi(clientConfiguration: clientConfiguration)
         self.clientConfiguration = clientConfiguration
         super.init(node: TableNode())
@@ -322,11 +322,13 @@ extension SetupInitialViewController {
     }
 
     private func proceedToCreatingNewKey() {
-        do {
-            let viewController = try SetupGenerateKeyViewController(appContext: appContext)
-            navigationController?.pushViewController(viewController, animated: true)
-        } catch {
-            showAlert(message: error.localizedDescription)
+        Task {
+            do {
+                let viewController = try await SetupGenerateKeyViewController(appContext: appContext)
+                navigationController?.pushViewController(viewController, animated: true)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 

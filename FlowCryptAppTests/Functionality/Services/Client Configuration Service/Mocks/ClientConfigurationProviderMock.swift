@@ -33,7 +33,7 @@ class LocalClientConfigurationMock: LocalClientConfigurationType {
     var saveCount = 0
     var saveCall: (RawClientConfiguration) -> Void = { clientConfiguration in
     }
-    func save(for user: User, raw: RawClientConfiguration, fesUrl: String?) {
+    func save(for user: String, raw: RawClientConfiguration, fesUrl: String?) {
         saveInvoked = true
         saveCount += 1
         saveCall(raw)

@@ -50,9 +50,9 @@ final class ThreadDetailsViewController: TableNodeViewController {
         messageService: MessageService? = nil,
         thread: MessageThread,
         completion: @escaping MessageActionCompletion
-    ) throws {
+    ) async throws {
         self.appContext = appContext
-        let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        let clientConfiguration = try await appContext.clientConfigurationService.configuration
         let localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
@@ -268,13 +268,16 @@ extension ThreadDetailsViewController {
         }()
 
         let composeInput = ComposeMessageInput(type: composeType)
-        do {
-            navigationController?.pushViewController(
-                try ComposeViewController(appContext: appContext, input: composeInput),
-                animated: true
-            )
-        } catch {
-            showAlert(message: error.localizedDescription)
+
+        Task {
+            do {
+                navigationController?.pushViewController(
+                    try await ComposeViewController(appContext: appContext, input: composeInput),
+                    animated: true
+                )
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 

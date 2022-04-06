@@ -10,14 +10,15 @@
 import Foundation
 
 final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
-
     var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError())
-    func fetchForCurrentUser() async throws -> ClientConfiguration {
-        switch fetchOrganisationalRulesForCurrentUserResult {
-        case .success(let result):
-            return result
-        case .failure(let error):
-            throw error
+    var configuration: ClientConfiguration {
+        get async throws {
+            switch fetchOrganisationalRulesForCurrentUserResult {
+            case .success(let result):
+                return result
+            case .failure(let error):
+                throw error
+            }
         }
     }
 

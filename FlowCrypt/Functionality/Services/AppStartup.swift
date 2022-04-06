@@ -75,11 +75,13 @@ struct AppStartup {
             )
         case .setupFlow:
             try await startWithUserContext(appContext: appContext, window: window) { context in
-                do {
-                    let controller = try SetupInitialViewController(appContext: context)
-                    window.rootViewController = MainNavigationController(rootViewController: controller)
-                } catch {
-                    window.rootViewController?.showAlert(message: error.errorMessage)
+                Task {
+                    do {
+                        let controller = try await SetupInitialViewController(appContext: context)
+                        window.rootViewController = MainNavigationController(rootViewController: controller)
+                    } catch {
+                        window.rootViewController?.showAlert(message: error.errorMessage)
+                    }
                 }
             }
         }

@@ -29,13 +29,13 @@ final class ClientConfigurationServiceTests: XCTestCase {
         )
     }
 
-    func testGetSavedOrganisationalRulesForCurrentUser() throws {
+    func testGetSavedOrganisationalRulesForCurrentUser() async throws {
         let expectedConfiguration = RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")
         localClientConfigurationProvider.fetchCall = {
             expectedConfiguration
         }
 
-        let clientConfiguration = try sut.getSaved(for: user.email)
+        let clientConfiguration = try await sut.configuration
         XCTAssert(localClientConfigurationProvider.fetchCount == 1)
         XCTAssert(localClientConfigurationProvider.fetchInvoked == true)
         XCTAssert(clientConfiguration.raw == expectedConfiguration)
@@ -46,7 +46,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             nil
         }
         do {
-            _ = try await sut.fetch(for: user)
+            _ = try await sut.configuration
             XCTFail()
         } catch {
         }
@@ -68,7 +68,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             "example@flowcrypt.test"
         }
 
-        _ = try await sut.fetch(for: user)
+        _ = try await sut.configuration
     }
 
     func testInCaseGetClientConfigurationReturnsError() async throws {
@@ -86,7 +86,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             expectedClientConfiguration
         }
 
-        let clientConfiguration = try await sut.fetch(for: user)
+        let clientConfiguration = try await sut.configuration
         XCTAssertTrue(clientConfiguration.raw == expectedClientConfiguration)
     }
 }
