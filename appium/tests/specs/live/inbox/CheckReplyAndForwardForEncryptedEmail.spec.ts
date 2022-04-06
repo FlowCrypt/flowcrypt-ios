@@ -15,7 +15,7 @@ describe('INBOX: ', () => {
 
     const senderEmail = CommonData.emailWithMultipleRecipientsWithCC.sender;
     const senderName = CommonData.emailWithMultipleRecipientsWithCC.senderName;
-    const recipientEmail = CommonData.emailWithMultipleRecipientsWithCC.recipient;
+    const recipientName = CommonData.emailWithMultipleRecipientsWithCC.recipientName;
     const ccEmail = CommonData.emailWithMultipleRecipientsWithCC.cc;
     const emailSubject = CommonData.emailWithMultipleRecipientsWithCC.subject;
     const emailText = CommonData.emailWithMultipleRecipientsWithCC.message;
@@ -46,7 +46,7 @@ describe('INBOX: ', () => {
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickReplyAllButton();
     await NewMessageScreen.checkFilledComposeEmailInfo({
-      recipients: [recipientEmail, senderName],
+      recipients: [recipientName, senderName],
       subject: replySubject,
       message: quoteText,
       cc: [ccEmail]

@@ -28,7 +28,7 @@ describe('SETUP: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.setAddRecipient('available.on@attester.test');
-      await NewMessageScreen.checkAddedRecipientColor('available.on@attester.test', 0, 'green');
+      await NewMessageScreen.checkAddedRecipientColor('Tom James Holub', 0, 'green');
     });
   });
 });

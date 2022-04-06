@@ -8,6 +8,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Foundation
 import PhotosUI
+import MailCore
 
 // swiftlint:disable file_length
 /**
@@ -1183,6 +1184,7 @@ extension ComposeViewController {
         guard recipient.email.isValidEmail else {
             updateRecipient(
                 email: recipient.email,
+                name: recipient.name,
                 state: decorator.recipientInvalidEmailState
             )
             return
@@ -1213,6 +1215,7 @@ extension ComposeViewController {
 
         updateRecipient(
             email: recipient.email,
+            name: recipient.name,
             state: state,
             keyState: recipient.keyState
         )
@@ -1253,6 +1256,7 @@ extension ComposeViewController {
 
     private func updateRecipient(
         email: String,
+        name: String? = nil,
         state: RecipientState,
         keyState: PubKeyState? = nil
     ) {
@@ -1260,11 +1264,17 @@ extension ComposeViewController {
             return
         }
 
+        var displayName = name
+        if let name = name, let address = MCOAddress.init(nonEncodedRFC822String: name), address.displayName != nil {
+            displayName = address.displayName
+        }
+
         let recipient = contextToSend.recipients[index]
-        let needsReload = recipient.state != state || recipient.keyState != keyState
+        let needsReload = recipient.state != state || recipient.keyState != keyState || recipient.name != displayName
 
         contextToSend.recipients[index].state = state
         contextToSend.recipients[index].keyState = keyState
+        contextToSend.recipients[index].name = displayName
 
         if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
             reload(sections: [.password])
@@ -1309,6 +1319,7 @@ extension ComposeViewController {
             if isRetryError {
                 updateRecipient(
                     email: recipient.email,
+                    name: recipient.name,
                     state: decorator.recipientIdleState,
                     keyState: nil
                 )
