@@ -38,7 +38,7 @@ describe('SETUP: ', () => {
 
       // Checking added recipients color
       await NewMessageScreen.checkAddedRecipientColor('attester@disabled.test', 0, 'gray');
-      await NewMessageScreen.checkAddedRecipientColor('attester@enabled.test', 1, 'green');
+      await NewMessageScreen.checkAddedRecipientColor('Tom James Holub', 1, 'green');
     });
   });
 });

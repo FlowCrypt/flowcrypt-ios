@@ -8,6 +8,7 @@ import FlowCryptCommon
 import FlowCryptUI
 import Foundation
 import PhotosUI
+import MailCore
 
 // swiftlint:disable file_length
 /**
@@ -48,7 +49,7 @@ final class ComposeViewController: TableNodeViewController {
         case topDivider, subject, subjectDivider, text
     }
 
-    private var userFinishedSearching = false
+    private var shouldDisplaySearchResult = false
     private var userTappedOutSideRecipientsArea = false
     private var shouldShowEmailRecipientsLabel = false
     private let appContext: AppContextWithUser
@@ -71,7 +72,6 @@ final class ComposeViewController: TableNodeViewController {
 
     private let search = PassthroughSubject<String, Never>()
     private var cancellable = Set<AnyCancellable>()
-    private var isPreviousSearchStateEmpty = false
 
     private var input: ComposeMessageInput
     private var contextToSend = ComposeMessageContext()
@@ -362,7 +362,6 @@ extension ComposeViewController {
             .removeDuplicates()
             .map { [weak self] query -> String in
                 if query.isEmpty {
-                    self?.isPreviousSearchStateEmpty = true
                     self?.updateState(with: .main)
                 }
                 return query
@@ -697,6 +696,12 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     }
 }
 
+extension ComposeViewController: UIPopoverPresentationControllerDelegate {
+    public func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+        return .none
+    }
+}
+
 // MARK: - Nodes
 extension ComposeViewController {
     private func recipientTextNode() -> ComposeRecipientCellNode {
@@ -857,10 +862,25 @@ extension ComposeViewController {
                 switch action {
                 case let .imageTap(indexPath):
                     self?.handleRecipientAction(with: indexPath, type: type)
-                case let .select(indexPath):
-                    self?.handleRecipientSelection(with: indexPath, type: type)
+                case let .select(indexPath, sender):
+                    self?.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
                 }
             }
+    }
+
+    private func displayRecipientPopOver(with indexPath: IndexPath, type: RecipientType, sender: CellNode) {
+        guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
+
+        let popoverVC = ComposeRecipientPopupViewController(
+            recipient: recipient,
+            type: type
+        )
+        popoverVC.modalPresentationStyle = .popover
+        popoverVC.popoverPresentationController?.sourceView = sender.view
+        popoverVC.popoverPresentationController?.permittedArrowDirections = .up
+        popoverVC.popoverPresentationController?.delegate = self
+        popoverVC.delegate = self
+        self.present(popoverVC, animated: true, completion: nil)
     }
 
     private func recipientInput(type: RecipientType) -> ASCellNode {
@@ -947,6 +967,31 @@ extension ComposeViewController {
                 .attributed(.regular(16)),
             image: UIImage(named: "gmail_icn"))
         )
+    }
+}
+
+extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
+    func removeRecipient(email: String, type: RecipientType) {
+        self.contextToSend.remove(recipient: email, type: type)
+        reload(sections: [.password])
+        if contextToSend.recipients(type: type).count < 1 {
+            reload(sections: [.recipients(type)])
+        }
+        if let listIndexPath = recipientsIndexPath(type: type, part: .list) {
+            node.reloadRows(at: [listIndexPath], with: .automatic)
+        }
+    }
+
+    func editRecipient(email: String, type: RecipientType) {
+        removeRecipient(email: email, type: type)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            if let textField = self.recipientsTextField(type: type) {
+                textField.text = email
+                if !textField.isFirstResponder() {
+                    textField.becomeFirstResponder()
+                }
+            }
+        })
     }
 }
 
@@ -1051,7 +1096,6 @@ extension ComposeViewController {
 
         node.view.keyboardDismissMode = .interactive
         search.send("")
-        userFinishedSearching = true
 
         updateState(with: .main)
     }
@@ -1102,6 +1146,7 @@ extension ComposeViewController {
     }
 
     private func handleEditingChanged(with text: String?) {
+        shouldDisplaySearchResult = text != ""
         search.send(text ?? "")
     }
 
@@ -1139,6 +1184,7 @@ extension ComposeViewController {
         guard recipient.email.isValidEmail else {
             updateRecipient(
                 email: recipient.email,
+                name: recipient.name,
                 state: decorator.recipientInvalidEmailState
             )
             return
@@ -1169,6 +1215,7 @@ extension ComposeViewController {
 
         updateRecipient(
             email: recipient.email,
+            name: recipient.name,
             state: state,
             keyState: recipient.keyState
         )
@@ -1209,6 +1256,7 @@ extension ComposeViewController {
 
     private func updateRecipient(
         email: String,
+        name: String? = nil,
         state: RecipientState,
         keyState: PubKeyState? = nil
     ) {
@@ -1216,11 +1264,17 @@ extension ComposeViewController {
             return
         }
 
+        var displayName = name
+        if let name = name, let address = MCOAddress.init(nonEncodedRFC822String: name), address.displayName != nil {
+            displayName = address.displayName
+        }
+
         let recipient = contextToSend.recipients[index]
-        let needsReload = recipient.state != state || recipient.keyState != keyState
+        let needsReload = recipient.state != state || recipient.keyState != keyState || recipient.name != displayName
 
         contextToSend.recipients[index].state = state
         contextToSend.recipients[index].keyState = keyState
+        contextToSend.recipients[index].name = displayName
 
         if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
             reload(sections: [.password])
@@ -1265,6 +1319,7 @@ extension ComposeViewController {
             if isRetryError {
                 updateRecipient(
                     email: recipient.email,
+                    name: recipient.name,
                     state: decorator.recipientIdleState,
                     keyState: nil
                 )
@@ -1333,12 +1388,11 @@ extension ComposeViewController {
 // MARK: - State Handling
 extension ComposeViewController {
     private func updateState(with newState: State) {
-        if case .searchEmails = newState, self.isPreviousSearchStateEmpty || self.userFinishedSearching {
-            self.isPreviousSearchStateEmpty = false
-            self.userFinishedSearching = false
+        if case .searchEmails = newState, !self.shouldDisplaySearchResult {
             return
         }
 
+        shouldDisplaySearchResult = false
         state = newState
 
         switch state {

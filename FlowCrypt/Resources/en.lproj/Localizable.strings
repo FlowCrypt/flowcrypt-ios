@@ -128,6 +128,9 @@
 "compose_password_link" = "%@ has sent you a password-encrypted email.\n\nTo open message copy and paste the following link: %@";
 "compose_invalid_recipient_title" = "Invalid recipient";
 "compose_invalid_recipient_message" = "Please enter a valid email address.";
+"compose_recipient_copy" = "Copy";
+"compose_recipient_edit" = "Edit";
+"compose_recipient_remove" = "Remove";
 
 // Folders
 "folder_all_mail" = "All Mail";

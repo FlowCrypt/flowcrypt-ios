@@ -18,7 +18,10 @@ const SELECTORS = {
   SEND_BUTTON: '~aid-compose-send',
   MESSAGE_PASSWORD_MODAL: '~aid-message-password-modal',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
-  ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'"
+  ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
+  RECIPIENT_POPUP_COPY_BUTTON: '~aid-recipient-popup-copy-button',
+  RECIPIENT_POPUP_REMOVE_BUTTON: '~aid-recipient-popup-remove-button',
+  RECIPIENT_POPUP_EDIT_BUTTON: '~aid-recipient-popup-edit-button'
 };
 
 interface ComposeEmailInfo {
@@ -93,6 +96,18 @@ class NewMessageScreen extends BaseScreen {
 
   get cancelButton() {
     return $(SELECTORS.CANCEL_BUTTON);
+  }
+
+  get recipientPopupCopyButton() {
+    return $(SELECTORS.RECIPIENT_POPUP_COPY_BUTTON);
+  }
+
+  get recipientPopupRemoveButton() {
+    return $(SELECTORS.RECIPIENT_POPUP_REMOVE_BUTTON);
+  }
+
+  get recipientPopupEditButton() {
+    return $(SELECTORS.RECIPIENT_POPUP_EDIT_BUTTON);
   }
 
   getRecipientsList = async (type: string) => {
@@ -236,7 +251,28 @@ class NewMessageScreen extends BaseScreen {
     await this.showRecipientInputIfNeeded();
     const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitAndClick(addedRecipientEl);
-    await driver.sendKeys(['\b']); // backspace
+    await ElementHelper.waitAndClick(await this.recipientPopupRemoveButton);
+    await ElementHelper.waitElementInvisible(addedRecipientEl);
+  }
+
+  checkCopyForAddedRecipient = async (email: string, order: number, type = 'to') => {
+    await this.showRecipientInputIfNeeded();
+    const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
+    await ElementHelper.waitAndClick(addedRecipientEl);
+    await ElementHelper.waitAndClick(await this.recipientPopupCopyButton);
+    const base64Encoded = new Buffer(email).toString('base64');
+    expect(await driver.getClipboard('plaintext')).toEqual(base64Encoded);
+  }
+
+  checkEditRecipient = async (order: number, type = 'to', recipient: string, recipientCount: number) => {
+    await this.showRecipientInputIfNeeded();
+    const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
+    await ElementHelper.waitAndClick(addedRecipientEl);
+    await ElementHelper.waitAndClick(await this.recipientPopupEditButton);
+    await browser.pause(1000); // Wait for added element to be deleted and text field to be set
+    await (await $(SELECTORS.RETURN_BUTTON)).click();
+    // Edited element will be placed at the end
+    await this.checkAddedRecipient(recipient, recipientCount - 1, type);
   }
 
   checkAddedAttachment = async (name: string) => {
