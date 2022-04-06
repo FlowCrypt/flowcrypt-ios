@@ -45,6 +45,7 @@ ava.default('generateKey', async t => {
       variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd',
       userIds: [{ email: 'a@b.com', name: 'Him' }]
     }));
+  // tslint:disable:no-unsafe-any
   expect(json.key.private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
   expect(json.key.public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
   const key = await readKey({ armoredKey: json.key.private });
@@ -52,6 +53,7 @@ ava.default('generateKey', async t => {
   expect(isFullyDecrypted(key)).to.be.false;
   expect(json.key.algo).to.deep.equal({ algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 });
   expectNoData(data);
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
@@ -61,6 +63,7 @@ for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && n
     const { pubKeys, keys } = getKeypairs(keypairName);
     const { data: encryptedMsg, json: encryptJson } =
       parseResponse(await endpoints.encryptMsg({ pubKeys }, [Buffer.from(content, 'utf8')]));
+    // tslint:disable-next-line:no-unsafe-any
     expectEmptyJson(encryptJson);
     expectData(encryptedMsg, 'armoredMsg');
     const { data: blocks, json: decryptJson } =
@@ -77,6 +80,7 @@ ava.default(`encryptMsg -> parseDecryptMsg (with password)`, async t => {
   const msgPwd = '123';
   const { data: encryptedMsg, json: encryptJson } = parseResponse(
     await endpoints.encryptMsg({ pubKeys: [], msgPwd }, [Buffer.from(content, 'utf8')]));
+  // tslint:disable-next-line:no-unsafe-any
   expectEmptyJson(encryptJson);
   expectData(encryptedMsg, 'armoredMsg');
   const { data: blocks, json: decryptJson } = parseResponse(
@@ -96,6 +100,7 @@ ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
     cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj'
   };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
+  // tslint:disable-next-line:no-unsafe-any
   expectEmptyJson(composeEmailJson);
   const plainMimeStr = plainMimeMsg.toString();
   expect(plainMimeStr).contains('To: some@to.com');
@@ -133,6 +138,7 @@ orig message
     cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original', replyToMimeMsg
   };
   const { data: mimeMsgReply, json } = parseResponse(await endpoints.composeEmail(req));
+  // tslint:disable-next-line:no-unsafe-any
   expectEmptyJson(json);
   const mimeMsgReplyStr = mimeMsgReply.toString();
   expect(mimeMsgReplyStr).contains('In-Reply-To: <originalmsg@from.com>');
@@ -148,6 +154,7 @@ ava.default('composeEmail format:plain with attachment', async t => {
     atts: [{ name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }]
   };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
+  // tslint:disable-next-line:no-unsafe-any
   expectEmptyJson(composeEmailJson);
   const plainMimeStr = plainMimeMsg.toString();
   expect(plainMimeStr).contains('To: some@to.com');
@@ -336,6 +343,7 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
     to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj'
   };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
+  // tslint:disable-next-line:no-unsafe-any
   expectEmptyJson(encryptJson);
   const encryptedMimeStr = encryptedMimeMsg.toString();
   expect(encryptedMimeStr).contains('To: encrypted@to.com');
@@ -362,6 +370,7 @@ ava.default('composeEmail format:encrypt-inline with attachment', async t => {
     }]
   };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
+  // tslint:disable-next-line:no-unsafe-any
   expectEmptyJson(encryptJson);
   const encryptedMimeStr = encryptedMimeMsg.toString();
   expect(encryptedMimeStr).contains('To: encrypted@to.com');
@@ -379,6 +388,7 @@ for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && n
     const content = Buffer.from([10, 20, 40, 80, 160, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]);
     const { data: encryptedFile, json: encryptJson } =
       parseResponse(await endpoints.encryptFile({ pubKeys, name }, [content]));
+    // tslint:disable-next-line:no-unsafe-any
     expectEmptyJson(encryptJson);
     expectData(encryptedFile);
     const { data: decryptedContent, json: decryptJson } =
