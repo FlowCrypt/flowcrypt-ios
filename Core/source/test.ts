@@ -603,6 +603,7 @@ ava.default('decryptKey', async t => {
   const { keys: [key] } = getKeypairs('rsa1');
   const { data, json } =
     parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
+  // tslint:disable-next-line:no-unsafe-any
   const decryptedKey = await readKey({ armoredKey: json.decryptedKey });
   expect(isFullyDecrypted(decryptedKey)).to.be.true;
   expect(isFullyEncrypted(decryptedKey)).to.be.false;
@@ -614,6 +615,7 @@ ava.default('encryptKey', async t => {
   const passphrase = 'this is some pass phrase';
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey, passphrase }));
+  // tslint:disable-next-line:no-unsafe-any
   const encryptedKey = await readKey({ armoredKey: json.encryptedKey });
   expect(isFullyEncrypted(encryptedKey)).to.be.true;
   expect(isFullyDecrypted(encryptedKey)).to.be.false;
@@ -631,16 +633,19 @@ ava.default('decryptKey gpg-dummy', async t => {
   expect(isFullyEncrypted(encryptedKey)).to.be.true;
   expect(isFullyDecrypted(encryptedKey)).to.be.false;
   const { json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
+  // tslint:disable-next-line:no-unsafe-any
   const decryptedKey = await readKey({ armoredKey: json.decryptedKey });
   expect(isFullyEncrypted(decryptedKey)).to.be.false;
   expect(isFullyDecrypted(decryptedKey)).to.be.true;
   const { json: json2 } = parseResponse(await endpoints.encryptKey(
     { armored: decryptedKey.armor(), passphrase: 'another pass phrase' }));
+  // tslint:disable-next-line:no-unsafe-any
   const reEncryptedKey = await readKey({ armoredKey: json2.encryptedKey });
   expect(isFullyEncrypted(reEncryptedKey)).to.be.true;
   expect(isFullyDecrypted(reEncryptedKey)).to.be.false;
   const { json: json3 } = parseResponse(await endpoints.decryptKey(
     { armored: reEncryptedKey.armor(), passphrases: ['another pass phrase'] }));
+  // tslint:disable-next-line:no-unsafe-any
   const reDecryptedKey = await readKey({ armoredKey: json3.decryptedKey });
   expect(isFullyEncrypted(reDecryptedKey)).to.be.false;
   expect(isFullyDecrypted(reDecryptedKey)).to.be.true;
@@ -683,18 +688,22 @@ ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
     'Enterprise FlowCrypt, app Apple ID: 1591462989.    To view or reply to the ' +
     'message, go to Resolution Center in App Store Connect.\n    \nBest regards,\n' +
     '    App Store Review\n';
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.text).to.contain(msg);
   expect(decryptJson.subject).to.eq('New Message from App Store Review Regarding Enterprise FlowCrypt');
   expect(decryptJson.replyType).to.eq('plain');
+  // tslint:enable:no-unsafe-any
   const html = '<p>Dear Tomas,</p> <p>We\'ve sent you a new message about your app, Enterprise FlowCrypt, ' +
     'app Apple ID: 1591462989. To view or reply to the message, ' +
     'go to <a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa' +
     '/ra/ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">' +
     'Resolution Center</a> in App Store Connect.</p> <p>Best regards,<br /> App Store Review</p>';
   const blocksObj = JSON.parse(blocks.toString().replace(/\\n/g, '').replace(/\s+/g, ' '));
+  // tslint:disable:no-unsafe-any
   expect(blocksObj.type).eq('plainHtml');
   expect(blocksObj.complete).eq(true);
   expect(blocksObj.content).contains(html);
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
@@ -965,11 +974,13 @@ ava.default('verify encrypted+signed message by providing it correct public key'
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
     { keys, isEmail: true, verificationPubkeys: pubKeys },
     [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.replyType).equals('encrypted');
   expect(decryptJson.subject).equals('mime email encrypted inline text signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).equals(true);
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
@@ -982,11 +993,13 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
     { keys, isEmail: true, verificationPubkeys: pubKeys },
     [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.replyType).equals('encrypted');
   expect(decryptJson.subject).equals('mime email encrypted inline text signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).equals(true);
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
