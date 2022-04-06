@@ -182,7 +182,7 @@ export const fmtErr = (e: any): EndpointRes => {
   return fmtRes({
     error: {
       message: String(e),
-      stack: e && typeof e === 'object' ? e.stack || '' : ''
+      stack: e && typeof e === 'object' ? e.stack || '' : '' // tslint:disable-line:no-unsafe-any
     }
   });
 };

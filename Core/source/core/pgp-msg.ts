@@ -387,7 +387,7 @@ export class PgpMsg {
   };
 
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {
-    return o
+    return o // tslint:disable-line:no-unsafe-any
       && typeof o === 'object'
       && typeof (o as FcAttLinkData).name !== 'undefined'
       && typeof (o as FcAttLinkData).size !== 'undefined'

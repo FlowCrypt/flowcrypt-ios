@@ -13,8 +13,10 @@ export class Str {
 
   public static extractErrorMessage = (e: any): string | undefined => {
     if (typeof e !== 'object') return undefined;
+    // tslint:disable:no-unsafe-any
     if (typeof e.message === 'undefined') return undefined;
     if (typeof e.message === 'string') return e.message;
+    // tslint:enable:no-unsafe-any
     return JSON.stringify(e);
   };
 
@@ -160,6 +162,7 @@ export class Str {
     }
     // tslint:disable-next-line:no-unsafe-any
     return decodeURIComponent(
+      // tslint:disable-nex-line no-unsafe-any
       Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));

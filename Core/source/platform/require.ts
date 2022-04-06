@@ -36,6 +36,7 @@ export const requireStreamReadToEnd = (): ReadToEndFn => {
   // this will work for running tests in node with build/ts/test.js as entrypoint
   // a different solution will have to be done for running in iOS
   (global as any).window = (global as any).window || {}; // web-stream-tools needs this
+  // tslint:disable-next-line:no-unsafe-any
   const { readToEnd } = require('../../bundles/raw/web-stream-tools');
   return readToEnd as ReadToEndFn;
 };
