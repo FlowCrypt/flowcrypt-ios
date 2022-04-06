@@ -160,9 +160,8 @@ export class Str {
     if (typeof str === 'undefined') {
       return str;
     }
-    // tslint:disable-next-line:no-unsafe-any
     return decodeURIComponent(
-      // tslint:disable-nex-line no-unsafe-any
+      // tslint:disable-next-line:no-unsafe-any
       Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));

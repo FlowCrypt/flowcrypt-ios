@@ -148,8 +148,10 @@ export class Mime {
       atts: [], headers: {}, subject: undefined, text: undefined, html: undefined,
       signature: undefined, from: undefined, to: [], cc: [], bcc: []
     };
+    // tslint:disable-next-line:no-unsafe-any
     const parser = new MimeParser();
     const leafNodes: { [key: string]: MimeParserNode } = {};
+    // tslint:disable-next-line:no-unsafe-any
     parser.onbody = (node: MimeParserNode) => {
       const path = String(node.path.join('.'));
       if (typeof leafNodes[path] === 'undefined') {
@@ -158,12 +160,15 @@ export class Mime {
     };
     return await new Promise((resolve, reject) => {
       try {
+        // tslint:disable-next-line:no-unsafe-any
         parser.onend = () => {
           try {
+            // tslint:disable:no-unsafe-any
             for (const name of Object.keys(parser.node.headers)) {
               mimeContent.headers[name] = parser.node.headers[name][0].value;
             }
             mimeContent.rawSignedContent = Mime.retrieveRawSignedContent([parser.node]);
+            // tslint:enable:no-unsafe-any
             for (const node of Object.values(leafNodes)) {
               if (Mime.getNodeType(node) === 'application/pgp-signature') {
                 mimeContent.signature = node.rawContent;
@@ -191,9 +196,12 @@ export class Mime {
             reject(e);
           }
         };
+        // tslint:disable:no-unsafe-any
         parser.write(mimeMsg);
         parser.end();
-      } catch (e) { // todo - on Android we may want to fail when this happens, evaluate effect on browser extension
+        // tslint:enable:no-unsafe-any
+      } catch (e) {
+        // todo - on Android we may want to fail when this happens, evaluate effect on browser extension
         Catch.reportErr(e);
         resolve(mimeContent);
       }
@@ -237,6 +245,7 @@ export class Mime {
   public static encodePgpMimeSigned = async (body: SendableMsgBody, headers: RichHeaders,
     atts: Att[] = [], sign: (data: string) => Promise<string>): Promise<string> => {
     const sigPlaceholder = `SIG_PLACEHOLDER_${Str.sloppyRandom(10)}`;
+    // tslint:disable-next-line:no-unsafe-any
     const rootNode = new MimeBuilder(`multipart/signed; protocol="application/pgp-signature";`,
       { includeBccInHeader: true }); // tslint:disable-line:no-unsafe-any
     for (const key of Object.keys(headers)) {
@@ -391,6 +400,7 @@ export class Mime {
   };
 
   private static getNodeContentAsUtfStr = (node: MimeParserNode): string => {
+    // tslint:disable-next-line:no-unsafe-any
     if (node.charset && Iso88592.labels.includes(node.charset)) {
       return Iso88592.decode(node.rawContent!); // tslint:disable-line:no-unsafe-any
     }
