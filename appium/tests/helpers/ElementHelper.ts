@@ -60,6 +60,27 @@ class ElementHelper {
     await this.waitAndClick(element);
     await element.setValue(text);
   }
+
+  static waitForText = async (element: WebdriverIO.Element, text: string, timeout: number = DEFAULT_TIMEOUT) => {
+    await this.waitElementVisible(element);
+    await element.waitUntil(async  function () {
+      return (await element.getText() === text)
+    }, {
+      timeout: timeout,
+      timeoutMsg: 'expected text to be different after 5s'
+    });
+  }
+
+  static waitForValue = async (element: WebdriverIO.Element, value: string, timeout: number = DEFAULT_TIMEOUT) => {
+    await this.waitElementVisible(element);
+    await element.waitUntil(async  function () {
+      return (await element.getValue() === value)
+    }, {
+      timeout: timeout,
+      timeoutMsg: 'expected value to be different after 15s'
+    });
+  }
+
 }
 
 export default ElementHelper;

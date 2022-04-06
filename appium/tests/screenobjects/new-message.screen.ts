@@ -164,6 +164,7 @@ class NewMessageScreen extends BaseScreen {
   };
 
   checkFilledComposeEmailInfo = async (emailInfo: ComposeEmailInfo) => {
+    await ElementHelper.waitElementVisible(await this.composeSecurityMessage);
     expect(await this.composeSecurityMessage).toHaveTextContaining(emailInfo.message);
 
     const element = await this.filledSubject(emailInfo.subject);
@@ -216,8 +217,12 @@ class NewMessageScreen extends BaseScreen {
     await this.showRecipientInputIfNeeded();
     const recipientCell = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitElementVisible(recipientCell);
-    const name = await recipientCell.getValue();
-    expect(name).toEqual(`  ${recipient}  `);
+    await recipientCell.waitUntil(async  function () {
+      return (await recipientCell.getValue() === `  ${recipient}  `)
+    }, {
+      timeout: 15,
+      timeoutMsg: 'expected text to be different after 15s'
+    });
   }
 
   getActiveElementId = async () => {
@@ -278,8 +283,7 @@ class NewMessageScreen extends BaseScreen {
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();
     const label = await this.attachmentNameLabel;
-    const value = await label.getValue();
-    expect(value).toEqual(name);
+    await ElementHelper.waitForValue(await label, name);
   }
 
   deleteAttachment = async () => {
@@ -314,7 +318,7 @@ class NewMessageScreen extends BaseScreen {
 
   checkPasswordCell = async (text: string) => {
     await ElementHelper.waitElementVisible(await this.passwordCell);
-    await ElementHelper.checkStaticText(await this.passwordCell, text);
+    await ElementHelper.waitForText(await this.passwordCell, text);
   }
 
   clickPasswordCell = async () => {
