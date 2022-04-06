@@ -166,6 +166,7 @@ export class ValidateInput {
 }
 
 const isObj = (v: any): v is Obj => {
+  // tslint:disable-next-line:no-unsafe-any
   return v && typeof v === 'object';
 };
 
@@ -192,9 +193,11 @@ const hasProp = (
     return typeof value === 'string' || typeof value === 'undefined';
   }
   if (type === 'Attachment[]?') {
+    // tslint:disable:no-unsafe-any
     return typeof value === 'undefined' ||
       (Array.isArray(value) && value.filter((x: any) => hasProp(x, 'name', 'string')
         && hasProp(x, 'type', 'string') && hasProp(x, 'base64', 'string')).length === value.length);
+    // tslint:enable:no-unsafe-any
   }
   if (type === 'string[]') {
     return Array.isArray(value) && value.filter((x: any) => typeof x === 'string').length === value.length;
@@ -208,16 +211,22 @@ const hasProp = (
       v[name] = undefined;
       return true;
     }
+    // tslint:disable:no-unsafe-any
     return typeof value === 'undefined' || hasProp(value, 'private', 'string')
       && hasProp(value, 'longid', 'string') && hasProp(value, 'passphrase', 'string?');
+    // tslint:enable:no-unsafe-any
   }
   if (type === 'PrvKeyInfo[]') {
+    // tslint:disable:no-unsafe-any
     return Array.isArray(value) && value.filter((ki: any) => hasProp(ki, 'private', 'string')
       && hasProp(ki, 'longid', 'string') && hasProp(ki, 'passphrase', 'string?')).length === value.length;
+    // tslint:enable:no-unsafe-any
   }
   if (type === 'Userid[]') {
+    // tslint:disable:no-unsafe-any
     return Array.isArray(value) && value.filter((ui: any) => hasProp(ui, 'name', 'string')
       && hasProp(ui, 'email', 'string')).length === value.length;
+    // tslint:enable:no-unsafe-any
   }
   if (type === 'object') {
     return isObj(value);
