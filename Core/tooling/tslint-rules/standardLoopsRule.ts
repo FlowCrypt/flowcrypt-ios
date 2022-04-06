@@ -22,7 +22,7 @@ for (const v of Object.keys(obj)) { } // get keys, no need obj.hasOwnProperty`;
 
 const DO_NOT_USE_EACH = `Using .each for looping is heavily discouraged. ${DO_USE_LOOPS}`;
 const DO_NOT_USE_MAP_EXPR_STMT = 'Use .map() when you want to transform an array,' +
-  ' not as a substitute for loops. ${DO_USE_LOOPS}';
+  ` not as a substitute for loops. ${DO_USE_LOOPS}`;
 
 export class Rule extends tslint.Rules.AbstractRule {
 
