@@ -59,13 +59,13 @@ export const strToHex = (str: string): string => {
 
 /* tslint:disable:no-null-keyword */
 const maxDate = (dates: (Date | null)[]): Date | null => {
-  let res: Date | undefined;
+  let res: Date | null = null;
   for (const date of dates) {
-    if (date != null && (res === undefined || date > res)) {
+    if (res === null || (date !== null && date > res)) {
       res = date;
     }
   }
-  return res === undefined ? null : res;
+  return res;
 };
 /* tslint:enable:no-null-keyword */
 
