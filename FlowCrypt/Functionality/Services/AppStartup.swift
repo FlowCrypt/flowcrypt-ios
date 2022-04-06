@@ -80,7 +80,10 @@ struct AppStartup {
                         let controller = try await SetupInitialViewController(appContext: context)
                         window.rootViewController = MainNavigationController(rootViewController: controller)
                     } catch {
-                        window.rootViewController?.showAlert(message: error.errorMessage)
+                        window.rootViewController?.showAlert(
+                            title: "error_login".localized,
+                            message: error.errorMessage
+                        )
                     }
                 }
             }
