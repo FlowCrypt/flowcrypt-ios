@@ -126,7 +126,8 @@ extension GoogleUserService: UserServiceType {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
     }
 
-    @MainActor func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String? = nil) async throws -> SessionType {
+    @MainActor
+    func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String? = nil) async throws -> SessionType {
         return try await withCheckedThrowingContinuation { continuation in
             let request = self.makeAuthorizationRequest(scopes: scopes, userEmail: userEmail)
             let googleDelegateSess = OIDAuthState.authState(

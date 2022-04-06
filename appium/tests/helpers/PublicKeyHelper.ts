@@ -7,11 +7,11 @@ import ContactPublicKeyScreen from "../screenobjects/contact-public-key.screen";
 import PublicKeyDetailsScreen from "../screenobjects/public-key-details.screen";
 
 class PublicKeyHelper {
- static loadRecipientInComposeThenCheckSignatureAndFingerprints = async (userEmail: string, signatureDate: string , fingerprintsValue: string ) => {
+ static loadRecipientInComposeThenCheckSignatureAndFingerprints = async (userEmail: string, signatureDate: string , fingerprintsValue: string, recipientName?: string ) => {
    await MailFolderScreen.checkInboxScreen();
    await MailFolderScreen.clickCreateEmail();
    await NewMessageScreen.setAddRecipient(userEmail);
-   await NewMessageScreen.checkAddedRecipient(userEmail);
+   await NewMessageScreen.checkAddedRecipient(recipientName ?? userEmail);
    await NewMessageScreen.clickBackButton();
 
    // Go to Contacts screen

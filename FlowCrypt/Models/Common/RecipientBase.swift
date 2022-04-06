@@ -26,6 +26,9 @@ extension RecipientBase {
     }
 
     var displayName: String {
-        name ?? email
+        if let name = name, name != "" {
+            return name
+        }
+        return email
     }
 }

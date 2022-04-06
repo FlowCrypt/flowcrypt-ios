@@ -15,10 +15,15 @@ describe('SETTINGS: ', () => {
   it('check correct removing contacts', async () => {
 
     const firstRecipient = CommonData.contact.email;
+    const firstRecipientName = CommonData.contact.name;
     const secondRecipient = CommonData.secondContact.email;
+    const secondRecipientName = CommonData.secondContact.name;
     const thirdRecipient = CommonData.recipient.email;
+    const thirdRecipientName = CommonData.recipient.name;
     const fourthRecipient = CommonData.recipientWithExpiredPublicKey.email;
+    const fourthRecipientName = CommonData.recipientWithExpiredPublicKey.name;
     const fifthRecipient = CommonData.recipientWithRevokedPublicKey.email;
+    const fifthRecipientName = CommonData.recipientWithRevokedPublicKey.name;
 
 
     await SplashScreen.login();
@@ -31,11 +36,11 @@ describe('SETTINGS: ', () => {
     await NewMessageScreen.setAddRecipient(thirdRecipient);
     await NewMessageScreen.setAddRecipient(fourthRecipient);
     await NewMessageScreen.setAddRecipient(fifthRecipient);
-    await NewMessageScreen.checkAddedRecipient(firstRecipient, 0);
-    await NewMessageScreen.checkAddedRecipient(secondRecipient, 1);
-    await NewMessageScreen.checkAddedRecipient(thirdRecipient, 2);
-    await NewMessageScreen.checkAddedRecipient(fourthRecipient, 3);
-    await NewMessageScreen.checkAddedRecipient(fifthRecipient, 4);
+    await NewMessageScreen.checkAddedRecipient(firstRecipientName, 0);
+    await NewMessageScreen.checkAddedRecipient(secondRecipientName, 1);
+    await NewMessageScreen.checkAddedRecipient(thirdRecipientName, 2);
+    await NewMessageScreen.checkAddedRecipient(fourthRecipientName, 3);
+    await NewMessageScreen.checkAddedRecipient(fifthRecipientName, 4);
 
     await NewMessageScreen.clickBackButton();
     await MenuBarScreen.clickMenuIcon();
