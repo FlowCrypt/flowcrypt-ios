@@ -997,13 +997,14 @@ ava.default('verify encrypted+signed message by providing it only a wrong public
     const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
       { keys, isEmail: true, verificationPubkeys: pubKeys2 },
       [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+    // tslint:disable:no-unsafe-any
     expect(decryptJson.replyType).equals('encrypted');
     expect(decryptJson.subject).equals('mime email encrypted inline text signed');
     const parsedDecryptData = JSON.parse(decryptData.toString());
     expect(!!parsedDecryptData.verifyRes).equals(true);
-    /* tslint:disable:no-null-keyword */
+    /* tslint:disable-next-line:no-null-keyword */
     expect(parsedDecryptData.verifyRes.match).equals(null);
-    /* tslint:enable:no-null-keyword */
+    // tslint:enable:no-unsafe-any
     t.pass();
   });
 
@@ -1012,11 +1013,13 @@ ava.default('verify plain-text signed message by providing it correct key', asyn
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
     { keys, isEmail: true, verificationPubkeys: pubKeys },
     [await getCompatAsset('mime-email-plain-signed')]));
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).equals(true);
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
@@ -1029,11 +1032,13 @@ ava.default('verify plain-text signed message by providing it both correct and i
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
       [await getCompatAsset('mime-email-plain-signed')]));
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).equals(true);
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
@@ -1043,6 +1048,7 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 },
       [await getCompatAsset('mime-email-plain-signed')]));
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -1050,6 +1056,7 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
   /* tslint:disable:no-null-keyword */
   expect(parsedDecryptData.verifyRes.match).equals(null);
   /* tslint:enable:no-null-keyword */
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
@@ -1059,11 +1066,13 @@ ava.default('verify plain-text signed message that you edited after signing. Thi
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
       [await getCompatAsset('mime-email-plain-signed-edited')]));
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).is.null;
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
@@ -1072,11 +1081,13 @@ ava.default('verify signed message with detached signature by providing it corre
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
       [await getCompatAsset('mime-email-plain-signed-detached')]));
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed detached');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
   expect(parsedDecryptData.verifyRes.match).equals(true);
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 
@@ -1085,10 +1096,12 @@ ava.default('decryptErr for not integrity protected message', async t => {
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys },
       [await getCompatAsset('mime-email-not-integrity-protected')]));
+  // tslint:disable:no-unsafe-any
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('not integrity protected - should show a warning and not decrypt automatically');
   const blocks = decryptData.toString().split('\n').map(block => JSON.parse(block));
   expect(blocks[1].decryptErr.error.type).equals('no_mdc');
+  // tslint:enable:no-unsafe-any
   t.pass();
 });
 

@@ -57,8 +57,10 @@ export namespace NodeRequest {
 export class ValidateInput {
 
   public static generateKey = (v: any): NodeRequest.generateKey => {
+    // tslint:disable:no-unsafe-any
     if (isObj(v) && hasProp(v, 'userIds', 'Userid[]') && v.userIds.length
       && hasProp(v, 'passphrase', 'string') && ['rsa2048', 'rsa4096', 'curve25519'].includes(v.variant)) {
+      // tslint:enable-next-line:no-unsafe-any
       return v as NodeRequest.generateKey;
     }
     throw new Error('Wrong request structure for NodeRequest.generateKey');
@@ -81,8 +83,10 @@ export class ValidateInput {
     if (!hasProp(v, 'atts', 'Attachment[]?')) {
       throw new Error('Wrong atts structure for NodeRequest.composeEmail, need: {name, type, base64}');
     }
+    // tslint:disable:no-unsafe-any
     if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?')
       && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
+      // tslint:enable:no-unsafe-any
       return v as NodeRequest.ComposeEmailEncrypted;
     }
     if (!v.pubKeys && v.format === 'plain') {
