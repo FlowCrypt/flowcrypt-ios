@@ -45,15 +45,18 @@ export const CommonData = {
     name: 'Dmitry at FlowCrypt'
   },
   contact: {
+    contactName: 'Dima Flowcrypt',
     email: 'dmitry@flowcrypt.com',
-    name: 'Dima Flowcrypt'
+    name: 'Dmitry at FlowCrypt'
   },
   secondContact: {
+    contactName: 'Demo',
     email: 'demo@flowcrypt.com',
-    name: 'Demo'
+    name: 'Demo key 2',
   },
   recipient: {
     email: 'robot@flowcrypt.com',
+    name: 'FlowCrypt Robot',
   },
   bundleId: {
     id: 'com.flowcrypt.as.ios.debug',
@@ -152,10 +155,12 @@ export const CommonData = {
     subjectPasswordErrorMessage: 'Error\nPlease do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don\'t need a password.'
   },
   recipientWithExpiredPublicKey: {
-    email: 'expired@flowcrypt.com'
+    email: 'expired@flowcrypt.com',
+    name: 'expired key'
   },
   recipientWithRevokedPublicKey: {
-    email: 'revoked@flowcrypt.com'
+    email: 'revoked@flowcrypt.com',
+    name: 'revoekd@flowcrypt.com'
   },
   errors: {
     noPublicKey: 'Error\n' +

@@ -7,6 +7,7 @@ describe('COMPOSE EMAIL: ', () => {
   it('check added recipient popup', async () => {
 
     const recipient1 = CommonData.emailWithMultipleRecipientsWithCC.sender;
+    const recipient1Name = CommonData.emailWithMultipleRecipientsWithCC.senderName;
     const recipient2 = CommonData.recipientWithExpiredPublicKey.email;
     const recipient3 = CommonData.recipientWithRevokedPublicKey.email;
 
@@ -22,7 +23,7 @@ describe('COMPOSE EMAIL: ', () => {
 
     await NewMessageScreen.checkCopyForAddedRecipient(recipient1, 0);
 
-    await NewMessageScreen.checkEditRecipient(0, 'to', recipient1, 3);
+    await NewMessageScreen.checkEditRecipient(0, 'to', recipient1Name, 3);
 
     await NewMessageScreen.deleteAddedRecipient(2);
     await NewMessageScreen.deleteAddedRecipient(1);
