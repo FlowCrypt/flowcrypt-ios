@@ -61,6 +61,7 @@ class ElementHelper {
     await element.setValue(text);
   }
 
+  //wait for text in element during 15 seconds (if the text doesn't appear during 15s, it will show the error)
   static waitForText = async (element: WebdriverIO.Element, text: string, timeout: number = DEFAULT_TIMEOUT) => {
     await this.waitElementVisible(element);
     await element.waitUntil(async  function () {
@@ -71,6 +72,7 @@ class ElementHelper {
     });
   }
 
+  //wait for value in element during 15 seconds (if the value doesn't appear during 15s, it will show the error)
   static waitForValue = async (element: WebdriverIO.Element, value: string, timeout: number = DEFAULT_TIMEOUT) => {
     await this.waitElementVisible(element);
     await element.waitUntil(async  function () {
