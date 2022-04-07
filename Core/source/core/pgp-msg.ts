@@ -13,7 +13,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
-import { requireStreamReadToEnd } from '../platform/require';
+import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 const readToEnd = requireStreamReadToEnd();
 
 export namespace PgpMsgMethod {
@@ -250,8 +250,10 @@ export class PgpMsg {
       // we can only figure out who signed the msg once it's decrypted
       await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
       await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
-      const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined; // verify first to prevent stream hang
-      const content = new Buf(await readToEnd(decrypted.getLiteralData()!)); // read content second to prevent stream hang
+      // verify first to prevent stream hang
+      const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined;
+      // read content second to prevent stream hang
+      const content = new Buf(await readToEnd(decrypted.getLiteralData()!  as MaybeStream<Uint8Array>));
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined; // evaluate verify results third to prevent stream hang
       if (!prepared.isCleartext && (prepared.message as Message<Data>).packets
         .filterByTag(enums.packet.symmetricallyEncryptedData).length) {

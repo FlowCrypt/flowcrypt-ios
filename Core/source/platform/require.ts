@@ -2,18 +2,20 @@
 
 'use strict';
 
-interface BaseStream<T extends Uint8Array | string> extends AsyncIterable<T> { }
+export interface BaseStream<T extends Uint8Array | string> extends AsyncIterable<T> { }
 
-interface WebStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from lib.dom.d.ts
+export interface WebStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from lib.dom.d.ts
   readonly locked: boolean; getReader: Function; pipeThrough: Function; pipeTo: Function; tee: Function;
   cancel(reason?: any): Promise<void>;
 }
 
-interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from @types/node/index.d.ts
+export interface NodeStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from @types/node/index.d.ts
   readable: boolean; pipe: Function; unpipe: Function; wrap: Function;
   read(size?: number): string | Uint8Array; setEncoding(encoding: string): this; pause(): this; resume(): this;
   isPaused(): boolean; unshift(chunk: string | Uint8Array): void;
 }
+
+export type MaybeStream<T extends Uint8Array | string> = T | WebStream<T> | NodeStream<T>;
 
 type ReadToEndFn = <T extends Uint8Array | string>(input: T | WebStream<T> | NodeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
 

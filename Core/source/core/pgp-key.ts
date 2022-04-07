@@ -11,7 +11,7 @@ import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/util';
 import { AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
-import { requireStreamReadToEnd } from '../platform/require';
+import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 const readToEnd = requireStreamReadToEnd();
 
 export type Contact = {
@@ -414,7 +414,7 @@ export class PgpKey {
     if (!certificate || typeof certificate === 'string') {
       return certificate || undefined;
     } else {
-      return await readToEnd(certificate);
+      return await readToEnd(certificate as MaybeStream<string>);
     }
   }
 }
