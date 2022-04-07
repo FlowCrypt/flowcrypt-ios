@@ -34,6 +34,7 @@ describe('SETUP: ', () => {
       }
     };
     const userEmail = CommonData.updateRecipientPublicKey.email;
+    const userName = CommonData.updateRecipientPublicKey.name;
     const oldSignatureDate = CommonData.updateRecipientPublicKey.oldSignatureDate;
     const oldFingerprintsValue = CommonData.updateRecipientPublicKey.oldFingerprints;
     const newSignatureDate = CommonData.updateRecipientPublicKey.newSignatureDate;
@@ -44,7 +45,12 @@ describe('SETUP: ', () => {
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
 
-      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(userEmail, oldSignatureDate, oldFingerprintsValue);
+      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
+          userEmail,
+          oldSignatureDate,
+          oldFingerprintsValue,
+          userName
+      );
       firstFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
 
       await PublicKeyDetailsScreen.clickBackButton();
@@ -63,7 +69,12 @@ describe('SETUP: ', () => {
           'updating.key@example.test': attesterPublicKeySamples.keyNewerVersion
         }
       };
-      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(userEmail, newSignatureDate, newFingerprintsValue);
+      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
+          userEmail,
+          newSignatureDate,
+          newFingerprintsValue,
+          userName
+      );
 
       secondFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
 
@@ -85,7 +96,12 @@ describe('SETUP: ', () => {
           'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
         }
       };
-      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(userEmail, newSignatureDate, newFingerprintsValue);
+      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
+          userEmail,
+          newSignatureDate,
+          newFingerprintsValue,
+          userName
+      );
 
       thirdFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
       expect(secondFetchedDate).toBeLessThan(thirdFetchedDate);
@@ -102,7 +118,12 @@ describe('SETUP: ', () => {
       await MenuBarScreen.clickMenuIcon();
       await MenuBarScreen.clickInboxButton();
 
-      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(userEmail, oldSignatureDate, oldFingerprintsValue);
+      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
+          userEmail,
+          oldSignatureDate,
+          oldFingerprintsValue,
+          userName
+      );
 
       fourthFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
 

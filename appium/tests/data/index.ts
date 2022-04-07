@@ -45,15 +45,18 @@ export const CommonData = {
     name: 'Dmitry at FlowCrypt'
   },
   contact: {
+    contactName: 'Dima Flowcrypt',
     email: 'dmitry@flowcrypt.com',
-    name: 'Dima Flowcrypt'
+    name: 'Dmitry at FlowCrypt'
   },
   secondContact: {
+    contactName: 'Demo',
     email: 'demo@flowcrypt.com',
-    name: 'Demo'
+    name: 'Demo key 2',
   },
   recipient: {
     email: 'robot@flowcrypt.com',
+    name: 'FlowCrypt Robot',
   },
   bundleId: {
     id: 'com.flowcrypt.as.ios.debug',
@@ -72,6 +75,7 @@ export const CommonData = {
     sender: 'ioan@flowcrypt.com',
     senderName: 'Ioan at FlowCrypt',
     recipient: 'robot@flowcrypt.com',
+    recipientName: 'FlowCrypt Robot',
     cc: 'robot+cc@flowcrypt.com',
     subject: 'Message with cc and multiple recipients and attachment',
     message: 'This email has cc and multiple recipients and attachment',
@@ -87,6 +91,7 @@ export const CommonData = {
   },
   updateRecipientPublicKey: {
     email: 'updating.key@example.test',
+    name: 'Updating key',
     oldSignatureDate: '12 Jan 2022, 07:16:58 PM',//in UTC
     newSignatureDate: '12 Jan 2022, 07:27:20 PM',//in UTC
     oldFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0',
@@ -151,10 +156,12 @@ export const CommonData = {
     subjectPasswordErrorMessage: 'Error\nPlease do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don\'t need a password.'
   },
   recipientWithExpiredPublicKey: {
-    email: 'expired@flowcrypt.com'
+    email: 'expired@flowcrypt.com',
+    name: 'expired key'
   },
   recipientWithRevokedPublicKey: {
-    email: 'revoked@flowcrypt.com'
+    email: 'revoked@flowcrypt.com',
+    name: 'revoekd@flowcrypt.com'
   },
   errors: {
     noPublicKey: 'Error\n' +
@@ -195,12 +202,15 @@ export const CommonData = {
     new: path.join(process.cwd(), './FlowCrypt.app')
   },
   validMockUser: {
-    email: 'valid@domain.test'
+    email: 'valid@domain.test',
+    name: 'Tom James Holub'
   },
   expiredMockUser: {
-    email: 'expired@domain.test'
+    email: 'expired@domain.test',
+    name: 'expired.on.attester@domain.com'
   },
   revokedMockUser: {
-    email: 'revoked@domain.test'
+    email: 'revoked@domain.test',
+    name: 'revoekd@flowcrypt.com'
   }
 };

@@ -13,7 +13,9 @@ describe('COMPOSE EMAIL: ', () => {
   it('sending message to user with expired/revoked public key produces modal', async () => {
 
     const expiredPublicKey = CommonData.recipientWithExpiredPublicKey.email;
+    const expiredPublicKeyName = CommonData.recipientWithExpiredPublicKey.name;
     const revokedpublicKey = CommonData.recipientWithRevokedPublicKey.email;
+    const revokedpublicKeyName = CommonData.recipientWithRevokedPublicKey.name;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const expiredPublicKeyError = CommonData.errors.expiredPublicKey;
@@ -27,7 +29,7 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(expiredPublicKey, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo({
-      recipients: [expiredPublicKey],
+      recipients: [expiredPublicKeyName],
       subject: emailSubject,
       message: emailText
     });
@@ -42,7 +44,7 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(revokedpublicKey, emailSubject, emailText);
     await NewMessageScreen.checkFilledComposeEmailInfo({
-      recipients: [revokedpublicKey],
+      recipients: [revokedpublicKeyName],
       subject: emailSubject,
       message: emailText
     });
