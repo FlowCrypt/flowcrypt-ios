@@ -68,7 +68,7 @@ class ElementHelper {
       return (await element.getText() === text)
     }, {
       timeout: timeout,
-      timeoutMsg: 'expected text to be different after 5s'
+      timeoutMsg: `expected text within ${timeout}ms to be "${text}" but got last value "${await element.getText()}"`
     });
   }
 
@@ -79,7 +79,8 @@ class ElementHelper {
       return (await element.getValue() === value)
     }, {
       timeout: timeout,
-      timeoutMsg: 'expected value to be different after 15s'
+      timeoutMsg: `expected text within ${timeout}ms to be "${value}" but got last value "${await element.getValue()}"`
+
     });
   }
 
