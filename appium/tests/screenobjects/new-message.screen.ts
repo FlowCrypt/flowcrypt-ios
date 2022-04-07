@@ -313,8 +313,9 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkPasswordCell = async (text: string) => {
-    await ElementHelper.waitElementVisible(await this.passwordCell);
-    await ElementHelper.checkStaticText(await this.passwordCell, text);
+    const el = await this.passwordCell;
+    await ElementHelper.waitElementVisible(el);
+    await ElementHelper.checkStaticText(el, text);
   }
 
   clickPasswordCell = async () => {

@@ -14,6 +14,7 @@ protocol ClientConfigurationServiceType {
 }
 
 final class ClientConfigurationService: ClientConfigurationServiceType {
+    private lazy var logger = Logger.nested(Self.self)
 
     private let server: EnterpriseServerApiType
     private let local: LocalClientConfigurationType
@@ -22,9 +23,7 @@ final class ClientConfigurationService: ClientConfigurationServiceType {
 
     var configuration: ClientConfiguration {
         get async throws {
-            guard didFetch else {
-                return try await fetch()
-            }
+            if !didFetch { await fetch() }
 
             guard let raw = try local.load(for: server.email) else {
                 throw AppErr.unexpected("There should not be a user without OrganisationalRules")
@@ -42,7 +41,7 @@ final class ClientConfigurationService: ClientConfigurationServiceType {
         self.local = local
     }
 
-    private func fetch() async throws -> ClientConfiguration {
+    private func fetch() async {
         do {
             let raw = try await server.getClientConfiguration()
             try await local.save(
@@ -51,12 +50,8 @@ final class ClientConfigurationService: ClientConfigurationServiceType {
                 fesUrl: server.fesUrl
             )
             didFetch = true
-            return ClientConfiguration(raw: raw)
         } catch {
-            guard let raw = try local.load(for: server.email) else {
-                throw error
-            }
-            return ClientConfiguration(raw: raw)
+            logger.logError("Client configuration fetch failed: \(error.errorMessage)")
         }
     }
 }

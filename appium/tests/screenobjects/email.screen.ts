@@ -120,8 +120,8 @@ class EmailScreen extends BaseScreen {
 
   checkEmailSender = async (sender: string, index = 0) => {
     const element = await this.senderEmail(index);
-    await (await element).waitForDisplayed();
-    await expect(await (await element).getValue()).toEqual(sender);
+    await (element).waitForDisplayed();
+    expect(await element.getValue()).toEqual(sender);
   }
 
   senderEmail = async (index = 0) =>{
@@ -138,7 +138,7 @@ class EmailScreen extends BaseScreen {
     await (await $(selector)).waitForDisplayed();
     console.log(await $(selector).getValue());
 
-    await expect(await $(selector).getValue()).toContain(text)
+    expect(await $(selector).getValue()).toContain(text)
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
@@ -166,7 +166,7 @@ class EmailScreen extends BaseScreen {
     const element = `~aid-date-${index}`;
     await (await $(element)).waitForDisplayed();
     const convertedDate = moment(await $(element).getValue()).utcOffset(0).format('MMM DD');
-    await expect(convertedDate).toEqual(date)
+    expect(convertedDate).toEqual(date)
   }
 
   clickBackButton = async () => {
@@ -246,7 +246,8 @@ class EmailScreen extends BaseScreen {
 
   checkAttachmentTextView = async (value: string) => {
     const el = await this.attachmentTextView;
-    expect(el).toHaveValueContaining(value);
+    await ElementHelper.waitElementVisible(el);
+    expect(el).toHaveTextContaining(value);
   }
 }
 

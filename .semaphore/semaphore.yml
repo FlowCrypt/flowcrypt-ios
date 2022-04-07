@@ -36,6 +36,7 @@ blocks:
       jobs:
         - name: Appium UI tests
           commands:
+            - xcversion select 13.3
             - bundle exec fastlane build && ls -la appium
             - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/dev/flowcrypt-ios-2021-12-17-v060-for-ci-migration-test.zip -P ~/git/flowcrypt-ios/appium'
             - cd appium && npm run-script lint
@@ -71,6 +72,7 @@ blocks:
       jobs:
         - name: TypeScript + Swift tests
           commands:
+            - xcversion select 13.3
             - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
             - bundle exec fastlane test
 after_pipeline:

@@ -31,7 +31,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
 
     func testGetSavedOrganisationalRulesForCurrentUser() async throws {
         let expectedConfiguration = RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")
-        localClientConfigurationProvider.fetchCall = {
+        enterpriseServerApi.getClientConfigurationCall = { _ in
             expectedConfiguration
         }
 
@@ -82,9 +82,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
             "example@flowcrypt.test"
         }
 
-        localClientConfigurationProvider.fetchCall = {
-            expectedClientConfiguration
-        }
+        localClientConfigurationProvider.raw = expectedClientConfiguration
 
         let clientConfiguration = try await sut.configuration
         XCTAssertTrue(clientConfiguration.raw == expectedClientConfiguration)
