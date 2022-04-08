@@ -104,16 +104,16 @@ class MailFolderScreen extends BaseScreen {
   };
 
   scrollUpToFirstEmail = async () => {
-    const elem = await this.inboxList[0];
+    const elem = this.inboxList[0];
     if (elem) {
       await TouchHelper.scrollUpToElement(elem);
     }
   }
 
   checkInboxScreen = async () => {
-    await expect(await this.inboxHeader).toBeDisplayed();
-    await expect(await this.searchIcon).toBeDisplayed();
-    await expect(await this.helpIcon).toBeDisplayed()
+    await ElementHelper.waitElementVisible(await this.inboxHeader);
+    await ElementHelper.waitElementVisible(await this.searchIcon);
+    await ElementHelper.waitElementVisible(await this.helpIcon);
   }
 
   clickSearchButton = async () => {

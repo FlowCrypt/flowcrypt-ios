@@ -120,7 +120,7 @@ class EmailScreen extends BaseScreen {
 
   checkEmailSender = async (sender: string, index = 0) => {
     const element = await this.senderEmail(index);
-    await (element).waitForDisplayed();
+    await element.waitForDisplayed();
     expect(await element.getValue()).toEqual(sender);
   }
 
@@ -247,7 +247,8 @@ class EmailScreen extends BaseScreen {
   checkAttachmentTextView = async (value: string) => {
     const el = await this.attachmentTextView;
     await ElementHelper.waitElementVisible(el);
-    expect(el).toHaveTextContaining(value);
+    const text = await el.getText();
+    expect(text.includes(value)).toBeTrue();
   }
 }
 

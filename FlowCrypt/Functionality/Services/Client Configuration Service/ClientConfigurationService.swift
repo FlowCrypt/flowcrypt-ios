@@ -23,13 +23,7 @@ final class ClientConfigurationService: ClientConfigurationServiceType {
 
     var configuration: ClientConfiguration {
         get async throws {
-            if !didFetch { await fetch() }
-
-            guard let raw = try local.load(for: server.email) else {
-                throw AppErr.unexpected("There should not be a user without OrganisationalRules")
-            }
-
-            return ClientConfiguration(raw: raw)
+            didFetch ? try loadSaved() : try await fetchLatest()
         }
     }
 
@@ -41,17 +35,33 @@ final class ClientConfigurationService: ClientConfigurationServiceType {
         self.local = local
     }
 
-    private func fetch() async {
-        do {
-            let raw = try await server.getClientConfiguration()
-            try await local.save(
-                for: server.email,
-                raw: raw,
-                fesUrl: server.fesUrl
-            )
-            didFetch = true
-        } catch {
-            logger.logError("Client configuration fetch failed: \(error.errorMessage)")
+    private func loadSaved() throws -> ClientConfiguration {
+        guard let raw = try local.load(for: server.email) else {
+            throw AppErr.unexpected("There should not be a user without OrganisationalRules")
         }
+
+        return ClientConfiguration(raw: raw)
+    }
+
+    private func fetchLatest() async throws -> ClientConfiguration {
+        do {
+            try await fetch()
+            return try loadSaved()
+        } catch {
+            if let configuration = try? loadSaved() {
+                return configuration
+            }
+            throw error
+        }
+    }
+
+    private func fetch() async throws {
+        let raw = try await server.getClientConfiguration()
+        try await local.save(
+            for: server.email,
+            raw: raw,
+            fesUrl: server.fesUrl
+        )
+        didFetch = true
     }
 }
