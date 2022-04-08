@@ -217,12 +217,7 @@ class NewMessageScreen extends BaseScreen {
     await this.showRecipientInputIfNeeded();
     const recipientCell = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitElementVisible(recipientCell);
-    await recipientCell.waitUntil(async  function () {
-      return (await recipientCell.getValue() === `  ${recipient}  `)
-    }, {
-      timeout: 15,
-      timeoutMsg: 'expected text to be different after 15s'
-    });
+    await ElementHelper.waitForValue(await recipientCell, `  ${recipient}  `);
   }
 
   getActiveElementId = async () => {
