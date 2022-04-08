@@ -41,7 +41,9 @@ class ElementHelper {
 
   static checkStaticText = async (element: WebdriverIO.Element, label: string) => {
     await this.waitElementVisible(element);
-    expect(await element.getText()).toEqual(label);
+    await browser.waitUntil(
+      async () => (await element.getText()) === label
+    );
   }
 
   static doubleClick = async (element: WebdriverIO.Element) => {
