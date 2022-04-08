@@ -29,7 +29,7 @@ config.capabilities = [
     platformName: 'iOS',
     iosInstallPause: 5000,
     deviceName: 'iPhone 13',
-    platformVersion: '15.3',
+    platformVersion: '15.4',
     automationName: 'XCUITest',
     app: join(process.cwd(), './FlowCrypt.app'),
     simpleIsVisibleCheck: true,
