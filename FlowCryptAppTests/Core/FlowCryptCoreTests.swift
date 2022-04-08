@@ -415,6 +415,74 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(decryptResult.decryptErr!.error.type, DecryptErr.ErrorType.keyMismatch)
     }
 
+    func testCalculationTimes() async throws {
+        let timer = TestTimer()
+
+        // Test decrypt key
+        timer.start()
+        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.prv, passphrase: TestData.k3rsa4096.passphrase)
+        timer.stop()
+        XCTAssertLessThan(timer.durationMs, 1000)
+
+        // Test encrypt key
+        timer.start()
+        let _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: TestData.k3rsa4096.passphrase)
+        timer.stop()
+        XCTAssertLessThan(timer.durationMs, 1000)
+
+        // Test encrypt message
+        timer.start()
+        let keys = [
+            PrvKeyInfo(
+                private: TestData.k3rsa4096.prv,
+                longid: TestData.k3rsa4096.longid,
+                passphrase: TestData.k3rsa4096.passphrase,
+                fingerprints: TestData.k3rsa4096.fingerprints
+            )
+        ]
+        let encrypted = try await core.encrypt(
+            data: "Test email message".data(),
+            pubKeys: [TestData.k3rsa4096.pub],
+            password: nil
+        )
+        timer.stop()
+        XCTAssertLessThan(timer.durationMs, 1000)
+
+        // Test decrypt msg
+        timer.start()
+        let _ = try await core.parseDecryptMsg(
+            encrypted: encrypted,
+            keys: keys,
+            msgPwd: nil,
+            isEmail: true,
+            verificationPubKeys: [TestData.k3rsa4096.pub]
+        )
+        timer.stop()
+        XCTAssertLessThan(timer.durationMs, 1000)
+
+        // Test sign message
+        timer.start()
+        let msg = SendableMsg(
+            text: "this is the message",
+            html: nil,
+            to: ["email@hello.com"],
+            cc: [],
+            bcc: [],
+            from: "sender@hello.com",
+            subject: "Signed email",
+            replyToMimeMsg: nil,
+            atts: [],
+            pubKeys: [TestData.k3rsa4096.pub],
+            signingPrv: keys[0],
+            password: nil
+        )
+
+        let _ = try await core.composeEmail(msg: msg, fmt: .encryptInline)
+        timer.stop()
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/1478#issuecomment-1090299132
+        XCTAssertLessThan(timer.durationMs, 60 * 1000) // TODO: change value to 1 when above issue is fixed
+    }
+
     func testDecryptEncryptedFile() async throws {
         // Given
         let initialFileName = "data.txt"

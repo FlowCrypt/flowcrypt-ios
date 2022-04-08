@@ -26,6 +26,7 @@
 		049E606F27FDBBD50089EE2A /* ComposeViewController+Picker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */; };
 		049E607127FDBC690089EE2A /* ComposeViewController+Drafts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */; };
 		049E607427FDBDBE0089EE2A /* ComposeViewController+TapActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */; };
+		049E607927FDECDB0089EE2A /* TestTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E607727FDEC610089EE2A /* TestTimer.swift */; };
 		04A1724A27F2FD2F00B79559 /* GoogleUserService+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */; };
 		04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */; };
 		04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B472921ECE29F600B8266F /* MyMenuViewController.swift */; };
@@ -464,6 +465,7 @@
 		049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Picker.swift"; sourceTree = "<group>"; };
 		049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Drafts.swift"; sourceTree = "<group>"; };
 		049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+TapActions.swift"; sourceTree = "<group>"; };
+		049E607727FDEC610089EE2A /* TestTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestTimer.swift; sourceTree = "<group>"; };
 		04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GoogleUserService+Contacts.swift"; sourceTree = "<group>"; };
 		04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeypairRealmObject.swift; sourceTree = "<group>"; };
 		04B472921ECE29F600B8266F /* MyMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyMenuViewController.swift; sourceTree = "<group>"; };
@@ -1299,6 +1301,7 @@
 				9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */,
 				5A39F438239ECDD0001F4607 /* ExtensionTests.swift */,
 				A3DAD60722E4588800F2C4CD /* TestData.swift */,
+				049E607727FDEC610089EE2A /* TestTimer.swift */,
 				9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */,
 				D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */,
 				9F2AC5CA267BE99E00F6149B /* Info.plist */,
@@ -2622,6 +2625,7 @@
 				9F6F3C3526ADFA27005BD9C6 /* ComposeMessageServiceTests.swift in Sources */,
 				9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */,
 				9F976584267E194F0058419D /* TestData.swift in Sources */,
+				049E607927FDECDB0089EE2A /* TestTimer.swift in Sources */,
 				9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */,
 				9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */,
 				51B0C774272AB61000124663 /* StringTestExtension.swift in Sources */,
