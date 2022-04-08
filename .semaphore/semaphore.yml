@@ -27,9 +27,9 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/
-          - cache restore && make dependencies && cache store
+          - make dependencies && cache store
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
-          - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
+          - sem-version node 16 && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - brew install ideviceinstaller
           - npm install ios-deploy -g --unsafe-perm=true --allow-root
           - npm install ios-sim -g --unsafe-perm=true --allow-root
@@ -66,12 +66,12 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/
-          - cache restore && make dependencies && cache store
+          - make dependencies && cache store
           - sem-version node 16 && mkdir .custom-npm && cd .custom-npm && npm install npm@8.1.2 && cd ..
       jobs:
         - name: TypeScript + Swift tests
           commands:
-            - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
+            - ( cd Core && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules && ../.custom-npm/node_modules/.bin/npm test )
             - bundle exec fastlane test
 after_pipeline:
   task:
