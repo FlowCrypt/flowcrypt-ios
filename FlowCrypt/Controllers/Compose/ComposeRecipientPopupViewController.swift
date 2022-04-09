@@ -30,7 +30,7 @@ final class ComposeRecipientPopupViewController: TableNodeViewController {
     }
 
     private let recipient: ComposeMessageRecipient
-    private let type: RecipientType
+    internal let type: RecipientType
     var delegate: ComposeRecipientPopupViewControllerProtocol?
 
     init(
