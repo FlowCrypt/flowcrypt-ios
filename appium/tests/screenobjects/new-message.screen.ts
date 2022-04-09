@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
+import TouchHelper from "../helpers/TouchHelper";
 
 const SELECTORS = {
   RECIPIENT_LIST_LABEL: '~aid-recipient-list-text',
@@ -19,6 +20,8 @@ const SELECTORS = {
   MESSAGE_PASSWORD_MODAL: '~aid-message-password-modal',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
+  RECIPIENT_POPUP_EMAIL_NODE: '~aid-recipient-popup-email-node',
+  RECIPIENT_POPUP_NAME_NODE: '~aid-recipient-popup-name-node',
   RECIPIENT_POPUP_COPY_BUTTON: '~aid-recipient-popup-copy-button',
   RECIPIENT_POPUP_REMOVE_BUTTON: '~aid-recipient-popup-remove-button',
   RECIPIENT_POPUP_EDIT_BUTTON: '~aid-recipient-popup-edit-button'
@@ -96,6 +99,14 @@ class NewMessageScreen extends BaseScreen {
 
   get cancelButton() {
     return $(SELECTORS.CANCEL_BUTTON);
+  }
+
+  get recipientPopupEmailNode() {
+    return $(SELECTORS.RECIPIENT_POPUP_EMAIL_NODE);
+  }
+
+  get recipientPopupNameNode() {
+    return $(SELECTORS.RECIPIENT_POPUP_NAME_NODE);
   }
 
   get recipientPopupCopyButton() {
@@ -248,20 +259,38 @@ class NewMessageScreen extends BaseScreen {
   }
 
   deleteAddedRecipient = async (order: number, type = 'to') => {
-    await this.showRecipientInputIfNeeded();
+    await this.showRecipientPopup(order, type);
     const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
-    await ElementHelper.waitAndClick(addedRecipientEl);
     await ElementHelper.waitAndClick(await this.recipientPopupRemoveButton);
     await ElementHelper.waitElementInvisible(addedRecipientEl);
   }
 
+  deleteAddedRecipientWithBackspace = async (order: number, type = 'to') => {
+    await this.showRecipientPopup(order, type)
+    await driver.sendKeys(['\b']); // backspace
+  }
+
   checkCopyForAddedRecipient = async (email: string, order: number, type = 'to') => {
-    await this.showRecipientInputIfNeeded();
-    const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
-    await ElementHelper.waitAndClick(addedRecipientEl);
+    await this.showRecipientPopup(order, type);
     await ElementHelper.waitAndClick(await this.recipientPopupCopyButton);
     const base64Encoded = new Buffer(email).toString('base64');
     expect(await driver.getClipboard('plaintext')).toEqual(base64Encoded);
+  }
+
+  checkPopupRecipientInfo = async (email: string, order: number, type = 'to', name?: string) => {
+    await this.showRecipientPopup(order, type);
+    expect(await (await this.recipientPopupEmailNode).getValue()).toBe(email);
+    if (name) {
+      expect(await (await this.recipientPopupNameNode).getValue()).toBe(name);
+    }
+    await TouchHelper.dismissPopover();
+  }
+
+  showRecipientPopup = async (order: number, type = 'to') => {
+    await browser.pause(300);
+    await this.showRecipientInputIfNeeded();
+    const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
+    await ElementHelper.waitAndClick(addedRecipientEl);
   }
 
   checkEditRecipient = async (order: number, type = 'to', recipient: string, recipientCount: number) => {

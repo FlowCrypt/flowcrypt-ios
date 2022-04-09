@@ -1,12 +1,112 @@
 {
-  "pins" : [
-    {
+  "object": {
+    "pins": [
+      {
       "identity" : "appauth-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/openid/AppAuth-iOS.git",
       "state" : {
         "revision" : "33660c271c961f8ce1084cc13f2ea8195e864f7d",
         "version" : "1.5.0"
+      },
+      {
+        "package": "BigInt",
+        "repositoryURL": "https://github.com/attaswift/BigInt",
+        "state": {
+          "branch": null,
+          "revision": "0ed110f7555c34ff468e72e1686e59721f2b0da6",
+          "version": "5.3.0"
+        }
+      },
+      {
+        "package": "GoogleAPIClientForREST",
+        "repositoryURL": "https://github.com/google/google-api-objectivec-client-for-rest",
+        "state": {
+          "branch": null,
+          "revision": "22e0bb02729d60db396e8b90d8189313cd86ba53",
+          "version": "1.6.0"
+        }
+      },
+      {
+        "package": "GoogleSignIn",
+        "repositoryURL": "https://github.com/google/GoogleSignIn-iOS",
+        "state": {
+          "branch": null,
+          "revision": "60ca2bfd218ccb194a746a79b41d9d50eb7e3af0",
+          "version": "6.1.0"
+        }
+      },
+      {
+        "package": "GTMSessionFetcher",
+        "repositoryURL": "https://github.com/google/gtm-session-fetcher.git",
+        "state": {
+          "branch": null,
+          "revision": "bc6a19702ac76ac4e488b68148710eb815f9bc56",
+          "version": "1.7.0"
+        }
+      },
+      {
+        "package": "GTMAppAuth",
+        "repositoryURL": "https://github.com/google/GTMAppAuth.git",
+        "state": {
+          "branch": null,
+          "revision": "40f4103fb52109032c05599a0c39ad43edbdf80a",
+          "version": "1.2.2"
+        }
+      },
+      {
+        "package": "IDZSwiftCommonCrypto",
+        "repositoryURL": "https://github.com/iosdevzone/IDZSwiftCommonCrypto",
+        "state": {
+          "branch": null,
+          "revision": "d824371e670bd57eb456bbc41139b4997f7207b8",
+          "version": "0.13.1"
+        }
+      },
+      {
+        "package": "MailCore",
+        "repositoryURL": "https://github.com/FlowCrypt/mailcore2",
+        "state": {
+          "branch": null,
+          "revision": "512e3074f7b80a4425be806e3ce968f1e84b995f",
+          "version": "0.7.5"
+        }
+      },
+      {
+        "package": "MBProgressHUD",
+        "repositoryURL": "https://github.com/jdg/MBProgressHUD",
+        "state": {
+          "branch": null,
+          "revision": "bca42b801100b2b3a4eda0ba8dd33d858c780b0d",
+          "version": "1.2.0"
+        }
+      },
+      {
+        "package": "Realm",
+        "repositoryURL": "https://github.com/realm/realm-cocoa",
+        "state": {
+          "branch": null,
+          "revision": "f9400ca044844701ea32491a4c6c4b06d74ab24d",
+          "version": "10.25.0"
+        }
+      },
+      {
+        "package": "RealmDatabase",
+        "repositoryURL": "https://github.com/realm/realm-core",
+        "state": {
+          "branch": null,
+          "revision": "3c78cccdc0d9f967c5c15b7f3ea081814e2b3ef2",
+          "version": "11.13.0"
+        }
+      },
+      {
+        "package": "Toast",
+        "repositoryURL": "https://github.com/scalessec/Toast-Swift",
+        "state": {
+          "branch": null,
+          "revision": "0c9493eeacb102cc614da385cfaaf475379f4ab4",
+          "version": "5.0.1"
+        }
       }
     },
     {

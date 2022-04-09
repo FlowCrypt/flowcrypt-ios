@@ -141,6 +141,7 @@ extension ComposeViewController {
                 node.reloadRows(at: [indexPath, inputIndexPath], with: .automatic)
             }
 
+            hideRecipientPopOver()
             return
         }
 

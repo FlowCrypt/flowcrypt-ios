@@ -423,7 +423,10 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             case .idle:
                 return TextCellNode(input: self.decorator.initialNodeInput(for: size))
             case .fetched, .refresh:
-                return InboxCellNode(input: .init((self.inboxInput[indexPath.row])))
+                guard let input = self.inboxInput[safe: indexPath.row] else {
+                    return TextCellNode.loading
+                }
+                return InboxCellNode(input: .init(input))
                     .then { $0.backgroundColor = .backgroundColor }
             case .fetching:
                 guard let input = self.inboxInput[safe: indexPath.row] else {

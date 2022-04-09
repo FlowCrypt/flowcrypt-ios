@@ -87,6 +87,7 @@ final class ComposeViewController: TableNodeViewController {
 
     internal var selectedRecipientType: RecipientType? = .to
     internal var shouldShowAllRecipientTypes = false
+    internal var popoverVC: ComposeRecipientPopupViewController!
 
     internal var sectionsList: [Section] = []
 
