@@ -191,7 +191,7 @@ class EmailScreen extends BaseScreen {
 
   checkAttachment = async (name: string) => {
     await (await this.attachmentCell).waitForDisplayed();
-    await ElementHelper.checkStaticText(await this.attachmentTitle, name);
+    await ElementHelper.waitForText(await this.attachmentTitle, name);
   }
 
   clickOnAttachmentCell = async () => {
@@ -231,9 +231,9 @@ class EmailScreen extends BaseScreen {
   }
 
   checkRecipientsList = async (to: string, cc: string, bcc: string) => {
-    await ElementHelper.checkStaticText(await this.recipientsToLabel, to);
-    await ElementHelper.checkStaticText(await this.recipientsCcLabel, cc);
-    await ElementHelper.checkStaticText(await this.recipientsBccLabel, bcc);
+    await ElementHelper.waitForText(await this.recipientsToLabel, to);
+    await ElementHelper.waitForText(await this.recipientsCcLabel, cc);
+    await ElementHelper.waitForText(await this.recipientsBccLabel, bcc);
   }
 
   checkEncryptionBadge = async (value: string) => {

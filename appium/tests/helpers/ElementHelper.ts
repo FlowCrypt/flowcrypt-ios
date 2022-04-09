@@ -62,6 +62,30 @@ class ElementHelper {
     await this.waitAndClick(element);
     await element.setValue(text);
   }
+
+  //wait for text in element during 15 seconds (if the text doesn't appear during 15s, it will show the error)
+  static waitForText = async (element: WebdriverIO.Element, text: string, timeout: number = DEFAULT_TIMEOUT) => {
+    await this.waitElementVisible(element);
+    await element.waitUntil(async  function () {
+      return (await element.getText() === text)
+    }, {
+      timeout: timeout,
+      timeoutMsg: `expected text within ${timeout}ms to be "${text}" but got last value "${await element.getText()}"`
+    });
+  }
+
+  //wait for value in element during 15 seconds (if the value doesn't appear during 15s, it will show the error)
+  static waitForValue = async (element: WebdriverIO.Element, value: string, timeout: number = DEFAULT_TIMEOUT) => {
+    await this.waitElementVisible(element);
+    await element.waitUntil(async  function () {
+      return (await element.getValue() === value)
+    }, {
+      timeout: timeout,
+      timeoutMsg: `expected text within ${timeout}ms to be "${value}" but got last value "${await element.getValue()}"`
+
+    });
+  }
+
 }
 
 export default ElementHelper;

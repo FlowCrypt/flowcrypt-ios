@@ -175,6 +175,7 @@ class NewMessageScreen extends BaseScreen {
   };
 
   checkFilledComposeEmailInfo = async (emailInfo: ComposeEmailInfo) => {
+    await ElementHelper.waitElementVisible(await this.composeSecurityMessage);
     expect(await this.composeSecurityMessage).toHaveTextContaining(emailInfo.message);
 
     const element = await this.filledSubject(emailInfo.subject);
@@ -212,7 +213,7 @@ class NewMessageScreen extends BaseScreen {
     }
   }
 
-  checkRecipientsList = async(recipients: string[], type = 'to') => {
+  checkRecipientsList = async (recipients: string[], type = 'to') => {
     await this.showRecipientInputIfNeeded();
     if (recipients.length === 0) {
       await ElementHelper.waitElementInvisible(await $(`~aid-${type}-0-label`));
@@ -227,8 +228,7 @@ class NewMessageScreen extends BaseScreen {
     await this.showRecipientInputIfNeeded();
     const recipientCell = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitElementVisible(recipientCell);
-    const name = await recipientCell.getValue();
-    expect(name).toEqual(`  ${recipient}  `);
+    await ElementHelper.waitForValue(await recipientCell, `  ${recipient}  `);
   }
 
   getActiveElementId = async () => {
@@ -237,13 +237,13 @@ class NewMessageScreen extends BaseScreen {
     return activeElement.ELEMENT;
   }
 
-  checkMessageFieldFocus = async() => {
+  checkMessageFieldFocus = async () => {
     await ElementHelper.waitElementVisible(await this.recipientListLabel);
     const messageElementId = (await this.composeSecurityMessage).elementId;
     expect(messageElementId).toBe(await this.getActiveElementId());
   }
 
-  checkRecipientTextFieldFocus = async() => {
+  checkRecipientTextFieldFocus = async () => {
     const toTextField = await this.getRecipientsTextField('to');
     await ElementHelper.waitElementVisible(toTextField);
     const toTextFieldActiveElementId = ((await toTextField.getActiveElement()) as unknown as { ELEMENT: string }).ELEMENT;
@@ -307,8 +307,7 @@ class NewMessageScreen extends BaseScreen {
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();
     const label = await this.attachmentNameLabel;
-    const value = await label.getValue();
-    expect(value).toEqual(name);
+    await ElementHelper.waitForValue(await label, name);
   }
 
   deleteAttachment = async () => {
@@ -324,7 +323,7 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.sendButton);
   }
 
-  clickToggleRecipientsButton =async () => {
+  clickToggleRecipientsButton = async () => {
     await ElementHelper.waitAndClick(await this.toggleRecipientsButton);
   }
 
@@ -336,7 +335,7 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.cancelButton);
   }
 
-  checkSetPasswordButton = async(isEnabled: boolean) => {
+  checkSetPasswordButton = async (isEnabled: boolean) => {
     const el = await this.setPasswordButton;
     expect(await el.isEnabled()).toBe(isEnabled);
   }
