@@ -17,10 +17,10 @@ describe('COMPOSE EMAIL: ', () => {
   it('user is able to select recipient from contact list using contact name', async () => {
 
     const firstContactEmail = CommonData.contact.email;
-    const firstContactName = CommonData.contact.name;
+    const firstContactName = CommonData.contact.contactName;
 
     const secondContactEmail = CommonData.secondContact.email;
-    const secondContactName = CommonData.secondContact.name;
+    const secondContactName = CommonData.secondContact.contactName;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();

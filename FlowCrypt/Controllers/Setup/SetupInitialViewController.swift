@@ -127,10 +127,12 @@ extension SetupInitialViewController {
     }
 
     private func signOut() {
-        do {
-            try appContext.globalRouter.signOut(appContext: appContext)
-        } catch {
-            showAlert(message: error.localizedDescription)
+        Task {
+            do {
+                try await appContext.globalRouter.signOut(appContext: appContext)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 

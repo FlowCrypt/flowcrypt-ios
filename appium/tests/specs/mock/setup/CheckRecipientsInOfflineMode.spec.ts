@@ -13,8 +13,11 @@ describe('COMPOSE EMAIL: ', () => {
   it('check valid, revoked and expired recipients in offline mode', async () => {
 
     const validEmail = CommonData.validMockUser.email;
+    const validName = CommonData.validMockUser.name;
     const expiredEmail = CommonData.expiredMockUser.email;
+    const expiredName = CommonData.expiredMockUser.name;
     const revokedEmail = CommonData.revokedMockUser.email;
+    const revokedName = CommonData.revokedMockUser.name;
 
 
     const mockApi = new MockApi();
@@ -42,9 +45,9 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.setAddRecipient(expiredEmail);
       await NewMessageScreen.setAddRecipient(revokedEmail);
 
-      await NewMessageScreen.checkAddedRecipientColor(validEmail, 0, 'green');
-      await NewMessageScreen.checkAddedRecipientColor(expiredEmail, 1, 'orange');
-      await NewMessageScreen.checkAddedRecipientColor(revokedEmail, 2, 'red');
+      await NewMessageScreen.checkAddedRecipientColor(validName, 0, 'green');
+      await NewMessageScreen.checkAddedRecipientColor(expiredName, 1, 'orange');
+      await NewMessageScreen.checkAddedRecipientColor(revokedName, 2, 'red');
 
       await NewMessageScreen.deleteAddedRecipient(2);
       await NewMessageScreen.deleteAddedRecipient(1);
@@ -61,9 +64,9 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.setAddRecipient(expiredEmail);
       await NewMessageScreen.setAddRecipient(revokedEmail);
 
-      await NewMessageScreen.checkAddedRecipientColor(validEmail, 0, 'green');
-      await NewMessageScreen.checkAddedRecipientColor(expiredEmail, 1, 'red');
-      await NewMessageScreen.checkAddedRecipientColor(revokedEmail, 2, 'red');
+      await NewMessageScreen.checkAddedRecipientColor(validName, 0, 'green');
+      await NewMessageScreen.checkAddedRecipientColor(expiredName, 1, 'red');
+      await NewMessageScreen.checkAddedRecipientColor(revokedName, 2, 'red');
     });
   });
 });

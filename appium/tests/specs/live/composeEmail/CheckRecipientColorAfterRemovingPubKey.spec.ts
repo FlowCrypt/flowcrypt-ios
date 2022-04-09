@@ -17,7 +17,7 @@ describe('COMPOSE EMAIL: ', () => {
   it('check recipient color after removing public key from settings', async () => {
 
     const contactEmail = CommonData.contact.email;
-    const contactName = CommonData.contact.name;
+    const contactName = CommonData.contact.contactName;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();

@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -9,7 +9,10 @@ declare const global: any;
 
 const endpoints = new Endpoints();
 
-global.handleRequestFromHost = (endpointName: string, callbackId: string, request: string, data: Uint8Array, cb: (key: string, response: EndpointRes) => void): void => {
+// tslint:disable-next-line no-unsafe-any
+global.handleRequestFromHost = (
+  endpointName: string, callbackId: string, request: string,
+  data: Uint8Array, cb: (key: string, response: EndpointRes) => void): void => {
   try {
     const handler = endpoints[endpointName];
     if (!handler) {

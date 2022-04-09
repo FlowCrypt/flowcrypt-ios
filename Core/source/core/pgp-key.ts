@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -8,10 +8,12 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
-import { getKeyExpirationTimeForCapabilities, str_to_hex } from '../platform/util';
+import { getKeyExpirationTimeForCapabilities, strToHex } from '../platform/util';
+// eslint-disable-next-line max-len
 import { AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
+import { Str } from './common';
 const readToEnd = requireStreamReadToEnd();
 
 export type Contact = {
@@ -80,12 +82,12 @@ export class PgpKey {
   public static create = async (userIds: UserID[], variant: KeyAlgo, passphrase: string):
     Promise<{ private: string, public: string, revCert: string }> => {
     const k = await generateKey({
-      userIDs: userIds, passphrase: passphrase, format: 'armored',
+      userIDs: userIds, passphrase, format: 'armored',
       curve: (variant === 'curve25519' ? 'curve25519' : undefined),
       rsaBits: (variant === 'curve25519' ? undefined : (variant === 'rsa2048' ? 2048 : 4096))
     });
     return { public: k.publicKey, private: k.privateKey, revCert: k.revocationCertificate };
-  }
+  };
 
   /**
    * used only for keys that we ourselves parsed / formatted before, eg from local storage, because no err handling
@@ -95,12 +97,12 @@ export class PgpKey {
     if (fromCache) {
       return fromCache;
     }
-    const key = await readKey({ armoredKey: armoredKey });
+    const key = await readKey({ armoredKey });
     if (key?.isPrivate()) {
       Store.armoredKeyCacheSet(armoredKey, key);
     }
     return key;
-  }
+  };
 
   /**
    * Read many keys, could be armored or binary, in single armor or separately,
@@ -129,11 +131,11 @@ export class PgpKey {
       await pushKeysAndErrs(fileData, 'read');
     }
     return { keys: allKeys, errs: allErrs };
-  }
+  };
 
   public static isPacketPrivate = (packet: AllowedKeyPackets): packet is PrvPacket => {
     return packet instanceof SecretKeyPacket || packet instanceof SecretSubkeyPacket;
-  }
+  };
 
   public static validateAllDecryptedPackets = async (key: Key): Promise<void> => {
     for (const prvPacket of key.toPacketList().filter(PgpKey.isPacketPrivate)) {
@@ -173,7 +175,7 @@ export class PgpKey {
       }
     }
     return true;
-  }
+  };
 
   public static encrypt = async (prv: Key, passphrase: string) => {
     if (!passphrase || passphrase === 'undefined' || passphrase === 'null') {
@@ -189,9 +191,10 @@ export class PgpKey {
         `${secretPackets.length} private packets still encrypted`);
     }
     await encryptKey({ privateKey: (prv as PrivateKey), passphrase });
-  }
+  };
 
-  public static normalize = async (armored: string): Promise<{ normalized: string, keys: Key[], error?: string | undefined }> => {
+  public static normalize = async (armored: string):
+    Promise<{ normalized: string, keys: Key[], error?: string | undefined }> => {
     try {
       let keys: Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
@@ -212,9 +215,9 @@ export class PgpKey {
       return { normalized: keys.map(k => k.armor()).join('\n'), keys };
     } catch (error) {
       Catch.reportErr(error);
-      return { normalized: '', keys: [], error: error.message };
+      return { normalized: '', keys: [], error: Str.extractErrorMessage(error) };
     }
-  }
+  };
 
   public static fingerprint = async (key: Key | string, formatting: "default" | "spaced" = 'default'):
     Promise<string | undefined> => {
@@ -245,20 +248,20 @@ export class PgpKey {
         return undefined;
       }
     }
-  }
+  };
 
   public static longid = async (keyOrFingerprintOrBytes: string | Key | undefined): Promise<string | undefined> => {
     if (!keyOrFingerprintOrBytes) {
       return undefined;
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 8) {
-      return str_to_hex(keyOrFingerprintOrBytes).toUpperCase();
+      return strToHex(keyOrFingerprintOrBytes).toUpperCase();
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 40) {
       return keyOrFingerprintOrBytes.substr(-16);
     } else if (typeof keyOrFingerprintOrBytes === 'string' && keyOrFingerprintOrBytes.length === 49) {
       return keyOrFingerprintOrBytes.replace(/ /g, '').substr(-16);
     }
     return await PgpKey.longid(await PgpKey.fingerprint(keyOrFingerprintOrBytes));
-  }
+  };
 
   public static longids = async (keyIds: KeyID[]) => {
     const longids: string[] = [];
@@ -269,7 +272,7 @@ export class PgpKey {
       }
     }
     return longids;
-  }
+  };
 
   public static usable = async (armored: string) => { // is pubkey usable for encrytion?
     if (!PgpKey.fingerprint(armored)) {
@@ -283,7 +286,7 @@ export class PgpKey {
       return true; // good key - cannot be expired
     }
     return await PgpKey.usableButExpired(pubkey);
-  }
+  };
 
   public static expired = async (key: Key): Promise<boolean> => {
     if (!key) {
@@ -297,7 +300,7 @@ export class PgpKey {
       return Date.now() > exp.getTime();
     }
     throw new Error(`Got unexpected value for expiration: ${exp}`); // exp must be either null, Infinity or a Date
-  }
+  };
 
   public static usableButExpired = async (key: Key): Promise<boolean> => {
     if (!key) {
@@ -312,7 +315,7 @@ export class PgpKey {
     }
     // try to see if the key was usable just before expiration
     return Boolean(await key.getEncryptionKey(undefined, oneSecondBeforeExpiration));
-  }
+  };
 
   public static dateBeforeExpiration = async (key: Key | string): Promise<Date | undefined> => {
     const openPgpKey = typeof key === 'string' ? await PgpKey.read(key) : key;
@@ -323,12 +326,13 @@ export class PgpKey {
       return new Date(expires.getTime() - 1000);
     }
     return undefined;
-  }
+  };
 
-  public static parse = async (armored: string): Promise<{ original: string, normalized: string, keys: KeyDetails[], error?: string | undefined }> => {
+  public static parse = async (armored: string):
+    Promise<{ original: string, normalized: string, keys: KeyDetails[], error?: string | undefined }> => {
     const { normalized, keys, error } = await PgpKey.normalize(armored);
     return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)), error };
-  }
+  };
 
   public static details = async (k: Key): Promise<KeyDetails> => {
     const keys = k.getKeys();
@@ -368,7 +372,7 @@ export class PgpKey {
       lastModified,
       revoked: k.revocationSignatures.length > 0
     };
-  }
+  };
 
   /**
    * Get latest self-signature date, in utc millis.
@@ -379,7 +383,7 @@ export class PgpKey {
     // discussion is in progress: https://github.com/openpgpjs/openpgpjs/discussions/1491
     const allSignatures: SignaturePacket[] = [];
     for (const user of key.users) {
-      const data = { userID: user.userID, userAttribute: user.userAttribute, key: key };
+      const data = { userID: user.userID, userAttribute: user.userAttribute, key };
       for (const selfCert of user.selfCertifications) {
         try {
           await selfCert.verify(key.keyPacket, enums.signature.certGeneric, data);
@@ -402,7 +406,7 @@ export class PgpKey {
       return Math.max(...allSignatures.map(x => x.created ? x.created.getTime() : 0));
     }
     throw new Error('No valid signature found in key');
-  }
+  };
 
   public static revoke = async (key: Key): Promise<string | undefined> => {
     if (!key.isRevoked()) {
@@ -416,5 +420,5 @@ export class PgpKey {
     } else {
       return await readToEnd(certificate as MaybeStream<string>);
     }
-  }
+  };
 }

@@ -28,7 +28,7 @@ class OldVersionAppScreen extends BaseScreen {
   }
 
   checkEmailAddress = async (email: string) => {
-    await ElementHelper.checkStaticText(await this.senderEmail, email);
+    await ElementHelper.waitForText(await this.senderEmail, email);
   }
 
   checkEmailSubject = async (subject: string) => {

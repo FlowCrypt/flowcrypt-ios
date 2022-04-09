@@ -83,8 +83,11 @@ openpgpLib = replace( // rsa decrypt on host
 openpgpLib = replace( // rsa verify on host
   openpgpLib,
   /const EM = await _public_key2\.default\.rsa\.verify\(m, n, e\);/, `
-  const computed = await coreHost.verifyRsaModPow(m.toString(10), e.toString(10), n.toString(10)); // returns empty str if not supported: js fallback below
-  const EM = computed ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength()) : await _public_key2.default.rsa.verify(m, n, e);`
+  // returns empty str if not supported: js fallback below
+  const computed = await coreHost.verifyRsaModPow(m.toString(10), e.toString(10), n.toString(10));
+  const EM = computed
+    ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength())
+    : await _public_key2.default.rsa.verify(m, n, e);`
 );
 */
 

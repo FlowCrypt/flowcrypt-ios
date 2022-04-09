@@ -1,3 +1,4 @@
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 import { Str } from '../core/common';
 
 type Attributes = { [attr: string]: string };
@@ -19,12 +20,16 @@ declare const dereq_sanitize_html: (dirty: string, opts?: {
  * This file needs to be in platform/ folder because its implementation is platform-dependant
  *  - on browser, it uses DOMPurify
  *  - in Node (targetting mobile-core environment) it uses sanitize-html
- * It would be preferable to use DOMPurify on all platforms, but on Node it has a JSDOM dependency which is itself 20MB of code, not acceptable on mobile.
+ * It would be preferable to use DOMPurify on all platforms,
+ * but on Node it has a JSDOM dependency which is itself 20MB of code, not acceptable on mobile.
  */
 export class Xss {
 
-  private static ALLOWED_BASIC_TAGS = ['p', 'div', 'br', 'u', 'i', 'em', 'b', 'ol', 'ul', 'pre', 'li', 'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th',
-    'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'address', 'blockquote', 'dl', 'fieldset', 'a', 'font', 'strong', 'strike', 'code'];
+  private static ALLOWED_BASIC_TAGS = [
+    'p', 'div', 'br', 'u', 'i', 'em', 'b', 'ol', 'ul', 'pre', 'li', 'table',
+    'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
+    'address', 'blockquote', 'dl', 'fieldset', 'a', 'font', 'strong', 'strike', 'code'
+  ];
 
   private static ALLOWED_ATTRS = {
     a: ['href', 'name', 'target'],
@@ -44,7 +49,7 @@ export class Xss {
    * used whenever untrusted remote content (eg html email) is rendered, but we still want to preserve html
    * imgToLink is ignored on Node. Remote links are replaced with <a>, and local imgs are preserved
    */
-  public static htmlSanitizeKeepBasicTags = (dirtyHtml: string, imgToLink?: SanitizeImgHandling): string => {
+  public static htmlSanitizeKeepBasicTags = (dirtyHtml: string): string => {
     const imgContentReplaceable = `IMG_ICON_${Str.sloppyRandom()}`;
     let remoteContentReplacedWithLink = false;
     let cleanHtml = dereq_sanitize_html(dirtyHtml, {
@@ -58,7 +63,10 @@ export class Xss {
             return { tagName: 'img', attribs: { src: attribs.src, alt: attribs.alt || '' } };
           } else if (srcBegin.startsWith('http://') || srcBegin.startsWith('https://')) {
             remoteContentReplacedWithLink = true;
-            return { tagName: 'a', attribs: { href: String(attribs.src), target: "_blank" }, text: imgContentReplaceable };
+            return {
+              tagName: 'a', attribs: { href: String(attribs.src), target: "_blank" },
+              text: imgContentReplaceable
+            };
           } else {
             return { tagName: 'img', attribs: { alt: attribs.alt, title: attribs.title }, text: '[img]' } as Tag;
           }
@@ -83,13 +91,18 @@ export class Xss {
       }
     });
     if (remoteContentReplacedWithLink) {
-      cleanHtml = `<font size="-1" color="#31a217" face="monospace">[remote content blocked for your privacy]</font><br /><br />${cleanHtml}`;
+      cleanHtml = '<font size="-1" color="#31a217" face="monospace">' +
+        `[remote content blocked for your privacy]</font><br /><br />${cleanHtml}`;
       // clean it one more time in case something bad slipped in
-      cleanHtml = dereq_sanitize_html(cleanHtml, { allowedTags: Xss.ALLOWED_BASIC_TAGS, allowedAttributes: Xss.ALLOWED_ATTRS, allowedSchemes: Xss.ALLOWED_SCHEMES });
+      cleanHtml = dereq_sanitize_html(cleanHtml, {
+        allowedTags: Xss.ALLOWED_BASIC_TAGS, allowedAttributes: Xss.ALLOWED_ATTRS,
+        allowedSchemes: Xss.ALLOWED_SCHEMES
+      });
     }
-    cleanHtml = cleanHtml.replace(new RegExp(imgContentReplaceable, 'g'), `<font color="#D14836" face="monospace">[img]</font>`);
+    cleanHtml = cleanHtml.replace(new RegExp(imgContentReplaceable, 'g'),
+      `<font color="#D14836" face="monospace">[img]</font>`);
     return cleanHtml;
-  }
+  };
 
   public static htmlSanitizeAndStripAllTags = (dirtyHtml: string, outputNl: string): string => {
     let html = Xss.htmlSanitizeKeepBasicTags(dirtyHtml);
@@ -99,11 +112,15 @@ export class Xss {
     const blockEnd = `CU_BE_${random}`;
     html = html.replace(/<br[^>]*>/gi, br);
     html = html.replace(/\n/g, '');
-    html = html.replace(/<\/(p|h1|h2|h3|h4|h5|h6|ol|ul|pre|address|blockquote|dl|div|fieldset|form|hr|table)[^>]*>/gi, blockEnd);
-    html = html.replace(/<(p|h1|h2|h3|h4|h5|h6|ol|ul|pre|address|blockquote|dl|div|fieldset|form|hr|table)[^>]*>/gi, blockStart);
+    html = html.replace(
+      /<\/(p|h1|h2|h3|h4|h5|h6|ol|ul|pre|address|blockquote|dl|div|fieldset|form|hr|table)[^>]*>/gi, blockEnd);
+    html = html.replace(
+      /<(p|h1|h2|h3|h4|h5|h6|ol|ul|pre|address|blockquote|dl|div|fieldset|form|hr|table)[^>]*>/gi, blockStart);
     html = html.replace(RegExp(`(${blockStart})+`, 'g'), blockStart).replace(RegExp(`(${blockEnd})+`, 'g'), blockEnd);
-    html = html.split(br + blockEnd + blockStart).join(br).split(blockEnd + blockStart).join(br).split(br + blockEnd).join(br);
-    let text = html.split(br).join('\n').split(blockStart).filter(v => !!v).join('\n').split(blockEnd).filter(v => !!v).join('\n');
+    html = html.split(br + blockEnd + blockStart).join(br).split(blockEnd + blockStart).join(br)
+      .split(br + blockEnd).join(br);
+    let text = html.split(br).join('\n').split(blockStart).filter(v => !!v).join('\n')
+      .split(blockEnd).filter(v => !!v).join('\n');
     text = text.replace(/\n{2,}/g, '\n\n');
     // not all tags were removed above. Remove all remaining tags
     text = dereq_sanitize_html(text, {
@@ -116,17 +133,19 @@ export class Xss {
         },
       }
     });
-    text = dereq_sanitize_html(text, { allowedTags: [] }); // clean it one more time to replace leftover spans with their text
+    // clean it one more time to replace leftover spans with their text
+    text = dereq_sanitize_html(text, { allowedTags: [] });
     text = text.trim();
     if (outputNl !== '\n') {
       text = text.replace(/\n/g, outputNl);
     }
     return text;
-  }
+  };
 
   public static escape = (str: string) => {
-    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\//g, '&#x2F;');
-  }
+    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\//g, '&#x2F;');
+  };
 
   public static escapeTextAsRenderableHtml = (text: string) => {
     return Xss.escape(text)
@@ -134,11 +153,14 @@ export class Xss {
       .replace(/^ +/gm, spaces => spaces.replace(/ /g, '&nbsp;'))
       .replace(/^\t+/gm, tabs => tabs.replace(/\t/g, '&#9;'))
       .replace(/\n/g, ''); // strip newlines, already have <br>
-  }
+  };
 
   public static htmlUnescape = (str: string) => {
-    // the &nbsp; at the end is replaced with an actual NBSP character, not a space character. IDE won't show you the difference. Do not change.
-    return str.replace(/&#x2F;/g, '/').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
-  }
+    // the &nbsp; at the end is replaced with an actual NBSP character,
+    // not a space character. IDE won't show you the difference. Do not change.
+    return str.replace(/&#x2F;/g, '/').replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
+  };
 
 }

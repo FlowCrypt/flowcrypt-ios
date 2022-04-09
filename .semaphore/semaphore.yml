@@ -70,6 +70,11 @@ blocks:
           - sem-version node 16 && mkdir .custom-npm && cd .custom-npm && npm install npm@8.1.2 && cd ..
           - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules )
       jobs:
+        - name: Code quality
+          commands:
+            - cd Core
+            - ../.custom-npm/node_modules/.bin/npm run tslint
+            - ../.custom-npm/node_modules/.bin/npm run eslint
         - name: TypeScript tests
           commands:
             - cd Core
