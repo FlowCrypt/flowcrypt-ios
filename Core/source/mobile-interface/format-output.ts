@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -11,17 +11,35 @@ import { Xss } from '../platform/xss';
 import { VerifyRes } from '../core/pgp-msg';
 
 export type Buffers = (Buf | Uint8Array)[];
-export type EndpointRes = {json: string, data: Buf | Uint8Array};
+export type EndpointRes = { json: string, data: Buf | Uint8Array };
 
-export const isContentBlock = (t: MsgBlockType) => t === 'plainText' || t === 'decryptedText' || t === 'plainHtml' || t === 'decryptedHtml' || t === 'signedMsg' || t === 'verifiedMsg';
+export const isContentBlock = (t: MsgBlockType) => {
+  return t === 'plainText' || t === 'decryptedText' || t === 'plainHtml'
+    || t === 'decryptedHtml' || t === 'signedMsg' || t === 'verifiedMsg';
+};
 
-const seamlessLockBg = 'iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAMAAAAPdrEwAAAAh1BMVEXw8PD////w8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PD7MuHIAAAALXRSTlMAAAECBAcICw4QEhUZIyYqMTtGTV5kdn2Ii5mfoKOqrbG0uL6/xcnM0NTX2t1l7cN4AAAB0UlEQVR4Ae3Y3Y4SQRCG4bdHweFHRBTBH1FRFLXv//qsA8kmvbMdXhh2Q0KfknpSCQc130c67s22+e9+v/+d84fxkSPH0m/+5P9vN7vRV0vPfx7or1NB23e99KAHuoXOOc6moQsBwNN1Q9g4Wdh1uq3MA7Qn0+2ylAt7WbWpyT+Wo8roKH6v2QhZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2gjZ2AUNOLmwgQdogEJ2dnF3UJdU3WjqO/u96aYtVd/7jqvIyu76G5se6GaY7tNNcy5d7se7eWVnDz87fMkuVuS8epF6f9NPObPY5re9y4N1/vya9Gr3se2bfvl9M0mkyZdv077p+a/3z4Meby5Br4NWiV51BaiUqfLro9I3WiR61RVcffwfXI7u5zZ20EOA82Uu8x3SlrSwXQuBSvSqK0AletUVoBK96gpIwlZy0MJWctDCVnLQwlZy0MJWctDCVnLQwlZy0MJWctDCVnLQwlZy0MJWctDCVnLQwlZy0MJWckIletUVIJJxITN6wtZd2EI+0NquyIJOnUpFVvRpcwmV6FVXgEr0qitAJXrVFaASveoKUIledQWoRK+6AlSiV13BP+/VVbky7Xq1AAAAAElFTkSuQmCC';
+const seamlessLockBg = 'iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAMAAAAPdrEwAAAAh1BMVEXw8PD////' +
+  'w8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8' +
+  'PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PD' +
+  '7MuHIAAAALXRSTlMAAAECBAcICw4QEhUZIyYqMTtGTV5kdn2Ii5mfoKOqrbG0uL6/' +
+  'xcnM0NTX2t1l7cN4AAAB0UlEQVR4Ae3Y3Y4SQRCG4bdHweFHRBTBH1FRFLXv//qsA' +
+  '8kmvbMdXhh2Q0KfknpSCQc130c67s22+e9+v/+d84fxkSPH0m/' +
+  '+5P9vN7vRV0vPfx7or1NB23e99KAHuoXOOc6moQsBwNN1Q9g4Wdh1uq3MA7Qn0+2ylAt7WbWpyT' +
+  '+Wo8roKH6v2QhZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2ghZ2gjZ2AUNOLmwg' +
+  'QdogEJ2dnF3UJdU3WjqO/u96aYtVd/7jqvIyu76G5se6GaY7tNNcy5d7se7eWVnDz87fMkuVuS8' +
+  'epF6f9NPObPY5re9y4N1/vya9Gr3se2bfvl9M0mkyZdv077p+a/' +
+  '3z4Meby5Br4NWiV51BaiUqfLro9I3WiR61RVcffwfXI7u5zZ20EOA82Uu8x3SlrSwXQuBSvSqK0' +
+  'AletUVoBK96gpIwlZy0MJWctDCVnLQwlZy0MJWctDCVnLQwlZy0MJWctDCVnLQwlZy0MJWctDCV' +
+  'nLQwlZy0MJWckIletUVIJJxITN6wtZd2EI+0NquyIJOnUpFVvRpcwmV6FVXgEr0qitAJXrVFaAS' +
+  'veoKUIledQWoRK+6AlSiV13BP+/VVbky7Xq1AAAAAElFTkSuQmCC';
 
 const fmtMsgContentBlockAsHtml = (dirtyContent: string, frameColor: 'green' | 'gray' | 'red' | 'plain') => {
-  const generalCss = `background: white;padding-left: 8px;min-height: 50px;padding-top: 4px;padding-bottom: 4px;width: 100%;`;
+  const generalCss = 'background: white;padding-left: 8px;min-height: 50px;padding-top: 4px;' +
+    'padding-bottom: 4px;width: 100%;';
   let frameCss: string;
   if (frameColor === 'green') {
-    frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #31A217;border-right: none;background-image: url(data:image/png;base64,${seamlessLockBg});`;
+    frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #31A217;border-right: none;' +
+      'background-image: url(data:image/png;base64,${seamlessLockBg});`;
   } else if (frameColor === 'red') {
     frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #d14836;border-right: none;`;
   } else if (frameColor === 'plain') {
@@ -29,15 +47,16 @@ const fmtMsgContentBlockAsHtml = (dirtyContent: string, frameColor: 'green' | 'g
   } else { // gray
     frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #989898;border-right: none;`;
   }
-  return `<div class="MsgBlock ${frameColor}" style="${generalCss}${frameCss}">${Xss.htmlSanitizeKeepBasicTags(dirtyContent)}</div><!-- next MsgBlock -->\n`;
-}
+  return `<div class="MsgBlock ${frameColor}" style="${generalCss}${frameCss}">` +
+    `${Xss.htmlSanitizeKeepBasicTags(dirtyContent)}</div><!-- next MsgBlock -->\n`;
+};
 
 export const stripHtmlRootTags = (html: string) => { // todo - this is very rudimentary, use a proper parser
   html = html.replace(/<\/?html[^>]*>/g, ''); // remove opening and closing html tags
-  html = html.replace(/<head[^>]*>.*<\/head>/g, '') // remove the whole head section
+  html = html.replace(/<head[^>]*>.*<\/head>/g, ''); // remove the whole head section
   html = html.replace(/<\/?body[^>]*>/g, ''); // remove opening and closing body tags
   return html.trim();
-}
+};
 
 /**
  * replace content of imgs: <img src="cid:16c7a8c3c6a8d4ab1e01">
@@ -46,26 +65,28 @@ const fillInlineHtmlImgs = (htmlContent: string, inlineImgsByCid: { [cid: string
   return htmlContent.replace(/src="cid:([^"]+)"/g, (originalSrcAttr, cid) => {
     const img = inlineImgsByCid[cid];
     if (img) {
-      // in current usage, as used by `endpoints.ts`: `block.attMeta!.data` actually contains base64 encoded data, not Uint8Array as the type claims
-      let alteredSrcAttr = `src="data:${img.attMeta!.type};base64,${img.attMeta!.data}"`;
+      // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
+      // actually contains base64 encoded data, not Uint8Array as the type claims
+      const alteredSrcAttr = `src="data:${img.attMeta!.type};base64,${img.attMeta!.data}"`;
       // delete to find out if any imgs were unused
       // later we can add the unused ones at the bottom
-      // (though as implemented will cause issues if the same cid is reused in several places in html - which is theoretically valid - only first will get replaced)
+      // (though as implemented will cause issues if the same cid is reused
+      // in several places in html - which is theoretically valid - only first will get replaced)
       delete inlineImgsByCid[cid];
       return alteredSrcAttr;
     } else {
       return originalSrcAttr;
     }
   });
-}
+};
 
 export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: MsgBlock, text: string } => {
   let msgContentAsHtml = '';
   let msgContentAsText = '';
-  const contentBlocks = allContentBlocks.filter(b => !Mime.isPlainImgAtt(b))
+  const contentBlocks = allContentBlocks.filter(b => !Mime.isPlainImgAtt(b));
   const imgsAtTheBottom: MsgBlock[] = [];
   const inlineImgsByCid: { [cid: string]: MsgBlock } = {};
-  for (let plainImgBlock of allContentBlocks.filter(b => Mime.isPlainImgAtt(b))) {
+  for (const plainImgBlock of allContentBlocks.filter(b => Mime.isPlainImgAtt(b))) {
     if (plainImgBlock.attMeta!.cid) {
       inlineImgsByCid[plainImgBlock.attMeta!.cid.replace(/>$/, '').replace(/^</, '')] = plainImgBlock;
     } else {
@@ -73,9 +94,9 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     }
   }
 
-  var verifyRes: (VerifyRes | undefined) = undefined;
-  var mixedSignatures = false;
-  var signedBlockCount = 0;
+  let verifyRes: VerifyRes | undefined;
+  let mixedSignatures = false;
+  let signedBlockCount = 0;
   for (const block of contentBlocks) {
     if (block.verifyRes) {
       ++signedBlockCount;
@@ -116,15 +137,18 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     if (mixedSignatures) {
       verifyRes.mixed = true;
     }
-    if (signedBlockCount > 0 && signedBlockCount != contentBlocks.length) {
+    if (signedBlockCount > 0 && signedBlockCount !== contentBlocks.length) {
       verifyRes.partial = true;
     }
   }
 
-  for (const inlineImg of imgsAtTheBottom.concat(Object.values(inlineImgsByCid))) { // render any images we did not insert into content, at the bottom
-    let alt = `${inlineImg.attMeta!.name || '(unnamed image)'} - ${inlineImg.attMeta!.length! / 1024}kb`;
-    // in current usage, as used by `endpoints.ts`: `block.attMeta!.data` actually contains base64 encoded data, not Uint8Array as the type claims
-    let inlineImgTag = `<img src="data:${inlineImg.attMeta!.type};base64,${inlineImg.attMeta!.data}" alt="${Xss.escape(alt)} " />`;
+  for (const inlineImg of imgsAtTheBottom.concat(Object.values(inlineImgsByCid))) {
+    // render any images we did not insert into content, at the bottom
+    const alt = `${inlineImg.attMeta!.name || '(unnamed image)'} - ${inlineImg.attMeta!.length! / 1024}kb`;
+    // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
+    // actually contains base64 encoded data, not Uint8Array as the type claims
+    const inlineImgTag = `<img src="data:${inlineImg.attMeta!.type};` +
+      `base64,${inlineImg.attMeta!.data}" alt="${Xss.escape(alt)} " />`;
     msgContentAsHtml += fmtMsgContentBlockAsHtml(inlineImgTag, 'plain');
     msgContentAsText += `[image: ${alt}]\n`;
   }
@@ -144,34 +168,36 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
   </html>`;
   const contentBlock = MsgBlock.fromContent('plainHtml', msgContentAsHtml);
   contentBlock.verifyRes = verifyRes;
-  return { contentBlock: contentBlock, text: msgContentAsText.trim() };
-}
+  return { contentBlock, text: msgContentAsText.trim() };
+};
 
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
   return {
     json: JSON.stringify(response),
     data: data || new Uint8Array(0)
   };
-}
+};
 
 export const fmtErr = (e: any): EndpointRes => {
   return fmtRes({
     error: {
       message: String(e),
-      stack: e && typeof e === 'object' ? e.stack || '' : ''
+      stack: e && typeof e === 'object' ? e.stack || '' : '' // tslint:disable-line:no-unsafe-any
     }
   });
-}
+};
 
 export const printReplayTestDefinition = (endpoint: string, request: {}, data: Buf) => {
   console.log(`
 ava.test.only('replaying', async t => {
   const reqData = Buf.fromBase64Str('${Buf.fromUint8(data).toBase64Str()}');
-  console.log('replay ${endpoint}: ', ${JSON.stringify(request)}, '-------- begin req data ---------', reqData.toString(), '--------- end req data ---------');
+  console.log('replay ${endpoint}: ', ${JSON.stringify(request)},
+    '-------- begin req data ---------', reqData.toString(), '--------- end req data ---------');
   const { data, json } = parseResponse(await endpoints.${endpoint}(${JSON.stringify(request)},
     [Buffer.from(reqData)]));
-  console.log('response: ', json, '\n\n\n-------- begin res data ---------', Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
+  console.log('response: ', json, '\n\n\n-------- begin res data ---------',
+    Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
   t.pass();
 });
-  `)
-}
+  `);
+};
