@@ -305,10 +305,12 @@ extension MyMenuViewController {
                 sideMenuController()?.sideMenu?.hideSideMenu()
                 return
             }
-            do {
-                sideMenuController()?.setContentViewController(try SettingsViewController(appContext: appContext))
-            } catch {
-                showAlert(message: error.localizedDescription)
+            Task {
+                do {
+                    sideMenuController()?.setContentViewController(try await SettingsViewController(appContext: appContext))
+                } catch {
+                    showAlert(message: error.localizedDescription)
+                }
             }
         case .logOut:
             Task {

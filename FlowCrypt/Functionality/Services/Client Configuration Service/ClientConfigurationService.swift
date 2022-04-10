@@ -10,14 +10,22 @@ import FlowCryptCommon
 import Foundation
 
 protocol ClientConfigurationServiceType {
-    func fetch(for user: User) async throws -> ClientConfiguration
-    func getSaved(for user: String) throws -> ClientConfiguration
+    var configuration: ClientConfiguration { get async throws }
 }
 
-final class ClientConfigurationService {
+final class ClientConfigurationService: ClientConfigurationServiceType {
+    private lazy var logger = Logger.nested(Self.self)
 
     private let server: EnterpriseServerApiType
     private let local: LocalClientConfigurationType
+
+    private var didFetch = false
+
+    var configuration: ClientConfiguration {
+        get async throws {
+            didFetch ? try loadSaved() : try await fetchLatest()
+        }
+    }
 
     init(
         server: EnterpriseServerApiType,
@@ -26,29 +34,34 @@ final class ClientConfigurationService {
         self.server = server
         self.local = local
     }
-}
 
-// MARK: - OrganisationalRulesServiceType
-extension ClientConfigurationService: ClientConfigurationServiceType {
+    private func loadSaved() throws -> ClientConfiguration {
+        guard let raw = try local.load(for: server.email) else {
+            throw AppErr.unexpected("There should not be a user without OrganisationalRules")
+        }
 
-    func fetch(for user: User) async throws -> ClientConfiguration {
+        return ClientConfiguration(raw: raw)
+    }
+
+    private func fetchLatest() async throws -> ClientConfiguration {
         do {
-            let raw = try await server.getClientConfiguration()
-            try local.save(for: user, raw: raw, fesUrl: server.fesUrl)
-            return ClientConfiguration(raw: raw)
+            try await fetch()
+            return try loadSaved()
         } catch {
-            guard let raw = try local.load(for: user.email) else {
-                throw error
+            if let configuration = try? loadSaved() {
+                return configuration
             }
-            return ClientConfiguration(raw: raw)
+            throw error
         }
     }
 
-    func getSaved(for userEmail: String) throws -> ClientConfiguration {
-        guard let raw = try local.load(for: userEmail) else {
-            // todo - throw instead
-            fatalError("There should not be a user without OrganisationalRules")
-        }
-        return ClientConfiguration(raw: raw)
+    private func fetch() async throws {
+        let raw = try await server.getClientConfiguration()
+        try await local.save(
+            for: server.email,
+            raw: raw,
+            fesUrl: server.fesUrl
+        )
+        didFetch = true
     }
 }

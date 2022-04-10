@@ -18,7 +18,6 @@ final class ClientConfigurationRealmObject: Object {
     @Persisted var disallowAttesterSearchForDomains: Data?
     @Persisted var enforceKeygenAlgo: String?
     @Persisted var enforceKeygenExpireMonths: Int
-    @Persisted var user: UserRealmObject?
 
     convenience init(
         flags: [String]?,
@@ -28,7 +27,7 @@ final class ClientConfigurationRealmObject: Object {
         disallowAttesterSearchForDomains: [String]?,
         enforceKeygenAlgo: String?,
         enforceKeygenExpireMonths: Int?,
-        user: UserRealmObject
+        email: String
     ) {
         self.init()
         if let flags = flags {
@@ -42,13 +41,12 @@ final class ClientConfigurationRealmObject: Object {
         }
         self.enforceKeygenAlgo = enforceKeygenAlgo
         self.enforceKeygenExpireMonths = enforceKeygenExpireMonths ?? -1
-        self.user = user
-        self.userEmail = user.email
+        self.userEmail = email
     }
 }
 
 extension ClientConfigurationRealmObject {
-    convenience init(configuration: RawClientConfiguration, user: User, fesUrl: String?) {
+    convenience init(configuration: RawClientConfiguration, email: String, fesUrl: String?) {
         self.init(
             flags: configuration.flags?.map(\.rawValue),
             customKeyserverUrl: configuration.customKeyserverUrl,
@@ -57,7 +55,7 @@ extension ClientConfigurationRealmObject {
             disallowAttesterSearchForDomains: configuration.disallowAttesterSearchForDomains,
             enforceKeygenAlgo: configuration.enforceKeygenAlgo,
             enforceKeygenExpireMonths: configuration.enforceKeygenExpireMonths,
-            user: UserRealmObject(user)
+            email: email
         )
     }
 }

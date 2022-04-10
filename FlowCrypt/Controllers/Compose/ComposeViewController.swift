@@ -100,13 +100,14 @@ final class ComposeViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods()
-    ) throws {
+    ) async throws {
         self.appContext = appContext
         self.email = appContext.user.email
         self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
-        let clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        let clientConfiguration = try await appContext.clientConfigurationService.configuration
+
         self.localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )

@@ -51,10 +51,10 @@ final class SettingsViewController: TableNodeViewController {
     init(
         appContext: AppContextWithUser,
         decorator: SettingsViewDecorator = SettingsViewDecorator()
-    ) throws {
+    ) async throws {
         self.appContext = appContext
         self.decorator = decorator
-        self.clientConfiguration = try appContext.clientConfigurationService.getSaved(for: appContext.user.email)
+        self.clientConfiguration = try await appContext.clientConfigurationService.configuration
         self.rows = SettingsMenuItem.filtered(with: clientConfiguration)
         super.init(node: TableNode())
     }
@@ -101,20 +101,23 @@ extension SettingsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         let setting = rows[indexPath.row]
-        proceed(to: setting)
+
+        Task {
+            await proceed(to: setting)
+        }
     }
 }
 
 // MARK: - Actions
 
 extension SettingsViewController {
-    private func proceed(to setting: SettingsMenuItem) {
+    private func proceed(to setting: SettingsMenuItem) async {
         let viewController: UIViewController?
 
         switch setting {
         case .keys:
             do {
-                viewController = try KeySettingsViewController(appContext: appContext)
+                viewController = try await KeySettingsViewController(appContext: appContext)
             } catch {
                 viewController = nil
                 showAlert(message: error.localizedDescription)
