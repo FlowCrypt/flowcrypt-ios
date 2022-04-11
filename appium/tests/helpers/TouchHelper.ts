@@ -16,6 +16,19 @@ class TouchHelper {
     await driver.execute('mobile: scroll', { direction: 'up' });
   }
 
+  /**
+   * Dismiss popover by clicking popup outside
+   */
+  static dismissPopover = async () => {
+    const {width, height} = await driver.getWindowSize();
+    await driver.touchPerform([
+      {action: 'press', options: {x: width, y: height / 2}},
+      {action: 'wait', options: {ms: 100}},
+      {action: 'release', options: {}},
+    ]);
+    await browser.pause(100);
+  }
+
   static pullToRefresh = async () =>{
     const {width, height} = await driver.getWindowSize();
     const anchor = width / 2;

@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -14,7 +14,7 @@ export class Buf extends Uint8Array {
       offset += array.length;
     }
     return Buf.fromUint8(result);
-  }
+  };
 
   public static with = (input: Uint8Array | Buf | string): Buf => { // utf8 string or Typed Array bytes
     if (input instanceof Buf) {
@@ -24,11 +24,11 @@ export class Buf extends Uint8Array {
     } else {
       return Buf.fromUtfStr(input);
     }
-  }
+  };
 
   public static fromUint8 = (u8a: Uint8Array): Buf => {
     return new Buf(u8a);
-  }
+  };
 
   public static fromRawBytesStr = (rawStr: string): Buf => {
     const length = rawStr.length;
@@ -37,10 +37,12 @@ export class Buf extends Uint8Array {
       buf[i] = rawStr.charCodeAt(i);
     }
     return buf;
-  }
+  };
 
   public static fromUtfStr = (utfStr: string): Buf => {
-    // adapted from https://github.com/feross/buffer/blob/master/index.js see https://github.com/feross/buffer/blob/master/LICENSE (MIT as of Jan 2018)
+    // eslint-disable-next-line max-len
+    // adapted from https://github.com/feross/buffer/blob/master/index.js see https://github.com/feross/buffer/blob/master/LICENSE
+    // (MIT as of Jan 2018)
     let codePoint;
     const length = utfStr.length;
     let leadSurrogate: number | undefined;
@@ -77,25 +79,29 @@ export class Buf extends Uint8Array {
       } else if (codePoint < 0x10000) {
         bytes.push(codePoint >> 0xC | 0xE0, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
       } else if (codePoint < 0x110000) {
-        bytes.push(codePoint >> 0x12 | 0xF0, codePoint >> 0xC & 0x3F | 0x80, codePoint >> 0x6 & 0x3F | 0x80, codePoint & 0x3F | 0x80);
+        bytes.push(
+          codePoint >> 0x12 | 0xF0,
+          codePoint >> 0xC & 0x3F | 0x80,
+          codePoint >> 0x6 & 0x3F | 0x80,
+          codePoint & 0x3F | 0x80);
       } else {
         throw new Error('Invalid code point');
       }
     }
     return new Buf(bytes);
-  }
+  };
 
   public static fromBase64Str = (b64str: string): Buf => {
     return Buf.fromRawBytesStr(base64decode(b64str));
-  }
+  };
 
   public static fromBase64UrlStr = (b64UrlStr: string): Buf => {
     return Buf.fromBase64Str(b64UrlStr.replace(/-/g, '+').replace(/_/g, '/'));
-  }
+  };
 
   public toString = (mode: 'strict' | 'inform' | 'ignore' = 'inform'): string => { // mimic Node api
     return this.toUtfStr(mode);
-  }
+  };
 
   public toUtfStr = (mode: 'strict' | 'inform' | 'ignore' = 'inform'): string => { // tom
     const length = this.length;
@@ -104,7 +110,8 @@ export class Buf extends Uint8Array {
     let binaryChar = '';
     for (let i = 0; i < length; i++) {
       if (this[i] < 128) {
-        if (bytesLeftInChar) { // utf-8 continuation byte missing, assuming the last character was an 8-bit ASCII character
+        if (bytesLeftInChar) {
+          // utf-8 continuation byte missing, assuming the last character was an 8-bit ASCII character
           utf8string += String.fromCharCode(this[i - 1]);
         }
         bytesLeftInChar = 0;
@@ -149,7 +156,7 @@ export class Buf extends Uint8Array {
       }
     }
     return utf8string;
-  }
+  };
 
   public toRawBytesStr = (): string => {
     const chunkSize = 0x8000;
@@ -159,13 +166,13 @@ export class Buf extends Uint8Array {
       chars.push(String.fromCharCode.apply(undefined, Array.from(this.subarray(i, i + chunkSize))));
     }
     return chars.join('');
-  }
+  };
 
   public toBase64Str = (): string => {
     return base64encode(this.toRawBytesStr());
-  }
+  };
 
   public toBase64UrlStr = (): string => {
     return this.toBase64Str().replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  }
+  };
 }

@@ -1,2 +1,13 @@
 {
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "eslint.validate": [
+        "javascript",
+        "typescript"
+    ],
+    "editor.rulers": [
+        80,
+        100,
+        120
+    ]
 }

@@ -123,7 +123,9 @@ extension ComposeViewController {
 
         contextToSend.recipients[index].state = state
         contextToSend.recipients[index].keyState = keyState
-        contextToSend.recipients[index].name = displayName
+        if let displayName = displayName, displayName.isNotEmpty {
+            contextToSend.recipients[index].name = displayName
+        }
 
         if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
             reload(sections: [.password])

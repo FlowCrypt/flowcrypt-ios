@@ -1,9 +1,9 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
 import { MsgBlock, ReplaceableMsgBlockType } from './msg-block';
-import { SanitizeImgHandling, Xss } from '../platform/xss';
+import { Xss } from '../platform/xss';
 
 import { Buf } from './buf';
 import { Catch } from '../platform/catch';
@@ -32,15 +32,17 @@ export class MsgBlockParser {
         return { blocks, normalized };
       } else {
         if (r.continueAt <= startAt) {
-          Catch.report(`PgpArmordetect_blocks likely infinite loop: r.continue_at(${r.continueAt}) <= start_at(${startAt})`);
+          Catch.report(`PgpArmordetect_blocks likely infinite loop: r.continue_at(${r.continueAt})` +
+            ` <= start_at(${startAt})`);
           return { blocks, normalized }; // prevent infinite loop
         }
         startAt = r.continueAt;
       }
     }
-  }
+  };
 
-  public static fmtDecryptedAsSanitizedHtmlBlocks = async (decryptedContent: Uint8Array, signature?: VerifyRes, imgHandling: SanitizeImgHandling = 'IMG-TO-LINK'): Promise<SanitizedBlocks> => {
+  public static fmtDecryptedAsSanitizedHtmlBlocks = async (
+    decryptedContent: Uint8Array, signature?: VerifyRes): Promise<SanitizedBlocks> => {
     const blocks: MsgBlock[] = [];
     let isRichText = false;
     if (!Mime.resemblesMsg(decryptedContent)) {
@@ -57,7 +59,7 @@ export class MsgBlockParser {
     }
     const decoded = await Mime.decode(decryptedContent);
     if (typeof decoded.html !== 'undefined') {
-      const block = MsgBlock.fromContent('decryptedHtml', Xss.htmlSanitizeKeepBasicTags(decoded.html, imgHandling));
+      const block = MsgBlock.fromContent('decryptedHtml', Xss.htmlSanitizeKeepBasicTags(decoded.html));
       block.verifyRes = signature;
       blocks.push(block); // sanitized html
       isRichText = true;
@@ -74,13 +76,14 @@ export class MsgBlockParser {
       if (att.treatAs() === 'publicKey') {
         await MsgBlockParser.pushArmoredPubkeysToBlocks([att.getData().toUtfStr()], blocks);
       } else {
-        const block = MsgBlock.fromAtt('decryptedAtt', '', { name: att.name, data: att.getData(), length: att.length, type: att.type });
+        const block = MsgBlock.fromAtt('decryptedAtt', '',
+          { name: att.name, data: att.getData(), length: att.length, type: att.type });
         block.verifyRes = signature;
         blocks.push(block);
       }
     }
     return { blocks, subject: decoded.subject, isRichText };
-  }
+  };
 
   private static detectBlockNext = (origText: string, startAt: number) => {
     const result: { found: MsgBlock[], continueAt?: number } = { found: [] as MsgBlock[] };
@@ -92,7 +95,9 @@ export class MsgBlockParser {
         const blockHeaderDef = PgpArmor.ARMOR_HEADER_DICT[type];
         if (blockHeaderDef.replace) {
           const indexOfConfirmedBegin = potentialBeginHeader.indexOf(blockHeaderDef.begin);
-          if (indexOfConfirmedBegin === 0 || (type === 'encryptedMsgLink' && indexOfConfirmedBegin >= 0 && indexOfConfirmedBegin < 15)) { // identified beginning of a specific block
+          if (indexOfConfirmedBegin === 0
+            || (type === 'encryptedMsgLink' && indexOfConfirmedBegin >= 0 && indexOfConfirmedBegin < 15)) {
+            // identified beginning of a specific block
             if (begin > startAt) {
               const potentialTextBeforeBlockBegun = origText.substring(startAt, begin).trim();
               if (potentialTextBeforeBlockBegun) {
@@ -114,7 +119,8 @@ export class MsgBlockParser {
             }
             if (endIndex !== -1) { // identified end of the same block
               if (type !== 'encryptedMsgLink') {
-                result.found.push(MsgBlock.fromContent(type, origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim()));
+                result.found.push(MsgBlock.fromContent(
+                  type, origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim()));
               } else {
                 const pwdMsgFullText = origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim();
                 const pwdMsgShortIdMatch = pwdMsgFullText.match(/[a-zA-Z0-9]{10}$/);
@@ -140,7 +146,7 @@ export class MsgBlockParser {
       }
     }
     return result;
-  }
+  };
 
   private static pushArmoredPubkeysToBlocks = async (armoredPubkeys: string[], blocks: MsgBlock[]): Promise<void> => {
     for (const armoredPubkey of armoredPubkeys) {
@@ -149,6 +155,6 @@ export class MsgBlockParser {
         blocks.push(MsgBlock.fromKeyDetails('publicKey', keyDetails.public, keyDetails));
       }
     }
-  }
+  };
 
 }

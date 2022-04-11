@@ -369,12 +369,14 @@ extension InboxViewController {
     }
 
     private func btnComposeTap() {
-        do {
-            TapTicFeedback.generate(.light)
-            let composeVc = try ComposeViewController(appContext: appContext)
-            navigationController?.pushViewController(composeVc, animated: true)
-        } catch {
-            showAlert(message: error.localizedDescription)
+        Task {
+            do {
+                TapTicFeedback.generate(.light)
+                let composeVc = try await ComposeViewController(appContext: appContext)
+                navigationController?.pushViewController(composeVc, animated: true)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 }
@@ -421,7 +423,10 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             case .idle:
                 return TextCellNode(input: self.decorator.initialNodeInput(for: size))
             case .fetched, .refresh:
-                return InboxCellNode(input: .init((self.inboxInput[indexPath.row])))
+                guard let input = self.inboxInput[safe: indexPath.row] else {
+                    return TextCellNode.loading
+                }
+                return InboxCellNode(input: .init(input))
                     .then { $0.backgroundColor = .backgroundColor }
             case .fetching:
                 guard let input = self.inboxInput[safe: indexPath.row] else {

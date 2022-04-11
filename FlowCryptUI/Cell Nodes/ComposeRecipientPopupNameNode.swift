@@ -16,6 +16,7 @@ public final class ComposeRecipientPopupNameNode: CellNode {
     private lazy var nameNode: ASTextNode2 = {
         let textNode = ASTextNode2()
         textNode.attributedText = name?.attributed(.regular(18), color: .darkGray, alignment: .left)
+        textNode.accessibilityIdentifier = "aid-recipient-popup-name-node"
         return textNode
     }()
 
@@ -26,6 +27,7 @@ public final class ComposeRecipientPopupNameNode: CellNode {
         } else {
             textNode.attributedText = email.attributed(.regular(18), color: .darkGray, alignment: .left)
         }
+        textNode.accessibilityIdentifier = "aid-recipient-popup-email-node"
         return textNode
     }()
 

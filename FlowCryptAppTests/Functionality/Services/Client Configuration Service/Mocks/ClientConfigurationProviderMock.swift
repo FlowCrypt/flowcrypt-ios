@@ -10,21 +10,21 @@
 import Foundation
 
 class LocalClientConfigurationMock: LocalClientConfigurationType {
+    var raw: RawClientConfiguration?
 
     var fetchInvoked = false
     var fetchCount = 0
-    var fetchCall: () -> (RawClientConfiguration?) = {
-        nil
-    }
+
     func load(for user: String) -> RawClientConfiguration? {
         fetchInvoked = true
         fetchCount += 1
-        return fetchCall()
+        return raw
     }
 
     var removeClientConfigurationInvoked = false
     var removeClientConfigurationCount = 0
     func remove(for user: String) {
+        raw = nil
         removeClientConfigurationInvoked = true
         removeClientConfigurationCount += 1
     }
@@ -33,7 +33,8 @@ class LocalClientConfigurationMock: LocalClientConfigurationType {
     var saveCount = 0
     var saveCall: (RawClientConfiguration) -> Void = { clientConfiguration in
     }
-    func save(for user: User, raw: RawClientConfiguration, fesUrl: String?) {
+    func save(for user: String, raw: RawClientConfiguration, fesUrl: String?) {
+        self.raw = raw
         saveInvoked = true
         saveCount += 1
         saveCall(raw)

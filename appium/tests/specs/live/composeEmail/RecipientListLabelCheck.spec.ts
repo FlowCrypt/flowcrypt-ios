@@ -10,7 +10,7 @@ import { CommonData } from '../../../data';
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('should toggle recipient list label and show correct email addresses ', async () => {
+  it('should toggle recipient list label and show correct email addresses', async () => {
 
     const recipientEmail = CommonData.recipient.email;
     const recipientName = CommonData.recipient.name;

@@ -141,7 +141,7 @@ export const CommonData = {
     encryptedBadgeText: 'encrypted',
     signatureBadgeText: 'not signed',
     firstAttachmentName: 'Screenshot_20180422_125217.png.asc',
-    firstAttachmentBody: '-----BEGIN PGP MESSAGE-----\nVersion: Mailvelope v2.2.0\nComment: https://www.mailvelope.com'
+    firstAttachmentBody: '-----BEGIN PGP MESSAGE-----\r\nVersion: Mailvelope v2.2.0\r\nComment: https://www.mailvelope.com'
   },
   recipientWithoutPublicKey: {
     email: 'no.publickey@flowcrypt.com',

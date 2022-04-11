@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
+import TouchHelper from "../helpers/TouchHelper";
 
 const SELECTORS = {
   RECIPIENT_LIST_LABEL: '~aid-recipient-list-text',
@@ -19,6 +20,8 @@ const SELECTORS = {
   MESSAGE_PASSWORD_MODAL: '~aid-message-password-modal',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
+  RECIPIENT_POPUP_EMAIL_NODE: '~aid-recipient-popup-email-node',
+  RECIPIENT_POPUP_NAME_NODE: '~aid-recipient-popup-name-node',
   RECIPIENT_POPUP_COPY_BUTTON: '~aid-recipient-popup-copy-button',
   RECIPIENT_POPUP_REMOVE_BUTTON: '~aid-recipient-popup-remove-button',
   RECIPIENT_POPUP_EDIT_BUTTON: '~aid-recipient-popup-edit-button'
@@ -98,6 +101,14 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.CANCEL_BUTTON);
   }
 
+  get recipientPopupEmailNode() {
+    return $(SELECTORS.RECIPIENT_POPUP_EMAIL_NODE);
+  }
+
+  get recipientPopupNameNode() {
+    return $(SELECTORS.RECIPIENT_POPUP_NAME_NODE);
+  }
+
   get recipientPopupCopyButton() {
     return $(SELECTORS.RECIPIENT_POPUP_COPY_BUTTON);
   }
@@ -164,6 +175,7 @@ class NewMessageScreen extends BaseScreen {
   };
 
   checkFilledComposeEmailInfo = async (emailInfo: ComposeEmailInfo) => {
+    await ElementHelper.waitElementVisible(await this.composeSecurityMessage);
     expect(await this.composeSecurityMessage).toHaveTextContaining(emailInfo.message);
 
     const element = await this.filledSubject(emailInfo.subject);
@@ -201,7 +213,7 @@ class NewMessageScreen extends BaseScreen {
     }
   }
 
-  checkRecipientsList = async(recipients: string[], type = 'to') => {
+  checkRecipientsList = async (recipients: string[], type = 'to') => {
     await this.showRecipientInputIfNeeded();
     if (recipients.length === 0) {
       await ElementHelper.waitElementInvisible(await $(`~aid-${type}-0-label`));
@@ -216,8 +228,7 @@ class NewMessageScreen extends BaseScreen {
     await this.showRecipientInputIfNeeded();
     const recipientCell = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitElementVisible(recipientCell);
-    const name = await recipientCell.getValue();
-    expect(name).toEqual(`  ${recipient}  `);
+    await ElementHelper.waitForValue(await recipientCell, `  ${recipient}  `);
   }
 
   getActiveElementId = async () => {
@@ -226,13 +237,13 @@ class NewMessageScreen extends BaseScreen {
     return activeElement.ELEMENT;
   }
 
-  checkMessageFieldFocus = async() => {
+  checkMessageFieldFocus = async () => {
     await ElementHelper.waitElementVisible(await this.recipientListLabel);
     const messageElementId = (await this.composeSecurityMessage).elementId;
     expect(messageElementId).toBe(await this.getActiveElementId());
   }
 
-  checkRecipientTextFieldFocus = async() => {
+  checkRecipientTextFieldFocus = async () => {
     const toTextField = await this.getRecipientsTextField('to');
     await ElementHelper.waitElementVisible(toTextField);
     const toTextFieldActiveElementId = ((await toTextField.getActiveElement()) as unknown as { ELEMENT: string }).ELEMENT;
@@ -248,20 +259,38 @@ class NewMessageScreen extends BaseScreen {
   }
 
   deleteAddedRecipient = async (order: number, type = 'to') => {
-    await this.showRecipientInputIfNeeded();
+    await this.showRecipientPopup(order, type);
     const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
-    await ElementHelper.waitAndClick(addedRecipientEl);
     await ElementHelper.waitAndClick(await this.recipientPopupRemoveButton);
     await ElementHelper.waitElementInvisible(addedRecipientEl);
   }
 
+  deleteAddedRecipientWithBackspace = async (order: number, type = 'to') => {
+    await this.showRecipientPopup(order, type)
+    await driver.sendKeys(['\b']); // backspace
+  }
+
   checkCopyForAddedRecipient = async (email: string, order: number, type = 'to') => {
-    await this.showRecipientInputIfNeeded();
-    const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
-    await ElementHelper.waitAndClick(addedRecipientEl);
+    await this.showRecipientPopup(order, type);
     await ElementHelper.waitAndClick(await this.recipientPopupCopyButton);
     const base64Encoded = new Buffer(email).toString('base64');
     expect(await driver.getClipboard('plaintext')).toEqual(base64Encoded);
+  }
+
+  checkPopupRecipientInfo = async (email: string, order: number, type = 'to', name?: string) => {
+    await this.showRecipientPopup(order, type);
+    expect(await (await this.recipientPopupEmailNode).getValue()).toBe(email);
+    if (name) {
+      expect(await (await this.recipientPopupNameNode).getValue()).toBe(name);
+    }
+    await TouchHelper.dismissPopover();
+  }
+
+  showRecipientPopup = async (order: number, type = 'to') => {
+    await browser.pause(300);
+    await this.showRecipientInputIfNeeded();
+    const addedRecipientEl = await $(`~aid-${type}-${order}-label`);
+    await ElementHelper.waitAndClick(addedRecipientEl);
   }
 
   checkEditRecipient = async (order: number, type = 'to', recipient: string, recipientCount: number) => {
@@ -278,8 +307,7 @@ class NewMessageScreen extends BaseScreen {
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();
     const label = await this.attachmentNameLabel;
-    const value = await label.getValue();
-    expect(value).toEqual(name);
+    await ElementHelper.waitForValue(await label, name);
   }
 
   deleteAttachment = async () => {
@@ -295,7 +323,7 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.sendButton);
   }
 
-  clickToggleRecipientsButton =async () => {
+  clickToggleRecipientsButton = async () => {
     await ElementHelper.waitAndClick(await this.toggleRecipientsButton);
   }
 
@@ -307,14 +335,15 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.cancelButton);
   }
 
-  checkSetPasswordButton = async(isEnabled: boolean) => {
+  checkSetPasswordButton = async (isEnabled: boolean) => {
     const el = await this.setPasswordButton;
     expect(await el.isEnabled()).toBe(isEnabled);
   }
 
   checkPasswordCell = async (text: string) => {
-    await ElementHelper.waitElementVisible(await this.passwordCell);
-    await ElementHelper.checkStaticText(await this.passwordCell, text);
+    const el = await this.passwordCell;
+    await ElementHelper.waitElementVisible(el);
+    await ElementHelper.checkStaticText(el, text);
   }
 
   clickPasswordCell = async () => {
