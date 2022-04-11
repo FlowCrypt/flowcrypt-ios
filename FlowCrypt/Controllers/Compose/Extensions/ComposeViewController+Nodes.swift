@@ -172,6 +172,7 @@ extension ComposeViewController {
                 case let .imageTap(indexPath):
                     self?.handleRecipientAction(with: indexPath, type: type)
                 case let .select(indexPath, sender):
+                    self?.handleRecipientSelection(with: indexPath, type: type)
                     self?.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
                 }
             }

@@ -13,7 +13,7 @@ extension ComposeViewController {
     internal func displayRecipientPopOver(with indexPath: IndexPath, type: RecipientType, sender: CellNode) {
         guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
-        let popoverVC = ComposeRecipientPopupViewController(
+        popoverVC = ComposeRecipientPopupViewController(
             recipient: recipient,
             type: type
         )
@@ -24,11 +24,33 @@ extension ComposeViewController {
         popoverVC.delegate = self
         self.present(popoverVC, animated: true, completion: nil)
     }
+
+    internal func hideRecipientPopOver() {
+        if popoverVC != nil {
+            popoverVC.dismiss(animated: true, completion: nil)
+        }
+    }
 }
 
 extension ComposeViewController: UIPopoverPresentationControllerDelegate {
-    public func adaptivePresentationStyle(for controller: UIPresentationController, traitCollection: UITraitCollection) -> UIModalPresentationStyle {
+    public func adaptivePresentationStyle(
+        for controller: UIPresentationController,
+        traitCollection: UITraitCollection
+    ) -> UIModalPresentationStyle {
         return .none
+    }
+
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+        guard let popoverVC = presentationController.presentedViewController as? ComposeRecipientPopupViewController else {
+            return
+        }
+        let recipients = contextToSend.recipients(type: popoverVC.type)
+        let selectedRecipients = recipients.filter { $0.state.isSelected }
+        // Deselect previous selected receipients
+        for recipient in selectedRecipients {
+            contextToSend.update(recipient: recipient.email, type: popoverVC.type, state: decorator.recipientIdleState)
+            evaluate(recipient: recipient)
+        }
     }
 }
 

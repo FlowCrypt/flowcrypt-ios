@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -7,30 +7,30 @@ import { randomBytes } from 'crypto';
 import { ConvertStringOptions } from 'encoding-japanese';
 import { Key, KeyID, Subkey, UserID } from 'openpgp';
 
-declare const dereq_encoding_japanese : {
+declare const dereq_encoding_japanese: {
   convert: (data: Uint8Array, options: ConvertStringOptions) => string;
 };
 
 export const secureRandomBytes = (length: number): Uint8Array => {
   return randomBytes(length);
-}
+};
 
 export const base64encode = (binary: string): string => {
   return Buffer.from(binary, 'binary').toString('base64');
-}
+};
 
 export const base64decode = (b64tr: string): string => {
   return Buffer.from(b64tr, 'base64').toString('binary');
-}
+};
 
 export const setGlobals = () => {
   (global as any).btoa = base64encode;
   (global as any).atob = base64decode;
-}
+};
 
 export const iso2022jpToUtf = (content: Buf) => {
   return dereq_encoding_japanese.convert(content, { to: 'UTF8', from: 'JIS', type: 'string' });
-}
+};
 
 /**
  * Create hex string from a binary.
@@ -39,7 +39,7 @@ export const iso2022jpToUtf = (content: Buf) => {
  * @note This method, brought from OpenPGP.js project is, unlike the rest of the codebase,
  *       licensed under LGPL. See original license file: https://github.com/openpgpjs/openpgpjs/blob/main/LICENSE
  */
-export const str_to_hex = (str: string): string => {
+export const strToHex = (str: string): string => {
   if (str === null) {
     return "";
   }
@@ -55,31 +55,34 @@ export const str_to_hex = (str: string): string => {
     r.push("" + h);
   }
   return r.join('');
-}
+};
 
+/* tslint:disable:no-null-keyword */
 const maxDate = (dates: (Date | null)[]): Date | null => {
   let res: Date | null = null;
   for (const date of dates) {
-    if (res == null || (date != null && date > res)) {
+    if (res === null || (date !== null && date > res)) {
       res = date;
     }
   }
   return res;
-}
+};
+/* tslint:enable:no-null-keyword */
 
 const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
   const bindingCreated = maxDate(subkey.bindingSignatures.map(b => b.created));
   const binding = subkey.bindingSignatures.filter(b => b.created === bindingCreated)[0];
   return binding.getExpirationTime();
-}
+};
 
 // Attempt to backport from openpgp.js v4
+/* tslint:disable:no-null-keyword */
 export const getKeyExpirationTimeForCapabilities = async (
-    key: Key,
-    capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
-    keyId?: KeyID | undefined,
-    userId?: UserID | undefined
-  ): Promise<Date | null | typeof Infinity> => {
+  key: Key,
+  capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
+  keyId?: KeyID | undefined,
+  userId?: UserID | undefined
+): Promise<Date | null | typeof Infinity> => {
   const primaryUser = await key.getPrimaryUser(undefined, userId, undefined);
   if (!primaryUser) throw new Error('Could not find primary user');
   const keyExpiry = await key.getExpirationTime(userId);
@@ -89,8 +92,9 @@ export const getKeyExpirationTimeForCapabilities = async (
   const sigExpiry = selfCert.getExpirationTime();
   let expiry = keyExpiry < sigExpiry ? keyExpiry : sigExpiry;
   if (capabilities === 'encrypt' || capabilities === 'encrypt_sign') {
-    const encryptionKey = (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => {}))
-      || (await key.getEncryptionKey(keyId, null, userId).catch(() => {}));
+    const encryptionKey =
+      (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => { return undefined; }))
+      || (await key.getEncryptionKey(keyId, null, userId).catch(() => { return undefined; }));
     if (!encryptionKey) return null;
     // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
     const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
@@ -99,8 +103,9 @@ export const getKeyExpirationTimeForCapabilities = async (
     if (encryptionKeyExpiry < expiry) expiry = encryptionKeyExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
-    const signatureKey = (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => {}))
-      || (await key.getSigningKey(keyId, null, userId).catch(() => {}));
+    const signatureKey =
+      (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => { return undefined; }))
+      || (await key.getSigningKey(keyId, null, userId).catch(() => { return undefined; }));
     if (!signatureKey) return null;
     // could be the same as above, so checking for property instead of using "instanceof"
     const signatureKeyExpiry = 'bindingSignatures' in signatureKey
@@ -109,4 +114,5 @@ export const getKeyExpirationTimeForCapabilities = async (
     if (signatureKeyExpiry < expiry) expiry = signatureKeyExpiry;
   }
   return expiry;
-}
+};
+/* tslint:enable:no-null-keyword */

@@ -1,4 +1,4 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
@@ -26,7 +26,7 @@ export class Endpoints {
 
   public version = async (): Promise<EndpointRes> => {
     return fmtRes({ app_version: VERSION });
-  }
+  };
 
   public generateKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // generateKey may be used when changing major settings, wipe cache to prevent dated results
@@ -36,9 +36,9 @@ export class Endpoints {
         'Pass phrase length seems way too low! ' +
         'Pass phrase strength should be properly checked before encrypting a key.');
     }
-    let k = await PgpKey.create(userIds, variant, passphrase);
+    const k = await PgpKey.create(userIds, variant, passphrase);
     return fmtRes({ key: await PgpKey.details(await PgpKey.read(k.private)) });
-  }
+  };
 
   public composeEmail = async (uncheckedReq: any): Promise<EndpointRes> => {
     const req = ValidateInput.composeEmail(uncheckedReq);
@@ -48,7 +48,7 @@ export class Endpoints {
         .split('\n\n')[0] || '') + `\n\nno content`));
       const replyHeaders = Mime.replyHeaders(previousMsg);
       mimeHeaders['in-reply-to'] = replyHeaders['in-reply-to'];
-      mimeHeaders['references'] = replyHeaders['references'];
+      mimeHeaders.references = replyHeaders.references;
     }
     if (req.format === 'plain') {
       const atts = (req.atts || []).map(({ name, type, base64 }) =>
@@ -68,7 +68,7 @@ export class Endpoints {
           name: `${att.name}.pgp`,
           type: 'application/pgp-encrypted',
           data: encryptedAtt
-        }))
+        }));
       }
 
       const signingPrv = await getSigningPrv(req);
@@ -82,30 +82,30 @@ export class Endpoints {
     } else {
       throw new Error(`Unknown format: ${req.format}`);
     }
-  }
+  };
 
   public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptMsg(uncheckedReq);
     const encrypted = await PgpMsg.encrypt(
       { pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as string;
     return fmtRes({}, Buf.fromUtfStr(encrypted));
-  }
+  };
 
   public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptFile(uncheckedReq);
     const encrypted = await PgpMsg.encrypt(
       { pubkeys: req.pubKeys, data: Buf.concat(data), filename: req.name, armor: false }) as Uint8Array;
     return fmtRes({}, encrypted);
-  }
+  };
 
   public parseDecryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd, isEmail, verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data
-    let rawSigned: string | undefined = undefined;
-    let subject: string | undefined = undefined;
+    let rawSigned: string | undefined;
+    let subject: string | undefined;
     if (isEmail) {
       const { blocks, rawSignedContent, headers } = await Mime.process(Buf.concat(data));
-      subject = String(headers['subject']);
+      subject = String(headers.subject);
       rawSigned = rawSignedContent;
       rawBlocks.push(...blocks);
     } else {
@@ -115,17 +115,17 @@ export class Endpoints {
     for (const rawBlock of rawBlocks) {
       if ((rawBlock.type === 'signedMsg' || rawBlock.type === 'signedHtml') && rawBlock.signature) {
         const verify = await PgpMsg.verifyDetached({
-            sigText: Buf.fromUtfStr(rawBlock.signature),
-            plaintext: Buf.with(rawSigned || rawBlock.content),
-            verificationPubkeys: verificationPubkeys
-          });
+          sigText: Buf.fromUtfStr(rawBlock.signature),
+          plaintext: Buf.with(rawSigned || rawBlock.content),
+          verificationPubkeys
+        });
         if (rawBlock.type === 'signedHtml') {
           sequentialProcessedBlocks.push({
-              type: 'verifiedMsg',
-              content: Xss.htmlSanitizeKeepBasicTags(rawBlock.content.toString()),
-              verifyRes: verify,
-              complete: true
-            });
+            type: 'verifiedMsg',
+            content: Xss.htmlSanitizeKeepBasicTags(rawBlock.content.toString()),
+            verifyRes: verify,
+            complete: true
+          });
         } else { // text
           sequentialProcessedBlocks.push({
             type: 'verifiedMsg',
@@ -172,8 +172,8 @@ export class Endpoints {
           });
         }
       } else if (rawBlock.type === 'encryptedAtt'
-          && rawBlock.attMeta
-          && /^(0x)?[A-Fa-f0-9]{16,40}\.asc\.pgp$/.test(rawBlock.attMeta.name || '')) {
+        && rawBlock.attMeta
+        && /^(0x)?[A-Fa-f0-9]{16,40}\.asc\.pgp$/.test(rawBlock.attMeta.name || '')) {
         // encrypted pubkey attached
         const decryptRes = await PgpMsg.decrypt({
           kisWithPp,
@@ -251,10 +251,10 @@ export class Endpoints {
     blocks.unshift(contentBlock);
     // data represent one JSON-stringified block per line. This is so that it can be read as a stream later
     return fmtRes({ text, replyType, subject }, Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
-  }
+  };
 
   public decryptFile = async (uncheckedReq: any, data: Buffers, verificationPubkeys?: string[]):
-      Promise<EndpointRes> => {
+    Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
     const decryptRes = await PgpMsg.decrypt({
       kisWithPp,
@@ -267,12 +267,12 @@ export class Endpoints {
       return fmtRes({ decryptErr: decryptRes });
     }
     return fmtRes({ decryptSuccess: { name: decryptRes.filename || '' } }, decryptRes.content);
-  }
+  };
 
   public parseDateStr = async (uncheckedReq: any): Promise<EndpointRes> => {
     const { dateStr } = ValidateInput.parseDateStr(uncheckedReq);
     return fmtRes({ timestamp: String(Date.parse(dateStr) || -1) });
-  }
+  };
 
   public zxcvbnStrengthBar = async (uncheckedReq: any): Promise<EndpointRes> => {
     const r = ValidateInput.zxcvbnStrengthBar(uncheckedReq);
@@ -284,9 +284,9 @@ export class Endpoints {
         // host does not have zxcvbn, let's use zxcvbn-js to estimate guesses
         type FakeWindow = { zxcvbn: (password: string, weakWords: string[]) => { guesses: number } };
         if (typeof (window as unknown as FakeWindow).zxcvbn !== 'function') {
-          throw new Error("window.zxcvbn missing in js")
+          throw new Error("window.zxcvbn missing in js");
         }
-        let guesses = (window as unknown as FakeWindow).zxcvbn(r.value, PgpPwd.weakWords()).guesses;
+        const guesses = (window as unknown as FakeWindow).zxcvbn(r.value, PgpPwd.weakWords()).guesses;
         return fmtRes(PgpPwd.estimateStrength(guesses));
       } else {
         throw new Error('Unexpected format: guesses is not a number, value is not a string');
@@ -294,12 +294,12 @@ export class Endpoints {
     } else {
       throw new Error(`Unknown purpose: ${r.purpose}`);
     }
-  }
+  };
 
   public gmailBackupSearch = async (uncheckedReq: any): Promise<EndpointRes> => {
     const { acctEmail } = ValidateInput.gmailBackupSearch(uncheckedReq);
     return fmtRes({ query: gmailBackupSearchQuery(acctEmail) });
-  }
+  };
 
   public parseKeys = async (_uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
     const keyDetails: KeyDetails[] = [];
@@ -318,17 +318,17 @@ export class Endpoints {
       return fmtRes({ format: 'armored', keyDetails });
     }
     // binary
-    const openPgpKeys = await readKeys({binaryKeys: allData});
+    const openPgpKeys = await readKeys({ binaryKeys: allData });
     for (const openPgpKey of openPgpKeys) {
-      keyDetails.push(await PgpKey.details(openPgpKey))
+      keyDetails.push(await PgpKey.details(openPgpKey));
     }
-    return fmtRes({ format: 'binary', keyDetails: keyDetails });
-  }
+    return fmtRes({ format: 'binary', keyDetails });
+  };
 
   public isEmailValid = async (uncheckedReq: any): Promise<EndpointRes> => {
     const { email } = ValidateInput.isEmailValid(uncheckedReq);
     return fmtRes({ valid: Str.isEmailValid(email) });
-  }
+  };
 
   public decryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     // decryptKey may be used when changing major settings, wipe cache to prevent dated results
@@ -342,8 +342,8 @@ export class Endpoints {
     if (await PgpKey.decrypt(key, passphrases[0])) {
       return fmtRes({ decryptedKey: key.armor() });
     }
-    return fmtRes({ decryptedKey: null });
-  }
+    return fmtRes({ decryptedKey: undefined });
+  };
 
   public encryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
     // encryptKey may be used when changing major settings, wipe cache to prevent dated results
@@ -355,17 +355,17 @@ export class Endpoints {
         'Pass phrase length seems way too low! ' +
         'Pass phrase strength should be properly checked before encrypting a key.');
     }
-    const encryptedKey = await encryptKey({privateKey, passphrase});
+    const encryptedKey = await encryptKey({ privateKey, passphrase });
     return fmtRes({ encryptedKey: encryptedKey.armor() });
-  }
+  };
 
   public keyCacheWipe = async (): Promise<EndpointRes> => {
     Store.keyCacheWipe();
     return fmtRes({});
-  }
+  };
 }
 
-export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Promise<Key | undefined> => {
+export const getSigningPrv = async (req: NodeRequest.ComposeEmailEncrypted): Promise<Key | undefined> => {
   if (!req.signingPrv) {
     return undefined;
   }
@@ -375,4 +375,4 @@ export const getSigningPrv = async (req: NodeRequest.composeEmailEncrypted): Pro
   } else {
     throw new Error(`Fail to decrypt signing key`);
   }
-}
+};

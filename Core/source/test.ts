@@ -1,7 +1,8 @@
-/* © 2016-present FlowCrypt a. s. Limitations apply. Contact human@flowcrypt.com */
+/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
 
+/* tslint:disable */
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_sanitize_html = require("sanitize-html");
 // @ts-ignore - this way we can test ISO-2201-JP encoding
@@ -9,9 +10,14 @@ global.dereq_encoding_japanese = require("encoding-japanese");
 (global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder');
 (global as any)["emailjs-mime-parser"] = require('../../source/lib/emailjs/emailjs-mime-parser');
 (global as any)["iso88592"] = require('../../source/lib/iso-8859-2');
+/* tslint:enable */
+
+/* tslint:disable:no-unused-expression */
+/* tslint:disable:no-unsafe-any */
 
 import * as ava from 'ava';
 
+// eslint-disable-next-line max-len
 import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, parseResponse } from './test/test-utils';
 
 import { Xss } from './platform/xss';
@@ -35,10 +41,14 @@ ava.default('version', async t => {
 });
 
 ava.default('generateKey', async t => {
-  const { json, data } = parseResponse(await endpoints.generateKey({ variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd', userIds: [{ email: 'a@b.com', name: 'Him' }] }));
+  const { json, data } = parseResponse(
+    await endpoints.generateKey({
+      variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd',
+      userIds: [{ email: 'a@b.com', name: 'Him' }]
+    }));
   expect(json.key.private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
   expect(json.key.public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
-  const key = await readKey({armoredKey: json.key.private});
+  const key = await readKey({ armoredKey: json.key.private });
   expect(isFullyEncrypted(key)).to.be.true;
   expect(isFullyDecrypted(key)).to.be.false;
   expect(json.key.algo).to.deep.equal({ algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 });
@@ -46,16 +56,19 @@ ava.default('generateKey', async t => {
   t.pass();
 });
 
-for (const keypairName of allKeypairNames.filter(name => name != 'expired' && name != 'revoked')) {
+for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && name !== 'revoked')) {
   ava.default(`encryptMsg -> parseDecryptMsg (${keypairName})`, async t => {
     const content = 'hello\nwrld';
     const { pubKeys, keys } = getKeypairs(keypairName);
-    const { data: encryptedMsg, json: encryptJson } = parseResponse(await endpoints.encryptMsg({ pubKeys }, [Buffer.from(content, 'utf8')]));
+    const { data: encryptedMsg, json: encryptJson } =
+      parseResponse(await endpoints.encryptMsg({ pubKeys }, [Buffer.from(content, 'utf8')]));
     expectEmptyJson(encryptJson);
     expectData(encryptedMsg, 'armoredMsg');
-    const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [encryptedMsg]));
+    const { data: blocks, json: decryptJson } =
+      parseResponse(await endpoints.parseDecryptMsg({ keys }, [encryptedMsg]));
     expect(decryptJson).to.deep.equal({ text: content, replyType: 'encrypted' });
-    expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
+    expectData(blocks, 'msgBlocks',
+      [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
     t.pass();
   });
 }
@@ -63,19 +76,26 @@ for (const keypairName of allKeypairNames.filter(name => name != 'expired' && na
 ava.default(`encryptMsg -> parseDecryptMsg (with password)`, async t => {
   const content = 'hello\nwrld';
   const msgPwd = '123';
-  const { data: encryptedMsg, json: encryptJson } = parseResponse(await endpoints.encryptMsg({ pubKeys: [], msgPwd: msgPwd }, [Buffer.from(content, 'utf8')]));
+  const { data: encryptedMsg, json: encryptJson } = parseResponse(
+    await endpoints.encryptMsg({ pubKeys: [], msgPwd }, [Buffer.from(content, 'utf8')]));
   expectEmptyJson(encryptJson);
   expectData(encryptedMsg, 'armoredMsg');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys: [], msgPwd: msgPwd }, [encryptedMsg]));
+  const { data: blocks, json: decryptJson } = parseResponse(
+    await endpoints.parseDecryptMsg({ keys: [], msgPwd }, [encryptedMsg]));
   expect(decryptJson).to.deep.equal({ text: content, replyType: 'encrypted' });
-  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
+  expectData(blocks, 'msgBlocks', [
+    { rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }
+  ]);
   t.pass();
 });
 
 ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { keys } = getKeypairs('rsa1');
-  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj' };
+  const req = {
+    format: 'plain', text: content, to: ['some@to.com'],
+    cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj'
+  };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(composeEmailJson);
   const plainMimeStr = plainMimeMsg.toString();
@@ -85,9 +105,11 @@ ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
   expect(plainMimeStr).contains('Cc: some@cc.com');
   expect(plainMimeStr).contains('Date: ');
   expect(plainMimeStr).contains('MIME-Version: 1.0');
-  const { data: blocks, json: parseJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [plainMimeMsg]));
+  const { data: blocks, json: parseJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [plainMimeMsg]));
   expect(parseJson).to.deep.equal({ text: content, replyType: 'plain', subject: 'a subj' });
-  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent: content.replace(/\n/g, '<br />') }]);
+  expectData(blocks, 'msgBlocks',
+    [{ rendered: true, frameColor: 'plain', htmlContent: content.replace(/\n/g, '<br />') }]);
   t.pass();
 });
 
@@ -106,8 +128,11 @@ Content-Type: text/plain
 Content-Transfer-Encoding: quoted-printable
 
 orig message
-------sinikael-?=_1-15535259519270.930031460416217--`
-  const req = { format: 'plain', text: 'replying', to: ['some@to.com'], cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original', replyToMimeMsg };
+------sinikael-?=_1-15535259519270.930031460416217--`;
+  const req = {
+    format: 'plain', text: 'replying', to: ['some@to.com'],
+    cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original', replyToMimeMsg
+  };
   const { data: mimeMsgReply, json } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(json);
   const mimeMsgReplyStr = mimeMsgReply.toString();
@@ -118,7 +143,11 @@ orig message
 
 ava.default('composeEmail format:plain with attachment', async t => {
   const content = 'hello\nwrld';
-  const req = { format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj', atts: [{ name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
+  const req = {
+    format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [],
+    from: 'some@from.com', subject: 'a subj',
+    atts: [{ name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }]
+  };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(composeEmailJson);
   const plainMimeStr = plainMimeMsg.toString();
@@ -143,8 +172,12 @@ Content-Type: text/plain; charset="UTF-8"
 
 ${textSpecialChars}`;
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
-  expect(decryptJson).deep.equal({ text: textSpecialChars, replyType: 'plain', subject: 'plain text with special chars' });
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
+  expect(decryptJson).deep.equal({
+    text: textSpecialChars, replyType: 'plain',
+    subject: 'plain text with special chars'
+  });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent: htmlSpecialChars }]);
   t.pass();
 });
@@ -160,23 +193,34 @@ Content-Type: text/html; charset="UTF-8"
 
 ${htmlSpecialChars}`;
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
-  expect(decryptJson).deep.equal({ text: textSpecialChars, replyType: 'plain', subject: 'plain text with special chars' });
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
+  expect(decryptJson).deep.equal({
+    text: textSpecialChars, replyType: 'plain',
+    subject: 'plain text with special chars'
+  });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent: htmlSpecialChars }]);
   t.pass();
 });
 
 ava.default('parseDecryptMsg unescaped special characters in encrypted pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false }, [await getCompatAsset('direct-encrypted-pgpmime-special-chars')]));
-  expect(decryptJson).deep.equal({ text: textSpecialChars, replyType: 'encrypted', subject: 'direct encrypted pgpmime special chars' });
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false },
+      [await getCompatAsset('direct-encrypted-pgpmime-special-chars')]));
+  expect(decryptJson).deep.equal({
+    text: textSpecialChars, replyType: 'encrypted',
+    subject: 'direct encrypted pgpmime special chars'
+  });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: htmlSpecialChars }]);
   t.pass();
 });
 
 ava.default('parseDecryptMsg unescaped special characters in encrypted text', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false }, [await getCompatAsset('direct-encrypted-text-special-chars')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false },
+      [await getCompatAsset('direct-encrypted-text-special-chars')]));
   expect(decryptJson).deep.equal({ text: textSpecialChars, replyType: 'encrypted' });
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: htmlSpecialChars }]);
   t.pass();
@@ -204,7 +248,8 @@ Above
 --000000000000ee6439058fc0fe64
 Content-Type: text/html; charset="UTF-8"
 
-<div dir="ltr"><div>Below</div><div><div><img src="cid:ii_jz5exwmh0" alt="image.png" width="16" height="16"><br></div></div><div>Above<br></div></div>
+<div dir="ltr"><div>Below</div><div><div><img src="cid:ii_jz5exwmh0" alt="image.png" width="16" height="16">
+<br></div></div><div>Above<br></div></div>
 
 --000000000000ee6439058fc0fe64--
 --000000000000ee643b058fc0fe65
@@ -221,9 +266,22 @@ OkR+L4ShPw3bdtdCnMmZfSig2a+gtcD1R0LyA1mh6OdmsJNnmW0Sfwp75LYevQ5AsUI3g0aKI+ll
 Ee3KQbcx28SsnZi9LNO/6/wBmhVJ7HDmOd4AAAAASUVORK5CYII=
 --000000000000ee643b058fc0fe65--`;
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
-  expect(decryptJson).deep.equal({ text: 'Below\n[image: image.png]\nAbove', replyType: 'plain', subject: 'tiny inline img plain' });
-  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent: '<div><div>Below</div><div><div><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAMFJREFUOE+lU9sRg0AIZDNpym9rSAumJm0hNfidsgic5w1wGJ1kZ3zgwvI4AQtIAHrq4zKY5uJ715sGP7C44BdPnZj1gaRVERBPpYJfUSpoGLeyir2Glg64mxMQg9f6xQbU94zrBDBWgVCBBmecbyGWbcrLgpX+OkR+L4ShPw3bdtdCnMmZfSig2a+gtcD1R0LyA1mh6OdmsJNnmW0Sfwp75LYevQ5AsUI3g0aKI+llEe3KQbcx28SsnZi9LNO/6/wBmhVJ7HDmOd4AAAAASUVORK5CYII=" alt="image.png" /><br /></div></div><div>Above<br /></div></div>' }]);
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [Buffer.from(mime, 'utf8')]));
+  expect(decryptJson).deep.equal({
+    text: 'Below\n[image: image.png]\nAbove',
+    replyType: 'plain', subject: 'tiny inline img plain'
+  });
+  expectData(blocks, 'msgBlocks', [{
+    rendered: true, frameColor: 'plain',
+    htmlContent: '<div><div>Below</div><div><div><img src="data:image/png;base64,' +
+      'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/' +
+      '9hAAAABHNCSVQICAgIfAhkiAAAAMFJREFUOE' +
+      '+lU9sRg0AIZDNpym9rSAumJm0hNfidsgic5w1wGJ1kZ3zgwvI4AQtIAHrq4zKY5uJ715sGP7C44BdP' +
+      'nZj1gaRVERBPpYJfUSpoGLeyir2Glg64mxMQg9f6xQbU94zrBDBWgVCBBmecbyGWbcrLgpX+OkR+L4ShPw3bdtdCnMmZfSig2a' +
+      '+gtcD1R0LyA1mh6OdmsJNnmW0Sfwp75LYevQ5AsUI3g0aKI+llEe3KQbcx28SsnZi9LNO/6/wBmhVJ7HDmOd4AAAAASUVORK5C' +
+      'YII=" alt="image.png" />\n<br /></div></div><div>Above<br /></div></div>'
+  }]);
   t.pass();
 });
 
@@ -257,51 +315,75 @@ ADjvgywpiGmrwdehioKtS0SrHRvExYx8ory0iLo0cLGERArZ3jycF8F+S2Xp
 =F2om
 -----END PGP SIGNATURE-----`;
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false }, [Buffer.from(mime, 'utf8')]));
-  expect(decryptJson).deep.equal({ text: `Standard message\n\nsigned inline\n\nshould easily verify\nThis is email footer`, replyType: 'plain' });
-  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'gray', htmlContent: 'Standard message<br /><br />signed inline<br /><br />should easily verify<br />This is email footer' }]);
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: false }, [Buffer.from(mime, 'utf8')]));
+  expect(decryptJson).deep.equal({
+    text: 'Standard message\n\nsigned inline\n\n' +
+      'should easily verify\nThis is email footer', replyType: 'plain'
+  });
+  expectData(blocks, 'msgBlocks', [{
+    rendered: true, frameColor: 'gray',
+    htmlContent: 'Standard message<br /><br />signed inline<br />' +
+      '<br />should easily verify<br />This is email footer'
+  }]);
   t.pass();
 });
 
 ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { pubKeys, keys } = getKeypairs('rsa1');
-  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj' };
+  const req = {
+    pubKeys, format: 'encrypt-inline', text: content,
+    to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj'
+  };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(encryptJson);
   const encryptedMimeStr = encryptedMimeMsg.toString();
   expect(encryptedMimeStr).contains('To: encrypted@to.com');
   expect(encryptedMimeStr).contains('MIME-Version: 1.0');
   expectData(encryptedMimeMsg, 'armoredMsg'); // armored msg block should be contained in the mime message
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [encryptedMimeMsg]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [encryptedMimeMsg]));
   expect(decryptJson).deep.equal({ text: content, replyType: 'encrypted', subject: 'encr subj' });
-  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
+  expectData(blocks, 'msgBlocks',
+    [{ rendered: true, frameColor: 'green', htmlContent: content.replace(/\n/g, '<br />') }]);
   t.pass();
 });
 
 ava.default('composeEmail format:encrypt-inline with attachment', async t => {
   const content = 'hello\nwrld';
   const { pubKeys } = getKeypairs('rsa1');
-  const req = { pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj', atts: [{ name: 'topsecret.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }] };
+  const req = {
+    pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [],
+    from: 'encr@from.com',
+    subject: 'encr subj',
+    atts: [{
+      name: 'topsecret.txt', type: 'text/plain',
+      base64: Buffer.from('hello, world!!!').toString('base64')
+    }]
+  };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(encryptJson);
   const encryptedMimeStr = encryptedMimeMsg.toString();
   expect(encryptedMimeStr).contains('To: encrypted@to.com');
   expect(encryptedMimeStr).contains('MIME-Version: 1.0');
   expect(encryptedMimeStr).contains('topsecret.txt.pgp');
-  expectData(encryptedMimeMsg, 'armoredMsg'); // armored msg block should be contained in the mime message
+  // armored msg block should be contained in the mime message
+  expectData(encryptedMimeMsg, 'armoredMsg');
   t.pass();
 });
 
-for (const keypairName of allKeypairNames.filter(name => name != 'expired' && name != 'revoked')) {
+for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && name !== 'revoked')) {
   ava.default(`encryptFile -> decryptFile ${keypairName}`, async t => {
     const { pubKeys, keys } = getKeypairs(keypairName);
     const name = 'myfile.txt';
     const content = Buffer.from([10, 20, 40, 80, 160, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]);
-    const { data: encryptedFile, json: encryptJson } = parseResponse(await endpoints.encryptFile({ pubKeys, name }, [content]));
+    const { data: encryptedFile, json: encryptJson } =
+      parseResponse(await endpoints.encryptFile({ pubKeys, name }, [content]));
     expectEmptyJson(encryptJson);
     expectData(encryptedFile);
-    const { data: decryptedContent, json: decryptJson } = parseResponse(await endpoints.decryptFile({ keys }, [encryptedFile]));
+    const { data: decryptedContent, json: decryptJson } =
+      parseResponse(await endpoints.decryptFile({ keys }, [encryptedFile]));
     expect(decryptJson).to.deep.equal({ decryptSuccess: { name } });
     expectData(decryptedContent, 'binary', content);
     t.pass();
@@ -317,7 +399,11 @@ ava.default('parseDateStr', async t => {
 
 ava.default('gmailBackupSearch', async t => {
   const { data, json } = parseResponse(await endpoints.gmailBackupSearch({ acctEmail: 'test@acct.com' }));
-  expect(json).to.deep.equal({ query: 'from:test@acct.com to:test@acct.com (subject:"Your FlowCrypt Backup" OR subject: "Your CryptUp Backup" OR subject: "All you need to know about CryptUP (contains a backup)" OR subject: "CryptUP Account Backup") -is:spam' });
+  expect(json).to.deep.equal({
+    query: 'from:test@acct.com to:test@acct.com (subject:"Your FlowCrypt Backup" OR subject: ' +
+      '"Your CryptUp Backup" OR subject: "All you need to know about CryptUP (contains a backup)"' +
+      ' OR subject: "CryptUP Account Backup") -is:spam'
+  });
   expectNoData(data);
   t.pass();
 });
@@ -343,13 +429,49 @@ ava.default('parseKeys', async t => {
     "format": "armored",
     "keyDetails": [
       {
-        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nxsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\nZln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\nmbSsF0Ui+oh1//LT1ic6ZnISCA7Q2h2U/DSAPNxDZUMu9kjh9TjkKlR81fiA\nlxuD05ivRxCnmZnzqZtHoUvvCqsENgRjO9a5oWpMwtdItjdRFF7UFKYpfeA+\nct0uUNMRVdPK7MXBEr2FdWiKN1K21dQ1pWiAwj/5cTA8hu5Jue2RcF8FcPfs\nniRihQkNqtLDsfY5no1B3xeSnyO2SES1bAHw8ObXZn/C/6jxFztkn4NbABEB\nAAHNEFRlc3QgPHRAZXN0LmNvbT7CwH8EEAEIACkFAlwBWOEGCwkHCAMCCRA6\nMPTMCpqPEAQVCAoCAxYCAQIZAQIbAwIeAQAKCRA6MPTMCpqPENaTB/0faBFR\n2k3RM7P427HyZOsZtqEPxuynsLUqmsAAup6LtPhir4CAsb5DSvgYrzC8pbrf\njCaodoB7hMXc8RxTbSh+vQc5Su4QwY8sqy7hyMXOGGWsRxnuZ8t8BeEJBIHy\nPguXIR+wYvo1eveC+NMxHhTtjoSIn/E4vW0W9j5OlFeTK7HTNCuidIE0Hk2k\nXnEEoNO7ztxPPxsHz9g56uMhyAhf3mqKfvUFo/FLLRBOpxLO0kk64yAMcAHm\nc6ZI5Fz10y48+hHEv/RFOwfub9asF5NWHltanqyiZ+kHeoaieYJFc6t7Mt3j\ng8qxMKTUKAEeCfHt1UJCjp/aIgJRU4JRXgYXzsBNBFwBWOEBB/9nclmx98vf\noSpPUccBczvuZxmqk+jY6Id+vBhBFoEhtdTSpaw/JNstf0dTXN8RCFjB0lHt\na51llTjSobqcFwAU54/HKDOW3qMVbvadaGILpuCMCxdMgLWlpZdYY7BApv1N\n9zpN+iQ2tIrvnUQ312xKOXF/W83NUJ1nTObQYNpsUZLLG2N3kz11HuBS3E9F\ngEOYYy1tLT53hs5btqvQ5Jp4Iw5cBoBoTAmv+dPMDKYBroBPwuFeNRIokwLT\nrVcxrXajxlXaGXmmGS3PZ00HXq2g7vKIqWliMLLIWFl+LlVb6O8bMeXOT1l0\nXSO9GlLOSMDEc7pY26vkmAjbWv7iUWHNABEBAAHCwGkEGAEIABMFAlwBWOEJ\nEDow9MwKmo8QAhsMAAoJEDow9MwKmo8QjTcH/1pYXyXW/rpBrDg7w/dXJCfT\n8+RVYlhW3kqMxbid7EB8zgGVTDr3us/ki99hc2HjsKbxUqrGBxeh3Mmui7OD\nCI8XFeYl7lSDbgU6mZ5J4iXzdR8LNqIib4Horlx/Y24dOuvikSUNpDtFAYfa\nbZwxyKa/ihZT1rS1GO3V7tdAB9BJagJqVRssF5g5GBUAX3sxQ2p62HoUxPlJ\nOOr4AaCc1na92xScBJL8dtBBRQ5pUZWOjb2UHp9L5QdPaBX8T9ZAieOiTlSt\nQxoUfCk7RU0/TnsM3KqFnDFoCzkGxKAmU4LmGtP48qV+v2Jzvl+qcmqYuKtw\nH6FWd+EZH07MfdEIiTI=\n=wXbX\n-----END PGP PUBLIC KEY BLOCK-----\n",
+        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+          "\n" +
+          "xsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\n" +
+          "Zln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\n" +
+          "mbSsF0Ui+oh1//LT1ic6ZnISCA7Q2h2U/DSAPNxDZUMu9kjh9TjkKlR81fiA\n" +
+          "lxuD05ivRxCnmZnzqZtHoUvvCqsENgRjO9a5oWpMwtdItjdRFF7UFKYpfeA+\n" +
+          "ct0uUNMRVdPK7MXBEr2FdWiKN1K21dQ1pWiAwj/5cTA8hu5Jue2RcF8FcPfs\n" +
+          "niRihQkNqtLDsfY5no1B3xeSnyO2SES1bAHw8ObXZn/C/6jxFztkn4NbABEB\n" +
+          "AAHNEFRlc3QgPHRAZXN0LmNvbT7CwH8EEAEIACkFAlwBWOEGCwkHCAMCCRA6\n" +
+          "MPTMCpqPEAQVCAoCAxYCAQIZAQIbAwIeAQAKCRA6MPTMCpqPENaTB/0faBFR\n" +
+          "2k3RM7P427HyZOsZtqEPxuynsLUqmsAAup6LtPhir4CAsb5DSvgYrzC8pbrf\n" +
+          "jCaodoB7hMXc8RxTbSh+vQc5Su4QwY8sqy7hyMXOGGWsRxnuZ8t8BeEJBIHy\n" +
+          "PguXIR+wYvo1eveC+NMxHhTtjoSIn/E4vW0W9j5OlFeTK7HTNCuidIE0Hk2k\n" +
+          "XnEEoNO7ztxPPxsHz9g56uMhyAhf3mqKfvUFo/FLLRBOpxLO0kk64yAMcAHm\n" +
+          "c6ZI5Fz10y48+hHEv/RFOwfub9asF5NWHltanqyiZ+kHeoaieYJFc6t7Mt3j\n" +
+          "g8qxMKTUKAEeCfHt1UJCjp/aIgJRU4JRXgYXzsBNBFwBWOEBB/9nclmx98vf\n" +
+          "oSpPUccBczvuZxmqk+jY6Id+vBhBFoEhtdTSpaw/JNstf0dTXN8RCFjB0lHt\n" +
+          "a51llTjSobqcFwAU54/HKDOW3qMVbvadaGILpuCMCxdMgLWlpZdYY7BApv1N\n" +
+          "9zpN+iQ2tIrvnUQ312xKOXF/W83NUJ1nTObQYNpsUZLLG2N3kz11HuBS3E9F\n" +
+          "gEOYYy1tLT53hs5btqvQ5Jp4Iw5cBoBoTAmv+dPMDKYBroBPwuFeNRIokwLT\n" +
+          "rVcxrXajxlXaGXmmGS3PZ00HXq2g7vKIqWliMLLIWFl+LlVb6O8bMeXOT1l0\n" +
+          "XSO9GlLOSMDEc7pY26vkmAjbWv7iUWHNABEBAAHCwGkEGAEIABMFAlwBWOEJ\n" +
+          "EDow9MwKmo8QAhsMAAoJEDow9MwKmo8QjTcH/1pYXyXW/rpBrDg7w/dXJCfT\n" +
+          "8+RVYlhW3kqMxbid7EB8zgGVTDr3us/ki99hc2HjsKbxUqrGBxeh3Mmui7OD\n" +
+          "CI8XFeYl7lSDbgU6mZ5J4iXzdR8LNqIib4Horlx/Y24dOuvikSUNpDtFAYfa\n" +
+          "bZwxyKa/ihZT1rS1GO3V7tdAB9BJagJqVRssF5g5GBUAX3sxQ2p62HoUxPlJ\n" +
+          "OOr4AaCc1na92xScBJL8dtBBRQ5pUZWOjb2UHp9L5QdPaBX8T9ZAieOiTlSt\n" +
+          "QxoUfCk7RU0/TnsM3KqFnDFoCzkGxKAmU4LmGtP48qV+v2Jzvl+qcmqYuKtw\n" +
+          "H6FWd+EZH07MfdEIiTI=\n" +
+          "=wXbX\n" +
+          "-----END PGP PUBLIC KEY BLOCK-----\n",
         "users": [
           "Test <t@est.com>"
         ],
         "ids": [
-          { "fingerprint": "E76853E128A0D376CAE47C143A30F4CC0A9A8F10", "longid": "3A30F4CC0A9A8F10", "shortid": "0A9A8F10", "keywords": "DEMAND MARBLE CREDIT BENEFIT POTTERY CAPITAL" },
-          { "fingerprint": "9EF2F8F36A841C0D5FAB8B0F0BAB9C018B265D22", "longid": "0BAB9C018B265D22", "shortid": "8B265D22", "keywords": "ARM FRIEND ABOUT BIND GRAPE CATTLE" }
+          {
+            "fingerprint": "E76853E128A0D376CAE47C143A30F4CC0A9A8F10", "longid": "3A30F4CC0A9A8F10",
+            "shortid": "0A9A8F10", "keywords": "DEMAND MARBLE CREDIT BENEFIT POTTERY CAPITAL"
+          },
+          {
+            "fingerprint": "9EF2F8F36A841C0D5FAB8B0F0BAB9C018B265D22", "longid": "0BAB9C018B265D22",
+            "shortid": "8B265D22", "keywords": "ARM FRIEND ABOUT BIND GRAPE CATTLE"
+          }
         ],
         "algo": {
           "algorithm": "rsaEncryptSign",
@@ -374,7 +496,38 @@ ava.default('parseKeys - expiration and date last updated', async t => {
     "format": "armored",
     "keyDetails": [
       {
-        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nxsBNBF8PcdUBCADi8no6T4Bd9Ny5COpbheBuPWEyDOedT2EVeaPrfutB1D8i\nCP6Rf1cUvs/qNUX/O7HQHFpgFuW2uOY4OU5cvcrwmNpOxT3pPt2cavxJMdJo\nfwEvloY3OfY7MCqdAj5VUcFGMhubfV810V2n5pf2FFUNTirksT6muhviMymy\nuWZLdh0F4WxrXEon7k3y2dZ3mI4xsG+Djttb6hj3gNr8/zNQQnTmVjB0mmpO\nFcGUQLTTTYMngvVMkz8/sh38trqkVGuf/M81gkbr1egnfKfGz/4NT3qQLjin\nnA8In2cSFS/MipIV14gTfHQAICFIMsWuW/xkaXUqygvAnyFa2nAQdgELABEB\nAAHNKDxhdXRvLnJlZnJlc2guZXhwaXJlZC5rZXlAcmVjaXBpZW50LmNvbT7C\nwJMEEAEIACYFAl8PcdUFCQAAAAEGCwkHCAMCBBUICgIEFgIBAAIZAQIbAwIe\nAQAhCRC+46QtmpyKyRYhBG0+CYZ1RO5ify6Sj77jpC2anIrJIvQIALG8TGMN\nYB4CRouMJawNCLui6Fx4Ba1ipPTaqlJPybLoe6z/WVZwAA9CmbjkCIk683pp\nmGQ3GXv7f8Sdk7DqhEhfZ7JtAK/Uw2VZqqIryNrrB0WV3EUHsENCOlq0YJod\nLqtkqgl83lCNDIkeoQwq4IyrgC8wsPgF7YMpxxQLONJvChZxSdCDjnfX3kvO\nZsLYFiKnNlX6wyrKAQxWnxxYhglMf0GDDyh0AJ+vOQHJ9m+oeBnA1tJ5AZU5\naQHvRtyWBKkYaEhljhyWr3eu1JjK4mn7/W6Rszveso33987wtIoQ66GpGcX2\nmh7y217y/uXz4D3X5PUEBXIbhvAPty71bnTOwE0EXw9x1QEIALdJgAsQ0Jnv\nLXwAKoOammWlUQmracK89v1Yc4mFnImtHDHS3pGsbx3DbNGuiz5BhXCdoPDf\ngMxlGmJgShy9JAhrhWFXkvsjW/7aO4bM1wU486VPKXb7Av/dcrfHH0ASj4zj\n/TYAeubNoxQtxHgyb13LVCW1kh4Oe6s0ac/hKtxogwEvNFY3x+4yfloHH0Ik\n9sbLGk0gS03bPABDHMpYk346406f5TuP6UDzb9M90i2cFxbq26svyBzBZ0vY\nzfMRuNsm6an0+B/wS6NLYBqsRyxwwCTdrhYS512yBzCHDYJJX0o3OJNe85/0\nTqEBO1prgkh3QMfw13/Oxq8PuMsyJpUAEQEAAcLAfAQYAQgADwUCXw9x1QUJ\nAAAAAQIbDAAhCRC+46QtmpyKyRYhBG0+CYZ1RO5ify6Sj77jpC2anIrJARgH\n/1KV7JBOS2ZEtO95FrLYnIqI45rRpvT1XArpBPrYLuHtDBwgMcmpiMhhKIZC\nFlZkR1W88ENdSkr8Nx81nW+f9JWRR6HuSyom7kOfS2Gdbfwo3bgp48DWr7K8\nKV/HHGuqLqd8UfPyDpsBGNx0w7tRo+8vqUbhskquLAIahYCbhEIE8zgy0fBV\nhXKFe1FjuFUoW29iEm0tZWX0k2PT5r1owEgDe0g/X1AXgSQyfPRFVDwE3QNJ\n1np/Rmygq1C+DIW2cohJOc7tO4gbl11XolsfQ+FU+HewYXy8aAEbrTSRfsff\nMvK6tgT9BZ3kzjOxT5ou2SdvTa0eUk8k+zv8OnJJfXA=\n=LPeQ\n-----END PGP PUBLIC KEY BLOCK-----\n",
+        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+          "\n" +
+          "xsBNBF8PcdUBCADi8no6T4Bd9Ny5COpbheBuPWEyDOedT2EVeaPrfutB1D8i\n" +
+          "CP6Rf1cUvs/qNUX/O7HQHFpgFuW2uOY4OU5cvcrwmNpOxT3pPt2cavxJMdJo\n" +
+          "fwEvloY3OfY7MCqdAj5VUcFGMhubfV810V2n5pf2FFUNTirksT6muhviMymy\n" +
+          "uWZLdh0F4WxrXEon7k3y2dZ3mI4xsG+Djttb6hj3gNr8/zNQQnTmVjB0mmpO\n" +
+          "FcGUQLTTTYMngvVMkz8/sh38trqkVGuf/M81gkbr1egnfKfGz/4NT3qQLjin\n" +
+          "nA8In2cSFS/MipIV14gTfHQAICFIMsWuW/xkaXUqygvAnyFa2nAQdgELABEB\n" +
+          "AAHNKDxhdXRvLnJlZnJlc2guZXhwaXJlZC5rZXlAcmVjaXBpZW50LmNvbT7C\n" +
+          "wJMEEAEIACYFAl8PcdUFCQAAAAEGCwkHCAMCBBUICgIEFgIBAAIZAQIbAwIe\n" +
+          "AQAhCRC+46QtmpyKyRYhBG0+CYZ1RO5ify6Sj77jpC2anIrJIvQIALG8TGMN\n" +
+          "YB4CRouMJawNCLui6Fx4Ba1ipPTaqlJPybLoe6z/WVZwAA9CmbjkCIk683pp\n" +
+          "mGQ3GXv7f8Sdk7DqhEhfZ7JtAK/Uw2VZqqIryNrrB0WV3EUHsENCOlq0YJod\n" +
+          "Lqtkqgl83lCNDIkeoQwq4IyrgC8wsPgF7YMpxxQLONJvChZxSdCDjnfX3kvO\n" +
+          "ZsLYFiKnNlX6wyrKAQxWnxxYhglMf0GDDyh0AJ+vOQHJ9m+oeBnA1tJ5AZU5\n" +
+          "aQHvRtyWBKkYaEhljhyWr3eu1JjK4mn7/W6Rszveso33987wtIoQ66GpGcX2\n" +
+          "mh7y217y/uXz4D3X5PUEBXIbhvAPty71bnTOwE0EXw9x1QEIALdJgAsQ0Jnv\n" +
+          "LXwAKoOammWlUQmracK89v1Yc4mFnImtHDHS3pGsbx3DbNGuiz5BhXCdoPDf\n" +
+          "gMxlGmJgShy9JAhrhWFXkvsjW/7aO4bM1wU486VPKXb7Av/dcrfHH0ASj4zj\n" +
+          "/TYAeubNoxQtxHgyb13LVCW1kh4Oe6s0ac/hKtxogwEvNFY3x+4yfloHH0Ik\n" +
+          "9sbLGk0gS03bPABDHMpYk346406f5TuP6UDzb9M90i2cFxbq26svyBzBZ0vY\n" +
+          "zfMRuNsm6an0+B/wS6NLYBqsRyxwwCTdrhYS512yBzCHDYJJX0o3OJNe85/0\n" +
+          "TqEBO1prgkh3QMfw13/Oxq8PuMsyJpUAEQEAAcLAfAQYAQgADwUCXw9x1QUJ\n" +
+          "AAAAAQIbDAAhCRC+46QtmpyKyRYhBG0+CYZ1RO5ify6Sj77jpC2anIrJARgH\n" +
+          "/1KV7JBOS2ZEtO95FrLYnIqI45rRpvT1XArpBPrYLuHtDBwgMcmpiMhhKIZC\n" +
+          "FlZkR1W88ENdSkr8Nx81nW+f9JWRR6HuSyom7kOfS2Gdbfwo3bgp48DWr7K8\n" +
+          "KV/HHGuqLqd8UfPyDpsBGNx0w7tRo+8vqUbhskquLAIahYCbhEIE8zgy0fBV\n" +
+          "hXKFe1FjuFUoW29iEm0tZWX0k2PT5r1owEgDe0g/X1AXgSQyfPRFVDwE3QNJ\n" +
+          "1np/Rmygq1C+DIW2cohJOc7tO4gbl11XolsfQ+FU+HewYXy8aAEbrTSRfsff\n" +
+          "MvK6tgT9BZ3kzjOxT5ou2SdvTa0eUk8k+zv8OnJJfXA=\n" +
+          "=LPeQ\n" +
+          "-----END PGP PUBLIC KEY BLOCK-----\n",
         "users": [
           "<auto.refresh.expired.key@recipient.com>"
         ],
@@ -416,9 +569,25 @@ ava.default('parseKeys - revoked', async t => {
     "format": "armored",
     "keyDetails": [
       {
-        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nxjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7\nuXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK\nACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7\nEFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY\nDKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA\nBgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW\nRBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN\nFXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ\noXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS\nzZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==\n=bMwq\n-----END PGP PUBLIC KEY BLOCK-----\n",
+        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+          "\n" +
+          "xjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7\n" +
+          "uXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK\n" +
+          "ACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7\n" +
+          "EFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY\n" +
+          "DKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA\n" +
+          "BgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW\n" +
+          "RBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN\n" +
+          "FXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ\n" +
+          "oXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS\n" +
+          "zZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==\n" +
+          "=bMwq\n" +
+          "-----END PGP PUBLIC KEY BLOCK-----\n",
         "users": ["revoekd@flowcrypt.com", "revoked@flowcrypt.com"],
-        "ids": [{ "fingerprint": "3931B7413DBB2FA60CEF85CE5F15978910A1780A", "longid": "5F15978910A1780A", "shortid": "10A1780A", "keywords": "GALLERY PROTECT TIME CANDY BLEAK ACCESS" }],
+        "ids": [{
+          "fingerprint": "3931B7413DBB2FA60CEF85CE5F15978910A1780A", "longid": "5F15978910A1780A",
+          "shortid": "10A1780A", "keywords": "GALLERY PROTECT TIME CANDY BLEAK ACCESS"
+        }],
         "algo": { "algorithm": "eddsa", "curve": "ed25519", "algorithmId": 22 },
         "created": 1634664782,
         "lastModified": 1634664811,
@@ -433,8 +602,9 @@ ava.default('parseKeys - revoked', async t => {
 
 ava.default('decryptKey', async t => {
   const { keys: [key] } = getKeypairs('rsa1');
-  const { data, json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
-  const decryptedKey = await readKey({armoredKey: json.decryptedKey});
+  const { data, json } =
+    parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
+  const decryptedKey = await readKey({ armoredKey: json.decryptedKey });
   expect(isFullyDecrypted(decryptedKey)).to.be.true;
   expect(isFullyEncrypted(decryptedKey)).to.be.false;
   expectNoData(data);
@@ -445,12 +615,12 @@ ava.default('encryptKey', async t => {
   const passphrase = 'this is some pass phrase';
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey, passphrase }));
-  const encryptedKey = await readKey({armoredKey: json.encryptedKey});
+  const encryptedKey = await readKey({ armoredKey: json.encryptedKey });
   expect(isFullyEncrypted(encryptedKey)).to.be.true;
   expect(isFullyDecrypted(encryptedKey)).to.be.false;
   expect(await decryptKey({
     privateKey: (encryptedKey as PrivateKey),
-    passphrase: passphrase
+    passphrase
   })).is.not.null;
   expectNoData(data);
   t.pass();
@@ -458,21 +628,21 @@ ava.default('encryptKey', async t => {
 
 ava.default('decryptKey gpg-dummy', async t => {
   const { keys: [key] } = getKeypairs('gpg-dummy');
-  const encryptedKey = await readKey({armoredKey: key.private});
+  const encryptedKey = await readKey({ armoredKey: key.private });
   expect(isFullyEncrypted(encryptedKey)).to.be.true;
   expect(isFullyDecrypted(encryptedKey)).to.be.false;
   const { json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
-  const decryptedKey = await readKey({armoredKey: json.decryptedKey});
+  const decryptedKey = await readKey({ armoredKey: json.decryptedKey });
   expect(isFullyEncrypted(decryptedKey)).to.be.false;
   expect(isFullyDecrypted(decryptedKey)).to.be.true;
   const { json: json2 } = parseResponse(await endpoints.encryptKey(
     { armored: decryptedKey.armor(), passphrase: 'another pass phrase' }));
-  const reEncryptedKey = await readKey({armoredKey: json2.encryptedKey});
+  const reEncryptedKey = await readKey({ armoredKey: json2.encryptedKey });
   expect(isFullyEncrypted(reEncryptedKey)).to.be.true;
   expect(isFullyDecrypted(reEncryptedKey)).to.be.false;
   const { json: json3 } = parseResponse(await endpoints.decryptKey(
     { armored: reEncryptedKey.armor(), passphrases: ['another pass phrase'] }));
-  const reDecryptedKey = await readKey({armoredKey: json3.decryptedKey});
+  const reDecryptedKey = await readKey({ armoredKey: json3.decryptedKey });
   expect(isFullyEncrypted(reDecryptedKey)).to.be.false;
   expect(isFullyDecrypted(reDecryptedKey)).to.be.true;
   t.pass();
@@ -480,7 +650,8 @@ ava.default('decryptKey gpg-dummy', async t => {
 
 ava.default('parseDecryptMsg compat direct-encrypted-text', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted' });
   t.pass();
@@ -488,7 +659,8 @@ ava.default('parseDecryptMsg compat direct-encrypted-text', async t => {
 
 ava.default('parseDecryptMsg compat direct-encrypted-pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-pgpmime')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-pgpmime')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted', subject: 'direct encrypted pgpmime' });
   t.pass();
@@ -496,7 +668,8 @@ ava.default('parseDecryptMsg compat direct-encrypted-pgpmime', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-plain', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'plain', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'plain', subject: 'mime email plain' });
   t.pass();
@@ -504,7 +677,9 @@ ava.default('parseDecryptMsg compat mime-email-plain', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-iso-2201-jp')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-plain-iso-2201-jp')]));
   const msg = 'Dear Tomas,\n    \nWe\'ve sent you a new message about your app, ' +
     'Enterprise FlowCrypt, app Apple ID: 1591462989.    To view or reply to the ' +
     'message, go to Resolution Center in App Store Connect.\n    \nBest regards,\n' +
@@ -512,7 +687,11 @@ ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
   expect(decryptJson.text).to.contain(msg);
   expect(decryptJson.subject).to.eq('New Message from App Store Review Regarding Enterprise FlowCrypt');
   expect(decryptJson.replyType).to.eq('plain');
-  const html = '<p>Dear Tomas,</p> <p>We\'ve sent you a new message about your app, Enterprise FlowCrypt, app Apple ID: 1591462989. To view or reply to the message, go to <a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">Resolution Center</a> in App Store Connect.</p> <p>Best regards,<br /> App Store Review</p>';
+  const html = '<p>Dear Tomas,</p> <p>We\'ve sent you a new message about your app, Enterprise FlowCrypt, ' +
+    'app Apple ID: 1591462989. To view or reply to the message, ' +
+    'go to <a href=\"https://appstoreconnect.apple.com/WebObjects/iTunesConnect.woa' +
+    '/ra/ng/app/1591462989/platform/ios/versions/844846907/resolutioncenter\">' +
+    'Resolution Center</a> in App Store Connect.</p> <p>Best regards,<br /> App Store Review</p>';
   const blocksObj = JSON.parse(blocks.toString().replace(/\\n/g, '').replace(/\s+/g, ' '));
   expect(blocksObj.type).eq('plainHtml');
   expect(blocksObj.complete).eq(true);
@@ -522,7 +701,9 @@ ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-encrypted-inline-text')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-encrypted-inline-text')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted', subject: 'mime email encrypted inline text' });
   t.pass();
@@ -530,14 +711,17 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text', async t =
 
 ava.default('parseDecryptMsg compat mime-email-encrypted-inline-pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-encrypted-inline-pgpmime')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-encrypted-inline-pgpmime')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted', subject: 'mime email encrypted inline pgpmime' });
   t.pass();
 });
 
 ava.default('zxcvbnStrengthBar', async t => {
-  const { data, json } = parseResponse(await endpoints.zxcvbnStrengthBar({ guesses: 88946283684265, purpose: 'passphrase' }));
+  const { data, json } =
+    parseResponse(await endpoints.zxcvbnStrengthBar({ guesses: 88946283684265, purpose: 'passphrase' }));
   expectNoData(data);
   expect(json).to.deep.equal({
     word: {
@@ -555,7 +739,9 @@ ava.default('zxcvbnStrengthBar', async t => {
 
 ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-TextEncoder', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-encrypted-inline-text-2')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-encrypted-inline-text-2')]));
   expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent }]);
   expect(decryptJson).to.deep.equal({ text, replyType: 'encrypted', subject: 'mime email encrytped inline text 2' });
   t.pass();
@@ -563,10 +749,25 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-Text
 
 ava.default('parseDecryptMsg - decryptErr wrong key when dencrypting content', async t => {
   const { keys } = getKeypairs('rsa2'); // intentional key mismatch
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys },
+      [await getCompatAsset('direct-encrypted-text')]));
   expectData(blocks, 'msgBlocks', [{
     "type": "decryptErr",
-    "content": "-----BEGIN PGP MESSAGE-----\nVersion: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\nComment: Seamlessly send and receive encrypted email\n\nwcBMAwurnAGLJl0iAQf+I2exIah3XL/zfPozDmVFSLJk4tBFIlIyFfGYcw5W\n+ebOL3Gu/+/oCIIlXrdP0FxIVEYnSEaevmB9p0FfXGpcw4Wr8PBnSubCkn2s\n+V//k6W1Uu915GmiwCgDkLTCP7vEHvwUglNvgAatDtNdJ3xrf2gjOOFiYQnn\n4JSI1msMfL5tmdFCyXm1g4mUe9MdVXfphrXIyvGu1Sufhv+T5FgteDW0c6lM\ng7G6jgX4q5xiT8r2LTxKlxHVlQSqvGlnx/yRXwqBs3PAMiS4u5JlKJX4aKVy\nFyN+gq++tWZC1XCSFzXfAf0rXcoDZ7nEkxdkKQqXgA6LCsFD79FMCtuenvzU\nU9JEAdvmmpGlextZcfCUmGgclQXgowDnjaXy5Uc6Bzmi8AlY/4MFo0Q3bOU4\nkNhLCiXTGNJlFDd0HLz8Cy7YXzLWZ94IuGk=\n=Bvit\n-----END PGP MESSAGE-----\n",
+    "content": "-----BEGIN PGP MESSAGE-----\n" +
+      "Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\n" +
+      "Comment: Seamlessly send and receive encrypted email\n" +
+      "\n" +
+      "wcBMAwurnAGLJl0iAQf+I2exIah3XL/zfPozDmVFSLJk4tBFIlIyFfGYcw5W\n" +
+      "+ebOL3Gu/+/oCIIlXrdP0FxIVEYnSEaevmB9p0FfXGpcw4Wr8PBnSubCkn2s\n" +
+      "+V//k6W1Uu915GmiwCgDkLTCP7vEHvwUglNvgAatDtNdJ3xrf2gjOOFiYQnn\n" +
+      "4JSI1msMfL5tmdFCyXm1g4mUe9MdVXfphrXIyvGu1Sufhv+T5FgteDW0c6lM\n" +
+      "g7G6jgX4q5xiT8r2LTxKlxHVlQSqvGlnx/yRXwqBs3PAMiS4u5JlKJX4aKVy\n" +
+      "FyN+gq++tWZC1XCSFzXfAf0rXcoDZ7nEkxdkKQqXgA6LCsFD79FMCtuenvzU\n" +
+      "U9JEAdvmmpGlextZcfCUmGgclQXgowDnjaXy5Uc6Bzmi8AlY/4MFo0Q3bOU4\n" +
+      "kNhLCiXTGNJlFDd0HLz8Cy7YXzLWZ94IuGk=\n" +
+      "=Bvit\n" +
+      "-----END PGP MESSAGE-----\n",
     "decryptErr": {
       "success": false,
       "error": {
@@ -589,7 +790,9 @@ ava.default('parseDecryptMsg - decryptErr wrong key when dencrypting content', a
 
 ava.default('decryptFile - decryptErr wrong key when decrypting attachment', async t => {
   const jsonReq = { keys: getKeypairs('rsa2').keys }; // intentional key mismatch
-  const { json: decryptJson } = parseResponse(await endpoints.decryptFile(jsonReq, [await getCompatAsset('direct-encrypted-key-mismatch-file')]));
+  const { json: decryptJson } =
+    parseResponse(await endpoints.decryptFile(jsonReq,
+      [await getCompatAsset('direct-encrypted-key-mismatch-file')]));
   expect(decryptJson).to.deep.equal({
     "decryptErr": {
       "success": false,
@@ -611,27 +814,104 @@ ava.default('decryptFile - decryptErr wrong key when decrypting attachment', asy
 
 ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-html')]));
-  expectData(blocks, 'msgBlocks', [{ frameColor: 'plain', htmlContent: '<p>paragraph 1</p><p>paragraph 2 with <b>bold</b></p><p>paragraph 3 with <em style="color:red">red i</em></p>', rendered: true }]);
-  expect(decryptJson).to.deep.equal({ text: `paragraph 1\nparagraph 2 with bold\nparagraph 3 with red i`, replyType: 'plain', subject: 'mime email plain html' });
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-plain-html')]));
+  expectData(blocks, 'msgBlocks', [{
+    frameColor: 'plain',
+    htmlContent: '<p>paragraph 1</p><p>paragraph 2 with <b>bold</b></p><p>paragraph 3 with ' +
+      '<em style="color:red">red i</em></p>', rendered: true
+  }]);
+  expect(decryptJson).to.deep.equal({
+    text: `paragraph 1\nparagraph 2 with bold\nparagraph 3 with red i`,
+    replyType: 'plain', subject: 'mime email plain html'
+  });
   t.pass();
 });
 
 ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-pubkey')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-plain-with-pubkey')]));
   const expected = [
     { rendered: true, frameColor: 'plain', htmlContent },
     {
       "type": "publicKey",
-      "content": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nxsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\nZln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\nmbSsF0Ui+oh1//LT1ic6ZnISCA7Q2h2U/DSAPNxDZUMu9kjh9TjkKlR81fiA\nlxuD05ivRxCnmZnzqZtHoUvvCqsENgRjO9a5oWpMwtdItjdRFF7UFKYpfeA+\nct0uUNMRVdPK7MXBEr2FdWiKN1K21dQ1pWiAwj/5cTA8hu5Jue2RcF8FcPfs\nniRihQkNqtLDsfY5no1B3xeSnyO2SES1bAHw8ObXZn/C/6jxFztkn4NbABEB\nAAHNEFRlc3QgPHRAZXN0LmNvbT7CwH8EEAEIACkFAlwBWOEGCwkHCAMCCRA6\nMPTMCpqPEAQVCAoCAxYCAQIZAQIbAwIeAQAKCRA6MPTMCpqPENaTB/0faBFR\n2k3RM7P427HyZOsZtqEPxuynsLUqmsAAup6LtPhir4CAsb5DSvgYrzC8pbrf\njCaodoB7hMXc8RxTbSh+vQc5Su4QwY8sqy7hyMXOGGWsRxnuZ8t8BeEJBIHy\nPguXIR+wYvo1eveC+NMxHhTtjoSIn/E4vW0W9j5OlFeTK7HTNCuidIE0Hk2k\nXnEEoNO7ztxPPxsHz9g56uMhyAhf3mqKfvUFo/FLLRBOpxLO0kk64yAMcAHm\nc6ZI5Fz10y48+hHEv/RFOwfub9asF5NWHltanqyiZ+kHeoaieYJFc6t7Mt3j\ng8qxMKTUKAEeCfHt1UJCjp/aIgJRU4JRXgYXzsBNBFwBWOEBB/9nclmx98vf\noSpPUccBczvuZxmqk+jY6Id+vBhBFoEhtdTSpaw/JNstf0dTXN8RCFjB0lHt\na51llTjSobqcFwAU54/HKDOW3qMVbvadaGILpuCMCxdMgLWlpZdYY7BApv1N\n9zpN+iQ2tIrvnUQ312xKOXF/W83NUJ1nTObQYNpsUZLLG2N3kz11HuBS3E9F\ngEOYYy1tLT53hs5btqvQ5Jp4Iw5cBoBoTAmv+dPMDKYBroBPwuFeNRIokwLT\nrVcxrXajxlXaGXmmGS3PZ00HXq2g7vKIqWliMLLIWFl+LlVb6O8bMeXOT1l0\nXSO9GlLOSMDEc7pY26vkmAjbWv7iUWHNABEBAAHCwGkEGAEIABMFAlwBWOEJ\nEDow9MwKmo8QAhsMAAoJEDow9MwKmo8QjTcH/1pYXyXW/rpBrDg7w/dXJCfT\n8+RVYlhW3kqMxbid7EB8zgGVTDr3us/ki99hc2HjsKbxUqrGBxeh3Mmui7OD\nCI8XFeYl7lSDbgU6mZ5J4iXzdR8LNqIib4Horlx/Y24dOuvikSUNpDtFAYfa\nbZwxyKa/ihZT1rS1GO3V7tdAB9BJagJqVRssF5g5GBUAX3sxQ2p62HoUxPlJ\nOOr4AaCc1na92xScBJL8dtBBRQ5pUZWOjb2UHp9L5QdPaBX8T9ZAieOiTlSt\nQxoUfCk7RU0/TnsM3KqFnDFoCzkGxKAmU4LmGtP48qV+v2Jzvl+qcmqYuKtw\nH6FWd+EZH07MfdEIiTI=\n=wXbX\n-----END PGP PUBLIC KEY BLOCK-----\n",
+      "content": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+        "\n" +
+        "xsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\n" +
+        "Zln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\n" +
+        "mbSsF0Ui+oh1//LT1ic6ZnISCA7Q2h2U/DSAPNxDZUMu9kjh9TjkKlR81fiA\n" +
+        "lxuD05ivRxCnmZnzqZtHoUvvCqsENgRjO9a5oWpMwtdItjdRFF7UFKYpfeA+\n" +
+        "ct0uUNMRVdPK7MXBEr2FdWiKN1K21dQ1pWiAwj/5cTA8hu5Jue2RcF8FcPfs\n" +
+        "niRihQkNqtLDsfY5no1B3xeSnyO2SES1bAHw8ObXZn/C/6jxFztkn4NbABEB\n" +
+        "AAHNEFRlc3QgPHRAZXN0LmNvbT7CwH8EEAEIACkFAlwBWOEGCwkHCAMCCRA6\n" +
+        "MPTMCpqPEAQVCAoCAxYCAQIZAQIbAwIeAQAKCRA6MPTMCpqPENaTB/0faBFR\n" +
+        "2k3RM7P427HyZOsZtqEPxuynsLUqmsAAup6LtPhir4CAsb5DSvgYrzC8pbrf\n" +
+        "jCaodoB7hMXc8RxTbSh+vQc5Su4QwY8sqy7hyMXOGGWsRxnuZ8t8BeEJBIHy\n" +
+        "PguXIR+wYvo1eveC+NMxHhTtjoSIn/E4vW0W9j5OlFeTK7HTNCuidIE0Hk2k\n" +
+        "XnEEoNO7ztxPPxsHz9g56uMhyAhf3mqKfvUFo/FLLRBOpxLO0kk64yAMcAHm\n" +
+        "c6ZI5Fz10y48+hHEv/RFOwfub9asF5NWHltanqyiZ+kHeoaieYJFc6t7Mt3j\n" +
+        "g8qxMKTUKAEeCfHt1UJCjp/aIgJRU4JRXgYXzsBNBFwBWOEBB/9nclmx98vf\n" +
+        "oSpPUccBczvuZxmqk+jY6Id+vBhBFoEhtdTSpaw/JNstf0dTXN8RCFjB0lHt\n" +
+        "a51llTjSobqcFwAU54/HKDOW3qMVbvadaGILpuCMCxdMgLWlpZdYY7BApv1N\n" +
+        "9zpN+iQ2tIrvnUQ312xKOXF/W83NUJ1nTObQYNpsUZLLG2N3kz11HuBS3E9F\n" +
+        "gEOYYy1tLT53hs5btqvQ5Jp4Iw5cBoBoTAmv+dPMDKYBroBPwuFeNRIokwLT\n" +
+        "rVcxrXajxlXaGXmmGS3PZ00HXq2g7vKIqWliMLLIWFl+LlVb6O8bMeXOT1l0\n" +
+        "XSO9GlLOSMDEc7pY26vkmAjbWv7iUWHNABEBAAHCwGkEGAEIABMFAlwBWOEJ\n" +
+        "EDow9MwKmo8QAhsMAAoJEDow9MwKmo8QjTcH/1pYXyXW/rpBrDg7w/dXJCfT\n" +
+        "8+RVYlhW3kqMxbid7EB8zgGVTDr3us/ki99hc2HjsKbxUqrGBxeh3Mmui7OD\n" +
+        "CI8XFeYl7lSDbgU6mZ5J4iXzdR8LNqIib4Horlx/Y24dOuvikSUNpDtFAYfa\n" +
+        "bZwxyKa/ihZT1rS1GO3V7tdAB9BJagJqVRssF5g5GBUAX3sxQ2p62HoUxPlJ\n" +
+        "OOr4AaCc1na92xScBJL8dtBBRQ5pUZWOjb2UHp9L5QdPaBX8T9ZAieOiTlSt\n" +
+        "QxoUfCk7RU0/TnsM3KqFnDFoCzkGxKAmU4LmGtP48qV+v2Jzvl+qcmqYuKtw\n" +
+        "H6FWd+EZH07MfdEIiTI=\n" +
+        "=wXbX\n" +
+        "-----END PGP PUBLIC KEY BLOCK-----\n",
       "complete": true,
       "keyDetails": {
-        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\nxsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\nZln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\nmbSsF0Ui+oh1//LT1ic6ZnISCA7Q2h2U/DSAPNxDZUMu9kjh9TjkKlR81fiA\nlxuD05ivRxCnmZnzqZtHoUvvCqsENgRjO9a5oWpMwtdItjdRFF7UFKYpfeA+\nct0uUNMRVdPK7MXBEr2FdWiKN1K21dQ1pWiAwj/5cTA8hu5Jue2RcF8FcPfs\nniRihQkNqtLDsfY5no1B3xeSnyO2SES1bAHw8ObXZn/C/6jxFztkn4NbABEB\nAAHNEFRlc3QgPHRAZXN0LmNvbT7CwH8EEAEIACkFAlwBWOEGCwkHCAMCCRA6\nMPTMCpqPEAQVCAoCAxYCAQIZAQIbAwIeAQAKCRA6MPTMCpqPENaTB/0faBFR\n2k3RM7P427HyZOsZtqEPxuynsLUqmsAAup6LtPhir4CAsb5DSvgYrzC8pbrf\njCaodoB7hMXc8RxTbSh+vQc5Su4QwY8sqy7hyMXOGGWsRxnuZ8t8BeEJBIHy\nPguXIR+wYvo1eveC+NMxHhTtjoSIn/E4vW0W9j5OlFeTK7HTNCuidIE0Hk2k\nXnEEoNO7ztxPPxsHz9g56uMhyAhf3mqKfvUFo/FLLRBOpxLO0kk64yAMcAHm\nc6ZI5Fz10y48+hHEv/RFOwfub9asF5NWHltanqyiZ+kHeoaieYJFc6t7Mt3j\ng8qxMKTUKAEeCfHt1UJCjp/aIgJRU4JRXgYXzsBNBFwBWOEBB/9nclmx98vf\noSpPUccBczvuZxmqk+jY6Id+vBhBFoEhtdTSpaw/JNstf0dTXN8RCFjB0lHt\na51llTjSobqcFwAU54/HKDOW3qMVbvadaGILpuCMCxdMgLWlpZdYY7BApv1N\n9zpN+iQ2tIrvnUQ312xKOXF/W83NUJ1nTObQYNpsUZLLG2N3kz11HuBS3E9F\ngEOYYy1tLT53hs5btqvQ5Jp4Iw5cBoBoTAmv+dPMDKYBroBPwuFeNRIokwLT\nrVcxrXajxlXaGXmmGS3PZ00HXq2g7vKIqWliMLLIWFl+LlVb6O8bMeXOT1l0\nXSO9GlLOSMDEc7pY26vkmAjbWv7iUWHNABEBAAHCwGkEGAEIABMFAlwBWOEJ\nEDow9MwKmo8QAhsMAAoJEDow9MwKmo8QjTcH/1pYXyXW/rpBrDg7w/dXJCfT\n8+RVYlhW3kqMxbid7EB8zgGVTDr3us/ki99hc2HjsKbxUqrGBxeh3Mmui7OD\nCI8XFeYl7lSDbgU6mZ5J4iXzdR8LNqIib4Horlx/Y24dOuvikSUNpDtFAYfa\nbZwxyKa/ihZT1rS1GO3V7tdAB9BJagJqVRssF5g5GBUAX3sxQ2p62HoUxPlJ\nOOr4AaCc1na92xScBJL8dtBBRQ5pUZWOjb2UHp9L5QdPaBX8T9ZAieOiTlSt\nQxoUfCk7RU0/TnsM3KqFnDFoCzkGxKAmU4LmGtP48qV+v2Jzvl+qcmqYuKtw\nH6FWd+EZH07MfdEIiTI=\n=wXbX\n-----END PGP PUBLIC KEY BLOCK-----\n",
+        "public": "-----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+          "\n" +
+          "xsBNBFwBWOEBB/9uIqBYIPDQbBqHMvGXhgnm+b2i5rNLXrrGoalrp7wYQ654\n" +
+          "Zln/+ffxzttRLRiwRQAOG0z78aMDXAHRfI9d3GaRKTkhTqVY+C02E8NxgB3+\n" +
+          "mbSsF0Ui+oh1//LT1ic6ZnISCA7Q2h2U/DSAPNxDZUMu9kjh9TjkKlR81fiA\n" +
+          "lxuD05ivRxCnmZnzqZtHoUvvCqsENgRjO9a5oWpMwtdItjdRFF7UFKYpfeA+\n" +
+          "ct0uUNMRVdPK7MXBEr2FdWiKN1K21dQ1pWiAwj/5cTA8hu5Jue2RcF8FcPfs\n" +
+          "niRihQkNqtLDsfY5no1B3xeSnyO2SES1bAHw8ObXZn/C/6jxFztkn4NbABEB\n" +
+          "AAHNEFRlc3QgPHRAZXN0LmNvbT7CwH8EEAEIACkFAlwBWOEGCwkHCAMCCRA6\n" +
+          "MPTMCpqPEAQVCAoCAxYCAQIZAQIbAwIeAQAKCRA6MPTMCpqPENaTB/0faBFR\n" +
+          "2k3RM7P427HyZOsZtqEPxuynsLUqmsAAup6LtPhir4CAsb5DSvgYrzC8pbrf\n" +
+          "jCaodoB7hMXc8RxTbSh+vQc5Su4QwY8sqy7hyMXOGGWsRxnuZ8t8BeEJBIHy\n" +
+          "PguXIR+wYvo1eveC+NMxHhTtjoSIn/E4vW0W9j5OlFeTK7HTNCuidIE0Hk2k\n" +
+          "XnEEoNO7ztxPPxsHz9g56uMhyAhf3mqKfvUFo/FLLRBOpxLO0kk64yAMcAHm\n" +
+          "c6ZI5Fz10y48+hHEv/RFOwfub9asF5NWHltanqyiZ+kHeoaieYJFc6t7Mt3j\n" +
+          "g8qxMKTUKAEeCfHt1UJCjp/aIgJRU4JRXgYXzsBNBFwBWOEBB/9nclmx98vf\n" +
+          "oSpPUccBczvuZxmqk+jY6Id+vBhBFoEhtdTSpaw/JNstf0dTXN8RCFjB0lHt\n" +
+          "a51llTjSobqcFwAU54/HKDOW3qMVbvadaGILpuCMCxdMgLWlpZdYY7BApv1N\n" +
+          "9zpN+iQ2tIrvnUQ312xKOXF/W83NUJ1nTObQYNpsUZLLG2N3kz11HuBS3E9F\n" +
+          "gEOYYy1tLT53hs5btqvQ5Jp4Iw5cBoBoTAmv+dPMDKYBroBPwuFeNRIokwLT\n" +
+          "rVcxrXajxlXaGXmmGS3PZ00HXq2g7vKIqWliMLLIWFl+LlVb6O8bMeXOT1l0\n" +
+          "XSO9GlLOSMDEc7pY26vkmAjbWv7iUWHNABEBAAHCwGkEGAEIABMFAlwBWOEJ\n" +
+          "EDow9MwKmo8QAhsMAAoJEDow9MwKmo8QjTcH/1pYXyXW/rpBrDg7w/dXJCfT\n" +
+          "8+RVYlhW3kqMxbid7EB8zgGVTDr3us/ki99hc2HjsKbxUqrGBxeh3Mmui7OD\n" +
+          "CI8XFeYl7lSDbgU6mZ5J4iXzdR8LNqIib4Horlx/Y24dOuvikSUNpDtFAYfa\n" +
+          "bZwxyKa/ihZT1rS1GO3V7tdAB9BJagJqVRssF5g5GBUAX3sxQ2p62HoUxPlJ\n" +
+          "OOr4AaCc1na92xScBJL8dtBBRQ5pUZWOjb2UHp9L5QdPaBX8T9ZAieOiTlSt\n" +
+          "QxoUfCk7RU0/TnsM3KqFnDFoCzkGxKAmU4LmGtP48qV+v2Jzvl+qcmqYuKtw\n" +
+          "H6FWd+EZH07MfdEIiTI=\n" +
+          "=wXbX\n" +
+          "-----END PGP PUBLIC KEY BLOCK-----\n",
         "users": ["Test <t@est.com>"],
         "ids": [
-          { "fingerprint": "E76853E128A0D376CAE47C143A30F4CC0A9A8F10", "longid": "3A30F4CC0A9A8F10", "shortid": "0A9A8F10", "keywords": "DEMAND MARBLE CREDIT BENEFIT POTTERY CAPITAL" },
-          { "fingerprint": "9EF2F8F36A841C0D5FAB8B0F0BAB9C018B265D22", "longid": "0BAB9C018B265D22", "shortid": "8B265D22", "keywords": "ARM FRIEND ABOUT BIND GRAPE CATTLE" }
+          {
+            "fingerprint": "E76853E128A0D376CAE47C143A30F4CC0A9A8F10", "longid": "3A30F4CC0A9A8F10",
+            "shortid": "0A9A8F10", "keywords": "DEMAND MARBLE CREDIT BENEFIT POTTERY CAPITAL"
+          },
+          {
+            "fingerprint": "9EF2F8F36A841C0D5FAB8B0F0BAB9C018B265D22", "longid": "0BAB9C018B265D22",
+            "shortid": "8B265D22", "keywords": "ARM FRIEND ABOUT BIND GRAPE CATTLE"
+          }
         ],
         "algo": { "algorithm": "rsaEncryptSign", "bits": 2047, "algorithmId": 1 },
         "created": 1543592161,
@@ -647,7 +927,9 @@ ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
 
 ava.default('parseDecryptMsg plainAtt', async t => {
   const { keys } = getKeypairs('rsa1');
-  const { data: blocks, json: decryptJson } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true }, [await getCompatAsset('mime-email-plain-with-attachment')]));
+  const { data: blocks, json: decryptJson } =
+    parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true },
+      [await getCompatAsset('mime-email-plain-with-attachment')]));
   expectData(blocks, 'msgBlocks', [
     { rendered: true, frameColor: 'plain', htmlContent },
     {
@@ -681,7 +963,9 @@ ava.default('can process dirty html without throwing', async t => {
 
 ava.default('verify encrypted+signed message by providing it correct public key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+    { keys, isEmail: true, verificationPubkeys: pubKeys },
+    [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   expect(decryptJson.replyType).equals('encrypted');
   expect(decryptJson.subject).equals('mime email encrypted inline text signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -696,7 +980,9 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
   const allPubKeys = [];
   for (const pubkey of pubKeys2) allPubKeys.push(pubkey);
   for (const pubkey of pubKeys) allPubKeys.push(pubkey);
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+    { keys, isEmail: true, verificationPubkeys: pubKeys },
+    [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
   expect(decryptJson.replyType).equals('encrypted');
   expect(decryptJson.subject).equals('mime email encrypted inline text signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -705,21 +991,27 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
   t.pass();
 });
 
-ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)', async t => {
-  const { keys } = getKeypairs('rsa1');
-  const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys2 }, [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
-  expect(decryptJson.replyType).equals('encrypted');
-  expect(decryptJson.subject).equals('mime email encrypted inline text signed');
-  const parsedDecryptData = JSON.parse(decryptData.toString());
-  expect(!!parsedDecryptData.verifyRes).equals(true);
-  expect(parsedDecryptData.verifyRes.match).equals(null);
-  t.pass();
-});
+ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)',
+  async t => {
+    const { keys } = getKeypairs('rsa1');
+    const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
+    const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+      { keys, isEmail: true, verificationPubkeys: pubKeys2 },
+      [await getCompatAsset('mime-email-encrypted-inline-text-signed')]));
+    expect(decryptJson.replyType).equals('encrypted');
+    expect(decryptJson.subject).equals('mime email encrypted inline text signed');
+    const parsedDecryptData = JSON.parse(decryptData.toString());
+    expect(!!parsedDecryptData.verifyRes).equals(true);
+    /* tslint:disable-next-line:no-null-keyword */
+    expect(parsedDecryptData.verifyRes.match).equals(null);
+    t.pass();
+  });
 
 ava.default('verify plain-text signed message by providing it correct key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
-  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg({ keys, isEmail: true, verificationPubkeys: pubKeys }, [await getCompatAsset('mime-email-plain-signed')]));
+  const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
+    { keys, isEmail: true, verificationPubkeys: pubKeys },
+    [await getCompatAsset('mime-email-plain-signed')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
@@ -755,10 +1047,12 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
+  /* tslint:disable-next-line:no-null-keyword */
   expect(parsedDecryptData.verifyRes.match).equals(null);
   t.pass();
 });
 
+// eslint-disable-next-line max-len
 ava.default('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(
@@ -929,6 +1223,7 @@ FraCqKUj088pjlLZsORJCsLOgugt7y4O9lf7fNiRo3I81LZsqegqdzcvCeK9
 PBcqDCjq5jgMhU1oyVclRK7jJdmu0Azvwo2lleLAFLdCzHEXWXUz
 =//ru
 -----END PGP PRIVATE KEY BLOCK-----`;
-  expect((await PgpKey.parse(unencryptedCorruptedRsaKey)).error).to.equals('Key is invalid');
+  const res = await PgpKey.parse(unencryptedCorruptedRsaKey);
+  expect(res.error).to.equals('Key is invalid');
   t.pass();
 });

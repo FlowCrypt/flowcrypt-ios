@@ -31,12 +31,14 @@ extension MsgListViewController where Self: UIViewController {
 
     // TODO: uncomment in "sent message from draft" feature
     private func openDraft(appContext: AppContextWithUser, with message: Message) {
-        do {
-            let controller = try ComposeViewController(appContext: appContext)
-            controller.update(with: message)
-            navigationController?.pushViewController(controller, animated: true)
-        } catch {
-            showAlert(message: error.localizedDescription)
+        Task {
+            do {
+                let controller = try await ComposeViewController(appContext: appContext)
+                controller.update(with: message)
+                navigationController?.pushViewController(controller, animated: true)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
         }
     }
 
@@ -51,16 +53,18 @@ extension MsgListViewController where Self: UIViewController {
     }
 
     private func openThread(with thread: MessageThread, appContext: AppContextWithUser) {
-        do {
-            let viewController = try ThreadDetailsViewController(
-                appContext: appContext,
-                thread: thread
-            ) { [weak self] (action, message) in
-                self?.handleMessageOperation(with: message, action: action)
+        Task {
+            do {
+                let viewController = try await ThreadDetailsViewController(
+                    appContext: appContext,
+                    thread: thread
+                ) { [weak self] (action, message) in
+                    self?.handleMessageOperation(with: message, action: action)
+                }
+                navigationController?.pushViewController(viewController, animated: true)
+            } catch {
+                showAlert(message: error.localizedDescription)
             }
-            navigationController?.pushViewController(viewController, animated: true)
-        } catch {
-            showAlert(message: error.localizedDescription)
         }
     }
 
