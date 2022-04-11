@@ -14,6 +14,7 @@ protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType) async
     func reauthorize(appContext: AppContext, route: GlobalRoutingType) async
+    func renderMissingPermissionsView(appContext: AppContext)
     func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws
     func switchActive(user: User, appContext: AppContext) async throws
     func signOut(appContext: AppContext) async throws
@@ -103,12 +104,12 @@ extension GlobalRouter: GlobalRouterType {
                 )
                 let session = try await googleService.signIn(
                     in: viewController,
-                    scopes: GeneralConstants.Gmail.contactsScope,
+                    scopes: GeneralConstants.Gmail.mailScope,
                     userEmail: email
                 )
                 try appContext.userAccountService.startSessionFor(session: session)
                 viewController.hideSpinner()
-                try proceed(with: appContext, session: session)
+                try await proceed(with: appContext, session: session)
             case .other:
                 break
             }
@@ -179,6 +180,15 @@ extension GlobalRouter: GlobalRouterType {
         keyWindow.makeKeyAndVisible()
     }
 
+    func renderMissingPermissionsView(appContext: AppContext) {
+        let controller = CheckMailAuthViewController(
+            appContext: appContext,
+            decorator: CheckMailAuthViewDecorator(type: .invalidGrant)
+        )
+        keyWindow.rootViewController = UINavigationController(rootViewController: controller)
+        keyWindow.makeKeyAndVisible()
+    }
+
     @MainActor
     private func proceed(with appContext: AppContext) {
         logger.logInfo("proceed for session: \(appContext.session?.description ?? "nil")")
@@ -220,7 +230,10 @@ extension GlobalRouter: GlobalRouterType {
 
             if case .userNotAllowedAllNeededScopes = gmailUserError {
                 let navigationController = keyWindow.rootViewController?.navigationController
-                let checkAuthViewController = CheckMailAuthViewController(appContext: appContext)
+                let checkAuthViewController = CheckMailAuthViewController(
+                    appContext: appContext,
+                    decorator: CheckMailAuthViewDecorator(type: .setup)
+                )
                 navigationController?.pushViewController(checkAuthViewController, animated: true)
                 return
             }

@@ -10,7 +10,7 @@ import FlowCryptCommon
 import Combine
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssionContainer {
+class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSessionContainer {
     var blurViewController: BlurViewController?
     var googleAuthSession: OIDExternalUserAgentSession?
     let window = UIWindow(frame: UIScreen.main.bounds)

@@ -94,7 +94,7 @@ class AppContext {
         return MailProvider(
             currentAuthType: currentAuthType,
             currentUser: currentUser,
-            delegate: UIApplication.shared.delegate as? AppDelegateGoogleSesssionContainer
+            delegate: UIApplication.shared.delegate as? AppDelegateGoogleSessionContainer
         )
     }
 

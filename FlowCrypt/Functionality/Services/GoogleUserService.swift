@@ -75,7 +75,7 @@ protocol GoogleUserServiceType {
 }
 
 // this is here so that we don't have to include AppDelegate in test target
-protocol AppDelegateGoogleSesssionContainer {
+protocol AppDelegateGoogleSessionContainer {
     var googleAuthSession: OIDExternalUserAgentSession? { get set }
 }
 
@@ -84,11 +84,11 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     @available(*, deprecated, message: "This variable will be removed in the near future.")
     let currentUserEmail: String?
-    var appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer?
+    var appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer?
 
     init(
         currentUserEmail: String?,
-        appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer? = nil
+        appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil
     ) {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail

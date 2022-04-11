@@ -13,9 +13,11 @@ import UIKit
 
 class CheckMailAuthViewController: TableNodeViewController {
     private let appContext: AppContext
+    private let decorator: CheckMailAuthViewDecorator
 
-    init(appContext: AppContext) {
+    init(appContext: AppContext, decorator: CheckMailAuthViewDecorator) {
         self.appContext = appContext
+        self.decorator = decorator
         super.init(node: TableNode())
     }
 
@@ -49,21 +51,17 @@ extension CheckMailAuthViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
+        node.bounces = false
 
         title = "app_name".localized
     }
+
     private func unauthStateNode(for indexPath: IndexPath) -> ASCellNode {
         switch indexPath.row {
         case 0:
             return SetupTitleNode(
                 SetupTitleNode.Input(
-                    title: "setup_title"
-                        .localized
-                        .attributed(
-                            .bold(35),
-                            color: .mainTextColor,
-                            alignment: .center
-                        ),
+                    title: decorator.title,
                     insets: UIEdgeInsets(
                         top: 64, left: 16,
                         bottom: 64, right: 16
@@ -78,7 +76,7 @@ extension CheckMailAuthViewController {
                     title: "gmail_service_no_access_to_account_message".localized,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200),
-                    insets: UIEdgeInsets.side(24),
+                    insets: .side(24),
                     textAlignment: .center
                 )
             )
