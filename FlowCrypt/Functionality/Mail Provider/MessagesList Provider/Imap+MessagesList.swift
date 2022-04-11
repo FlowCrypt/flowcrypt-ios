@@ -50,8 +50,10 @@ extension Message {
         // swiftlint:disable compiler_protocol_init
         let labels = Array(arrayLiteral: imapMessage.flags).map(MessageLabelType.init).map(MessageLabel.init)
         var sender: Recipient?
-        if let senderString = imapMessage.header.from ?? imapMessage.header.sender {
-            sender = Recipient(senderString.nonEncodedRFC822String())
+        if let senderAddress = imapMessage.header.from ?? imapMessage.header.sender,
+           senderAddress.mailbox != nil,
+           let encodedString = senderAddress.nonEncodedRFC822String() {
+            sender = Recipient(encodedString)
         }
 
         self.init(
