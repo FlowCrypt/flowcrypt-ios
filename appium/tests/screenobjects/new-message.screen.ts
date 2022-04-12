@@ -311,7 +311,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   checkRecipientEvaluationWhenTapOutside = async (type = 'to') => {
-    const recipient = 'testRecipientEvaluation@example.com'
+    const recipient = 'test.recipient.evaluation@example.com'
     await (await this.getRecipientsTextField(type)).setValue(recipient);
     await browser.pause(2000);
     await TouchHelper.tapScreen('centerCenter');
