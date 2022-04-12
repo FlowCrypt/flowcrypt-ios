@@ -35,11 +35,15 @@ extension ComposeViewController {
     }
 
     internal func setupUI() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(handleTableTap))
+
         node.do {
             $0.delegate = self
             $0.dataSource = self
             $0.view.contentInsetAdjustmentBehavior = .never
             $0.view.keyboardDismissMode = .interactive
+            $0.view.backgroundView = UIView()
+            $0.view.backgroundView?.addGestureRecognizer(tap)
         }
 
         updateState(with: .main)
