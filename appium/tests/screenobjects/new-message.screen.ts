@@ -283,7 +283,7 @@ class NewMessageScreen extends BaseScreen {
     if (name) {
       expect(await (await this.recipientPopupNameNode).getValue()).toBe(name);
     }
-    await TouchHelper.dismissPopover();
+    await TouchHelper.tapScreen('centerRight');
   }
 
   showRecipientPopup = async (order: number, type = 'to') => {
@@ -308,6 +308,14 @@ class NewMessageScreen extends BaseScreen {
     await (await this.deleteAttachmentButton).waitForDisplayed();
     const label = await this.attachmentNameLabel;
     await ElementHelper.waitForValue(await label, name);
+  }
+
+  checkRecipientEvaluationWhenTapOutside = async (type = 'to') => {
+    const recipient = 'test@gmail.com'
+    await (await this.getRecipientsTextField(type)).setValue(recipient);
+    await browser.pause(2000);
+    await TouchHelper.tapScreen('centerCenter');
+    await this.checkAddedRecipient(recipient, 0);
   }
 
   deleteAttachment = async () => {
