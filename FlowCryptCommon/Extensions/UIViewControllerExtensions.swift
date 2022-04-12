@@ -70,8 +70,9 @@ public extension UIViewController {
     func showRetryAlert(
         title: String? = "error".localized,
         message: String,
-        onRetry: (() -> Void)? = nil,
-        onOk: (() -> Void)? = nil
+        cancelActionTitle: String,
+        onRetry: ((UIAlertAction) -> Void)?,
+        onCancel: ((UIAlertAction) -> Void)?
     ) {
         self.view.hideAllToasts()
         hideSpinner()
@@ -82,14 +83,15 @@ public extension UIViewController {
         )
         let retry = UIAlertAction(
             title: "retry_title".localized,
-            style: .cancel
-        ) { _ in onRetry?() }
-        let ok = UIAlertAction(
-            title: "ok".localized,
-            style: .default
-        ) { _ in onOk?() }
+            style: .cancel,
+            handler: onRetry
+        )
+        let cancel = UIAlertAction(
+            title: cancelActionTitle,
+            style: .default,
+            handler: onCancel)
         alert.addAction(retry)
-        alert.addAction(ok)
+        alert.addAction(cancel)
         present(alert, animated: true, completion: nil)
     }
 

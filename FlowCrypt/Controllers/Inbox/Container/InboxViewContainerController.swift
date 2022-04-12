@@ -175,9 +175,10 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
                         ) { [weak self] in
                             guard let self = self else { return }
                             Task {
-                                await self.appContext.globalRouter.reauthorize(
+                                await self.appContext.globalRouter.signIn(
                                     appContext: self.appContext,
-                                    route: .gmailLogin(self)
+                                    route: .gmailLogin(self),
+                                    email: nil
                                 )
                             }
                         }

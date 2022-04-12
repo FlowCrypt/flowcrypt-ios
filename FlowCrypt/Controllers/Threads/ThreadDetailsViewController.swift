@@ -372,8 +372,16 @@ extension ThreadDetailsViewController {
                 // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
                 showToast("Message not found in folder: \(thread.path)")
             } else {
-                // todo - this should be a retry / cancel alert
-                showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
+                showRetryAlert(
+                    title: "message_failed_open".localized,
+                    message: error.errorMessage,
+                    cancelActionTitle: "go_back".localized,
+                    onRetry: { _ in
+                        // TODO
+                    },
+                    onCancel: { _ in
+                        // TODO
+                    })
             }
             navigationController?.popViewController(animated: true)
         }

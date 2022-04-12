@@ -17,11 +17,11 @@ struct CheckMailAuthViewDecorator {
             case .setup:
                 return "setup_title".localized
             case .invalidGrant:
-                return "setup_title".localized // todo
+                return "error_connection".localized
             }
         }
 
-        var description: String {
+        var message: String {
             switch self {
             case .setup:
                 return "gmail_service_no_access_to_account_message".localized
@@ -34,10 +34,12 @@ struct CheckMailAuthViewDecorator {
     let type: CheckMailAuthType
 
     var title: NSAttributedString {
-        type.title.attributed(
-            .bold(35),
-            color: .mainTextColor,
-            alignment: .center
-        )
+        type
+            .title
+            .attributed(
+                .bold(35),
+                color: .mainTextColor,
+                alignment: .center
+            )
     }
 }

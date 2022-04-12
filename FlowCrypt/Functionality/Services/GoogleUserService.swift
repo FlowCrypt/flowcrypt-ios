@@ -164,8 +164,17 @@ extension GoogleUserService: UserServiceType {
     }
 
     private func parseSignInError(_ error: Error) -> Error {
-        guard let underlyingError = (error as NSError).userInfo["NSUnderlyingError"] as? NSError
-        else { return error }
+        let nsError = error as NSError
+
+        guard let underlyingError = nsError.userInfo["NSUnderlyingError"] as? NSError
+        else {
+            switch nsError.code {
+            case -4: // login cancelled
+                return GoogleUserServiceError.cancelledAuthorization
+            default:
+                return error
+            }
+        }
 
         switch underlyingError.code {
         case 1:

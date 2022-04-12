@@ -73,7 +73,7 @@ extension CheckMailAuthViewController {
             return TextCellNode(
                 input: .init(
                     backgroundColor: .backgroundColor,
-                    title: "gmail_service_no_access_to_account_message".localized,
+                    title: decorator.type.message,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200),
                     insets: .side(24),
@@ -86,7 +86,8 @@ extension CheckMailAuthViewController {
                 Task {
                     await self.appContext.globalRouter.signIn(
                         appContext: self.appContext,
-                        route: .gmailLogin(self)
+                        route: .gmailLogin(self),
+                        email: nil
                     )
                 }
             }

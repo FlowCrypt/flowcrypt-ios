@@ -165,10 +165,11 @@ extension SetupInitialViewController {
                 case .noKeys:
                     showRetryAlert(
                         message: "organisational_rules_ekm_empty_private_keys_error".localized,
-                        onRetry: { [weak self] in
+                        cancelActionTitle: "log_out".localized,
+                        onRetry: { [weak self] _ in
                             self?.state = .fetchingKeysFromEKM
                         },
-                        onOk: { [weak self] in
+                        onCancel: { [weak self] _ in
                             self?.signOut()
                         }
                     )
