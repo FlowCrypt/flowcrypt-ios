@@ -83,16 +83,30 @@ extension CheckMailAuthViewController {
         case 2:
             return ButtonCellNode(input: .signInAgain) { [weak self] in
                 guard let self = self else { return }
-                Task {
-                    await self.appContext.globalRouter.signIn(
-                        appContext: self.appContext,
-                        route: .gmailLogin(self),
-                        email: nil
-                    )
-                }
+                self.authorize()
             }
         default:
             return ASCellNode()
+        }
+    }
+
+    private func authorize() {
+        Task {
+            do {
+                let email = try appContext.encryptedStorage.activeUser?.email
+                await self.appContext.globalRouter.signIn(
+                    appContext: self.appContext,
+                    route: .gmailLogin(self),
+                    email: email
+                )
+            } catch {
+                switch error {
+                case GoogleUserServiceError.wrongAccount:
+                    showAlert(message: error.errorMessage)
+                default:
+                    break
+                }
+            }
         }
     }
 }
