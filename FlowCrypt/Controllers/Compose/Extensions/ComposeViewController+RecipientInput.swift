@@ -77,7 +77,7 @@ extension ComposeViewController {
 
         let indexOfRecipient: Int
 
-        let indexPath = recipientsIndexPath(type: recipientType, part: .list)
+        let indexPath = recipientsIndexPath(type: recipientType)
 
         if let index = idleRecipients.firstIndex(where: { $0.email == newRecipient.email }) {
             // recipient already in list
@@ -114,14 +114,14 @@ extension ComposeViewController {
         updateState(with: .main)
     }
 
-    internal func recipientsIndexPath(type: RecipientType, part: RecipientPart) -> IndexPath? {
+    internal func recipientsIndexPath(type: RecipientType) -> IndexPath? {
         guard let section = sectionsList.firstIndex(of: .recipients(type)) else { return nil }
-        return IndexPath(row: part.rawValue, section: section)
+        return IndexPath(row: 0, section: section)
     }
 
     internal func recipientsTextField(type: RecipientType) -> TextFieldNode? {
-        guard let indexPath = recipientsIndexPath(type: type, part: .input) else { return nil }
-        return (node.nodeForRow(at: indexPath) as? RecipientEmailTextFieldNode)?.textField
+        guard let indexPath = recipientsIndexPath(type: type) else { return nil }
+        return (node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode)?.recipientInput.textField
     }
 
     internal func handleBackspaceAction(with textField: UITextField, for recipientType: RecipientType) {
@@ -136,9 +136,8 @@ extension ComposeViewController {
             contextToSend.set(recipients: notSelectedRecipients, for: recipientType)
             reload(sections: [.recipients(.to), .password])
 
-            if let indexPath = recipientsIndexPath(type: recipientType, part: .list),
-               let inputIndexPath = recipientsIndexPath(type: recipientType, part: .input) {
-                node.reloadRows(at: [indexPath, inputIndexPath], with: .automatic)
+            if let indexPath = recipientsIndexPath(type: recipientType) {
+                node.reloadRows(at: [indexPath], with: .automatic)
             }
 
             hideRecipientPopOver()
@@ -151,7 +150,7 @@ extension ComposeViewController {
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
 
-            if let indexPath = recipientsIndexPath(type: recipientType, part: .list) {
+            if let indexPath = recipientsIndexPath(type: recipientType) {
                 node.reloadRows(at: [indexPath], with: .automatic)
             }
         } else {

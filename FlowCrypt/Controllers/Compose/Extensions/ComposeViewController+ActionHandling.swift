@@ -130,7 +130,7 @@ extension ComposeViewController {
         if needsReload, selectedRecipientType == nil || selectedRecipientType == recipient.type {
             reload(sections: [.password])
 
-            if let listIndexPath = recipientsIndexPath(type: recipient.type, part: .list) {
+            if let listIndexPath = recipientsIndexPath(type: recipient.type) {
                 node.reloadRows(at: [listIndexPath], with: .automatic)
             }
         }
@@ -147,7 +147,7 @@ extension ComposeViewController {
             evaluate(recipient: recipient)
         }
 
-        if let listIndexPath = recipientsIndexPath(type: type, part: .list) {
+        if let listIndexPath = recipientsIndexPath(type: type) {
             node.reloadRows(at: [listIndexPath], with: .automatic)
         }
 
@@ -178,7 +178,7 @@ extension ComposeViewController {
             } else {
                 contextToSend.remove(recipient: recipient.email, type: type)
 
-                if let listIndexPath = recipientsIndexPath(type: type, part: .list) {
+                if let listIndexPath = recipientsIndexPath(type: type) {
                     node.reloadRows(at: [listIndexPath], with: .automatic)
                 }
             }

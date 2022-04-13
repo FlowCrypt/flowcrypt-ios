@@ -63,7 +63,7 @@ final public class RecipientEmailsCellNode: CellNode {
     private var collectionLayoutHeight: CGFloat
     private var recipients: [Input] = []
     private let type: String
-    private let recipientInput: RecipientEmailTextFieldNode
+    public let recipientInput: RecipientEmailTextFieldNode
 
     public init(recipients: [Input],
                 recipientInput: RecipientEmailTextFieldNode,

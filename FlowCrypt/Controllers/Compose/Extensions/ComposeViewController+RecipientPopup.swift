@@ -61,7 +61,7 @@ extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
         if contextToSend.recipients(type: type).count < 1 {
             reload(sections: [.recipients(type)])
         }
-        if let listIndexPath = recipientsIndexPath(type: type, part: .list) {
+        if let listIndexPath = recipientsIndexPath(type: type) {
             node.reloadRows(at: [listIndexPath], with: .automatic)
         }
     }

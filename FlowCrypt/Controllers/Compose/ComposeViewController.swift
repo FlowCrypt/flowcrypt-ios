@@ -38,10 +38,6 @@ final class ComposeViewController: TableNodeViewController {
         }
     }
 
-    internal enum RecipientPart: Int, CaseIterable {
-        case list, input
-    }
-
     internal enum ComposePart: Int, CaseIterable {
         case topDivider, subject, subjectDivider, text
     }
