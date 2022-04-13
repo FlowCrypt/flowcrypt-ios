@@ -16,7 +16,7 @@ import SwiftyRSA // for rsa
     func getSecureRandomByteNumberArray(_ byteCount: Int) -> [UInt8]?
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8]
     func decryptRsaNoPadding(_ rsaPrvDerBase64: String, _ encryptedBase64: String) -> String
-    func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String
+    func modPow(_ base: String, _ exponent: String, _ modulo: String) -> String
     func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8]
 
     func setTimeout(_ callback: JSValue, _ ms: Double) -> String
@@ -54,13 +54,14 @@ final class CoreHost: NSObject, CoreHostExports {
 
     // sign in pure JS takes 30-120 seconds for RSA 4096 depending on device.
     // Investigating improvement in Swift
-    func signRsa() {
-        // todo
+    func signRsaRedPow(base: String, exponent: String, modulo: String) {
+        // js: base.toRed(new _bn2.default.red(modulus)).redPow(exponent);
+        
     }
     
     // rsa verify is used by OpenPGP.js during decryption as well to figure out our own key preferences
     // this slows down decryption the first time a private key is used in a session because bn.js is slow
-    func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
+    func modPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
         guard
             let bnBase = BigUInt(base, radix: 10),
             let bnExponent = BigUInt(exponent, radix: 10),

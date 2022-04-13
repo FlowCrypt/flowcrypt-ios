@@ -216,7 +216,6 @@
 		9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E903826A1AD7A0021C07F /* KeyDetailsTests.swift */; };
 		9F7ECCA7272C3FB4008A1770 /* TextImageNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ECCA6272C3FB4008A1770 /* TextImageNode.swift */; };
 		9F7ECCA9272C47DB008A1770 /* InboxRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ECCA8272C47DA008A1770 /* InboxRenderable.swift */; };
-		9F8076D927762515008E5874 /* BigIntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D27B78248A8694007346FA /* BigIntExtensions.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */; };
 		9F883912271F242900669B56 /* ThreadDetailsDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */; };
 		9F8839142721EB5000669B56 /* MessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8839132721EB5000669B56 /* MessageAction.swift */; };
@@ -825,7 +824,6 @@
 		D2A1D3D023FD83B100D626D6 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewDecorator.swift; sourceTree = "<group>"; };
 		D2A9CA44242622F800E1D898 /* GeneralConstantsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralConstantsTest.swift; sourceTree = "<group>"; };
-		D2D27B78248A8694007346FA /* BigIntExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigIntExtensions.swift; sourceTree = "<group>"; };
 		D2E26F6224F1698100612AF1 /* ContactsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListViewController.swift; sourceTree = "<group>"; };
 		D2E26F6524F169B400612AF1 /* ContactsListDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsListDecorator.swift; sourceTree = "<group>"; };
 		D2E26F6724F169E300612AF1 /* ContactCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCellNode.swift; sourceTree = "<group>"; };
@@ -1968,7 +1966,6 @@
 			isa = PBXGroup;
 			children = (
 				21F836B42652A25D00B2448C /* Data */,
-				D2D27B78248A8694007346FA /* BigIntExtensions.swift */,
 				E26D5E20275AA417007B8802 /* BundleExtensions.swift */,
 				21C7DEFB26669A3700C44800 /* CalendarExtensions.swift */,
 				32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */,
@@ -2983,7 +2980,6 @@
 				9FBD69EB27775086002FC602 /* UIColorExtensions.swift in Sources */,
 				21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */,
 				9FD5052927889D8200FAA82F /* UIAlertControllerExtensions.swift in Sources */,
-				9F8076D927762515008E5874 /* BigIntExtensions.swift in Sources */,
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
 				D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */,
 				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
