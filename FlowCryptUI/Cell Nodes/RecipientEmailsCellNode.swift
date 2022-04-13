@@ -92,9 +92,7 @@ final public class RecipientEmailsCellNode: CellNode {
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-//        let collectionNodeHeight = recipients.isEmpty ? 40 : collectionLayoutHeight
-        let collectionNodeHeight = CGFloat(300)
-        let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionNodeHeight)
+        let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionLayoutHeight)
         let buttonSize = CGSize(width: 40, height: 32)
 
         let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0)

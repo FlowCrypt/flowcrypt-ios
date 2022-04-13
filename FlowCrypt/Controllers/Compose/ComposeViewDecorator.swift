@@ -43,7 +43,8 @@ struct ComposeViewDecorator {
     func styledTextFieldInput(
         with text: String,
         keyboardType: UIKeyboardType = .default,
-        accessibilityIdentifier: String? = nil
+        accessibilityIdentifier: String? = nil,
+        insets: UIEdgeInsets = .deviceSpecificTextInsets(top: 0, bottom: 0)
     ) -> TextFieldCellNode.Input {
         TextFieldCellNode.Input(
             placeholder: text.attributed(
@@ -53,7 +54,7 @@ struct ComposeViewDecorator {
             ),
             isSecureTextEntry: false,
             textAlignment: .left,
-            insets: .deviceSpecificTextInsets(top: 0, bottom: 0),
+            insets: insets,
             height: 32,
             width: UIScreen.main.bounds.width,
             keyboardType: keyboardType,

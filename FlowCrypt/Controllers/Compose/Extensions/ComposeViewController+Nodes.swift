@@ -182,7 +182,8 @@ extension ComposeViewController {
             input: decorator.styledTextFieldInput(
                 with: "",
                 keyboardType: .emailAddress,
-                accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)"
+                accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)",
+                insets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             ),
             action: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)
