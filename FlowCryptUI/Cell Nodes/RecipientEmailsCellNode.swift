@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 
-final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode {
+final public class RecipientEmailsCellNode: CellNode {
     public typealias RecipientTap = (RecipientEmailTapAction) -> Void
 
     public enum RecipientEmailTapAction {
@@ -25,12 +25,20 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
     private var onAction: RecipientTap?
 
     lazy var textNode: ASTextNode2 = {
-        createNodeLabel(type: type, isEmpty: recipients.isEmpty)
+        let textNode = ASTextNode2()
+        let textTitle = "compose_recipient_\(type)".localized
+        textNode.attributedText = textTitle.attributed(.regular(17), color: .lightGray, alignment: .left)
+        textNode.isAccessibilityElement = true
+        textNode.style.preferredSize.width = 35
+        return textNode
     }()
+
     lazy var toggleButtonNode: ASButtonNode = {
         createToggleButton()
     }()
+
     var toggleButtonAction: (() -> Void)?
+
     var isToggleButtonRotated = false {
         didSet {
             updateToggleButton(animated: true)
@@ -55,8 +63,10 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
     private var collectionLayoutHeight: CGFloat
     private var recipients: [Input] = []
     private let type: String
+    private let recipientInput: RecipientEmailTextFieldNode
 
     public init(recipients: [Input],
+                recipientInput: RecipientEmailTextFieldNode,
                 type: String,
                 height: CGFloat,
                 isToggleButtonRotated: Bool,
@@ -64,6 +74,7 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
         self.recipients = recipients
         self.type = type
         self.collectionLayoutHeight = height
+        self.recipientInput = recipientInput
 
         super.init()
 
@@ -81,7 +92,7 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        let collectionNodeHeight = recipients.isEmpty ? 0 : collectionLayoutHeight
+        let collectionNodeHeight = recipients.isEmpty ? 50 : collectionLayoutHeight
         let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionNodeHeight)
         let buttonSize = CGSize(width: 40, height: 32)
 
@@ -98,7 +109,7 @@ final public class RecipientEmailsCellNode: CellNode, RecipientToggleButtonNode 
         )
     }
 
-    func onToggleButtonTap() {
+    @objc func onToggleButtonTap() {
         isToggleButtonRotated.toggle()
         toggleButtonAction?()
     }
@@ -138,5 +149,67 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
             }
             return cell
         }
+    }
+}
+
+extension RecipientEmailsCellNode {
+    func createToggleButton() -> ASButtonNode {
+        let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .light)
+        let image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
+        let button = ASButtonNode()
+        button.accessibilityIdentifier = "aid-recipients-toggle-button"
+        button.setImage(image, for: .normal)
+        button.contentEdgeInsets = UIEdgeInsets(top: 3, left: 0, bottom: 0, right: 0)
+        button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
+        button.addTarget(self, action: #selector(self.onToggleButtonTap), forControlEvents: .touchUpInside)
+        return button
+    }
+
+    func updateToggleButton(animated: Bool) {
+        func rotateButton(angle: CGFloat) {
+            toggleButtonNode.view.transform = CGAffineTransform(rotationAngle: angle)
+        }
+
+        let angle = self.isToggleButtonRotated ? .pi : 0
+        if animated {
+            UIView.animate(withDuration: 0.3) {
+                rotateButton(angle: angle)
+            }
+        } else {
+            rotateButton(angle: angle)
+        }
+    }
+
+    func createLayout(
+        contentNode: ASDisplayNode,
+        textNodeStack: ASInsetLayoutSpec,
+        contentSize: CGSize,
+        insets: UIEdgeInsets,
+        buttonSize: CGSize
+    ) -> ASInsetLayoutSpec {
+
+        contentNode.style.preferredSize.height = contentSize.height
+        contentNode.style.flexGrow = 1
+
+        let recipientInset = UIEdgeInsets(top: CGFloat.infinity, left: 100, bottom: 2, right: CGFloat.infinity)
+        let recipientInsetSpec = ASInsetLayoutSpec(insets: recipientInset, child: recipientInput)
+
+        let mainStack = ASOverlayLayoutSpec.init(child: contentNode, overlay: recipientInsetSpec)
+        mainStack.style.flexGrow = 1
+
+        let stack = ASStackLayoutSpec.horizontal()
+        stack.children = [textNodeStack, mainStack]
+
+        if toggleButtonAction != nil {
+            toggleButtonNode.style.preferredSize = buttonSize
+
+            DispatchQueue.main.async {
+                self.updateToggleButton(animated: false)
+            }
+
+            stack.children?.append(toggleButtonNode)
+        }
+
+        return ASInsetLayoutSpec(insets: insets, child: stack)
     }
 }

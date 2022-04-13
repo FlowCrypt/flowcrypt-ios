@@ -83,7 +83,6 @@
 		32DCAF95A6A329C3136B1C8E /* Imap+msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA55C094E9745AA1FD210 /* Imap+msg.swift */; };
 		32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA9701B2D5052225A0414 /* SignInViewController.swift */; };
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
-		51074E6427BD0C5800FBB124 /* RecipientToggleButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51074E6327BD0C5800FBB124 /* RecipientToggleButtonNode.swift */; };
 		5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		510BB63527BE92CC00B1011F /* RecipientBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510BB63427BE92CC00B1011F /* RecipientBase.swift */; };
 		511D07E12769FBBA0050417B /* MessagePasswordCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */; };
@@ -545,7 +544,6 @@
 		4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCrypt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
-		51074E6327BD0C5800FBB124 /* RecipientToggleButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientToggleButtonNode.swift; sourceTree = "<group>"; };
 		5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		510BB63427BE92CC00B1011F /* RecipientBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientBase.swift; sourceTree = "<group>"; };
 		511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePasswordCellNode.swift; sourceTree = "<group>"; };
@@ -2121,7 +2119,6 @@
 				D26F132624509EB6009175BA /* RecipientEmailsCellNodeInput.swift */,
 				D2531F3523FFEDA2007E5198 /* RecipientEmailNode.swift */,
 				5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */,
-				51074E6327BD0C5800FBB124 /* RecipientToggleButtonNode.swift */,
 				9F1797692368EE90002BF770 /* ButtonCellNode.swift */,
 				9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */,
 				9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */,
@@ -2907,7 +2904,6 @@
 				D28655952423BFF60066F52E /* SideMenuOptionalView.swift in Sources */,
 				D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */,
 				D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */,
-				51074E6427BD0C5800FBB124 /* RecipientToggleButtonNode.swift in Sources */,
 				5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
 				9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */,

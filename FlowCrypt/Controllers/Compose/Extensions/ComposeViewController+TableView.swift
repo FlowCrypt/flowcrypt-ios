@@ -21,11 +21,11 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
         switch (state, sectionItem) {
         case (.main, .recipientsLabel):
-            return shouldShowEmailRecipientsLabel ? RecipientPart.allCases.count : 0
+            return shouldShowEmailRecipientsLabel ? 1 : 0
         case (.main, .recipients(.to)):
-            return shouldShowEmailRecipientsLabel ? 0 : RecipientPart.allCases.count
+            return shouldShowEmailRecipientsLabel ? 0 : 1
         case (.main, .recipients(.cc)), (.main, .recipients(.bcc)):
-            return !shouldShowEmailRecipientsLabel && shouldShowAllRecipientTypes ? RecipientPart.allCases.count : 0
+            return !shouldShowEmailRecipientsLabel && shouldShowAllRecipientTypes ? 1 : 0
         case (.main, .password):
             return isMessagePasswordSupported && contextToSend.hasRecipientsWithoutPubKey ? 1 : 0
         case (.main, .compose):
@@ -33,7 +33,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (.main, .attachments):
             return contextToSend.attachments.count
         case (.searchEmails, .recipients(let type)):
-            return selectedRecipientType == type ? RecipientPart.allCases.count : 0
+            return selectedRecipientType == type ? 1 : 0
         case let (.searchEmails(emails), .searchResults):
             return emails.isNotEmpty ? emails.count + 1 : 2
         case (.searchEmails, .contacts):
@@ -53,11 +53,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             switch (self.state, section) {
             case (_, .recipients(.to)), (_, .recipients(.cc)), (_, .recipients(.bcc)):
                 let recipientType = RecipientType.allCases[indexPath.section]
-                if indexPath.row == 0 {
-                    return self.recipientsNode(type: recipientType)
-                } else {
-                    return self.recipientInput(type: recipientType)
-                }
+                return self.recipientsNode(type: recipientType)
             case (.main, .recipientsLabel):
                 if indexPath.row > 0 {
                     return ASCellNode()

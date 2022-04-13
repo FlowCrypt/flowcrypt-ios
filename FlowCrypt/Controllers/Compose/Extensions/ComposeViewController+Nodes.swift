@@ -148,6 +148,7 @@ extension ComposeViewController {
 
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.Input.init),
+            recipientInput: recipientInput(type: type),
             type: type.rawValue,
             height: decorator.recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
             isToggleButtonRotated: shouldShowAllRecipientTypes,
@@ -176,28 +177,16 @@ extension ComposeViewController {
                 }
             }
     }
-
-    internal func recipientInput(type: RecipientType) -> ASCellNode {
-        let recipients = contextToSend.recipients(type: type)
-        let shouldShowToggleButton = type == .to
-            && contextToSend.recipients(type: .to).isEmpty
-            && !contextToSend.hasCcOrBccRecipients
-
+    internal func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
         return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
                 with: "",
                 keyboardType: .emailAddress,
                 accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)"
             ),
-            hasRecipients: recipients.isNotEmpty,
-            type: type.rawValue,
             action: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)
-            },
-            isToggleButtonRotated: shouldShowAllRecipientTypes,
-            toggleButtonAction: shouldShowToggleButton ? { [weak self] in
-                self?.toggleRecipientsList()
-            } : nil
+            }
         )
         .onShouldReturn { [weak self] textField -> (Bool) in
             if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
