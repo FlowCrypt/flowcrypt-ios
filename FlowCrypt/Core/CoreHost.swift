@@ -45,22 +45,33 @@ final class CoreHost: NSObject, CoreHostExports {
             return ""
         }
     }
-
+    
     // aes256 msglen:1300, original 11ms, now 7ms
     // performance untested for larger messages
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8] {
         Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
     }
 
+    // sign in pure JS takes 30-120 seconds for RSA 4096 depending on device.
+    // Investigating improvement in Swift
+    func signRsa() {
+        // todo
+    }
+    
     // rsa verify is used by OpenPGP.js during decryption as well to figure out our own key preferences
     // this slows down decryption the first time a private key is used in a session because bn.js is slow
     func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
-        // If there is an error parsing provided numbers, the function returns empty string, and JS falls back on bn.js
-        guard let n = BigUInt(base), let e = BigUInt(exponent), let m = BigUInt(modulo) else {
+        guard
+            let bnBase = BigUInt(base, radix: 10),
+            let bnExponent = BigUInt(exponent, radix: 10),
+            let bnModulo = BigUInt(modulo, radix: 10)
+        else {
+            // If there is an error parsing provided numbers,
+            //   the function returns empty string, and JS falls back on bn.js
             return ""
         }
-        let result = modPow(n: n, e: e, m: m)
-        return String(result, radix: 10)
+        let bnResult = bnBase.power(bnExponent, modulus: bnModulo)
+        return String(bnResult, radix: 10)
     }
 
     func hashDigest(name: String, data: Data) throws -> [UInt8] {
