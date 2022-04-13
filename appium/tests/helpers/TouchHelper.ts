@@ -1,4 +1,4 @@
-
+type ScreenPosition = 'topLeft' | 'topCenter' | 'topRight' | 'centerLeft' | 'centerCenter' | 'centerRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
 
 class TouchHelper {
 
@@ -17,12 +17,42 @@ class TouchHelper {
   }
 
   /**
-   * Dismiss popover by clicking popup outside
+   * Tap Screen
    */
-  static dismissPopover = async () => {
+  static tapScreen = async (position: ScreenPosition) => {
     const {width, height} = await driver.getWindowSize();
+    let pressOptions;
+    switch (position) {
+      case 'topLeft':
+        pressOptions = {x: 0, y: 0};
+        break;
+      case 'topCenter':
+        pressOptions = {x: width/2, y: 0};
+        break;
+      case 'topRight':
+        pressOptions = {x: width, y: 0};
+        break;
+      case 'centerLeft':
+        pressOptions = {x: 0, y: height/2};
+        break;
+      case 'centerCenter':
+        pressOptions = {x: width/2, y: height/2};
+        break;
+      case 'centerRight':
+        pressOptions = {x: width, y: height/2};
+        break;
+      case 'bottomLeft':
+        pressOptions = {x: 0, y: height};
+        break;
+      case 'bottomCenter':
+        pressOptions = {x: width/2, y: height};
+        break;
+      case 'bottomRight':
+        pressOptions = {x: width, y: height};
+        break;
+    }
     await driver.touchPerform([
-      {action: 'press', options: {x: width, y: height / 2}},
+      {action: 'press', options: pressOptions},
       {action: 'wait', options: {ms: 100}},
       {action: 'release', options: {}},
     ]);
