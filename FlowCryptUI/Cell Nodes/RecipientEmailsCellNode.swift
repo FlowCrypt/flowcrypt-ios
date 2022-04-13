@@ -92,7 +92,8 @@ final public class RecipientEmailsCellNode: CellNode {
     }
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        let collectionNodeHeight = recipients.isEmpty ? 50 : collectionLayoutHeight
+//        let collectionNodeHeight = recipients.isEmpty ? 40 : collectionLayoutHeight
+        let collectionNodeHeight = CGFloat(300)
         let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionNodeHeight)
         let buttonSize = CGSize(width: 40, height: 32)
 
@@ -129,13 +130,21 @@ extension RecipientEmailsCellNode {
 
 extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource {
     public func collectionNode(_: ASCollectionNode, numberOfItemsInSection _: Int) -> Int {
-        recipients.count
+        recipients.count + 1
     }
 
     public func collectionNode(_ collectionNode: ASCollectionNode, nodeBlockForItemAt indexPath: IndexPath) -> ASCellNodeBlock {
         let width = collectionNode.style.preferredSize.width
+
         return { [weak self] in
-            guard let recipient = self?.recipients[indexPath.row] else { assertionFailure(); return ASCellNode() }
+            guard let self = self else {
+                return ASCellNode()
+            }
+            if indexPath.row == self.recipients.count {
+                return self.recipientInput
+            }
+
+            guard let recipient = self.recipients[safe: indexPath.row] else { assertionFailure(); return ASCellNode() }
 
             let cell = RecipientEmailNode(
                 input: RecipientEmailNode.Input(recipient: recipient, width: width),
@@ -191,14 +200,8 @@ extension RecipientEmailsCellNode {
         contentNode.style.preferredSize.height = contentSize.height
         contentNode.style.flexGrow = 1
 
-        let recipientInset = UIEdgeInsets(top: CGFloat.infinity, left: 100, bottom: 2, right: CGFloat.infinity)
-        let recipientInsetSpec = ASInsetLayoutSpec(insets: recipientInset, child: recipientInput)
-
-        let mainStack = ASOverlayLayoutSpec.init(child: contentNode, overlay: recipientInsetSpec)
-        mainStack.style.flexGrow = 1
-
         let stack = ASStackLayoutSpec.horizontal()
-        stack.children = [textNodeStack, mainStack]
+        stack.children = [textNodeStack, collectionNode]
 
         if toggleButtonAction != nil {
             toggleButtonNode.style.preferredSize = buttonSize

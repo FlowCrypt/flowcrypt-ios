@@ -24,4 +24,11 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
         textField.becomeFirstResponder()
         return true
     }
+
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        textField.style.flexGrow = 1
+        textField.style.preferredSize.height = input.height
+
+        return ASInsetLayoutSpec(insets: input.insets, child: textField)
+    }
 }
