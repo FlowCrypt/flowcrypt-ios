@@ -154,7 +154,7 @@ struct ComposeViewDecorator {
     mutating func updateRecipientsNode(
         layoutHeight: CGFloat,
         type: RecipientType,
-        reload: (([ComposeViewController.Section]) -> Void)? = nil
+        completion: (() -> Void)? = nil
     ) {
         let currentHeight = self.recipientsNodeHeight(type: type)
 
@@ -165,14 +165,12 @@ struct ComposeViewDecorator {
         switch type {
         case .to:
             self.calculatedRecipientsToPartHeight = layoutHeight
-            reload?([.recipients(.to), .password])
         case .cc:
             self.calculatedRecipientsCcPartHeight = layoutHeight
-            reload?([.recipients(.to), .recipients(.cc), .password])
         case .bcc:
             self.calculatedRecipientsBccPartHeight = layoutHeight
-            reload?([.recipients(.to), .recipients(.bcc), .password])
         }
+        completion?()
     }
 
     private func messagePasswordInput(

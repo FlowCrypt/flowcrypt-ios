@@ -162,9 +162,11 @@ extension ComposeViewController {
                 self?.decorator.updateRecipientsNode(
                     layoutHeight: layoutHeight,
                     type: type,
-                    reload: { sections in
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            self?.reload(sections: sections)
+                    completion: {
+                        if let indexPath = self?.recipientsIndexPath(type: type),
+                           let emailNode = self?.node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
+                            emailNode.style.preferredSize.height = layoutHeight
+                            emailNode.setNeedsLayout()
                         }
                     }
                 )
