@@ -108,19 +108,21 @@ extension ComposeViewController {
         }
         .then {
             let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
+            let textNode = $0
 
             if input.isQuote && !messageText.string.contains(styledQuote.string) {
                 let mutableString = NSMutableAttributedString(attributedString: messageText)
                 mutableString.append(styledQuote)
-                $0.textView.attributedText = mutableString
-                let textView = $0
+                textNode.textView.attributedText = mutableString
                 if input.isReply {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        textView.becomeFirstResponder()
+                        textNode.becomeFirstResponder()
                     }
                 }
             } else {
-                $0.textView.attributedText = messageText
+                DispatchQueue.main.async {
+                    textNode.textView.attributedText = messageText
+                }
             }
         }
     }
@@ -161,7 +163,7 @@ extension ComposeViewController {
                     layoutHeight: layoutHeight,
                     type: type,
                     reload: { sections in
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             self?.reload(sections: sections)
                         }
                     }
