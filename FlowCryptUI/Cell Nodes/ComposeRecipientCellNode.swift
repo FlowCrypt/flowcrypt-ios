@@ -34,13 +34,20 @@ public final class ComposeRecipientCellNode: CellNode {
         recipientNode.addTarget(self, action: #selector(onTextNodeTap), forControlEvents: .touchUpInside)
 
         recipientNode.accessibilityIdentifier = accessibilityIdentifier
+        let grayBubbleTextColor = UIColor.colorFor(
+            darkStyle: .white,
+            lightStyle: .black
+        )
         recipientNode.attributedText = input.recipients.map { (recipient) -> NSAttributedString in
             // Use black text color for gray bubbles
-            let textColor = recipient.state.backgroundColor == titleNodeBackgroundColorSelected ? .black : recipient.state.backgroundColor
+            var textColor = recipient.state.backgroundColor
+            if textColor == titleNodeBackgroundColorSelected {
+                textColor = grayBubbleTextColor
+            }
             return recipient.email.string.attributed(.regular(17), color: textColor, alignment: .left)
         }.reduce(NSMutableAttributedString()) { (r, e) in
             if r.length > 0 {
-                r.append(NSAttributedString(", "))
+                r.append(", ".attributed(color: grayBubbleTextColor))
             }
             r.append(e)
             return r
