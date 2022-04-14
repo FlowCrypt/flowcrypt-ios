@@ -154,7 +154,7 @@ extension GlobalRouter: GlobalRouterType {
             appContext: appContext,
             decorator: CheckMailAuthViewDecorator(type: .invalidGrant)
         )
-        keyWindow.rootViewController = UINavigationController(rootViewController: controller)
+        keyWindow.rootViewController = MainNavigationController(rootViewController: controller)
         keyWindow.makeKeyAndVisible()
     }
 
@@ -210,8 +210,7 @@ extension GlobalRouter: GlobalRouterType {
 
         keyWindow.rootViewController?.showAlert(
             title: "error_login".localized,
-            message: error.errorMessage,
-            onOk: { [weak self] in self?.proceed() }
+            message: error.errorMessage
         )
     }
 }

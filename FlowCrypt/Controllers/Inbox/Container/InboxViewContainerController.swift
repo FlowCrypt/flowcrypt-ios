@@ -166,32 +166,13 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
             case .error(let error):
                 switch indexPath.row {
                 case 1:
-                    switch error {
-                    case GmailServiceError.invalidGrant:
-                        return ButtonCellNode(
-                            input: ButtonCellNode.Input(
-                                title: self.decorator.continueActionTitle()
-                            )
-                        ) { [weak self] in
-                            guard let self = self else { return }
-                            Task {
-                                await self.appContext.globalRouter.signIn(
-                                    appContext: self.appContext,
-                                    route: .gmailLogin(self),
-                                    email: nil
-                                )
-                            }
-                        }
-                    default:
-                        return ButtonCellNode(
-                            input: ButtonCellNode.Input(
-                                title: self.decorator.retryActionTitle()
-                            )
-                        ) {
-                            self.fetchInboxFolder()
-                        }
+                    return ButtonCellNode(
+                        input: ButtonCellNode.Input(
+                            title: self.decorator.retryActionTitle()
+                        )
+                    ) {
+                        self.fetchInboxFolder()
                     }
-
                 default:
                     return TextCellNode(
                         input: self.decorator.errorInput(with: descriptionSize, error: error)

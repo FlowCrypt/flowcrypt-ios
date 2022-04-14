@@ -334,14 +334,22 @@ extension InboxViewController {
 
     private func handle(error: Error) {
         refreshControl.endRefreshing()
-        let appError = AppErr(error)
-        switch appError {
-        case .connection, .general:
-            state = .error(appError.errorMessage)
+
+        switch error {
+        case GmailServiceError.invalidGrant:
+            appContext.globalRouter.renderMissingPermissionsView(
+                appContext: appContext
+            )
         default:
-            showAlert(error: error, message: "message_failed_load".localized)
+            let appError = AppErr(error)
+            switch appError {
+            case .connection, .general:
+                state = .error(appError.errorMessage)
+            default:
+                showAlert(error: error, message: "message_failed_load".localized)
+            }
+            tableNode.reloadData()
         }
-        tableNode.reloadData()
     }
 }
 

@@ -50,7 +50,15 @@ extension GmailService: MessagesThreadProvider {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListThreadsResponse, Error>) in
                 self.gmailService.executeQuery(query) { _, data, error in
                     if let error = error {
-                        return continuation.resume(throwing: GmailServiceError.providerError(error))
+                        let nsError = error as NSError
+
+                        // TODO: Make common
+                        switch nsError.code {
+                        case -10: // invalid_grant error code
+                            return continuation.resume(throwing: GmailServiceError.invalidGrant(error))
+                        default:
+                            return continuation.resume(throwing: GmailServiceError.providerError(error))
+                        }
                     }
 
                     guard let threadsResponse = data as? GTLRGmail_ListThreadsResponse else {

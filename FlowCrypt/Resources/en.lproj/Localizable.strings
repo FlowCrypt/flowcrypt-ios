@@ -332,7 +332,7 @@
 "gmail_service_no_access_to_account_message" = "Google login successful.\n Now connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
 // Google User Service errors
-"google_user_service_error_wrong_account" = "Just used account %@ differs from already signed account %@.\nPlease use account %@ to log in";
+"google_user_service_error_wrong_account" = "Just used account %@ differs from already signed account %@.\n\nPlease use account %@ to log in";
 "google_user_service_error_auth_cancelled" = "Authorization was cancelled";
 "google_user_service_context_error" = "Context error";
 "google_user_service_error_inconsistent_state" = "Inconsistent state error";
