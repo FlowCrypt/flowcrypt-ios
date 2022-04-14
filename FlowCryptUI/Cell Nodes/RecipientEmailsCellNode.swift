@@ -108,6 +108,10 @@ final public class RecipientEmailsCellNode: CellNode {
         )
     }
 
+    public func setRecipientsInput(input: [Input]) {
+        self.recipients = input
+    }
+
     @objc func onToggleButtonTap() {
         isToggleButtonRotated.toggle()
         toggleButtonAction?()

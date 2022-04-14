@@ -75,43 +75,62 @@ extension ComposeViewController {
             state: decorator.recipientIdleState
         )
 
-        let indexOfRecipient: Int
-
-        let indexPath = recipientsIndexPath(type: recipientType)
-
-        if let index = idleRecipients.firstIndex(where: { $0.email == newRecipient.email }) {
-            // recipient already in list
-            evaluate(recipient: newRecipient)
-            indexOfRecipient = index
-        } else {
+        if idleRecipients.firstIndex(where: { $0.email == newRecipient.email }) == nil {
             // add new recipient
             contextToSend.add(recipient: newRecipient)
 
-            if let indexPath = indexPath {
-                node.reloadRows(at: [indexPath], with: .automatic)
-            }
-
-            evaluate(recipient: newRecipient)
-
-            // scroll to the latest recipient
-            indexOfRecipient = recipients.endIndex - 1
+            refreshRecipient(for: newRecipient.email, type: recipientType, refreshType: .add)
         }
 
-        if let indexPath = indexPath,
-           let emailsNode = node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                emailsNode.collectionNode.scrollToItem(
-                    at: IndexPath(row: indexOfRecipient, section: 0),
-                    at: .bottom,
-                    animated: true
-                )
-            }
+        evaluate(recipient: newRecipient)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.refreshRecipient(for: newRecipient.email, type: recipientType, refreshType: .scrollToBottom)
         }
 
         node.view.keyboardDismissMode = .interactive
         search.send("")
 
         updateState(with: .main)
+    }
+
+    /// This function refreshes recipient cell.
+    ///
+    /// - Parameter email: Recipient email.
+    /// - Parameter type: Recipient type.
+    /// - Parameter refreshType: Refresh type (delete/add/reload/scrollToBottom).
+    /// - Parameter TempRecipients: Temp recipients (Optional). Used to get deleted recipient index
+    internal func refreshRecipient(
+        for email: String,
+        type: RecipientType,
+        refreshType: RefreshType,
+        tempRecipients: [ComposeMessageRecipient]? = nil
+    ) {
+        let recipients = tempRecipients ?? contextToSend.recipients(type: type)
+        guard let indexPath = recipientsIndexPath(type: type),
+           let emailNode = node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode,
+           let emailIndex = recipients.firstIndex(where: { $0.email == email && $0.type == type }) else {
+            return
+        }
+        emailNode.setRecipientsInput(input: contextToSend.recipients(type: type).map(RecipientEmailsCellNode.Input.init))
+
+        // Reload recipient section when there are no recipients left
+        if refreshType == .delete && contextToSend.recipients(type: type).count < 1 {
+            reload(sections: [.recipients(type)])
+            return
+        }
+
+        let emailIndexPath = IndexPath(row: emailIndex, section: 0)
+        switch refreshType {
+        case .delete:
+            emailNode.collectionNode.deleteItems(at: [emailIndexPath])
+        case .reload:
+            emailNode.collectionNode.reloadItems(at: [emailIndexPath])
+        case .add:
+            emailNode.collectionNode.insertItems(at: [emailIndexPath])
+        case .scrollToBottom:
+            emailNode.collectionNode.scrollToItem(at: emailIndexPath, at: .bottom, animated: true)
+        }
     }
 
     internal func recipientsIndexPath(type: RecipientType) -> IndexPath? {
@@ -132,13 +151,12 @@ extension ComposeViewController {
         let selectedRecipients = recipients.filter { $0.state.isSelected }
 
         guard selectedRecipients.isEmpty else {
+            let tempRecipients = contextToSend.recipients(type: recipientType)
             let notSelectedRecipients = recipients.filter { !$0.state.isSelected }
             contextToSend.set(recipients: notSelectedRecipients, for: recipientType)
-            reload(sections: [.recipients(.to), .password])
+            reload(sections: [.password])
 
-            if let indexPath = recipientsIndexPath(type: recipientType) {
-                node.reloadRows(at: [indexPath], with: .automatic)
-            }
+            refreshRecipient(for: selectedRecipients[0].email, type: recipientType, refreshType: .delete, tempRecipients: tempRecipients)
 
             hideRecipientPopOver()
             return
@@ -150,9 +168,7 @@ extension ComposeViewController {
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
 
-            if let indexPath = recipientsIndexPath(type: recipientType) {
-                node.reloadRows(at: [indexPath], with: .automatic)
-            }
+            refreshRecipient(for: lastRecipient.email, type: recipientType, refreshType: .reload)
         } else {
             // dismiss keyboard if no recipients left
             textField.resignFirstResponder()

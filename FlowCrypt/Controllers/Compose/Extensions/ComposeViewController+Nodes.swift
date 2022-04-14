@@ -161,7 +161,7 @@ extension ComposeViewController {
                     layoutHeight: layoutHeight,
                     type: type,
                     reload: { sections in
-                        DispatchQueue.main.async {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             self?.reload(sections: sections)
                         }
                     }
@@ -177,6 +177,7 @@ extension ComposeViewController {
                 }
             }
     }
+
     internal func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
         return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(

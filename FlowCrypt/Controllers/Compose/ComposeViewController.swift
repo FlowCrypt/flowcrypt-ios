@@ -38,6 +38,10 @@ final class ComposeViewController: TableNodeViewController {
         }
     }
 
+    enum RefreshType {
+        case delete, reload, add, scrollToBottom
+    }
+
     internal enum ComposePart: Int, CaseIterable {
         case topDivider, subject, subjectDivider, text
     }

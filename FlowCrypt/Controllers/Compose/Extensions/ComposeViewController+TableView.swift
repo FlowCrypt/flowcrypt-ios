@@ -55,9 +55,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 let recipientType = RecipientType.allCases[indexPath.section]
                 return self.recipientsNode(type: recipientType)
             case (.main, .recipientsLabel):
-                if indexPath.row > 0 {
-                    return ASCellNode()
-                }
                 return self.recipientTextNode()
             case (.main, .password):
                 return self.messagePasswordNode()

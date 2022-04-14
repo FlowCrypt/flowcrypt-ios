@@ -56,14 +56,10 @@ extension ComposeViewController: UIPopoverPresentationControllerDelegate {
 
 extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
     func removeRecipient(email: String, type: RecipientType) {
+        let tempRecipients = self.contextToSend.recipients(type: type)
         self.contextToSend.remove(recipient: email, type: type)
         reload(sections: [.password])
-        if contextToSend.recipients(type: type).count < 1 {
-            reload(sections: [.recipients(type)])
-        }
-        if let listIndexPath = recipientsIndexPath(type: type) {
-            node.reloadRows(at: [listIndexPath], with: .automatic)
-        }
+        refreshRecipient(for: email, type: type, refreshType: .delete, tempRecipients: tempRecipients)
     }
 
     func editRecipient(email: String, type: RecipientType) {

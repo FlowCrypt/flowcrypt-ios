@@ -27,7 +27,7 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
 
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         textField.style.flexGrow = 1
-        textField.style.minWidth = ASDimensionMake(80)
+        textField.style.minWidth = ASDimensionMake(120)
         textField.style.preferredSize.height = input.height
 
         return ASInsetLayoutSpec(insets: input.insets, child: textField)
