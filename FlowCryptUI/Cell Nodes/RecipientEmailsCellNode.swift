@@ -1,5 +1,5 @@
 //
-//  TestElement.swift
+//  RecipientEmailsCellNode.swift
 //  FlowCryptUIApplication
 //
 //  Created by Anton Kharchevskyi on 19/02/2020.
