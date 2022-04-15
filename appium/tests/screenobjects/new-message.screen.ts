@@ -159,6 +159,7 @@ class NewMessageScreen extends BaseScreen {
       await this.setAddRecipient(cc, 'cc');
       await this.setAddRecipient(bcc, 'bcc');
     }
+    await this.showRecipientLabelIfNeeded();
     await this.setComposeSecurityMessage(message);
     await this.setSubject(subject);
   };
