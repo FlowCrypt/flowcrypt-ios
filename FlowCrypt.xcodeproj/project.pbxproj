@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		040CF0DA2809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040CF0D92809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift */; };
 		040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */ = {isa = PBXBuildFile; productRef = 040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */; };
 		040FDF1227EDFC5C00CB936A /* IdTokenUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040FDF1127EDFC5C00CB936A /* IdTokenUtils.swift */; };
 		04127DFD27E3097E009DF86C /* LocalContactsProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */; };
@@ -445,6 +446,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		040CF0D92809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		040FDF1127EDFC5C00CB936A /* IdTokenUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenUtils.swift; sourceTree = "<group>"; };
 		04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProviderMock.swift; sourceTree = "<group>"; };
 		042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRecipientPopupViewController.swift; sourceTree = "<group>"; };
@@ -2021,6 +2023,7 @@
 				D28655942423BFF60066F52E /* SideMenuOptionalView.swift */,
 				D24FAFA32520BF9100BF46C5 /* CheckBoxCircleView.swift */,
 				5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */,
+				040CF0D92809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2938,6 +2941,7 @@
 				D211CE7023FC35AC00D1CE38 /* TableNode.swift in Sources */,
 				D26F132724509EB6009175BA /* RecipientEmailsCellNodeInput.swift in Sources */,
 				D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */,
+				040CF0DA2809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift in Sources */,
 				D27177512425678F00BDA9A9 /* KeySettingCellNode.swift in Sources */,
 				5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				D27177462424D59800BDA9A9 /* InboxCellNode.swift in Sources */,

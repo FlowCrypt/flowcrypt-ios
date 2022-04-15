@@ -45,8 +45,8 @@ final public class RecipientEmailsCellNode: CellNode {
         }
     }
 
-    private lazy var layout: LeftAlignedCollectionViewFlowLayout = {
-        let layout = LeftAlignedCollectionViewFlowLayout()
+    private lazy var layout: RecipientEmailCollectionViewFlowLayout = {
+        let layout = RecipientEmailCollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumInteritemSpacing = 1
         layout.minimumLineSpacing = Constants.minimumLineSpacing
