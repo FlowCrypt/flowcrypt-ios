@@ -108,19 +108,21 @@ extension ComposeViewController {
         }
         .then {
             let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
-            let mutableString = NSMutableAttributedString(attributedString: messageText)
             let textNode = $0
 
             if input.isQuote && !messageText.string.contains(styledQuote.string) {
+                let mutableString = NSMutableAttributedString(attributedString: messageText)
                 mutableString.append(styledQuote)
+                textNode.textView.attributedText = mutableString
                 if input.isReply {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         textNode.becomeFirstResponder()
                     }
                 }
-            }
-            DispatchQueue.main.async {
-                textNode.textView.attributedText = mutableString
+            } else {
+                DispatchQueue.main.async {
+                    textNode.textView.attributedText = messageText
+                }
             }
         }
     }
