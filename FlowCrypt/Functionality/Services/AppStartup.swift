@@ -58,8 +58,26 @@ struct AppStartup {
             if case let .success(keys) = result {
                 for keyDetail in keys {
                     let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint })
-                    if let savedLocalKey = savedLocalKey {
+                    if let savedLocalKey = savedLocalKey, let lastModified = keyDetail.lastModified {
                         // Key exists in local. Check if saved key is outdated by checking lastModified and update if needed
+                        if let localLastModified = savedLocalKey.lastModified, localLastModified < lastModified {
+                            guard let privateKey = keyDetail.private else {
+                                throw CreatePassphraseWithExistingKeyError.noPrivateKey
+                            }
+                            let encryptedPrv = try await Core.shared.encryptKey(
+                                armoredPrv: privateKey,
+                                passphrase: savedLocalKey.passphrase ?? "''"
+                            )
+                            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
+                            try appContext.encryptedStorage.putKeypairs(
+                                keyDetails: parsedKey.keyDetails,
+                                passPhrase: nil,
+                                source: .ekm,
+                                for: context.user.email
+                            )
+                        } else {
+                            // save
+                        }
                     }
                     // No keys found in local. Add new key to local
                 }
