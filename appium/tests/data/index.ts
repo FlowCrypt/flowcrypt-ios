@@ -173,7 +173,7 @@ export const CommonData = {
     wrongPassPhrase: 'Error\n' +
       'Could not compose message\n' +
       '\n' +
-      'This pass phrase did not match your signing private key',
+      'This pass phrase did not match your signing private key.',
     expiredPublicKey: 'Error\n' +
       'Could not compose message\n' +
       '\n' +

@@ -38,12 +38,11 @@ extension ComposeViewController {
         guard shouldSaveDraft() else { return }
         Task {
             do {
-                let signingPrv = try await prepareSigningKey()
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
                     input: input,
                     contextToSend: contextToSend,
                     includeAttachments: false,
-                    signingPrv: signingPrv
+                    viewController: self
                 )
                 try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
             } catch {
