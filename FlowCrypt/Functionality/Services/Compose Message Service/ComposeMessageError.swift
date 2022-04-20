@@ -54,7 +54,6 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
 
 enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
     case validationError(MessageValidationError)
-    case viewControllerRequired
     case passPhraseRequired
     case passPhraseNoMatch
     case gatewayError(Error)
@@ -63,8 +62,6 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
         switch self {
         case .validationError(let messageValidationError):
             return messageValidationError.description
-        case .viewControllerRequired:
-            return "compose_sign_view_controller_required".localized
         case .passPhraseRequired:
             return "compose_sign_passphrase_required".localized
         case .passPhraseNoMatch:
