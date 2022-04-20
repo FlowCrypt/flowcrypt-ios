@@ -95,6 +95,7 @@ create_framework() {
 		-output build/GMP.xcframework
 
   echo "Moving GMP.xcframework to FlowCrypt..."
+  mkdir -p ../../FlowCrypt/Lib/GMP
   mv ./build/GMP.xcframework ../../FlowCrypt/Lib/GMP
 }
 
