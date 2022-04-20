@@ -23,8 +23,7 @@ extension ComposeViewController {
                     throw MessageValidationError.noPubRecipients
                 }
 
-                let key = try await prepareSigningKey()
-                try await sendMessage(key)
+                try await sendMessage()
             } catch {
                 handle(error: error)
             }

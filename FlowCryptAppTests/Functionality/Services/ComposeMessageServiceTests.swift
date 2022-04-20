@@ -38,13 +38,18 @@ class ComposeMessageServiceTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+
+        let passPhraseServiceMock = PassPhraseServiceMock()
+        let keyService = KeyService(storage: EncryptedStorageMock(), passPhraseService: PassPhraseServiceMock())
         sut = ComposeMessageService(
             clientConfiguration: ClientConfiguration(
                 raw: RawClientConfiguration()
             ),
             encryptedStorage: encryptedStorage,
             messageGateway: MessageGatewayMock(),
-            passPhraseService: PassPhraseServiceMock(),
+            passPhraseService: passPhraseServiceMock,
+            keyService: keyService,
+            keyMethods: KeyMethods(),
             draftGateway: DraftGatewayMock(),
             localContactsProvider: localContactsProvider,
             enterpriseServer: enterpriseServerMock,
@@ -68,8 +73,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "",
                     recipients: [],
                     subject: nil
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -90,8 +94,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "",
                     recipients: recipients,
                     subject: nil
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -107,8 +110,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "",
                     recipients: recipients,
                     subject: nil
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -121,8 +123,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "",
                     recipients: recipients,
                     subject: ""
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -135,8 +136,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "",
                     recipients: recipients,
                     subject: "     "
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -152,8 +152,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: nil,
                     recipients: recipients,
                     subject: "Some subject"
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -166,8 +165,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "",
                     recipients: recipients,
                     subject: "Some subject"
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -180,8 +178,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "                  ",
                     recipients: recipients,
                     subject: "Some subject"
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -198,8 +195,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "some message",
                     recipients: recipients,
                     subject: "Some subject"
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -218,8 +214,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "some message",
                     recipients: recipients,
                     subject: "Some subject"
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -242,8 +237,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "some message",
                     recipients: recipients,
                     subject: "Some subject"
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -266,8 +260,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "some message",
                     recipients: recipients,
                     subject: "Some subject"
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -308,8 +301,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 message: message,
                 recipients: recipients,
                 subject: subject
-            ),
-            signingPrv: nil
+            )
         )
 
         let expected = SendableMsg(
@@ -353,8 +345,7 @@ class ComposeMessageServiceTests: XCTestCase {
                     message: "some message",
                     recipients: recipients,
                     subject: "Some subject"
-                ),
-                signingPrv: nil
+                )
             )
             XCTFail("expected to throw above")
         } catch {
@@ -380,8 +371,7 @@ class ComposeMessageServiceTests: XCTestCase {
                 message: message,
                 recipients: recipients,
                 subject: subject
-            ),
-            signingPrv: nil
+            )
         )
 
         let expected = SendableMsg(

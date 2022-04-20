@@ -12,64 +12,7 @@ import FlowCryptUI
 
 // MARK: - Message Sending
 extension ComposeViewController {
-    internal func prepareSigningKey() async throws -> PrvKeyInfo {
-        guard let signingKey = try await appContext.keyService.getSigningKey(email: appContext.user.email) else {
-            throw AppErr.general("None of your private keys have your user id \"\(email)\". Please import the appropriate key.")
-        }
-
-        guard let existingPassPhrase = signingKey.passphrase else {
-            return signingKey.copy(with: try await self.requestMissingPassPhraseWithModal(for: signingKey))
-        }
-
-        return signingKey.copy(with: existingPassPhrase)
-    }
-
-    internal func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo) async throws -> String {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            let alert = AlertsFactory.makePassPhraseAlert(
-                onCancel: {
-                    return continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
-                },
-                onCompletion: { [weak self] passPhrase in
-                    guard let self = self else {
-                        return continuation.resume(throwing: AppErr.nilSelf)
-                    }
-                    Task<Void, Never> {
-                        do {
-                            let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
-                            if matched {
-                                return continuation.resume(returning: passPhrase)
-                            } else {
-                                throw AppErr.user("This pass phrase did not match your signing private key")
-                            }
-                        } catch {
-                            return continuation.resume(throwing: error)
-                        }
-                    }
-                }
-            )
-            present(alert, animated: true, completion: nil)
-        }
-    }
-
-    internal func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
-        // since pass phrase was entered (an inconvenient thing for user to do),
-        //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await appContext.keyService.getPrvKeyInfo(email: appContext.user.email)
-        guard allKeys.isNotEmpty else {
-            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
-            //   I copied it from another usage, but has to be changed
-            throw KeyServiceError.retrieve
-        }
-        let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
-        // save passphrase for all matching keys
-        try appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
-        // now figure out if the pass phrase also matched the signing prv itself
-        let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
-        return matched != nil// true if the pass phrase matched signing key
-    }
-
-    internal func sendMessage(_ signingKey: PrvKeyInfo) async throws {
+    internal func sendMessage() async throws {
         view.endEditing(true)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
@@ -88,7 +31,7 @@ extension ComposeViewController {
         let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
             input: self.input,
             contextToSend: self.contextToSend,
-            signingPrv: signingKey
+            viewController: self
         )
         UIApplication.shared.isIdleTimerDisabled = true
         try await composeMessageService.encryptAndSend(
