@@ -81,6 +81,11 @@
 "error_login" = "Login Error";
 "error_wrong_app_state" = "Wrong application state. User not found for session %@";
 
+// Refresh key
+"refresh_key_alert_title" = "Enter pass phrase to keep your account keys up to date.";
+"refresh_key_invalid_pass_phrase" = "Incorrect pass phrase. Please try again.";
+"refresh_key_cancel_pass_phrase" = "User cancelled pass phrase prompt.";
+
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
 "keyServiceError_retrieve_parse" = "Could not parse keys from storage. Please reinstall the app.";

@@ -45,46 +45,6 @@ struct AppStartup {
         await Core.shared.startIfNotAlreadyRunning()
     }
 
-    private func refreshKeysFromEKMIfNeeded(context: AppContextWithUser) {
-        Task {
-            let configuration = try await context.clientConfigurationService.configuration
-            guard configuration.checkUsesEKM() == .usesEKM else {
-                return
-            }
-            let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
-            let idToken = try await IdTokenUtils.getIdToken(userEmail: context.user.email)
-            let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
-            let localKeys = try context.encryptedStorage.getKeypairs(by: context.user.email)
-            if case let .success(keys) = result {
-                for keyDetail in keys {
-                    let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint })
-                    if let savedLocalKey = savedLocalKey, let lastModified = keyDetail.lastModified {
-                        // Key exists in local. Check if saved key is outdated by checking lastModified and update if needed
-                        if let localLastModified = savedLocalKey.lastModified, localLastModified < lastModified {
-                            guard let privateKey = keyDetail.private else {
-                                throw CreatePassphraseWithExistingKeyError.noPrivateKey
-                            }
-                            let encryptedPrv = try await Core.shared.encryptKey(
-                                armoredPrv: privateKey,
-                                passphrase: savedLocalKey.passphrase ?? "''"
-                            )
-                            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-                            try appContext.encryptedStorage.putKeypairs(
-                                keyDetails: parsedKey.keyDetails,
-                                passPhrase: nil,
-                                source: .ekm,
-                                for: context.user.email
-                            )
-                        } else {
-                            // save
-                        }
-                    }
-                    // No keys found in local. Add new key to local
-                }
-            }
-        }
-    }
-
     private func setupSession() async throws {
         logger.logInfo("Setup Session")
         try await renewSessionIfValid()
@@ -103,7 +63,6 @@ struct AppStartup {
         switch try entryPointForUser() {
         case .mainFlow:
             try await startWithUserContext(appContext: appContext, window: window) { context in
-                refreshKeysFromEKMIfNeeded(context: context)
                 let controller = InboxViewContainerController(appContext: context)
                 window.rootViewController = SideMenuNavigationController(
                     appContext: context,
