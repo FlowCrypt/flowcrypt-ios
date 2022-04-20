@@ -135,7 +135,7 @@ extension SideMenuNavigationController {
                 savedPassPhrase = savedLocalKey.passphrase
                 // Key exists in local. Check if saved key is outdated by checking lastModified and update if needed
                 if let lastModified = keyDetail.lastModified,
-                   savedLocalKey.lastModified ?? 0 <= lastModified {
+                   savedLocalKey.lastModified ?? 0 < lastModified {
                     try await saveKeyToLocal(context: context, keyDetail: keyDetail, passPhrase: savedPassPhrase)
                 }
             }
@@ -199,7 +199,11 @@ extension SideMenuNavigationController {
                             }
                             // Pass phrase mismatch, display error alert and ask again
                             try await self.showAsyncAlert(message: "refresh_key_invalid_pass_phrase".localized)
-                            let newPassPhrase = try await self.requestPassPhraseWithModal(context: context, for: keyDetail, isNewKey: isNewKey)
+                            let newPassPhrase = try await self.requestPassPhraseWithModal(
+                                context: context,
+                                for: keyDetail,
+                                isNewKey: isNewKey
+                            )
                             return continuation.resume(returning: newPassPhrase)
                         } catch {
                             return continuation.resume(throwing: error)
