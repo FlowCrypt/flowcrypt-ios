@@ -82,6 +82,7 @@ create_framework() {
   echo "Merging libraries in XCFramework..."
 
 	local SIMULATOR_PATH="./lib/iphonesimulator"
+  local BUILD_PATH="./build/GMP.xcframework"
 
   mkdir -p $SIMULATOR_PATH/lib
 
@@ -92,11 +93,12 @@ create_framework() {
 	xcodebuild -create-xcframework \
 		-library ./lib/iphoneos/lib/libgmp.a \
 		-library ${SIMULATOR_PATH}/lib/libgmp.a \
-		-output build/GMP.xcframework
+		-output $BUILD_PATH
 
   echo "Moving GMP.xcframework to FlowCrypt..."
-  mkdir -p ../../FlowCrypt/Lib/GMP
-  mv ./build/GMP.xcframework ../../FlowCrypt/Lib/GMP
+  local FRAMEWORK_PATH='../FlowCrypt/Lib/GMP'
+  mkdir -p $FRAMEWORK_PATH
+  mv $BUILD_PATH $FRAMEWORK_PATH
 }
 
 clean() {
