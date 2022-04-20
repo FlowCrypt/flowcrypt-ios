@@ -73,9 +73,9 @@ final class ComposeMessageService {
         self.onStateChanged = completion
     }
 
-    internal func prepareSigningKey(viewController: UIViewController?) async throws -> PrvKeyInfo {
-        guard let signingKey = try await keyService.getSigningKey(email: sender) else {
-            throw AppErr.general("None of your private keys have your user id \"\(sender)\". Please import the appropriate key.")
+    func prepareSigningKey(viewController: UIViewController?) async throws -> PrvKeyInfo? {
+        guard let viewController = viewController, let signingKey = try await keyService.getSigningKey(email: sender) else {
+            return nil
         }
 
         guard let existingPassPhrase = signingKey.passphrase else {
@@ -86,11 +86,11 @@ final class ComposeMessageService {
     }
 
     @MainActor
-    internal func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo, viewController: UIViewController?) async throws -> String {
+    internal func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo, viewController: UIViewController) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
                 onCancel: {
-                    return continuation.resume(throwing: AppErr.user("Passphrase is required for message signing"))
+                    return continuation.resume(throwing: ComposeMessageError.passPhraseRequired)
                 },
                 onCompletion: { [weak self] passPhrase in
                     guard let self = self else {
@@ -102,7 +102,7 @@ final class ComposeMessageService {
                             if matched {
                                 return continuation.resume(returning: passPhrase)
                             } else {
-                                throw AppErr.user("This pass phrase did not match your signing private key")
+                                throw ComposeMessageError.passPhraseNoMatch
                             }
                         } catch {
                             return continuation.resume(throwing: error)
@@ -110,11 +110,11 @@ final class ComposeMessageService {
                     }
                 }
             )
-            viewController?.present(alert, animated: true, completion: nil)
+            viewController.present(alert, animated: true, completion: nil)
         }
     }
 
-    internal func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
+    func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
         let allKeys = try await keyService.getPrvKeyInfo(email: sender)
@@ -170,8 +170,6 @@ final class ComposeMessageService {
             throw MessageValidationError.missingPublicKey
         }
 
-        let signingPrv = try await prepareSigningKey(viewController: viewController)
-
         let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
                 ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
                 : []
@@ -194,6 +192,8 @@ final class ComposeMessageService {
                 throw MessageValidationError.notUniquePassword
             }
         }
+
+        let signingPrv = try await prepareSigningKey(viewController: viewController)
 
         return SendableMsg(
             text: text,
