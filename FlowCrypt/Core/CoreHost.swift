@@ -44,18 +44,11 @@ final class CoreHost: NSObject, CoreHostExports {
             return ""
         }
     }
-    
+
     // aes256 msglen:1300, original 11ms, now 7ms
     // performance untested for larger messages
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8] {
         Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
-    }
-
-    // sign in pure JS takes 30-120 seconds for RSA 4096 depending on device.
-    // Investigating improvement in Swift
-    func signRsaRedPow(base: String, exponent: String, modulo: String) {
-        // js: base.toRed(new _bn2.default.red(modulus)).redPow(exponent);
-        
     }
     
     // RSA relies on this method, which is slow in OpenPGP.js that uses BN.js

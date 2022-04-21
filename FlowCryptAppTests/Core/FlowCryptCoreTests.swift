@@ -415,29 +415,6 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(decryptResult.decryptErr!.error.type, DecryptErr.ErrorType.keyMismatch)
     }
 
-    func testRsaSignTemporary() async throws {
-        let msg = SendableMsg(
-            text: "this is the message",
-            html: nil,
-            to: ["email@recipient.test"],
-            cc: [],
-            bcc: [],
-            from: "sender@sender.test",
-            subject: "Signed+encrypted email",
-            replyToMimeMsg: nil,
-            atts: [],
-            pubKeys: [TestData.k3rsa4096.pub],
-            signingPrv: PrvKeyInfo(
-                private: TestData.k3rsa4096.prv,
-                longid: TestData.k3rsa4096.longid,
-                passphrase: TestData.k3rsa4096.passphrase,
-                fingerprints: TestData.k3rsa4096.fingerprints
-            ),
-            password: nil
-        )
-        let _ = try await core.composeEmail(msg: msg, fmt: .encryptInline)
-    }
-
     func testRsaPerformance() async throws {
         let timer = TestTimer()
 
