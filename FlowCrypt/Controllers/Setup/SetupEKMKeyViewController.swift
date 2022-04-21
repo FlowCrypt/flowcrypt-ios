@@ -72,6 +72,7 @@ extension SetupEKMKeyViewController {
     private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) async throws {
         self.showSpinner()
         let clientConfiguration = try await appContext.clientConfigurationService.configuration
+        storageMethod = clientConfiguration.forbidStoringPassPhrase ? .memory : .persistent
         try await self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
         var allFingerprintsOfAllKeys: [[String]] = []
         for keyDetail in self.keys {
@@ -85,21 +86,21 @@ extension SetupEKMKeyViewController {
             let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
             try appContext.encryptedStorage.putKeypairs(
                 keyDetails: parsedKey.keyDetails,
-                passPhrase: clientConfiguration.forbidStoringPassPhrase ? nil : passPhrase,
+                passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
                 source: .ekm,
                 for: self.appContext.user.email
             )
             allFingerprintsOfAllKeys.append(contentsOf: parsedKey.keyDetails.map(\.fingerprints))
         }
         // Save pass phrase in memory when FORBID_STORING_PASS_PHRASE is set
-        if clientConfiguration.forbidStoringPassPhrase {
+        if storageMethod == .memory {
             for allFingerprintsOfOneKey in allFingerprintsOfAllKeys {
                 try appContext.passPhraseService.savePassPhrase(
                     with: PassPhrase(
                         value: passPhrase,
                         fingerprintsOfAssociatedKey: allFingerprintsOfOneKey
                     ),
-                    storageMethod: .memory
+                    storageMethod: storageMethod
                 )
             }
         }
