@@ -182,20 +182,6 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssert(error == .autogenPassPhraseQuietly)
     }
 
-    func testCheckShouldUseEKMFailForForbidStoringPassPhrase() {
-        let result = ClientConfiguration(raw: RawClientConfiguration(
-            flags: [
-                .privateKeyAutoimportOrAutogen
-            ],
-            keyManagerUrl: "https://ekm.example.com"
-        )).checkUsesEKM()
-        guard case .inconsistentClientConfiguration(let error) = result else {
-            return XCTFail()
-        }
-
-        XCTAssert(error == .forbidStoringPassPhrase)
-    }
-
     func testCheckShouldUseEKMFailForMustSubmitAttester() {
         let result = ClientConfiguration(raw: RawClientConfiguration(
             flags: [
