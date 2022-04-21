@@ -124,6 +124,7 @@ extension SetupBackupsViewController {
         logger.logInfo("Start recoverAccount with \(backups.count) keys")
         let matchingKeyBackups = Set(try await keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase))
         logger.logInfo("matchingKeyBackups = \(matchingKeyBackups.count)")
+        let clientConfiguration = try await appContext.clientConfigurationService.configuration
         guard matchingKeyBackups.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
@@ -136,7 +137,7 @@ extension SetupBackupsViewController {
         }
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: Array(matchingKeyBackups),
-            passPhrase: storageMethod == .persistent ? passPhrase : nil,
+            passPhrase: storageMethod == .persistent || clientConfiguration.shouldRememberPassphraseByDefault ? passPhrase : nil,
             source: .backup,
             for: appContext.user.email
         )

@@ -63,6 +63,18 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: nil)).mustAutogenPassPhraseQuietly)
     }
 
+    func testRememberPassphraseByDefault() {
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
+            flags: [.defaultRememberPassphrase]
+        )).shouldRememberPassphraseByDefault)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [])).shouldRememberPassphraseByDefault)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [.hideArmorMeta])).shouldRememberPassphraseByDefault)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: nil)).shouldRememberPassphraseByDefault)
+    }
+
     func testForbidStoringPassPhrase() {
         XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
             flags: [.forbidStoringPassphrase]

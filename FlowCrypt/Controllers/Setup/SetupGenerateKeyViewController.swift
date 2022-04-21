@@ -19,13 +19,15 @@ import FlowCryptUI
 final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewController {
 
     private let attester: AttesterApiType
+    let clientConfiguration: ClientConfiguration
 
     init(
         appContext: AppContextWithUser,
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) async throws {
+        self.clientConfiguration = try await appContext.clientConfigurationService.configuration
         self.attester = AttesterApi(
-            clientConfiguration: try await appContext.clientConfigurationService.configuration
+            clientConfiguration: clientConfiguration
         )
         super.init(
             appContext: appContext,
@@ -89,7 +91,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: StorageMethod, passPhrase: String) throws {
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
-            passPhrase: storageMethod == .persistent ? passPhrase: nil,
+            passPhrase: storageMethod == .persistent || clientConfiguration.shouldRememberPassphraseByDefault ? passPhrase: nil,
             source: .generated,
             for: appContext.user.email
         )

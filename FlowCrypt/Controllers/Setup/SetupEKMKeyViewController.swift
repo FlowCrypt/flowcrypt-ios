@@ -72,6 +72,7 @@ extension SetupEKMKeyViewController {
 
     private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) async throws {
         self.showSpinner()
+        let clientConfiguration = try await appContext.clientConfigurationService.configuration
         try await self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
         var allFingerprintsOfAllKeys: [[String]] = []
         for keyDetail in self.keys {
@@ -85,7 +86,7 @@ extension SetupEKMKeyViewController {
             let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
             try appContext.encryptedStorage.putKeypairs(
                 keyDetails: parsedKey.keyDetails,
-                passPhrase: self.storageMethod == .persistent ? passPhrase : nil,
+                passPhrase: self.storageMethod == .persistent || clientConfiguration.shouldRememberPassphraseByDefault ? passPhrase : nil,
                 source: .ekm,
                 for: self.appContext.user.email
             )
