@@ -15,7 +15,7 @@ import SwiftyRSA // for rsa
     func getSecureRandomByteNumberArray(_ byteCount: Int) -> [UInt8]?
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8]
     func decryptRsaNoPadding(_ rsaPrvDerBase64: String, _ encryptedBase64: String) -> String
-    func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String
+    func modPow(_ base: String, _ exponent: String, _ modulo: String) -> String
     func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8]
 
     func setTimeout(_ callback: JSValue, _ ms: Double) -> String
@@ -50,10 +50,11 @@ final class CoreHost: NSObject, CoreHostExports {
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8] {
         Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
     }
-
-    // rsa verify is used by OpenPGP.js during decryption as well to figure out our own key preferences
-    // this slows down decryption the first time a private key is used in a session because bn.js is slow
-    func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
+    
+    // RSA relies on this method, which is slow in OpenPGP.js that uses BN.js
+    // primarily added here because of slow decryption, slow signing, slow sig verification
+    // particularly noticeable on RSA4096 (signing could originally be 30-90 seconds)
+    func modPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
         // If there is an error parsing provided numbers, the function returns empty string, and JS falls back on bn.js
         return String(cString: c_gmp_mod_pow(base, exponent, modulo))
     }
