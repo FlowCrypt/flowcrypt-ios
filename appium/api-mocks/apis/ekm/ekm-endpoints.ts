@@ -9,6 +9,7 @@
 // import { testConstants } from '../../tests/tooling/consts';
 import { HandlersDefinition, HttpErr } from '../../lib/api';
 import { EkmConfig, MockConfig } from '../../lib/configuration-types';
+import { throwIfNotGetMethod } from "../../lib/mock-util";
 
 // tslint:disable:max-line-length
 /* eslint-disable max-len */
@@ -40,105 +41,25 @@ export const getMockEkmEndpoints = (
   }
 
   // todo
-  return {};
-  // return {
-  //   '/flowcrypt-email-key-manager/keys/private': async ({ body }, req) => {
-  //     const acctEmail = oauth.checkAuthorizationHeaderWithIdToken(req.headers.authorization);
-  //     if (isGet(req)) {
-  //       if (acctEmail === 'wkd@google.mock.flowcryptlocal.test:8001') {
-  //         return { privateKeys: [{ decryptedPrivateKey: testConstants.wkdAtgooglemockflowcryptlocalcom8001Private }] };
-  //       }
-  //       if (acctEmail === 'get.key@key-manager-autogen.flowcrypt.test') {
-  //         return { privateKeys: [{ decryptedPrivateKey: existingPrv }] };
-  //       }
-  //       if (acctEmail === 'get.key@no-submit-org-rule.key-manager-autogen.flowcrypt.test') {
-  //         return { privateKeys: [{ decryptedPrivateKey: prvNoSubmit }] };
-  //       }
-  //       if (acctEmail === 'two.keys@key-manager-autogen.flowcrypt.test') {
-  //         return { privateKeys: [{ decryptedPrivateKey: twoKeys1 }, { decryptedPrivateKey: twoKeys2 }] };
-  //       }
-  //       if (acctEmail === 'user@key-manager-no-pub-lookup.flowcrypt.test') {
-  //         return { privateKeys: [{ decryptedPrivateKey: existingPrv }] };
-  //       }
-  //       if (acctEmail === 'get.key@key-manager-choose-passphrase-forbid-storing.flowcrypt.test') {
-  //         return { privateKeys: [{ decryptedPrivateKey: existingPrv }] };
-  //       }
-  //       if (acctEmail === 'get.key@key-manager-choose-passphrase.flowcrypt.test') {
-  //         return { privateKeys: [{ decryptedPrivateKey: existingPrv }] };
-  //       }
-  //       if (acctEmail === 'get.key@key-manager-autoimport-no-prv-create.flowcrypt.test') {
-  //         return { privateKeys: [] };
-  //       }
-  //       if (acctEmail === 'put.key@key-manager-autogen.flowcrypt.test') {
-  //         return { privateKeys: [] };
-  //       }
-  //       if (acctEmail === 'put.error@key-manager-autogen.flowcrypt.test') {
-  //         return { privateKeys: [] };
-  //       }
-  //       if (acctEmail === 'reject.client.keypair@key-manager-autogen.flowcrypt.test') {
-  //         return { privateKeys: [] };
-  //       }
-  //       if (acctEmail === 'expire@key-manager-keygen-expiration.flowcrypt.test') {
-  //         return { privateKeys: [] };
-  //       }
-  //       if (acctEmail === 'get.error@key-manager-autogen.flowcrypt.test') {
-  //         throw new Error('Intentional error for get.error to test client behavior');
-  //       }
-  //       throw new HttpErr(`Unexpectedly calling mockKeyManagerEndpoints:/keys/private GET with acct ${acctEmail}`);
-  //     }
-  //     if (isPut(req)) {
-  //       const { decryptedPrivateKey, publicKey } = body as Dict<string>;
-  //       if (acctEmail === 'put.key@key-manager-autogen.flowcrypt.test') {
-  //         const prv = await KeyUtil.parseMany(decryptedPrivateKey);
-  //         expect(prv).to.have.length(1);
-  //         expect(prv[0].algo.bits).to.equal(2048);
-  //         expect(prv[0].identities).to.have.length(1);
-  //         expect(prv[0].identities[0]).to.equal('First Last <put.key@key-manager-autogen.flowcrypt.test>');
-  //         expect(prv[0].isPrivate).to.be.true;
-  //         expect(prv[0].fullyDecrypted).to.be.true;
-  //         expect(prv[0].expiration).to.not.exist;
-  //         const pub = await KeyUtil.parseMany(publicKey);
-  //         expect(pub).to.have.length(1);
-  //         expect(pub[0].algo.bits).to.equal(2048);
-  //         expect(pub[0].identities).to.have.length(1);
-  //         expect(pub[0].identities[0]).to.equal('First Last <put.key@key-manager-autogen.flowcrypt.test>');
-  //         expect(pub[0].isPrivate).to.equal(false);
-  //         expect(pub[0].expiration).to.not.exist;
-  //         expect(pub[0].id).to.equal(prv[0].id);
-  //         MOCK_KM_LAST_INSERTED_KEY[acctEmail] = { decryptedPrivateKey, publicKey };
-  //         return {};
-  //       }
-  //       if (acctEmail === 'put.error@key-manager-autogen.flowcrypt.test') {
-  //         throw new Error('Intentional error for put.error user to test client behavior');
-  //       }
-  //       if (acctEmail === 'reject.client.keypair@key-manager-autogen.flowcrypt.test') {
-  //         throw new HttpErr(`No key has been generated for ${acctEmail} yet. Please ask your administrator.`, 405);
-  //       }
-  //       if (acctEmail === 'expire@key-manager-keygen-expiration.flowcrypt.test') {
-  //         const prv = await KeyUtil.parseMany(decryptedPrivateKey);
-  //         expect(prv).to.have.length(1);
-  //         expect(prv[0].algo.bits).to.equal(2048);
-  //         expect(prv[0].identities).to.have.length(1);
-  //         expect(prv[0].identities[0]).to.equal('First Last <expire@key-manager-keygen-expiration.flowcrypt.test>');
-  //         expect(prv[0].isPrivate).to.be.true;
-  //         expect(prv[0].fullyDecrypted).to.be.true;
-  //         expect(prv[0].expiration).to.exist;
-  //         const pub = await KeyUtil.parseMany(publicKey);
-  //         expect(pub).to.have.length(1);
-  //         expect(pub[0].algo.bits).to.equal(2048);
-  //         expect(pub[0].id).to.equal(prv[0].id);
-  //         expect(pub[0].identities).to.have.length(1);
-  //         expect(pub[0].identities[0]).to.equal('First Last <expire@key-manager-keygen-expiration.flowcrypt.test>');
-  //         expect(pub[0].isPrivate).to.be.false;
-  //         expect(pub[0].expiration).to.exist;
-  //         MOCK_KM_LAST_INSERTED_KEY[acctEmail] = { decryptedPrivateKey, publicKey };
-  //         return {};
-  //       }
-  //       throw new HttpErr(`Unexpectedly calling mockKeyManagerEndpoints:/keys/private PUT with acct ${acctEmail}`);
-  //     }
-  //     throw new HttpErr(`Unknown method: ${req.method}`);
-  //   }
-  // };
+  return {
+    '/ekm/v1/keys/private': async ({ }, req) => {
+      throwErrorIfConfigSaysSo(ekmConfig);
+
+      throwIfNotGetMethod(req);
+
+      const keys = ekmConfig.returnKeys ?? [];
+      const decryptedPrivateKeys = keys.map((key) => ({ decryptedPrivateKey: key }));
+      return {
+        privateKeys: decryptedPrivateKeys
+      };
+    },
+  };
+}
+
+const throwErrorIfConfigSaysSo = (config: EkmConfig) => {
+  if (config.returnError) {
+    throw new EkmHttpErr(config.returnError.message, config.returnError.code);
+  }
 }
 
 export const ekmPrivateKeySamples = {
