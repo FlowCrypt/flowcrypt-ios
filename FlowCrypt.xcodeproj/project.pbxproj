@@ -86,7 +86,6 @@
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
 		5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		510BB63527BE92CC00B1011F /* RecipientBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510BB63427BE92CC00B1011F /* RecipientBase.swift */; };
-		51114DB4280EAA9F006C252A /* GMP.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 51114DB3280EAA9F006C252A /* GMP.xcframework */; };
 		51114DB6280EB699006C252A /* gmp-interface.m in Sources */ = {isa = PBXBuildFile; fileRef = 51114DB5280EB699006C252A /* gmp-interface.m */; };
 		511D07E12769FBBA0050417B /* MessagePasswordCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */; };
 		511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */; };
@@ -99,6 +98,7 @@
 		514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */; };
 		514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */; };
 		5152F196277E5AED00BE8A5B /* MessageUploadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */; };
+		515B7C2528119CED0066AB4F /* GMP in Frameworks */ = {isa = PBXBuildFile; productRef = 515B7C2428119CED0066AB4F /* GMP */; };
 		5165ABCC27B526D100CCC379 /* RecipientEmailTextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */; };
 		51689F3F2795C1D90050A9B8 /* ProcessedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */; };
 		5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5168FB0A274F94D300131072 /* MessageAttachment.swift */; };
@@ -548,7 +548,6 @@
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
 		5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		510BB63427BE92CC00B1011F /* RecipientBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientBase.swift; sourceTree = "<group>"; };
-		51114DB3280EAA9F006C252A /* GMP.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GMP.xcframework; sourceTree = "<group>"; };
 		51114DB5280EB699006C252A /* gmp-interface.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "gmp-interface.m"; sourceTree = "<group>"; };
 		51114DB7280EB6B9006C252A /* gmp-interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "gmp-interface.h"; sourceTree = "<group>"; };
 		51114DBA280EBB78006C252A /* gmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
@@ -871,6 +870,7 @@
 				D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */,
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
 				51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */,
+				515B7C2528119CED0066AB4F /* GMP in Frameworks */,
 				51E1675D270F36A400D27C52 /* Realm in Frameworks */,
 				51C0C1EF271982A1000C9738 /* MailCore in Frameworks */,
 				51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */,
@@ -878,7 +878,6 @@
 				040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
-				51114DB4280EAA9F006C252A /* GMP.xcframework in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1124,7 +1123,6 @@
 		51114DB8280EBB1E006C252A /* GMP */ = {
 			isa = PBXGroup;
 			children = (
-				51114DB3280EAA9F006C252A /* GMP.xcframework */,
 				51114DB5280EB699006C252A /* gmp-interface.m */,
 				51114DB7280EB6B9006C252A /* gmp-interface.h */,
 				51114DBA280EBB78006C252A /* gmp.h */,
@@ -2307,6 +2305,7 @@
 				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
 				51C0C1EE271982A1000C9738 /* MailCore */,
 				040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */,
+				515B7C2428119CED0066AB4F /* GMP */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -2421,6 +2420,7 @@
 				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
+				515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -3915,6 +3915,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/FlowCrypt/GMP";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.2.1;
+			};
+		};
 		51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FlowCrypt/mailcore2";
@@ -3983,6 +3991,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
 			productName = GoogleAPIClientForREST_PeopleService;
+		};
+		515B7C2428119CED0066AB4F /* GMP */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */;
+			productName = GMP;
 		};
 		51C0C1EE271982A1000C9738 /* MailCore */ = {
 			isa = XCSwiftPackageProductDependency;
