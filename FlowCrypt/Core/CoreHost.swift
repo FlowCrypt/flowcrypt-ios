@@ -2,7 +2,6 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import BigInt
 import CommonCrypto // for hashing
 import FlowCryptCommon
 import Foundation
@@ -59,20 +58,12 @@ final class CoreHost: NSObject, CoreHostExports {
         
     }
     
-    // rsa verify is used by OpenPGP.js during decryption as well to figure out our own key preferences
-    // this slows down decryption the first time a private key is used in a session because bn.js is slow
+    // RSA relies on this method, which is slow in OpenPGP.js that uses BN.js
+    // primarily added here because of slow decryption, slow signing, slow sig verification
+    // particularly noticeable on RSA4096 (signing could originally be 30-90 seconds)
     func modPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
-        guard
-            let bnBase = BigUInt(base, radix: 10),
-            let bnExponent = BigUInt(exponent, radix: 10),
-            let bnModulo = BigUInt(modulo, radix: 10)
-        else {
-            // If there is an error parsing provided numbers,
-            //   the function returns empty string, and JS falls back on bn.js
-            return ""
-        }
-        let bnResult = bnBase.power(bnExponent, modulus: bnModulo)
-        return String(bnResult, radix: 10)
+        // If there is an error parsing provided numbers, the function returns empty string, and JS falls back on bn.js
+        return String(cString: c_gmp_mod_pow(base, exponent, modulo))
     }
 
     func hashDigest(name: String, data: Data) throws -> [UInt8] {

@@ -108,19 +108,23 @@ extension ComposeViewController {
         }
         .then {
             let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
+            let mutableString = NSMutableAttributedString(attributedString: messageText)
+            let textNode = $0
 
             if input.isQuote && !messageText.string.contains(styledQuote.string) {
-                let mutableString = NSMutableAttributedString(attributedString: messageText)
                 mutableString.append(styledQuote)
-                $0.textView.attributedText = mutableString
-                let textView = $0
-                if input.isReply {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        textView.becomeFirstResponder()
-                    }
+            }
+
+            DispatchQueue.main.async {
+                textNode.textView.attributedText = mutableString
+                // Set cursor position to start of text view
+                textNode.textView.textView.selectedTextRange = textNode.textView.textView.textRange(
+                    from: textNode.textView.textView.beginningOfDocument,
+                    to: textNode.textView.textView.beginningOfDocument
+                )
+                if self.input.isReply {
+                    textNode.becomeFirstResponder()
                 }
-            } else {
-                $0.textView.attributedText = messageText
             }
         }
     }
@@ -148,6 +152,7 @@ extension ComposeViewController {
 
         return RecipientEmailsCellNode(
             recipients: recipients.map(RecipientEmailsCellNode.Input.init),
+            recipientInput: recipientInput(type: type),
             type: type.rawValue,
             height: decorator.recipientsNodeHeight(type: type) ?? Constants.minRecipientsPartHeight,
             isToggleButtonRotated: shouldShowAllRecipientTypes,
@@ -159,9 +164,11 @@ extension ComposeViewController {
                 self?.decorator.updateRecipientsNode(
                     layoutHeight: layoutHeight,
                     type: type,
-                    reload: { sections in
-                        DispatchQueue.main.async {
-                            self?.reload(sections: sections)
+                    completion: {
+                        if let indexPath = self?.recipientsIndexPath(type: type),
+                           let emailNode = self?.node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
+                            emailNode.style.preferredSize.height = layoutHeight
+                            emailNode.setNeedsLayout()
                         }
                     }
                 )
@@ -177,27 +184,17 @@ extension ComposeViewController {
             }
     }
 
-    internal func recipientInput(type: RecipientType) -> ASCellNode {
-        let recipients = contextToSend.recipients(type: type)
-        let shouldShowToggleButton = type == .to
-            && contextToSend.recipients(type: .to).isEmpty
-            && !contextToSend.hasCcOrBccRecipients
-
+    internal func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
         return RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
                 with: "",
                 keyboardType: .emailAddress,
-                accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)"
+                accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)",
+                insets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
             ),
-            hasRecipients: recipients.isNotEmpty,
-            type: type.rawValue,
             action: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)
-            },
-            isToggleButtonRotated: shouldShowAllRecipientTypes,
-            toggleButtonAction: shouldShowToggleButton ? { [weak self] in
-                self?.toggleRecipientsList()
-            } : nil
+            }
         )
         .onShouldReturn { [weak self] textField -> (Bool) in
             if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
