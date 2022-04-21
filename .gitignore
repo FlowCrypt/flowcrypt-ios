@@ -53,3 +53,5 @@ appium/video
 
 BuildTools/.build
 BuildTools/.swiftpm
+
+Scripts/gmp

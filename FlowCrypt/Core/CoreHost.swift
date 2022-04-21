@@ -2,7 +2,6 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import BigInt
 import CommonCrypto // for hashing
 import FlowCryptCommon
 import Foundation
@@ -56,11 +55,7 @@ final class CoreHost: NSObject, CoreHostExports {
     // this slows down decryption the first time a private key is used in a session because bn.js is slow
     func verifyRsaModPow(_ base: String, _ exponent: String, _ modulo: String) -> String {
         // If there is an error parsing provided numbers, the function returns empty string, and JS falls back on bn.js
-        guard let n = BigUInt(base), let e = BigUInt(exponent), let m = BigUInt(modulo) else {
-            return ""
-        }
-        let result = modPow(n: n, e: e, m: m)
-        return String(result, radix: 10)
+        return String(cString: c_gmp_mod_pow(base, exponent, modulo))
     }
 
     func hashDigest(name: String, data: Data) throws -> [UInt8] {
