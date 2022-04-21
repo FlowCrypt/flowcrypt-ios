@@ -5,7 +5,6 @@ dependencies:
 	gem install bundler:2.3.11
 	bundle config set path 'vendor/bundle'
 	bundle install
-	sh Scripts/build-gmp.sh
 
 ui_tests: dependencies
 	bundle exec fastlane test_ui --verbose

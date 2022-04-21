@@ -95,10 +95,7 @@ create_framework() {
 		-library ${SIMULATOR_PATH}/lib/libgmp.a \
 		-output $BUILD_PATH
 
-  echo "Moving GMP.xcframework to FlowCrypt..."
-  local FRAMEWORK_PATH='../FlowCrypt/Lib/GMP'
-  mkdir -p $FRAMEWORK_PATH
-  mv $BUILD_PATH $FRAMEWORK_PATH
+  echo "GMP.xcframework saved to 'build' folder"
 }
 
 clean() {
