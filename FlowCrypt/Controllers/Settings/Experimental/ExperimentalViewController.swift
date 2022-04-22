@@ -79,7 +79,12 @@ extension ExperimentalViewController: ASTableDelegate, ASTableDataSource {
         let setting = rows[indexPath.row]
 
         Task {
-            try await proceed(to: setting)
+            do {
+                try proceed(to: setting)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
+            
         }
     }
 }
@@ -87,7 +92,7 @@ extension ExperimentalViewController: ASTableDelegate, ASTableDataSource {
 // MARK: - Actions
 
 extension ExperimentalViewController {
-    private func proceed(to setting: ExperimentalMenuItem) async throws {
+    private func proceed(to setting: ExperimentalMenuItem) throws {
         switch setting {
         case .reloadApp:
             try reloadApp()
