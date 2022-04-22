@@ -274,6 +274,9 @@
 "key_settings_detail_show_private" = "Not implemented yet";
 "key_settings_detail_public" = "Public key";
 
+// Experiemental
+"experimental_title" = "Experimental";
+"experimental_reload_app" = "Reload app";
 
 // Other Provider
 "other_provider_account_title" = "Account info";
