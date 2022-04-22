@@ -74,11 +74,11 @@ final class PassPhraseService: PassPhraseServiceType {
     private lazy var logger = Logger.nested(Self.self)
 
     let encryptedStorage: PassPhraseStorageType
-    let inMemoryStorage: InMemoryPassPhraseStorage
+    let inMemoryStorage: PassPhraseStorageType & LogOutHandler
 
     init(
         encryptedStorage: PassPhraseStorageType,
-        inMemoryStorage: InMemoryPassPhraseStorage = InMemoryPassPhraseStorage()
+        inMemoryStorage: PassPhraseStorageType & LogOutHandler = InMemoryPassPhraseStorage()
     ) {
         self.encryptedStorage = encryptedStorage
         self.inMemoryStorage = inMemoryStorage
@@ -96,7 +96,7 @@ final class PassPhraseService: PassPhraseServiceType {
                 logger.logInfo("\(StorageMethod.persistent): removing pass phrase for key \(fingerprint)")
                 try encryptedStorage.remove(passPhrase: passPhrase)
             }
-            inMemoryStorage.save(passPhrase: passPhrase)
+            try inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
@@ -106,7 +106,7 @@ final class PassPhraseService: PassPhraseServiceType {
         case .persistent:
             try encryptedStorage.update(passPhrase: passPhrase)
         case .memory:
-            inMemoryStorage.save(passPhrase: passPhrase)
+            try inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
