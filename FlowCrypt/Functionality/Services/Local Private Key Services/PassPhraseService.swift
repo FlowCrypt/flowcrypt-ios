@@ -67,17 +67,18 @@ protocol PassPhraseServiceType {
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
     func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) throws
+    func removeInMemoryPassPhrases(for email: String) throws
 }
 
 final class PassPhraseService: PassPhraseServiceType {
     private lazy var logger = Logger.nested(Self.self)
 
     let encryptedStorage: PassPhraseStorageType
-    let inMemoryStorage: PassPhraseStorageType
+    let inMemoryStorage: InMemoryPassPhraseStorage
 
     init(
         encryptedStorage: PassPhraseStorageType,
-        inMemoryStorage: PassPhraseStorageType = InMemoryPassPhraseStorage()
+        inMemoryStorage: InMemoryPassPhraseStorage = InMemoryPassPhraseStorage()
     ) {
         self.encryptedStorage = encryptedStorage
         self.inMemoryStorage = inMemoryStorage
@@ -95,7 +96,7 @@ final class PassPhraseService: PassPhraseServiceType {
                 logger.logInfo("\(StorageMethod.persistent): removing pass phrase for key \(fingerprint)")
                 try encryptedStorage.remove(passPhrase: passPhrase)
             }
-            try inMemoryStorage.save(passPhrase: passPhrase)
+            inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
@@ -105,8 +106,12 @@ final class PassPhraseService: PassPhraseServiceType {
         case .persistent:
             try encryptedStorage.update(passPhrase: passPhrase)
         case .memory:
-            try inMemoryStorage.save(passPhrase: passPhrase)
+            inMemoryStorage.save(passPhrase: passPhrase)
         }
+    }
+
+    func removeInMemoryPassPhrases(for email: String) throws {
+        try inMemoryStorage.logOutUser(email: email)
     }
 
     func getPassPhrases() throws -> [PassPhrase] {
