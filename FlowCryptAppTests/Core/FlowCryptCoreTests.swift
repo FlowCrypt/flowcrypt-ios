@@ -415,7 +415,7 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertEqual(decryptResult.decryptErr!.error.type, DecryptErr.ErrorType.keyMismatch)
     }
 
-    func testCalculationTimes() async throws {
+    func testRsaPerformance() async throws {
         let timer = TestTimer()
 
         // Test decrypt key
@@ -432,14 +432,6 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // Test encrypt message
         timer.start()
-        let keys = [
-            PrvKeyInfo(
-                private: TestData.k3rsa4096.prv,
-                longid: TestData.k3rsa4096.longid,
-                passphrase: TestData.k3rsa4096.passphrase,
-                fingerprints: TestData.k3rsa4096.fingerprints
-            )
-        ]
         let encrypted = try await core.encrypt(
             data: "Test email message".data(),
             pubKeys: [TestData.k3rsa4096.pub],
@@ -450,6 +442,14 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // Test decrypt msg
         timer.start()
+        let keys = [
+            PrvKeyInfo(
+                private: TestData.k3rsa4096.prv,
+                longid: TestData.k3rsa4096.longid,
+                passphrase: TestData.k3rsa4096.passphrase,
+                fingerprints: TestData.k3rsa4096.fingerprints
+            )
+        ]
         let _ = try await core.parseDecryptMsg(
             encrypted: encrypted,
             keys: keys,
@@ -465,10 +465,10 @@ final class FlowCryptCoreTests: XCTestCase {
         let msg = SendableMsg(
             text: "this is the message",
             html: nil,
-            to: ["email@hello.com"],
+            to: ["email@recipient.test"],
             cc: [],
             bcc: [],
-            from: "sender@hello.com",
+            from: "sender@sender.test",
             subject: "Signed email",
             replyToMimeMsg: nil,
             atts: [],
@@ -479,8 +479,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
         let _ = try await core.composeEmail(msg: msg, fmt: .encryptInline)
         timer.stop()
-        // https://github.com/FlowCrypt/flowcrypt-ios/issues/1478#issuecomment-1090299132
-        XCTAssertLessThan(timer.durationMs, 60 * 1000) // TODO: change value to 1 when above issue is fixed
+        XCTAssertLessThan(timer.durationMs, 1000)
     }
 
     func testDecryptEncryptedFile() async throws {
