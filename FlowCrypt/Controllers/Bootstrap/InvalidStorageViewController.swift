@@ -18,12 +18,10 @@ final class InvalidStorageViewController: TableNodeViewController {
     }
 
     private let error: Error
-    private let encryptedStorage: EncryptedStorageType? // nil if failed to initialize
     private let router: GlobalRouterType
 
-    init(error: Error, encryptedStorage: EncryptedStorageType?, router: GlobalRouterType) {
+    init(error: Error, router: GlobalRouterType) {
         self.error = error
-        self.encryptedStorage = encryptedStorage
         self.router = router
         super.init(node: TableNode())
     }
@@ -43,13 +41,9 @@ final class InvalidStorageViewController: TableNodeViewController {
         node.reloadData()
     }
 
-    @objc private func handleTap() {
-        guard let encryptedStorage = encryptedStorage else {
-            showAlert(message: "invalid_storage_failed_to_initialize".localized)
-            return
-        }
+    private func resetStorage() {
         do {
-            try encryptedStorage.reset()
+            try EncryptedStorage.reset()
             router.proceed()
         } catch {
             showAlert(message: "invalid_storage_reset_error".localized)
@@ -100,7 +94,7 @@ extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
             case .description:
                 return SetupTitleNode(
                     SetupTitleNode.Input(
-                        title: self.error.localizedDescription.attributed(
+                        title: self.error.errorMessage.attributed(
                             .regular(16),
                             color: .mainTextColor,
                             alignment: .center
@@ -122,7 +116,7 @@ extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
                         color: .red
                     )
                 ) { [weak self] in
-                    self?.handleTap()
+                    self?.resetStorage()
                 }
             }
         }
