@@ -35,6 +35,10 @@ export default class BaseScreen {
     expect(alertText).toEqual(message);
   }
 
+  static checkToastMessage = async (message: string) => {
+    await ElementHelper.waitElementVisible(await $(`~${message}`));
+  }
+
   static clickOkButtonOnError = async () => {
     await ElementHelper.waitAndClick(await this.okButton)
   }
