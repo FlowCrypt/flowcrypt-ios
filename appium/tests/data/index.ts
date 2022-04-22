@@ -212,5 +212,9 @@ export const CommonData = {
   revokedMockUser: {
     email: 'revoked@domain.test',
     name: 'revoekd@flowcrypt.com'
+  },
+  refreshKeys: {
+    wrongPassPhrase: 'Error\nIncorrect pass phrase. Please try again.',
+    updatedSuccessfully: 'Account keys updated'
   }
 };
