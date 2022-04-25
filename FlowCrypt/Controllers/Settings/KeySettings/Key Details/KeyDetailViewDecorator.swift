@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension KeyDetailViewController.Parts {
+extension KeyDetailViewController.Part {
     var isDescription: Bool {
         guard case .description = self else { return false }
         return true
@@ -24,7 +24,7 @@ struct KeyDetailViewDecorator {
     let titleInsets = UIEdgeInsets.deviceSpecificTextInsets(top: 16, bottom: 16)
     let buttonInsets = UIEdgeInsets.buttonInsets
 
-    func attributedTitle(for keyDetailPart: KeyDetailViewController.Parts) -> NSAttributedString {
+    func attributedTitle(for keyDetailPart: KeyDetailViewController.Part) -> NSAttributedString {
         let title: String
         switch keyDetailPart {
         case .description: title = "key_settings_subtitle".localized
@@ -42,7 +42,7 @@ struct KeyDetailViewDecorator {
         }
     }
 
-    func buttonColor(for keyDetailPart: KeyDetailViewController.Parts) -> UIColor {
+    func buttonColor(for keyDetailPart: KeyDetailViewController.Part) -> UIColor {
         keyDetailPart.isPrivateKey ? .red : .main
     }
 }

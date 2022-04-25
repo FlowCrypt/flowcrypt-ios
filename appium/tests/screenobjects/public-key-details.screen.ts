@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
+import TouchHelper from 'tests/helpers/TouchHelper';
 import moment from 'moment'
 
 const SELECTORS = {
@@ -74,10 +75,15 @@ class PublicKeyDetailsScreen extends BaseScreen {
     await (await this.trashButton).waitForDisplayed();
     await (await this.copyButton).waitForDisplayed();
     await (await this.shareButton).waitForDisplayed();
-    await expect(await this.keyLabel).toBePresent();
-    await expect(await this.signatureLabel).toBePresent();
-    await expect(await this.lastFetchedDateLabel).toBePresent();
-    await expect(await this.fingerprintsLabel).toBePresent();
+    await (await this.keyLabel).waitForDisplayed();
+    await (await this.signatureLabel).waitForDisplayed();
+    await (await this.lastFetchedDateLabel).waitForDisplayed();
+
+    const fingerprintsElem = await this.fingerprintsLabel;
+    if ((await fingerprintsElem.isDisplayed()) !== true) {
+      await TouchHelper.scrollDownToElement(fingerprintsElem);
+      await fingerprintsElem.waitForDisplayed();
+    }
   }
 
   checkPublicKeyNotEmpty = async () => {
