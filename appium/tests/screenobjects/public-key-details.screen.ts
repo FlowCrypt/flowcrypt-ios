@@ -76,14 +76,10 @@ class PublicKeyDetailsScreen extends BaseScreen {
     await (await this.copyButton).waitForDisplayed();
     await (await this.shareButton).waitForDisplayed();
     await (await this.keyLabel).waitForDisplayed();
+    await TouchHelper.scrollDown();
     await (await this.signatureLabel).waitForDisplayed();
     await (await this.lastFetchedDateLabel).waitForDisplayed();
-
-    const fingerprintsElem = await this.fingerprintsLabel;
-    if ((await fingerprintsElem.isDisplayed()) !== true) {
-      await TouchHelper.scrollDownToElement(fingerprintsElem);
-      await fingerprintsElem.waitForDisplayed();
-    }
+    await (await this.fingerprintsLabel).waitForDisplayed();
   }
 
   checkPublicKeyNotEmpty = async () => {

@@ -155,6 +155,7 @@ class NewMessageScreen extends BaseScreen {
   composeEmail = async (recipient: string, subject: string, message: string, cc?: string, bcc?: string) => {
     await this.setAddRecipient(recipient);
     if (cc || bcc) {
+      await browser.pause(100);
       await this.clickToggleRecipientsButton();
       await this.setAddRecipient(cc, 'cc');
       await this.setAddRecipient(bcc, 'bcc');
