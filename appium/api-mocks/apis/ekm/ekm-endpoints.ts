@@ -32,8 +32,8 @@ export const MOCK_KM_LAST_INSERTED_KEY: { [acct: string]: { decryptedPrivateKey:
  * Email Key Manager - distributes private keys to users who own them
  */
 export const getMockEkmEndpoints = (
-  mockConfig: MockConfig,
-  ekmConfig: EkmConfig | undefined
+    mockConfig: MockConfig,
+    ekmConfig: EkmConfig | undefined
 ): HandlersDefinition => {
 
   if (!ekmConfig) {
@@ -370,8 +370,8 @@ abtIoeuUOpEqo9k0BEuoBzJhxjWtl/zwdyzS5tUK
 =8Vls
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: 'E583 B442 1B0B 30C4 C99B  D80E BA90 6726 82E7 10C7',
-    name: 'Test1 <test1@example.net> test1-new <test1-new@example.net>',
-    date: '9/22/21',
+    name: 'test1-new <test1-new@example.net> Test1 <test1@example.net>',
+    date: '4/21/22',
   },
   key1: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
