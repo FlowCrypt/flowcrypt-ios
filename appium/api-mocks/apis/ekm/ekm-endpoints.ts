@@ -64,10 +64,10 @@ const throwErrorIfConfigSaysSo = (config: EkmConfig) => {
 
 export interface KeyDetailInfo {
   prv: string;
-  pub: string;
-  primaryFingerprint: string;
-  name: string;
-  date: string;
+  pub?: string;
+  primaryFingerprint?: string;
+  name?: string;
+  date?: string;
 }
 
 type KeyTypes = 'e2e' | 'flowcryptCompability' | 'key0' | 'key0Updated' | 'key1';
@@ -253,9 +253,9 @@ koesQ3aTakf0GDxEC3X6GlElB2ZLQmOOyFVIoqjwk5GhPhYYzzAdgK5Cupf1NiGG
 l2IyabtIoeuUOpEqo9k0BEuoBzJhxjWtl/zwdyzS5tUK
 =X7jE
 -----END PGP PUBLIC KEY BLOCK-----`,
-    primaryFingerprint: 'E583 B442 1B0B 30C4 C99B  D80E BA90 6726 82E7 10C7',
+    primaryFingerprint: 'E583 B442 1B0B 30C4 C99B D80E BA90 6726 82E7 10C7',
     name: 'Test1 <test1@example.net>',
-    date: '9/22/21',
+    date: '4/21/22',
   },
   key0Updated: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -369,7 +369,7 @@ vSsIHsxFGvrFETXPfP1bb95ifMFocx0vdWF08A9C0FnrcCh4IfCcwBF71i/rl2Iy
 abtIoeuUOpEqo9k0BEuoBzJhxjWtl/zwdyzS5tUK
 =8Vls
 -----END PGP PUBLIC KEY BLOCK-----`,
-    primaryFingerprint: 'E583 B442 1B0B 30C4 C99B  D80E BA90 6726 82E7 10C7',
+    primaryFingerprint: 'E583 B442 1B0B 30C4 C99B D80E BA90 6726 82E7 10C7',
     name: 'test1-new <test1-new@example.net> Test1 <test1@example.net>',
     date: '4/21/22',
   },
@@ -468,8 +468,8 @@ Xv00dJYlZNadimW3VzVoDTp25ZH1lw/bTlQrklYjdSzBo0fcyXBMF435EJlsJRcX
 xa0hb0caoaEpLJCj45Us7oBH13jDk1ySt/bkYpI8fRvg
 =EY/L
 -----END PGP PUBLIC KEY BLOCK-----`,
-    primaryFingerprint: '253A 04BA DCEB FE46 E0A2  7AFB E792 D184 312E B299',
+    primaryFingerprint: '253A 04BA DCEB FE46 E0A2 7AFB E792 D184 312E B299',
     name: 'Test2 <test2@example.net>',
-    date: '9/22/21',
+    date: '4/21/22',
   }
 };

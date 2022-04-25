@@ -75,9 +75,10 @@ class KeysScreen extends BaseScreen {
   private checkKeys = async (keys: KeyDetailInfo[]) => {
     expect((await this.fingerPrint).length).toEqual(keys.length);
     for (const [index, key] of keys.entries()) {
-      expect(await (await this.fingerPrint)[index].getValue()).toContain(key.primaryFingerprint);
-      expect(await (await this.nameAndEmail)[index].getValue()).toContain(key.name);
-      expect(await (await this.dateCreated)[index].getValue()).toContain(key.date);
+      const fingerPrints = await (await this.fingerPrint)[index].getText();
+      expect(fingerPrints).toContain(key.primaryFingerprint ?? '');
+      expect(await (await this.nameAndEmail)[index].getValue()).toEqual(key.name ?? '');
+      expect(await (await this.dateCreated)[index].getValue()).toEqual(key.date ?? '');
     }
   }
 
