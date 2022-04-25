@@ -13,6 +13,7 @@ import BaseScreen from "../../../screenobjects/base.screen";
 import AppiumHelper from "../../../helpers/AppiumHelper";
 
 const ekmMockServer = 'http://127.0.0.1:8001/ekm';
+const successMessage = CommonData.refreshKeys.updatedSuccessfully;
 
 const goToKeysScreen = async () => {
   await MenuBarScreen.clickMenuIcon();
@@ -20,15 +21,21 @@ const goToKeysScreen = async () => {
   await SettingsScreen.clickOnSettingItem('Keys');
 }
 
+const logoutUserFromKeyScreen = async () => {
+  await KeysScreen.clickBackButton();
+  await MenuBarScreen.clickMenuIcon();
+  await MenuBarScreen.clickLogout();
+  await SplashScreen.checkLoginPage();
+}
+
 describe('SETUP: ', () => {
 
   it('app auto updates keys from EKM during startup with a pass phrase prompt', async () => {
 
-    const mockApi = new MockApi();
     const wrongPassPhraseError = CommonData.refreshKeys.wrongPassPhrase;
     const passPhrase = CommonData.account.passPhrase;
-    const successMessage = CommonData.refreshKeys.updatedSuccessfully;
 
+    const mockApi = new MockApi();
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
@@ -88,6 +95,44 @@ describe('SETUP: ', () => {
       await AppiumHelper.restartApp();
       await goToKeysScreen();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0Updated, ekmPrivateKeySamples.key1]);
+    });
+  });
+
+  it('app auto updates keys from EKM during startup without pass phrase prompt', async () => {
+
+    await logoutUserFromKeyScreen();
+
+    const mockApi = new MockApi();
+    mockApi.fesConfig = {
+      clientConfiguration: {
+        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN"],
+        key_manager_url: ekmMockServer,
+      }
+    };
+    mockApi.ekmConfig = {
+      returnKeys: [ ekmPrivateKeySamples.key0.prv ]
+    }
+
+    await mockApi.withMockedApis(async () => {
+      // stage 1 - setup
+      await SplashScreen.login();
+      await SetupKeyScreen.setPassPhrase();
+      await goToKeysScreen();
+      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
+
+      // stage 2 - keys get auto-updated
+      mockApi.ekmConfig = {
+        returnKeys: [ ekmPrivateKeySamples.key0.prv, ekmPrivateKeySamples.key1.prv ]
+      }
+      await AppiumHelper.restartApp();
+      await BaseScreen.checkToastMessage(successMessage);
+      await goToKeysScreen();
+      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0, ekmPrivateKeySamples.key1]);
+
+      // stage 3 - nothing to update
+      await AppiumHelper.restartApp();
+      await goToKeysScreen();
+      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0, ekmPrivateKeySamples.key1]);
     });
   });
 });

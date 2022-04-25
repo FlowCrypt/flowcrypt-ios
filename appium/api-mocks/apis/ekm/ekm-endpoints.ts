@@ -62,6 +62,7 @@ const throwErrorIfConfigSaysSo = (config: EkmConfig) => {
   }
 }
 
+// pub, primaryFingerprint, name, date are used to check Keys in KeyScreen and can be optional
 export interface KeyDetailInfo {
   prv: string;
   pub?: string;
