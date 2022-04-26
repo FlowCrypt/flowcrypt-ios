@@ -132,8 +132,6 @@ extension SettingsViewController {
                 return
             }
             viewController = BackupViewController(appContext: appContext)
-        case .experimental:
-            viewController = ExperimentalViewController(appContext: appContext)
         default:
             viewController = nil
         }

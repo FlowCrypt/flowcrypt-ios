@@ -14,8 +14,6 @@
 		042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */; };
 		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
 		0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
-		045464912812D18800F73BA4 /* ExperimentalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045464902812D0C100F73BA4 /* ExperimentalViewController.swift */; };
-		045464932812D22D00F73BA4 /* ExperimentalViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 045464922812D22D00F73BA4 /* ExperimentalViewDecorator.swift */; };
 		049E605927FDB6310089EE2A /* ComposeViewController+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */; };
 		049E605B27FDB6BE0089EE2A /* ComposeViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */; };
 		049E605D27FDB7D10089EE2A /* ComposeViewController+Nodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */; };
@@ -454,8 +452,6 @@
 		042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRecipientPopupViewController.swift; sourceTree = "<group>"; };
 		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		0443C85D27F4A6D700A432AA /* Task+Retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+Retry.swift"; sourceTree = "<group>"; };
-		045464902812D0C100F73BA4 /* ExperimentalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentalViewController.swift; sourceTree = "<group>"; };
-		045464922812D22D00F73BA4 /* ExperimentalViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperimentalViewDecorator.swift; sourceTree = "<group>"; };
 		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
 		049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Attachment.swift"; sourceTree = "<group>"; };
 		049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+TableView.swift"; sourceTree = "<group>"; };
@@ -917,15 +913,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0454648F2812D08D00F73BA4 /* Experimental */ = {
-			isa = PBXGroup;
-			children = (
-				045464902812D0C100F73BA4 /* ExperimentalViewController.swift */,
-				045464922812D22D00F73BA4 /* ExperimentalViewDecorator.swift */,
-			);
-			path = Experimental;
-			sourceTree = "<group>";
-		};
 		049E607227FDBCC30089EE2A /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -1190,7 +1177,6 @@
 		5A39F42E239EC32B001F4607 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				0454648F2812D08D00F73BA4 /* Experimental */,
 				5A39F435239ECADA001F4607 /* Settings List */,
 				D2E26F6424F1698F00612AF1 /* Contacts */,
 				5A39F43B239ECFA0001F4607 /* KeySettings */,
@@ -2737,7 +2723,6 @@
 				9FC411212595EA12001180A8 /* MessageSearchProvider.swift in Sources */,
 				9F778E7E27162038001D4B21 /* MessageThread.swift in Sources */,
 				9F4163B8265ED61C00106194 /* SetupInitialViewController.swift in Sources */,
-				045464932812D22D00F73BA4 /* ExperimentalViewDecorator.swift in Sources */,
 				D27B911D24EFE806002DF0A1 /* RecipientRealmObject.swift in Sources */,
 				D2E26F6C24F25B1F00612AF1 /* KeyAlgo.swift in Sources */,
 				51938DC1274CC291007AD57B /* MessageQuoteType.swift in Sources */,
@@ -2813,7 +2798,6 @@
 				9F3EF33123B1785600FA0CEF /* MsgListViewController.swift in Sources */,
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
 				9F5C2A92257E94DF00DE9B4B /* Imap+MessageOperations.swift in Sources */,
-				045464912812D18800F73BA4 /* ExperimentalViewController.swift in Sources */,
 				D27B911F24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
 				2CC50FAF27440B2C0051629A /* Session.swift in Sources */,

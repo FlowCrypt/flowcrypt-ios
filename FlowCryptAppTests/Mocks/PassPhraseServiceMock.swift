@@ -24,7 +24,4 @@ final class PassPhraseServiceMock: PassPhraseServiceType {
 
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) {
     }
-
-    func removeInMemoryPassPhrases(for email: String) throws {
-    }
 }
