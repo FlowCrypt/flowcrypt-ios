@@ -174,14 +174,7 @@ extension SetupInitialViewController {
                                 self?.signOut()
                             }
                         )
-                    case .keysAreNotDecrypted:
-                        showAlert(
-                            message: errorMessage,
-                            onOk: { [weak self] in
-                                self?.signOut()
-                            }
-                        )
-                    case .keysAreInvalid:
+                    case .keysAreNotDecrypted, .keysAreInvalid:
                         showAlert(
                             message: errorMessage,
                             onOk: { [weak self] in
