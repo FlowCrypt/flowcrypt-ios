@@ -158,30 +158,32 @@ extension SetupInitialViewController {
         Task {
             do {
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
-                let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
-                switch result {
-                case .success(keys: let keys):
-                    proceedToSetupWithEKMKeys(keys: keys)
-                case .noKeys:
-                    showRetryAlert(
-                        message: "organisational_rules_ekm_empty_private_keys_error".localized,
-                        onRetry: { [weak self] in
-                            self?.state = .fetchingKeysFromEKM
-                        },
-                        onOk: { [weak self] in
-                            self?.signOut()
-                        }
-                    )
-                case .keysAreNotDecrypted:
-                    showAlert(
-                        message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized,
-                        onOk: { [weak self] in
-                            self?.signOut()
-                        }
-                    )
-                }
+                let keys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
+                proceedToSetupWithEKMKeys(keys: keys)
             } catch {
-                if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
+                if let ekmError = error as? EmailKeyManagerApiError {
+                    let errorMessage = ekmError.errorMessage
+                    switch ekmError {
+                    case .noKeys:
+                        showRetryAlert(
+                            message: errorMessage,
+                            onRetry: { [weak self] in
+                                self?.state = .fetchingKeysFromEKM
+                            },
+                            onOk: { [weak self] in
+                                self?.signOut()
+                            }
+                        )
+                    case .keysAreNotDecrypted, .keysAreInvalid:
+                        showAlert(
+                            message: errorMessage,
+                            onOk: { [weak self] in
+                                self?.signOut()
+                            }
+                        )
+                    case .noPrivateKeysUrlString:
+                        break
+                    }
                     return
                 }
                 showAlert(message: error.errorMessage, onOk: { [weak self] in
