@@ -39,6 +39,6 @@ export type GoogleConfig = {
 export type WkdConfig = {};
 
 export type EkmConfig = {
-  returnKeys?: string[],
-  returnError?: { code: number, message: string },
+    returnKeys?: string[]
+    returnError?: { code: number, message: string },
 };

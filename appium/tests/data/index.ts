@@ -192,7 +192,12 @@ export const CommonData = {
       ' Missing appropriate key\n' +
       '\n' +
       'This will likely download a corrupted file. Download anyway?',
-    invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.'
+    invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.',
+    noPrivateKey: 'Error\n' +
+        'Could not compose message\n' +
+        '\n' +
+        'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e ' +
+        '@ asyncFunctionResume@[native code] @[native code] promiseReactionJobWithoutPromise@[native code] promiseReactionJob@[native code]'
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
