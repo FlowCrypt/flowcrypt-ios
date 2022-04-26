@@ -212,5 +212,8 @@ export const CommonData = {
   revokedMockUser: {
     email: 'revoked@domain.test',
     name: 'revoekd@flowcrypt.com'
+  },
+  keyManagerURL : {
+    link: 'http://127.0.0.1:8001/ekm'
   }
 };

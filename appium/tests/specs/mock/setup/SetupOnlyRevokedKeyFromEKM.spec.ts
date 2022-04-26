@@ -19,17 +19,18 @@ describe('SETUP: ', () => {
     const recipientEmail = CommonData.recipient.email;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
+    const ekmURl = CommonData.keyManagerURL.link;
 
     const noPrivateKeyError = 'Error\n' +
-        'Could not compose message\n' +
-        '\n' +
-        'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e ' +
-        '@ asyncFunctionResume@[native code] @[native code] promiseReactionJobWithoutPromise@[native code] promiseReactionJob@[native code]';
+      'Could not compose message\n' +
+      '\n' +
+      'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e ' +
+      '@ asyncFunctionResume@[native code] @[native code] promiseReactionJobWithoutPromise@[native code] promiseReactionJob@[native code]';
 
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: "http://127.0.0.1:8001/ekm",
+        key_manager_url: ekmURl,
       }
     };
     mockApi.attesterConfig = {
