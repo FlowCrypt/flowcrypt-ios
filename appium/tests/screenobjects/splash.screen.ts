@@ -89,12 +89,12 @@ class SplashScreen extends BaseScreen {
   }
 
   checkLoginPage = async () => {
-    ElementHelper.waitElementVisible(await this.privacyTab);
-    ElementHelper.waitElementVisible(await this.termsTab);
-    ElementHelper.waitElementVisible(await this.securityTab);
-    ElementHelper.waitElementVisible(await this.continueWithGmailBtn);
-    ElementHelper.waitElementVisible(await this.continueWithOutlookBtn);
-    ElementHelper.waitElementVisible(await this.otherEmailProviderButton);
+    await ElementHelper.waitElementVisible(await this.privacyTab);
+    await ElementHelper.waitElementVisible(await this.termsTab);
+    await ElementHelper.waitElementVisible(await this.securityTab);
+    await ElementHelper.waitElementVisible(await this.continueWithGmailBtn);
+    await ElementHelper.waitElementVisible(await this.continueWithOutlookBtn);
+    await ElementHelper.waitElementVisible(await this.otherEmailProviderButton);
   }
 
   clickContinueWithGmail = async () => {
