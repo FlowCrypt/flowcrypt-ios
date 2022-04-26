@@ -16,7 +16,6 @@ describe('SETUP: ', () => {
   it('test that has one revoked key followed by one valid key returned by EKM during setup', async () => {
 
     const mockApi = new MockApi();
-    const noPrivateKeyError = CommonData.errors.noPrivateKey;
     const recipientEmail = CommonData.recipient.email;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;

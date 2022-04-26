@@ -16,10 +16,15 @@ describe('SETUP: ', () => {
   it('test that returns only revoked key from EKM during setup', async () => {
 
     const mockApi = new MockApi();
-    const noPrivateKeyError = CommonData.errors.noPrivateKey;
     const recipientEmail = CommonData.recipient.email;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
+
+    const noPrivateKeyError = 'Error\n' +
+        'Could not compose message\n' +
+        '\n' +
+        'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e ' +
+        '@ asyncFunctionResume@[native code] @[native code] promiseReactionJobWithoutPromise@[native code] promiseReactionJob@[native code]';
 
     mockApi.fesConfig = {
       clientConfiguration: {
