@@ -24,7 +24,8 @@ const SELECTORS = {
   RECIPIENT_POPUP_NAME_NODE: '~aid-recipient-popup-name-node',
   RECIPIENT_POPUP_COPY_BUTTON: '~aid-recipient-popup-copy-button',
   RECIPIENT_POPUP_REMOVE_BUTTON: '~aid-recipient-popup-remove-button',
-  RECIPIENT_POPUP_EDIT_BUTTON: '~aid-recipient-popup-edit-button'
+  RECIPIENT_POPUP_EDIT_BUTTON: '~aid-recipient-popup-edit-button',
+  RECIPIENT_SPINNER: '~aid-recipient-spinner'
 };
 
 interface ComposeEmailInfo {
@@ -121,6 +122,10 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.RECIPIENT_POPUP_EDIT_BUTTON);
   }
 
+  get recipientSpinner() {
+    return $(SELECTORS.RECIPIENT_SPINNER);
+  }
+
   getRecipientsList = async (type: string) => {
     return $(`~aid-recipients-list-${type}`);
   }
@@ -155,11 +160,11 @@ class NewMessageScreen extends BaseScreen {
   composeEmail = async (recipient: string, subject: string, message: string, cc?: string, bcc?: string) => {
     await this.setAddRecipient(recipient);
     if (cc || bcc) {
-      await browser.pause(100);
       await this.clickToggleRecipientsButton();
       await this.setAddRecipient(cc, 'cc');
       await this.setAddRecipient(bcc, 'bcc');
     }
+    await ElementHelper.waitElementInvisible(await this.recipientSpinner);
     await this.showRecipientLabelIfNeeded();
     await this.setComposeSecurityMessage(message);
     await this.setSubject(subject);
@@ -230,7 +235,7 @@ class NewMessageScreen extends BaseScreen {
     await this.showRecipientInputIfNeeded();
     const recipientCell = await $(`~aid-${type}-${order}-label`);
     await ElementHelper.waitElementVisible(recipientCell);
-    await ElementHelper.waitForValue(await recipientCell, `  ${recipient}  `);
+    await ElementHelper.waitForValue(recipientCell, `  ${recipient}  `);
   }
 
   getActiveElementId = async () => {
