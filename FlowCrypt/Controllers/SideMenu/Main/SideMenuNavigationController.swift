@@ -114,20 +114,20 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 extension SideMenuNavigationController {
     private func refreshKeysFromEKMIfNeeded(context: AppContextWithUser) {
         Task {
-            let configuration = try await context.clientConfigurationService.configuration
-            guard configuration.checkUsesEKM() == .usesEKM else {
-                return
-            }
-            let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
-            let idToken = try await IdTokenUtils.getIdToken(userEmail: context.user.email)
-            let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
-            let localKeys = try context.encryptedStorage.getKeypairs(by: context.user.email)
-            var savedPassPhrase = localKeys.first(where: { $0.passphrase != nil })?.passphrase
-            guard case let .success(keys) = result, !keys.isEmpty else {
-                return
-            }
-            var isKeyUpdated = false
             do {
+                let configuration = try await context.clientConfigurationService.configuration
+                guard configuration.checkUsesEKM() == .usesEKM else {
+                    return
+                }
+                let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
+                let idToken = try await IdTokenUtils.getIdToken(userEmail: context.user.email)
+                let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
+                let localKeys = try context.encryptedStorage.getKeypairs(by: context.user.email)
+                var savedPassPhrase = localKeys.first(where: { $0.passphrase != nil })?.passphrase
+                guard case let .success(keys) = result, !keys.isEmpty else {
+                    return
+                }
+                var isKeyUpdated = false
                 for keyDetail in keys {
                     guard let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) else {
                         // No keys found in local. Add it
@@ -155,6 +155,10 @@ extension SideMenuNavigationController {
                 }
                 if isKeyUpdated {
                     showToast("refresh_key_success".localized)
+                }
+            } catch {
+                if !(error is ApiError) {
+                    showAlert(message: "Could not update keys from EKM due to error: \(error.localizedDescription)")
                 }
             }
         }

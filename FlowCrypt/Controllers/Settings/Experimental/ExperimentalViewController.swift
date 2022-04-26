@@ -84,7 +84,6 @@ extension ExperimentalViewController: ASTableDelegate, ASTableDataSource {
             } catch {
                 showAlert(message: error.localizedDescription)
             }
-            
         }
     }
 }

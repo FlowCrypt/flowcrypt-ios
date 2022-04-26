@@ -95,12 +95,11 @@ describe('SETUP: ', () => {
       await AppiumHelper.restartApp();
       await goToKeysScreen();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0Updated, ekmPrivateKeySamples.key1]);
+      await logoutUserFromKeyScreen();
     });
   });
 
   it('app auto updates keys from EKM during startup without pass phrase prompt', async () => {
-
-    await logoutUserFromKeyScreen();
 
     const mockApi = new MockApi();
     mockApi.fesConfig = {
@@ -133,6 +132,49 @@ describe('SETUP: ', () => {
       await AppiumHelper.restartApp();
       await goToKeysScreen();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0, ekmPrivateKeySamples.key1]);
+      await logoutUserFromKeyScreen();
+    });
+  });
+
+  it('EKM key update errors handled gracefully', async () => {
+
+    const mockApi = new MockApi();
+    mockApi.fesConfig = {
+      clientConfiguration: {
+        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN"],
+        key_manager_url: ekmMockServer,
+      }
+    };
+    mockApi.ekmConfig = {
+      returnKeys: [ ekmPrivateKeySamples.key0.prv ]
+    }
+
+    await mockApi.withMockedApis(async () => {
+      // stage 1 - setup
+      await SplashScreen.login();
+      await SetupKeyScreen.setPassPhrase();
+      await goToKeysScreen();
+      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
+
+      // stage 2 - EKM down
+      mockApi.ekmConfig = {
+        returnError: {
+          code: 500,
+          message: 'Test EKM down'
+        }
+      }
+      await AppiumHelper.restartApp();
+      await goToKeysScreen();
+      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
+
+      // stage 3 - error shown to user
+
+      mockApi.ekmConfig = {
+        returnKeys: [ ekmPrivateKeySamples.key0.prv.substring(0, 300) ]
+      }
+      await AppiumHelper.restartApp();
+      await goToKeysScreen();
+      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
     });
   });
 });
