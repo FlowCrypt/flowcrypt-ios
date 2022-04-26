@@ -9,7 +9,7 @@
 @testable import FlowCrypt
 import Foundation
 
-class PassPhraseStorageMock: PassPhraseStorageType & LogOutHandler {
+class PassPhraseStorageMock: PassPhraseStorageType {
 
     var saveResult: ((PassPhrase) -> Void)?
     func save(passPhrase: PassPhrase) {
@@ -34,8 +34,5 @@ class PassPhraseStorageMock: PassPhraseStorageType & LogOutHandler {
     }
     func getPassPhrases() -> [PassPhrase] {
         getPassPhrasesResult()
-    }
-
-    func logOutUser(email: String) throws {
     }
 }
