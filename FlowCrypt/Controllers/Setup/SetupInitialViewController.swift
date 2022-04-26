@@ -162,9 +162,11 @@ extension SetupInitialViewController {
                 proceedToSetupWithEKMKeys(keys: keys)
             } catch {
                 if let ekmError = error as? EmailKeyManagerApiError {
-                    if ekmError == .noKeys {
+                    let errorMessage = ekmError.errorMessage
+                    switch ekmError {
+                    case .noKeys:
                         showRetryAlert(
-                            message: ekmError.errorMessage,
+                            message: errorMessage,
                             onRetry: { [weak self] in
                                 self?.state = .fetchingKeysFromEKM
                             },
@@ -172,13 +174,22 @@ extension SetupInitialViewController {
                                 self?.signOut()
                             }
                         )
-                    } else if ekmError == .keysAreNotDecrypted {
+                    case .keysAreNotDecrypted:
                         showAlert(
-                            message: ekmError.errorMessage,
+                            message: errorMessage,
                             onOk: { [weak self] in
                                 self?.signOut()
                             }
                         )
+                    case .keysAreInvalid:
+                        showAlert(
+                            message: errorMessage,
+                            onOk: { [weak self] in
+                                self?.signOut()
+                            }
+                        )
+                    case .noPrivateKeysUrlString:
+                        break
                     }
                     return
                 }

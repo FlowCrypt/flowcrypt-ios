@@ -80,7 +80,7 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             if isKeyDecrypted.contains(false) {
                 throw EmailKeyManagerApiError.keysAreNotDecrypted
             }
-            if parsedPrivateKey.keyDetails.count < 1 {
+            if parsedPrivateKey.keyDetails.isEmpty {
                 throw EmailKeyManagerApiError.keysAreInvalid
             }
             keys.append(contentsOf: parsedPrivateKey.keyDetails)
