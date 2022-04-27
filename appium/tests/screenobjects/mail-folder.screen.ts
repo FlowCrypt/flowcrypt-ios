@@ -51,9 +51,9 @@ class MailFolderScreen extends BaseScreen {
   }
 
   checkTrashScreen = async () => {
-    await expect(await this.trashHeader).toBeDisplayed();
-    await expect(await this.searchIcon).toBeDisplayed();
-    await expect(await this.helpIcon).toBeDisplayed()
+    await ElementHelper.waitElementVisible(await this.trashHeader);
+    await ElementHelper.waitElementVisible(await this.searchIcon);
+    await ElementHelper.waitElementVisible(await this.helpIcon);
   }
 
   checkEmailIsNotDisplayed = async (subject: string) => {
@@ -61,9 +61,9 @@ class MailFolderScreen extends BaseScreen {
   }
 
   checkSentScreen = async () => {
-    await expect(await this.sentHeader).toBeDisplayed();
-    await expect(await this.searchIcon).toBeDisplayed();
-    await expect(await this.helpIcon).toBeDisplayed()
+    await ElementHelper.waitElementVisible(await this.sentHeader);
+    await ElementHelper.waitElementVisible(await this.searchIcon);
+    await ElementHelper.waitElementVisible(await this.helpIcon);
   }
 
   refreshMailList = async () => {
