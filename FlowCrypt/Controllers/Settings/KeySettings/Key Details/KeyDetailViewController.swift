@@ -14,18 +14,18 @@ import FlowCryptUI
  * - User can be redirected here from *KeyDetailViewController*
  */
 final class KeyDetailViewController: TableNodeViewController {
-    enum Parts: Int, CaseIterable {
+    enum Part: Int, CaseIterable {
         case description, publicInfo, keyDetails, copy, save, privateInfo
     }
 
     private let key: KeyDetails
-    private let parts: [Parts]
+    private let parts: [Part]
     private let pasteboard: UIPasteboard
     private let decorator: KeyDetailViewDecorator
 
     init(
         key: KeyDetails,
-        parts: [Parts] = Parts.allCases,
+        parts: [Part] = Part.allCases,
         pasteboard: UIPasteboard = UIPasteboard.general,
         decorator: KeyDetailViewDecorator = KeyDetailViewDecorator()
     ) {
@@ -58,7 +58,7 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else {
+            guard let self = self, let part = Part(rawValue: indexPath.row) else {
                 return ASCellNode()
             }
 
@@ -82,7 +82,7 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    private func handleTap(on part: Parts) {
+    private func handleTap(on part: Part) {
         switch part {
         case .publicInfo:
             let viewController = PublicKeyDetailViewController(text: key.public)
