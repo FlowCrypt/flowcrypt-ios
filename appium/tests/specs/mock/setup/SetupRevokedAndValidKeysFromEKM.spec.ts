@@ -1,14 +1,14 @@
 import { MockApi } from 'api-mocks/mock';
 import {
-    SplashScreen,
-    SetupKeyScreen,
+  SplashScreen,
+  SetupKeyScreen,
 } from '../../../screenobjects/all-screens';
-import {attesterPublicKeySamples} from "../../../../api-mocks/apis/attester/attester-endpoints";
-import {ekmPrivateKeySamples} from "../../../../api-mocks/apis/ekm/ekm-endpoints";
+import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
+import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
-import {CommonData} from "../../../data";
+import { CommonData } from "../../../data";
 
 
 describe('SETUP: ', () => {
@@ -17,6 +17,7 @@ describe('SETUP: ', () => {
 
     const mockApi = new MockApi();
     const recipientEmail = CommonData.recipient.email;
+    const recipientName = CommonData.recipient.name;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
 
@@ -39,7 +40,7 @@ describe('SETUP: ', () => {
     };
 
     mockApi.ekmConfig = {
-      returnKeys: [ ekmPrivateKeySamples.revokedPrv ,ekmPrivateKeySamples.existingPrv]
+      returnKeys: [ekmPrivateKeySamples.revokedPrv, ekmPrivateKeySamples.existingPrv]
     };
 
     await mockApi.withMockedApis(async () => {
@@ -50,7 +51,7 @@ describe('SETUP: ', () => {
 
       await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);
       await NewMessageScreen.checkFilledComposeEmailInfo({
-        recipients: [recipientEmail],
+        recipients: [recipientName],
         subject: emailSubject,
         message: emailText
       });
