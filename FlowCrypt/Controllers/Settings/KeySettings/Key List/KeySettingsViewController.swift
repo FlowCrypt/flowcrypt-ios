@@ -109,7 +109,7 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         guard let key = keys[safe: indexPath.row] else { return }
 
-        var parts = KeyDetailViewController.Parts.allCases
+        var parts = KeyDetailViewController.Part.allCases
         if isUsingKeyManager {
             if let index = parts.firstIndex(where: { $0 == .privateInfo }) {
                 parts.remove(at: index)

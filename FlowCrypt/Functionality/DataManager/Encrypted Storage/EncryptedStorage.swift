@@ -22,8 +22,9 @@ protocol EncryptedStorageType {
     func getKeypairs(by email: String) throws -> [Keypair]
 
     func validate() throws
-    func reset() throws
     func cleanup() throws
+
+    static func reset() throws
 }
 
 final class EncryptedStorage: EncryptedStorageType {
@@ -85,19 +86,12 @@ final class EncryptedStorage: EncryptedStorageType {
         self.storageEncryptionKey = storageEncryptionKey
     }
 
-    private func getDocumentDirectory() throws -> String {
-        guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
-            throw AppErr.general("No path direction for .documentDirectory")
-        }
-        return documentDirectory
-    }
-
     private func getConfiguration() throws -> Realm.Configuration {
         guard !UIApplication.shared.isRunningTests else {
             return Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
         }
 
-        let path = try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let path = try EncryptedStorage.getDocumentDirectory() + "/" + Constants.encryptedDbFilename
         let latestSchemaVersion = currentSchema.version.dbSchemaVersion
 
         return Realm.Configuration(
@@ -271,16 +265,25 @@ extension EncryptedStorage {
         _ = try Realm(configuration: configuration)
     }
 
-    func reset() throws {
-        let path = try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        try FileManager.default.removeItem(atPath: path)
-    }
-
     func cleanup() throws {
         let storage = try storage
 
         try storage.write {
             storage.deleteAll()
         }
+    }
+}
+
+extension EncryptedStorage {
+    static func getDocumentDirectory() throws -> String {
+        guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
+            throw AppErr.general("No path direction for .documentDirectory")
+        }
+        return documentDirectory
+    }
+
+    static func reset() throws {
+        let path = try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        try FileManager.default.removeItem(atPath: path)
     }
 }

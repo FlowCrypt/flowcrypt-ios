@@ -46,14 +46,10 @@ extension GlobalRouter: GlobalRouterType {
     func proceed() {
         do {
             let appContext = try AppContext.setup(globalRouter: self)
-            do {
-                try appContext.encryptedStorage.validate()
-                proceed(with: appContext)
-            } catch {
-                renderInvalidStorageView(error: error, encryptedStorage: nil)
-            }
+            try appContext.encryptedStorage.validate()
+            proceed(with: appContext)
         } catch {
-            renderInvalidStorageView(error: error, encryptedStorage: nil)
+            renderInvalidStorageView(error: error)
         }
     }
 
@@ -135,11 +131,9 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func renderInvalidStorageView(error: Error, encryptedStorage: EncryptedStorageType?) {
-        // EncryptedStorage is nil if we could not successfully initialize it
+    private func renderInvalidStorageView(error: Error) {
         let controller = InvalidStorageViewController(
             error: error,
-            encryptedStorage: encryptedStorage,
             router: self
         )
         keyWindow.rootViewController = UINavigationController(rootViewController: controller)
