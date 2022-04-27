@@ -192,7 +192,7 @@ export const CommonData = {
       ' Missing appropriate key\n' +
       '\n' +
       'This will likely download a corrupted file. Download anyway?',
-    invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.'
+    invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.',
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
@@ -212,5 +212,8 @@ export const CommonData = {
   revokedMockUser: {
     email: 'revoked@domain.test',
     name: 'revoekd@flowcrypt.com'
+  },
+  keyManagerURL : {
+    mockServer: 'http://127.0.0.1:8001/ekm'
   }
 };
