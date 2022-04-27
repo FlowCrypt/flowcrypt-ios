@@ -316,6 +316,7 @@
 "organisational_rules_must_submit_attester_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + ENFORCE_ATTESTER_SUBMIT) is not supported on this platform";
 "organisational_rules_ekm_empty_private_keys_error" = "There are no private keys configured for you. Please ask yout systems administrator or help desk";
 "organisational_rules_ekm_keys_are_not_decrypted_error" = "Received private keys are not fully decrypted. Please try login flow again";
+"organisational_rules_ekm_keys_are_invalid_error" = "One or more of keys received from EKM are invalid";
 "organisational_wrong_email_error" = "Not a valid email %@";
 
 // Google id token errors
