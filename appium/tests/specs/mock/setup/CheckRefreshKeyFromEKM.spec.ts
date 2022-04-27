@@ -139,6 +139,7 @@ describe('SETUP: ', () => {
   it('EKM key update errors handled gracefully', async () => {
 
     const mockApi = new MockApi();
+
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN"],
@@ -168,11 +169,12 @@ describe('SETUP: ', () => {
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
 
       // stage 3 - error shown to user
-
       mockApi.ekmConfig = {
         returnKeys: [ ekmPrivateKeySamples.key0.prv.substring(0, 300) ]
       }
       await AppiumHelper.restartApp();
+      await BaseScreen.checkModalMessage(CommonData.refreshKeys.errorMessage);
+      await BaseScreen.clickOkButtonOnError();
       await goToKeysScreen();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
     });

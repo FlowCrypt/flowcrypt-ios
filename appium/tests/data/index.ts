@@ -215,6 +215,7 @@ export const CommonData = {
   },
   refreshKeys: {
     wrongPassPhrase: 'Error\nIncorrect pass phrase. Please try again.',
-    updatedSuccessfully: 'Account keys updated'
+    updatedSuccessfully: 'Account keys updated',
+    errorMessage: 'Error\nCould not update keys from EKM due to error: '
   }
 };

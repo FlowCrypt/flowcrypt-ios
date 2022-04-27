@@ -13,13 +13,6 @@ protocol SideMenuViewController {
 
 enum RefreshKeyError: Error {
     case cancelPassPhrase
-
-    var description: String {
-        switch self {
-        case .cancelPassPhrase:
-            return "refresh_key_cancel_pass_phrase".localized
-        }
-    }
 }
 /**
  * Navigation Controller inherited from ENSideMenuNavigationController
@@ -121,14 +114,11 @@ extension SideMenuNavigationController {
                 }
                 let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: context.user.email)
-                let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
+                let keydDetails = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 let localKeys = try context.encryptedStorage.getKeypairs(by: context.user.email)
                 var savedPassPhrase = localKeys.first(where: { $0.passphrase != nil })?.passphrase
-                guard case let .success(keys) = result, !keys.isEmpty else {
-                    return
-                }
                 var isKeyUpdated = false
-                for keyDetail in keys {
+                for keyDetail in keydDetails {
                     guard let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) else {
                         // No keys found in local. Add it
                         savedPassPhrase = try await saveKeyToLocal(
@@ -157,9 +147,18 @@ extension SideMenuNavigationController {
                     showToast("refresh_key_success".localized)
                 }
             } catch {
-                if !(error is ApiError) {
-                    showAlert(message: "Could not update keys from EKM due to error: \(error.localizedDescription)")
+                if error is ApiError {
+                    return
                 }
+                // Do not display error alert when no keys are returned
+                if let ekmError = error as? EmailKeyManagerApiError, ekmError == .noKeys {
+                    return
+                }
+                // Do not display error alert when user cancels pass phrase prompt
+                if let refreshError = error as? RefreshKeyError, refreshError == .cancelPassPhrase {
+                    return
+                }
+                showAlert(message: "refresh_key_error".localizeWithArguments(error.errorMessage))
             }
         }
     }

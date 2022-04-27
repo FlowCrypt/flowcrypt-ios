@@ -84,8 +84,8 @@
 // Refresh key
 "refresh_key_alert_title" = "Enter pass phrase to keep your account keys up to date.";
 "refresh_key_invalid_pass_phrase" = "Incorrect pass phrase. Please try again.";
-"refresh_key_cancel_pass_phrase" = "User cancelled pass phrase prompt.";
 "refresh_key_success" = "Account keys updated";
+"refresh_key_error" = "Could not update keys from EKM due to error: %@";
 
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
