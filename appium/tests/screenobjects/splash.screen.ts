@@ -89,12 +89,12 @@ class SplashScreen extends BaseScreen {
   }
 
   checkLoginPage = async () => {
-    await expect(this.privacyTab).toBeDisplayed();
-    await expect(this.termsTab).toBeDisplayed();
-    await expect(this.securityTab).toBeDisplayed();
-    await expect(this.continueWithGmailBtn).toBeDisplayed();
-    await expect(this.continueWithOutlookBtn).toBeDisplayed();
-    await expect(this.otherEmailProviderButton).toBeDisplayed();
+    await ElementHelper.waitElementVisible(await this.privacyTab);
+    await ElementHelper.waitElementVisible(await this.termsTab);
+    await ElementHelper.waitElementVisible(await this.securityTab);
+    await ElementHelper.waitElementVisible(await this.continueWithGmailBtn);
+    await ElementHelper.waitElementVisible(await this.continueWithOutlookBtn);
+    await ElementHelper.waitElementVisible(await this.otherEmailProviderButton);
   }
 
   clickContinueWithGmail = async () => {
@@ -102,7 +102,7 @@ class SplashScreen extends BaseScreen {
   }
 
   clickOtherEmailProvider = async () => {
-      await ElementHelper.waitAndClick(await this.otherEmailProviderButton)  ;
+    await ElementHelper.waitAndClick(await this.otherEmailProviderButton)  ;
   }
 
   clickContinueBtn = async () => {

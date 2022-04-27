@@ -17,6 +17,7 @@ describe('INBOX: ', () => {
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
     const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
+    const attachmentNameWithoutExtension = attachmentName.substring(0, attachmentName.lastIndexOf('.')) || attachmentName;
     const encryptedAttachmentName = CommonData.encryptedEmailWithAttachment.encryptedAttachmentName;
 
     const wrongPassPhrase = 'wrong';
@@ -54,7 +55,7 @@ describe('INBOX: ', () => {
 
     await AttachmentScreen.clickSaveButton();
 
-    await AttachmentScreen.checkDownloadPopUp(attachmentName);
+    await AttachmentScreen.checkDownloadPopUp(attachmentNameWithoutExtension);
     await AttachmentScreen.clickCancelButton();
     await AttachmentScreen.checkAttachment(attachmentName);
     await AttachmentScreen.clickBackButton();
@@ -70,6 +71,6 @@ describe('INBOX: ', () => {
     await AttachmentScreen.checkAttachment(attachmentName);
 
     await AttachmentScreen.clickSaveButton();
-    await AttachmentScreen.checkDownloadPopUp(attachmentName);
+    await AttachmentScreen.checkDownloadPopUp(attachmentNameWithoutExtension);
   });
 });
