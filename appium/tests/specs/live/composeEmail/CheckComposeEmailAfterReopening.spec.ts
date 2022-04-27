@@ -33,6 +33,7 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkInboxScreen();
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText, ccRecipientEmail, bccRecipientEmail);
+    
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [recipientName],
       subject: emailSubject,
@@ -46,7 +47,9 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [recipientName],
       subject: emailSubject,
-      message: emailText
+      message: emailText,
+      cc: [ccRecipientName],
+      bcc: [bccRecipientName]
     });
   });
 });
