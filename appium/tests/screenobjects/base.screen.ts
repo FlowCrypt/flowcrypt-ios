@@ -32,7 +32,7 @@ export default class BaseScreen {
   static checkModalMessage = async (message: string) => {
     await ElementHelper.waitElementVisible(await this.currentModal);
     const alertText = await driver.getAlertText();
-    expect(alertText).toEqual(message);
+    expect(alertText).toContain(message);
   }
 
   static clickOkButtonOnError = async () => {

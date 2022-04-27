@@ -19,19 +19,17 @@ describe('SETUP: ', () => {
     const recipientEmail = CommonData.recipient.email;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
-    const ekmURL = CommonData.keyManagerURL.link
 
     const noPrivateKeyError = 'Error\n' +
       'Could not compose message\n' +
       '\n' +
-      'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e ' +
-      '@ asyncFunctionResume@[native code] @[native code] promiseReactionJobWithoutPromise@[native code] promiseReactionJob@[native code]';
+      'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e';
 
 
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: ekmURL,
+        key_manager_url: CommonData.keyManagerURL.mockServer,
       }
     };
     mockApi.attesterConfig = {
@@ -42,7 +40,7 @@ describe('SETUP: ', () => {
 
     mockApi.ekmConfig = {
       returnKeys: [ ekmPrivateKeySamples.revokedPrv ,ekmPrivateKeySamples.existingPrv]
-    }
+    };
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.login();

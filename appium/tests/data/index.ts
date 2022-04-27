@@ -214,6 +214,6 @@ export const CommonData = {
     name: 'revoekd@flowcrypt.com'
   },
   keyManagerURL : {
-    link: 'http://127.0.0.1:8001/ekm'
+    mockServer: 'http://127.0.0.1:8001/ekm'
   }
 };
