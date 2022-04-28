@@ -114,11 +114,11 @@ extension SideMenuNavigationController {
                 }
                 let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: context.user.email)
-                let keydDetails = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
+                let keyDetails = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 let localKeys = try context.encryptedStorage.getKeypairs(by: context.user.email)
                 var savedPassPhrase = localKeys.first(where: { $0.passphrase != nil })?.passphrase
                 var isKeyUpdated = false
-                for keyDetail in keydDetails {
+                for keyDetail in keyDetails {
                     guard let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) else {
                         // No keys found in local. Add it
                         savedPassPhrase = try await saveKeyToLocal(
