@@ -49,9 +49,6 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         self?.hideMenu()
     }
 
-    let keyMethods = KeyMethods()
-    var askedUserPassPhrase = false
-
     private var menuViewContoller: SideMenuViewController?
 
     convenience init(appContext: AppContextWithUser, contentViewController: UIViewController) {
@@ -63,7 +60,8 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
             $0.delegate = self
             $0.animationDuration = Constants.animationDuration
         }
-        refreshKeysFromEKMIfNeeded(context: appContext)
+        let ekmService = EKMService(appContext: appContext)
+        ekmService.refreshKeysFromEKMIfNeeded(in: self)
     }
 
     override func viewDidLoad() {
@@ -103,153 +101,6 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     }
 }
 
-// MARK: Refresh keys from EKM
-extension SideMenuNavigationController {
-    private func refreshKeysFromEKMIfNeeded(context: AppContextWithUser) {
-        Task {
-            do {
-                let configuration = try await context.clientConfigurationService.configuration
-                guard configuration.checkUsesEKM() == .usesEKM else {
-                    return
-                }
-                let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
-                let idToken = try await IdTokenUtils.getIdToken(userEmail: context.user.email)
-                let keyDetails = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
-                let localKeys = try context.encryptedStorage.getKeypairs(by: context.user.email)
-
-                var passPhrase = localKeys.first(where: { $0.passphrase != nil })?.passphrase
-                // If this is called when starting the app, then it doesn't make much difference
-                // but conceptually it would be better to look pass phrase both in memory and storage
-                if passPhrase == nil {
-                    passPhrase = try context.passPhraseService.getPassPhrases().first(where: { $0.value.isNotEmpty })?.value
-                }
-
-                var keysToUpdate: [KeyDetails] = []
-                for keyDetail in keyDetails {
-                    if let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
-                        if savedLocalKey.lastModified ?? 0 < keyDetail.lastModified ?? 0 {
-                            keysToUpdate.append(keyDetail)
-                        }
-                    } else {
-                        keysToUpdate.append(keyDetail)
-                    }
-                }
-                if keysToUpdate.isEmpty {
-                    return
-                }
-                for keyDetail in keysToUpdate {
-                    passPhrase = try await saveKeyToLocal(
-                        context: context,
-                        keyDetail: keyDetail,
-                        passPhrase: passPhrase
-                    )
-                }
-                showToast("refresh_key_success".localized)
-            } catch {
-                if error is ApiError {
-                    return
-                }
-                // Do not display error alert when no keys are returned
-                if let ekmError = error as? EmailKeyManagerApiError, ekmError == .noKeys {
-                    return
-                }
-                // Do not display error alert when user cancels pass phrase prompt
-                if let refreshError = error as? RefreshKeyError, refreshError == .cancelPassPhrase {
-                    return
-                }
-                showAlert(message: "refresh_key_error".localizeWithArguments(error.errorMessage))
-            }
-        }
-    }
-
-    private func saveKeyToLocal(
-        context: AppContextWithUser,
-        keyDetail: KeyDetails,
-        passPhrase: String?
-    ) async throws -> String? {
-        var newPassPhrase = passPhrase
-        if newPassPhrase == nil {
-            if askedUserPassPhrase {
-                return nil
-            }
-            newPassPhrase = try await requestPassPhraseWithModal(context: context)
-        }
-        guard let newPassPhrase = newPassPhrase else {
-            return nil
-        }
-
-        guard let privateKey = keyDetail.private else {
-            throw CreatePassphraseWithExistingKeyError.noPrivateKey
-        }
-        let encryptedPrv = try await Core.shared.encryptKey(
-            armoredPrv: privateKey,
-            passphrase: newPassPhrase
-        )
-        let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
-        try context.encryptedStorage.putKeypairs(
-            keyDetails: parsedKey.keyDetails,
-            passPhrase: nil,
-            source: .ekm,
-            for: context.user.email
-        )
-        return newPassPhrase
-    }
-
-    private func requestPassPhraseWithModal(context: AppContextWithUser) async throws -> String {
-        self.askedUserPassPhrase = true
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            let alert = AlertsFactory.makePassPhraseAlert(
-                title: "refresh_key_alert_title".localized,
-                onCancel: {
-                    return continuation.resume(throwing: RefreshKeyError.cancelPassPhrase)
-                },
-                onCompletion: { [weak self] passPhrase in
-                    guard let self = self else {
-                        return continuation.resume(throwing: AppErr.nilSelf)
-                    }
-                    Task<Void, Never> {
-                        do {
-                            let matched = try await self.handlePassPhraseEntry(
-                                appContext: context,
-                                passPhrase
-                            )
-                            if matched {
-                                return continuation.resume(returning: passPhrase)
-                            }
-                            // Pass phrase mismatch, display error alert and ask again
-                            try await self.showAsyncAlert(message: "refresh_key_invalid_pass_phrase".localized)
-                            let newPassPhrase = try await self.requestPassPhraseWithModal(
-                                context: context
-                            )
-                            return continuation.resume(returning: newPassPhrase)
-                        } catch {
-                            return continuation.resume(throwing: error)
-                        }
-                    }
-                }
-            )
-            present(alert, animated: true, completion: nil)
-        }
-    }
-
-    internal func handlePassPhraseEntry(
-        appContext: AppContextWithUser,
-        _ passPhrase: String
-    ) async throws -> Bool {
-        // since pass phrase was entered (an inconvenient thing for user to do),
-        //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await appContext.keyService.getPrvKeyInfo(email: appContext.user.email)
-        guard allKeys.isNotEmpty else {
-            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
-            //   I copied it from another usage, but has to be changed
-            throw KeyServiceError.retrieve
-        }
-        let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
-        // save passphrase for all matching keys
-        try appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
-        return matchingKeys.isNotEmpty
-    }
-}
 extension SideMenuNavigationController: ENSideMenuDelegate {
     func sideMenuShouldOpenSideMenu() -> Bool {
         guard let top = topViewController else { return false }

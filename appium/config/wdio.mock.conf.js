@@ -7,6 +7,9 @@ config.suites = {
   all: [
     './tests/specs/mock/**/*.spec.ts'
   ],
+  test: [
+    './tests/specs/mock/setup/CheckRefreshKeyFromEKM.spec.ts'
+  ],
 };
 
 config.capabilities = [
