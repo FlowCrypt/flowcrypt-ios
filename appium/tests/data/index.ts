@@ -192,7 +192,7 @@ export const CommonData = {
       ' Missing appropriate key\n' +
       '\n' +
       'This will likely download a corrupted file. Download anyway?',
-    invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.'
+    invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.',
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
@@ -217,5 +217,8 @@ export const CommonData = {
     wrongPassPhrase: 'Error\nIncorrect pass phrase. Please try again.',
     updatedSuccessfully: 'Account keys updated',
     errorMessage: 'Error\nCould not update keys from EKM due to error: '
+  },
+  keyManagerURL: {
+    mockServer: 'http://127.0.0.1:8001/ekm'
   }
 };
