@@ -166,7 +166,7 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = try storage.getKeypairs(by: sender).map(\.public).first else {
+        guard let keyPair = try await keyService.getKeyPair(from: sender) else {
             throw MessageValidationError.missingPublicKey
         }
 
@@ -205,7 +205,7 @@ final class ComposeMessageService {
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
-            pubKeys: [myPubKey] + validPubKeys,
+            pubKeys: [keyPair.public] + validPubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )

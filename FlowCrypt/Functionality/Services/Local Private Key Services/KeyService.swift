@@ -12,6 +12,7 @@ import FlowCryptCommon
 protocol KeyServiceType {
     func getPrvKeyInfo(email: String) async throws -> [PrvKeyInfo]
     func getSigningKey(email: String) async throws -> PrvKeyInfo?
+    func getKeyPair(from email: String) async throws -> Keypair?
 }
 
 final class KeyService: KeyServiceType {
@@ -40,12 +41,16 @@ final class KeyService: KeyServiceType {
     }
 
     func getSigningKey(email: String) async throws -> PrvKeyInfo? {
-        let keysInfo = try storage.getKeypairs(by: email)
-        guard let foundKey = try await findKeyByUserEmail(keysInfo: keysInfo, email: email) else {
+        guard let foundKey = try await getKeyPair(from: email) else {
             return nil
         }
 
         return try self.getPrvKeyInfo(keyPair: foundKey)
+    }
+
+    func getKeyPair(from email: String) async throws -> Keypair? {
+        let keysInfo = try storage.getKeypairs(by: email)
+        return try await findKeyByUserEmail(keysInfo: keysInfo, email: email)
     }
 
     // Get Private Key Info from KeyPair
@@ -71,12 +76,14 @@ final class KeyService: KeyServiceType {
             }
             keys.append((keyInfo, parsedKey))
         }
-        if let primaryEmailMatch = keys.first(where: { $0.1.pgpUserEmails.first?.lowercased() == email.lowercased() }) {
+        if let primaryEmailMatch = keys.first(where: {
+            $0.1.pgpUserEmails.first?.lowercased() == email.lowercased() && $0.1.isKeyUsuable
+        }) {
             logger.logDebug("findKeyByUserEmail: found key \(primaryEmailMatch.1.primaryFingerprint) by primary email match")
             return primaryEmailMatch.0
         }
         if let alternativeEmailMatch = keys.first(where: {
-            $0.1.pgpUserEmails.map { $0.lowercased() }.contains(email.lowercased()) == true
+            $0.1.pgpUserEmails.map { $0.lowercased() }.contains(email.lowercased()) == true && $0.1.isKeyUsuable
         }) {
             logger.logDebug("findKeyByUserEmail: found key \(alternativeEmailMatch.1.primaryFingerprint) by alternative email match")
             return alternativeEmailMatch.0

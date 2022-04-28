@@ -99,8 +99,8 @@ class MailFolderScreen extends BaseScreen {
   };
 
   getEmailCount = async () => {
-      await browser.pause(1000);
-      return await this.inboxList.length;
+    await browser.pause(1000);
+    return await this.inboxList.length;
   };
 
   scrollUpToFirstEmail = async () => {

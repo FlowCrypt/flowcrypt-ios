@@ -40,6 +40,15 @@ extension KeyDetails {
     var pgpUserEmails: [String] {
         users.map { MCOAddress(nonEncodedRFC822String: $0).mailbox }
     }
+    
+    var isKeyUsuable: Bool {
+        var expired = false
+        let now = Date()
+        if let expiration = expiration, TimeInterval(expiration) < now.timeIntervalSince1970 {
+            expired = true
+        }
+        return !revoked && !expired
+    }
 }
 
 // MARK: - CustomStringConvertible, Hashable, Equatable

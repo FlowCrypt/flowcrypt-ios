@@ -40,6 +40,10 @@ export const CommonData = {
     secondDate: 'Feb 06',
     thirdDate: 'Feb 07',
   },
+  revokeValidMessage: {
+    subject: 'test revoke valid key from ekm',
+    message: 'Test revoked key'
+  },
   sender: {
     email: 'dmitry@flowcrypt.com',
     name: 'Dmitry at FlowCrypt'
@@ -213,7 +217,7 @@ export const CommonData = {
     email: 'revoked@domain.test',
     name: 'revoekd@flowcrypt.com'
   },
-  keyManagerURL : {
+  keyManagerURL: {
     mockServer: 'http://127.0.0.1:8001/ekm'
   }
 };
