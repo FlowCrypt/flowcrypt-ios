@@ -1,6 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
-import {ekmPrivateKeySamples, KeyDetailInfo} from "../../api-mocks/apis/ekm/ekm-endpoints";
+import { ekmPrivateKeySamples, KeyDetailInfo } from "../../api-mocks/apis/ekm/ekm-endpoints";
 
 const SELECTORS = {
   KEYS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Keys"`]',
@@ -77,8 +77,8 @@ class KeysScreen extends BaseScreen {
     for (const [index, key] of keys.entries()) {
       const fingerPrints = await (await this.fingerPrint)[index].getText();
       expect(fingerPrints).toContain(key.primaryFingerprint ?? '');
-      expect(await (await this.nameAndEmail)[index].getValue()).toEqual(key.name ?? '');
-      expect(await (await this.dateCreated)[index].getValue()).toEqual(key.date ?? '');
+      expect(await (await this.nameAndEmail)[index].getValue()).toEqual(key.renderedPrimaryUid ?? '');
+      expect(await (await this.dateCreated)[index].getValue()).toEqual(key.renderedDateCreated ?? '');
     }
   }
 

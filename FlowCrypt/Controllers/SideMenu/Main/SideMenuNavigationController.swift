@@ -116,36 +116,37 @@ extension SideMenuNavigationController {
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: context.user.email)
                 let keyDetails = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 let localKeys = try context.encryptedStorage.getKeypairs(by: context.user.email)
-                var savedPassPhrase = localKeys.first(where: { $0.passphrase != nil })?.passphrase
-                var isKeyUpdated = false
+
+                var passPhrase = localKeys.first(where: { $0.passphrase != nil })?.passphrase
+                // If this is called when starting the app, then it doesn't make much difference
+                // but conceptually it would be better to look pass phrase both in memory and storage
+                if passPhrase == nil {
+                    passPhrase = try context.passPhraseService.getPassPhrases().first(where: { $0.value.isNotEmpty })?.value
+                }
+
+                // second parameter indicates whether key detail is new key or not
+                var keysToUpdate: [(KeyDetails, Bool)] = []
                 for keyDetail in keyDetails {
-                    guard let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) else {
-                        // No keys found in local. Add it
-                        savedPassPhrase = try await saveKeyToLocal(
-                            context: context,
-                            keyDetail: keyDetail,
-                            passPhrase: savedPassPhrase,
-                            isNewKey: true
-                        )
-                        isKeyUpdated = true
-                        continue
-                    }
-                    guard let lastModified = keyDetail.lastModified else {
-                        continue
-                    }
-                    // Key exists in local. Check if saved key is outdated by checking lastModified and update if needed
-                    if savedLocalKey.lastModified ?? 0 < lastModified {
-                        savedPassPhrase = try await saveKeyToLocal(
-                            context: context,
-                            keyDetail: keyDetail,
-                            passPhrase: savedPassPhrase
-                        )
-                        isKeyUpdated = true
+                    if let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
+                        if savedLocalKey.lastModified ?? 0 < keyDetail.lastModified ?? 0 {
+                            keysToUpdate.append((keyDetail, false))
+                        }
+                    } else {
+                        keysToUpdate.append((keyDetail, true))
                     }
                 }
-                if isKeyUpdated {
-                    showToast("refresh_key_success".localized)
+                if keysToUpdate.isEmpty {
+                    return
                 }
+                for keyDetailData in keysToUpdate {
+                    passPhrase = try await saveKeyToLocal(
+                        context: context,
+                        keyDetail: keyDetailData.0,
+                        passPhrase: passPhrase,
+                        isNewKey: keyDetailData.1
+                    )
+                }
+                showToast("refresh_key_success".localized)
             } catch {
                 if error is ApiError {
                     return
@@ -257,7 +258,7 @@ extension SideMenuNavigationController {
         try appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         // For new key just check if there are any matching keys
         if isNewKey {
-            return !matchingKeys.isEmpty
+            return matchingKeys.isNotEmpty
         }
         // now figure out if the pass phrase also matched the signing prv itself
         let matched = matchingKeys.first(where: { $0.fingerprints.first == keyDetail.primaryFingerprint })

@@ -67,8 +67,8 @@ export interface KeyDetailInfo {
   prv: string;
   pub?: string;
   primaryFingerprint?: string;
-  name?: string;
-  date?: string;
+  renderedPrimaryUid?: string;
+  renderedDateCreated?: string;
 }
 
 type KeyTypes = 'e2e' | 'flowcryptCompability' | 'key0' | 'key0Updated' | 'key1' | 'e2eRevokedKey' | 'e2eValidKey';
@@ -93,8 +93,8 @@ CwkIBwUVCgkICwIeAQAKCRClTYK+FSHSDsUNAP9+YFUHDOCxJLmv6HZI6y2o
 =n4ak
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: '3810 0D21 F173 26E4 4786 9DA7 A54D 82BE 1521 D20E',
-    name: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
-    date: '9/22/21'
+    renderedPrimaryUid: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
+    renderedDateCreated: '9/22/21'
   },
   flowcryptCompability: {
     prv: '',
@@ -156,8 +156,8 @@ Eg==
 =r2et
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: 'E8F0 517B A6D7 DAB6 081C 96E4 ADAC 279C 9509 3207',
-    name: 'FlowCrypt Compatibility <flowcrypt.compatibility@gmail.com>',
-    date: '11/2/17'
+    renderedPrimaryUid: 'FlowCrypt Compatibility <flowcrypt.compatibility@gmail.com>',
+    renderedDateCreated: '11/2/17'
   },
   key0: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -255,8 +255,8 @@ l2IyabtIoeuUOpEqo9k0BEuoBzJhxjWtl/zwdyzS5tUK
 =X7jE
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: 'E583 B442 1B0B 30C4 C99B D80E BA90 6726 82E7 10C7',
-    name: 'Test1 <test1@example.net>',
-    date: '4/21/22',
+    renderedPrimaryUid: 'Test1 <test1@example.net>',
+    renderedDateCreated: '4/21/22',
   },
   key0Updated: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -371,8 +371,8 @@ abtIoeuUOpEqo9k0BEuoBzJhxjWtl/zwdyzS5tUK
 =8Vls
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: 'E583 B442 1B0B 30C4 C99B D80E BA90 6726 82E7 10C7',
-    name: 'test1-new <test1-new@example.net> Test1 <test1@example.net>',
-    date: '4/21/22',
+    renderedPrimaryUid: 'test1-new <test1-new@example.net> Test1 <test1@example.net>',
+    renderedDateCreated: '4/21/22',
   },
   key1: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -470,8 +470,8 @@ xa0hb0caoaEpLJCj45Us7oBH13jDk1ySt/bkYpI8fRvg
 =EY/L
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: '253A 04BA DCEB FE46 E0A2 7AFB E792 D184 312E B299',
-    name: 'Test2 <test2@example.net>',
-    date: '4/21/22',
+    renderedPrimaryUid: 'Test2 <test2@example.net>',
+    renderedDateCreated: '4/21/22',
   },
   e2eRevokedKey: {
     prv: `
