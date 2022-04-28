@@ -24,7 +24,7 @@ describe('SETUP: ', () => {
     // When private key is revoked key, there are no public keys to pick. So missing sender public key error occurs.
     const noPrivateKeyError = 'Error\n' +
       'Could not compose message\n\n' +
-      'Missing sender public key. Is FlowCrypt iOS app well set up?';
+      'Your account keys are not usable for encryption.';
 
     mockApi.fesConfig = {
       clientConfiguration: {
