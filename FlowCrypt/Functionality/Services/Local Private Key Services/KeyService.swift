@@ -64,7 +64,6 @@ final class KeyService: KeyServiceType {
     }
 
     private func findKeyByUserEmail(keysInfo: [Keypair], email: String) async throws -> Keypair? {
-        // todo - should be refactored with https://github.com/FlowCrypt/flowcrypt-ios/issues/812
         logger.logDebug("findKeyByUserEmail: found \(keysInfo.count) candidate prvs in storage, searching by:\(email)")
         var keys: [(Keypair, KeyDetails)] = []
         for keyInfo in keysInfo {
