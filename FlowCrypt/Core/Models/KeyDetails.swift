@@ -42,12 +42,17 @@ extension KeyDetails {
     }
     
     var isKeyUsuable: Bool {
-        var expired = false
-        let now = Date()
-        if let expiration = expiration, TimeInterval(expiration) < now.timeIntervalSince1970 {
-            expired = true
-        }
-        return !revoked && !expired
+        // revoked keys are not usable
+        guard !revoked else { return false }
+        // keys without lastModified don't have valid signatures on them - not usable
+        guard lastModified != nil else { return false }
+        // keys without uids on them are not usable
+        guard users.isNotEmpty else { return false }
+        // expired keys are not usable
+        if let expiration = expiration, expiration.toDate() < Date() { return false }
+        // non-revoked keys, with lastModified and at least one user, that are not expired are usable
+        // gross simplification until https://github.com/FlowCrypt/flowcrypt-ios/issues/1546
+        return true
     }
 }
 
