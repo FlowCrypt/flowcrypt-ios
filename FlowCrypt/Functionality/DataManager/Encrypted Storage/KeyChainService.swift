@@ -25,7 +25,7 @@ extension KeyChainServiceError: CustomStringConvertible {
 }
 
 struct KeyChainConfig: Codable {
-    let dynamicPartIndex: String
+    let indexPrefix: String
 }
 
 /// keychain is used to generate and retrieve encryption key which is used to encrypt local DB
@@ -36,31 +36,57 @@ actor KeyChainService {
     private let logger = Logger.nested("KeyChain")
     private let keyByteLen = 64
 
+    private let filesManager = FilesManager()
+    private let userDefaults = UserDefaults.standard
+
+    private enum Constants {
+        static let prefixUserDefaultsKey = "indexSecureKeychainPrefix"
+        static let configFileName = "keychain-config"
+        static let indexSuffix = "-indexStorageEncryptionKey"
+    }
+
     /// this dynamic keychainIndex ensures that we use a different keychain index
-    ///   after deleting the app, because keychain entries survive app uninstall
+    /// after deleting the app, because keychain entries survive app uninstall
     @MainActor private func getKeychainIndex() throws -> String {
-        let fileName = "keychain-config"
-        let fileManager = FilesManager()
-//        let dynamicPartIndex = "indexSecureKeychainPrefix"
-        if let file = try? fileManager.read(fileName: fileName),
-            let config = try? file.decodeJson(as: KeyChainConfig.self) {
-            return constructKeychainIndex(dynamicPart: config.dynamicPartIndex)
+        if let currentPrefix = try getCurrentPrefix() {
+            return constructKeychainIndex(prefix: currentPrefix)
         }
 
         guard try !EncryptedStorage.isStorageExists else {
             throw KeyChainServiceError.storageEncryptionKeyFetchFailed("KeyChainService: failed to get encryption key prefix")
         }
 
-        let newDynamicPart = try newRandomString()
-        let config = KeyChainConfig(dynamicPartIndex: newDynamicPart)
+        let prefix = try newRandomString()
+        try saveConfig(prefix: prefix)
+        return constructKeychainIndex(prefix: prefix)
+    }
+
+    @MainActor private func getCurrentPrefix() throws -> String? {
+        if let file = try? filesManager.read(fileName: Constants.configFileName),
+            let config = try? file.decodeJson(as: KeyChainConfig.self) {
+            return config.indexPrefix
+        }
+
+        // Migration from using UserDefaults for storing prefix value
+        if let storedDynamicPart = userDefaults.string(forKey: Constants.prefixUserDefaultsKey) {
+            try saveConfig(prefix: storedDynamicPart)
+            userDefaults.removeObject(forKey: Constants.prefixUserDefaultsKey)
+            return storedDynamicPart
+        }
+
+        return nil
+    }
+
+    @MainActor private func saveConfig(prefix: String) throws {
+        let config = KeyChainConfig(indexPrefix: prefix)
 
         let file = FileItem(
-            name: fileName,
+            name: Constants.configFileName,
             data: try config.toJsonData(),
             isEncrypted: false
         )
-        _ = try fileManager.save(file: file, options: [.noFileProtection])
-        return constructKeychainIndex(dynamicPart: newDynamicPart)
+
+        _ = try filesManager.save(file: file, options: [.noFileProtection])
     }
 
     @MainActor private func newRandomString() throws -> String {
@@ -73,8 +99,8 @@ actor KeyChainService {
             .replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
     }
 
-    @MainActor private func constructKeychainIndex(dynamicPart: String) -> String {
-        return dynamicPart + "-indexStorageEncryptionKey"
+    @MainActor private func constructKeychainIndex(prefix: String) -> String {
+        return prefix + Constants.indexSuffix
     }
 
     @MainActor private func generateAndSaveStorageEncryptionKey() throws {
