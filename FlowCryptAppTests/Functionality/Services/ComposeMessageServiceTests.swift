@@ -33,6 +33,7 @@ class ComposeMessageServiceTests: XCTestCase {
 
     var core = CoreComposeMessageMock()
     var encryptedStorage = EncryptedStorageMock()
+    var keyServiceMock = KeyServiceMock()
     var localContactsProvider = LocalContactsProviderMock()
     var enterpriseServerMock = EnterpriseServerApiMock()
 
@@ -40,7 +41,6 @@ class ComposeMessageServiceTests: XCTestCase {
         super.setUp()
 
         let passPhraseServiceMock = PassPhraseServiceMock()
-        let keyService = KeyService(storage: EncryptedStorageMock(), passPhraseService: PassPhraseServiceMock())
         sut = ComposeMessageService(
             clientConfiguration: ClientConfiguration(
                 raw: RawClientConfiguration()
@@ -48,7 +48,7 @@ class ComposeMessageServiceTests: XCTestCase {
             encryptedStorage: encryptedStorage,
             messageGateway: MessageGatewayMock(),
             passPhraseService: passPhraseServiceMock,
-            keyService: keyService,
+            keyService: keyServiceMock,
             keyMethods: KeyMethods(),
             draftGateway: DraftGatewayMock(),
             localContactsProvider: localContactsProvider,
@@ -204,7 +204,7 @@ class ComposeMessageServiceTests: XCTestCase {
     }
 
     func testValidateMessageInputWithAllEmptyRecipientPubKeys() async {
-        encryptedStorage.getKeypairsResult = [keypair]
+        keyServiceMock.getKeyPairResult = keypair
         localContactsProvider.retrievePubKeysResult = { _ in [] }
 
         do {
@@ -227,7 +227,7 @@ class ComposeMessageServiceTests: XCTestCase {
             let keyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: Int(Date().timeIntervalSince1970 - 60))
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
-        encryptedStorage.getKeypairsResult = [keypair]
+        keyServiceMock.getKeyPairResult = keypair
         localContactsProvider.retrievePubKeysResult = { _ in ["pubKey"] }
 
         do {
@@ -250,7 +250,7 @@ class ComposeMessageServiceTests: XCTestCase {
             let keyDetails = EncryptedStorageMock.createFakeKeyDetails(expiration: nil, revoked: true)
             return CoreRes.ParseKeys(format: .armored, keyDetails: [keyDetails])
         }
-        encryptedStorage.getKeypairsResult = [keypair]
+        keyServiceMock.getKeyPairResult = keypair
         localContactsProvider.retrievePubKeysResult = { _ in ["pubKey"] }
 
         do {
@@ -285,7 +285,7 @@ class ComposeMessageServiceTests: XCTestCase {
             }
             return CoreRes.ParseKeys(format: .armored, keyDetails: allKeyDetails)
         }
-        encryptedStorage.getKeypairsResult = [keypair]
+        keyServiceMock.getKeyPairResult = keypair
         localContactsProvider.retrievePubKeysResult = { _ in
             ["revoked", "expired", "valid"]
         }
@@ -328,7 +328,7 @@ class ComposeMessageServiceTests: XCTestCase {
     }
 
     func testValidateMessageInputWithoutOneRecipientPubKey() async throws {
-        encryptedStorage.getKeypairsResult = [keypair]
+        keyServiceMock.getKeyPairResult = keypair
         let recWithoutPubKey = recipients[0].email
 
         localContactsProvider.retrievePubKeysResult = { recipient in
@@ -354,7 +354,7 @@ class ComposeMessageServiceTests: XCTestCase {
     }
 
     func testSuccessfulMessageValidation() async throws {
-        encryptedStorage.getKeypairsResult = [keypair]
+        keyServiceMock.getKeyPairResult = keypair
 
         localContactsProvider.retrievePubKeysResult = { recipient in
             ["pubKey"]
