@@ -124,26 +124,24 @@ extension SideMenuNavigationController {
                     passPhrase = try context.passPhraseService.getPassPhrases().first(where: { $0.value.isNotEmpty })?.value
                 }
 
-                // second parameter indicates whether key detail is new key or not
-                var keysToUpdate: [(KeyDetails, Bool)] = []
+                var keysToUpdate: [KeyDetails] = []
                 for keyDetail in keyDetails {
                     if let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
                         if savedLocalKey.lastModified ?? 0 < keyDetail.lastModified ?? 0 {
-                            keysToUpdate.append((keyDetail, false))
+                            keysToUpdate.append(keyDetail)
                         }
                     } else {
-                        keysToUpdate.append((keyDetail, true))
+                        keysToUpdate.append(keyDetail)
                     }
                 }
                 if keysToUpdate.isEmpty {
                     return
                 }
-                for keyDetailData in keysToUpdate {
+                for keyDetail in keysToUpdate {
                     passPhrase = try await saveKeyToLocal(
                         context: context,
-                        keyDetail: keyDetailData.0,
-                        passPhrase: passPhrase,
-                        isNewKey: keyDetailData.1
+                        keyDetail: keyDetail,
+                        passPhrase: passPhrase
                     )
                 }
                 showToast("refresh_key_success".localized)
@@ -167,15 +165,14 @@ extension SideMenuNavigationController {
     private func saveKeyToLocal(
         context: AppContextWithUser,
         keyDetail: KeyDetails,
-        passPhrase: String?,
-        isNewKey: Bool = false
+        passPhrase: String?
     ) async throws -> String? {
         var newPassPhrase = passPhrase
         if newPassPhrase == nil {
             if askedUserPassPhrase {
                 return nil
             }
-            newPassPhrase = try await requestPassPhraseWithModal(context: context, for: keyDetail, isNewKey: isNewKey)
+            newPassPhrase = try await requestPassPhraseWithModal(context: context)
         }
         guard let newPassPhrase = newPassPhrase else {
             return nil
@@ -198,7 +195,7 @@ extension SideMenuNavigationController {
         return newPassPhrase
     }
 
-    private func requestPassPhraseWithModal(context: AppContextWithUser, for keyDetail: KeyDetails, isNewKey: Bool) async throws -> String {
+    private func requestPassPhraseWithModal(context: AppContextWithUser) async throws -> String {
         self.askedUserPassPhrase = true
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
@@ -214,9 +211,7 @@ extension SideMenuNavigationController {
                         do {
                             let matched = try await self.handlePassPhraseEntry(
                                 appContext: context,
-                                passPhrase,
-                                for: keyDetail,
-                                isNewKey: isNewKey
+                                passPhrase
                             )
                             if matched {
                                 return continuation.resume(returning: passPhrase)
@@ -224,9 +219,7 @@ extension SideMenuNavigationController {
                             // Pass phrase mismatch, display error alert and ask again
                             try await self.showAsyncAlert(message: "refresh_key_invalid_pass_phrase".localized)
                             let newPassPhrase = try await self.requestPassPhraseWithModal(
-                                context: context,
-                                for: keyDetail,
-                                isNewKey: isNewKey
+                                context: context
                             )
                             return continuation.resume(returning: newPassPhrase)
                         } catch {
@@ -241,9 +234,7 @@ extension SideMenuNavigationController {
 
     internal func handlePassPhraseEntry(
         appContext: AppContextWithUser,
-        _ passPhrase: String,
-        for keyDetail: KeyDetails,
-        isNewKey: Bool
+        _ passPhrase: String
     ) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
@@ -256,13 +247,7 @@ extension SideMenuNavigationController {
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
         try appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
-        // For new key just check if there are any matching keys
-        if isNewKey {
-            return matchingKeys.isNotEmpty
-        }
-        // now figure out if the pass phrase also matched the signing prv itself
-        let matched = matchingKeys.first(where: { $0.fingerprints.first == keyDetail.primaryFingerprint })
-        return matched != nil// true if the pass phrase matched signing key
+        return matchingKeys.isNotEmpty
     }
 }
 extension SideMenuNavigationController: ENSideMenuDelegate {
