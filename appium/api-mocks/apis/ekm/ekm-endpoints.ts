@@ -71,9 +71,9 @@ export interface KeyDetailInfo {
   renderedDateCreated?: string;
 }
 
-type KeyTypes = 'e2e' | 'flowcryptCompability' | 'key0' | 'key0Updated' | 'key1' | 'e2eRevokedKey' | 'e2eValidKey';
+type KeySampleName = 'e2e' | 'flowcryptCompability' | 'key0' | 'key0Updated' | 'key1' | 'e2eRevokedKey' | 'e2eValidKey';
 
-export const ekmPrivateKeySamples: Record<KeyTypes, KeyDetailInfo> = {
+export const ekmPrivateKeySamples: Record<KeySampleName, KeyDetailInfo> = {
   e2e: {
     prv: '',
     pub: `-----BEGIN PGP PUBLIC KEY BLOCK-----
