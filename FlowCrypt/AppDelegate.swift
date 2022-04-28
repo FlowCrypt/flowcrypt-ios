@@ -20,7 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSesssion
         if application.isRunningTests {
             return true
         }
-        // When trying to initialize storage before protected data is available, existing storage may get corrupted due to a lost db encryption key. See https://github.com/FlowCrypt/flowcrypt-ios/issues/1373
+        // When trying to initialize storage before protected data is available,
+        // existing storage may get corrupted due to a lost db encryption key.
+        // See https://github.com/FlowCrypt/flowcrypt-ios/issues/1373
         guard UIApplication.shared.isProtectedDataAvailable else {
             NotificationCenter
                  .default

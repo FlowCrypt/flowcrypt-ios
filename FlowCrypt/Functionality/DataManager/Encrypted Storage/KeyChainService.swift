@@ -11,6 +11,23 @@ import Foundation
 import Security
 import UIKit
 
+enum KeyChainServiceError: Error {
+    case storageEncryptionKeyFetchFailed(String)
+}
+
+extension KeyChainServiceError: CustomStringConvertible {
+    var description: String {
+        switch self {
+        case .storageEncryptionKeyFetchFailed(let message):
+            return message
+        }
+    }
+}
+
+struct KeyChainConfig: Codable {
+    let dynamicPartIndex: String
+}
+
 /// keychain is used to generate and retrieve encryption key which is used to encrypt local DB
 /// it does not contain any actual data or keys other than the db encryption key
 /// index of the keychain entry is dynamic (set up once per app installation), set in user defaults
@@ -22,19 +39,27 @@ actor KeyChainService {
     /// this dynamic keychainIndex ensures that we use a different keychain index
     ///   after deleting the app, because keychain entries survive app uninstall
     @MainActor private func getKeychainIndex() throws -> String {
-        guard UIApplication.shared.isProtectedDataAvailable else {
-            // when not available, UserDefaults is empty and a new index would be wrongly generated
-            // which would cause new database encryption key to get generated
-            // and that would corrupt existing storage
-            // https://github.com/FlowCrypt/flowcrypt-ios/issues/1373
-            throw AppErr.general("KeyChainService: protected data is not available")
+        let fileName = "keychain-config"
+        let fileManager = FilesManager()
+//        let dynamicPartIndex = "indexSecureKeychainPrefix"
+        if let file = try? fileManager.read(fileName: fileName),
+            let config = try? file.decodeJson(as: KeyChainConfig.self) {
+            return constructKeychainIndex(dynamicPart: config.dynamicPartIndex)
         }
-        let dynamicPartIndex = "indexSecureKeychainPrefix"
-        if let storedDynamicPart = UserDefaults.standard.string(forKey: dynamicPartIndex) {
-            return constructKeychainIndex(dynamicPart: storedDynamicPart)
+
+        guard try !EncryptedStorage.isStorageExists else {
+            throw KeyChainServiceError.storageEncryptionKeyFetchFailed("KeyChainService: failed to get encryption key prefix")
         }
+
         let newDynamicPart = try newRandomString()
-        UserDefaults.standard.set(newDynamicPart, forKey: dynamicPartIndex)
+        let config = KeyChainConfig(dynamicPartIndex: newDynamicPart)
+
+        let file = FileItem(
+            name: fileName,
+            data: try config.toJsonData(),
+            isEncrypted: false
+        )
+        _ = try fileManager.save(file: file, options: [.noFileProtection])
         return constructKeychainIndex(dynamicPart: newDynamicPart)
     }
 

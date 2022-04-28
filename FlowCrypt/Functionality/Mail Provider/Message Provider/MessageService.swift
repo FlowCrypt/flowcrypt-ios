@@ -136,7 +136,7 @@ final class MessageService {
         )
     }
 
-    func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
+    func decrypt(attachment: FileItem, userEmail: String) async throws -> FileItem {
         guard attachment.isEncrypted else { return attachment }
 
         let keys = try await keyService.getPrvKeyInfo(email: userEmail)
@@ -150,7 +150,7 @@ final class MessageService {
             throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
         }
 
-        return MessageAttachment(name: decryptSuccess.name, data: decryptSuccess.data, isEncrypted: false)
+        return FileItem(name: decryptSuccess.name, data: decryptSuccess.data, isEncrypted: false)
     }
 
     private func processMessage(
@@ -209,12 +209,12 @@ final class MessageService {
     private func getAttachments(
         blocks: [MsgBlock],
         keys: [PrvKeyInfo]
-    ) async throws -> [MessageAttachment] {
+    ) async throws -> [FileItem] {
         let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
-        let attachments: [MessageAttachment] = attachmentBlocks.compactMap { block in
+        let attachments: [FileItem] = attachmentBlocks.compactMap { block in
             guard let meta = block.attMeta else { return nil }
 
-            return MessageAttachment(
+            return FileItem(
                 name: meta.name,
                 data: meta.data,
                 isEncrypted: block.type == .encryptedAtt

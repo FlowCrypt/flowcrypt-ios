@@ -10,7 +10,7 @@ import UIKit
 
 @MainActor
 protocol AttachmentManagerType {
-    func download(_ file: FileType) async
+    func download(_ file: FileItem) async
 }
 
 final class AttachmentManager: NSObject {
@@ -53,9 +53,9 @@ final class AttachmentManager: NSObject {
 
 extension AttachmentManager: AttachmentManagerType {
 
-    func download(_ file: FileType) async {
+    func download(_ file: FileItem) async {
         do {
-            let url = try await filesManager.save(file: file)
+            let url = try await filesManager.save(file: file, options: [])
             openDocumentsController(from: url)
         } catch {
             controller?.showToast(

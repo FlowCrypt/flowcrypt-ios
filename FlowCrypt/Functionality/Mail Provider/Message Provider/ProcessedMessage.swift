@@ -68,7 +68,7 @@ struct ProcessedMessage {
     let rawMimeData: Data
     let text: String
     let messageType: MessageType
-    var attachments: [MessageAttachment]
+    var attachments: [FileItem]
     var signature: MessageSignature?
 }
 

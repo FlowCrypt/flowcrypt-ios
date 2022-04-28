@@ -191,7 +191,7 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func getAttachment(at indexPath: IndexPath) async throws -> MessageAttachment {
+    private func getAttachment(at indexPath: IndexPath) async throws -> FileItem {
         let trace = Trace(id: "Attachment")
         let section = input[indexPath.section-1]
         let attachmentIndex = indexPath.row - 2
@@ -213,7 +213,7 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func show(attachment: MessageAttachment) {
+    private func show(attachment: FileItem) {
         let attachmentViewController = AttachmentViewController(file: attachment)
         navigationController?.pushViewController(attachmentViewController, animated: true)
     }

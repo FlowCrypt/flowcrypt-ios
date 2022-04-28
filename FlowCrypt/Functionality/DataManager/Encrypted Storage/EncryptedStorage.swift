@@ -88,7 +88,7 @@ final class EncryptedStorage: EncryptedStorageType {
             return Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
         }
 
-        let path = try EncryptedStorage.getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let path = try EncryptedStorage.path
         let latestSchemaVersion = currentSchema.version.dbSchemaVersion
 
         return Realm.Configuration(
@@ -272,6 +272,18 @@ extension EncryptedStorage {
 }
 
 extension EncryptedStorage {
+    static var path: String {
+        get throws {
+            try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        }
+    }
+
+    static var isStorageExists: Bool {
+        get throws {
+            FileManager.default.fileExists(atPath: try path)
+        }
+    }
+
     static func getDocumentDirectory() throws -> String {
         guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
             throw AppErr.general("No path direction for .documentDirectory")
@@ -280,7 +292,6 @@ extension EncryptedStorage {
     }
 
     static func reset() throws {
-        let path = try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        try FileManager.default.removeItem(atPath: path)
+        try FileManager.default.removeItem(atPath: try path)
     }
 }

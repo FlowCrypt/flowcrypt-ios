@@ -14,7 +14,8 @@ final class InvalidStorageViewController: TableNodeViewController {
         case screenTitle
         case title
         case description
-        case button
+        case retry
+        case reset
     }
 
     private let error: Error
@@ -48,6 +49,10 @@ final class InvalidStorageViewController: TableNodeViewController {
         } catch {
             showAlert(message: "invalid_storage_reset_error".localized)
         }
+    }
+
+    private func retry() {
+        router.proceed()
     }
 }
 
@@ -103,7 +108,22 @@ extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
                         backgroundColor: .backgroundColor
                     )
                 )
-            case .button:
+            case .retry:
+                return ButtonCellNode(
+                    input: ButtonCellNode.Input(
+                        title: "retry_title"
+                            .localized
+                            .attributed(
+                                .bold(16),
+                                color: .white,
+                                alignment: .center
+                            ),
+                        color: .main
+                    )
+                ) { [weak self] in
+                    self?.resetStorage()
+                }
+            case .reset:
                 return ButtonCellNode(
                     input: ButtonCellNode.Input(
                         title: "invalid_storage_reset_button"

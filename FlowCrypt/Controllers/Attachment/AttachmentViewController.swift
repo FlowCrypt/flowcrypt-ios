@@ -16,7 +16,7 @@ final class AttachmentViewController: UIViewController {
 
     private lazy var logger = Logger.nested(Self.self)
 
-    private let file: FileType
+    private let file: FileItem
     private let shouldShowDownloadButton: Bool
 
     private let filesManager: FilesManagerType
@@ -78,7 +78,7 @@ final class AttachmentViewController: UIViewController {
     private var didLayoutSubviews = false
 
     init(
-        file: FileType,
+        file: FileItem,
         shouldShowDownloadButton: Bool = true,
         filesManager: FilesManagerType = FilesManager()
     ) {

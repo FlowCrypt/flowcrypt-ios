@@ -20,7 +20,7 @@ struct ComposeMessageInput: Equatable {
         let sentDate: Date
         let message: String
         let threadId: String?
-        let attachments: [MessageAttachment]
+        let attachments: [FileItem]
     }
 
     enum InputType: Equatable {
@@ -57,7 +57,7 @@ struct ComposeMessageInput: Equatable {
         type.info?.threadId
     }
 
-    var attachments: [MessageAttachment] {
+    var attachments: [FileItem] {
         type.info?.attachments ?? []
     }
 }

@@ -62,7 +62,7 @@ extension ProcessedMessage {
 }
 
 extension AttachmentNode.Input {
-    init(msgAttachment: MessageAttachment, index: Int) {
+    init(msgAttachment: FileItem, index: Int) {
         self.init(
             name: msgAttachment.name
                 .attributed(.regular(16), color: .textColor, alignment: .left),
