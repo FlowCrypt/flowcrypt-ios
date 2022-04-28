@@ -21,10 +21,10 @@ describe('SETUP: ', () => {
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
 
+    // When private key is revoked key, there are no public keys to pick. So missing sender public key error occurs.
     const noPrivateKeyError = 'Error\n' +
-      'Could not compose message\n' +
-      '\n' +
-      'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e';
+      'Could not compose message\n\n' +
+      'Missing sender public key. Is FlowCrypt iOS app well set up?';
 
     mockApi.fesConfig = {
       clientConfiguration: {
