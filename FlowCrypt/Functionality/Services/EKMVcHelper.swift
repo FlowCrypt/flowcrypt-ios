@@ -68,13 +68,10 @@ final class EKMVcHelper: EKMVcHelperType {
     private func getPassphrase(in viewController: UIViewController) async throws -> String? {
         // If this is called when starting the app, then it doesn't make much difference
         // but conceptually it would be better to look pass phrase both in memory and storage
-        var passphrase = try appContext.passPhraseService.getPassPhrases(
-            for: appContext.user.email
-        ).first(where: { $0.value.isNotEmpty })?.value
-        if passphrase == nil {
-            passphrase = try await requestPassPhraseWithModal(in: viewController)
+        if let passPhrase = try appContext.passPhraseService.getPassPhrases(for: appContext.user.email).first(where: { $0.value.isNotEmpty })?.value {
+          return passPhrase
         }
-        return passphrase
+        return try await requestPassPhraseWithModal(in: viewController)
     }
 
     private func findKeysToUpdate(from keyDetails: [KeyDetails], localKeys: [Keypair]) throws -> [KeyDetails] {
