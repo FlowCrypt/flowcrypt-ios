@@ -12,7 +12,10 @@
   },
   "extensions": {
     "recommendations": [
-      "dbaeumer.vscode-eslint"
+      "dbaeumer.vscode-eslint",
+      "stylelint.vscode-stylelint",
+      "ms-vscode.vscode-typescript-tslint-plugin",
+      "philhindle.errorlens"
     ]
   }
 }

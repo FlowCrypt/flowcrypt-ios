@@ -10,23 +10,23 @@ import Foundation
 import FlowCryptCommon
 
 protocol EmailKeyManagerApiType {
-    func getPrivateKeys(idToken: String) async throws -> EmailKeyManagerApiResult
+    func getPrivateKeys(idToken: String) async throws -> [KeyDetails]
 }
 
 enum EmailKeyManagerApiError: Error {
-    case noPrivateKeysUrlString
-}
-
-enum EmailKeyManagerApiResult {
-    case success(keys: [KeyDetails])
     case noKeys
     case keysAreNotDecrypted
+    case keysAreInvalid
+    case noPrivateKeysUrlString
 }
 
 extension EmailKeyManagerApiError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noPrivateKeysUrlString: return ""
+        case .keysAreNotDecrypted: return "organisational_rules_ekm_keys_are_not_decrypted_error".localized
+        case .keysAreInvalid: return "organisational_rules_ekm_keys_are_invalid_error".localized
+        case .noKeys: return "organisational_rules_ekm_empty_private_keys_error".localized
         }
     }
 }
@@ -50,7 +50,7 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         self.core = core
     }
 
-    func getPrivateKeys(idToken: String) async throws -> EmailKeyManagerApiResult {
+    func getPrivateKeys(idToken: String) async throws -> [KeyDetails] {
         let urlString = try getPrivateKeysUrlString()
         let headers = [
             URLHeader(
@@ -68,22 +68,25 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
 
         if decryptedPrivateKeysResponse.privateKeys.isEmpty {
-            return .noKeys
+            throw EmailKeyManagerApiError.noKeys
         }
 
-        let privateKeysArmored = decryptedPrivateKeysResponse.privateKeys
-            .map(\.decryptedPrivateKey)
-            .joined(separator: "\n")
-            .data()
-        let parsedPrivateKeys = try await core.parseKeys(armoredOrBinary: privateKeysArmored)
-        // todo - check that parsedPrivateKeys don't contain public keys
-        let areKeysDecrypted = parsedPrivateKeys.keyDetails
-            .compactMap { $0.isFullyDecrypted }
-        if areKeysDecrypted.contains(false) {
-            return .keysAreNotDecrypted
+        var keys: [KeyDetails] = []
+        for privateKey in decryptedPrivateKeysResponse.privateKeys {
+            let parsedPrivateKey = try await core.parseKeys(armoredOrBinary: privateKey.decryptedPrivateKey.data())
+            // todo - check that parsedPrivateKeys don't contain public keys
+            let isKeyDecrypted = parsedPrivateKey.keyDetails
+                .compactMap { $0.isFullyDecrypted }
+            if isKeyDecrypted.contains(false) {
+                throw EmailKeyManagerApiError.keysAreNotDecrypted
+            }
+            if parsedPrivateKey.keyDetails.count != 1 {
+                throw EmailKeyManagerApiError.keysAreInvalid
+            }
+            keys.append(contentsOf: parsedPrivateKey.keyDetails)
         }
 
-        return .success(keys: parsedPrivateKeys.keyDetails)
+        return keys
     }
 
     private func getPrivateKeysUrlString() throws -> String {

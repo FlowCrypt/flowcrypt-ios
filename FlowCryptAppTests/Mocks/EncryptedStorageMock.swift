@@ -41,7 +41,7 @@ final class EncryptedStorageMock: EncryptedStorageType {
     func validate() throws {
     }
 
-    func reset() throws {
+    static func reset() throws {
     }
 
     func cleanup() {

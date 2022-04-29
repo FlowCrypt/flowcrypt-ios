@@ -10,12 +10,12 @@
       }
     },
     {
-      "identity" : "bigint",
+      "identity" : "gmp",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/attaswift/BigInt",
+      "location" : "https://github.com/FlowCrypt/GMP",
       "state" : {
-        "revision" : "0ed110f7555c34ff468e72e1686e59721f2b0da6",
-        "version" : "5.3.0"
+        "revision" : "fbaf8d1ee92710523a368b2fb0e1edf0fab7e5fa",
+        "version" : "6.2.1"
       }
     },
     {

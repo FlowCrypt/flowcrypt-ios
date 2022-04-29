@@ -38,8 +38,8 @@ final class ComposeViewController: TableNodeViewController {
         }
     }
 
-    internal enum RecipientPart: Int, CaseIterable {
-        case list, input
+    enum RefreshType {
+        case delete, reload, add, scrollToBottom
     }
 
     internal enum ComposePart: Int, CaseIterable {
@@ -120,6 +120,8 @@ final class ComposeViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage,
             messageGateway: appContext.getRequiredMailProvider().messageSender,
             passPhraseService: appContext.passPhraseService,
+            keyService: appContext.keyService,
+            keyMethods: keyMethods,
             enterpriseServer: appContext.enterpriseServer,
             sender: appContext.user.email
         )

@@ -51,6 +51,7 @@ final class RecipientEmailNode: CellNode {
 
         imageNode.image = input.recipient.state.stateImage
         imageNode.alpha = 0
+        imageNode.accessibilityIdentifier = "aid-recipient-spinner"
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             switch input.recipient.state {
             case .idle: self.animateImageRotation()

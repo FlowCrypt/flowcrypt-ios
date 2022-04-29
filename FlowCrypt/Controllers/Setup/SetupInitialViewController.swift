@@ -158,36 +158,18 @@ extension SetupInitialViewController {
         Task {
             do {
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
-                let result = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
-                switch result {
-                case .success(keys: let keys):
-                    proceedToSetupWithEKMKeys(keys: keys)
-                case .noKeys:
-                    showRetryAlert(
-                        message: "organisational_rules_ekm_empty_private_keys_error".localized,
-                        cancelActionTitle: "log_out".localized,
-                        onRetry: { [weak self] _ in
-                            self?.state = .fetchingKeysFromEKM
-                        },
-                        onCancel: { [weak self] _ in
-                            self?.signOut()
-                        }
-                    )
-                case .keysAreNotDecrypted:
-                    showAlert(
-                        message: "organisational_rules_ekm_keys_are_not_decrypted_error".localized,
-                        onOk: { [weak self] in
-                            self?.signOut()
-                        }
-                    )
-                }
+                let keys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
+                proceedToSetupWithEKMKeys(keys: keys)
             } catch {
-                if case .noPrivateKeysUrlString = error as? EmailKeyManagerApiError {
-                    return
-                }
-                showAlert(message: error.errorMessage, onOk: { [weak self] in
-                    self?.state = .decidingIfEKMshouldBeUsed
-                })
+                showRetryAlert(
+                    message: error.errorMessage,
+                    onRetry: { [weak self] in
+                        self?.state = .fetchingKeysFromEKM
+                    },
+                    onOk: { [weak self] in
+                        self?.signOut()
+                    }
+                )
             }
         }
     }

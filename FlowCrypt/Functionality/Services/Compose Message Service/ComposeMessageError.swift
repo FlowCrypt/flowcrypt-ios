@@ -54,12 +54,18 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
 
 enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
     case validationError(MessageValidationError)
+    case passPhraseRequired
+    case passPhraseNoMatch
     case gatewayError(Error)
 
     var description: String {
         switch self {
         case .validationError(let messageValidationError):
             return messageValidationError.description
+        case .passPhraseRequired:
+            return "compose_sign_passphrase_required".localized
+        case .passPhraseNoMatch:
+            return "compose_sign_passphrase_no_match".localized
         case .gatewayError(let error):
             return error.localizedDescription
         }

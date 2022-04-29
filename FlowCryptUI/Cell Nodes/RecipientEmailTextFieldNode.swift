@@ -8,66 +8,26 @@
 
 import AsyncDisplayKit
 
-public final class RecipientEmailTextFieldNode: TextFieldCellNode, RecipientToggleButtonNode {
-    var toggleButtonAction: (() -> Void)?
+public final class RecipientEmailTextFieldNode: TextFieldCellNode {
 
-    lazy var toggleButtonNode: ASButtonNode = {
-        createToggleButton()
-    }()
-
-    private let type: String
-    private let hasRecipients: Bool
-    lazy var textNode: ASTextNode2 = {
-        createNodeLabel(type: type, isEmpty: hasRecipients)
-    }()
-
-    var isToggleButtonRotated = false {
-        didSet {
-            updateToggleButton(animated: true)
-        }
-    }
-
-    public init(
+    public override init(
         input: TextFieldCellNode.Input,
-        hasRecipients: Bool,
-        type: String,
-        action: TextFieldAction? = nil,
-        isToggleButtonRotated: Bool,
-        toggleButtonAction: (() -> Void)?
+        action: TextFieldAction? = nil
     ) {
-        self.type = type
-        self.hasRecipients = hasRecipients
         super.init(input: input, action: action)
 
         self.isLowercased = true
-        self.isToggleButtonRotated = isToggleButtonRotated
-        self.toggleButtonAction = toggleButtonAction
-    }
-
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        let textFieldWidth = input.width ?? (constrainedSize.max.width - input.insets.width)
-        let textFieldSize = CGSize(width: textFieldWidth, height: input.height)
-        let buttonSize = CGSize(width: input.height, height: input.height)
-
-        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 6, left: 0, bottom: 0, right: 0), child: textNode)
-
-        return createLayout(
-            contentNode: textField,
-            textNodeStack: textNodeStack,
-            contentSize: textFieldSize,
-            insets: input.insets,
-            buttonSize: buttonSize
-        )
-    }
-
-    func onToggleButtonTap() {
-        isToggleButtonRotated.toggle()
-        toggleButtonAction?()
     }
 
     @discardableResult
     public override func becomeFirstResponder() -> Bool {
         textField.becomeFirstResponder()
         return true
+    }
+
+    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        textField.style.preferredSize.height = input.height
+
+        return ASInsetLayoutSpec(insets: input.insets, child: textField)
     }
 }
