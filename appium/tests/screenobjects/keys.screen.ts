@@ -82,8 +82,8 @@ class KeysScreen extends BaseScreen {
     }
   }
 
-  clickOnKey = async () => {
-    await ElementHelper.waitAndClick((await this.nameAndEmail)[0]);
+  clickOnKey = async (index = 0) => {
+    await ElementHelper.waitAndClick((await this.nameAndEmail)[index]);
   }
 
   checkSelectedKeyScreen = async () => {

@@ -14,6 +14,7 @@ class PassPhraseStorageTests: XCTestCase {
     var sut: PassPhraseService!
     var encryptedStorage: PassPhraseStorageMock!
     var inMemoryStorage: PassPhraseStorageMock!
+    let testPassPhraseAccount = "passphrase@account.test"
 
     override func setUp() {
         encryptedStorage = PassPhraseStorageMock()
@@ -31,7 +32,7 @@ class PassPhraseStorageTests: XCTestCase {
         // no pass phrases in localStorage
         inMemoryStorage.getPassPhrasesResult = { [] }
 
-        let result = try sut.getPassPhrases(for: "")
+        let result = try sut.getPassPhrases(for: testPassPhraseAccount)
 
         XCTAssertTrue(result.isEmpty)
     }
@@ -50,7 +51,7 @@ class PassPhraseStorageTests: XCTestCase {
         // no pass phrases in localStorage
         inMemoryStorage.getPassPhrasesResult = { [] }
 
-        var result = try sut.getPassPhrases(for: "")
+        var result = try sut.getPassPhrases(for: testPassPhraseAccount)
 
         XCTAssertTrue(result.count == 1)
 
@@ -58,7 +59,7 @@ class PassPhraseStorageTests: XCTestCase {
             [passPhrase1, passPhrase2]
         }
 
-        result = try sut.getPassPhrases(for: "")
+        result = try sut.getPassPhrases(for: testPassPhraseAccount)
 
         XCTAssertTrue(result.count == 2)
     }
@@ -77,7 +78,7 @@ class PassPhraseStorageTests: XCTestCase {
         // current timeout = 2
         sleep(1)
 
-        let result = try sut.getPassPhrases(for: "")
+        let result = try sut.getPassPhrases(for: testPassPhraseAccount)
         XCTAssertTrue(result.isNotEmpty)
     }
 
@@ -103,7 +104,7 @@ class PassPhraseStorageTests: XCTestCase {
 
         inMemoryStorage.getPassPhrasesResult = { [localPassPhrase] }
 
-        let result = try sut.getPassPhrases(for: "")
+        let result = try sut.getPassPhrases(for: testPassPhraseAccount)
         XCTAssertTrue(result.count == 3)
     }
 
