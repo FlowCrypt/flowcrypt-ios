@@ -76,13 +76,13 @@ final class KeyService: KeyServiceType {
             keys.append((keyInfo, parsedKey))
         }
         if let primaryEmailMatch = keys.first(where: {
-            $0.1.pgpUserEmails.first?.lowercased() == email.lowercased() && $0.1.isKeyUsuable
+            $0.1.pgpUserEmails.first?.lowercased() == email.lowercased() && $0.1.isKeyUsable
         }) {
             logger.logDebug("findKeyByUserEmail: found key \(primaryEmailMatch.1.primaryFingerprint) by primary email match")
             return primaryEmailMatch.0
         }
         if let alternativeEmailMatch = keys.first(where: {
-            $0.1.pgpUserEmails.map { $0.lowercased() }.contains(email.lowercased()) == true && $0.1.isKeyUsuable
+            $0.1.pgpUserEmails.map { $0.lowercased() }.contains(email.lowercased()) == true && $0.1.isKeyUsable
         }) {
             logger.logDebug("findKeyByUserEmail: found key \(alternativeEmailMatch.1.primaryFingerprint) by alternative email match")
             return alternativeEmailMatch.0
