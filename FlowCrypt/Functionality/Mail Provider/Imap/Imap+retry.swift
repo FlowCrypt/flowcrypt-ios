@@ -15,10 +15,8 @@ extension Imap {
         _ op: String,
         _ voidExecutor: @escaping (MCOIMAPSession, @escaping (Error?) -> Void) -> Void
     ) async throws {
-        guard let imapSess = self.imapSess else {
-            throw ImapError.noSession
-        }
         do {
+            let imapSess = try self.imapSess
             try await asAsync(imapSess, voidExecutor)
             // todo - log time
             return
@@ -44,10 +42,8 @@ extension Imap {
         _ executor: @escaping (MCOIMAPSession, @escaping (Error?, RES?) -> Void) -> Void
     ) async throws -> RES {
 //        let start = DispatchTime.now()
-        guard let imapSess = self.imapSess else {
-            throw ImapError.noSession
-        }
         do {
+            let imapSess = try self.imapSess
             let result = try await asAsync(imapSess, executor)
             // todo - log result + time
             return result
