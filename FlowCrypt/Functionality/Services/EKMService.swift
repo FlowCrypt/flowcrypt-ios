@@ -77,7 +77,7 @@ final class EKMService: EKMServiceType {
     private func fetchCurrentPassphrase() throws -> String? {
         // If this is called when starting the app, then it doesn't make much difference
         // but conceptually it would be better to look pass phrase both in memory and storage
-        return try appContext.passPhraseService.getPassPhrases().first(where: { $0.value.isNotEmpty })?.value
+        return try appContext.passPhraseService.getPassPhrases(for: appContext.user.email).first(where: { $0.value.isNotEmpty })?.value
     }
 
     private func findKeysToUpdate(from keyDetails: [KeyDetails], localKeys: [Keypair]) throws -> [KeyDetails] {

@@ -221,9 +221,12 @@ extension EncryptedStorage: PassPhraseStorageType {
         try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
     }
 
-    func getPassPhrases() throws -> [PassPhrase] {
-        return try storage.objects(KeypairRealmObject.self)
-            .compactMap(PassPhrase.init)
+    func getPassPhrases(for email: String?) throws -> [PassPhrase] {
+        var keypairObjects = try storage.objects(KeypairRealmObject.self)
+        if let email = email, email.isNotEmpty {
+            keypairObjects = keypairObjects.where({ $0.user.email == email })
+        }
+        return keypairObjects.compactMap(PassPhrase.init)
     }
 }
 

@@ -187,7 +187,7 @@ final class ComposeMessageService {
                 throw MessageValidationError.subjectContainsPassword
             }
 
-            let allAvailablePassPhrases = try passPhraseService.getPassPhrases().map(\.value)
+            let allAvailablePassPhrases = try passPhraseService.getPassPhrases(for: sender).map(\.value)
             if allAvailablePassPhrases.contains(password) {
                 throw MessageValidationError.notUniquePassword
             }
