@@ -45,7 +45,6 @@ test-ci-secrets.json
 
 # appium
 appium/node_modules
-appium/package-lock.json
 appium/tmp
 appium/.env
 appium/FlowCrypt.app
