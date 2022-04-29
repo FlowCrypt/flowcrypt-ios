@@ -13,10 +13,6 @@ protocol EKMVcHelperType {
     func refreshKeysFromEKMIfNeeded(in viewController: UIViewController)
 }
 
-enum RefreshKeyError: Error {
-    case cancelPassPhrase
-}
-
 final class EKMVcHelper: EKMVcHelperType {
 
     let appContext: AppContextWithUser
@@ -39,10 +35,13 @@ final class EKMVcHelper: EKMVcHelperType {
                 let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
 
-                let passPhrase = try await getPassphrase(in: viewController)
                 let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
 
-                if keysToUpdate.isEmpty {
+                guard keysToUpdate.isNotEmpty else {
+                    return
+                }
+                
+                guard let passPhrase = try await getPassphrase(in: viewController), passPhrase.isNotEmpty else {
                     return
                 }
 
@@ -61,10 +60,6 @@ final class EKMVcHelper: EKMVcHelperType {
                 if error is ApiError {
                     return
                 }
-                // Do not display error alert when user cancels pass phrase prompt
-                if let refreshError = error as? RefreshKeyError, refreshError == .cancelPassPhrase {
-                    return
-                }
                 await viewController.showAlert(message: "refresh_key_error".localizeWithArguments(error.errorMessage))
             }
         }
@@ -73,7 +68,9 @@ final class EKMVcHelper: EKMVcHelperType {
     private func getPassphrase(in viewController: UIViewController) async throws -> String? {
         // If this is called when starting the app, then it doesn't make much difference
         // but conceptually it would be better to look pass phrase both in memory and storage
-        var passphrase = try appContext.passPhraseService.getPassPhrases(for: appContext.user.email).first(where: { $0.value.isNotEmpty })?.value
+        var passphrase = try appContext.passPhraseService.getPassPhrases(
+            for: appContext.user.email
+        ).first(where: { $0.value.isNotEmpty })?.value
         if passphrase == nil {
             passphrase = try await requestPassPhraseWithModal(in: viewController)
         }
@@ -102,12 +99,8 @@ final class EKMVcHelper: EKMVcHelperType {
         in viewController: UIViewController,
         context: AppContextWithUser,
         keyDetail: KeyDetails,
-        passPhrase: String?
+        passPhrase: String
     ) async throws {
-        guard let passPhrase = passPhrase else {
-            return
-        }
-
         guard let privateKey = keyDetail.private else {
             throw CreatePassphraseWithExistingKeyError.noPrivateKey
         }
@@ -130,7 +123,7 @@ final class EKMVcHelper: EKMVcHelperType {
             let alert = AlertsFactory.makePassPhraseAlert(
                 title: "refresh_key_alert_title".localized,
                 onCancel: {
-                    return continuation.resume(throwing: RefreshKeyError.cancelPassPhrase)
+                    return continuation.resume(returning: "")
                 },
                 onCompletion: { [weak self] passPhrase in
                     guard let self = self else {
