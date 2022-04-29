@@ -18,14 +18,13 @@ struct IMAPSession {
 }
 
 extension IMAPSession {
-    init?(user: User) {
+    init(user: User) throws {
         guard let imap = user.imap else {
-            assertionFailure("Can't get IMAP Session without user data")
-            return nil
+            throw AppErr.general("Can't get IMAP Session without user data")
         }
 
         guard let auth = user.authType, let connection = ConnectionType(rawValue: imap.connectionType) else {
-            return nil
+            throw AppErr.general("Authentication type should be defined on this step")
         }
 
         self.init(
