@@ -30,7 +30,7 @@ final class EKMVcHelper: EKMVcHelperType {
                 guard configuration.checkUsesEKM() == .usesEKM else {
                     return
                 }
-                let storageMethod: StorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
+                let passPhraseStorageMethod: StorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
                 let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
                 let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
@@ -52,7 +52,7 @@ final class EKMVcHelper: EKMVcHelperType {
                         context: appContext,
                         keyDetail: keyDetail,
                         passPhrase: passPhrase,
-                        storageMethod: storageMethod
+                        passPhraseStorageMethod: passPhraseStorageMethod
                     )
                 }
                 await viewController.showToast("refresh_key_success".localized)
@@ -101,7 +101,7 @@ final class EKMVcHelper: EKMVcHelperType {
         context: AppContextWithUser,
         keyDetail: KeyDetails,
         passPhrase: String,
-        storageMethod: StorageMethod
+        passPhraseStorageMethod: StorageMethod
     ) async throws {
         guard let privateKey = keyDetail.private else {
             throw CreatePassphraseWithExistingKeyError.noPrivateKey
@@ -121,7 +121,7 @@ final class EKMVcHelper: EKMVcHelperType {
             value: passPhrase,
             fingerprintsOfAssociatedKey: keyDetail.fingerprints
         )
-        try appContext.passPhraseService.savePassPhrase(with: passPhraseObj, storageMethod: storageMethod)
+        try appContext.passPhraseService.savePassPhrase(with: passPhraseObj, storageMethod: passPhraseStorageMethod)
     }
 
     @MainActor
