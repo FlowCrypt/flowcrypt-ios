@@ -347,8 +347,8 @@
 "files_picking_size_error_message" = "Total attachments size can not exceed 10 MB";
 
 // Invalid storage view controller
-"invalid_storage_title" = "Error";
-"invalid_storage_text" = "Your data storage is invalid.\nYou could reset it and start with new one.\n\nCheck error description below:";
+"invalid_storage_title" = "Decryption Error";
+"invalid_storage_text" = "Your data storage decryption failed.\nYou could reset it and start with new one or try to decrypt it again.\n\nCheck error description below:";
 "invalid_storage_reset_button" = "Reset Storage";
 "invalid_storage_reset_error" = "Couldn't remove storage. Please reinstall application";
 "invalid_storage_failed_to_initialize" = "Failed to initialize storage. Please restart your device. If it doesn't help, please reinstall application";
