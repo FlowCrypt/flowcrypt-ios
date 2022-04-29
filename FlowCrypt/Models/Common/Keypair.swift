@@ -16,7 +16,7 @@ struct Keypair {
     var source: String
     var allFingerprints: [String]
     var allLongids: [String]
-    var lastModified: Int?
+    var lastModified: Int
 
     var primaryLongid: String {
         allLongids[0]

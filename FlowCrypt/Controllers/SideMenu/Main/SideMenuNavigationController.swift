@@ -11,9 +11,6 @@ protocol SideMenuViewController {
     func didOpen()
 }
 
-enum RefreshKeyError: Error {
-    case cancelPassPhrase
-}
 /**
  * Navigation Controller inherited from ENSideMenuNavigationController
  * - Encapsulates logic of status bar appearance, burger menu width, offsets and etc

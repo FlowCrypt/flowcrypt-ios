@@ -13,6 +13,10 @@ protocol EKMServiceType {
     func refreshKeysFromEKMIfNeeded(in viewController: UIViewController)
 }
 
+enum RefreshKeyError: Error {
+    case cancelPassPhrase
+}
+
 final class EKMService: EKMServiceType {
 
     let appContext: AppContextWithUser
@@ -38,7 +42,7 @@ final class EKMService: EKMServiceType {
                 let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
 
                 var passPhrase = try fetchCurrentPassphrase()
-                let keysToUpdate = findKeysToUpdate(from: keyDetails, localKeys: localKeys)
+                let keysToUpdate = try findKeysToUpdate(from: keyDetails, localKeys: localKeys)
 
                 if keysToUpdate.isEmpty {
                     return
@@ -76,11 +80,14 @@ final class EKMService: EKMServiceType {
         return try appContext.passPhraseService.getPassPhrases().first(where: { $0.value.isNotEmpty })?.value
     }
 
-    private func findKeysToUpdate(from keyDetails: [KeyDetails], localKeys: [Keypair]) -> [KeyDetails] {
+    private func findKeysToUpdate(from keyDetails: [KeyDetails], localKeys: [Keypair]) throws -> [KeyDetails] {
         var keysToUpdate: [KeyDetails] = []
         for keyDetail in keyDetails {
+            guard let keyLastModified = keyDetail.lastModified else {
+                throw EmailKeyManagerApiError.keysAreInvalid
+            }
             if let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
-                if savedLocalKey.lastModified ?? 0 < keyDetail.lastModified ?? 0 {
+                if savedLocalKey.lastModified < keyLastModified {
                     keysToUpdate.append(keyDetail)
                 }
             } else {
