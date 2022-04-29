@@ -1,5 +1,5 @@
 //
-//  EKMService.swift
+//  EKMVcHelper.swift
 //  FlowCrypt
 //
 //  Created by Ioan Moldovan on 4/28/22
@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-protocol EKMServiceType {
+protocol EKMVcHelperType {
     func refreshKeysFromEKMIfNeeded(in viewController: UIViewController)
 }
 
@@ -17,10 +17,9 @@ enum RefreshKeyError: Error {
     case cancelPassPhrase
 }
 
-final class EKMService: EKMServiceType {
+final class EKMVcHelper: EKMVcHelperType {
 
     let appContext: AppContextWithUser
-    var askedUserPassPhrase = false
     let keyMethods: KeyMethodsType
 
     init(appContext: AppContextWithUser) {
@@ -31,25 +30,24 @@ final class EKMService: EKMServiceType {
     func refreshKeysFromEKMIfNeeded(in viewController: UIViewController) {
         Task {
             do {
-                self.askedUserPassPhrase = false
                 let configuration = try await appContext.clientConfigurationService.configuration
                 guard configuration.checkUsesEKM() == .usesEKM else {
                     return
                 }
                 let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
-                let keyDetails = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
+                let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
 
-                var passPhrase = try fetchCurrentPassphrase()
-                let keysToUpdate = try findKeysToUpdate(from: keyDetails, localKeys: localKeys)
+                let passPhrase = try await getPassphrase(in: viewController)
+                let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
 
                 if keysToUpdate.isEmpty {
                     return
                 }
 
                 for keyDetail in keysToUpdate {
-                    passPhrase = try await saveKeyToLocal(
+                    try await saveKeyToLocal(
                         in: viewController,
                         context: appContext,
                         keyDetail: keyDetail,
@@ -58,11 +56,9 @@ final class EKMService: EKMServiceType {
                 }
                 await viewController.showToast("refresh_key_success".localized)
             } catch {
+                // since this is an update function that happens on every startup
+                // it's ok if it's skipped sometimes - keys will be updated next time
                 if error is ApiError {
-                    return
-                }
-                // Do not display error alert when no keys are returned
-                if let ekmError = error as? EmailKeyManagerApiError, ekmError == .noKeys {
                     return
                 }
                 // Do not display error alert when user cancels pass phrase prompt
@@ -74,10 +70,14 @@ final class EKMService: EKMServiceType {
         }
     }
 
-    private func fetchCurrentPassphrase() throws -> String? {
+    private func getPassphrase(in viewController: UIViewController) async throws -> String? {
         // If this is called when starting the app, then it doesn't make much difference
         // but conceptually it would be better to look pass phrase both in memory and storage
-        return try appContext.passPhraseService.getPassPhrases(for: appContext.user.email).first(where: { $0.value.isNotEmpty })?.value
+        var passphrase = try appContext.passPhraseService.getPassPhrases(for: appContext.user.email).first(where: { $0.value.isNotEmpty })?.value
+        if passphrase == nil {
+            passphrase = try await requestPassPhraseWithModal(in: viewController)
+        }
+        return passphrase
     }
 
     private func findKeysToUpdate(from keyDetails: [KeyDetails], localKeys: [Keypair]) throws -> [KeyDetails] {
@@ -103,16 +103,9 @@ final class EKMService: EKMServiceType {
         context: AppContextWithUser,
         keyDetail: KeyDetails,
         passPhrase: String?
-    ) async throws -> String? {
-        var newPassPhrase = passPhrase
-        if newPassPhrase == nil {
-            if askedUserPassPhrase {
-                return nil
-            }
-            newPassPhrase = try await requestPassPhraseWithModal(in: viewController)
-        }
-        guard let newPassPhrase = newPassPhrase else {
-            return nil
+    ) async throws {
+        guard let passPhrase = passPhrase else {
+            return
         }
 
         guard let privateKey = keyDetail.private else {
@@ -120,7 +113,7 @@ final class EKMService: EKMServiceType {
         }
         let encryptedPrv = try await Core.shared.encryptKey(
             armoredPrv: privateKey,
-            passphrase: newPassPhrase
+            passphrase: passPhrase
         )
         let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: encryptedPrv.encryptedKey.data())
         try context.encryptedStorage.putKeypairs(
@@ -129,12 +122,10 @@ final class EKMService: EKMServiceType {
             source: .ekm,
             for: context.user.email
         )
-        return newPassPhrase
     }
 
     @MainActor
     private func requestPassPhraseWithModal(in viewController: UIViewController) async throws -> String {
-        self.askedUserPassPhrase = true
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
                 title: "refresh_key_alert_title".localized,

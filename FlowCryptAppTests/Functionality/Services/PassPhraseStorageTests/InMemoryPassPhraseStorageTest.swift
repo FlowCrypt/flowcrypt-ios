@@ -47,22 +47,22 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     }
 
     func testGetPassPhrases() {
-        XCTAssertTrue(sut.getPassPhrases(for: nil).isEmpty)
+        XCTAssertTrue(sut.getPassPhrases(for: "").isEmpty)
 
         let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.save(passPhrase: pass)
-        XCTAssertTrue(sut.getPassPhrases(for: nil).count == 1)
-        XCTAssertTrue(sut.getPassPhrases(for: nil).contains(where: { $0.primaryFingerprintOfAssociatedKey == "11" }))
-        XCTAssertTrue(sut.getPassPhrases(for: nil).filter { $0.date == nil }.isEmpty)
+        XCTAssertTrue(sut.getPassPhrases(for: "").count == 1)
+        XCTAssertTrue(sut.getPassPhrases(for: "").contains(where: { $0.primaryFingerprintOfAssociatedKey == "11" }))
+        XCTAssertTrue(sut.getPassPhrases(for: "").filter { $0.date == nil }.isEmpty)
     }
 
     func testExpiredPassPhrases() {
-        XCTAssertTrue(sut.getPassPhrases(for: nil).isEmpty)
+        XCTAssertTrue(sut.getPassPhrases(for: "").isEmpty)
 
         let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
         sut.save(passPhrase: pass)
         sleep(3)
-        XCTAssertTrue(sut.getPassPhrases(for: nil).isEmpty)
+        XCTAssertTrue(sut.getPassPhrases(for: "").isEmpty)
     }
 }
 

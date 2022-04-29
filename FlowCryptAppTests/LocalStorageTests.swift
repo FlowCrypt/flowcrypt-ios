@@ -31,12 +31,12 @@ class LocalStorageTests: XCTestCase {
     }
 
     func testLogOutForUser() throws {
-        XCTAssertFalse(try sut.passPhraseStorage.getPassPhrases(for: nil).isEmpty)
+        XCTAssertFalse(try sut.passPhraseStorage.getPassPhrases(for: "").isEmpty)
 
         let user = "anton@gmail.com"
         try sut.logOutUser(email: user)
 
         XCTAssertNil(UserDefaults.standard.string(forKey: trashKey))
-        XCTAssertTrue(try sut.passPhraseStorage.getPassPhrases(for: nil).isEmpty)
+        XCTAssertTrue(try sut.passPhraseStorage.getPassPhrases(for: "").isEmpty)
     }
 }

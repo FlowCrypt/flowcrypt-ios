@@ -38,7 +38,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
         passPhraseProvider.remove(passPhrases: [passPhrase])
     }
 
-    func getPassPhrases(for _: String?) -> [PassPhrase] {
+    func getPassPhrases(for email: String) -> [PassPhrase] {
         passPhraseProvider.passPhrases
             .compactMap { passPhrase -> PassPhrase? in
                 guard let dateToCompare = passPhrase.date else {

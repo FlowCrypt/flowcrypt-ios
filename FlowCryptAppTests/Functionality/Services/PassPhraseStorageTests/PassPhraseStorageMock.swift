@@ -32,7 +32,7 @@ class PassPhraseStorageMock: PassPhraseStorageType {
             PassPhrase(value: "2", fingerprintsOfAssociatedKey: ["21","22"])
         ]
     }
-    func getPassPhrases(for email: String?) -> [PassPhrase] {
+    func getPassPhrases(for email: String) -> [PassPhrase] {
         getPassPhrasesResult()
     }
 }
