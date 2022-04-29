@@ -40,7 +40,7 @@ final class EKMVcHelper: EKMVcHelperType {
                 guard keysToUpdate.isNotEmpty else {
                     return
                 }
-                
+
                 guard let passPhrase = try await getPassphrase(in: viewController), passPhrase.isNotEmpty else {
                     return
                 }
