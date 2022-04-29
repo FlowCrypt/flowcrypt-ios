@@ -1,6 +1,10 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 import { ekmPrivateKeySamples, KeyDetailInfo } from "../../api-mocks/apis/ekm/ekm-endpoints";
+import {
+  MenuBarScreen,
+  SettingsScreen
+} from '../screenobjects/all-screens';
 
 const SELECTORS = {
   KEYS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Keys"`]',
@@ -100,6 +104,12 @@ class KeysScreen extends BaseScreen {
 
   clickBackButton = async () => {
     await this.backButton.click();
+  }
+
+  openKeyScreenWithSideMenu = async () => {
+    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickSettingsButton();
+    await SettingsScreen.clickOnSettingItem('Keys');
   }
 }
 
