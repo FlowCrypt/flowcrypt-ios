@@ -30,6 +30,7 @@ final class EKMVcHelper: EKMVcHelperType {
                 guard configuration.checkUsesEKM() == .usesEKM else {
                     return
                 }
+                let storageMethod: StorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
                 let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
                 let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
@@ -50,7 +51,8 @@ final class EKMVcHelper: EKMVcHelperType {
                         in: viewController,
                         context: appContext,
                         keyDetail: keyDetail,
-                        passPhrase: passPhrase
+                        passPhrase: passPhrase,
+                        storageMethod: storageMethod
                     )
                 }
                 await viewController.showToast("refresh_key_success".localized)
@@ -68,8 +70,10 @@ final class EKMVcHelper: EKMVcHelperType {
     private func getPassphrase(in viewController: UIViewController) async throws -> String? {
         // If this is called when starting the app, then it doesn't make much difference
         // but conceptually it would be better to look pass phrase both in memory and storage
-        if let passPhrase = try appContext.passPhraseService.getPassPhrases(for: appContext.user.email).first(where: { $0.value.isNotEmpty })?.value {
-          return passPhrase
+        if let passPhrase = try appContext.passPhraseService.getPassPhrases(
+            for: appContext.user.email
+        ).first(where: { $0.value.isNotEmpty })?.value {
+            return passPhrase
         }
         return try await requestPassPhraseWithModal(in: viewController)
     }
@@ -96,7 +100,8 @@ final class EKMVcHelper: EKMVcHelperType {
         in viewController: UIViewController,
         context: AppContextWithUser,
         keyDetail: KeyDetails,
-        passPhrase: String
+        passPhrase: String,
+        storageMethod: StorageMethod
     ) async throws {
         guard let privateKey = keyDetail.private else {
             throw CreatePassphraseWithExistingKeyError.noPrivateKey
@@ -112,6 +117,11 @@ final class EKMVcHelper: EKMVcHelperType {
             source: .ekm,
             for: context.user.email
         )
+        let passPhraseObj = PassPhrase(
+            value: passPhrase,
+            fingerprintsOfAssociatedKey: keyDetail.fingerprints
+        )
+        try appContext.passPhraseService.savePassPhrase(with: passPhraseObj, storageMethod: storageMethod)
     }
 
     @MainActor

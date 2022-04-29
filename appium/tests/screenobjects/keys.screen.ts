@@ -1,6 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
-import { ekmPrivateKeySamples, KeyDetailInfo } from "../../api-mocks/apis/ekm/ekm-endpoints";
+import { KeyDetailInfo } from "../../api-mocks/apis/ekm/ekm-endpoints";
 import {
   MenuBarScreen,
   SettingsScreen
@@ -69,11 +69,10 @@ class KeysScreen extends BaseScreen {
     return $(SELECTORS.BACK_BUTTON)
   }
 
-  checkKeysScreen = async (keys?: KeyDetailInfo[]) => {
+  checkKeysScreen = async (keys: KeyDetailInfo[]) => {
     await (await this.keysHeader).waitForDisplayed();
     await (await this.addButton).waitForDisplayed({ reverse: true });
-    const e2eLiveKeys = [ekmPrivateKeySamples.e2e, ekmPrivateKeySamples.flowcryptCompability];
-    await this.checkKeys(keys ?? e2eLiveKeys);
+    await this.checkKeys(keys);
   }
 
   private checkKeys = async (keys: KeyDetailInfo[]) => {
@@ -106,7 +105,7 @@ class KeysScreen extends BaseScreen {
     await this.backButton.click();
   }
 
-  openKeyScreenWithSideMenu = async () => {
+  openScreenFromSideMenu = async () => {
     await MenuBarScreen.clickMenuIcon();
     await MenuBarScreen.clickSettingsButton();
     await SettingsScreen.clickOnSettingItem('Keys');

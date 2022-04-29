@@ -1,8 +1,6 @@
 import { MockApi } from 'api-mocks/mock';
 import {
   KeysScreen,
-  MenuBarScreen,
-  SettingsScreen,
   SetupKeyScreen,
   SplashScreen,
 } from '../../../screenobjects/all-screens';
@@ -10,12 +8,6 @@ import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoin
 import { CommonData } from "../../../data";
 import BaseScreen from "../../../screenobjects/base.screen";
 import AppiumHelper from "../../../helpers/AppiumHelper";
-
-const goToKeysScreen = async () => {
-  await MenuBarScreen.clickMenuIcon();
-  await MenuBarScreen.clickSettingsButton();
-  await SettingsScreen.clickOnSettingItem('Keys');
-}
 
 describe('SETUP: ', () => {
 
@@ -38,7 +30,7 @@ describe('SETUP: ', () => {
       // stage 1 - setup
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
-      await goToKeysScreen();
+      await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
 
       // stage 2 - keys get auto-updated
@@ -47,12 +39,12 @@ describe('SETUP: ', () => {
       }
       await AppiumHelper.restartApp(processArgs);
       await BaseScreen.checkToastMessage(CommonData.refreshingKeysFromEkm.updatedSuccessfully);
-      await goToKeysScreen();
+      await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0, ekmPrivateKeySamples.key1]);
 
       // stage 3 - nothing to update
       await AppiumHelper.restartApp(processArgs);
-      await goToKeysScreen();
+      await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0, ekmPrivateKeySamples.key1]);
     });
   });
