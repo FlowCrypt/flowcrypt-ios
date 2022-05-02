@@ -12,13 +12,9 @@ import MailCore
 
 extension Imap {
 
-    func setupSession() {
-        guard let imapSession = imapSess, let smtpSession = smtpSess else {
-            logger.logError("No IMAP session")
-            return
-        }
-        imapSession.startLogging()
-        smtpSession.startLogging()
+    func setupSession() throws {
+        try imapSess.startLogging()
+        try smtpSess.startLogging()
     }
 
     func connectSmtp(session: SMTPSession) async throws {
@@ -51,9 +47,9 @@ extension Imap {
         }
     }
 
-    func disconnect() {
+    func disconnect() throws {
         let start = Trace(id: "Imap disconnect")
-        imapSess?.disconnectOperation().start { [weak self] error in
+        try imapSess.disconnectOperation().start { [weak self] error in
             if let error = error {
                 self?.logger.logError("disconnect with \(error)")
             } else {

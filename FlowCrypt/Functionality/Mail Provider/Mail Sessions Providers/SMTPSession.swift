@@ -18,15 +18,13 @@ struct SMTPSession {
 }
 
 extension SMTPSession {
-    init?(user: User) {
+    init(user: User) throws {
         guard let smtp = user.smtp else {
-            assertionFailure("Can't get SMTP Session without user data")
-            return nil
+            throw AppErr.general("Can't get SMTP Session without user data")
         }
 
         guard let auth = user.authType, let connection = ConnectionType(rawValue: smtp.connectionType) else {
-            assertionFailure("Authentication type should be defined on this step")
-            return nil
+            throw AppErr.general("Authentication type should be defined on this step")
         }
 
         self.init(
