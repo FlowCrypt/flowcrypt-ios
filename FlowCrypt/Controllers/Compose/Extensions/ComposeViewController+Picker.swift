@@ -17,10 +17,10 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
     ) {
         picker.dismiss(animated: true, completion: nil)
 
-        let composeMessageAttachment: FileItem?
+        let composeMessageAttachment: MessageAttachment?
         switch picker.sourceType {
         case .camera:
-            composeMessageAttachment = FileItem(cameraSourceMediaInfo: info)
+            composeMessageAttachment = MessageAttachment(cameraSourceMediaInfo: info)
         default: fatalError("No other image picker's sources should be used")
         }
 
@@ -32,7 +32,7 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
         reload(sections: [.attachments])
     }
 
-    internal func appendAttachmentIfAllowed(_ attachment: FileItem) {
+    internal func appendAttachmentIfAllowed(_ attachment: MessageAttachment) {
         let totalSize = contextToSend.attachments.map(\.size).reduce(0, +) + attachment.size
         if totalSize > GeneralConstants.Global.attachmentSizeLimit {
             showToast("files_picking_size_error_message".localized)
@@ -80,7 +80,7 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
     internal func handleRepresentation(url: URL?, error: Error?, isVideo: Bool) {
         guard
             let url = url,
-            let composeMessageAttachment = FileItem(fileURL: url)
+            let composeMessageAttachment = MessageAttachment(fileURL: url)
         else {
             let message = isVideo
                 ? "files_picking_videos_error_message".localized
@@ -99,7 +99,7 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
 extension ComposeViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         guard let fileUrl = urls.first,
-              let attachment = FileItem(fileURL: fileUrl)
+              let attachment = MessageAttachment(fileURL: fileUrl)
         else {
             showAlert(message: "files_picking_files_error_message".localized)
             return

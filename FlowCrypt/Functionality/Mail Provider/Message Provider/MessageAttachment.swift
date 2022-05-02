@@ -1,5 +1,5 @@
 //
-//  FileItem.swift
+//  MessageAttachment.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 25/11/21
@@ -9,21 +9,13 @@
 import Photos
 import UIKit
 
-struct FileItem: Equatable {
+struct MessageAttachment: Equatable, FileType {
     let name: String
     let data: Data
     let isEncrypted: Bool
 }
 
-extension FileItem {
-    var size: Int { data.count }
-    var formattedSize: String {
-        ByteCountFormatter().string(fromByteCount: Int64(size))
-    }
-    var type: String { name.mimeType }
-}
-
-extension FileItem {
+extension MessageAttachment {
     init?(cameraSourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
         guard let image = cameraSourceMediaInfo[.originalImage] as? UIImage,
               let data = image.jpegData(compressionQuality: 1) else {
@@ -46,7 +38,7 @@ extension FileItem {
     }
 }
 
-extension FileItem {
+extension MessageAttachment {
     func toSendableMsgAttachment() -> SendableMsg.Attachment {
         return SendableMsg.Attachment(name: name, type: type, base64: data.base64EncodedString())
     }

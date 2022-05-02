@@ -340,7 +340,7 @@ extension RecipientEmailsCellNode.Input {
 
 // MARK: - AttachmentNode.Input
 extension AttachmentNode.Input {
-    init(attachment: FileItem, index: Int) {
+    init(attachment: MessageAttachment, index: Int) {
         self.init(
             name: attachment.name
                 .attributed(.regular(18), color: .mainTextColor, alignment: .left),

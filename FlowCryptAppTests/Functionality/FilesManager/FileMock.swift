@@ -8,8 +8,13 @@
 
 import Foundation
 
-extension FileItem {
-    static let stringedFile = FileItem(
+struct FileMock: FileType {
+    let name: String
+    let data: Data
+}
+
+extension FileMock {
+    static let stringedFile = FileMock(
         name: "mock_file.pdf",
         data: "mocktext".data(using: .utf8)!
     )

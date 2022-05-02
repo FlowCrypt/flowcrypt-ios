@@ -8,6 +8,19 @@
 
 import UIKit
 
+protocol FileType {
+    var name: String { get }
+    var data: Data { get }
+}
+
+extension FileType {
+    var size: Int { data.count }
+    var formattedSize: String {
+        ByteCountFormatter().string(fromByteCount: Int64(size))
+    }
+    var type: String { name.mimeType }
+}
+
 protocol FilesManagerPresenter {
     func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?)
 }
@@ -15,10 +28,10 @@ protocol FilesManagerPresenter {
 protocol FilesManagerType {
     typealias Controller = FilesManagerPresenter & UIDocumentPickerDelegate
 
-    func save(file: FileItem, options: Data.WritingOptions) throws -> URL
+    func save(file: FileType) throws -> URL
 
     @MainActor
-    func saveToFilesApp(file: FileItem, from viewController: Controller) async throws
+    func saveToFilesApp(file: FileType, from viewController: Controller) async throws
 
     @MainActor
     func selectFromFilesApp(from viewController: Controller) async
@@ -33,18 +46,13 @@ final class FilesManager {
 }
 
 extension FilesManager: FilesManagerType {
-    func save(file: FileItem, options: Data.WritingOptions = []) throws -> URL {
+    func save(file: FileType) throws -> URL {
         let url = documentsDirectoryURL.appendingPathComponent(file.name)
-        try file.data.write(to: url, options: options)
+        try file.data.write(to: url)
         return url
     }
 
-    func read(fileName: String) throws -> Data {
-        let url = self.documentsDirectoryURL.appendingPathComponent(fileName)
-        return try Data(contentsOf: url)
-    }
-
-    func saveToFilesApp(file: FileItem, from viewController: Controller) throws {
+    func saveToFilesApp(file: FileType, from viewController: Controller) throws {
         let url = try save(file: file)
         let documentController = UIDocumentPickerViewController(forExporting: [url])
         documentController.delegate = viewController
