@@ -35,6 +35,7 @@ class InboxViewController: ViewController {
     // Search related varaibles
     internal var isSearch: Bool = false
     internal var searchedExpression: String = ""
+    var shouldBeginFetch = true
 
     init(
         appContext: AppContextWithUser,
@@ -246,6 +247,10 @@ extension InboxViewController {
     }
 
     func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
+        if !shouldBeginFetch {
+            context.completeBatchFetching(true)
+            return
+        }
         context.beginBatchFetching()
         handleBeginFetching(context)
     }
@@ -307,6 +312,7 @@ extension InboxViewController {
     }
 
     private func handleNew(_ input: InboxContext) {
+        shouldBeginFetch = false
         inboxInput = input.data
         if inboxInput.isEmpty && isSearch {
             state = .searchEmpty
@@ -314,7 +320,14 @@ extension InboxViewController {
             state = .fetched(input.pagination)
         }
         refreshControl.endRefreshing()
-        tableNode.reloadData()
+        // Disable should begin fetch event while table node is reloaded
+        // This is to prevent inbox initially load 2 pages of emails
+        // (willBeginBatchFetchWith called right after initial inbox load and it triggered another page load before)
+        tableNode.reloadData(completion: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                self.shouldBeginFetch = true
+            })
+        })
     }
 
     private func handleFetched(_ input: InboxContext) {

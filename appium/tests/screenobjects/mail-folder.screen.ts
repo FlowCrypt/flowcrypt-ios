@@ -104,8 +104,8 @@ class MailFolderScreen extends BaseScreen {
   };
 
   getEmailCount = async () => {
-    await browser.pause(1000);
     await ElementHelper.waitElementInvisible(await this.idleNode);
+    await browser.pause(1000);
     return await this.inboxList.length;
   };
 
