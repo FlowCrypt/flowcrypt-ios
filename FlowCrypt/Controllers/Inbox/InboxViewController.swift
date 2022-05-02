@@ -421,7 +421,9 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             case .searching:
                 return TextCellNode.loading
             case .idle:
-                return TextCellNode(input: self.decorator.initialNodeInput(for: size))
+                let node = TextCellNode(input: self.decorator.initialNodeInput(for: size))
+                node.accessibilityIdentifier = "aid-inbox-idle-node"
+                return node
             case .fetched, .refresh:
                 guard let input = self.inboxInput[safe: indexPath.row] else {
                     return TextCellNode.loading
