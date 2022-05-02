@@ -21,7 +21,7 @@ actor KeyChainService {
 
     private enum Constants {
         static let legacyKeychainIndexPrefixInUserDefaults = "indexSecureKeychainPrefix"
-        static let encryptionKeyProperty = "app-storage-encryption-key"
+        static let keychainPropertyKey = "app-storage-encryption-key"
     }
 
     @MainActor var storageEncryptionKey: Data {
@@ -30,7 +30,9 @@ actor KeyChainService {
                 return key
             }
 
+            // TODO: Should be removed after all users migrated to new keychain
             if let legacyKey = try fetchLegacyEncryptionKey() {
+                try saveStorageEncryptionKey(data: legacyKey)
                 return legacyKey
             }
 
@@ -73,7 +75,7 @@ actor KeyChainService {
     @MainActor private func saveStorageEncryptionKey(data: Data) throws {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: Constants.encryptionKeyProperty,
+            kSecAttrAccount: Constants.keychainPropertyKey,
             kSecValueData: data
         ]
         let addOsStatus = SecItemAdd(query as CFDictionary, nil)
@@ -83,7 +85,7 @@ actor KeyChainService {
     }
 
     @MainActor private func fetchEncryptionKey(
-        property: String = Constants.encryptionKeyProperty
+        property: String = Constants.keychainPropertyKey
     ) throws -> Data? {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,

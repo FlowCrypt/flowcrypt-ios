@@ -1582,8 +1582,8 @@
 				9F93623E2573D16F0009912F /* Gmail+Message.swift */,
 				9F9362182573D10E0009912F /* Imap+Message.swift */,
 				9FA9C83B264C2D75005A9670 /* MessageService.swift */,
-				51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */,
 				5168FB0A274F94D300131072 /* MessageAttachment.swift */,
+				51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */,
 			);
 			path = "Message Provider";
 			sourceTree = "<group>";
