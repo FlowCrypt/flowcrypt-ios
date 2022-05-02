@@ -44,7 +44,7 @@ final class InvalidStorageViewController: TableNodeViewController {
 
     private func resetStorage() {
         do {
-            try EncryptedStorage.reset()
+            try EncryptedStorage.removeStorageFile()
             router.proceed()
         } catch {
             showAlert(message: "invalid_storage_reset_error".localized)

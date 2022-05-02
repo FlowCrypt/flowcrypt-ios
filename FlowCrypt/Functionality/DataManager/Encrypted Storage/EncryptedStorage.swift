@@ -24,7 +24,7 @@ protocol EncryptedStorageType {
     func validate() throws
     func cleanup() throws
 
-    static func reset() throws
+    static func removeStorageFile() throws
 }
 
 final class EncryptedStorage: EncryptedStorageType {
@@ -59,16 +59,13 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    private enum Constants {
-        static let encryptedDbFilename = "encrypted.realm"
-    }
-
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
     private let currentSchema: EncryptedStorageSchema = .version8
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
+    private let keyChainService: KeyChainService
     private let storageEncryptionKey: Data
 
     var storage: Realm {
@@ -79,8 +76,9 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    init(storageEncryptionKey: Data) {
-        self.storageEncryptionKey = storageEncryptionKey
+    init() async throws {
+        self.keyChainService = KeyChainService()
+        self.storageEncryptionKey = try await keyChainService.storageEncryptionKey
     }
 
     private func getConfiguration() throws -> Realm.Configuration {
@@ -274,11 +272,11 @@ extension EncryptedStorage {
 extension EncryptedStorage {
     static var path: String {
         get throws {
-            try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+            try getDocumentDirectory() + "/encrypted.realm"
         }
     }
 
-    static var isStorageExists: Bool {
+    static var doesStorageFileExist: Bool {
         get throws {
             FileManager.default.fileExists(atPath: try path)
         }
@@ -291,7 +289,7 @@ extension EncryptedStorage {
         return documentDirectory
     }
 
-    static func reset() throws {
+    static func removeStorageFile() throws {
         try FileManager.default.removeItem(atPath: try path)
     }
 }
