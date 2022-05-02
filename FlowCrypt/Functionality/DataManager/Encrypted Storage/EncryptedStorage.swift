@@ -65,7 +65,6 @@ final class EncryptedStorage: EncryptedStorageType {
     private let currentSchema: EncryptedStorageSchema = .version8
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
-    private let keyChainService: KeyChainService
     private let storageEncryptionKey: Data
 
     var storage: Realm {
@@ -77,7 +76,7 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     init() async throws {
-        self.keyChainService = KeyChainService()
+        let keyChainService = KeyChainService()
         self.storageEncryptionKey = try await keyChainService.storageEncryptionKey
     }
 
