@@ -12,13 +12,17 @@ final class Imap: MailServiceProvider {
     let user: User
     let helper: ImapHelperType
     let messageKindProvider: MessageKindProviderType
-    var imapSess: MCOIMAPSession? {
-        imapSessionProvider.imapSession()
-            .map(MCOIMAPSession.init)
+    var imapSess: MCOIMAPSession {
+        get throws {
+            let imapSeesion = try imapSessionProvider.imapSession()
+            return MCOIMAPSession(session: imapSeesion)
+        }
     }
-    var smtpSess: MCOSMTPSession? {
-        imapSessionProvider.smtpSession()
-            .map(MCOSMTPSession.init)
+    var smtpSess: MCOSMTPSession {
+        get throws {
+            let smtpSession = try imapSessionProvider.smtpSession()
+            return MCOSMTPSession(session: smtpSession)
+        }
     }
 
     typealias ImapIndexSet = MCOIndexSet

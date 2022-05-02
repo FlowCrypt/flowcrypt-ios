@@ -9,8 +9,8 @@
 import Foundation
 
 protocol ImapSessionProviderType {
-    func imapSession() -> IMAPSession?
-    func smtpSession() -> SMTPSession?
+    func imapSession() throws -> IMAPSession
+    func smtpSession() throws -> SMTPSession
 }
 
 class ImapSessionProvider: ImapSessionProviderType {
@@ -21,18 +21,11 @@ class ImapSessionProvider: ImapSessionProviderType {
         self.user = user
     }
 
-    func imapSession() -> IMAPSession? {
-        guard let imapSession = IMAPSession(user: self.user) else {
-            return nil
-        }
-        return imapSession
+    func imapSession() throws -> IMAPSession {
+        return try IMAPSession(user: self.user)
     }
 
-    func smtpSession() -> SMTPSession? {
-        guard let smtpSession = SMTPSession(user: self.user) else {
-            assertionFailure("couldn't create SMTP Session with this parameters")
-            return nil
-        }
-        return smtpSession
+    func smtpSession() throws -> SMTPSession {
+        return try SMTPSession(user: self.user)
     }
 }
