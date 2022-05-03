@@ -26,6 +26,11 @@ final class EKMVcHelper: EKMVcHelperType {
     func refreshKeysFromEKMIfNeeded(in viewController: UIViewController) {
         Task {
             do {
+                // Sleep for 3 seconds when mock testing
+                // (This is to prevent refresh key UI test failure in semaphoreCI)
+                if Bundle.isDebugBundleWithArgument("--mock-fes-api") {
+                    try await Task.sleep(nanoseconds: 3 * 1000 * 1_000_000)
+                }
                 let configuration = try await appContext.clientConfigurationService.configuration
                 guard configuration.checkUsesEKM() == .usesEKM else {
                     return
