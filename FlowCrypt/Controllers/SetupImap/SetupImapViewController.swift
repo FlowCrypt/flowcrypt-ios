@@ -501,14 +501,10 @@ extension SetupImapViewController {
     private func checkImapSession() {
         showSpinner()
 
-        guard
-            let imapSessionToCheck = IMAPSession(user: user),
-            let smtpSession = SMTPSession(user: user)
-        else {
-            fatalError("Should be able to create session at this momment")
-        }
         Task {
             do {
+                let imapSessionToCheck = try IMAPSession(user: user)
+                let smtpSession = try SMTPSession(user: user)
                 try await self.imap.connectImap(session: imapSessionToCheck)
                 try await self.imap.connectSmtp(session: smtpSession)
                 handleSuccessfulConnection()

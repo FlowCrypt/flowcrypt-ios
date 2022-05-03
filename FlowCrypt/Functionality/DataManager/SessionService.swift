@@ -80,7 +80,7 @@ extension SessionService: SessionServiceType {
             )
             try encryptedStorage.saveActiveUser(with: user)
         case let .session(user):
-            imap.setupSession()
+            try imap.setupSession()
             try encryptedStorage.saveActiveUser(with: user)
         }
     }
@@ -89,7 +89,7 @@ extension SessionService: SessionServiceType {
         guard let currentUser = try encryptedStorage.activeUser else {
             return nil
         }
-        logOut(user: currentUser)
+        try logOut(user: currentUser)
 
         guard let nextUser = try encryptedStorage.getAllUsers().first else {
             return nil
@@ -118,7 +118,7 @@ extension SessionService: SessionServiceType {
         for user in try encryptedStorage.getAllUsers() {
             if try !encryptedStorage.doesAnyKeypairExist(for: user.email) {
                 logger.logInfo("User session to clean up \(user.email)")
-                logOut(user: user)
+                try logOut(user: user)
             }
         }
 
@@ -148,13 +148,13 @@ extension SessionService: SessionServiceType {
         return sessionType
     }
 
-    private func logOut(user: User) {
+    private func logOut(user: User) throws {
         logger.logInfo("Logging out user \(user.email)")
         switch user.authType {
         case .oAuthGmail:
             googleService.signOut(user: user.email)
         case .password:
-            imap.disconnect()
+            try imap.disconnect()
         default:
             logger.logWarning("currentAuthType is not resolved")
         }
