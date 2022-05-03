@@ -163,10 +163,11 @@ extension SetupInitialViewController {
             } catch {
                 showRetryAlert(
                     message: error.errorMessage,
-                    onRetry: { [weak self] in
+                    cancelActionTitle: "log_out".localized,
+                    onRetry: { [weak self] _ in
                         self?.state = .fetchingKeysFromEKM
                     },
-                    onOk: { [weak self] in
+                    onCancel: { [weak self] _ in
                         self?.signOut()
                     }
                 )
