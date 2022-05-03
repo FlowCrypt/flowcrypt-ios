@@ -20,6 +20,6 @@ extension GmailService: UsersMailSessionProvider {
 // MARK: - Imap
 extension Imap: UsersMailSessionProvider {
     func renewSession() async throws {
-        setupSession()
+        try setupSession()
     }
 }

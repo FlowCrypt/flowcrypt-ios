@@ -11,6 +11,7 @@ const SELECTORS = {
   HELP_ICON: '~help icn',
   SEARCH_FIELD: '~searchAllEmailField',
   INBOX_LIST: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
+  IDLE_NODE: '~aid-inbox-idle-node'
 };
 
 class MailFolderScreen extends BaseScreen {
@@ -48,6 +49,10 @@ class MailFolderScreen extends BaseScreen {
 
   get inboxList() {
     return $$(SELECTORS.INBOX_LIST);
+  }
+
+  get idleNode() {
+    return $(SELECTORS.IDLE_NODE);
   }
 
   checkTrashScreen = async () => {
@@ -99,8 +104,9 @@ class MailFolderScreen extends BaseScreen {
   };
 
   getEmailCount = async () => {
-      await browser.pause(1000);
-      return await this.inboxList.length;
+    await ElementHelper.waitElementInvisible(await this.idleNode);
+    await browser.pause(1000);
+    return await this.inboxList.length;
   };
 
   scrollUpToFirstEmail = async () => {
