@@ -44,12 +44,14 @@ extension GlobalRouter: GlobalRouterType {
 
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
-        do {
-            let appContext = try AppContext.setup(globalRouter: self)
-            try appContext.encryptedStorage.validate()
-            proceed(with: appContext)
-        } catch {
-            renderInvalidStorageView(error: error)
+        Task {
+            do {
+                let appContext = try await AppContext.setup(globalRouter: self)
+                try appContext.encryptedStorage.validate()
+                proceed(with: appContext)
+            } catch {
+                renderInvalidStorageView(error: error)
+            }
         }
     }
 
