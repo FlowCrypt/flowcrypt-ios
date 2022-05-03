@@ -1,7 +1,6 @@
 import { MockApi } from 'api-mocks/mock';
 import {
   KeysScreen,
-  SettingsScreen,
   SetupKeyScreen,
   SplashScreen,
 } from '../../../screenobjects/all-screens';
@@ -9,14 +8,7 @@ import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoin
 import { CommonData } from "../../../data";
 import RefreshKeyScreen from "../../../screenobjects/refresh-key.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
-// import AppiumHelper from "../../../helpers/AppiumHelper";
-import experimentalScreen from 'tests/screenobjects/experimental.screen';
-
-const restartApp = async () => {
-  await KeysScreen.clickBackButton();
-  await SettingsScreen.clickOnSettingItem('Experimental');
-  await experimentalScreen.clickReloadAppButton();
-}
+import AppiumHelper from "../../../helpers/AppiumHelper";
 
 describe('SETUP: ', () => {
 
@@ -24,7 +16,7 @@ describe('SETUP: ', () => {
 
     const passPhrase = CommonData.account.passPhrase;
     const successMessage = CommonData.refreshingKeysFromEkm.updatedSuccessfully;
-    // const processArgs = CommonData.mockProcessArgs;
+    const processArgs = CommonData.mockProcessArgs;
 
     const mockApi = new MockApi();
     mockApi.fesConfig = {
@@ -48,7 +40,7 @@ describe('SETUP: ', () => {
       mockApi.ekmConfig = {
         returnKeys: [ekmPrivateKeySamples.key0.prv, ekmPrivateKeySamples.key1.prv]
       }
-      await restartApp();
+      await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
       await RefreshKeyScreen.fillPassPhrase('wrong passphrase');
       await RefreshKeyScreen.clickOkButton();
@@ -59,7 +51,7 @@ describe('SETUP: ', () => {
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
 
       // stage 3 - new key gets added
-      await restartApp();
+      await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
       await RefreshKeyScreen.fillPassPhrase(passPhrase);
       await RefreshKeyScreen.clickOkButton();
@@ -71,7 +63,7 @@ describe('SETUP: ', () => {
       mockApi.ekmConfig = {
         returnKeys: [ekmPrivateKeySamples.key0Updated.prv]
       }
-      await restartApp();
+      await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
       await RefreshKeyScreen.fillPassPhrase(passPhrase);
       await RefreshKeyScreen.clickOkButton();
@@ -83,7 +75,7 @@ describe('SETUP: ', () => {
       mockApi.ekmConfig = {
         returnKeys: [ekmPrivateKeySamples.key0.prv]
       }
-      await restartApp();
+      await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0Updated, ekmPrivateKeySamples.key1]);
     });
