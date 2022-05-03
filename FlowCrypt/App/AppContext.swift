@@ -36,11 +36,8 @@ class AppContext {
     }
 
     @MainActor
-    static func setup(globalRouter: GlobalRouterType) throws -> AppContext {
-        let keyChainService = KeyChainService()
-        let encryptedStorage = EncryptedStorage(
-            storageEncryptionKey: try keyChainService.getStorageEncryptionKey()
-        )
+    static func setup(globalRouter: GlobalRouterType) async throws -> AppContext {
+        let encryptedStorage = try await EncryptedStorage()
         let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
         let keyService = KeyService(
             storage: encryptedStorage,

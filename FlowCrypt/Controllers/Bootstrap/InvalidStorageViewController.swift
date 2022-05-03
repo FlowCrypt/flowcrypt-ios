@@ -14,7 +14,8 @@ final class InvalidStorageViewController: TableNodeViewController {
         case screenTitle
         case title
         case description
-        case button
+        case retry
+        case reset
     }
 
     private let error: Error
@@ -43,11 +44,54 @@ final class InvalidStorageViewController: TableNodeViewController {
 
     private func resetStorage() {
         do {
-            try EncryptedStorage.reset()
+            try EncryptedStorage.removeStorageFile()
             router.proceed()
         } catch {
             showAlert(message: "invalid_storage_reset_error".localized)
         }
+    }
+
+    private func retry() {
+        router.proceed()
+    }
+}
+
+extension InvalidStorageViewController {
+    private func createTitleNode(
+        title: String,
+        style: NSAttributedString.Style = .regular(16)
+    ) -> SetupTitleNode {
+        .init(
+            SetupTitleNode.Input(
+                title: title
+                    .attributed(
+                        style,
+                        color: .mainTextColor,
+                        alignment: .center
+                    ),
+                insets: .deviceSpecificInsets(top: 8, bottom: 8),
+                backgroundColor: .backgroundColor
+            )
+        )
+    }
+
+    private func createButtonNode(
+        title: String,
+        backgroundColor: UIColor,
+        action: @escaping () -> Void
+    ) -> ButtonCellNode {
+        .init(
+            input: ButtonCellNode.Input(
+                title: title
+                    .attributed(
+                        .bold(16),
+                        color: .white,
+                        alignment: .center
+                    ),
+                color: backgroundColor
+            ),
+            action: action
+        )
     }
 }
 
@@ -62,62 +106,36 @@ extension InvalidStorageViewController: ASTableDelegate, ASTableDataSource {
                 return ASCellNode()
             }
 
-            let insets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
             switch part {
             case .screenTitle:
-                return SetupTitleNode(
-                    SetupTitleNode.Input(
-                        title: "invalid_storage_title".localized
-                            .attributed(
-                                .bold(18),
-                                color: .mainTextColor,
-                                alignment: .center
-                            ),
-                        insets: insets,
-                        backgroundColor: .backgroundColor
-                    )
+                return self.createTitleNode(
+                    title: "invalid_storage_title".localized,
+                    style: .bold(18)
                 )
             case .title:
-                return SetupTitleNode(
-                    SetupTitleNode.Input(
-                        title: "invalid_storage_text"
-                            .localized
-                            .attributed(
-                                .regular(16),
-                                color: .mainTextColor,
-                                alignment: .center
-                            ),
-                        insets: insets,
-                        backgroundColor: .backgroundColor
-                    )
+                return self.createTitleNode(
+                    title: "invalid_storage_text".localized
                 )
             case .description:
-                return SetupTitleNode(
-                    SetupTitleNode.Input(
-                        title: self.error.errorMessage.attributed(
-                            .regular(16),
-                            color: .mainTextColor,
-                            alignment: .center
-                        ),
-                        insets: insets,
-                        backgroundColor: .backgroundColor
-                    )
+                return self.createTitleNode(
+                    title: self.error.errorMessage
                 )
-            case .button:
-                return ButtonCellNode(
-                    input: ButtonCellNode.Input(
-                        title: "invalid_storage_reset_button"
-                            .localized
-                            .attributed(
-                                .bold(16),
-                                color: .white,
-                                alignment: .center
-                            ),
-                        color: .red
-                    )
-                ) { [weak self] in
-                    self?.resetStorage()
-                }
+            case .retry:
+                return self.createButtonNode(
+                    title: "retry_title".localized,
+                    backgroundColor: .main,
+                    action: { [weak self] in
+                        self?.retry()
+                    }
+                )
+            case .reset:
+                return self.createButtonNode(
+                    title: "invalid_storage_reset_button".localized,
+                    backgroundColor: .red,
+                    action: { [weak self] in
+                        self?.resetStorage()
+                    }
+                )
             }
         }
     }
