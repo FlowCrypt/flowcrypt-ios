@@ -33,24 +33,24 @@ actor KeyChainService {
             // TODO: Should be removed after all users migrated to new keychain
             if let legacyKey = try fetchLegacyEncryptionKey() {
                 try saveStorageEncryptionKey(data: legacyKey)
+                removeLegacyEncryptionKey()
                 return legacyKey
             }
 
-            return try generateStorageEncryptionKey()
+            return try generateAndSaveStorageEncryptionKey()
         }
     }
 
     @MainActor private func fetchLegacyEncryptionKey() throws -> Data? {
-        let userDefaults = UserDefaults.standard
         let prefixKey = Constants.legacyKeychainIndexPrefixInUserDefaults
 
-        guard let storedDynamicPart = userDefaults.string(forKey: prefixKey) else { return nil }
+        guard let storedDynamicPart = UserDefaults.standard.string(forKey: prefixKey)
+        else { return nil }
 
-        userDefaults.removeObject(forKey: prefixKey)
         let storageKey = storedDynamicPart + "-indexStorageEncryptionKey"
 
         guard let encryptionKey = try fetchEncryptionKey(property: storageKey) else {
-            if try !EncryptedStorage.doesStorageFileExist {
+            if try EncryptedStorage.doesStorageFileExist {
                 throw AppErr.general("KeyChainService: failed to get encryption key prefix")
             }
             return nil
@@ -59,7 +59,13 @@ actor KeyChainService {
         return encryptionKey
     }
 
-    @MainActor private func generateStorageEncryptionKey() throws -> Data {
+    @MainActor private func removeLegacyEncryptionKey() {
+        UserDefaults.standard.removeObject(
+            forKey: Constants.legacyKeychainIndexPrefixInUserDefaults
+        )
+    }
+
+    @MainActor private func generateAndSaveStorageEncryptionKey() throws -> Data {
         logger.logInfo("generate storage encryption key")
 
         guard let randomBytes = CoreHost().getSecureRandomByteNumberArray(keyByteLen) else {
