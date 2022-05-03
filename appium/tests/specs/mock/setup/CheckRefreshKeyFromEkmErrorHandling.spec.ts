@@ -3,18 +3,25 @@ import {
   KeysScreen,
   SetupKeyScreen,
   SplashScreen,
+  SettingsScreen
 } from '../../../screenobjects/all-screens';
 import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { CommonData } from "../../../data";
 import BaseScreen from "../../../screenobjects/base.screen";
-import AppiumHelper from "../../../helpers/AppiumHelper";
+// import AppiumHelper from "../../../helpers/AppiumHelper";
+import experimentalScreen from 'tests/screenobjects/experimental.screen';
 
+const restartApp = async () => {
+  await KeysScreen.clickBackButton();
+  await SettingsScreen.clickOnSettingItem('Experimental');
+  await experimentalScreen.clickReloadAppButton();
+}
 describe('SETUP: ', () => {
 
   it('EKM key update errors handled gracefully', async () => {
 
     const mockApi = new MockApi();
-    const processArgs = CommonData.mockProcessArgs;
+    // const processArgs = CommonData.mockProcessArgs;
 
     mockApi.fesConfig = {
       clientConfiguration: {
@@ -40,7 +47,7 @@ describe('SETUP: ', () => {
           message: 'Test EKM down'
         }
       }
-      await AppiumHelper.restartApp(processArgs);
+      await restartApp();
       await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
 
@@ -48,7 +55,7 @@ describe('SETUP: ', () => {
       mockApi.ekmConfig = {
         returnKeys: [ekmPrivateKeySamples.key0.prv.substring(0, 300)]
       }
-      await AppiumHelper.restartApp(processArgs);
+      await restartApp();
       await BaseScreen.checkModalMessage(CommonData.refreshingKeysFromEkm.errorMessage);
       await BaseScreen.clickOkButtonOnError();
       await KeysScreen.openScreenFromSideMenu();
