@@ -88,8 +88,15 @@ final class InboxViewContainerController: TableNodeViewController {
 
     private func handleNewState() {
         switch state {
-        case .loading, .empty:
+        case .loading:
             node.reloadData()
+        case .empty:
+            showAlert(
+                message: "No folders found. Please try again.",
+                onOk: { [node] in
+                    node?.reloadData()
+                }
+            )
         case let .error(error):
             showAlert(
                 message: error.errorMessage,
