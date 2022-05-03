@@ -24,7 +24,7 @@ protocol EncryptedStorageType {
     func validate() throws
     func cleanup() throws
 
-    static func reset() throws
+    static func removeStorageFile() throws
 }
 
 final class EncryptedStorage: EncryptedStorageType {
@@ -62,10 +62,6 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    private enum Constants {
-        static let encryptedDbFilename = "encrypted.realm"
-    }
-
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
@@ -82,8 +78,9 @@ final class EncryptedStorage: EncryptedStorageType {
         }
     }
 
-    init(storageEncryptionKey: Data) {
-        self.storageEncryptionKey = storageEncryptionKey
+    init() async throws {
+        let keyChainService = KeyChainService()
+        self.storageEncryptionKey = try await keyChainService.storageEncryptionKey
     }
 
     private func getConfiguration() throws -> Realm.Configuration {
@@ -91,7 +88,7 @@ final class EncryptedStorage: EncryptedStorageType {
             return Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
         }
 
-        let path = try EncryptedStorage.getDocumentDirectory() + "/" + Constants.encryptedDbFilename
+        let path = try EncryptedStorage.path
         let latestSchemaVersion = currentSchema.version.dbSchemaVersion
 
         return Realm.Configuration(
@@ -276,6 +273,18 @@ extension EncryptedStorage {
 }
 
 extension EncryptedStorage {
+    static var path: String {
+        get throws {
+            try getDocumentDirectory() + "/encrypted.realm"
+        }
+    }
+
+    static var doesStorageFileExist: Bool {
+        get throws {
+            FileManager.default.fileExists(atPath: try path)
+        }
+    }
+
     static func getDocumentDirectory() throws -> String {
         guard let documentDirectory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first else {
             throw AppErr.general("No path direction for .documentDirectory")
@@ -283,8 +292,7 @@ extension EncryptedStorage {
         return documentDirectory
     }
 
-    static func reset() throws {
-        let path = try getDocumentDirectory() + "/" + Constants.encryptedDbFilename
-        try FileManager.default.removeItem(atPath: path)
+    static func removeStorageFile() throws {
+        try FileManager.default.removeItem(atPath: try path)
     }
 }
