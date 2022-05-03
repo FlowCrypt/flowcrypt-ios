@@ -1,3 +1,4 @@
+import { ekmPrivateKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import {
   SplashScreen,
   SetupKeyScreen,
@@ -29,6 +30,7 @@ describe('UPDATE: ', () => {
     const senderName = CommonData.sender.name;
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
+    const liveKeys = [ekmPrivateKeySamples.e2e, ekmPrivateKeySamples.flowcryptCompability];
 
     //terminate current app version
     await driver.terminateApp(bundleId);
@@ -102,7 +104,7 @@ describe('UPDATE: ', () => {
 
     await SettingsScreen.clickOnSettingItem('Keys');
 
-    await KeysScreen.checkKeysScreen();
+    await KeysScreen.checkKeysScreen(liveKeys);
     await KeysScreen.clickOnKey();
 
     await KeysScreen.checkSelectedKeyScreen();
@@ -114,7 +116,7 @@ describe('UPDATE: ', () => {
     await KeysScreen.checkSelectedKeyScreen();
     await KeysScreen.clickBackButton();
 
-    await KeysScreen.checkKeysScreen();
+    await KeysScreen.checkKeysScreen(liveKeys);
     await KeysScreen.clickBackButton();
 
     await MenuBarScreen.clickMenuIcon();

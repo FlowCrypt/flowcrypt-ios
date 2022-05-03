@@ -28,7 +28,8 @@ class ComposeMessageServiceTests: XCTestCase {
         passphrase: nil,
         source: "",
         allFingerprints: [],
-        allLongids: []
+        allLongids: [],
+        lastModified: 0
     )
 
     var core = CoreComposeMessageMock()

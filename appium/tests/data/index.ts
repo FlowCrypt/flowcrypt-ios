@@ -213,7 +213,13 @@ export const CommonData = {
     email: 'revoked@domain.test',
     name: 'revoekd@flowcrypt.com'
   },
-  keyManagerURL : {
+  refreshingKeysFromEkm: {
+    wrongPassPhrase: 'Error\nIncorrect pass phrase. Please try again.',
+    updatedSuccessfully: 'Account keys updated',
+    errorMessage: 'Error\nError updating account keys: '
+  },
+  keyManagerURL: {
     mockServer: 'http://127.0.0.1:8001/ekm'
-  }
+  },
+  mockProcessArgs: ['--mock-fes-api', '--mock-attester-api']
 };

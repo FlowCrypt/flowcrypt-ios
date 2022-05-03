@@ -11,6 +11,7 @@ import XCTest
 
 class LocalStorageTests: XCTestCase {
     var sut: LocalStorage!
+    let testPassPhraseAccount = "passphrase@account.test"
 
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -31,12 +32,12 @@ class LocalStorageTests: XCTestCase {
     }
 
     func testLogOutForUser() throws {
-        XCTAssertFalse(try sut.passPhraseStorage.getPassPhrases().isEmpty)
+        XCTAssertFalse(try sut.passPhraseStorage.getPassPhrases(for: testPassPhraseAccount).isEmpty)
 
         let user = "anton@gmail.com"
         try sut.logOutUser(email: user)
 
         XCTAssertNil(UserDefaults.standard.string(forKey: trashKey))
-        XCTAssertTrue(try sut.passPhraseStorage.getPassPhrases().isEmpty)
+        XCTAssertTrue(try sut.passPhraseStorage.getPassPhrases(for: testPassPhraseAccount).isEmpty)
     }
 }
