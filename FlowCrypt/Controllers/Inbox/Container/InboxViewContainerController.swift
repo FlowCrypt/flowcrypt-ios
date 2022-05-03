@@ -32,7 +32,6 @@ final class InboxViewContainerController: TableNodeViewController {
     let appContext: AppContextWithUser
     let foldersService: FoldersServiceType
     let decorator: InboxViewControllerContainerDecorator
-    var navController: UINavigationController?
 
     private var state: State = .loading {
         didSet { handleNewState() }
@@ -47,7 +46,6 @@ final class InboxViewContainerController: TableNodeViewController {
         self.foldersService = foldersService ?? appContext.getFoldersService()
         self.decorator = decorator
         super.init(node: TableNode())
-        self.navController = navigationController
         node.delegate = self
         node.dataSource = self
     }
@@ -112,7 +110,7 @@ final class InboxViewContainerController: TableNodeViewController {
                 appContext: appContext,
                 viewModel: input
             )
-            navController?.setViewControllers([inboxViewController], animated: false)
+            navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }
 }
