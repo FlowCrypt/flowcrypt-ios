@@ -51,7 +51,7 @@ actor KeyChainService {
 
         guard let encryptionKey = try fetchEncryptionKey(property: storageKey) else {
             if try EncryptedStorage.doesStorageFileExist {
-                throw AppErr.general("KeyChainService: failed to get encryption key prefix")
+                throw AppErr.general("KeyChainService: got legacy dynamic prefix from user defaults but could not find entry in key chain based on it")
             }
             return nil
         }
