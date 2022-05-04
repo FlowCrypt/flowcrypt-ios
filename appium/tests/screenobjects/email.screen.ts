@@ -124,8 +124,8 @@ class EmailScreen extends BaseScreen {
     expect(await element.getValue()).toEqual(sender);
   }
 
-  senderEmail = async (index = 0) =>{
-      return $(`~aid-sender-${index}`)
+  senderEmail = async (index = 0) => {
+    return $(`~aid-sender-${index}`)
   }
 
   checkEmailSubject = async (subject: string) => {
@@ -148,16 +148,16 @@ class EmailScreen extends BaseScreen {
   }
 
   checkThreadMessage = async (email: string, subject: string, text: string, date: string, index = 0) => {
-      await this.checkEmailSubject(subject);
-      await this.checkEmailSender(email, index);
-      await this.clickExpandButtonByIndex(index);
-      await this.checkEmailText(text, index);
-      await this.checkDate(date, index);
+    await this.checkEmailSubject(subject);
+    await this.checkEmailSender(email, index);
+    await this.clickExpandButtonByIndex(index);
+    await this.checkEmailText(text, index);
+    await this.checkDate(date, index);
   }
 
   clickExpandButtonByIndex = async (index: any) => {
     const element = (`~aid-expand-image-${index}`);
-    if(await (await $(element)).isDisplayed()) {
+    if (await (await $(element)).isDisplayed()) {
       await ElementHelper.waitAndClick(await $(element));
     }
   }
@@ -178,7 +178,7 @@ class EmailScreen extends BaseScreen {
   }
 
   clickDownloadButton = async () => {
-    await ElementHelper.waitAndClick(await  this.downloadButton);
+    await ElementHelper.waitAndClick(await this.downloadButton);
   }
 
   enterPassPhrase = async (text: string = CommonData.account.passPhrase) => {
@@ -202,12 +202,12 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.replyButton);
   }
 
-  clickRecipientsButton =async () => {
+  clickRecipientsButton = async () => {
     await ElementHelper.waitAndClick(await this.recipientsButton);
   }
 
   clickMenuButton = async () => {
-    await ElementHelper.waitAndClick(await this.menuButton);
+    await ElementHelper.waitAndClick(await this.menuButton, 300);
   }
 
   clickForwardButton = async () => {
