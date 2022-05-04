@@ -35,6 +35,7 @@ describe('INBOX: ', () => {
 
     // check reply message
     await EmailScreen.clickReplyButton();
+    await NewMessageScreen.checkRecipientsTextFieldIsInvisible();
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [senderName],
       subject: replySubject,
@@ -45,6 +46,7 @@ describe('INBOX: ', () => {
     // check reply all message
     await EmailScreen.clickMenuButton();
     await EmailScreen.clickReplyAllButton();
+    await NewMessageScreen.checkRecipientsTextFieldIsInvisible();
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [recipientName, senderName],
       subject: replySubject,
