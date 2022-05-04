@@ -75,9 +75,11 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
                     title: self.decorator.attributedTitle(for: part),
                     color: self.decorator.buttonColor(for: part)
                 )
-                return ButtonCellNode(input: input) { [weak self] in
+                let buttonCellNode = ButtonCellNode(input: input) { [weak self] in
                     self?.handleTap(on: part)
                 }
+                buttonCellNode.accessibilityIdentifier = self.decorator.identifier(for: part)
+                return buttonCellNode
             }
         }
     }
