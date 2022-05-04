@@ -82,8 +82,7 @@ extension CheckMailAuthViewController {
             )
         case 2:
             return ButtonCellNode(input: .signInAgain) { [weak self] in
-                guard let self = self else { return }
-                self.authorize()
+                self?.authorize()
             }
         default:
             return ASCellNode()
@@ -100,12 +99,7 @@ extension CheckMailAuthViewController {
                     email: email
                 )
             } catch {
-                switch error {
-                case GoogleUserServiceError.wrongAccount:
-                    showAlert(message: error.errorMessage)
-                default:
-                    break
-                }
+                showAlert(message: error.errorMessage)
             }
         }
     }

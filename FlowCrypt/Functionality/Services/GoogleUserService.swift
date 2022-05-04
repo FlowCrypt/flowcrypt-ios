@@ -31,14 +31,16 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
         case .cancelledAuthorization:
             return "google_user_service_error_auth_cancelled".localized
         case .wrongAccount(let signedAccount, let currentAccount):
-            return "google_user_service_error_wrong_account".localizeWithArguments(signedAccount, currentAccount, currentAccount)
+            return "google_user_service_error_wrong_account".localizeWithArguments(
+                signedAccount, currentAccount, currentAccount
+            )
         case .contextError(let message):
-            return "\("google_user_service_context_error".localized): \(message)"
+            return "google_user_service_context_error".localizeWithArguments(message)
         case .inconsistentState(let message):
-            return "\("google_user_service_error_inconsistent_state".localized): \(message)"
+            return "google_user_service_error_inconsistent_state".localizeWithArguments(message)
         case .userNotAllowedAllNeededScopes(let missingScopes):
             let scopesLabel = missingScopes.map(\.title).joined(separator: ", ")
-            return "\("google_user_service_error_missing_scopes".localized): \(scopesLabel)"
+            return "google_user_service_error_missing_scopes".localizeWithArguments(scopesLabel)
         }
     }
 }

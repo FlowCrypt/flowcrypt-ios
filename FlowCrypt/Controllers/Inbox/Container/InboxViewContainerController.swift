@@ -110,8 +110,6 @@ final class InboxViewContainerController: TableNodeViewController {
     }
 
     private func handle(error: Error) {
-        node.reloadData()
-
         switch error {
         case GmailServiceError.invalidGrant:
             appContext.globalRouter.renderMissingPermissionsView(
@@ -160,24 +158,24 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
         return { [weak self] in
             guard let self = self else { return ASCellNode() }
 
+            // Retry Button
+            if indexPath.row == 1 {
+                return ButtonCellNode(
+                    input: ButtonCellNode.Input(
+                        title: self.decorator.retryActionTitle()
+                    )
+                ) {
+                    self.fetchInboxFolder()
+                }
+            }
+
             switch self.state {
             case .loading:
                 return TextCellNode.loading
             case .error(let error):
-                switch indexPath.row {
-                case 1:
-                    return ButtonCellNode(
-                        input: ButtonCellNode.Input(
-                            title: self.decorator.retryActionTitle()
-                        )
-                    ) {
-                        self.fetchInboxFolder()
-                    }
-                default:
-                    return TextCellNode(
-                        input: self.decorator.errorInput(with: descriptionSize, error: error)
-                    )
-                }
+                return TextCellNode(
+                    input: self.decorator.errorInput(with: descriptionSize, error: error)
+                )
             case .empty:
                 return TextCellNode(
                     input: self.decorator.emptyFoldersInput(with: size)

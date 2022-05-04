@@ -367,25 +367,15 @@ extension ThreadDetailsViewController {
             handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
         default:
             // TODO: - Ticket - Improve error handling for ThreadDetailsViewController
-            let nsError = error as NSError
-            switch nsError.code {
-            case Imap.Err.fetch.rawValue:
+            if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
                 // todo - the missing msg should be removed from the list in inbox view
                 // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
                 showToast("Message not found in folder: \(thread.path)")
-                navigationController?.popViewController(animated: true)
-            default:
-                showRetryAlert(
-                    title: "message_failed_open".localized,
-                    message: error.errorMessage,
-                    cancelActionTitle: "go_back".localized,
-                    onRetry: { _ in
-                        // TODO
-                    },
-                    onCancel: { [weak self] _ in
-                        self?.navigationController?.popViewController(animated: true)
-                    })
+            } else {
+                // todo - this should be a retry / cancel alert
+                showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
             }
+            navigationController?.popViewController(animated: true)
         }
     }
 
