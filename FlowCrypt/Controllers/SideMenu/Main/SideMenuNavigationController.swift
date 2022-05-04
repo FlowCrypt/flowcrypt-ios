@@ -57,6 +57,8 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
             $0.delegate = self
             $0.animationDuration = Constants.animationDuration
         }
+        let ekmVcHelper = EKMVcHelper(appContext: appContext)
+        ekmVcHelper.refreshKeysFromEKMIfNeeded(in: self)
     }
 
     override func viewDidLoad() {

@@ -40,6 +40,35 @@ struct AppStartup {
         }
     }
 
+    // Update `lastModified` value (KeyPairRealm `lastModified` was added in realm schema version 9)
+    // Need to set correct `lastModified` value when user first opens app from older versions
+    @MainActor
+    private func checkAndUpdateLastModified(context: AppContextWithUser) async throws {
+        let lastModifiedUpdatedFlag = "IS_LAST_MODIFIED_FLAG_UPDATED"
+        let userDefaults = UserDefaults.standard
+        if userDefaults.bool(forKey: lastModifiedUpdatedFlag) {
+           return
+        }
+        // Added storage access directly because this function logic should be removed in the near future
+        let storage = try context.encryptedStorage.storage
+        let keyPairs = storage.objects(KeypairRealmObject.self).where({
+            $0.account.equals(context.user.email)
+        }).unique()
+
+        for keyPair in keyPairs {
+            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: keyPair.public.data())
+            try storage.write {
+                if let keyDetail = parsedKey.keyDetails.first, let lastModified = keyDetail.lastModified {
+                    keyPair.lastModified = lastModified
+                } else {
+                    storage.delete(keyPair)
+                }
+            }
+        }
+
+        userDefaults.set(true, forKey: lastModifiedUpdatedFlag)
+    }
+
     private func setupCore() async {
         logger.logInfo("Setup Core")
         await Core.shared.startIfNotAlreadyRunning()
@@ -63,11 +92,16 @@ struct AppStartup {
         switch try entryPointForUser() {
         case .mainFlow:
             try await startWithUserContext(appContext: appContext, window: window) { context in
-                let controller = InboxViewContainerController(appContext: context)
-                window.rootViewController = SideMenuNavigationController(
-                    appContext: context,
-                    contentViewController: controller
-                )
+                Task {
+                    // TODO: need to remove this after a few versions.
+                    // https://github.com/FlowCrypt/flowcrypt-ios/pull/1510#discussion_r861051611
+                    try await checkAndUpdateLastModified(context: context)
+                    let controller = InboxViewContainerController(appContext: context)
+                    window.rootViewController = SideMenuNavigationController(
+                        appContext: context,
+                        contentViewController: controller
+                    )
+                }
             }
         case .signIn:
             window.rootViewController = MainNavigationController(

@@ -82,6 +82,12 @@
 "error_login" = "Login Error";
 "error_wrong_app_state" = "Wrong application state. User not found for session %@";
 
+// Refresh key
+"refresh_key_alert_title" = "Enter pass phrase to keep your account keys up to date.";
+"refresh_key_invalid_pass_phrase" = "Incorrect pass phrase. Please try again.";
+"refresh_key_success" = "Account keys updated";
+"refresh_key_error" = "Error updating account keys: %@";
+
 // KeyServiceError
 "keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
 "keyServiceError_retrieve_parse" = "Could not parse keys from storage. Please reinstall the app.";
@@ -317,6 +323,7 @@
 "organisational_rules_must_submit_attester_error" = "Combination of rules (PRV_AUTOIMPORT_OR_AUTOGEN + ENFORCE_ATTESTER_SUBMIT) is not supported on this platform";
 "organisational_rules_ekm_empty_private_keys_error" = "There are no private keys configured for you. Please ask yout systems administrator or help desk";
 "organisational_rules_ekm_keys_are_not_decrypted_error" = "Received private keys are not fully decrypted. Please try login flow again";
+"organisational_rules_ekm_keys_are_unexpectedly_encrypted_error" = "One or more of keys received from EKM are unexpectedly encrypted";
 "organisational_rules_ekm_keys_are_invalid_error" = "One or more of keys received from EKM are invalid";
 "organisational_wrong_email_error" = "Not a valid email %@";
 

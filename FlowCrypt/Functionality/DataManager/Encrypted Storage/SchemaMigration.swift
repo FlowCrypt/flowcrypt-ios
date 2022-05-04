@@ -93,5 +93,6 @@ extension SchemaMigration.Properties {
         case user
         case allFingerprints
         case allLongids
+        case lastModified
     }
 }

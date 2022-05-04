@@ -15,7 +15,7 @@ final class PassPhraseServiceMock: PassPhraseServiceType {
 
     var passPhrases: [PassPhrase] = []
 
-    func getPassPhrases() -> [PassPhrase] {
+    func getPassPhrases(for email: String) -> [PassPhrase] {
         passPhrases
     }
 
