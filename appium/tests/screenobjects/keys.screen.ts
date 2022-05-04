@@ -7,16 +7,16 @@ import {
 } from '../screenobjects/all-screens';
 
 const SELECTORS = {
-  KEYS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Keys"`]',
-  ADD_BUTTON: '~Add',
-  NAME_AND_EMAIL: '~keyTitle',
-  DATE_CREATED: '~keyDate',
-  FINGERPRINT: '~keySubtitle',
-  SHOW_PUBLIC_KEY_BUTTON: '~Show public key',
-  SHOW_KEY_DETAILS_BUTTON: '~Show key details',
-  COPY_TO_CLIPBOARD_BUTTON: '~Copy to clipboard',
-  SHARE_BUTTON: '~Share',
-  SHOW_PRIVATE_KEY_BUTTON: '~Show private key',
+  KEYS_HEADER: '~navigationItemKeys',
+  ADD_BUTTON: '~aid-add-button',
+  NAME_AND_EMAIL: '~aid-key-title',
+  DATE_CREATED: '~aid-key-date-created',
+  FINGERPRINT: '~aid-key-subtitle',
+  SHOW_PUBLIC_KEY_BUTTON: '~aid-key-public-info',
+  SHOW_KEY_DETAILS_BUTTON: '~aid-key-details',
+  COPY_TO_CLIPBOARD_BUTTON: '~aid-key-copy',
+  SHARE_BUTTON: '~aid-key-share',
+  SHOW_PRIVATE_KEY_BUTTON: '~aid-key-private-info',
   BACK_BUTTON: '~aid-back-button',
 };
 

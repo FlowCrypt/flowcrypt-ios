@@ -45,4 +45,21 @@ struct KeyDetailViewDecorator {
     func buttonColor(for keyDetailPart: KeyDetailViewController.Part) -> UIColor {
         keyDetailPart.isPrivateKey ? .red : .main
     }
+
+    func identifier(for keyDetailPart: KeyDetailViewController.Part) -> String {
+        switch keyDetailPart {
+        case .description:
+            return "aid-key-description"
+        case .publicInfo:
+            return "aid-key-public-info"
+        case .copy:
+            return "aid-key-copy"
+        case .keyDetails:
+            return "aid-key-details"
+        case .save:
+            return "aid-key-share"
+        case .privateInfo:
+            return "aid-key-private-info"
+        }
+    }
 }

@@ -155,7 +155,9 @@ class EmailScreen extends BaseScreen {
 
   clickExpandButtonByIndex = async (index: any) => {
     const element = await $(`~aid-expand-image-${index}`);
-    await ElementHelper.waitAndClick(element);
+    if (await element.isDisplayed()) {
+      await ElementHelper.waitAndClick(element);
+    }
   }
 
   checkDate = async (date: string, index: any) => {

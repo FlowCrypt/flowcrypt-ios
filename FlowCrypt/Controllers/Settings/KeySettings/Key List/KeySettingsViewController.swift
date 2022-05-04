@@ -58,6 +58,7 @@ final class KeySettingsViewController: TableNodeViewController {
                 target: self,
                 action: #selector(handleAddButtonTap)
             )
+            navigationItem.rightBarButtonItem?.accessibilityIdentifier = "aid-add-button"
         }
     }
 
