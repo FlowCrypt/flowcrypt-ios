@@ -19,48 +19,70 @@ actor KeyChainService {
     private let logger = Logger.nested("KeyChain")
     private let keyByteLen = 64
 
-    /// this dynamic keychainIndex ensures that we use a different keychain index
-    ///   after deleting the app, because keychain entries survive app uninstall
-    @MainActor private func getKeychainIndex() throws -> String {
-        guard UIApplication.shared.isProtectedDataAvailable else {
-            // when not available, UserDefaults is empty and a new index would be wrongly generated
-            // which would cause new database encryption key to get generated
-            // and that would corrupt existing storage
-            // https://github.com/FlowCrypt/flowcrypt-ios/issues/1373
-            throw AppErr.general("KeyChainService: protected data is not available")
-        }
-        let dynamicPartIndex = "indexSecureKeychainPrefix"
-        if let storedDynamicPart = UserDefaults.standard.string(forKey: dynamicPartIndex) {
-            return constructKeychainIndex(dynamicPart: storedDynamicPart)
-        }
-        let newDynamicPart = try newRandomString()
-        UserDefaults.standard.set(newDynamicPart, forKey: dynamicPartIndex)
-        return constructKeychainIndex(dynamicPart: newDynamicPart)
+    private enum Constants {
+        static let legacyKeychainIndexPrefixInUserDefaults = "indexSecureKeychainPrefix"
+        static let keychainPropertyKey = "app-storage-encryption-key"
     }
 
-    @MainActor private func newRandomString() throws -> String {
-        logger.logInfo("newRandomString - generating new KeyChain index")
-        guard let randomBytes = CoreHost().getSecureRandomByteNumberArray(12) else {
-            throw AppErr.general("KeyChainService.newRandomString - randomBytes are nil")
+    @MainActor var storageEncryptionKey: Data {
+        get throws {
+            if let key = try fetchEncryptionKey() {
+                return key
+            }
+
+            // TODO: Should be removed after all users migrated to new keychain
+            if let legacyKey = try fetchLegacyEncryptionKey() {
+                try saveStorageEncryptionKey(data: legacyKey)
+                removeLegacyEncryptionKey()
+                return legacyKey
+            }
+
+            return try generateAndSaveStorageEncryptionKey()
         }
-        return Data(randomBytes)
-            .base64EncodedString()
-            .replacingOccurrences(of: "[^A-Za-z0-9]+", with: "", options: [.regularExpression])
     }
 
-    @MainActor private func constructKeychainIndex(dynamicPart: String) -> String {
-        return dynamicPart + "-indexStorageEncryptionKey"
+    @MainActor private func fetchLegacyEncryptionKey() throws -> Data? {
+        let prefixKey = Constants.legacyKeychainIndexPrefixInUserDefaults
+
+        guard let storedDynamicPart = UserDefaults.standard.string(forKey: prefixKey)
+        else { return nil }
+
+        let storageKey = storedDynamicPart + "-indexStorageEncryptionKey"
+
+        guard let encryptionKey = try fetchEncryptionKey(property: storageKey) else {
+            if try EncryptedStorage.doesStorageFileExist {
+                throw AppErr.general("KeyChainService: got legacy dynamic prefix from user defaults but could not find entry in key chain based on it")
+            }
+            return nil
+        }
+
+        return encryptionKey
     }
 
-    @MainActor private func generateAndSaveStorageEncryptionKey() throws {
-        logger.logInfo("generateAndSaveStorageEncryptionKey")
+    @MainActor private func removeLegacyEncryptionKey() {
+        UserDefaults.standard.removeObject(
+            forKey: Constants.legacyKeychainIndexPrefixInUserDefaults
+        )
+    }
+
+    @MainActor private func generateAndSaveStorageEncryptionKey() throws -> Data {
+        logger.logInfo("generate storage encryption key")
+
         guard let randomBytes = CoreHost().getSecureRandomByteNumberArray(keyByteLen) else {
             throw AppErr.general("KeyChainService getSecureRandomByteNumberArray bytes are nil")
         }
+
+        let keyData = Data(randomBytes)
+        try saveStorageEncryptionKey(data: keyData)
+
+        return keyData
+    }
+
+    @MainActor private func saveStorageEncryptionKey(data: Data) throws {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: try getKeychainIndex(),
-            kSecValueData: Data(randomBytes)
+            kSecAttrAccount: Constants.keychainPropertyKey,
+            kSecValueData: data
         ]
         let addOsStatus = SecItemAdd(query as CFDictionary, nil)
         guard addOsStatus == noErr else {
@@ -68,18 +90,20 @@ actor KeyChainService {
         }
     }
 
-    @MainActor func getStorageEncryptionKey() throws -> Data {
+    @MainActor private func fetchEncryptionKey(
+        property: String = Constants.keychainPropertyKey
+    ) throws -> Data? {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: try getKeychainIndex(),
+            kSecAttrAccount: property,
             kSecReturnData: kCFBooleanTrue!,
             kSecMatchLimit: kSecMatchLimitOne
         ]
         var keyFromKeychain: AnyObject?
         let findOsStatus = SecItemCopyMatching(query as CFDictionary, &keyFromKeychain)
+
         guard findOsStatus != errSecItemNotFound else {
-            try generateAndSaveStorageEncryptionKey() // saves new key to storage
-            return try getStorageEncryptionKey() // retries search
+            return nil
         }
 
         guard findOsStatus == noErr else {

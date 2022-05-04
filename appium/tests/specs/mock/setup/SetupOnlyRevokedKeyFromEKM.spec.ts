@@ -39,7 +39,7 @@ describe('SETUP: ', () => {
     };
 
     mockApi.ekmConfig = {
-      returnKeys: [ekmPrivateKeySamples.revokedPrv]
+      returnKeys: [ekmPrivateKeySamples.e2eRevokedKey.prv]
     };
 
     await mockApi.withMockedApis(async () => {

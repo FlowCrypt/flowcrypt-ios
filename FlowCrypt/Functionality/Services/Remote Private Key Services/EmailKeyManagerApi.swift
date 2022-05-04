@@ -14,9 +14,9 @@ protocol EmailKeyManagerApiType {
 }
 
 enum EmailKeyManagerApiError: Error {
-    case noKeys
     case keysAreNotDecrypted
     case keysAreInvalid
+    case keysAreUnexpectedlyEncrypted
     case noPrivateKeysUrlString
 }
 
@@ -26,7 +26,7 @@ extension EmailKeyManagerApiError: LocalizedError {
         case .noPrivateKeysUrlString: return ""
         case .keysAreNotDecrypted: return "organisational_rules_ekm_keys_are_not_decrypted_error".localized
         case .keysAreInvalid: return "organisational_rules_ekm_keys_are_invalid_error".localized
-        case .noKeys: return "organisational_rules_ekm_empty_private_keys_error".localized
+        case .keysAreUnexpectedlyEncrypted: return "organisational_rules_ekm_keys_are_unexpectedly_encrypted_error".localized
         }
     }
 }
@@ -66,10 +66,6 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         )
         let response = try await ApiCall.call(request)
         let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
-
-        if decryptedPrivateKeysResponse.privateKeys.isEmpty {
-            throw EmailKeyManagerApiError.noKeys
-        }
 
         var keys: [KeyDetails] = []
         for privateKey in decryptedPrivateKeysResponse.privateKeys {

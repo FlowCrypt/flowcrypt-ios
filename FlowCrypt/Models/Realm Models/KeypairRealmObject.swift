@@ -27,6 +27,7 @@ final class KeypairRealmObject: Object {
     @Persisted var `public`: String
     @Persisted var passphrase: String?
     @Persisted var source: String
+    @Persisted var lastModified: Int = 0
     @Persisted var user: UserRealmObject?
     @Persisted var allFingerprints: List<String>
     @Persisted var allLongids: List<String>
@@ -67,6 +68,7 @@ extension KeypairRealmObject {
         self.primaryFingerprint = primaryFingerprint
         self.passphrase = passphrase
         self.source = source.rawValue
+        self.lastModified = keyDetails.lastModified ?? 0
         self.user = user
     }
 }

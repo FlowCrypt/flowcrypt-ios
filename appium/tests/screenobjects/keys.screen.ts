@@ -1,12 +1,17 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
+import { KeyDetailInfo } from "../../api-mocks/apis/ekm/ekm-endpoints";
+import {
+  MenuBarScreen,
+  SettingsScreen
+} from '../screenobjects/all-screens';
 
 const SELECTORS = {
   KEYS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Keys"`]',
   ADD_BUTTON: '~Add',
-  NAME_AND_EMAIL: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[1]',
-  DATE_CREATED: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[2]',
-  FINGERPRINT: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeStaticText[3]',
+  NAME_AND_EMAIL: '~keyTitle',
+  DATE_CREATED: '~keyDate',
+  FINGERPRINT: '~keySubtitle',
   SHOW_PUBLIC_KEY_BUTTON: '~Show public key',
   SHOW_KEY_DETAILS_BUTTON: '~Show key details',
   COPY_TO_CLIPBOARD_BUTTON: '~Copy to clipboard',
@@ -29,15 +34,15 @@ class KeysScreen extends BaseScreen {
   }
 
   get nameAndEmail() {
-    return $(SELECTORS.NAME_AND_EMAIL);
+    return $$(SELECTORS.NAME_AND_EMAIL);
   }
 
   get dateCreated() {
-    return $(SELECTORS.DATE_CREATED);
+    return $$(SELECTORS.DATE_CREATED);
   }
 
   get fingerPrint() {
-    return $(SELECTORS.FINGERPRINT);
+    return $$(SELECTORS.FINGERPRINT);
   }
 
   get showPublicKeyButton() {
@@ -64,20 +69,24 @@ class KeysScreen extends BaseScreen {
     return $(SELECTORS.BACK_BUTTON)
   }
 
-  checkKeysScreen = async () => {
-    //will add value verification for key later, need to create Api request for get key value
+  checkKeysScreen = async (keys: KeyDetailInfo[]) => {
     await (await this.keysHeader).waitForDisplayed();
     await (await this.addButton).waitForDisplayed({ reverse: true });
-    await (await this.nameAndEmail).waitForExist();
-    await (await this.dateCreated).waitForExist();
-    await (await this.fingerPrint).waitForExist();
-    expect(await (await this.nameAndEmail).getAttribute('value')).toBeTruthy();
-    expect(await (await this.dateCreated).getAttribute('value')).toBeTruthy();
-    expect(await (await this.fingerPrint).getAttribute('value')).toBeTruthy();
+    await this.checkKeys(keys);
   }
 
-  clickOnKey = async () => {
-    await ElementHelper.waitAndClick(await this.nameAndEmail);
+  private checkKeys = async (keys: KeyDetailInfo[]) => {
+    expect((await this.fingerPrint).length).toEqual(keys.length);
+    for (const [index, key] of keys.entries()) {
+      const fingerPrints = await (await this.fingerPrint)[index].getText();
+      expect(fingerPrints).toContain(key.primaryFingerprint ?? '');
+      expect(await (await this.nameAndEmail)[index].getValue()).toEqual(key.renderedPrimaryUid ?? '');
+      expect(await (await this.dateCreated)[index].getValue()).toEqual(key.renderedDateCreated ?? '');
+    }
+  }
+
+  clickOnKey = async (index = 0) => {
+    await ElementHelper.waitAndClick((await this.nameAndEmail)[index]);
   }
 
   checkSelectedKeyScreen = async () => {
@@ -94,6 +103,12 @@ class KeysScreen extends BaseScreen {
 
   clickBackButton = async () => {
     await this.backButton.click();
+  }
+
+  openScreenFromSideMenu = async () => {
+    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickSettingsButton();
+    await SettingsScreen.clickOnSettingItem('Keys');
   }
 }
 

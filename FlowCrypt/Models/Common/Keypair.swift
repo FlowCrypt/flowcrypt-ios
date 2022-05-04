@@ -16,6 +16,7 @@ struct Keypair {
     var source: String
     var allFingerprints: [String]
     var allLongids: [String]
+    var lastModified: Int
 
     var primaryLongid: String {
         allLongids[0]
@@ -31,5 +32,6 @@ extension Keypair {
         self.source = object.source
         self.allFingerprints = object.allFingerprints.map { $0 }
         self.allLongids = object.allLongids.map { $0 }
+        self.lastModified = object.lastModified
     }
 }

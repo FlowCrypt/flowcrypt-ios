@@ -67,6 +67,15 @@ public extension UIViewController {
     }
 
     @MainActor
+    func showAsyncAlert(title: String? = "error".localized, message: String) async throws {
+        return try await withCheckedThrowingContinuation { (continuation) in
+            showAlert(title: title, message: message, onOk: {
+                return continuation.resume()
+            })
+        }
+    }
+
+    @MainActor
     func showRetryAlert(
         title: String? = "error".localized,
         message: String,
