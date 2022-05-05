@@ -38,7 +38,7 @@ describe('INBOX: ', () => {
     const keyMismatchName = CommonData.keyMismatch.senderName;
     const keyMismatchText = CommonData.keyMismatch.message;
     const keyMismatchEncryptedBadge = CommonData.keyMismatch.encryptedBadgeText;
-    const keyMismatchSignatureBadge= CommonData.keyMismatch.signatureBadgeText;
+    const keyMismatchSignatureBadge = CommonData.keyMismatch.signatureBadgeText;
     const keyMismatchAttachmentError = CommonData.errors.attachmentDecryptKeyMismatchError;
     const firstAttachmentName = CommonData.keyMismatch.firstAttachmentName;
     const firstAttachmentBody = CommonData.keyMismatch.firstAttachmentBody;
@@ -100,5 +100,6 @@ describe('INBOX: ', () => {
     await BaseScreen.checkModalMessage(keyMismatchAttachmentError);
     await EmailScreen.clickDownloadButton();
     await EmailScreen.checkAttachmentTextView(firstAttachmentBody);
+    await EmailScreen.clickBackButton();
   });
 });
