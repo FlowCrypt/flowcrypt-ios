@@ -46,7 +46,7 @@ extension InboxRenderable {
         self.wrappedType = .message(message)
     }
 
-    init(thread: MessageThread, folderPath: String, activeUserEmail: String) {
+    init(thread: MessageThread, folderPath: String?, activeUserEmail: String) {
 
         self.title = InboxRenderable.messageTitle(activeUserEmail: activeUserEmail, with: thread, and: folderPath)
 
@@ -65,7 +65,7 @@ extension InboxRenderable {
         self.wrappedType = .thread(thread)
     }
 
-    private static func messageTitle(activeUserEmail: String, with thread: MessageThread, and folderPath: String) -> String {
+    private static func messageTitle(activeUserEmail: String, with thread: MessageThread, and folderPath: String?) -> String {
         // for now its not exactly clear how titles on other folders should looks like
         // so in scope of this PR we are applying this title presentation only for "sent" folder
         if folderPath == MessageLabelType.sent.value {
