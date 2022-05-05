@@ -188,11 +188,10 @@ extension GlobalRouter: GlobalRouterType {
         if let gmailUserError = error as? GoogleUserServiceError {
             logger.logInfo("Gmail login failed with error: \(gmailUserError.errorMessage)")
 
-            if case .cancelledAuthorization = gmailUserError {
-                return
-            }
-
-            if case .userNotAllowedAllNeededScopes = gmailUserError {
+            switch gmailUserError {
+            case .cancelledAuthorization:
+                return // don't show error modal when user cancels authorization
+            case .userNotAllowedAllNeededScopes:
                 let rootViewController = keyWindow.rootViewController
                 let navigationController = rootViewController as? UINavigationController ?? rootViewController?.navigationController
                 let checkAuthViewController = CheckMailAuthViewController(
@@ -201,6 +200,8 @@ extension GlobalRouter: GlobalRouterType {
                 )
                 navigationController?.pushViewController(checkAuthViewController, animated: true)
                 return
+            default:
+                break // show default error modal
             }
         }
 

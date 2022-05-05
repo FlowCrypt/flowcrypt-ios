@@ -110,7 +110,6 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 }
 
 // MARK: - Events
-
 extension SignInViewController {
     private func signInWithGmail() {
         Task {
