@@ -18,6 +18,7 @@ struct FetchMessageContext {
     /// Pagination
     let pagination: MessagesListPagination?
 
+    // Folder path might be nil in case when user wants to search for all folders
     init(folderPath: String?, count: Int?, searchQuery: String? = nil, pagination: MessagesListPagination?) {
         self.folderPath = folderPath
         self.count = count

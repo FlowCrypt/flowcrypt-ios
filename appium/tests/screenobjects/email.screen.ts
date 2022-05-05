@@ -120,25 +120,23 @@ class EmailScreen extends BaseScreen {
 
   checkEmailSender = async (sender: string, index = 0) => {
     const element = await this.senderEmail(index);
-    await element.waitForDisplayed();
+    await ElementHelper.waitElementVisible(element);
     expect(await element.getValue()).toEqual(sender);
   }
 
-  senderEmail = async (index = 0) =>{
-      return $(`~aid-sender-${index}`)
+  senderEmail = async (index = 0) => {
+    return $(`~aid-sender-${index}`)
   }
 
   checkEmailSubject = async (subject: string) => {
-    const selector = `~${subject}`;
-    await (await $(selector)).waitForDisplayed();
+    const subjectElement = await $(`~${subject}`);
+    await ElementHelper.waitElementVisible(subjectElement);
   }
 
   checkEmailText = async (text: string, index = 0) => {
-    const selector = `~aid-message-${index}`;
-    await (await $(selector)).waitForDisplayed();
-    console.log(await $(selector).getValue());
-
-    expect(await $(selector).getValue()).toContain(text)
+    const messageEl = await $(`~aid-message-${index}`);
+    await ElementHelper.waitElementVisible(messageEl);
+    expect(await messageEl.getValue()).toContain(text)
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
@@ -148,24 +146,24 @@ class EmailScreen extends BaseScreen {
   }
 
   checkThreadMessage = async (email: string, subject: string, text: string, date: string, index = 0) => {
-      await this.checkEmailSubject(subject);
-      await this.checkEmailSender(email, index);
-      await this.clickExpandButtonByIndex(index);
-      await this.checkEmailText(text, index);
-      await this.checkDate(date, index);
+    await this.checkEmailSubject(subject);
+    await this.checkEmailSender(email, index);
+    await this.clickExpandButtonByIndex(index);
+    await this.checkEmailText(text, index);
+    await this.checkDate(date, index);
   }
 
   clickExpandButtonByIndex = async (index: any) => {
-    const element = (`~aid-expand-image-${index}`);
-    if(await (await $(element)).isDisplayed()) {
-      await ElementHelper.waitAndClick(await $(element));
+    const element = await $(`~aid-expand-image-${index}`);
+    if (await element.isDisplayed()) {
+      await ElementHelper.waitAndClick(element);
     }
   }
 
   checkDate = async (date: string, index: any) => {
-    const element = `~aid-date-${index}`;
-    await (await $(element)).waitForDisplayed();
-    const convertedDate = moment(await $(element).getValue()).utcOffset(0).format('MMM DD');
+    const element = await $(`~aid-date-${index}`);
+    await ElementHelper.waitElementVisible(element);
+    const convertedDate = moment(await element.getValue()).utcOffset(0).format('MMM DD');
     expect(convertedDate).toEqual(date)
   }
 
@@ -178,7 +176,7 @@ class EmailScreen extends BaseScreen {
   }
 
   clickDownloadButton = async () => {
-    await ElementHelper.waitAndClick(await  this.downloadButton);
+    await ElementHelper.waitAndClick(await this.downloadButton);
   }
 
   enterPassPhrase = async (text: string = CommonData.account.passPhrase) => {
@@ -186,11 +184,11 @@ class EmailScreen extends BaseScreen {
   }
 
   checkWrongPassPhraseErrorMessage = async () => {
-    await (await this.wrongPassPhraseMessage).waitForDisplayed();
+    await ElementHelper.waitElementVisible(await this.wrongPassPhraseMessage);
   }
 
   checkAttachment = async (name: string) => {
-    await (await this.attachmentCell).waitForDisplayed();
+    await ElementHelper.waitElementVisible(await this.attachmentCell);
     await ElementHelper.waitForText(await this.attachmentTitle, name);
   }
 
@@ -202,12 +200,12 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.replyButton);
   }
 
-  clickRecipientsButton =async () => {
+  clickRecipientsButton = async () => {
     await ElementHelper.waitAndClick(await this.recipientsButton);
   }
 
   clickMenuButton = async () => {
-    await ElementHelper.waitAndClick(await this.menuButton);
+    await ElementHelper.waitAndClick(await this.menuButton, 300);
   }
 
   clickForwardButton = async () => {
