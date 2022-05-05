@@ -46,18 +46,21 @@ public final class ContactKeyCellNode: CellNode {
 
         fingerprintTitleNode.attributedText = "contacts_fingerprint".localized
             .attributed(.bold(16))
+        fingerprintTitleNode.accessibilityIdentifier = "aid-fingerprint-label"
         fingerprintNode.attributedText = input.fingerprint
-        fingerprintNode.accessibilityIdentifier = "fingerprintValue"
+        fingerprintNode.accessibilityIdentifier = "aid-fingerprint-value"
 
         createdAtTitleNode.attributedText = "contacts_created".localized
             .attributed(.bold(16))
+        createdAtTitleNode.accessibilityIdentifier = "aid-created-at-label"
         createdAtNode.attributedText = input.createdAt
-        createdAtNode.accessibilityIdentifier = "createdAtValue"
+        createdAtNode.accessibilityIdentifier = "aid-created-at-value"
 
         expiresTitleNode.attributedText = "contacts_expires".localized
             .attributed(.bold(16))
+        expiresTitleNode.accessibilityIdentifier = "aid-expires-label"
         expiresNode.attributedText = input.expires
-        expiresNode.accessibilityIdentifier = "expiresValue"
+        expiresNode.accessibilityIdentifier = "aid-expires"
 
         borderNode.borderWidth = 1.0
         borderNode.cornerRadius = 8.0
