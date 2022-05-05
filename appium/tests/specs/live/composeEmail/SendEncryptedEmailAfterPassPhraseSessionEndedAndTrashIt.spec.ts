@@ -53,7 +53,7 @@ describe('COMPOSE EMAIL: ', () => {
     await EmailScreen.clickOkButton();
     await MailFolderScreen.checkInboxScreen();
 
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickSentButton();
     await MailFolderScreen.checkSentScreen();
 
@@ -69,7 +69,7 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkSentScreen();
     await MailFolderScreen.checkEmailIsNotDisplayed(emailSubject);
     //Check email in Trash list
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickTrashButton();
     await MailFolderScreen.checkTrashScreen();
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);

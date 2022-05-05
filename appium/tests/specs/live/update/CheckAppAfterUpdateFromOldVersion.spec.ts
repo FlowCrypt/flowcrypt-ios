@@ -54,7 +54,7 @@ describe('UPDATE: ', () => {
 
     await OldVersionAppScreen.clickBackButton();
 
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkMenuBar();
 
     await MenuBarScreen.clickSettingsButton();
@@ -79,7 +79,7 @@ describe('UPDATE: ', () => {
     await driver.activateApp(bundleId);
 
     await MailFolderScreen.checkInboxScreen();
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkUserEmail();
     await MenuBarScreen.clickSettingsButton();
 
@@ -119,7 +119,7 @@ describe('UPDATE: ', () => {
     await KeysScreen.checkKeysScreen(liveKeys);
     await KeysScreen.clickBackButton();
 
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkMenuBar();
 
     await MenuBarScreen.clickInboxButton();

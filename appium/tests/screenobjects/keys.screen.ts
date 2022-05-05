@@ -106,7 +106,7 @@ class KeysScreen extends BaseScreen {
   }
 
   openScreenFromSideMenu = async () => {
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickSettingsButton();
     await SettingsScreen.clickOnSettingItem('Keys');
   }

@@ -27,7 +27,7 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     // Go to Contacts screen
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkUserEmail();
 
     await MenuBarScreen.clickSettingsButton();
@@ -38,7 +38,7 @@ describe('COMPOSE EMAIL: ', () => {
     await ContactScreen.checkEmptyList();
     await ContactScreen.clickBackButton();
 
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickInboxButton();
     await MailFolderScreen.checkInboxScreen();
 
@@ -55,7 +55,7 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.clickBackButton();
 
     // Go to Contacts screen
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkUserEmail();
 
     await MenuBarScreen.clickSettingsButton();
