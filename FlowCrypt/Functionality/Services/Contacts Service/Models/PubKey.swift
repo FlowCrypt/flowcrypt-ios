@@ -59,7 +59,7 @@ extension PubKey {
             armored: keyDetails.public,
             lastSig: keyDetails.lastModified.map { Date(timeIntervalSince1970: TimeInterval($0)) },
             lastChecked: Date(),
-            expiresOn: keyDetails.expiration.map { Date(timeIntervalSince1970: TimeInterval($0)) },
+            expiresOn: keyDetails.expiration.ifNotNil { Date(timeIntervalSince1970: TimeInterval($0)) },
             longids: longids,
             fingerprints: fingerprints,
             created: Date(timeIntervalSince1970: Double(keyDetails.created)),
