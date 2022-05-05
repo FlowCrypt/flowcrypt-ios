@@ -136,7 +136,9 @@ class NewMessageScreen extends BaseScreen {
 
   setAddRecipient = async (recipient?: string, type = 'to') => {
     if (recipient) {
-      await (await this.getRecipientsTextField(type)).setValue(recipient);
+      const textFieldEl = await this.getRecipientsTextField(type);
+      await ElementHelper.waitElementVisible(textFieldEl);
+      await textFieldEl.setValue(recipient);
       await browser.pause(500);
       await (await $(SELECTORS.RETURN_BUTTON)).click();
     }
