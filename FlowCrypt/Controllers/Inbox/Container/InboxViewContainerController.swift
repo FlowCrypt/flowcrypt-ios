@@ -91,12 +91,7 @@ final class InboxViewContainerController: TableNodeViewController {
         case .loading, .empty:
             node.reloadData()
         case let .error(error):
-            showAlert(
-                message: error.errorMessage,
-                onOk: { [node] in
-                    node?.reloadData()
-                }
-            )
+            handle(error: error)
         case .loadedFolders(let folders):
             let folder = folders
                 .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
@@ -111,6 +106,22 @@ final class InboxViewContainerController: TableNodeViewController {
                 viewModel: input
             )
             navigationController?.setViewControllers([inboxViewController], animated: false)
+        }
+    }
+
+    private func handle(error: Error) {
+        switch error {
+        case GmailServiceError.invalidGrant:
+            appContext.globalRouter.renderMissingPermissionsView(
+                appContext: appContext
+            )
+        default:
+            showAlert(
+                message: error.errorMessage,
+                onOk: { [node] in
+                    node?.reloadData()
+                }
+            )
         }
     }
 }

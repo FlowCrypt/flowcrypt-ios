@@ -110,11 +110,14 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
 }
 
 // MARK: - Events
-
 extension SignInViewController {
     private func signInWithGmail() {
         Task {
-            await appContext.globalRouter.signIn(appContext: appContext, route: .gmailLogin(self))
+            await appContext.globalRouter.signIn(
+                appContext: appContext,
+                route: .gmailLogin(self),
+                email: nil
+            )
         }
     }
 

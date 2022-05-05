@@ -12,7 +12,8 @@ import UIKit
 @MainActor
 protocol GlobalRouterType {
     func proceed()
-    func signIn(appContext: AppContext, route: GlobalRoutingType) async
+    func signIn(appContext: AppContext, route: GlobalRoutingType, email: String?) async
+    func renderMissingPermissionsView(appContext: AppContext)
     func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws
     func switchActive(user: User, appContext: AppContext) async throws
     func signOut(appContext: AppContext) async throws
@@ -55,7 +56,7 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
-    func signIn(appContext: AppContext, route: GlobalRoutingType) async {
+    func signIn(appContext: AppContext, route: GlobalRoutingType, email: String?) async {
         logger.logInfo("Sign in with \(route)")
         do {
             switch route {
@@ -63,12 +64,13 @@ extension GlobalRouter: GlobalRouterType {
                 viewController.showSpinner()
 
                 let googleService = GoogleUserService(
-                    currentUserEmail: try appContext.encryptedStorage.activeUser?.email,
+                    currentUserEmail: email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
                 let session = try await googleService.signIn(
                     in: viewController,
-                    scopes: GeneralConstants.Gmail.mailScope
+                    scopes: GeneralConstants.Gmail.mailScope,
+                    userEmail: email
                 )
                 try appContext.userAccountService.startSessionFor(session: session)
                 viewController.hideSpinner()
@@ -142,6 +144,16 @@ extension GlobalRouter: GlobalRouterType {
         keyWindow.makeKeyAndVisible()
     }
 
+    func renderMissingPermissionsView(appContext: AppContext) {
+        let email = (try? appContext.encryptedStorage.activeUser?.email) ?? ""
+        let controller = CheckMailAuthViewController(
+            appContext: appContext,
+            decorator: CheckMailAuthViewDecorator(type: .invalidGrant(email))
+        )
+        keyWindow.rootViewController = MainNavigationController(rootViewController: controller)
+        keyWindow.makeKeyAndVisible()
+    }
+
     @MainActor
     private func proceed(with appContext: AppContext) {
         logger.logInfo("proceed for session: \(appContext.session?.description ?? "nil")")
@@ -176,23 +188,26 @@ extension GlobalRouter: GlobalRouterType {
         if let gmailUserError = error as? GoogleUserServiceError {
             logger.logInfo("Gmail login failed with error: \(gmailUserError.errorMessage)")
 
-            if case .cancelledAuthorization = gmailUserError {
-                proceed()
-                return
-            }
-
-            if case .userNotAllowedAllNeededScopes = gmailUserError {
-                let navigationController = keyWindow.rootViewController?.navigationController
-                let checkAuthViewController = CheckMailAuthViewController(appContext: appContext)
+            switch gmailUserError {
+            case .cancelledAuthorization:
+                return // don't show error modal when user cancels authorization
+            case .userNotAllowedAllNeededScopes:
+                let rootViewController = keyWindow.rootViewController
+                let navigationController = rootViewController as? UINavigationController ?? rootViewController?.navigationController
+                let checkAuthViewController = CheckMailAuthViewController(
+                    appContext: appContext,
+                    decorator: CheckMailAuthViewDecorator(type: .setup)
+                )
                 navigationController?.pushViewController(checkAuthViewController, animated: true)
                 return
+            default:
+                break // show default error modal
             }
         }
 
         keyWindow.rootViewController?.showAlert(
             title: "error_login".localized,
-            message: error.errorMessage,
-            onOk: { [weak self] in self?.proceed() }
+            message: error.errorMessage
         )
     }
 }
