@@ -10,7 +10,7 @@ import UIKit
 
 struct CheckMailAuthViewDecorator {
     enum CheckMailAuthType {
-        case setup, invalidGrant
+        case setup, invalidGrant(String)
 
         var title: String {
             switch self {
@@ -25,8 +25,17 @@ struct CheckMailAuthViewDecorator {
             switch self {
             case .setup:
                 return "gmail_service_no_access_to_account_message".localized
+            case .invalidGrant(let email):
+                return "gmail_service_invalid_grant_error_message".localizeWithArguments(email)
+            }
+        }
+
+        var numberOfRows: Int {
+            switch self {
+            case .setup:
+                return 3
             case .invalidGrant:
-                return "gmail_service_invalid_grant_error_message".localized
+                return 4
             }
         }
     }

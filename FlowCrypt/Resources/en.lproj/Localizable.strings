@@ -337,9 +337,9 @@
 "gmail_service_missing_message_payload_error_message" = "Missing message payload";
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
 "gmail_service_provider_error_error_message" = "Gmail provider error: %@";
-"gmail_service_invalid_grant_error_message" = "Please reconnect the app to Gmail";
+"gmail_service_invalid_grant_error_message" = "Access to %@ account was revoked.\n\nPlease reconnect the app to Gmail";
 "gmail_service_missing_back_query_error_message" = "Missing backup query: %@";
-"gmail_service_no_access_to_account_message" = "Google login successful.\n Now connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
+"gmail_service_no_access_to_account_message" = "Google login successful.\nNow connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
 // Google User Service errors
 "google_user_service_error_wrong_account" = "Just used account %@ differs from already signed account %@.\n\nPlease use account %@ to log in";

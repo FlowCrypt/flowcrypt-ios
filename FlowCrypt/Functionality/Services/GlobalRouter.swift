@@ -63,7 +63,6 @@ extension GlobalRouter: GlobalRouterType {
             case .gmailLogin(let viewController):
                 viewController.showSpinner()
 
-                let email = try email ?? appContext.encryptedStorage.activeUser?.email
                 let googleService = GoogleUserService(
                     currentUserEmail: email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
@@ -146,9 +145,10 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     func renderMissingPermissionsView(appContext: AppContext) {
+        let email = (try? appContext.encryptedStorage.activeUser?.email) ?? ""
         let controller = CheckMailAuthViewController(
             appContext: appContext,
-            decorator: CheckMailAuthViewDecorator(type: .invalidGrant)
+            decorator: CheckMailAuthViewDecorator(type: .invalidGrant(email))
         )
         keyWindow.rootViewController = MainNavigationController(rootViewController: controller)
         keyWindow.makeKeyAndVisible()

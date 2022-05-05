@@ -309,7 +309,7 @@ extension MyMenuViewController {
                 do {
                     sideMenuController()?.setContentViewController(try await SettingsViewController(appContext: appContext))
                 } catch {
-                    showAlert(message: error.localizedDescription)
+                    showAlert(message: error.errorMessage)
                 }
             }
         case .logOut:
@@ -317,7 +317,7 @@ extension MyMenuViewController {
                 do {
                     try await appContext.globalRouter.signOut(appContext: appContext)
                 } catch {
-                    showAlert(message: error.localizedDescription)
+                    showAlert(message: error.errorMessage)
                 }
             }
         }

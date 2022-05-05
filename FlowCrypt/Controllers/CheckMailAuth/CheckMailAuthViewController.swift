@@ -35,7 +35,7 @@ class CheckMailAuthViewController: TableNodeViewController {
 // MARK: - ASTableDelegate, ASTableDataSource
 extension CheckMailAuthViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        return 3
+        return decorator.type.numberOfRows
     }
 
     func tableNode(_ node: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -62,10 +62,7 @@ extension CheckMailAuthViewController {
             return SetupTitleNode(
                 SetupTitleNode.Input(
                     title: decorator.title,
-                    insets: UIEdgeInsets(
-                        top: 64, left: 16,
-                        bottom: 64, right: 16
-                    ),
+                    insets: .deviceSpecificTextInsets(top: 64, bottom: 64),
                     backgroundColor: .backgroundColor
                 )
             )
@@ -84,6 +81,10 @@ extension CheckMailAuthViewController {
             return ButtonCellNode(input: .signInAgain) { [weak self] in
                 self?.authorize()
             }
+        case 3:
+            return ButtonCellNode(input: .signOut) { [weak self] in
+                self?.signOut()
+            }
         default:
             return ASCellNode()
         }
@@ -92,12 +93,21 @@ extension CheckMailAuthViewController {
     private func authorize() {
         Task {
             do {
-                let email = try appContext.encryptedStorage.activeUser?.email
                 await self.appContext.globalRouter.signIn(
                     appContext: self.appContext,
                     route: .gmailLogin(self),
-                    email: email
+                    email: try appContext.encryptedStorage.activeUser?.email
                 )
+            } catch {
+                showAlert(message: error.errorMessage)
+            }
+        }
+    }
+
+    private func signOut() {
+        Task {
+            do {
+                try await appContext.globalRouter.signOut(appContext: appContext)
             } catch {
                 showAlert(message: error.errorMessage)
             }
@@ -112,6 +122,15 @@ private extension ButtonCellNode.Input {
                 .localized
                 .attributed(.bold(16), color: .white, alignment: .center),
             color: .main
+        )
+    }
+
+    static var signOut: ButtonCellNode.Input {
+        return .init(
+            title: "log_out"
+                .localized
+                .attributed(.bold(16), color: .white, alignment: .center),
+            color: .red
         )
     }
 }
