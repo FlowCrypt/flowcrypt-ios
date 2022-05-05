@@ -6,7 +6,7 @@ const SELECTORS = {
   FINGERPRINT_VALUE: '~aid-fingerprint-value',
   CREATED_VALUE: '~aid-created-at-value',
   EXPIRES_VALUE: '~aid-expires-value',
-  FINGERPRINT_LABEL: '~aid-fingerprint-label:',
+  FINGERPRINT_LABEL: '~aid-fingerprint-label',
   CREATED_LABEL: '~aid-created-at-label',
   EXPIRES_LABEL: '~aid-expires-label',
   PGD_USER_ID_LABEL: '~aid-user-label',

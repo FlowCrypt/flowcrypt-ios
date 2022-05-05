@@ -60,7 +60,7 @@ public final class ContactKeyCellNode: CellNode {
             .attributed(.bold(16))
         expiresTitleNode.accessibilityIdentifier = "aid-expires-label"
         expiresNode.attributedText = input.expires
-        expiresNode.accessibilityIdentifier = "aid-expires"
+        expiresNode.accessibilityIdentifier = "aid-expires-value"
 
         borderNode.borderWidth = 1.0
         borderNode.cornerRadius = 8.0

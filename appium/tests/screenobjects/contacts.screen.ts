@@ -2,10 +2,10 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  CONTACTS_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Contacts"`]',
+  CONTACTS_HEADER: '~navigationItemContacts',
   BACK_BUTTON: '~aid-back-button',
   EMPTY_CONTACTS_LIST: '~Empty list',
-  NO_PUBLIC_KEY_LABEL: '~(No public keys)'
+  NO_PUBLIC_KEY_LABEL: '~(No public keys)' // Can't use `aid` identifier because string is generated dynamically depends on public key count
 };
 
 class ContactsScreen extends BaseScreen {
