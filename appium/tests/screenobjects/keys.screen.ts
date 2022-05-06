@@ -7,7 +7,7 @@ import {
 } from '../screenobjects/all-screens';
 
 const SELECTORS = {
-  KEYS_HEADER: '~navigationItemKeys',
+  KEYS_HEADER: '~aid-navigation-item-keys',
   ADD_BUTTON: '~aid-add-button',
   NAME_AND_EMAIL: '~aid-key-title',
   DATE_CREATED: '~aid-key-date-created',

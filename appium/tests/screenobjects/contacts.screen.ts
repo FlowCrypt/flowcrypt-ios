@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  CONTACTS_HEADER: '~navigationItemContacts',
+  CONTACTS_HEADER: '~aid-navigation-item-contacts',
   BACK_BUTTON: '~aid-back-button',
   EMPTY_CONTACTS_LIST: '~Empty list',
   NO_PUBLIC_KEY_LABEL: '~(No public keys)' // Can't use `aid` identifier because string is generated dynamically depends on public key count

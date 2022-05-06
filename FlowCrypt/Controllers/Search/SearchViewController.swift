@@ -58,7 +58,7 @@ class SearchViewController: InboxViewController {
                 alignment: .left
             )
         searchController.searchBar.searchTextField.textColor = .white
-        searchController.searchBar.searchTextField.accessibilityIdentifier = "searchAllEmailField"
+        searchController.searchBar.searchTextField.accessibilityIdentifier = "aid-search-all-emails"
     }
 }
 
