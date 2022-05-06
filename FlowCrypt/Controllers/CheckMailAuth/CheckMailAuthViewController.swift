@@ -13,9 +13,11 @@ import UIKit
 
 class CheckMailAuthViewController: TableNodeViewController {
     private let appContext: AppContext
+    private let decorator: CheckMailAuthViewDecorator
 
-    init(appContext: AppContext) {
+    init(appContext: AppContext, decorator: CheckMailAuthViewDecorator) {
         self.appContext = appContext
+        self.decorator = decorator
         super.init(node: TableNode())
     }
 
@@ -33,7 +35,7 @@ class CheckMailAuthViewController: TableNodeViewController {
 // MARK: - ASTableDelegate, ASTableDataSource
 extension CheckMailAuthViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_: ASTableNode, numberOfRowsInSection _: Int) -> Int {
-        return 3
+        return decorator.type.numberOfRows
     }
 
     func tableNode(_ node: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
@@ -49,25 +51,18 @@ extension CheckMailAuthViewController {
     private func setupUI() {
         node.delegate = self
         node.dataSource = self
+        node.bounces = false
 
         title = "app_name".localized
     }
+
     private func unauthStateNode(for indexPath: IndexPath) -> ASCellNode {
         switch indexPath.row {
         case 0:
             return SetupTitleNode(
                 SetupTitleNode.Input(
-                    title: "setup_title"
-                        .localized
-                        .attributed(
-                            .bold(35),
-                            color: .mainTextColor,
-                            alignment: .center
-                        ),
-                    insets: UIEdgeInsets(
-                        top: 64, left: 16,
-                        bottom: 64, right: 16
-                    ),
+                    title: decorator.title,
+                    insets: .deviceSpecificTextInsets(top: 64, bottom: 64),
                     backgroundColor: .backgroundColor
                 )
             )
@@ -75,25 +70,47 @@ extension CheckMailAuthViewController {
             return TextCellNode(
                 input: .init(
                     backgroundColor: .backgroundColor,
-                    title: "gmail_service_no_access_to_account_message".localized,
+                    title: decorator.type.message,
                     withSpinner: false,
                     size: CGSize(width: 200, height: 200),
-                    insets: UIEdgeInsets.side(24),
+                    insets: .side(24),
                     textAlignment: .center
                 )
             )
         case 2:
             return ButtonCellNode(input: .signInAgain) { [weak self] in
-                guard let self = self else { return }
-                Task {
-                    await self.appContext.globalRouter.signIn(
-                        appContext: self.appContext,
-                        route: .gmailLogin(self)
-                    )
-                }
+                self?.authorize()
+            }
+        case 3:
+            return ButtonCellNode(input: .signOut) { [weak self] in
+                self?.signOut()
             }
         default:
             return ASCellNode()
+        }
+    }
+
+    private func authorize() {
+        Task {
+            do {
+                await self.appContext.globalRouter.signIn(
+                    appContext: self.appContext,
+                    route: .gmailLogin(self),
+                    email: try appContext.encryptedStorage.activeUser?.email
+                )
+            } catch {
+                showAlert(message: error.errorMessage)
+            }
+        }
+    }
+
+    private func signOut() {
+        Task {
+            do {
+                try await appContext.globalRouter.signOut(appContext: appContext)
+            } catch {
+                showAlert(message: error.errorMessage)
+            }
         }
     }
 }
@@ -105,6 +122,15 @@ private extension ButtonCellNode.Input {
                 .localized
                 .attributed(.bold(16), color: .white, alignment: .center),
             color: .main
+        )
+    }
+
+    static var signOut: ButtonCellNode.Input {
+        return .init(
+            title: "log_out"
+                .localized
+                .attributed(.bold(16), color: .white, alignment: .center),
+            color: .red
         )
     }
 }

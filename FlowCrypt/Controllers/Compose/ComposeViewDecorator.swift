@@ -25,7 +25,10 @@ struct ComposeViewDecorator {
     private var calculatedRecipientsCcPartHeight: CGFloat?
     private var calculatedRecipientsBccPartHeight: CGFloat?
 
-    func styledTextViewInput(with height: CGFloat, accessibilityIdentifier: String? = nil) -> TextViewCellNode.Input {
+    func styledTextViewInput(
+        with height: CGFloat,
+        accessibilityIdentifier: String? = nil
+    ) -> TextViewCellNode.Input {
         TextViewCellNode.Input(
             placeholder: "message_compose_secure"
                 .localized

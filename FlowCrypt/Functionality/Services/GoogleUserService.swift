@@ -21,6 +21,7 @@ protocol UserServiceType {
 
 enum GoogleUserServiceError: Error, CustomStringConvertible {
     case cancelledAuthorization
+    case wrongAccount(String, String)
     case contextError(String)
     case inconsistentState(String)
     case userNotAllowedAllNeededScopes(missingScopes: [GoogleScope])
@@ -28,13 +29,18 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
     var description: String {
         switch self {
         case .cancelledAuthorization:
-            return "Authorization was cancelled"
+            return "google_user_service_error_auth_cancelled".localized
+        case .wrongAccount(let signedAccount, let currentAccount):
+            return "google_user_service_error_wrong_account".localizeWithArguments(
+                signedAccount, currentAccount, currentAccount
+            )
         case .contextError(let message):
-            return "Context error: \(message)"
+            return "google_user_service_context_error".localizeWithArguments(message)
         case .inconsistentState(let message):
-            return "Inconsistent state error: \(message)"
+            return "google_user_service_error_inconsistent_state".localizeWithArguments(message)
         case .userNotAllowedAllNeededScopes(let missingScopes):
-            return "Missing scopes error: \(missingScopes.map(\.title).joined(separator: ", "))"
+            let scopesLabel = missingScopes.map(\.title).joined(separator: ", ")
+            return "google_user_service_error_missing_scopes".localizeWithArguments(scopesLabel)
         }
     }
 }
@@ -75,7 +81,7 @@ protocol GoogleUserServiceType {
 }
 
 // this is here so that we don't have to include AppDelegate in test target
-protocol AppDelegateGoogleSesssionContainer {
+protocol AppDelegateGoogleSessionContainer {
     var googleAuthSession: OIDExternalUserAgentSession? { get set }
 }
 
@@ -84,11 +90,11 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     @available(*, deprecated, message: "This variable will be removed in the near future.")
     let currentUserEmail: String?
-    var appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer?
+    var appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer?
 
     init(
         currentUserEmail: String?,
-        appDelegateGoogleSessionContainer: AppDelegateGoogleSesssionContainer? = nil
+        appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil
     ) {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
@@ -146,7 +152,13 @@ extension GoogleUserService: UserServiceType {
                 }
                 Task<Void, Never> {
                     do {
-                        return continuation.resume(returning: try await self.handleGoogleAuthStateResult(authState, scopes: scopes))
+                        return continuation.resume(
+                            returning: try await self.handleGoogleAuthStateResult(
+                                authState,
+                                scopes: scopes,
+                                userEmail: userEmail
+                            )
+                        )
                     } catch {
                         return continuation.resume(throwing: error)
                     }
@@ -164,8 +176,17 @@ extension GoogleUserService: UserServiceType {
     }
 
     private func parseSignInError(_ error: Error) -> Error {
-        guard let underlyingError = (error as NSError).userInfo["NSUnderlyingError"] as? NSError
-        else { return error }
+        let nsError = error as NSError
+
+        guard let underlyingError = nsError.userInfo["NSUnderlyingError"] as? NSError
+        else {
+            switch nsError.code {
+            case -4: // login cancelled
+                return GoogleUserServiceError.cancelledAuthorization
+            default:
+                return error
+            }
+        }
 
         switch underlyingError.code {
         case 1:
@@ -179,7 +200,11 @@ extension GoogleUserService: UserServiceType {
         }
     }
 
-    private func handleGoogleAuthStateResult(_ authState: OIDAuthState, scopes: [GoogleScope]) async throws -> SessionType {
+    private func handleGoogleAuthStateResult(
+        _ authState: OIDAuthState,
+        scopes: [GoogleScope],
+        userEmail: String?
+    ) async throws -> SessionType {
         let missingScopes = self.checkMissingScopes(authState.scope, from: scopes)
         if missingScopes.isNotEmpty {
             throw GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes)
@@ -187,6 +212,9 @@ extension GoogleUserService: UserServiceType {
         let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
         guard let email = authorization.userEmail else {
             throw GoogleUserServiceError.inconsistentState("Missing email")
+        }
+        if let userEmail = userEmail, email != userEmail {
+            throw GoogleUserServiceError.wrongAccount(email, userEmail)
         }
         self.saveAuth(state: authState, for: email)
         guard let token = authState.lastTokenResponse?.accessToken else {

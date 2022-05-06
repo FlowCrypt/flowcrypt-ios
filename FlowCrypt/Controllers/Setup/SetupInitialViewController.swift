@@ -160,23 +160,24 @@ extension SetupInitialViewController {
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
                 let keys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 guard keys.isNotEmpty else {
-                    showRetryAlertFor(errorMessage: "organisational_rules_ekm_empty_private_keys_error".localized)
+                    showRetryAlert(for: "organisational_rules_ekm_empty_private_keys_error".localized)
                     return
                 }
                 proceedToSetupWithEKMKeys(keys: keys)
             } catch {
-                showRetryAlertFor(errorMessage: error.errorMessage)
+                showRetryAlert(for: error.errorMessage)
             }
         }
     }
 
-    func showRetryAlertFor(errorMessage: String) {
+    func showRetryAlert(for errorMessage: String) {
         showRetryAlert(
             message: errorMessage,
-            onRetry: { [weak self] in
+            cancelActionTitle: "log_out".localized,
+            onRetry: { [weak self] _ in
                 self?.state = .fetchingKeysFromEKM
             },
-            onOk: { [weak self] in
+            onCancel: { [weak self] _ in
                 self?.signOut()
             }
         )

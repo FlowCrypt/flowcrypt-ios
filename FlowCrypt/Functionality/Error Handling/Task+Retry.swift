@@ -19,9 +19,15 @@ extension Task where Failure == Error {
                 do {
                     return try await operation()
                 } catch {
-                    let oneMillisecond = UInt64(1_000_000)
-                    let delay = oneMillisecond * retryDelayMs
-                    try await Task<Never, Never>.sleep(nanoseconds: delay)
+                    switch error {
+                    case GmailServiceError.invalidGrant:
+                        // valid grant is needed before retry
+                        throw error
+                    default:
+                        let oneMillisecond = UInt64(1_000_000)
+                        let delay = oneMillisecond * retryDelayMs
+                        try await Task<Never, Never>.sleep(nanoseconds: delay)
+                    }
                 }
             }
 
