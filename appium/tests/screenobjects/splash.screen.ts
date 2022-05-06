@@ -122,13 +122,13 @@ class SplashScreen extends BaseScreen {
   }
 
   fillEmail = async (email: string) => {
-    await ElementHelper.waitAndPasteString(await this.loginField, email);
+    await ElementHelper.waitClickAndType(await this.loginField, email);
     await this.clickDoneBtn();
     await browser.pause(500); // stability sleep
   }
 
   fillPassword = async (password: string) => {
-    await ElementHelper.waitAndPasteString(await this.passwordField, password);
+    await ElementHelper.waitClickAndType(await this.passwordField, password);
     await this.clickDoneBtn();
     await browser.pause(500); // stability sleep
   }
