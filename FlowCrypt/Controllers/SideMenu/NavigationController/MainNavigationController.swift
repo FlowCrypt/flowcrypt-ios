@@ -67,10 +67,7 @@ extension UINavigationController {
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         navigationBar.standardAppearance = appearance
         navigationBar.scrollEdgeAppearance = appearance
-
-        if #available(iOS 15.0, *) {
-            navigationBar.compactScrollEdgeAppearance = appearance
-        }
+        navigationBar.compactScrollEdgeAppearance = appearance
 
         navigationBar.do {
             $0.barTintColor = .main

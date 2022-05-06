@@ -122,6 +122,7 @@
 		51DA5BD62721AB07001C4359 /* PubKeyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD52721AB07001C4359 /* PubKeyState.swift */; };
 		51DA5BDA2722C82E001C4359 /* RecipientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD92722C82E001C4359 /* RecipientTests.swift */; };
 		51DAD9BD273E7DD20076CBA7 /* BadgeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */; };
+		51DDA24E28044F0700EE13A8 /* CheckMailAuthViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DDA24D28044F0700EE13A8 /* CheckMailAuthViewDecorator.swift */; };
 		51DE2FEE2714DA0400916222 /* ContactKeyCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DE2FED2714DA0400916222 /* ContactKeyCellNode.swift */; };
 		51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */ = {isa = PBXBuildFile; productRef = 51E13F11270F92BA00F287CA /* IDZSwiftCommonCrypto */; };
 		51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 51E1673C270DAFF900D27C52 /* Localizable.stringsdict */; };
@@ -146,6 +147,7 @@
 		5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADEDCBF23A43B0800EC495E /* KeyDetailInfoViewDecorator.swift */; };
 		601EEE31272B19D200FE445B /* CheckMailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */; };
 		606FE33A2745AA2E009DA039 /* AttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606FE3392745AA2E009DA039 /* AttachmentViewController.swift */; };
+		750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750A6C3C28244A780048E1CC /* OptionalExtensions.swift */; };
 		7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
@@ -586,6 +588,7 @@
 		51DA5BD52721AB07001C4359 /* PubKeyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubKeyState.swift; sourceTree = "<group>"; };
 		51DA5BD92722C82E001C4359 /* RecipientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientTests.swift; sourceTree = "<group>"; };
 		51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeNode.swift; sourceTree = "<group>"; };
+		51DDA24D28044F0700EE13A8 /* CheckMailAuthViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMailAuthViewDecorator.swift; sourceTree = "<group>"; };
 		51DE2FED2714DA0400916222 /* ContactKeyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyCellNode.swift; sourceTree = "<group>"; };
 		51E1673C270DAFF900D27C52 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		51E4F0B427348E310017DABB /* ErrorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorExtensions.swift; sourceTree = "<group>"; };
@@ -610,6 +613,7 @@
 		5ADEDCC123A43C6800EC495E /* KeyTextCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyTextCellNode.swift; sourceTree = "<group>"; };
 		601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMailAuthViewController.swift; sourceTree = "<group>"; };
 		606FE3392745AA2E009DA039 /* AttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentViewController.swift; sourceTree = "<group>"; };
+		750A6C3C28244A780048E1CC /* OptionalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalExtensions.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionService.swift; sourceTree = "<group>"; };
@@ -1251,6 +1255,7 @@
 			isa = PBXGroup;
 			children = (
 				601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */,
+				51DDA24D28044F0700EE13A8 /* CheckMailAuthViewDecorator.swift */,
 			);
 			path = CheckMailAuth;
 			sourceTree = "<group>";
@@ -2019,6 +2024,7 @@
 				32DCA7E0AFE19FACB0F233ED /* URLSessionExtensions.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				D2FD0F682453245E00259FF0 /* Either.swift */,
+				750A6C3C28244A780048E1CC /* OptionalExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2838,6 +2844,7 @@
 				0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */,
 				D212D36024C1AC0D00035991 /* KeyDetails.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
+				51DDA24E28044F0700EE13A8 /* CheckMailAuthViewDecorator.swift in Sources */,
 				9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
 				D2F41371243CC76F0066AFB5 /* SessionRealmObject.swift in Sources */,
@@ -3015,6 +3022,7 @@
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
 				D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */,
 				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
+				750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
 				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,
 				D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */,

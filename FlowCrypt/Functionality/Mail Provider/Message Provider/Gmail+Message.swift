@@ -14,39 +14,38 @@ extension GmailService: MessageProvider {
     func fetchMsg(message: Message,
                   folder: String,
                   progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
-            guard let identifier = message.identifier.stringId else {
-                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
-            }
+        guard let identifier = message.identifier.stringId else {
+            throw GmailServiceError.missingMessageInfo("id")
+        }
 
-            Task {
-                let messageSize = try await self.fetchMessageSize(identifier: identifier)
+        let messageSize = try await self.fetchMessageSize(identifier: identifier)
 
-                let fetcher = self.createMessageFetcher(identifier: identifier)
-                fetcher.receivedProgressBlock = { _, received in
-                    let progress = min(Float(received)/messageSize, 1)
-                    progressHandler?(.download(progress))
+        let fetcher = createMessageFetcher(identifier: identifier)
+        fetcher.receivedProgressBlock = { _, received in
+            let progress = min(Float(received)/messageSize, 1)
+            progressHandler?(.download(progress))
+        }
+
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Data, Error>) in
+            fetcher.beginFetch { data, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                fetcher.beginFetch { data, error in
-                    if let error = error {
-                        return continuation.resume(throwing: GmailServiceError.providerError(error))
-                    }
 
-                    guard let data = data,
-                          let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                          let raw = dictionary["raw"] as? String
-                    else {
-                        return continuation.resume(throwing: GmailServiceError.missingMessageInfo("raw"))
-                    }
-
-                    progressHandler?(.decrypt)
-
-                    guard let data = GTLRDecodeWebSafeBase64(raw) else {
-                        return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
-                    }
-
-                    return continuation.resume(returning: data)
+                guard let data = data,
+                      let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                      let raw = dictionary["raw"] as? String
+                else {
+                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("raw"))
                 }
+
+                progressHandler?(.decrypt)
+
+                guard let data = GTLRDecodeWebSafeBase64(raw) else {
+                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
+                }
+
+                return continuation.resume(returning: data)
             }
         }
     }

@@ -22,13 +22,18 @@ struct InboxViewControllerContainerDecorator {
     func errorInput(with size: CGSize, error: Error) -> TextCellNode.Input {
         TextCellNode.Input(
             backgroundColor: .backgroundColor,
-            title: "error_general_text".localized + "\n\n\(error)",
+            title: "error_general_text".localized + "\n\n\(error.errorMessage)",
             withSpinner: false,
-            size: size
+            size: size,
+            insets: .deviceSpecificTextInsets(top: 8, bottom: 8)
         )
     }
 
     func retryActionTitle() -> NSAttributedString {
         "retry_title".localized.attributed(color: .white)
+    }
+
+    func continueActionTitle() -> NSAttributedString {
+        "continue".localized.attributed(color: .white)
     }
 }

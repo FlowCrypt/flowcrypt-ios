@@ -31,6 +31,7 @@
 "placeholder" = "PLACEHOLDER";
 "backup_subject" = "Your FlowCrypt Backup";
 "content_hidden" = "(content hidden for security)";
+"go_back" = "Go back";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -293,7 +294,7 @@
 "backup_screen_found_action" = "See more backup options";
 "backup_screen_not_found_action" = "Back up my key";
 
-"backup_screen_not_found" = "There are no bcakups on this account";
+"backup_screen_not_found" = "There are no backups on this account";
 "backup_screen_not_found_description" = "If you lose your device, or it stops working, your encrypted email will be unreadable.";
 "backup_screen_fetching_backups" = "Fetching backups...";
 
@@ -336,8 +337,16 @@
 "gmail_service_missing_message_payload_error_message" = "Missing message payload";
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
 "gmail_service_provider_error_error_message" = "Gmail provider error: %@";
+"gmail_service_invalid_grant_error_message" = "Access to %@ account was revoked.\n\nPlease reconnect the app to Gmail";
 "gmail_service_missing_back_query_error_message" = "Missing backup query: %@";
-"gmail_service_no_access_to_account_message" = "Google login successful.\n Now connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
+"gmail_service_no_access_to_account_message" = "Google login successful.\nNow connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
+
+// Google User Service errors
+"google_user_service_error_wrong_account" = "Just used account %@ differs from already signed account %@.\n\nPlease use account %@ to log in";
+"google_user_service_error_auth_cancelled" = "Authorization was cancelled";
+"google_user_service_context_error" = "Context error: %@";
+"google_user_service_error_inconsistent_state" = "Inconsistent state error: %@";
+"google_user_service_error_missing_scopes" = "Missing scopes error: %@";
 
 // Files picking
 "files_picking_select_input_source_title" = "Please select input source";

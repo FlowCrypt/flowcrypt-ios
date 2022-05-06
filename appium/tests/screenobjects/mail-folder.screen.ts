@@ -76,17 +76,17 @@ class MailFolderScreen extends BaseScreen {
   }
 
   clickOnEmailBySubject = async (subject: string) => {
-    const selector = `~${subject}`;
-    if (!await (await $(selector)).isDisplayed()) {
-      await TouchHelper.scrollDownToElement(await $(selector));
+    const subjectEl = await $(`~${subject}`);
+    if (!await subjectEl.isDisplayed()) {
+      await TouchHelper.scrollDownToElement(subjectEl);
     }
-    await ElementHelper.waitAndClick(await $(selector), 500);
+    await ElementHelper.waitAndClick(subjectEl, 500);
   }
 
   clickCreateEmail = async () => {
     await browser.pause(500);
     const elem = await this.createEmailButton;
-    if ((await elem.isDisplayed()) !== true) {
+    if (!await elem.isDisplayed()) {
       await TouchHelper.scrollDownToElement(elem);
       await elem.waitForDisplayed();
     }

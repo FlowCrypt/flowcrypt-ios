@@ -21,6 +21,15 @@ enum SessionType: CustomStringConvertible {
             return "Session \(user.email)"
         }
     }
+
+    var email: String {
+        switch self {
+        case .google(let email, _, _):
+            return email
+        case .session(let user):
+            return user.email
+        }
+    }
 }
 
 protocol SessionServiceType {

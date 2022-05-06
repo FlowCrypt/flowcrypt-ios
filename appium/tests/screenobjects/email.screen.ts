@@ -120,7 +120,7 @@ class EmailScreen extends BaseScreen {
 
   checkEmailSender = async (sender: string, index = 0) => {
     const element = await this.senderEmail(index);
-    await element.waitForDisplayed();
+    await ElementHelper.waitElementVisible(element);
     expect(await element.getValue()).toEqual(sender);
   }
 
@@ -129,16 +129,14 @@ class EmailScreen extends BaseScreen {
   }
 
   checkEmailSubject = async (subject: string) => {
-    const selector = `~${subject}`;
-    await (await $(selector)).waitForDisplayed();
+    const subjectElement = await $(`~${subject}`);
+    await ElementHelper.waitElementVisible(subjectElement);
   }
 
   checkEmailText = async (text: string, index = 0) => {
-    const selector = `~aid-message-${index}`;
-    await (await $(selector)).waitForDisplayed();
-    console.log(await $(selector).getValue());
-
-    expect(await $(selector).getValue()).toContain(text)
+    const messageEl = await $(`~aid-message-${index}`);
+    await ElementHelper.waitElementVisible(messageEl);
+    expect(await messageEl.getValue()).toContain(text)
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {
@@ -156,16 +154,16 @@ class EmailScreen extends BaseScreen {
   }
 
   clickExpandButtonByIndex = async (index: any) => {
-    const element = (`~aid-expand-image-${index}`);
-    if (await (await $(element)).isDisplayed()) {
-      await ElementHelper.waitAndClick(await $(element));
+    const element = await $(`~aid-expand-image-${index}`);
+    if (await element.isDisplayed()) {
+      await ElementHelper.waitAndClick(element);
     }
   }
 
   checkDate = async (date: string, index: any) => {
-    const element = `~aid-date-${index}`;
-    await (await $(element)).waitForDisplayed();
-    const convertedDate = moment(await $(element).getValue()).utcOffset(0).format('MMM DD');
+    const element = await $(`~aid-date-${index}`);
+    await ElementHelper.waitElementVisible(element);
+    const convertedDate = moment(await element.getValue()).utcOffset(0).format('MMM DD');
     expect(convertedDate).toEqual(date)
   }
 
@@ -186,11 +184,11 @@ class EmailScreen extends BaseScreen {
   }
 
   checkWrongPassPhraseErrorMessage = async () => {
-    await (await this.wrongPassPhraseMessage).waitForDisplayed();
+    await ElementHelper.waitElementVisible(await this.wrongPassPhraseMessage);
   }
 
   checkAttachment = async (name: string) => {
-    await (await this.attachmentCell).waitForDisplayed();
+    await ElementHelper.waitElementVisible(await this.attachmentCell);
     await ElementHelper.waitForText(await this.attachmentTitle, name);
   }
 

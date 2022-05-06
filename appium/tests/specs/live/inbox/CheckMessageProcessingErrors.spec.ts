@@ -38,7 +38,7 @@ describe('INBOX: ', () => {
     const keyMismatchName = CommonData.keyMismatch.senderName;
     const keyMismatchText = CommonData.keyMismatch.message;
     const keyMismatchEncryptedBadge = CommonData.keyMismatch.encryptedBadgeText;
-    const keyMismatchSignatureBadge= CommonData.keyMismatch.signatureBadgeText;
+    const keyMismatchSignatureBadge = CommonData.keyMismatch.signatureBadgeText;
     const keyMismatchAttachmentError = CommonData.errors.attachmentDecryptKeyMismatchError;
     const firstAttachmentName = CommonData.keyMismatch.firstAttachmentName;
     const firstAttachmentBody = CommonData.keyMismatch.firstAttachmentBody;
@@ -80,7 +80,6 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickSearchButton();
 
     await SearchScreen.searchAndClickEmailBySubject(notIntegrityProtectedSubject);
-    await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
     await EmailScreen.checkOpenedEmail(notIntegrityProtectedEmail, notIntegrityProtectedSubject, notIntegrityProtectedText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
@@ -91,7 +90,6 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickSearchButton();
 
     await SearchScreen.searchAndClickEmailBySubject(keyMismatchSubject);
-    await MailFolderScreen.clickOnEmailBySubject(keyMismatchSubject);
     await EmailScreen.checkOpenedEmail(keyMismatchName, keyMismatchSubject, keyMismatchText);
     await EmailScreen.checkEncryptionBadge(keyMismatchEncryptedBadge);
     await EmailScreen.checkSignatureBadge(keyMismatchSignatureBadge);

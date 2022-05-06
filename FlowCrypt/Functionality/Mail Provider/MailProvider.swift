@@ -80,7 +80,7 @@ final class MailProvider {
     init(
         currentAuthType: AuthType,
         currentUser: User,
-        delegate: AppDelegateGoogleSesssionContainer?
+        delegate: AppDelegateGoogleSessionContainer?
     ) {
         self.currentAuthType = currentAuthType
         self.services = MailServiceProviderFactory.services(user: currentUser, delegate: delegate)
@@ -104,7 +104,7 @@ final class MailProvider {
 private struct MailServiceProviderFactory {
     static func services(
         user: User,
-        delegate: AppDelegateGoogleSesssionContainer?
+        delegate: AppDelegateGoogleSessionContainer?
     ) -> [MailServiceProvider] {
         [
             Imap(user: user),

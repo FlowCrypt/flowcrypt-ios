@@ -29,12 +29,11 @@ class InboxMessageThreadsProvider: InboxDataProvider {
 
     override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
-        let folderPath = context.folderPath ?? ""
 
         let inboxData = result.threads.map {
             InboxRenderable(
                 thread: $0,
-                folderPath: folderPath,
+                folderPath: context.folderPath,
                 activeUserEmail: userEmail
             )
         }

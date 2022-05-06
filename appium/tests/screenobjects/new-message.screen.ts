@@ -136,7 +136,9 @@ class NewMessageScreen extends BaseScreen {
 
   setAddRecipient = async (recipient?: string, type = 'to') => {
     if (recipient) {
-      await (await this.getRecipientsTextField(type)).setValue(recipient);
+      const textFieldEl = await this.getRecipientsTextField(type);
+      await ElementHelper.waitElementVisible(textFieldEl);
+      await textFieldEl.setValue(recipient);
       await browser.pause(500);
       await (await $(SELECTORS.RETURN_BUTTON)).click();
     }
@@ -282,7 +284,7 @@ class NewMessageScreen extends BaseScreen {
   checkCopyForAddedRecipient = async (email: string, order: number, type = 'to') => {
     await this.showRecipientPopup(order, type);
     await ElementHelper.waitAndClick(await this.recipientPopupCopyButton);
-    const base64Encoded = new Buffer(email).toString('base64');
+    const base64Encoded = Buffer.from(email).toString('base64');
     expect(await driver.getClipboard('plaintext')).toEqual(base64Encoded);
   }
 
