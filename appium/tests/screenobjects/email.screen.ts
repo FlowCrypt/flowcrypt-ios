@@ -145,12 +145,14 @@ class EmailScreen extends BaseScreen {
     await this.checkEmailText(text);
   }
 
-  checkThreadMessage = async (email: string, subject: string, text: string, date: string, index = 0) => {
+  checkThreadMessage = async (email: string, subject: string, text: string, index = 0, date?: string) => {
     await this.checkEmailSubject(subject);
     await this.checkEmailSender(email, index);
     await this.clickExpandButtonByIndex(index);
     await this.checkEmailText(text, index);
-    await this.checkDate(date, index);
+    if (date) {
+      await this.checkDate(date, index);
+    }
   }
 
   clickExpandButtonByIndex = async (index: any) => {
