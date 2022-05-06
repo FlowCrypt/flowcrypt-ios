@@ -284,7 +284,7 @@ class NewMessageScreen extends BaseScreen {
   checkCopyForAddedRecipient = async (email: string, order: number, type = 'to') => {
     await this.showRecipientPopup(order, type);
     await ElementHelper.waitAndClick(await this.recipientPopupCopyButton);
-    const base64Encoded = new Buffer(email).toString('base64');
+    const base64Encoded = Buffer.from(email, 'base64').toString();
     expect(await driver.getClipboard('plaintext')).toEqual(base64Encoded);
   }
 

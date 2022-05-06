@@ -2,7 +2,7 @@ import BaseScreen from './base.screen';
 import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
 import {
-    EmailProviderScreen
+  EmailProviderScreen
 } from '../screenobjects/all-screens';
 
 const SELECTORS = {
@@ -102,7 +102,7 @@ class SplashScreen extends BaseScreen {
   }
 
   clickOtherEmailProvider = async () => {
-    await ElementHelper.waitAndClick(await this.otherEmailProviderButton)  ;
+    await ElementHelper.waitAndClick(await this.otherEmailProviderButton);
   }
 
   clickContinueBtn = async () => {
@@ -122,15 +122,13 @@ class SplashScreen extends BaseScreen {
   }
 
   fillEmail = async (email: string) => {
-    await ElementHelper.waitClickAndType(await this.loginField, email);
+    await ElementHelper.waitAndPasteString(await this.loginField, email);
     await this.clickDoneBtn();
     await browser.pause(500); // stability sleep
   }
 
   fillPassword = async (password: string) => {
-    await ElementHelper.waitClickAndType(await this.passwordField, password);
-    await this.clickDoneBtn();
-    await browser.pause(500); // stability sleep
+    await ElementHelper.waitAndPasteString(await this.passwordField, password);
   }
 
   clickNextBtn = async () => {
@@ -168,7 +166,7 @@ class SplashScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(await this.signInAsGoogleAccounLabel);
   }
 
-  loginToOtherEmailProvider = async (email: string  = CommonData.outlookAccount.email, password: string = CommonData.outlookAccount.password!) => {
+  loginToOtherEmailProvider = async (email: string = CommonData.outlookAccount.email, password: string = CommonData.outlookAccount.password!) => {
     await this.clickOtherEmailProvider();
     await EmailProviderScreen.checkEmailProviderScreen();
     await EmailProviderScreen.fillEmail(email);

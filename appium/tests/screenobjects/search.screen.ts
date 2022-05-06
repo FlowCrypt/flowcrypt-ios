@@ -26,7 +26,9 @@ class SearchScreen extends BaseScreen {
   }
 
   searchAndClickEmailBySubject = async (subject: string) => {
-    await (await this.searchField).setValue(`subject: '${subject}'`);
+    // Stability to wait for search caret to be displayed
+    await browser.pause(1000);
+    await ElementHelper.waitAndPasteString(await this.searchField, `subject: '${subject}'`);
 
     const selector = `~${subject}`;
     await ElementHelper.waitAndClick(await $(selector), 500);

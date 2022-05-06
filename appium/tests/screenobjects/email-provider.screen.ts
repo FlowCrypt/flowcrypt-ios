@@ -52,7 +52,7 @@ class EmailProviderScreen extends BaseScreen {
   }
 
   fillPassword = async (password: string) => {
-    await ElementHelper.waitClickAndType(await this.passwordField, password);
+    await ElementHelper.waitAndPasteString(await this.passwordField, password);
     await browser.pause(500); // stability sleep
   }
 
