@@ -34,7 +34,7 @@ extension Keypair {
         self.allLongids = object.allLongids.map { $0 }
         self.lastModified = object.lastModified
     }
-    
+
     func getArmoredPrv() -> String? {
         return `private`
     }

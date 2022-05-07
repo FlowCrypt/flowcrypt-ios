@@ -178,7 +178,7 @@ final class ComposeMessageService {
         //   and then later prioritize / filter by sender email which may be different)
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/1298
         let senderKeys = try await keyMethods.chooseSenderEncryptionKeys(keys: try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender), senderEmail: sender)
-        
+
         guard senderKeys.isNotEmpty else {
             throw MessageValidationError.missingPublicKey
         }

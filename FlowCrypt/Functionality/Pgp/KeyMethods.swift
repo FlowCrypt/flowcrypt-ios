@@ -17,7 +17,6 @@ protocol KeyMethodsType {
     func chooseSenderEncryptionKeys(keys: [Keypair], senderEmail: String) async throws -> [Keypair]
 }
 
-
 enum KeyMethodsError: Error {
 //    case unexpected
     case parsingError
@@ -45,7 +44,6 @@ extension KeyMethodsError: CustomStringConvertible {
         return key.localized
     }
 }
-
 
 final class KeyMethods: KeyMethodsType {
 
@@ -87,13 +85,12 @@ final class KeyMethods: KeyMethodsType {
         // TODO - needs to be implemented
         return keys.first
     }
-    
+
     func chooseSenderEncryptionKeys(keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
         // TODO - needs to be implemented
         return keys
     }
 }
-
 
 //    private func findKeyByUserEmail(keysInfo: [Keypair], email: String) async throws -> Keypair? {
 //        logger.logDebug("findKeyByUserEmail: found \(keysInfo.count) candidate prvs in storage, searching by:\(email)")
