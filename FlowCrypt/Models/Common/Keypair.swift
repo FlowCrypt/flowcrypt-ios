@@ -14,6 +14,7 @@ enum KeypairError: Error, Equatable {
     case missingKeyIds
     case missingPrimaryFingerprint
     case parsingError
+    case keyMissingSelfSignature
     case noAccountKeysAvailable
     case expectedPrivateGotPublic
 }
@@ -81,8 +82,7 @@ extension Keypair {
         self.allFingerprints = k.fingerprints
         self.allLongids = k.ids.map { $0.longid }
         guard let lastModified = k.lastModified else {
-            // todo - make a new error like `keyMissingSelfSignature`
-            throw KeypairError.parsingError
+            throw KeypairError.keyMissingSelfSignature
         }
         self.lastModified = lastModified
     }
