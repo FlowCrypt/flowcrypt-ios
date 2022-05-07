@@ -3,6 +3,7 @@
 //
 
 import Foundation
+@testable import FlowCrypt
 
 struct TestData {
 

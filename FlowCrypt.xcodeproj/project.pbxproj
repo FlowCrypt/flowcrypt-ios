@@ -239,7 +239,6 @@
 		9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B3526565B8100691848 /* client_configuraion_empty.json */; };
 		9F976584267E194F0058419D /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
 		9F976585267E194F0058419D /* FlowCryptCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */; };
-		9F976592267E19880058419D /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
 		9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
 		9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */; };
 		9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA1988F253C841F008C9CF2 /* TableViewController.swift */; };
@@ -2683,7 +2682,6 @@
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				9F65B0B7277DF2AD005CD19C /* Imap+ThreadOperations.swift in Sources */,
 				9F5FAF6D271DCDAF00B8762B /* MessageActionsHandler.swift in Sources */,
-				9F976592267E19880058419D /* TestData.swift in Sources */,
 				04B472961ECE29F600B8266F /* SideMenuNavigationController.swift in Sources */,
 				2C08F6BE273FA7B900EE1610 /* Version5SchemaMigration.swift in Sources */,
 				049E607127FDBC690089EE2A /* ComposeViewController+Drafts.swift in Sources */,

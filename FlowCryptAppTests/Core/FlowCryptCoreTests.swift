@@ -82,7 +82,7 @@ final class FlowCryptCoreTests: XCTestCase {
     }
 
     func testDecryptKeyWithCorrectPassPhrase() async throws {
-        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k0.private, passphrase: TestData.k0.passphrase)
+        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k0.private, passphrase: TestData.k0.passphrase!)
         XCTAssertNotNil(decryptKeyRes.decryptedKey)
         // make sure indeed decrypted
         let parseKeyRes = try await core.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey.data(using: .utf8)!)
@@ -92,7 +92,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testDecryptKeyWithWrongPassPhrase() async {
         do {
-            _ = try await core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: "wrong")
+            _ = try await core.decryptKey(armoredPrv: TestData.k0.private, passphrase: "wrong")
             XCTFail("Should have thrown above")
         } catch {
             Logger.logDebug("catched \(error)")
@@ -135,7 +135,7 @@ final class FlowCryptCoreTests: XCTestCase {
             subject: "subj",
             replyToMimeMsg: nil,
             atts: [],
-            pubKeys: [TestData.k0.pub, TestData.k1.pub],
+            pubKeys: [TestData.k0.public, TestData.k1.public],
             signingPrv: nil,
             password: nil
         )
@@ -163,7 +163,7 @@ final class FlowCryptCoreTests: XCTestCase {
             from: "sender@hello.com",
             subject: "subj", replyToMimeMsg: nil,
             atts: [attachment],
-            pubKeys: [TestData.k0.pub, TestData.k1.pub],
+            pubKeys: [TestData.k0.public, TestData.k1.public],
             signingPrv: nil,
             password: nil
         )
@@ -187,7 +187,7 @@ final class FlowCryptCoreTests: XCTestCase {
             subject: "Signed email",
             replyToMimeMsg: nil,
             atts: [],
-            pubKeys: [TestData.k0.pub],
+            pubKeys: [TestData.k0.public],
             signingPrv: signingKey,
             password: nil
         )
@@ -223,7 +223,7 @@ final class FlowCryptCoreTests: XCTestCase {
             subject: "Signed email",
             replyToMimeMsg: nil,
             atts: [],
-            pubKeys: [TestData.k0.pub],
+            pubKeys: [TestData.k0.public],
             signingPrv: signingKey,
             password: nil
         )
@@ -391,13 +391,13 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // Test decrypt key
         timer.start()
-        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.prv, passphrase: TestData.k3rsa4096.passphrase)
+        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.private, passphrase: TestData.k3rsa4096.passphrase!)
         timer.stop()
         XCTAssertLessThan(timer.durationMs, 1000)
 
         // Test encrypt key
         timer.start()
-        let _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: TestData.k3rsa4096.passphrase)
+        let _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: TestData.k3rsa4096.passphrase!)
         timer.stop()
         XCTAssertLessThan(timer.durationMs, 1000)
 
@@ -405,7 +405,7 @@ final class FlowCryptCoreTests: XCTestCase {
         timer.start()
         let encrypted = try await core.encrypt(
             data: "Test email message".data(),
-            pubKeys: [TestData.k3rsa4096.pub],
+            pubKeys: [TestData.k3rsa4096.public],
             password: nil
         )
         timer.stop()
@@ -418,7 +418,7 @@ final class FlowCryptCoreTests: XCTestCase {
             keys: [TestData.k3rsa4096],
             msgPwd: nil,
             isEmail: true,
-            verificationPubKeys: [TestData.k3rsa4096.pub]
+            verificationPubKeys: [TestData.k3rsa4096.public]
         )
         timer.stop()
         XCTAssertLessThan(timer.durationMs, 1000)
@@ -436,7 +436,7 @@ final class FlowCryptCoreTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: [TestData.k3rsa4096.public],
-            signingPrv: TestData.k3rsa4096,
+            signingPrv: Optional(TestData.k3rsa4096),
             password: nil
         )
 
