@@ -46,6 +46,10 @@ extension KeyDetails {
         users.map { MCOAddress(nonEncodedRFC822String: $0).mailbox }
     }
     
+    var pgpUserEmailsLowercased: [String] {
+        pgpUserEmails.map { $0.lowercased() }
+    }
+    
     var isKeyUsable: Bool {
         // revoked keys are not usable
         guard !revoked else { return false }
