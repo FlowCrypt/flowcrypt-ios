@@ -12,10 +12,19 @@ module.exports = {
   output: {
     path: __dirname + '/build/bundles/raw',
     filename: '[name].js',
-    libraryTarget: 'commonjs2'
+    libraryTarget: 'commonjs2',
+    publicPath: '',
+    globalObject: 'this',
   },
   externals: {
     openpgp: 'openpgp',
     '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools'
+  },
+  resolve: {
+    fallback: {
+      "stream": false,
+      "buffer": false,
+      "crypto": false
+    }
   }
-}
+};
