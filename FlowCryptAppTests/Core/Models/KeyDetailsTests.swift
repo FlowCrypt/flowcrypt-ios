@@ -121,17 +121,17 @@ class KeyDetailsTests: XCTestCase {
         let keyDetail = KeyDetails(
             public: "public",
             private: "private",
-            isFullyDecrypted: true,
+            isFullyDecrypted: false,
             isFullyEncrypted: true,
             ids: [
                 KeyId(longid: "l1", fingerprint: "f1"),
                 KeyId(longid: "l2", fingerprint: "f2"),
                 KeyId(longid: "l3", fingerprint: "f3")
             ],
-            created: 1231244,
-            lastModified: nil,
+            created: 100,
+            lastModified: 100,
             expiration: nil,
-            users: [ ],
+            users: ["example@test.com"],
             algo: nil,
             revoked: false
         )

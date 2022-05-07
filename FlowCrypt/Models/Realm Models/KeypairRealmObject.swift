@@ -38,16 +38,16 @@ extension KeypairRealmObject {
     convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
 
-        guard let privateKey = keyDetails.private, let isFullyEncrypted = keyDetails.isFullyEncrypted else {
+        guard let privateKey = keyDetails.private, keyDetails.isFullyEncrypted != nil else {
             throw KeypairError.missingPrivateKey("storing pubkey as private")
         }
-        guard isFullyEncrypted else {
+        guard keyDetails.isFullyEncrypted == true else {
             throw KeypairError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
         guard keyDetails.ids.isNotEmpty else {
             throw KeypairError.missingKeyIds
         }
-        guard let primaryFingerprint = self.allFingerprints.first else {
+        guard let primaryFingerprint = keyDetails.ids.first?.fingerprint else {
             throw KeypairError.missingPrimaryFingerprint
         }
 
