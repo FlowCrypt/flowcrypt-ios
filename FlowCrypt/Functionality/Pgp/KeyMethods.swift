@@ -56,11 +56,11 @@ final class KeyMethods: KeyMethodsType {
         let senderEmail = senderEmail.lowercased()
         let parsed = try await parseKeys(armored: keys.map { $0.public })
         guard parsed.isNotEmpty else {
-            throw AppErr.general("No account keys available")
+            throw KeypairError.noAccountKeysAvailable
         }
         let usable = parsed.filter { $0.isKeyUsable }
         guard usable.isNotEmpty else {
-            throw AppErr.general("None of your account keys are usable for encryption")
+            throw MessageValidationError.noUsableAccountKeys
         }
         if let byPrimaryUid = filter(keys, usable, ({ $0.pgpUserEmailsLowercased.first == senderEmail })) {
             return byPrimaryUid // if any keys match by primary uid, use them
