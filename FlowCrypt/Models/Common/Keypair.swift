@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Keypair {
+struct Keypair: ArmoredPrvWithIdentity, Equatable {
     var primaryFingerprint: String
     var `private`: String
     var `public`: String
@@ -33,5 +33,9 @@ extension Keypair {
         self.allFingerprints = object.allFingerprints.map { $0 }
         self.allLongids = object.allLongids.map { $0 }
         self.lastModified = object.lastModified
+    }
+    
+    func getArmoredPrv() -> String? {
+        return `private`
     }
 }

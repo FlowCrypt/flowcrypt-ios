@@ -42,7 +42,7 @@ extension ComposeViewController {
                     input: input,
                     contextToSend: contextToSend,
                     includeAttachments: false,
-                    viewController: self
+                    vcForPassPhraseModal: self
                 )
                 try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
             } catch {

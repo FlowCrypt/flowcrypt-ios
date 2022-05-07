@@ -11,7 +11,6 @@
 		040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */ = {isa = PBXBuildFile; productRef = 040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */; };
 		040FDF1227EDFC5C00CB936A /* IdTokenUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 040FDF1127EDFC5C00CB936A /* IdTokenUtils.swift */; };
 		04127DFD27E3097E009DF86C /* LocalContactsProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */; };
-		04218B9F281A6E220023F977 /* KeyServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04218B9E281A6E220023F977 /* KeyServiceMock.swift */; };
 		042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */; };
 		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
 		0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
@@ -61,7 +60,6 @@
 		2C124DB42728809100A2EFA6 /* ApiCall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C124DB32728809100A2EFA6 /* ApiCall.swift */; };
 		2C141B2C274572D50038A3F8 /* Recipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141B2B274572D50038A3F8 /* Recipient.swift */; };
 		2C141B2F274578C20038A3F8 /* Keypair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C141B2E274578C20038A3F8 /* Keypair.swift */; };
-		2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */; };
 		2C2A3B4D2719EF7300B7F27B /* PassPhraseServiceMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */; };
 		2C2B058927A07F7B00A406F0 /* ObjcException.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2B058827A07F7B00A406F0 /* ObjcException.m */; };
 		2C2D0B95275FDF6B0052771D /* Version6SchemaMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C2D0B94275FDF6B0052771D /* Version6SchemaMigration.swift */; };
@@ -206,7 +204,6 @@
 		9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
 		9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */; };
 		9F6F3BEF26ADF5DE005BD9C6 /* ComposeMessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BED26ADF5DE005BD9C6 /* ComposeMessageError.swift */; };
-		9F6F3C3526ADFA27005BD9C6 /* ComposeMessageServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C3426ADFA27005BD9C6 /* ComposeMessageServiceTests.swift */; };
 		9F6F3C3C26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C3B26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift */; };
 		9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C6926ADFBEB005BD9C6 /* MessageGatewayMock.swift */; };
 		9F6F5F6C26A2F66B00C625C7 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8220D426336626004B2009 /* Logger.swift */; };
@@ -248,7 +245,6 @@
 		9F976592267E19880058419D /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
 		9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
 		9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */; };
-		9F9FD51F27C58AE0006BE93E /* KeyServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9FD51E27C58AE0006BE93E /* KeyServiceError.swift */; };
 		9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA1988F253C841F008C9CF2 /* TableViewController.swift */; };
 		9FA405C7265AEBA50084D133 /* SetupGenerateKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA405C6265AEBA40084D133 /* SetupGenerateKeyViewController.swift */; };
 		9FA9C83C264C2D75005A9670 /* MessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA9C83B264C2D75005A9670 /* MessageService.swift */; };
@@ -360,7 +356,7 @@
 		D28655982424D1BD0066F52E /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D28655992424D1EB0066F52E /* FlowCryptCommon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */; };
 		D286559A2424D1EB0066F52E /* FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */; };
-		D2891AC224C59EFA008918E3 /* KeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2891AC124C59EFA008918E3 /* KeyService.swift */; };
+		D2891AC224C59EFA008918E3 /* KeyAndPassPhraseStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2891AC124C59EFA008918E3 /* KeyAndPassPhraseStorage.swift */; };
 		D28A1CBD2525C141003B760B /* CheckBoxTextNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */; };
 		D29AFFF6240939AE00C1387D /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */; };
@@ -453,7 +449,6 @@
 		040CF0D92809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		040FDF1127EDFC5C00CB936A /* IdTokenUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdTokenUtils.swift; sourceTree = "<group>"; };
 		04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalContactsProviderMock.swift; sourceTree = "<group>"; };
-		04218B9E281A6E220023F977 /* KeyServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceMock.swift; sourceTree = "<group>"; };
 		042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRecipientPopupViewController.swift; sourceTree = "<group>"; };
 		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		0443C85D27F4A6D700A432AA /* Task+Retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+Retry.swift"; sourceTree = "<group>"; };
@@ -513,7 +508,6 @@
 		2C124DB32728809100A2EFA6 /* ApiCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiCall.swift; sourceTree = "<group>"; };
 		2C141B2B274572D50038A3F8 /* Recipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recipient.swift; sourceTree = "<group>"; };
 		2C141B2E274578C20038A3F8 /* Keypair.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keypair.swift; sourceTree = "<group>"; };
-		2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyServiceTests.swift; sourceTree = "<group>"; };
 		2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseServiceMock.swift; sourceTree = "<group>"; };
 		2C2B058627A07F7A00A406F0 /* FlowCrypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FlowCrypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		2C2B058727A07F7B00A406F0 /* ObjcException.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ObjcException.h; sourceTree = "<group>"; };
@@ -690,7 +684,6 @@
 		9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+Backup.swift"; sourceTree = "<group>"; };
 		9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeMessageService.swift; sourceTree = "<group>"; };
 		9F6F3BED26ADF5DE005BD9C6 /* ComposeMessageError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeMessageError.swift; sourceTree = "<group>"; };
-		9F6F3C3426ADFA27005BD9C6 /* ComposeMessageServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageServiceTests.swift; sourceTree = "<group>"; };
 		9F6F3C3B26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreComposeMessageMock.swift; sourceTree = "<group>"; };
 		9F6F3C6926ADFBEB005BD9C6 /* MessageGatewayMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageGatewayMock.swift; sourceTree = "<group>"; };
 		9F716301234FC6950031645E /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -729,7 +722,6 @@
 		9F95A3F623607C0900C80B64 /* SigninButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SigninButtonNode.swift; sourceTree = "<group>"; };
 		9F9AAFFC2383E216000A00F1 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
 		9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContext.swift; sourceTree = "<group>"; };
-		9F9FD51E27C58AE0006BE93E /* KeyServiceError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyServiceError.swift; sourceTree = "<group>"; };
 		9FA0157926565B7800CBBA05 /* KeyMethodsTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyMethodsTest.swift; sourceTree = "<group>"; };
 		9FA1988F253C841F008C9CF2 /* TableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewController.swift; sourceTree = "<group>"; };
 		9FA405C6265AEBA40084D133 /* SetupGenerateKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupGenerateKeyViewController.swift; sourceTree = "<group>"; };
@@ -824,7 +816,7 @@
 		D27B911E24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientWithSortedPubKeys.swift; sourceTree = "<group>"; };
 		D28655922423B4EE0066F52E /* MyMenuViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyMenuViewDecorator.swift; sourceTree = "<group>"; };
 		D28655942423BFF60066F52E /* SideMenuOptionalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideMenuOptionalView.swift; sourceTree = "<group>"; };
-		D2891AC124C59EFA008918E3 /* KeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyService.swift; sourceTree = "<group>"; };
+		D2891AC124C59EFA008918E3 /* KeyAndPassPhraseStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyAndPassPhraseStorage.swift; sourceTree = "<group>"; };
 		D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckBoxTextNode.swift; sourceTree = "<group>"; };
 		D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleContactsResponse.swift; sourceTree = "<group>"; };
 		D2A1D3B723FD64AB00D626D6 /* FlowCryptUIApplication.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowCryptUIApplication.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1076,7 +1068,6 @@
 		2C2A3B492719EE4D00B7F27B /* Key Services */ = {
 			isa = PBXGroup;
 			children = (
-				2C2A3B4A2719EE6100B7F27B /* KeyServiceTests.swift */,
 				A34D222827294C67004E0220 /* PubLookupTest.swift */,
 				51DA5BDB2722D444001C4359 /* Models */,
 			);
@@ -1374,7 +1365,6 @@
 			isa = PBXGroup;
 			children = (
 				2C03CC14275BB51000887EEB /* Account Server Services */,
-				9F6F3C3426ADFA27005BD9C6 /* ComposeMessageServiceTests.swift */,
 				2C2A3B492719EE4D00B7F27B /* Key Services */,
 				9F5F500C26F90AC800294FA2 /* Client Configuration Service */,
 				9FC7EBB6266EBDF000F3BF5D /* PassPhraseStorageTests */,
@@ -1529,7 +1519,6 @@
 				A36108E8273C7A2E00A90E34 /* MockError.swift */,
 				2C2A3B4C2719EF7300B7F27B /* PassPhraseServiceMock.swift */,
 				04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */,
-				04218B9E281A6E220023F977 /* KeyServiceMock.swift */,
 			);
 			path = Mocks;
 			sourceTree = "<group>";
@@ -1611,10 +1600,9 @@
 		9FB22CFD25715DDF0026EE64 /* Local Private Key Services */ = {
 			isa = PBXGroup;
 			children = (
-				9F9FD51E27C58AE0006BE93E /* KeyServiceError.swift */,
 				9F79228726696B0200DA3D80 /* PassPhraseService.swift */,
 				9FC7EBA9266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift */,
-				D2891AC124C59EFA008918E3 /* KeyService.swift */,
+				D2891AC124C59EFA008918E3 /* KeyAndPassPhraseStorage.swift */,
 			);
 			path = "Local Private Key Services";
 			sourceTree = "<group>";
@@ -2654,15 +2642,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F6F3C3526ADFA27005BD9C6 /* ComposeMessageServiceTests.swift in Sources */,
 				9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */,
 				9F976584267E194F0058419D /* TestData.swift in Sources */,
-				04218B9F281A6E220023F977 /* KeyServiceMock.swift in Sources */,
 				049E607927FDECDB0089EE2A /* TestTimer.swift in Sources */,
 				9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */,
 				9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */,
 				51B0C774272AB61000124663 /* StringTestExtension.swift in Sources */,
-				2C2A3B4B2719EE6100B7F27B /* KeyServiceTests.swift in Sources */,
 				9F976490267E11880058419D /* ImapHelperTest.swift in Sources */,
 				9F5F501D26F90AE100294FA2 /* OrganisationalRulesServiceMock.swift in Sources */,
 				2C4E60F72757D91A00DE5770 /* EncryptedStorageMock.swift in Sources */,
@@ -2832,7 +2817,7 @@
 				5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */,
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,
-				D2891AC224C59EFA008918E3 /* KeyService.swift in Sources */,
+				D2891AC224C59EFA008918E3 /* KeyAndPassPhraseStorage.swift in Sources */,
 				D269E02724103A20000495C3 /* ComposeViewControllerInput.swift in Sources */,
 				510BB63527BE92CC00B1011F /* RecipientBase.swift in Sources */,
 				9FAFD75D2714A06400321FA4 /* InboxProviders.swift in Sources */,
@@ -2897,7 +2882,6 @@
 				9F268891237DC55600428A94 /* SetupManuallyImportKeyViewController.swift in Sources */,
 				D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */,
 				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
-				9F9FD51F27C58AE0006BE93E /* KeyServiceError.swift in Sources */,
 				21489B7A267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift in Sources */,
 				5180CB9327357B67001FC7EF /* RawClientConfiguration.swift in Sources */,
 				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,

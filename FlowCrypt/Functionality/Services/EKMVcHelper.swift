@@ -170,11 +170,11 @@ final class EKMVcHelper: EKMVcHelperType {
     ) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await appContext.keyService.getPrvKeyInfo(email: appContext.user.email)
+        let allKeys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: appContext.user.email)
         guard allKeys.isNotEmpty else {
             // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
             //   I copied it from another usage, but has to be changed
-            throw KeyServiceError.retrieve
+            throw KeyMethodsError.retrieve
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys

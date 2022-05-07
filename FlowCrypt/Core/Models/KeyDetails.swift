@@ -10,7 +10,12 @@ import FlowCryptCommon
 import MailCore
 import Foundation
 
-struct KeyDetails: Decodable {
+protocol ArmoredPrvWithIdentity {
+    var primaryFingerprint: String { get }
+    func getArmoredPrv() -> String?
+}
+
+struct KeyDetails: ArmoredPrvWithIdentity, Decodable {
     let `public`: String
     let `private`: String? // ony if this is prv
     let isFullyDecrypted: Bool? // only if this is prv
@@ -53,6 +58,10 @@ extension KeyDetails {
         // non-revoked keys, with lastModified and at least one user, that are not expired are usable
         // gross simplification until https://github.com/FlowCrypt/flowcrypt-ios/issues/1546
         return true
+    }
+    
+    func getArmoredPrv() -> String? {
+        return `private`
     }
 }
 

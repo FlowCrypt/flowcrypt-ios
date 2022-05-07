@@ -49,7 +49,7 @@ final class MessageService {
     private let localContactsProvider: LocalContactsProviderType
     private let core: Core
     private let logger: Logger
-    private let keyService: KeyServiceType
+    private let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
     private let passPhraseService: PassPhraseServiceType
     private let pubLookup: PubLookupType
 
@@ -58,11 +58,11 @@ final class MessageService {
         keyMethods: KeyMethodsType = KeyMethods(),
         localContactsProvider: LocalContactsProviderType,
         pubLookup: PubLookupType,
-        keyService: KeyServiceType,
+        keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         messageProvider: MessageProvider,
         passPhraseService: PassPhraseServiceType
     ) {
-        self.keyService = keyService
+        self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
         self.passPhraseService = passPhraseService
         self.messageProvider = messageProvider
         self.core = core
@@ -73,7 +73,7 @@ final class MessageService {
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String, userEmail: String) async throws -> Bool {
-        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
@@ -112,14 +112,14 @@ final class MessageService {
         onlyLocalKeys: Bool,
         userEmail: String
     ) async throws -> ProcessedMessage {
-        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
         let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
         let decrypted = try await core.parseDecryptMsg(
             encrypted: rawMimeData,
-            keys: keys,
+            keys: keys.map { PrvKeyInfo(keypair: $0) },
             msgPwd: nil,
             isEmail: true,
             verificationPubKeys: verificationPubKeys
@@ -130,17 +130,15 @@ final class MessageService {
 
         return try await processMessage(
             rawMimeData: rawMimeData,
-            sender: sender,
-            with: decrypted,
-            keys: keys
+            with: decrypted
         )
     }
 
     func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
         guard attachment.isEncrypted else { return attachment }
 
-        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
-        let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys, msgPwd: nil)
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
+        let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys.map { PrvKeyInfo(keypair: $0) }, msgPwd: nil)
 
         if let decryptErr = decrypted.decryptErr {
             throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)
@@ -155,16 +153,11 @@ final class MessageService {
 
     private func processMessage(
         rawMimeData: Data,
-        sender: Recipient?,
-        with decrypted: CoreRes.ParseDecryptMsg,
-        keys: [PrvKeyInfo]
+        with decrypted: CoreRes.ParseDecryptMsg
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
-        let attachments = try await getAttachments(
-            blocks: decrypted.blocks,
-            keys: keys
-        )
+        let attachments = try await getAttachments(blocks: decrypted.blocks)
         let messageType: ProcessedMessage.MessageType
         let text: String
         let signature: ProcessedMessage.MessageSignature?
@@ -207,8 +200,7 @@ final class MessageService {
     }
 
     private func getAttachments(
-        blocks: [MsgBlock],
-        keys: [PrvKeyInfo]
+        blocks: [MsgBlock]
     ) async throws -> [MessageAttachment] {
         let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
         let attachments: [MessageAttachment] = attachmentBlocks.compactMap { block in

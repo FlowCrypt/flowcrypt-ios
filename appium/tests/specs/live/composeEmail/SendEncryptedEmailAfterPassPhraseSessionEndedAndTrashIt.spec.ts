@@ -22,7 +22,6 @@ describe('COMPOSE EMAIL: ', () => {
     const passPhrase = CommonData.account.passPhrase;
     const wrongPassPhraseError = CommonData.errors.wrongPassPhrase;
     const wrongPassPhrase = "wrong";
-    const senderEmail = CommonData.account.email;
     const bundleId = CommonData.bundleId.id;
 
     await SplashScreen.login();
