@@ -155,7 +155,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             let text: String
         }
         let json: [String: Any?]? = [
-            "keys": try keys.map { $0.prvKeyInfoJsonDictForCore },
+            "keys": keys.map { $0.prvKeyInfoJsonDictForCore },
             "isEmail": isEmail,
             "msgPwd": msgPwd,
             "verificationPubkeys": verificationPubKeys
