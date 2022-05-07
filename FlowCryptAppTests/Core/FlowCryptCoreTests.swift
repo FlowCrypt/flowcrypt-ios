@@ -61,7 +61,7 @@ final class FlowCryptCoreTests: XCTestCase {
     }
 
     func testParseKeys() async throws {
-        let r = try await core.parseKeys(armoredOrBinary: TestData.k0.pub.data(using: .utf8)! + [10] + TestData.k1.prv.data(using: .utf8)!)
+        let r = try await core.parseKeys(armoredOrBinary: TestData.k0.public.data(using: .utf8)! + [10] + TestData.k1.private.data(using: .utf8)!)
         XCTAssertEqual(r.format, CoreRes.ParseKeys.Format.armored)
         XCTAssertEqual(r.keyDetails.count, 2)
         // k0 k is public
@@ -82,7 +82,7 @@ final class FlowCryptCoreTests: XCTestCase {
     }
 
     func testDecryptKeyWithCorrectPassPhrase() async throws {
-        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k0.prv, passphrase: TestData.k0.passphrase)
+        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k0.private, passphrase: TestData.k0.passphrase)
         XCTAssertNotNil(decryptKeyRes.decryptedKey)
         // make sure indeed decrypted
         let parseKeyRes = try await core.parseKeys(armoredOrBinary: decryptKeyRes.decryptedKey.data(using: .utf8)!)
@@ -177,12 +177,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testComposeEmailWithSigningKey() async throws {
         // arrange
-        let signingKey = PrvKeyInfo(
-            private: TestData.k0.prv,
-            longid: TestData.k0.longid,
-            passphrase: TestData.k0.passphrase,
-            fingerprints: TestData.k0.fingerprints
-        )
+        let signingKey = TestData.k0
 
         let msg = SendableMsg(
             text: "this is the message",
@@ -206,7 +201,7 @@ final class FlowCryptCoreTests: XCTestCase {
             keys: [signingKey],
             msgPwd: nil,
             isEmail: true,
-            verificationPubKeys: [TestData.k0.pub]
+            verificationPubKeys: [TestData.k0.public]
         )
         guard let verifyResult = decrypted.blocks.first?.verifyRes else {
             XCTFail("verify result expected")
@@ -218,12 +213,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testComposeEmailWithSigningKeyWithoutVerificationKey() async throws {
         // arrange
-        let signingKey = PrvKeyInfo(
-            private: TestData.k0.prv,
-            longid: TestData.k0.longid,
-            passphrase: TestData.k0.passphrase,
-            fingerprints: TestData.k0.fingerprints
-        )
+        let signingKey = TestData.k0
 
         let msg = SendableMsg(
             text: "this is the message",
@@ -266,7 +256,6 @@ final class FlowCryptCoreTests: XCTestCase {
             variant: KeyVariant.curve25519,
             userIds: [UserId(email: email, name: "End to end")]
         )
-        let k = generateKeyRes.key
         let msg = SendableMsg(
             text: text,
             html: text,
@@ -277,12 +266,12 @@ final class FlowCryptCoreTests: XCTestCase {
             subject: "e2e subj",
             replyToMimeMsg: nil,
             atts: [],
-            pubKeys: [k.public],
+            pubKeys: [generateKeyRes.key.public],
             signingPrv: nil,
             password: nil
         )
         let mime = try await core.composeEmail(msg: msg, fmt: .encryptInline)
-        let keys = [PrvKeyInfo(private: k.private!, longid: k.ids[0].longid, passphrase: passphrase, fingerprints: k.fingerprints)]
+        let keys = [try Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")]
         let decrypted = try await core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true, verificationPubKeys: [])
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, ReplyType.encrypted)
@@ -295,7 +284,7 @@ final class FlowCryptCoreTests: XCTestCase {
     }
 
     func testDecryptErrMismatch() async throws {
-        let key = PrvKeyInfo(private: TestData.k0.prv, longid: TestData.k0.longid, passphrase: TestData.k0.passphrase, fingerprints: TestData.k0.fingerprints)
+        let key = TestData.k0
         let r = try await core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false, verificationPubKeys: [])
         let decrypted = r
         XCTAssertEqual(decrypted.text, "")
@@ -325,25 +314,16 @@ final class FlowCryptCoreTests: XCTestCase {
             variant: KeyVariant.curve25519,
             userIds: [UserId(email: email, name: "End to end")]
         )
-        let k = generateKeyRes.key
-        let keys = [
-            PrvKeyInfo(
-                private: k.private!,
-                longid: k.ids[0].longid,
-                passphrase: passphrase,
-                fingerprints: k.fingerprints
-            )
-        ]
 
         // When
         let encrypted = try await core.encrypt(
             file: fileData,
             name: initialFileName,
-            pubKeys: [k.public]
+            pubKeys: [generateKeyRes.key.public]
         )
         let decrypted = try await core.decryptFile(
             encrypted: encrypted,
-            keys: keys,
+            keys: [Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")],
             msgPwd: nil
         )
 
@@ -366,20 +346,11 @@ final class FlowCryptCoreTests: XCTestCase {
             variant: KeyVariant.curve25519,
             userIds: [UserId(email: email, name: "End to end")]
         )
-        let k = generateKeyRes.key
-        let keys = [
-            PrvKeyInfo(
-                private: k.private!,
-                longid: k.ids[0].longid,
-                passphrase: passphrase,
-                fingerprints: k.fingerprints
-            )
-        ]
 
         // When
         let decryptRes = try await core.decryptFile(
             encrypted: fileData,
-            keys: keys,
+            keys: [Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")],
             msgPwd: nil
         )
 
@@ -442,17 +413,9 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // Test decrypt msg
         timer.start()
-        let keys = [
-            PrvKeyInfo(
-                private: TestData.k3rsa4096.prv,
-                longid: TestData.k3rsa4096.longid,
-                passphrase: TestData.k3rsa4096.passphrase,
-                fingerprints: TestData.k3rsa4096.fingerprints
-            )
-        ]
         let _ = try await core.parseDecryptMsg(
             encrypted: encrypted,
-            keys: keys,
+            keys: [TestData.k3rsa4096],
             msgPwd: nil,
             isEmail: true,
             verificationPubKeys: [TestData.k3rsa4096.pub]
@@ -472,8 +435,8 @@ final class FlowCryptCoreTests: XCTestCase {
             subject: "Signed email",
             replyToMimeMsg: nil,
             atts: [],
-            pubKeys: [TestData.k3rsa4096.pub],
-            signingPrv: keys[0],
+            pubKeys: [TestData.k3rsa4096.public],
+            signingPrv: TestData.k3rsa4096,
             password: nil
         )
 
@@ -496,25 +459,16 @@ final class FlowCryptCoreTests: XCTestCase {
             variant: KeyVariant.curve25519,
             userIds: [UserId(email: email, name: "End to end")]
         )
-        let k = generateKeyRes.key
-        let keys = [
-            PrvKeyInfo(
-                private: k.private!,
-                longid: k.ids[0].longid,
-                passphrase: passphrase,
-                fingerprints: k.fingerprints
-            )
-        ]
 
         // When
         let encrypted = try await core.encrypt(
             file: fileData,
             name: initialFileName,
-            pubKeys: [k.public]
+            pubKeys: [generateKeyRes.key.public]
         )
         let decrypted = try await core.decryptFile(
             encrypted: encrypted,
-            keys: keys,
+            keys: [Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")],
             msgPwd: nil
         )
 

@@ -13,7 +13,7 @@ enum KeySource: String {
     case ekm
 }
 
-enum KeyInfoError: Error, Equatable {
+enum KeypairError: Error, Equatable {
     case missingPrivateKey(String)
     case notEncrypted(String)
     case missingKeyIds
@@ -46,24 +46,22 @@ extension KeypairRealmObject {
         self.init()
 
         guard let privateKey = keyDetails.private, let isFullyEncrypted = keyDetails.isFullyEncrypted else {
-            throw KeyInfoError.missingPrivateKey("storing pubkey as private")
+            throw KeypairError.missingPrivateKey("storing pubkey as private")
         }
         guard isFullyEncrypted else {
-            throw KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
+            throw KeypairError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
         guard keyDetails.ids.isNotEmpty else {
-            throw KeyInfoError.missingKeyIds
+            throw KeypairError.missingKeyIds
+        }
+        guard let primaryFingerprint = self.allFingerprints.first else {
+            throw KeypairError.missingPrimaryFingerprint
         }
 
         self.`private` = privateKey
         self.`public` = keyDetails.public
         self.allFingerprints.append(objectsIn: keyDetails.ids.map(\.fingerprint))
         self.allLongids.append(objectsIn: keyDetails.ids.map(\.longid))
-
-        guard let primaryFingerprint = self.allFingerprints.first else {
-            throw KeyInfoError.missingPrimaryFingerprint
-        }
-
         self.primaryKey = primaryFingerprint + user.email
         self.primaryFingerprint = primaryFingerprint
         self.passphrase = passphrase

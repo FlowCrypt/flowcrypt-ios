@@ -35,10 +35,39 @@ extension Keypair {
         self.lastModified = object.lastModified
     }
 
+    init (_ k: KeyDetails, passPhrase: String?, source: String) throws {
+        self.primaryFingerprint = k.primaryFingerprint
+        // todo - this is duplicate code from KeypairRealmObject
+        guard let privateKey = k.private, let isFullyEncrypted = k.isFullyEncrypted else {
+            throw KeypairError.missingPrivateKey("storing pubkey as private")
+        }
+        guard isFullyEncrypted else {
+            throw KeypairError.notEncrypted("Will not store Private Key that is not fully encrypted")
+        }
+        guard k.ids.isNotEmpty else {
+            throw KeypairError.missingKeyIds
+        }
+        guard let primaryFingerprint = self.allFingerprints.first else {
+            throw KeypairError.missingPrimaryFingerprint
+        }
+        // end duplicate
+        self.private = privateKey
+        self.public = k.public
+        self.passphrase = passPhrase
+        self.source = source
+        self.allFingerprints = k.fingerprints
+        self.allLongids = k.ids.map { $0.longid }
+        guard let lastModified = k.lastModified else {
+            // todo - make a new error like `keyMissingSelfSignature`
+            throw KeyMethodsError.parsingError
+        }
+        self.lastModified = lastModified
+    }
+
     func getArmoredPrv() -> String? {
         return `private`
     }
-    
+
     var prvKeyInfoJsonDictForCore: [String: String?] {
         // this exact format is needed by Core javascript code
         ["private": `private`, "longid": primaryLongid, "passphrase": passphrase]

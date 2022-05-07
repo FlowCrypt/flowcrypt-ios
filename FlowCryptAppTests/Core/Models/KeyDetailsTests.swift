@@ -12,7 +12,7 @@ import XCTest
 class KeyDetailsTests: XCTestCase {
 
     let user = UserRealmObject(name: "name", email: "email", imap: nil, smtp: nil)
-    
+
     func testHashable() {
         let keyDetail = KeyDetails(
             public: "public",
@@ -69,7 +69,7 @@ class KeyDetailsTests: XCTestCase {
 
         assert(
             try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
-            throws: KeyInfoError.missingPrivateKey("storing pubkey as private")
+            throws: KeypairError.missingPrivateKey("storing pubkey as private")
         )
     }
 
@@ -92,7 +92,7 @@ class KeyDetailsTests: XCTestCase {
 
         assert(
             try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
-            throws: KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
+            throws: KeypairError.notEncrypted("Will not store Private Key that is not fully encrypted")
         )
     }
 
@@ -113,7 +113,7 @@ class KeyDetailsTests: XCTestCase {
 
         assert(
             try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
-            throws: KeyInfoError.missingKeyIds
+            throws: KeypairError.missingKeyIds
         )
     }
 
