@@ -8,6 +8,32 @@
 
 import Foundation
 
+enum KeypairError: Error, Equatable {
+    case missingPrivateKey(String)
+    case notEncrypted(String)
+    case missingKeyIds
+    case missingPrimaryFingerprint
+    case parsingError
+    case noAccountKeysAvailable
+    case expectedPrivateGotPublic
+}
+
+extension KeypairError: CustomStringConvertible {
+
+    var description: String {
+        switch self {
+        case .parsingError:
+            return "KeypairError_parsing_error".localized
+        case .noAccountKeysAvailable:
+            return "KeypairError_no_account_keys_available_error".localized
+        case .expectedPrivateGotPublic:
+            return "KeypairError_expected_public_got_private".localized
+        default:
+            return localizedDescription
+        }
+    }
+}
+
 struct Keypair: ArmoredPrvWithIdentity, Equatable {
     var primaryFingerprint: String
     var `private`: String
@@ -56,7 +82,7 @@ extension Keypair {
         self.allLongids = k.ids.map { $0.longid }
         guard let lastModified = k.lastModified else {
             // todo - make a new error like `keyMissingSelfSignature`
-            throw KeyMethodsError.parsingError
+            throw KeypairError.parsingError
         }
         self.lastModified = lastModified
     }

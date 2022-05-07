@@ -13,13 +13,6 @@ enum KeySource: String {
     case ekm
 }
 
-enum KeypairError: Error, Equatable {
-    case missingPrivateKey(String)
-    case notEncrypted(String)
-    case missingKeyIds
-    case missingPrimaryFingerprint
-}
-
 final class KeypairRealmObject: Object {
     @Persisted(primaryKey: true) var primaryKey: String
     @Persisted var primaryFingerprint: String

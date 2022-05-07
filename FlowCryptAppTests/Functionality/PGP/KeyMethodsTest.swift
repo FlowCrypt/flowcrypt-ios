@@ -65,7 +65,7 @@ class KeyMethodsTest: XCTestCase {
             _ = try await sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
             XCTFail("expected to throw above")
         } catch {
-            XCTAssertEqual(error as? KeyMethodsError, KeyMethodsError.expectedPrivateGotPublic)
+            XCTAssertEqual(error as? KeypairError, KeypairError.expectedPrivateGotPublic)
         }
     }
 

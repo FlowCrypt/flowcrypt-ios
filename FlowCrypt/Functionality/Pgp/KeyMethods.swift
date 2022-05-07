@@ -16,34 +16,6 @@ protocol KeyMethodsType {
     func chooseSenderEncryptionKeys(keys: [Keypair], senderEmail: String) async throws -> [Keypair]
 }
 
-enum KeyMethodsError: Error {
-//    case unexpected
-    case parsingError
-    case retrieve
-//    case missingCurrentUserEmail
-    case expectedPrivateGotPublic
-}
-
-extension KeyMethodsError: CustomStringConvertible {
-
-    var description: String {
-        let key: String
-        switch self {
-//        case .unexpected:
-//            key = "KeyMethodsError_retrieve_unexpected"
-        case .parsingError:
-            key = "KeyMethodsError_retrieve_parse"
-        case .retrieve:
-            key = "KeyMethodsError_retrieve_error"
-//        case .missingCurrentUserEmail:
-//            key = "KeyMethodsError_missing_current_email"
-        case .expectedPrivateGotPublic:
-            key = "KeyMethodsError_retrieve_private"
-        }
-        return key.localized
-    }
-}
-
 final class KeyMethods: KeyMethodsType {
 
     let decrypter: KeyDecrypter
@@ -57,7 +29,7 @@ final class KeyMethods: KeyMethodsType {
         var matching: [T] = []
         for key in keys {
             guard let privateKey = key.getArmoredPrv() else {
-                throw KeyMethodsError.expectedPrivateGotPublic
+                throw KeypairError.expectedPrivateGotPublic
             }
             do {
                 _ = try await self.decrypter.decryptKey(armoredPrv: privateKey, passphrase: passPhrase)
@@ -75,7 +47,7 @@ final class KeyMethods: KeyMethodsType {
             armoredOrBinary: armored.joined(separator: "\n").data()
         )
         guard parsed.keyDetails.count == armored.count else {
-            throw KeyMethodsError.parsingError
+            throw KeypairError.parsingError
         }
         return parsed.keyDetails
     }
@@ -99,7 +71,7 @@ final class KeyMethods: KeyMethodsType {
 //                armoredOrBinary: keyInfo.`private`.data()
 //            )
 //            guard let parsedKey = parsedKeys.keyDetails.first else {
-//                throw KeyMethodsError.parsingError
+//                throw KeypairError.parsingError
 //            }
 //            keys.append((keyInfo, parsedKey))
 //        }

@@ -124,9 +124,7 @@ final class ComposeMessageService {
         //  let's find all keys that match and save the pass phrase for all
         let allKeys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
         guard allKeys.isNotEmpty else {
-            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
-            //   I copied it from another usage, but has to be changed
-            throw KeyMethodsError.retrieve
+            throw KeypairError.noAccountKeysAvailable
         }
         let matchingKeys = try await keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
