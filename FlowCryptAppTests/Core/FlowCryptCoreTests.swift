@@ -436,7 +436,7 @@ final class FlowCryptCoreTests: XCTestCase {
             replyToMimeMsg: nil,
             atts: [],
             pubKeys: [TestData.k3rsa4096.public],
-            signingPrv: Optional(TestData.k3rsa4096),
+            signingPrv: TestData.k3rsa4096,
             password: nil
         )
 
