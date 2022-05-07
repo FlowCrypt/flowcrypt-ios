@@ -66,7 +66,7 @@ protocol PassPhraseServiceType {
     func getPassPhrases(for email: String) throws -> [PassPhrase]
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
-    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) throws
+    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [Keypair]) throws
 }
 
 final class PassPhraseService: PassPhraseServiceType {
@@ -113,9 +113,9 @@ final class PassPhraseService: PassPhraseServiceType {
         try encryptedStorage.getPassPhrases(for: email) + inMemoryStorage.getPassPhrases(for: email)
     }
 
-    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [PrvKeyInfo]) throws {
+    func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [Keypair]) throws {
         for privateKey in privateKeys {
-            let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: privateKey.fingerprints)
+            let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: privateKey.allFingerprints)
             try savePassPhrase(with: pp, storageMethod: .memory)
         }
     }

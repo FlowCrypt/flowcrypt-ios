@@ -24,7 +24,7 @@ final class ComposeMessageService {
 
     private let messageGateway: MessageGateway
     private let passPhraseService: PassPhraseServiceType
-    private let keyService: KeyServiceType
+    private let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
     private let keyMethods: KeyMethodsType
     private let storage: EncryptedStorageType
     private let localContactsProvider: LocalContactsProviderType
@@ -47,7 +47,7 @@ final class ComposeMessageService {
         encryptedStorage: EncryptedStorageType,
         messageGateway: MessageGateway,
         passPhraseService: PassPhraseServiceType,
-        keyService: KeyServiceType,
+        keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         keyMethods: KeyMethodsType,
         draftGateway: DraftGateway? = nil,
         localContactsProvider: LocalContactsProviderType? = nil,
@@ -57,7 +57,7 @@ final class ComposeMessageService {
     ) {
         self.messageGateway = messageGateway
         self.passPhraseService = passPhraseService
-        self.keyService = keyService
+        self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
         self.keyMethods = keyMethods
         self.draftGateway = draftGateway
         self.storage = encryptedStorage
@@ -73,20 +73,25 @@ final class ComposeMessageService {
         self.onStateChanged = completion
     }
 
-    func prepareSigningKey(viewController: UIViewController?) async throws -> PrvKeyInfo? {
-        guard let viewController = viewController, let signingKey = try await keyService.getSigningKey(email: sender) else {
+    func prepareSigningKey(viewController: UIViewController?) async throws -> Keypair? {
+        // todo - sender email will differ from account email once
+        //   https://github.com/FlowCrypt/flowcrypt-ios/issues/1298 is done
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
+        guard var signingKey = try await keyMethods.chooseSenderSigningKey(keys: keys, senderEmail: sender) else {
+            // todo - throw user error for missing signing key
             return nil
         }
-
-        guard let existingPassPhrase = signingKey.passphrase else {
-            return signingKey.copy(with: try await self.requestMissingPassPhraseWithModal(for: signingKey, viewController: viewController))
+        if signingKey.passphrase == nil {
+            guard let vc = viewController else {
+                throw AppErr.unexpected("missing UIViewController when promting for pass phrase for signing key")
+            }
+            signingKey.passphrase = try await self.requestMissingPassPhraseWithModal(for: signingKey, viewController: vc)
         }
-
-        return signingKey.copy(with: existingPassPhrase)
+        return signingKey
     }
 
     @MainActor
-    internal func requestMissingPassPhraseWithModal(for signingKey: PrvKeyInfo, viewController: UIViewController) async throws -> String {
+    internal func requestMissingPassPhraseWithModal(for signingKey: Keypair, viewController: UIViewController) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
             let alert = AlertsFactory.makePassPhraseAlert(
                 onCancel: {
@@ -114,20 +119,18 @@ final class ComposeMessageService {
         }
     }
 
-    func handlePassPhraseEntry(_ passPhrase: String, for signingKey: PrvKeyInfo) async throws -> Bool {
+    func handlePassPhraseEntry(_ passPhrase: String, for signingKey: Keypair) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await keyService.getPrvKeyInfo(email: sender)
+        let allKeys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
         guard allKeys.isNotEmpty else {
-            // tom - todo - nonsensical error type choice https://github.com/FlowCrypt/flowcrypt-ios/issues/859
-            //   I copied it from another usage, but has to be changed
-            throw KeyServiceError.retrieve
+            throw KeypairError.noAccountKeysAvailable
         }
         let matchingKeys = try await keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
         try passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
         // now figure out if the pass phrase also matched the signing prv itself
-        let matched = matchingKeys.first(where: { $0.fingerprints.first == signingKey.fingerprints.first })
+        let matched = matchingKeys.first(where: { $0.allFingerprints.first == signingKey.primaryFingerprint })
         return matched != nil// true if the pass phrase matched signing key
     }
 
@@ -136,7 +139,9 @@ final class ComposeMessageService {
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
         includeAttachments: Bool = true,
-        viewController: UIViewController? = nil
+        // todo - throw Error on missing pass phrase then catch it in VC
+        //   instead of passing VC it here
+        vcForPassPhraseModal: UIViewController? = nil
     ) async throws -> SendableMsg {
         onStateChanged?(.validatingMessage)
 
@@ -166,8 +171,17 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        guard let myPubKey = try storage.getKeypairs(by: sender).map(\.public).first else {
-            throw MessageValidationError.missingPublicKey
+        // todo - need to use account email here instead of sender
+        //   once sendAs aliases are implemented (we pull keys by account email,
+        //   and then later prioritize / filter by sender email which may be different)
+        // https://github.com/FlowCrypt/flowcrypt-ios/issues/1298
+        let senderKeys = try await keyMethods.chooseSenderEncryptionKeys(
+            keys: try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
+            senderEmail: sender
+        )
+
+        guard senderKeys.isNotEmpty else {
+            throw MessageValidationError.noUsableAccountKeys
         }
 
         let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
@@ -193,7 +207,7 @@ final class ComposeMessageService {
             }
         }
 
-        let signingPrv = try await prepareSigningKey(viewController: viewController)
+        let signingPrv = try await prepareSigningKey(viewController: vcForPassPhraseModal)
 
         return SendableMsg(
             text: text,
@@ -205,7 +219,7 @@ final class ComposeMessageService {
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
-            pubKeys: [myPubKey] + validPubKeys,
+            pubKeys: senderKeys.map { $0.public } + validPubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )

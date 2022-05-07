@@ -120,7 +120,7 @@ final class ComposeViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage,
             messageGateway: appContext.getRequiredMailProvider().messageSender,
             passPhraseService: appContext.passPhraseService,
-            keyService: appContext.keyService,
+            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
             keyMethods: keyMethods,
             enterpriseServer: appContext.enterpriseServer,
             sender: appContext.user.email
