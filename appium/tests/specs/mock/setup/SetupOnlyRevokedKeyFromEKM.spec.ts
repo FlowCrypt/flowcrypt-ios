@@ -22,6 +22,8 @@ describe('SETUP: ', () => {
     const emailText = CommonData.simpleEmail.message;
 
     // When private key is revoked key, there are no public keys to pick. So missing sender public key error occurs.
+
+
     const noPrivateKeyError = 'Error\n' +
       'Could not compose message\n\n' +
       'Your account keys are not usable for encryption.';
