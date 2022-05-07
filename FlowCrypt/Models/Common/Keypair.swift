@@ -38,4 +38,9 @@ extension Keypair {
     func getArmoredPrv() -> String? {
         return `private`
     }
+    
+    var prvKeyInfoJsonDictForCore: [String: String?] {
+        // this exact format is needed by Core javascript code
+        ["private": `private`, "longid": primaryLongid, "passphrase": passphrase]
+    }
 }

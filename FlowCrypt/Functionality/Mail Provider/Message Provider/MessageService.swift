@@ -119,7 +119,7 @@ final class MessageService {
         let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
         let decrypted = try await core.parseDecryptMsg(
             encrypted: rawMimeData,
-            keys: keys.map { PrvKeyInfo(keypair: $0) },
+            keys: keys,
             msgPwd: nil,
             isEmail: true,
             verificationPubKeys: verificationPubKeys
@@ -138,7 +138,7 @@ final class MessageService {
         guard attachment.isEncrypted else { return attachment }
 
         let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
-        let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys.map { PrvKeyInfo(keypair: $0) }, msgPwd: nil)
+        let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys, msgPwd: nil)
 
         if let decryptErr = decrypted.decryptErr {
             throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)

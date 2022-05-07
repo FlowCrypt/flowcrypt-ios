@@ -277,7 +277,7 @@ final class ComposeMessageService {
     // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
         do {
-            onStateChanged?(.startComposing)
+            onStateChanged?(.startComposisavePassPhrasesInMemoryng)
 
             let hasPassword = (message.password ?? "").isNotEmpty
             let composedEmail: CoreRes.ComposeEmail

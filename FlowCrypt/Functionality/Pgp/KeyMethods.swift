@@ -11,7 +11,6 @@ import Foundation
 
 protocol KeyMethodsType {
     func filterByPassPhraseMatch<T: ArmoredPrvWithIdentity>(keys: [T], passPhrase: String) async throws -> [T]
-//    func filterByPassPhraseMatch(keys: [PrvKeyInfo], passPhrase: String) async throws -> [PrvKeyInfo]
     func parseKeys(armored: [String]) async throws -> [KeyDetails]
     func chooseSenderSigningKey(keys: [Keypair], senderEmail: String) async throws -> Keypair?
     func chooseSenderEncryptionKeys(keys: [Keypair], senderEmail: String) async throws -> [Keypair]
