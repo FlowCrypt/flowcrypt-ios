@@ -24,6 +24,10 @@ extension ApiCall {
     }
 }
 
+extension ApiCall.Request {
+    var description: String { [method.rawValue, url].joined(separator: " ") }
+}
+
 extension ApiCall {
     static func call(_ request: Request) async throws -> HttpRes {
         guard let url = URL(string: request.url) else {
@@ -53,6 +57,7 @@ extension ApiCall {
             guard let httpError = error as? HttpErr else {
                 throw error
             }
+
             throw ApiError.create(from: httpError, request: request)
         }
     }
@@ -66,8 +71,9 @@ struct ApiError: LocalizedError {
 extension ApiError {
     static func create(from httpError: HttpErr, request: ApiCall.Request) -> Self {
         guard let data = httpError.data else {
+            let errorMessage = httpError.error?.localizedDescription ?? ""
             return ApiError(
-                errorDescription: httpError.error?.localizedDescription ?? "",
+                errorDescription: errorMessage + "\n\n" + request.description,
                 internalError: httpError.error
             )
         }
@@ -85,7 +91,7 @@ extension ApiError {
 
         var message = "\(request.apiName) \(object.code) \(object.message)"
         message += "\n"
-        message += "\(request.method) \(request.url)"
+        message += request.description
 
         return ApiError(errorDescription: message, internalError: httpError.error)
     }
