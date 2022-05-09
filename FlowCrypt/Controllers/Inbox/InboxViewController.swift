@@ -134,7 +134,7 @@ extension InboxViewController {
                 ) { [weak self] in self?.handleInfoTap() },
                 NavigationBarItemsView.Input(
                     image: UIImage(named: "search_icn"),
-                    accessibilityId: "aid-seach-btn"
+                    accessibilityId: "aid-search-btn"
                 ) { [weak self] in self?.handleSearchTap() }
             ]
         )

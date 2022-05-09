@@ -6,7 +6,7 @@ const SELECTORS = {
   TRASH_HEADER: '~aid-navigation-item-trash',
   SENT_HEADER: '~aid-navigation-item-sent',
   CREATE_EMAIL_BUTTON: '~aid-compose-message-button',
-  INBOX_HEADER: '~aid-navigation-item-ibox',
+  INBOX_HEADER: '~aid-navigation-item-inbox',
   SEARCH_BTN: '~aid-search-btn',
   HELP_BTN: '~aid-help-btn',
   SEARCH_FIELD: '~aid-search-all-emails',

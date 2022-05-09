@@ -48,7 +48,7 @@ extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {
                 image: nil,
                 insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
                 backgroundColor: .backgroundColor,
-                accessibilityIdentifier: "publicKey"
+                accessibilityIdentifier: "aid-public-key-node"
             ))
         }
     }

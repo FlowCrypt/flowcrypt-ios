@@ -2,8 +2,8 @@ import BaseScreen from './base.screen';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
-  PUBLIC_KEY_HEADER: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Public key"`]',
-  PUBLIC_KEY: '~publicKey',
+  PUBLIC_KEY_HEADER: '~aid-navigation-item-public-key',
+  PUBLIC_KEY: '~aid-public-key-node',
 };
 
 class PublicKeyScreen extends BaseScreen {

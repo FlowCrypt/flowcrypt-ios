@@ -4,12 +4,12 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   MENU_BTN: '~aid-menu-btn',
-  LOGOUT_BTN: '~menuBarItemLog out',
-  SETTINGS_BTN: '~menuBarItemSettings',
-  INBOX_BTN: '~menuBarItemInbox',
-  SENT_BTN: '~menuBarItemSent',
-  TRASH_BTN: '~menuBarItemTrash',
-  ADD_ACCOUNT_BUTTON: '~Add account'
+  LOGOUT_BTN: '~aid-menu-bar-item-log-out',
+  SETTINGS_BTN: '~aid-menu-bar-item-settings',
+  INBOX_BTN: '~aid-menu-bar-item-inbox',
+  SENT_BTN: '~aid-menu-bar-item-sent',
+  TRASH_BTN: '~aid-menu-bar-item-trash',
+  ADD_ACCOUNT_BUTTON: '~aid-add-account-btn'
 };
 
 class MenuBarScreen extends BaseScreen {
@@ -93,7 +93,7 @@ class MenuBarScreen extends BaseScreen {
   }
 
   checkMenuBarItem = async (menuItem: string) => {
-    const menuBarItem = await $(`~menuBarItem${menuItem}`);
+    const menuBarItem = await $(`~aid-menu-item-${menuItem}`);
     await menuBarItem.waitForDisplayed();
   }
 

@@ -3,8 +3,8 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   BACK_BUTTON: '~aid-back-button',
-  SCREEN: '~searchViewController',
-  SEARCH_FIELD: '~searchAllEmailField'
+  SCREEN: '~aid-search-view-controller',
+  SEARCH_FIELD: '~aid-search-all-emails-field'
 };
 
 class SearchScreen extends BaseScreen {
