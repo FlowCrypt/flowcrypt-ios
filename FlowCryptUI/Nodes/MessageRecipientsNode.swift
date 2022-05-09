@@ -56,7 +56,7 @@ public final class MessageRecipientsNode: ASDisplayNode {
         labelNode.style.preferredSize = CGSize(width: 30, height: 20)
 
         let children = recipients.enumerated().map { index, recipient in
-            return recipientNode(for: recipient, identifier: "aid-\(label)-label\(index)")
+            return recipientNode(for: recipient, identifier: "aid-\(label)-\(index)-label")
         }
         let recipientsList = ASStackLayoutSpec(
             direction: .vertical,
