@@ -40,8 +40,8 @@ final class GlobalRouter {
     private lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 }
 
-// MARK: - Proceed
 extension GlobalRouter: GlobalRouterType {
+    // MARK: - Proceed
 
     /// proceed to flow (signing/setup/app) depends on user status (isLoggedIn/isSetupFinished)
     func proceed() {
@@ -56,6 +56,36 @@ extension GlobalRouter: GlobalRouterType {
         }
     }
 
+    @MainActor
+    private func proceed(with appContext: AppContext) {
+        logger.logInfo("proceed for session: \(appContext.session?.description ?? "nil")")
+        AppStartup(appContext: appContext).initializeApp(window: keyWindow)
+    }
+
+    @MainActor
+    private func proceed(with appContext: AppContext, session: SessionType) async throws {
+        logger.logInfo("proceed for session: \(session.description)")
+        guard
+            let user = try appContext.encryptedStorage.activeUser,
+            let authType = user.authType
+        else {
+            let message = "Wrong application state. User not found for session \(session.description)"
+            logger.logError(message)
+
+            keyWindow.rootViewController?.showAlert(
+                title: "error".localized,
+                message: message,
+                onOk: { fatalError() }
+            )
+
+            return
+        }
+
+        let appContextWithUser = try await appContext.with(session: session, authType: authType, user: user)
+        AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
+    }
+
+    // MARK: - User Login
     func signIn(appContext: AppContext, route: GlobalRoutingType, email: String?) async {
         logger.logInfo("Sign in with \(route)")
         do {
@@ -134,6 +164,41 @@ extension GlobalRouter: GlobalRouterType {
         try await proceed(with: appContext, session: session)
     }
 
+    // MARK: - Error Handling
+    @MainActor
+    private func handleSignInError(error: Error, appContext: AppContext) {
+        if let gmailUserError = error as? GoogleUserServiceError {
+            logger.logInfo("Gmail login failed with error: \(gmailUserError.errorMessage)")
+
+            switch gmailUserError {
+            case .cancelledAuthorization:
+                return // don't show error modal when user cancels authorization
+            case .userNotAllowedAllNeededScopes(_, let email):
+                showMissingScopesView(appContext: appContext, email: email)
+                return
+            default:
+                break // show default error modal
+            }
+        }
+
+        keyWindow.rootViewController?.showAlert(
+            title: "error_login".localized,
+            message: error.errorMessage
+        )
+    }
+
+    @MainActor
+    private func showMissingScopesView(appContext: AppContext, email: String?) {
+        let rootViewController = keyWindow.rootViewController
+        let navigationController = rootViewController as? UINavigationController ?? rootViewController?.navigationController
+        let checkAuthViewController = CheckMailAuthViewController(
+            appContext: appContext,
+            decorator: CheckMailAuthViewDecorator(type: .setup),
+            email: email
+        )
+        navigationController?.pushViewController(checkAuthViewController, animated: true)
+    }
+
     @MainActor
     private func renderInvalidStorageView(error: Error) {
         let controller = InvalidStorageViewController(
@@ -148,66 +213,10 @@ extension GlobalRouter: GlobalRouterType {
         let email = (try? appContext.encryptedStorage.activeUser?.email) ?? ""
         let controller = CheckMailAuthViewController(
             appContext: appContext,
-            decorator: CheckMailAuthViewDecorator(type: .invalidGrant(email))
+            decorator: CheckMailAuthViewDecorator(type: .invalidGrant(email)),
+            email: email
         )
         keyWindow.rootViewController = MainNavigationController(rootViewController: controller)
         keyWindow.makeKeyAndVisible()
-    }
-
-    @MainActor
-    private func proceed(with appContext: AppContext) {
-        logger.logInfo("proceed for session: \(appContext.session?.description ?? "nil")")
-        AppStartup(appContext: appContext).initializeApp(window: keyWindow)
-    }
-
-    @MainActor
-    private func proceed(with appContext: AppContext, session: SessionType) async throws {
-        logger.logInfo("proceed for session: \(session.description)")
-        guard
-            let user = try appContext.encryptedStorage.activeUser,
-            let authType = user.authType
-        else {
-            let message = "Wrong application state. User not found for session \(session.description)"
-            logger.logError(message)
-
-            keyWindow.rootViewController?.showAlert(
-                title: "error".localized,
-                message: message,
-                onOk: { fatalError() }
-            )
-
-            return
-        }
-
-        let appContextWithUser = try await appContext.with(session: session, authType: authType, user: user)
-        AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
-    }
-
-    @MainActor
-    private func handleSignInError(error: Error, appContext: AppContext) {
-        if let gmailUserError = error as? GoogleUserServiceError {
-            logger.logInfo("Gmail login failed with error: \(gmailUserError.errorMessage)")
-
-            switch gmailUserError {
-            case .cancelledAuthorization:
-                return // don't show error modal when user cancels authorization
-            case .userNotAllowedAllNeededScopes:
-                let rootViewController = keyWindow.rootViewController
-                let navigationController = rootViewController as? UINavigationController ?? rootViewController?.navigationController
-                let checkAuthViewController = CheckMailAuthViewController(
-                    appContext: appContext,
-                    decorator: CheckMailAuthViewDecorator(type: .setup)
-                )
-                navigationController?.pushViewController(checkAuthViewController, animated: true)
-                return
-            default:
-                break // show default error modal
-            }
-        }
-
-        keyWindow.rootViewController?.showAlert(
-            title: "error_login".localized,
-            message: error.errorMessage
-        )
     }
 }
