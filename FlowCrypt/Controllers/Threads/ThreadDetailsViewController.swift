@@ -59,7 +59,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.messageService = messageService ?? MessageService(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
-            keyService: appContext.keyService,
+            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
             messageProvider: appContext.getRequiredMailProvider().messageProvider,
             passPhraseService: appContext.passPhraseService
         )

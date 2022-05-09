@@ -87,7 +87,7 @@ class SetupKeyScreen extends BaseScreen {
   }
 
   fillPassPhrase = async (passPhrase: string) => {
-    await ElementHelper.waitClickAndType(await this.enterPassPhraseField, passPhrase);
+    await ElementHelper.waitAndPasteString(await this.enterPassPhraseField, passPhrase);
   }
 
   clickSetPassPhraseBtn = async () => {
@@ -99,7 +99,7 @@ class SetupKeyScreen extends BaseScreen {
   }
 
   confirmPassPhrase = async (passPhrase: string) => {
-    await ElementHelper.waitClickAndType(await this.confirmPassPhraseField, passPhrase);
+    await ElementHelper.waitAndPasteString(await this.confirmPassPhraseField, passPhrase);
     await ElementHelper.waitAndClick(await this.okButton);
   }
 

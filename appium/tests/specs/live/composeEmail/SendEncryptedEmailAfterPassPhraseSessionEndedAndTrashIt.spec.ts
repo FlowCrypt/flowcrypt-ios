@@ -4,12 +4,12 @@ import {
   MailFolderScreen,
   NewMessageScreen,
   EmailScreen,
-  MenuBarScreen,
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
 import DataHelper from "../../../helpers/DataHelper";
 import BaseScreen from "../../../screenobjects/base.screen";
+import MailFolderHelper from 'tests/helpers/MailFolderHelper';
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -22,7 +22,6 @@ describe('COMPOSE EMAIL: ', () => {
     const passPhrase = CommonData.account.passPhrase;
     const wrongPassPhraseError = CommonData.errors.wrongPassPhrase;
     const wrongPassPhrase = "wrong";
-    const senderEmail = CommonData.account.email;
     const bundleId = CommonData.bundleId.id;
 
     await SplashScreen.login();
@@ -53,33 +52,6 @@ describe('COMPOSE EMAIL: ', () => {
     await EmailScreen.clickOkButton();
     await MailFolderScreen.checkInboxScreen();
 
-    await MenuBarScreen.clickMenuBtn();
-    await MenuBarScreen.clickSentButton();
-    await MailFolderScreen.checkSentScreen();
-
-    //Check sent email
-    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    //Delete sent email
-    await EmailScreen.clickDeleteButton();
-    await MailFolderScreen.checkSentScreen();
-    await MailFolderScreen.checkEmailIsNotDisplayed(emailSubject);
-    await browser.pause(2000); // give Google API time to process the deletion
-    await MailFolderScreen.refreshMailList();
-    await MailFolderScreen.checkSentScreen();
-    await MailFolderScreen.checkEmailIsNotDisplayed(emailSubject);
-    //Check email in Trash list
-    await MenuBarScreen.clickMenuBtn();
-    await MenuBarScreen.clickTrashButton();
-    await MailFolderScreen.checkTrashScreen();
-    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    //Remove from Trash
-    await EmailScreen.clickDeleteButton();
-    await EmailScreen.confirmDelete();
-    await MailFolderScreen.checkTrashScreen();
-    await browser.pause(2000); // give Google API time to process the deletion
-    await MailFolderScreen.refreshMailList();
-    await MailFolderScreen.checkTrashScreen();
-    await MailFolderScreen.checkEmailIsNotDisplayed(emailSubject);
+    await MailFolderHelper.deleteSentEmail(emailSubject, emailText);
   });
 });

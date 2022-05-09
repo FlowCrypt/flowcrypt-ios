@@ -31,7 +31,7 @@ extension ComposeViewController {
         let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
             input: self.input,
             contextToSend: self.contextToSend,
-            viewController: self
+            vcForPassPhraseModal: self
         )
         UIApplication.shared.isIdleTimerDisabled = true
         try await composeMessageService.encryptAndSend(

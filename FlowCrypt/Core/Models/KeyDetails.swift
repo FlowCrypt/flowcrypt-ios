@@ -10,7 +10,12 @@ import FlowCryptCommon
 import MailCore
 import Foundation
 
-struct KeyDetails: Decodable {
+protocol ArmoredPrvWithIdentity {
+    var primaryFingerprint: String { get }
+    func getArmoredPrv() -> String?
+}
+
+struct KeyDetails: ArmoredPrvWithIdentity, Decodable {
     let `public`: String
     let `private`: String? // ony if this is prv
     let isFullyDecrypted: Bool? // only if this is prv
@@ -39,6 +44,28 @@ extension KeyDetails {
 
     var pgpUserEmails: [String] {
         users.map { MCOAddress(nonEncodedRFC822String: $0).mailbox }
+    }
+    
+    var pgpUserEmailsLowercased: [String] {
+        pgpUserEmails.map { $0.lowercased() }
+    }
+    
+    var isKeyUsable: Bool {
+        // revoked keys are not usable
+        guard !revoked else { return false }
+        // keys without lastModified don't have valid signatures on them - not usable
+        guard lastModified != nil else { return false }
+        // keys without uids on them are not usable
+        guard users.isNotEmpty else { return false }
+        // expired keys are not usable
+        if let expiration = expiration, expiration.toDate().timeIntervalSinceNow < 0 { return false }
+        // non-revoked keys, with lastModified and at least one user, that are not expired are usable
+        // gross simplification until https://github.com/FlowCrypt/flowcrypt-ios/issues/1546
+        return true
+    }
+    
+    func getArmoredPrv() -> String? {
+        return `private`
     }
 }
 
