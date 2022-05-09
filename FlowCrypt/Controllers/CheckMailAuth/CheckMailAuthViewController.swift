@@ -94,15 +94,11 @@ extension CheckMailAuthViewController {
 
     private func authorize() {
         Task {
-            do {
-                await self.appContext.globalRouter.signIn(
-                    appContext: self.appContext,
-                    route: .gmailLogin(self),
-                    email: email
-                )
-            } catch {
-                showAlert(message: error.errorMessage)
-            }
+            await self.appContext.globalRouter.signIn(
+                appContext: self.appContext,
+                route: .gmailLogin(self),
+                email: email
+            )
         }
     }
 
