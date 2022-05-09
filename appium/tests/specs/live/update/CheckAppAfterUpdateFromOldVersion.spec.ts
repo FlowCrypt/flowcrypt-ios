@@ -23,9 +23,8 @@ describe('UPDATE: ', () => {
     const newAppPath = CommonData.appPath.new;
     const bundleId = CommonData.bundleId.id;
     const correctPassPhrase = CommonData.account.passPhrase;
-    const firstContactItemName = 'Dmitry at FlowCrypt';
+    const firstContactItemName = CommonData.contact.name;
     const firstContactEmail = CommonData.contact.email;
-    const senderEmail = CommonData.sender.email;
     const senderName = CommonData.sender.name;
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
@@ -48,7 +47,7 @@ describe('UPDATE: ', () => {
 
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
     await EmailScreen.clickBackButton();
 
     await SearchScreen.clickBackButton();
