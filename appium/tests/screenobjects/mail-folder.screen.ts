@@ -10,7 +10,9 @@ const SELECTORS = {
   SEARCH_BTN: '~aid-search-btn',
   HELP_BTN: '~aid-help-btn',
   SEARCH_FIELD: '~aid-search-all-emails',
-  INBOX_ITEM: '~aid-inbox-item',
+  // INBOX_ITEM: '~aid-inbox-item',
+  // TODO: Couldn't use accessibility identifier because $$ selector returns only visible cells
+  INBOX_ITEM: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
   IDLE_NODE: '~aid-inbox-idle-node'
 };
 

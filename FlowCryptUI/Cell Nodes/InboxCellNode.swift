@@ -57,6 +57,7 @@ public final class InboxCellNode: CellNode {
         separatorNode.backgroundColor = .lightGray
 
         accessibilityIdentifier = "aid-inbox-item"
+        
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
