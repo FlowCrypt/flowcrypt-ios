@@ -5,7 +5,6 @@ import {
   MenuBarScreen,
   MailFolderScreen,
   EmailScreen,
-  OldVersionAppScreen,
   SettingsScreen,
   KeysScreen,
   PublicKeyScreen,
@@ -49,10 +48,10 @@ describe('UPDATE: ', () => {
 
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-    await OldVersionAppScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await OldVersionAppScreen.clickBackButton();
+    await EmailScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
+    await EmailScreen.clickBackButton();
 
-    await OldVersionAppScreen.clickBackButton();
+    await SearchScreen.clickBackButton();
 
     await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkMenuBar();
@@ -68,7 +67,7 @@ describe('UPDATE: ', () => {
     await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
-    await OldVersionAppScreen.checkPublicKeyNotEmpty();
+    await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
 
     //close old app version
     await driver.terminateApp(bundleId);
