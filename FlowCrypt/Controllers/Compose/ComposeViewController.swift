@@ -175,8 +175,6 @@ final class ComposeViewController: TableNodeViewController {
             cancellable.cancel()
         }
         setupSearch()
-
-        evaluateAllRecipients()
     }
 
     override func viewDidLayoutSubviews() {
@@ -190,12 +188,6 @@ final class ComposeViewController: TableNodeViewController {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-
-    private func evaluateAllRecipients() {
-        for recipient in contextToSend.recipients {
-             evaluate(recipient: recipient)
-         }
     }
 
     func update(with message: Message) {
