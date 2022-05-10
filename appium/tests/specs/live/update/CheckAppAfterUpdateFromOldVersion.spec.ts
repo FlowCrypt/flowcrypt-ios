@@ -66,7 +66,7 @@ describe('UPDATE: ', () => {
     await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
-    await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
+    await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
 
     //close old app version
     await driver.terminateApp(bundleId);
