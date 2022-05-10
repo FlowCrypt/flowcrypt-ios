@@ -24,7 +24,7 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
     case wrongAccount(String, String)
     case contextError(String)
     case inconsistentState(String)
-    case userNotAllowedAllNeededScopes(missingScopes: [GoogleScope])
+    case userNotAllowedAllNeededScopes(missingScopes: [GoogleScope], email: String?)
 
     var description: String {
         switch self {
@@ -38,7 +38,7 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
             return "google_user_service_context_error".localizeWithArguments(message)
         case .inconsistentState(let message):
             return "google_user_service_error_inconsistent_state".localizeWithArguments(message)
-        case .userNotAllowedAllNeededScopes(let missingScopes):
+        case .userNotAllowedAllNeededScopes(let missingScopes, _):
             let scopesLabel = missingScopes.map(\.title).joined(separator: ", ")
             return "google_user_service_error_missing_scopes".localizeWithArguments(scopesLabel)
         }
@@ -205,16 +205,20 @@ extension GoogleUserService: UserServiceType {
         scopes: [GoogleScope],
         userEmail: String?
     ) async throws -> SessionType {
-        let missingScopes = self.checkMissingScopes(authState.scope, from: scopes)
-        if missingScopes.isNotEmpty {
-            throw GoogleUserServiceError.userNotAllowedAllNeededScopes(missingScopes: missingScopes)
-        }
         let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
+
         guard let email = authorization.userEmail else {
             throw GoogleUserServiceError.inconsistentState("Missing email")
         }
         if let userEmail = userEmail, email != userEmail {
             throw GoogleUserServiceError.wrongAccount(email, userEmail)
+        }
+        let missingScopes = checkMissingScopes(authState.scope, from: scopes)
+        if missingScopes.isNotEmpty {
+            throw GoogleUserServiceError.userNotAllowedAllNeededScopes(
+                missingScopes: missingScopes,
+                email: authorization.userEmail
+            )
         }
         self.saveAuth(state: authState, for: email)
         guard let token = authState.lastTokenResponse?.accessToken else {
