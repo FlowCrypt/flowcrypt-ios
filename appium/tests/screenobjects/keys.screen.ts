@@ -7,7 +7,7 @@ import {
 } from '../screenobjects/all-screens';
 
 const SELECTORS = {
-  KEYS_HEADER: '~navigationItemKeys',
+  KEYS_HEADER: '~aid-navigation-item-keys',
   ADD_BUTTON: '~aid-add-button',
   NAME_AND_EMAIL: '~aid-key-title',
   DATE_CREATED: '~aid-key-date-created',
@@ -106,7 +106,7 @@ class KeysScreen extends BaseScreen {
   }
 
   openScreenFromSideMenu = async () => {
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickSettingsButton();
     await SettingsScreen.clickOnSettingItem('Keys');
   }

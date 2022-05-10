@@ -270,9 +270,11 @@ extension SetupImapViewController {
         let input = ButtonCellNode.Input(
             title: decorator.connectButtonTitle
         )
-        return ButtonCellNode(input: input) { [weak self] in
+        let node = ButtonCellNode(input: input) { [weak self] in
             self?.connect()
         }
+        node.accessibilityIdentifier = "aid-connect-button"
+        return node
     }
 }
 

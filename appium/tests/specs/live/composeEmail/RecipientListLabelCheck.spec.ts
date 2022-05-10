@@ -25,7 +25,7 @@ describe('COMPOSE EMAIL: ', () => {
     await MailFolderScreen.checkInboxScreen();
 
     // Go to Contacts screen
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkUserEmail();
 
     // Add first contact

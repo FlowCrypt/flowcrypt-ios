@@ -44,7 +44,7 @@
 
 //     await SearchScreen.clickBackButton();
 
-//     await MenuBarScreen.clickMenuIcon();
+//     await MenuBarScreen.clickMenuBtn();
 //     await MenuBarScreen.checkUserEmail(outlookEmail);
 //     await MenuBarScreen.checkMenuBarItem(outlookFolder);
 
@@ -68,7 +68,7 @@
 
 //     await SearchScreen.clickBackButton();
 
-//     await MenuBarScreen.clickMenuIcon();
+//     await MenuBarScreen.clickMenuBtn();
 //     await MenuBarScreen.checkUserEmail();
 //     await MenuBarScreen.checkMenuBarItem(gmailFolder);
 
@@ -87,7 +87,7 @@
 
 //     await SearchScreen.clickBackButton();
 
-//     await MenuBarScreen.clickMenuIcon();
+//     await MenuBarScreen.clickMenuBtn();
 //     await MenuBarScreen.checkUserEmail(outlookEmail);
 //     await MenuBarScreen.checkMenuBarItem(outlookFolder);
 //   });

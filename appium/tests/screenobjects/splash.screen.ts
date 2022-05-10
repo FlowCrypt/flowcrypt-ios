@@ -6,12 +6,13 @@ import {
 } from '../screenobjects/all-screens';
 
 const SELECTORS = {
-  PRIVACY_TAB: '~privacy',
-  TERMS_TAB: '~terms',
-  SECURITY_TAB: '~security',
-  CONTINUE_WITH_GOOGLE_BTN: '~Continue with Gmail',
-  CONTINUE_WITH_OUTLOOK_BTN: '~Continue with Outlook',
-  OTHER_EMAIL_PROVIDER_BTN: '~Other email provider',
+  PRIVACY_TAB: '~aid-privacy-btn',
+  TERMS_TAB: '~aid-terms-btn',
+  SECURITY_TAB: '~aid-security-btn',
+  CONTINUE_WITH_GOOGLE_BTN: '~aid-sign-in-gmail-btn',
+  CONTINUE_WITH_OUTLOOK_BTN: '~aid-sign-in-outlook-btn',
+  OTHER_EMAIL_PROVIDER_BTN: '~aid-sign-in-other-btn',
+  // We can't use aid identifier for below fields because belows fields are from google oauth popup
   CONTINUE_BTN: '~Continue',
   CANCEL_BTN: '~Cancel',
   LOGIN_FIELD: '~Email or phone',

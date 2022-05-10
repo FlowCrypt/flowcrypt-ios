@@ -162,19 +162,24 @@ extension ThreadDetailsViewController {
             alert.popoverPresentation(style: .centred(view))
         }
 
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
+
         alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .replyAll))
         alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .forward))
-        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
+        alert.addAction(cancelAction)
 
         present(alert, animated: true, completion: nil)
     }
 
     private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
-        UIAlertAction(
+        let action = UIAlertAction(
             title: type.actionLabel,
             style: .default) { [weak self] _ in
                 self?.composeNewMessage(at: indexPath, quoteType: type)
             }
+        action.accessibilityIdentifier = type.accessibilityIdentifier
+        return action
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {
@@ -395,7 +400,9 @@ extension ThreadDetailsViewController {
             }
             self?.show(attachment: attachment)
         }
+        downloadAction.accessibilityIdentifier = "aid-download-button"
         let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
 
         alertController.addAction(downloadAction)
         alertController.addAction(cancelAction)

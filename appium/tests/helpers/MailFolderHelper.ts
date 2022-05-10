@@ -17,7 +17,7 @@ class MailFolderHelper {
   }
 
   static deleteSentEmail = async (subject: string, message: string) => {
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickSentButton();
     await MailFolderScreen.checkSentScreen();
 
@@ -33,7 +33,7 @@ class MailFolderHelper {
     await MailFolderScreen.checkSentScreen();
     await MailFolderScreen.checkEmailIsNotDisplayed(subject);
     //Check email in Trash list
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickTrashButton();
     await MailFolderScreen.checkTrashScreen();
     await MailFolderScreen.clickOnEmailBySubject(subject);

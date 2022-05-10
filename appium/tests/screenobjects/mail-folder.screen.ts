@@ -3,28 +3,30 @@ import TouchHelper from "../helpers/TouchHelper";
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  TRASH_HEADER: '~navigationItemTrash',
-  SENT_HEADER: '~navigationItemSent',
+  TRASH_HEADER: '~aid-navigation-item-trash',
+  SENT_HEADER: '~aid-navigation-item-sent',
   CREATE_EMAIL_BUTTON: '~aid-compose-message-button',
-  INBOX_HEADER: '~navigationItemInbox',
-  SEARCH_ICON: '~search icn',
-  HELP_ICON: '~help icn',
-  SEARCH_FIELD: '~searchAllEmailField',
-  INBOX_LIST: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
+  INBOX_HEADER: '~aid-navigation-item-inbox',
+  SEARCH_BTN: '~aid-search-btn',
+  HELP_BTN: '~aid-help-btn',
+  SEARCH_FIELD: '~aid-search-all-emails',
+  // INBOX_ITEM: '~aid-inbox-item',
+  // TODO: Couldn't use accessibility identifier because $$ selector returns only visible cells
+  INBOX_ITEM: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
   IDLE_NODE: '~aid-inbox-idle-node'
 };
 
 class MailFolderScreen extends BaseScreen {
   constructor() {
-    super(SELECTORS.SEARCH_ICON);
+    super(SELECTORS.SEARCH_BTN);
   }
 
-  get searchIcon() {
-    return $(SELECTORS.SEARCH_ICON);
+  get searchBtn() {
+    return $(SELECTORS.SEARCH_BTN);
   }
 
-  get helpIcon() {
-    return $(SELECTORS.HELP_ICON);
+  get helpBtn() {
+    return $(SELECTORS.HELP_BTN);
   }
 
   get trashHeader() {
@@ -48,7 +50,7 @@ class MailFolderScreen extends BaseScreen {
   }
 
   get inboxList() {
-    return $$(SELECTORS.INBOX_LIST);
+    return $$(SELECTORS.INBOX_ITEM);
   }
 
   get idleNode() {
@@ -57,8 +59,8 @@ class MailFolderScreen extends BaseScreen {
 
   checkTrashScreen = async () => {
     await ElementHelper.waitElementVisible(await this.trashHeader);
-    await ElementHelper.waitElementVisible(await this.searchIcon);
-    await ElementHelper.waitElementVisible(await this.helpIcon);
+    await ElementHelper.waitElementVisible(await this.searchBtn);
+    await ElementHelper.waitElementVisible(await this.helpBtn);
   }
 
   checkEmailIsNotDisplayed = async (subject: string) => {
@@ -67,8 +69,8 @@ class MailFolderScreen extends BaseScreen {
 
   checkSentScreen = async () => {
     await ElementHelper.waitElementVisible(await this.sentHeader);
-    await ElementHelper.waitElementVisible(await this.searchIcon);
-    await ElementHelper.waitElementVisible(await this.helpIcon);
+    await ElementHelper.waitElementVisible(await this.searchBtn);
+    await ElementHelper.waitElementVisible(await this.helpBtn);
   }
 
   refreshMailList = async () => {
@@ -118,12 +120,12 @@ class MailFolderScreen extends BaseScreen {
 
   checkInboxScreen = async () => {
     await ElementHelper.waitElementVisible(await this.inboxHeader);
-    await ElementHelper.waitElementVisible(await this.searchIcon);
-    await ElementHelper.waitElementVisible(await this.helpIcon);
+    await ElementHelper.waitElementVisible(await this.searchBtn);
+    await ElementHelper.waitElementVisible(await this.helpBtn);
   }
 
   clickSearchButton = async () => {
-    await ElementHelper.waitAndClick(await this.searchIcon, 1000); // delay needed on M1
+    await ElementHelper.waitAndClick(await this.searchBtn, 1000); // delay needed on M1
   }
 }
 

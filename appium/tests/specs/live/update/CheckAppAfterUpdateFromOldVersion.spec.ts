@@ -5,7 +5,6 @@ import {
   MenuBarScreen,
   MailFolderScreen,
   EmailScreen,
-  OldVersionAppScreen,
   SettingsScreen,
   KeysScreen,
   PublicKeyScreen,
@@ -24,9 +23,8 @@ describe('UPDATE: ', () => {
     const newAppPath = CommonData.appPath.new;
     const bundleId = CommonData.bundleId.id;
     const correctPassPhrase = CommonData.account.passPhrase;
-    const firstContactItemName = 'Dmitry at FlowCrypt';
+    const firstContactItemName = CommonData.contact.name;
     const firstContactEmail = CommonData.contact.email;
-    const senderEmail = CommonData.sender.email;
     const senderName = CommonData.sender.name;
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
@@ -49,12 +47,12 @@ describe('UPDATE: ', () => {
 
     await MailFolderScreen.clickSearchButton();
     await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-    await OldVersionAppScreen.checkOpenedEmail(senderEmail, emailSubject, emailText);
-    await OldVersionAppScreen.clickBackButton();
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
+    await EmailScreen.clickBackButton();
 
-    await OldVersionAppScreen.clickBackButton();
+    await SearchScreen.clickBackButton();
 
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkMenuBar();
 
     await MenuBarScreen.clickSettingsButton();
@@ -68,7 +66,7 @@ describe('UPDATE: ', () => {
     await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
-    await OldVersionAppScreen.checkPublicKeyNotEmpty();
+    await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
 
     //close old app version
     await driver.terminateApp(bundleId);
@@ -79,7 +77,7 @@ describe('UPDATE: ', () => {
     await driver.activateApp(bundleId);
 
     await MailFolderScreen.checkInboxScreen();
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkUserEmail();
     await MenuBarScreen.clickSettingsButton();
 
@@ -119,7 +117,7 @@ describe('UPDATE: ', () => {
     await KeysScreen.checkKeysScreen(liveKeys);
     await KeysScreen.clickBackButton();
 
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkMenuBar();
 
     await MenuBarScreen.clickInboxButton();

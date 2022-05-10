@@ -32,4 +32,15 @@ extension MessageQuoteType {
             return "forward".localized
         }
     }
+
+    var accessibilityIdentifier: String {
+        switch self {
+        case .reply:
+            return "aid-reply-button"
+        case .replyAll:
+            return "aid-reply-all-button"
+        case .forward:
+            return "aid-forward-button"
+        }
+    }
 }

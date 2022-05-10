@@ -236,6 +236,8 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                 )
                 return ButtonCellNode(input: input) { [weak self] in
                     self?.handleButtonAction()
+                }.then {
+                    $0.accessibilityIdentifier = "aid-set-pass-phrase-btn"
                 }
             case .subtitle:
                 return SetupTitleNode(
