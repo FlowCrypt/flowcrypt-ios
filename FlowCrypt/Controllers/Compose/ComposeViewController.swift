@@ -90,6 +90,8 @@ final class ComposeViewController: TableNodeViewController {
     internal var popoverVC: ComposeRecipientPopupViewController!
 
     internal var sectionsList: [Section] = []
+    var composeTextNode: ASCellNode!
+    var composeSubjectNode: ASCellNode!
 
     init(
         appContext: AppContextWithUser,
@@ -149,6 +151,7 @@ final class ComposeViewController: TableNodeViewController {
 
         setupUI()
         setupNavigationBar()
+        setupNodes()
         observeKeyboardNotifications()
         observerAppStates()
         observeComposeUpdates()
