@@ -61,8 +61,8 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             case (.main, .compose):
                 guard let part = ComposePart(rawValue: indexPath.row) else { return ASCellNode() }
                 switch part {
-                case .subject: return self.subjectNode()
-                case .text: return self.textNode()
+                case .subject: return self.composeSubjectNode
+                case .text: return self.composeTextNode
                 case .topDivider, .subjectDivider: return DividerCellNode()
                 }
             case (.main, .attachments):

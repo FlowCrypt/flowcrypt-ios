@@ -44,8 +44,8 @@ extension ComposeViewController {
         self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
     }
 
-    internal func subjectNode() -> ASCellNode {
-        TextFieldCellNode(
+    internal func setupSubjectNode() {
+        composeSubjectNode = TextFieldCellNode(
             input: decorator.styledTextFieldInput(
                 with: "compose_subject".localized,
                 accessibilityIdentifier: "aid-subject-text-field"
@@ -86,10 +86,10 @@ extension ComposeViewController {
         )
     }
 
-    internal func textNode() -> ASCellNode {
+    internal func setupTextNode() {
         let styledQuote = decorator.styledQuote(with: input)
         let height = max(decorator.frame(for: styledQuote).height, 40)
-        return TextViewCellNode(
+        composeTextNode = TextViewCellNode(
             decorator.styledTextViewInput(
                 with: height,
                 accessibilityIdentifier: "aid-message-text-view"
@@ -123,7 +123,9 @@ extension ComposeViewController {
                     to: textNode.textView.textView.beginningOfDocument
                 )
                 if self.input.isReply {
-                    textNode.becomeFirstResponder()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                        textNode.becomeFirstResponder()
+                    })
                 }
             }
         }

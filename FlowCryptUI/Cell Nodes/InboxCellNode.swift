@@ -55,9 +55,7 @@ public final class InboxCellNode: CellNode {
         dateNode.maximumNumberOfLines = 1
         emailNode.truncationMode = .byTruncatingTail
         separatorNode.backgroundColor = .lightGray
-
         accessibilityIdentifier = "aid-inbox-item"
-        
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {

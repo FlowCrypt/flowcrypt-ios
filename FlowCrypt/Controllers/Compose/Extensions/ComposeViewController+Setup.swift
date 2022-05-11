@@ -64,6 +64,11 @@ extension ComposeViewController {
             shouldShowAllRecipientTypes.toggle()
         }
     }
+
+    internal func setupNodes() {
+        setupTextNode()
+        setupSubjectNode()
+    }
 }
 
 // MARK: - Search
