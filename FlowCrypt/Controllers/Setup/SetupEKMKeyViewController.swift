@@ -72,7 +72,9 @@ extension SetupEKMKeyViewController {
     private func setupAccountWithKeysFetchedFromEkm(with passPhrase: String) async throws {
         self.showSpinner()
         let clientConfiguration = try await appContext.clientConfigurationService.configuration
-        // self.storageMethod is ignored in this setup flow, since there is no user UI related to storage method, so we only follow the client configuration in this flow.
+        // self.storageMethod is ignored in this setup flow,
+        // since there is no user UI related to storage method,
+        // so we only follow the client configuration in this flow.
         let storageMethod: StorageMethod = clientConfiguration.forbidStoringPassPhrase ? .memory : .persistent
         try await self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
         var allFingerprintsOfAllKeys: [[String]] = []

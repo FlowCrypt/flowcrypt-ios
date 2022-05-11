@@ -234,7 +234,7 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                     self?.handleButtonPressed()
                 }
                 .then {
-                    $0.button.accessibilityIdentifier = "load_account"
+                    $0.button.accessibilityIdentifier = "aid-load-account-btn"
                 }
             case .divider:
                 return DividerCellNode(inset: self.decorator.insets.dividerInsets)

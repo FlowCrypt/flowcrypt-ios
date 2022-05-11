@@ -34,7 +34,7 @@ describe('COMPOSE EMAIL: ', () => {
     await ContactScreen.clickBackButton();
     await SettingsScreen.checkSettingsScreen();
 
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkUserEmail();
     await MenuBarScreen.clickInboxButton();
     await MailFolderScreen.checkInboxScreen();

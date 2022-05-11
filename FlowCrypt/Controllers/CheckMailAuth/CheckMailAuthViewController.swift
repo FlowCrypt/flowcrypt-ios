@@ -14,10 +14,12 @@ import UIKit
 class CheckMailAuthViewController: TableNodeViewController {
     private let appContext: AppContext
     private let decorator: CheckMailAuthViewDecorator
+    private let email: String?
 
-    init(appContext: AppContext, decorator: CheckMailAuthViewDecorator) {
+    init(appContext: AppContext, decorator: CheckMailAuthViewDecorator, email: String?) {
         self.appContext = appContext
         self.decorator = decorator
+        self.email = email
         super.init(node: TableNode())
     }
 
@@ -92,15 +94,11 @@ extension CheckMailAuthViewController {
 
     private func authorize() {
         Task {
-            do {
-                await self.appContext.globalRouter.signIn(
-                    appContext: self.appContext,
-                    route: .gmailLogin(self),
-                    email: try appContext.encryptedStorage.activeUser?.email
-                )
-            } catch {
-                showAlert(message: error.errorMessage)
-            }
+            await self.appContext.globalRouter.signIn(
+                appContext: self.appContext,
+                route: .gmailLogin(self),
+                email: email
+            )
         }
     }
 

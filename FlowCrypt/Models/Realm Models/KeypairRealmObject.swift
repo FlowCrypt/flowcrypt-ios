@@ -38,10 +38,10 @@ extension KeypairRealmObject {
     convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
 
-        guard let privateKey = keyDetails.private, keyDetails.isFullyEncrypted != nil else {
+        guard let privateKey = keyDetails.private, let isFullyEncrypted = keyDetails.isFullyEncrypted else {
             throw KeypairError.missingPrivateKey("storing pubkey as private")
         }
-        guard keyDetails.isFullyEncrypted == true else {
+        guard isFullyEncrypted else {
             throw KeypairError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
         guard keyDetails.ids.isNotEmpty else {

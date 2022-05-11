@@ -13,6 +13,7 @@ public protocol Link {
     var attributedTitle: NSAttributedString { get }
     var title: String { get }
     var rawValue: String { get }
+    var identifier: String? { get }
 }
 
 public final class LinkButtonNode: CellNode {
@@ -26,7 +27,7 @@ public final class LinkButtonNode: CellNode {
         buttons = inputs.map {
             let button = ASButtonNode()
             button.setAttributedTitle($0.attributedTitle, for: .normal)
-            button.accessibilityLabel = $0.rawValue
+            button.accessibilityLabel = $0.identifier ?? $0.rawValue
             return button
         }
         super.init()
