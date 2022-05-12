@@ -15,7 +15,7 @@ struct TrashFolderProvider {
         // todo - rename argument to folderService:
         user: User,
         foldersService: FoldersServiceType,
-        localStorage: LocalStorageType = LocalStorage()
+        localStorage: LocalStorageType
     ) {
         self.foldersService = foldersService
         self.localStorage = localStorage

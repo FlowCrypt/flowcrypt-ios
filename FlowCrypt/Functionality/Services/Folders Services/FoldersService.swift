@@ -27,7 +27,7 @@ final class FoldersService: FoldersServiceType {
         encryptedStorage: EncryptedStorageType,
         localFoldersProvider: LocalFoldersProviderType? = nil,
         remoteFoldersProvider: RemoteFoldersProviderType,
-        trashPathStorage: LocalStorageType = LocalStorage()
+        trashPathStorage: LocalStorageType
     ) {
         self.localFoldersProvider = localFoldersProvider ?? LocalFoldersProvider(encryptedStorage: encryptedStorage)
         self.remoteFoldersProvider = remoteFoldersProvider

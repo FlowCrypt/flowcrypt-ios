@@ -59,6 +59,7 @@ protocol PassPhraseStorageType {
     func remove(passPhrase: PassPhrase) throws
 
     func getPassPhrases(for email: String) throws -> [PassPhrase]
+    func getPassPhrases(from fingerprint: String) throws -> [PassPhrase]
 }
 
 // MARK: - PassPhraseService
@@ -77,7 +78,7 @@ final class PassPhraseService: PassPhraseServiceType {
 
     init(
         encryptedStorage: PassPhraseStorageType,
-        inMemoryStorage: PassPhraseStorageType = InMemoryPassPhraseStorage()
+        inMemoryStorage: PassPhraseStorageType
     ) {
         self.encryptedStorage = encryptedStorage
         self.inMemoryStorage = inMemoryStorage
@@ -89,7 +90,7 @@ final class PassPhraseService: PassPhraseServiceType {
         case .persistent:
             try encryptedStorage.save(passPhrase: passPhrase)
         case .memory:
-            let storedPassPhrases = try encryptedStorage.getPassPhrases(for: "")
+            let storedPassPhrases = try encryptedStorage.getPassPhrases(from: passPhrase.primaryFingerprintOfAssociatedKey)
             let fingerprint = passPhrase.primaryFingerprintOfAssociatedKey
             if storedPassPhrases.contains(where: { $0.primaryFingerprintOfAssociatedKey == fingerprint }) {
                 logger.logInfo("\(StorageMethod.persistent): removing pass phrase for key \(fingerprint)")

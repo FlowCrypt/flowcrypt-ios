@@ -38,6 +38,22 @@ final class EncryptedStorageMock: EncryptedStorageType {
         getKeypairsResult
     }
 
+    func mockGetKeyPairs(with fingerPrints: [String]) throws {
+        let expiration = Int(Date().timeIntervalSince1970) + 3600
+        getKeypairsResult = try fingerPrints.map { fingerPrint in
+            try Keypair(
+                EncryptedStorageMock.createFakeKeyDetails(
+                    prv: "private",
+                    expiration: expiration,
+                    fingerprint: fingerPrint,
+                    isFullyEncrypted: true
+                ),
+                passPhrase: nil,
+                source: "test"
+            )
+        }
+    }
+
     func validate() throws {
     }
 
@@ -49,16 +65,16 @@ final class EncryptedStorageMock: EncryptedStorageType {
 }
 
 extension EncryptedStorageMock {
-    static func createFakeKeyDetails(pub: String = "pubKey", expiration: Int?, revoked: Bool = false) -> KeyDetails {
+    static func createFakeKeyDetails(pub: String = "pubKey", prv: String? = nil, expiration: Int?, revoked: Bool = false, fingerprint: String? = nil, isFullyEncrypted: Bool? = false) -> KeyDetails {
         KeyDetails(
             public: pub,
-            private: nil,
+            private: prv,
             isFullyDecrypted: false,
-            isFullyEncrypted: false,
+            isFullyEncrypted: isFullyEncrypted,
             ids: [KeyId(longid: String.random(length: 40),
-                        fingerprint: String.random(length: 40))],
+                        fingerprint: fingerprint ?? String.random(length: 40))],
             created: 1,
-            lastModified: nil,
+            lastModified: Int(Date().timeIntervalSince1970),
             expiration: expiration,
             users: ["Test User <test@flowcrypt.com>"],
             algo: nil,

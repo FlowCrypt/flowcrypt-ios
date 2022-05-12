@@ -26,7 +26,7 @@ struct LocalStorage: LocalStorageType {
     let passPhraseStorage: PassPhraseStorageType & LogOutHandler
 
     init(storage: UserDefaults = .standard,
-         passPhraseStorage: PassPhraseStorageType & LogOutHandler = InMemoryPassPhraseStorage()) {
+         passPhraseStorage: PassPhraseStorageType & LogOutHandler) {
         self.storage = storage
         self.passPhraseStorage = passPhraseStorage
     }
