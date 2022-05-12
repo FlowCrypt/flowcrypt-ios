@@ -157,6 +157,7 @@ extension SessionService: SessionServiceType {
         }
         do {
             try encryptedStorage.logOutUser(email: user.email)
+            localStorage.cleanup()
         } catch {
             logger.logError("storage error \(error)")
         }
