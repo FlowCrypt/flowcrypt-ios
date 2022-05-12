@@ -12,17 +12,17 @@ config.suites = {
 config.capabilities = [
   {
     platformName: 'iOS',
-    iosInstallPause: 5000,
-    deviceName: 'iPhone 13',
-    platformVersion: '15.4',
-    automationName: 'XCUITest',
-    app: join(process.cwd(), './FlowCrypt.app'),
-    processArguments: { 'args': ['--mock-fes-api', '--mock-attester-api'] },
-    newCommandTimeout: 10000,
-    wdaLaunchTimeout: 300000,
-    wdaConnectionTimeout: 600000,
-    wdaStartupRetries: 4,
-    wdaStartupRetryInterval: 120000,
+    "appium:iosInstallPause": 5000,
+    "appium:deviceName": 'iPhone 13',
+    "appium:platformVersion": '15.4',
+    "appium:automationName": 'XCUITest',
+    "appium:app": join(process.cwd(), './FlowCrypt.app'),
+    "appium:processArguments": { 'args': ['--mock-fes-api', '--mock-attester-api'] },
+    "appium:newCommandTimeout": 10000,
+    "appium:wdaLaunchTimeout": 300000,
+    "appium:wdaConnectionTimeout": 600000,
+    "appium:wdaStartupRetries": 4,
+    "appium:wdaStartupRetryInterval": 120000,
   },
 ];
 
