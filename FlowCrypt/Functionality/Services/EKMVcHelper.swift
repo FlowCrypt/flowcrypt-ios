@@ -35,7 +35,7 @@ final class EKMVcHelper: EKMVcHelperType {
                 guard configuration.checkUsesEKM() == .usesEKM else {
                     return
                 }
-                let passPhraseStorageMethod: StorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
+                let passPhraseStorageMethod: PassPhraseStorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
                 let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
                 let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
@@ -106,7 +106,7 @@ final class EKMVcHelper: EKMVcHelperType {
         context: AppContextWithUser,
         keyDetail: KeyDetails,
         passPhrase: String,
-        passPhraseStorageMethod: StorageMethod
+        passPhraseStorageMethod: PassPhraseStorageMethod
     ) async throws {
         guard let privateKey = keyDetail.private else {
             throw CreatePassphraseWithExistingKeyError.noPrivateKey

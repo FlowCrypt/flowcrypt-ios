@@ -9,6 +9,10 @@
 import FlowCryptCommon
 import UIKit
 
+enum PassPhraseStorageMethod {
+    case persistent, memory
+}
+
 // MARK: - Data Object
 struct PassPhrase: Codable, Hashable, Equatable {
     let value: String
@@ -64,8 +68,8 @@ protocol PassPhraseStorageType {
 // MARK: - PassPhraseService
 protocol PassPhraseServiceType {
     func getPassPhrases(for email: String) throws -> [PassPhrase]
-    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
-    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws
+    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws
+    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws
     func savePassPhrasesInMemory(_ passPhrase: String, for privateKeys: [Keypair]) throws
 }
 
@@ -83,7 +87,7 @@ final class PassPhraseService: PassPhraseServiceType {
         self.inMemoryStorage = inMemoryStorage
     }
 
-    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws {
+    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws {
         logger.logInfo("\(storageMethod): saving passphrase for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
         switch storageMethod {
         case .persistent:
@@ -92,14 +96,14 @@ final class PassPhraseService: PassPhraseServiceType {
             let storedPassPhrases = try encryptedStorage.getPassPhrases(for: "")
             let fingerprint = passPhrase.primaryFingerprintOfAssociatedKey
             if storedPassPhrases.contains(where: { $0.primaryFingerprintOfAssociatedKey == fingerprint }) {
-                logger.logInfo("\(StorageMethod.persistent): removing pass phrase for key \(fingerprint)")
+                logger.logInfo("\(PassPhraseStorageMethod.persistent): removing pass phrase for key \(fingerprint)")
                 try encryptedStorage.remove(passPhrase: passPhrase)
             }
             try inMemoryStorage.save(passPhrase: passPhrase)
         }
     }
 
-    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: StorageMethod) throws {
+    func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws {
         logger.logInfo("\(storageMethod): updating passphrase for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
         switch storageMethod {
         case .persistent:

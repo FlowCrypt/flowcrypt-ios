@@ -75,7 +75,7 @@ extension SetupEKMKeyViewController {
         // self.storageMethod is ignored in this setup flow,
         // since there is no user UI related to storage method,
         // so we only follow the client configuration in this flow.
-        let storageMethod: StorageMethod = clientConfiguration.forbidStoringPassPhrase ? .memory : .persistent
+        let storageMethod: PassPhraseStorageMethod = clientConfiguration.forbidStoringPassPhrase ? .memory : .persistent
         try await self.validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
         var allFingerprintsOfAllKeys: [[String]] = []
         for keyDetail in self.keys {
