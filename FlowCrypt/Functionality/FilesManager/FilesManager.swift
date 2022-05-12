@@ -31,9 +31,6 @@ protocol FilesManagerType {
     func save(file: FileType) throws -> URL
 
     @MainActor
-    func saveToFilesApp(file: FileType, from viewController: Controller) async throws
-
-    @MainActor
     func selectFromFilesApp(from viewController: Controller) async
 }
 
@@ -50,13 +47,6 @@ extension FilesManager: FilesManagerType {
         let url = documentsDirectoryURL.appendingPathComponent(file.name)
         try file.data.write(to: url)
         return url
-    }
-
-    func saveToFilesApp(file: FileType, from viewController: Controller) throws {
-        let url = try save(file: file)
-        let documentController = UIDocumentPickerViewController(forExporting: [url])
-        documentController.delegate = viewController
-        viewController.present(documentController, animated: true, completion: nil)
     }
 
     func selectFromFilesApp(from viewController: Controller) async {

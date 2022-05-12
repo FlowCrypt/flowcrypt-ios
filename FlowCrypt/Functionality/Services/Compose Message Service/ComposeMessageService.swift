@@ -31,7 +31,8 @@ final class ComposeMessageService {
     private let core: CoreComposeMessageType & KeyParser
     private let enterpriseServer: EnterpriseServerApiType
     private let draftGateway: DraftGateway?
-    private lazy var logger: Logger = Logger.nested(Self.self)
+    private lazy var logger = Logger.nested(Self.self)
+    private lazy var alertsFactory = AlertsFactory()
 
     private let sender: String
 
@@ -83,7 +84,7 @@ final class ComposeMessageService {
         }
         if signingKey.passphrase == nil {
             guard let vc = viewController else {
-                throw AppErr.unexpected("missing UIViewController when promting for pass phrase for signing key")
+                throw AppErr.unexpected("missing UIViewController when prompting for pass phrase for signing key")
             }
             signingKey.passphrase = try await self.requestMissingPassPhraseWithModal(for: signingKey, viewController: vc)
         }
@@ -93,7 +94,7 @@ final class ComposeMessageService {
     @MainActor
     internal func requestMissingPassPhraseWithModal(for signingKey: Keypair, viewController: UIViewController) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            let alert = AlertsFactory.makePassPhraseAlert(
+            let alert = alertsFactory.makePassPhraseAlert(
                 onCancel: {
                     return continuation.resume(throwing: ComposeMessageError.passPhraseRequired)
                 },
@@ -103,6 +104,8 @@ final class ComposeMessageService {
                     }
                     Task<Void, Never> {
                         do {
+                            viewController.presentedViewController?.dismiss(animated: true)
+
                             let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
                             if matched {
                                 return continuation.resume(returning: passPhrase)
@@ -185,8 +188,8 @@ final class ComposeMessageService {
         }
 
         let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
-                ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
-                : []
+            ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
+            : []
 
         let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
         let validPubKeys = try validate(

@@ -18,7 +18,6 @@ enum MessageFetchState {
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
     case missingPassPhrase(_ rawMimeData: Data)
-    case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
     case emptyKeys
     case attachmentNotFound
     case attachmentDecryptFailed(_ message: String)
@@ -29,8 +28,6 @@ extension MessageServiceError {
         switch self {
         case .missingPassPhrase:
             return "Passphrase is missing"
-        case .wrongPassPhrase:
-            return "Passphrase is wrong"
         case .emptyKeys:
             return "Could not fetch keys"
         case .attachmentNotFound:

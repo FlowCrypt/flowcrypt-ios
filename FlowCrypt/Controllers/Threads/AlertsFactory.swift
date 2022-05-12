@@ -9,23 +9,28 @@
 import UIKit
 import FlowCryptCommon
 
-enum AlertsFactory {
+class AlertsFactory {
     typealias PassPhraseCompletion = ((String) -> Void)
     typealias CancelCompletion = (() -> Void)
 
-    static func makePassPhraseAlert(
+    private var textFieldDelegate: UITextFieldDelegate?
+
+    func makePassPhraseAlert(
         title: String = "setup_enter_pass_phrase".localized,
         onCancel: @escaping CancelCompletion,
         onCompletion: @escaping PassPhraseCompletion
     ) -> UIAlertController {
+        textFieldDelegate = SubmitOnPasteTextFieldDelegate(onSubmit: onCompletion)
+
         let alert = UIAlertController(
             title: title,
             message: nil,
             preferredStyle: .alert
         )
 
-        alert.addTextField { tf in
+        alert.addTextField { [weak self] tf in
             tf.isSecureTextEntry = true
+            tf.delegate = self?.textFieldDelegate
         }
         let saveAction = UIAlertAction(
             title: "ok".localized,
@@ -56,5 +61,31 @@ enum AlertsFactory {
         alert.addAction(saveAction)
 
         return alert
+    }
+}
+
+class SubmitOnPasteTextFieldDelegate: NSObject, UITextFieldDelegate {
+    let onSubmit: ((String) -> Void)
+
+    init(onSubmit: @escaping ((String) -> Void)) {
+        self.onSubmit = onSubmit
+
+        super.init()
+    }
+
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let isTextFieldEmpty = textField.text?.isEmpty ?? true
+        let isPaste = isTextFieldEmpty && string.isNotEmpty
+
+        if isPaste { onSubmit(string) }
+
+        return true
+    }
+
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if let text = textField.text, text.isNotEmpty {
+            onSubmit(text)
+        }
+        return true
     }
 }
