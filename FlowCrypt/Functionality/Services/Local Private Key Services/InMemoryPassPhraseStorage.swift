@@ -38,8 +38,8 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
         passPhraseProvider.remove(passPhrases: [passPhrase])
     }
 
-    private func getValidPassPhrases() -> [PassPhrase] {
-        passPhraseProvider.passPhrases
+    func getPassPhrases(for email: String) throws -> [PassPhrase] {
+        return passPhraseProvider.passPhrases
             .compactMap { passPhrase -> PassPhrase? in
                 guard let dateToCompare = passPhrase.date else {
                     logger.logError("Date should not be nil")
@@ -57,23 +57,13 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
 
                 return isPassPhraseValid ? passPhrase : nil
             }
-    }
-
-    func getPassPhrases(for email: String) throws -> [PassPhrase] {
-        let passPhrases = getValidPassPhrases()
-        return passPhrases.filter { passPhrase in
-            // TODO: email
-            return passPhrase.primaryFingerprintOfAssociatedKey == ""
-        }
+            .filter { $0.email == email }
     }
 }
 
 extension InMemoryPassPhraseStorage: LogOutHandler {
     func logOutUser(email: String) throws {
-        let userPassPhrases = passPhraseProvider.passPhrases.filter { passPhrase in
-            // TODO: email
-            return passPhrase.primaryFingerprintOfAssociatedKey == ""
-        }
+        let userPassPhrases = passPhraseProvider.passPhrases.filter { $0.email == email }
         passPhraseProvider.remove(passPhrases: userPassPhrases)
     }
 }

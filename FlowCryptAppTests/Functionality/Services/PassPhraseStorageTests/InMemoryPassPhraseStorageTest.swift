@@ -14,10 +14,16 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     var passPhraseProvider: InMemoryPassPhraseProviderType!
     var timeoutInSeconds: Int!
     let testPassPhraseAccount = "passphrase@account.test"
+    var testPassPhrase: PassPhrase!
 
     override func setUp() {
         passPhraseProvider = InMemoryPassPhraseProviderMock()
         timeoutInSeconds = 2
+        testPassPhrase = PassPhrase(
+            value: "A",
+            email: testPassPhraseAccount,
+            fingerprintsOfAssociatedKey: ["11","12"]
+        )
         sut = .init(
             passPhraseProvider: passPhraseProvider,
             timeoutInSeconds: timeoutInSeconds
@@ -25,36 +31,30 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     }
 
     func testSavePassPhraseUpdatesDate() {
-        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
-        sut.save(passPhrase: pass)
+        sut.save(passPhrase: testPassPhrase)
         for passPhrase in passPhraseProvider.passPhrases {
             XCTAssertNotNil(passPhrase.date)
         }
     }
 
     func testUpdatePassPhraseUpdatesDate() {
-        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
-        sut.update(passPhrase: pass)
+        sut.update(passPhrase: testPassPhrase)
         for passPhrase in passPhraseProvider.passPhrases {
             XCTAssertNotNil(passPhrase.date)
         }
     }
 
     func testRemovePassPhrase() {
-        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
-        sut.save(passPhrase: pass)
-        sut.remove(passPhrase: pass)
+        sut.save(passPhrase: testPassPhrase)
+        sut.remove(passPhrase: testPassPhrase)
         XCTAssertTrue(passPhraseProvider.passPhrases.isEmpty)
     }
 
     func testGetPassPhrases() throws {
-        let fingerPrints = ["11","12"]
-
         var passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount)
         XCTAssertTrue(passPhrases.isEmpty)
 
-        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: fingerPrints)
-        sut.save(passPhrase: pass)
+        sut.save(passPhrase: testPassPhrase)
 
         passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount)
         XCTAssertTrue(passPhrases.count == 1)
@@ -67,8 +67,7 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     func testExpiredPassPhrases() {
         XCTAssertTrue(try sut.getPassPhrases(for: testPassPhraseAccount).isEmpty)
 
-        let pass = PassPhrase(value: "A", fingerprintsOfAssociatedKey: ["11","12"])
-        sut.save(passPhrase: pass)
+        sut.save(passPhrase: testPassPhrase)
         sleep(3)
         XCTAssertTrue(try sut.getPassPhrases(for: testPassPhraseAccount).isEmpty)
     }

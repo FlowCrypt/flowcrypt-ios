@@ -128,7 +128,11 @@ final class ComposeMessageService {
         }
         let matchingKeys = try await keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        try passPhraseService.savePassPhrasesInMemory(
+            for: sender,
+            passPhrase,
+            privateKeys: matchingKeys
+        )
         // now figure out if the pass phrase also matched the signing prv itself
         let matched = matchingKeys.first(where: { $0.allFingerprints.first == signingKey.primaryFingerprint })
         return matched != nil// true if the pass phrase matched signing key
