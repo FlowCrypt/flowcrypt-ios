@@ -57,7 +57,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 
     func setupAccount(
         passPhrase: String,
-        storageMethod: StorageMethod
+        storageMethod: PassPhraseStorageMethod
     ) async throws {
         try await validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
@@ -86,7 +86,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
     }
 
-    private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: StorageMethod, passPhrase: String) throws {
+    private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: PassPhraseStorageMethod, passPhrase: String) throws {
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,

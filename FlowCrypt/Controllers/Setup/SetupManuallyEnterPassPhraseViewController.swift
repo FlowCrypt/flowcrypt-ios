@@ -31,7 +31,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
 
     private var passPhrase: String?
 
-    var storageMethod: StorageMethod = .persistent {
+    var storageMethod: PassPhraseStorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }

@@ -30,7 +30,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     let decorator: SetupViewDecorator
     let fetchedKeysCount: Int
 
-    var storageMethod: StorageMethod = .persistent {
+    var storageMethod: PassPhraseStorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }
