@@ -101,6 +101,7 @@ extension SetupEKMKeyViewController {
                 try appContext.passPhraseService.savePassPhrase(
                     with: PassPhrase(
                         value: passPhrase,
+                        email: appContext.user.email,
                         fingerprintsOfAssociatedKey: allFingerprintsOfOneKey
                     ),
                     storageMethod: storageMethod

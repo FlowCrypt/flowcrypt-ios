@@ -124,9 +124,13 @@ final class EKMVcHelper: EKMVcHelperType {
         )
         let passPhraseObj = PassPhrase(
             value: passPhrase,
+            email: appContext.user.email,
             fingerprintsOfAssociatedKey: keyDetail.fingerprints
         )
-        try appContext.passPhraseService.savePassPhrase(with: passPhraseObj, storageMethod: passPhraseStorageMethod)
+        try appContext.passPhraseService.savePassPhrase(
+            with: passPhraseObj,
+            storageMethod: passPhraseStorageMethod
+        )
     }
 
     @MainActor
@@ -176,7 +180,7 @@ final class EKMVcHelper: EKMVcHelperType {
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        try appContext.passPhraseService.savePassPhrasesInMemory(for: appContext.user.email, passPhrase, privateKeys: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 }

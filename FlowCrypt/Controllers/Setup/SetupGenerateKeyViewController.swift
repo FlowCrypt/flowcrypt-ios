@@ -74,9 +74,13 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         if storageMethod == .memory {
             let passPhrase = PassPhrase(
                 value: passPhrase,
+                email: appContext.user.email,
                 fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints
             )
-            try appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
+            try appContext.passPhraseService.savePassPhrase(
+                with: passPhrase,
+                storageMethod: .memory
+            )
         }
 
         // sending welcome email is not crucial, so we don't handle errors
