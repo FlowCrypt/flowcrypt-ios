@@ -28,7 +28,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
 
     private var passPhrase: String?
 
-    var storageMethod: StorageMethod = .persistent {
+    var storageMethod: PassPhraseStorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }

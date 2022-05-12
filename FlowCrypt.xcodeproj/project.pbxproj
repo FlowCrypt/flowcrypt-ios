@@ -101,7 +101,6 @@
 		5165ABCC27B526D100CCC379 /* RecipientEmailTextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */; };
 		51689F3F2795C1D90050A9B8 /* ProcessedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */; };
 		5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5168FB0A274F94D300131072 /* MessageAttachment.swift */; };
-		51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51775C38270C7D2400D7C944 /* StorageMethod.swift */; };
 		517C2E302779F90700FECF32 /* MultipartDataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517C2E2F2779F90700FECF32 /* MultipartDataRequest.swift */; };
 		517C2E33277A0C6300FECF32 /* EnterpriseServerApiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517C2E32277A0C6300FECF32 /* EnterpriseServerApiError.swift */; };
 		5180CB9127356D48001FC7EF /* MessageSubjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5180CB9027356D48001FC7EF /* MessageSubjectNode.swift */; };
@@ -558,7 +557,6 @@
 		5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailTextFieldNode.swift; sourceTree = "<group>"; };
 		51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessedMessage.swift; sourceTree = "<group>"; };
 		5168FB0A274F94D300131072 /* MessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAttachment.swift; sourceTree = "<group>"; };
-		51775C38270C7D2400D7C944 /* StorageMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageMethod.swift; sourceTree = "<group>"; };
 		517C2E2F2779F90700FECF32 /* MultipartDataRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartDataRequest.swift; sourceTree = "<group>"; };
 		517C2E32277A0C6300FECF32 /* EnterpriseServerApiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApiError.swift; sourceTree = "<group>"; };
 		5180CB9027356D48001FC7EF /* MessageSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSubjectNode.swift; sourceTree = "<group>"; };
@@ -2075,7 +2073,6 @@
 				9F589F19238C82A1007FD759 /* Local Storage */,
 				9F003D6C25EA8F3200EB38C0 /* SessionService.swift */,
 				9F003DB525EA92BC00EB38C0 /* LogOutHandler.swift */,
-				51775C38270C7D2400D7C944 /* StorageMethod.swift */,
 			);
 			path = DataManager;
 			sourceTree = "<group>";
@@ -2790,7 +2787,6 @@
 				215897E8267A553300423694 /* FilesManager.swift in Sources */,
 				9F5C2A77257D705100DE9B4B /* MessageLabel.swift in Sources */,
 				9F93623F2573D16F0009912F /* Gmail+Message.swift in Sources */,
-				51775C39270C7D2400D7C944 /* StorageMethod.swift in Sources */,
 				9F7ECCA9272C47DB008A1770 /* InboxRenderable.swift in Sources */,
 				042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */,
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,

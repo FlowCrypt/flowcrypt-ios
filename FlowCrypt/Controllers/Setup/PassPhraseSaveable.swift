@@ -10,7 +10,7 @@ import FlowCryptUI
 
 @MainActor
 protocol PassPhraseSaveable {
-    var storageMethod: StorageMethod { get set }
+    var storageMethod: PassPhraseStorageMethod { get set }
     var passPhraseIndexes: [IndexPath] { get }
     var saveLocallyNode: CellNode { get }
     var saveInMemoryNode: CellNode { get }
