@@ -16,9 +16,6 @@ class LocalStorageTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         sut = LocalStorage()
-
-        let passPhrase = PassPhrase(value: "123", fingerprintsOfAssociatedKey: ["123"], date: nil)
-        try sut.passPhraseStorage.save(passPhrase: passPhrase)
     }
 
     var trashKey: String {
@@ -29,15 +26,5 @@ class LocalStorageTests: XCTestCase {
         let somePath = "dummyPath/gmail/trash"
         sut.saveTrashFolder(path: somePath)
         XCTAssertTrue(UserDefaults.standard.string(forKey: trashKey) == somePath)
-    }
-
-    func testLogOutForUser() throws {
-        XCTAssertFalse(try sut.passPhraseStorage.getPassPhrases(for: testPassPhraseAccount).isEmpty)
-
-        let user = "anton@gmail.com"
-        try sut.logOutUser(email: user)
-
-        XCTAssertNil(UserDefaults.standard.string(forKey: trashKey))
-        XCTAssertTrue(try sut.passPhraseStorage.getPassPhrases(for: testPassPhraseAccount).isEmpty)
     }
 }

@@ -37,7 +37,7 @@ final class EKMVcHelper: EKMVcHelperType {
                 guard configuration.checkUsesEKM() == .usesEKM else {
                     return
                 }
-                let passPhraseStorageMethod: StorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
+                let passPhraseStorageMethod: PassPhraseStorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
                 let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
                 let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
                 let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
@@ -108,7 +108,7 @@ final class EKMVcHelper: EKMVcHelperType {
         context: AppContextWithUser,
         keyDetail: KeyDetails,
         passPhrase: String,
-        passPhraseStorageMethod: StorageMethod
+        passPhraseStorageMethod: PassPhraseStorageMethod
     ) async throws {
         guard let privateKey = keyDetail.private else {
             throw CreatePassphraseWithExistingKeyError.noPrivateKey
@@ -126,9 +126,13 @@ final class EKMVcHelper: EKMVcHelperType {
         )
         let passPhraseObj = PassPhrase(
             value: passPhrase,
+            email: appContext.user.email,
             fingerprintsOfAssociatedKey: keyDetail.fingerprints
         )
-        try appContext.passPhraseService.savePassPhrase(with: passPhraseObj, storageMethod: passPhraseStorageMethod)
+        try appContext.passPhraseService.savePassPhrase(
+            with: passPhraseObj,
+            storageMethod: passPhraseStorageMethod
+        )
     }
 
     @MainActor
@@ -179,7 +183,7 @@ final class EKMVcHelper: EKMVcHelperType {
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try appContext.passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        try appContext.passPhraseService.savePassPhrasesInMemory(for: appContext.user.email, passPhrase, privateKeys: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 }

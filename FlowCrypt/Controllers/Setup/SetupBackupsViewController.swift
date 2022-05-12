@@ -28,7 +28,7 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
 
     private var passPhrase: String?
 
-    var storageMethod: StorageMethod = .persistent {
+    var storageMethod: PassPhraseStorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -130,8 +130,15 @@ extension SetupBackupsViewController {
         }
         if storageMethod == .memory {
             for backup in matchingKeyBackups {
-                let pp = PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: backup.fingerprints)
-                try appContext.passPhraseService.savePassPhrase(with: pp, storageMethod: storageMethod)
+                let pp = PassPhrase(
+                    value: passPhrase,
+                    email: appContext.user.email,
+                    fingerprintsOfAssociatedKey: backup.fingerprints
+                )
+                try appContext.passPhraseService.savePassPhrase(
+                    with: pp,
+                    storageMethod: storageMethod
+                )
             }
         }
         try appContext.encryptedStorage.putKeypairs(

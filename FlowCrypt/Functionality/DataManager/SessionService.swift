@@ -42,7 +42,8 @@ protocol SessionServiceType {
 
 final class SessionService {
     private let encryptedStorage: EncryptedStorageType & LogOutHandler
-    private let localStorage: LocalStorageType & LogOutHandler
+    private let passPhraseStorage: PassPhraseStorageType & LogOutHandler
+    private let localStorage: LocalStorageType
 
     private let imap: Imap
     private let googleService: GoogleUserService
@@ -51,7 +52,8 @@ final class SessionService {
 
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler,
-        localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
+        passPhraseStorage: PassPhraseStorageType & LogOutHandler = InMemoryPassPhraseStorage(),
+        localStorage: LocalStorageType = LocalStorage(),
         imap: Imap? = nil,
         googleService: GoogleUserService
     ) throws {
@@ -61,10 +63,7 @@ final class SessionService {
         self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
-    }
-
-    private var storages: [LogOutHandler] {
-        [encryptedStorage, localStorage]
+        self.passPhraseStorage = passPhraseStorage
     }
 }
 
@@ -160,9 +159,9 @@ extension SessionService: SessionServiceType {
             logger.logWarning("currentAuthType is not resolved")
         }
         do {
-            for storage in self.storages {
-                try storage.logOutUser(email: user.email)
-            }
+            try encryptedStorage.logOutUser(email: user.email)
+            try passPhraseStorage.logOutUser(email: user.email)
+            localStorage.cleanup()
         } catch {
             logger.logError("storage error \(error)")
         }
