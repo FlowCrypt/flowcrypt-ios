@@ -84,11 +84,14 @@ export const CommonData = {
   },
   emailForReplyWithChangingRecipient: {
     senderEmail: 'e2e.enterprise.test@flowcrypt.com',
-    recipientName: 'e2e enterprise tests',//TODO should be "Dima Flowcrypt"
-    subject: 'Email for check reply after changing recipient on inbox',
-    secondMessage: 'Reply message for checking',
-    newRecipientEmail: 'demo@flowcrypt.com',
-    newRecipientName : 'Demo'
+    recipientName: 'e2e enterprise tests',
+    subject: 'new message for reply',
+    secondMessage: 'Added new text to this message',
+    firstRecipientName: 'Demo key 2',
+    secondRecipientName: 'Dmitry at FlowCrypt',
+    thirdRecipientName: 'FlowCrypt Robot',
+    newRecipientEmail: 'ioan@flowcrypt.com',
+    newRecipientName : 'Ioan at FlowCrypt'
   },
   simpleEmail: {
     subject: 'Test 1',
