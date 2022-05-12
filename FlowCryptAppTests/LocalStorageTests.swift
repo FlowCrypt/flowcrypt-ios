@@ -15,7 +15,7 @@ class LocalStorageTests: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
-        sut = LocalStorage(passPhraseStorage: PassPhraseStorageMock())
+        sut = LocalStorage()
 
         let passPhrase = PassPhrase(value: "123", fingerprintsOfAssociatedKey: ["123"], date: nil)
         try sut.passPhraseStorage.save(passPhrase: passPhrase)

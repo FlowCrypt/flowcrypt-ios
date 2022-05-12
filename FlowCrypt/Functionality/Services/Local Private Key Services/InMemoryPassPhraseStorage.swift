@@ -15,16 +15,13 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
     let timeoutInSeconds: Int
     let calendar = Calendar.current
     let passPhraseProvider: InMemoryPassPhraseProviderType
-    let encryptedStorage: EncryptedStorageType
 
     init(
         passPhraseProvider: InMemoryPassPhraseProviderType = InMemoryPassPhraseProvider.shared,
-        encryptedStorage: EncryptedStorageType,
         timeoutInSeconds: Int = 4*60*60 // 4 hours
     ) {
         self.passPhraseProvider = passPhraseProvider
         self.timeoutInSeconds = timeoutInSeconds
-        self.encryptedStorage = encryptedStorage
     }
 
     func save(passPhrase: PassPhrase) {
@@ -63,26 +60,19 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
     }
 
     func getPassPhrases(for email: String) throws -> [PassPhrase] {
-        let keys = try encryptedStorage.getKeypairs(by: email)
         let passPhrases = getValidPassPhrases()
         return passPhrases.filter { passPhrase in
-            return keys.contains(where: { $0.primaryFingerprint == passPhrase.primaryFingerprintOfAssociatedKey })
-        }
-    }
-
-    func getPassPhrases(from fingerprint: String) throws -> [PassPhrase] {
-        let passPhrases = getValidPassPhrases()
-        return passPhrases.filter {
-            $0.primaryFingerprintOfAssociatedKey == fingerprint
+            // TODO: email
+            return passPhrase.primaryFingerprintOfAssociatedKey == ""
         }
     }
 }
 
 extension InMemoryPassPhraseStorage: LogOutHandler {
     func logOutUser(email: String) throws {
-        let keys = try encryptedStorage.getKeypairs(by: email)
         let userPassPhrases = passPhraseProvider.passPhrases.filter { passPhrase in
-            return keys.contains(where: { $0.primaryFingerprint == passPhrase.primaryFingerprintOfAssociatedKey })
+            // TODO: email
+            return passPhrase.primaryFingerprintOfAssociatedKey == ""
         }
         passPhraseProvider.remove(passPhrases: userPassPhrases)
     }

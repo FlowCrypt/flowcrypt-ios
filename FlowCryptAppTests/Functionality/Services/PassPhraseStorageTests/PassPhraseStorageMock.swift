@@ -36,10 +36,6 @@ class PassPhraseStorageMock: PassPhraseStorageType & LogOutHandler {
         getPassPhrasesResult()
     }
 
-    func getPassPhrases(from fingerprint: String) -> [PassPhrase] {
-        getPassPhrasesResult()
-    }
-
     func logOutUser(email: String) throws {
         getPassPhrasesResult = { [] }
     }

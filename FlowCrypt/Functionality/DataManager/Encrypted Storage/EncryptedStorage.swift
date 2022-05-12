@@ -223,12 +223,6 @@ extension EncryptedStorage: PassPhraseStorageType {
             .where({ $0.user.email == email })
             .compactMap(PassPhrase.init)
     }
-
-    func getPassPhrases(from fingerprint: String) throws -> [PassPhrase] {
-        return try storage.objects(KeypairRealmObject.self)
-            .where({ $0.primaryFingerprint == fingerprint })
-            .compactMap(PassPhrase.init)
-    }
 }
 
 // MARK: - User

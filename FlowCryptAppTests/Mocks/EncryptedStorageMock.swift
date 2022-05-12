@@ -2,10 +2,9 @@
 //  EncryptedStorageMock.swift
 //  FlowCryptAppTests
 //
-//  Created by  Ivan Ushakov on 01.12.2021
+//  Created by  Ivan Ushakov on 01.12.2021
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-
 @testable import FlowCrypt
 import RealmSwift
 
@@ -38,22 +37,6 @@ final class EncryptedStorageMock: EncryptedStorageType {
         getKeypairsResult
     }
 
-    func mockGetKeyPairs(with fingerPrints: [String]) throws {
-        let expiration = Int(Date().timeIntervalSince1970) + 3600
-        getKeypairsResult = try fingerPrints.map { fingerPrint in
-            try Keypair(
-                EncryptedStorageMock.createFakeKeyDetails(
-                    prv: "private",
-                    expiration: expiration,
-                    fingerprint: fingerPrint,
-                    isFullyEncrypted: true
-                ),
-                passPhrase: nil,
-                source: "test"
-            )
-        }
-    }
-
     func validate() throws {
     }
 
@@ -65,16 +48,16 @@ final class EncryptedStorageMock: EncryptedStorageType {
 }
 
 extension EncryptedStorageMock {
-    static func createFakeKeyDetails(pub: String = "pubKey", prv: String? = nil, expiration: Int?, revoked: Bool = false, fingerprint: String? = nil, isFullyEncrypted: Bool? = false) -> KeyDetails {
+    static func createFakeKeyDetails(pub: String = "pubKey", expiration: Int?, revoked: Bool = false) -> KeyDetails {
         KeyDetails(
             public: pub,
-            private: prv,
+            private: nil,
             isFullyDecrypted: false,
-            isFullyEncrypted: isFullyEncrypted,
+            isFullyEncrypted: false,
             ids: [KeyId(longid: String.random(length: 40),
-                        fingerprint: fingerprint ?? String.random(length: 40))],
+                        fingerprint: String.random(length: 40))],
             created: 1,
-            lastModified: Int(Date().timeIntervalSince1970),
+            lastModified: nil,
             expiration: expiration,
             users: ["Test User <test@flowcrypt.com>"],
             algo: nil,

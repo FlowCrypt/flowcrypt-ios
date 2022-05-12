@@ -38,8 +38,7 @@ class AppContext {
     @MainActor
     static func setup(globalRouter: GlobalRouterType) async throws -> AppContext {
         let encryptedStorage = try await EncryptedStorage()
-        let inMemoryStorage = InMemoryPassPhraseStorage(encryptedStorage: encryptedStorage)
-        let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage, inMemoryStorage: inMemoryStorage)
+        let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
         let keyAndPassPhraseStorage = KeyAndPassPhraseStorage(
             encryptedStorage: encryptedStorage,
             passPhraseService: passPhraseService
@@ -49,7 +48,6 @@ class AppContext {
             session: nil, // will be set later. But would be nice to already set here, if available
             userAccountService: try SessionService(
                 encryptedStorage: encryptedStorage,
-                localStorage: LocalStorage(passPhraseStorage: inMemoryStorage),
                 googleService: GoogleUserService(
                     currentUserEmail: try encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
@@ -108,11 +106,9 @@ class AppContext {
 
     @MainActor
     func getFoldersService() -> FoldersService {
-        let passPhraseStorage = InMemoryPassPhraseStorage(encryptedStorage: self.encryptedStorage)
         return FoldersService(
             encryptedStorage: self.encryptedStorage,
-            remoteFoldersProvider: self.getRequiredMailProvider().remoteFoldersProvider,
-            trashPathStorage: LocalStorage(passPhraseStorage: passPhraseStorage)
+            remoteFoldersProvider: self.getRequiredMailProvider().remoteFoldersProvider
         )
     }
 }

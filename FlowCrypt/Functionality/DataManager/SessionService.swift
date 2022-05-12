@@ -51,7 +51,7 @@ final class SessionService {
 
     init(
         encryptedStorage: EncryptedStorageType & LogOutHandler,
-        localStorage: LocalStorageType & LogOutHandler,
+        localStorage: LocalStorageType & LogOutHandler = LocalStorage(),
         imap: Imap? = nil,
         googleService: GoogleUserService
     ) throws {

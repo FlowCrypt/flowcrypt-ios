@@ -59,7 +59,6 @@ protocol PassPhraseStorageType {
     func remove(passPhrase: PassPhrase) throws
 
     func getPassPhrases(for email: String) throws -> [PassPhrase]
-    func getPassPhrases(from fingerprint: String) throws -> [PassPhrase]
 }
 
 // MARK: - PassPhraseService
@@ -78,7 +77,7 @@ final class PassPhraseService: PassPhraseServiceType {
 
     init(
         encryptedStorage: PassPhraseStorageType,
-        inMemoryStorage: PassPhraseStorageType
+        inMemoryStorage: PassPhraseStorageType = InMemoryPassPhraseStorage()
     ) {
         self.encryptedStorage = encryptedStorage
         self.inMemoryStorage = inMemoryStorage

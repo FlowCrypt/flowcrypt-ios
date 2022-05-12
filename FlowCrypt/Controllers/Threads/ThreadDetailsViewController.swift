@@ -68,19 +68,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
         }
         self.threadOperationsProvider = threadOperationsProvider
         self.messageOperationsProvider = appContext.getRequiredMailProvider().messageOperationsProvider
-        let localStorage = LocalStorage(
-            passPhraseStorage: InMemoryPassPhraseStorage(
-                encryptedStorage: appContext.encryptedStorage
-            )
-        )
         self.trashFolderProvider = TrashFolderProvider(
             user: appContext.user,
             foldersService: FoldersService(
                 encryptedStorage: appContext.encryptedStorage,
-                remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider,
-                trashPathStorage: localStorage
-            ),
-            localStorage: localStorage
+                remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
+            )
         )
         self.thread = thread
         self.onComplete = completion

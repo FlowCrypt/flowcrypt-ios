@@ -12,17 +12,14 @@ import XCTest
 class InMemoryPassPhraseStorageTest: XCTestCase {
     var sut: InMemoryPassPhraseStorage!
     var passPhraseProvider: InMemoryPassPhraseProviderType!
-    var encryptedStorageMock: EncryptedStorageMock!
     var timeoutInSeconds: Int!
     let testPassPhraseAccount = "passphrase@account.test"
 
     override func setUp() {
         passPhraseProvider = InMemoryPassPhraseProviderMock()
         timeoutInSeconds = 2
-        encryptedStorageMock = EncryptedStorageMock()
         sut = .init(
             passPhraseProvider: passPhraseProvider,
-            encryptedStorage: encryptedStorageMock,
             timeoutInSeconds: timeoutInSeconds
         )
     }
@@ -52,7 +49,6 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
 
     func testGetPassPhrases() throws {
         let fingerPrints = ["11","12"]
-        try encryptedStorageMock.mockGetKeyPairs(with: fingerPrints)
 
         var passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount)
         XCTAssertTrue(passPhrases.isEmpty)
