@@ -23,7 +23,7 @@ protocol EncryptedStorageType {
 
     func validate() throws
     func cleanup() throws
-    func logoutUser(email: String) throws
+    func deleteAccount(email: String) throws
 
     static func removeStorageFile() throws
 }
@@ -105,7 +105,7 @@ final class EncryptedStorage: EncryptedStorageType {
 
 // MARK: - LogOut
 extension EncryptedStorage {
-    func logoutUser(email: String) throws {
+    func deleteAccount(email: String) throws {
         let storage = try storage
 
         let users = storage.objects(UserRealmObject.self)
