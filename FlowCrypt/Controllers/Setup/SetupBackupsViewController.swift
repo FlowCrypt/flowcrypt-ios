@@ -180,7 +180,7 @@ extension SetupBackupsViewController {
         }
     }
 
-   func handleBackButtonTap() {
+    func handleBackButtonTap() {
         Task {
             do {
                 try await appContext.globalRouter.signOut(appContext: appContext)

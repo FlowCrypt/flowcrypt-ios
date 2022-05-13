@@ -27,11 +27,11 @@ extension MessageServiceError {
     var description: String {
         switch self {
         case .missingPassPhrase:
-            return "Passphrase is missing"
+            return "error_missing_passphrase".localized
         case .emptyKeys:
-            return "Could not fetch keys"
+            return "error_empty_keys".localized
         case .attachmentNotFound:
-            return "Failed to download attachment"
+            return "error_attachment_not_found".localized
         case .attachmentDecryptFailed(let message):
             return message
         }

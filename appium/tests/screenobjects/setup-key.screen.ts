@@ -57,7 +57,6 @@ class SetupKeyScreen extends BaseScreen {
       count++;
     } while (await (await this.enterPassPhraseField).isDisplayed() !== true && count <= 15);
     await this.fillPassPhrase(text);
-    await this.clickSetPassPhraseBtn();
     await this.confirmPassPhrase(text);
   }
 
@@ -78,7 +77,6 @@ class SetupKeyScreen extends BaseScreen {
     if (await (await this.enterPassPhraseField).isDisplayed() !== true) {
       await this.clickCreateNewKeyButton();
       await this.fillPassPhrase(text);
-      await this.clickSetPassPhraseBtn();
       await this.confirmPassPhrase(text);
     } else {
       await this.fillPassPhrase(text);
@@ -90,17 +88,12 @@ class SetupKeyScreen extends BaseScreen {
     await ElementHelper.waitAndPasteString(await this.enterPassPhraseField, passPhrase);
   }
 
-  clickSetPassPhraseBtn = async () => {
-    await ElementHelper.waitAndClick(await this.setPassPhraseButton);
-  }
-
   clickLoadAccountButton = async () => {
     await ElementHelper.waitAndClick(await this.loadAccountButton);
   }
 
   confirmPassPhrase = async (passPhrase: string) => {
     await ElementHelper.waitAndPasteString(await this.confirmPassPhraseField, passPhrase);
-    await ElementHelper.waitAndClick(await this.okButton);
   }
 
   clickCreateNewKeyButton = async () => {

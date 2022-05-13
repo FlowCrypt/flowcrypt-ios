@@ -419,10 +419,12 @@ extension ThreadDetailsViewController {
     }
 
     private func handleWrongPassPhrase(_ passPhrase: String? = nil, for rawMimeData: Data, at indexPath: IndexPath) {
-        let title = passPhrase == nil ? "setup_enter_pass_phrase" : "setup_wrong_pass_phrase_retry"
+        let title = passPhrase == nil
+            ? "setup_enter_pass_phrase".localized
+            : "setup_wrong_pass_phrase_retry".localized
 
         let alert = alertsFactory.makePassPhraseAlert(
-            title: title.localized,
+            title: title,
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
