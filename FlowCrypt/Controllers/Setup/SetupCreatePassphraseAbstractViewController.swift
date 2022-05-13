@@ -42,6 +42,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     }
 
     private var passPhrase: String?
+    private var modalTextFieldDelegate: UITextFieldDelegate?
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -147,14 +148,17 @@ extension SetupCreatePassphraseAbstractViewController {
     private func awaitUserPassPhraseEntry() async throws -> String? {
         return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
             DispatchQueue.main.async {
+                // modalTextFieldDelegate = SubmitOnPasteTextFieldDelegate()
+
                 let alert = UIAlertController(
                     title: "setup_pass_phrase_title".localized,
                     message: "setup_pass_phrase_confirm".localized,
                     preferredStyle: .alert
                 )
-                alert.addTextField { textField in
+                alert.addTextField { [weak self] textField in
                     textField.isSecureTextEntry = true
                     textField.accessibilityLabel = "textField"
+                    textField.delegate = self?.modalTextFieldDelegate
                 }
                 alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
                     return continuation.resume(returning: nil)
@@ -225,6 +229,17 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
                     self?.handleButtonAction()
+                    return true
+                }
+                .onShouldChangeCharacters { [weak self] textField, string in
+                    let isTextFieldEmpty = textField.text?.isEmpty ?? true
+                    let isPaste = isTextFieldEmpty && string.count > 1
+
+                    if isPaste {
+                        textField.text = string
+                        self?.handleButtonAction()
+                    }
+
                     return true
                 }
                 .then {

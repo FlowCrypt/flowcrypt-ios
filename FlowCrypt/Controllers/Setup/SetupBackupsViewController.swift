@@ -152,6 +152,7 @@ extension SetupBackupsViewController {
 
     private func handleButtonPressed() {
         view.endEditing(true)
+
         guard let passPhrase = passPhrase else { return }
 
         guard passPhrase.isNotEmpty else {
@@ -179,7 +180,7 @@ extension SetupBackupsViewController {
         }
     }
 
-    func handleBackButtonTap() {
+   func handleBackButtonTap() {
         Task {
             do {
                 try await appContext.globalRouter.signOut(appContext: appContext)
@@ -229,8 +230,18 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                     $0.becomeFirstResponder()
                 }
                 .onShouldReturn { [weak self] _ in
-                    self?.view.endEditing(true)
                     self?.handleButtonPressed()
+                    return true
+                }
+                .onShouldChangeCharacters { [weak self] textField, string in
+                    let isTextFieldEmpty = textField.text?.isEmpty ?? true
+                    let isPaste = isTextFieldEmpty && string.count > 1
+
+                    if isPaste {
+                        textField.text = string
+                        self?.handleButtonPressed()
+                    }
+
                     return true
                 }
             case .action:

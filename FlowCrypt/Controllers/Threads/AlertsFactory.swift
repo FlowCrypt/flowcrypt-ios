@@ -75,7 +75,7 @@ class SubmitOnPasteTextFieldDelegate: NSObject, UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let isTextFieldEmpty = textField.text?.isEmpty ?? true
-        let isPaste = isTextFieldEmpty && string.isNotEmpty
+        let isPaste = isTextFieldEmpty && string.count > 1
 
         if isPaste { onSubmit(string) }
 

@@ -44,11 +44,9 @@ final class EKMVcHelper: EKMVcHelperType {
                 let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
 
                 let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
-
                 guard keysToUpdate.isNotEmpty else {
                     return
                 }
-
                 guard let passPhrase = try await getPassphrase(in: viewController), passPhrase.isNotEmpty else {
                     return
                 }
@@ -62,6 +60,7 @@ final class EKMVcHelper: EKMVcHelperType {
                         passPhraseStorageMethod: passPhraseStorageMethod
                     )
                 }
+
                 await viewController.showToast("refresh_key_success".localized)
             } catch {
                 // since this is an update function that happens on every startup

@@ -86,11 +86,11 @@ struct EnterpriseServerApiHelper {
         // when calling FES, we got some sort of network error. Could be FES down or internet down.
         if await doesTheInternetWork() {
             // we got network error from FES, but internet works. We are on consumer release.
-            //   we can assume that there is no FES running
+            // we can assume that there is no FES running
             return true // tolerate the error
         } else {
             // we got network error from FES because internet actually doesn't work
-            //   throw original error so user can retry
+            // throw original error so user can retry
             return false // do not tolertate the error
         }
     }

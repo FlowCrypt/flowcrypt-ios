@@ -92,7 +92,8 @@ struct SetupViewDecorator {
             )
     }
 
-    var subtitleStyle: (String) -> NSAttributedString { { $0.attributed(.regular(17), alignment: .center) }
+    var subtitleStyle: (String) -> NSAttributedString {
+        { $0.attributed(.regular(17), alignment: .center) }
     }
 
     // MARK: Button
