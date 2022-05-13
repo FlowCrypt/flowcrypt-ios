@@ -65,6 +65,7 @@ protocol PassPhraseStorageType {
     func save(passPhrase: PassPhrase) throws
     func update(passPhrase: PassPhrase) throws
     func remove(passPhrase: PassPhrase) throws
+    func removePassPhrases(for email: String) throws
 
     func getPassPhrases(for email: String) throws -> [PassPhrase]
 }

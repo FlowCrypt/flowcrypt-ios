@@ -59,10 +59,8 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
             }
             .filter { $0.email == email }
     }
-}
 
-extension InMemoryPassPhraseStorage: LogOutHandler {
-    func logOutUser(email: String) throws {
+    func removePassPhrases(for email: String) {
         let userPassPhrases = passPhraseProvider.passPhrases.filter { $0.email == email }
         passPhraseProvider.remove(passPhrases: userPassPhrases)
     }

@@ -23,6 +23,7 @@ protocol EncryptedStorageType {
 
     func validate() throws
     func cleanup() throws
+    func deleteAccount(email: String) throws
 
     static func removeStorageFile() throws
 }
@@ -103,8 +104,8 @@ final class EncryptedStorage: EncryptedStorageType {
 }
 
 // MARK: - LogOut
-extension EncryptedStorage: LogOutHandler {
-    func logOutUser(email: String) throws {
+extension EncryptedStorage {
+    func deleteAccount(email: String) throws {
         let storage = try storage
 
         let users = storage.objects(UserRealmObject.self)
@@ -222,6 +223,14 @@ extension EncryptedStorage: PassPhraseStorageType {
         return try storage.objects(KeypairRealmObject.self)
             .where({ $0.user.email == email })
             .compactMap(PassPhrase.init)
+    }
+
+    func removePassPhrases(for email: String) throws {
+        let keyPairs = try storage.objects(KeypairRealmObject.self)
+            .where({ $0.user.email == email })
+        for keyPair in keyPairs {
+            try updateKeys(with: keyPair.primaryFingerprint, passphrase: nil)
+        }
     }
 }
 
