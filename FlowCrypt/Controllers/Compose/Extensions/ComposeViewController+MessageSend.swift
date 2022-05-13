@@ -30,8 +30,7 @@ extension ComposeViewController {
 
         let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
             input: self.input,
-            contextToSend: self.contextToSend,
-            vcForPassPhraseModal: self
+            contextToSend: self.contextToSend
         )
         UIApplication.shared.isIdleTimerDisabled = true
         try await composeMessageService.encryptAndSend(
@@ -41,11 +40,44 @@ extension ComposeViewController {
         handleSuccessfullySentMessage()
     }
 
+    internal func requestMissingPassPhraseWithModal(for signingKey: Keypair) {
+        Task {
+            let alert = AlertsFactory.makePassPhraseAlert(
+                onCancel: {
+                    self.handle(error: ComposeMessageError.passPhraseRequired)
+                },
+                onCompletion: { [weak self] passPhrase in
+                    guard let self = self else {
+                        return
+                    }
+                    Task<Void, Never> {
+                        do {
+                            let matched = try await self.composeMessageService.handlePassPhraseEntry(passPhrase, for: signingKey)
+                            if matched {
+                                return continuation.resume(returning: passPhrase)
+                            } else {
+                                self.handle(error: ComposeMessageError.passPhraseNoMatch)
+                            }
+                        } catch {
+                            self.handle(error: error)
+                        }
+                    }
+                }
+            )
+            present(alert, animated: true, completion: nil)
+        }
+    }
+
+    
     internal func handle(error: Error) {
         UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
 
+        if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
+            requestMissingPassPhraseWithModal(for: keyPair)
+        }
+        
         let hideSpinnerAnimationDuration: TimeInterval = 1
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
             guard let self = self else { return }
