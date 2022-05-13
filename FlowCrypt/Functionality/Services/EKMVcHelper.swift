@@ -147,6 +147,8 @@ final class EKMVcHelper: EKMVcHelperType {
                         return continuation.resume(throwing: AppErr.nilSelf)
                     }
 
+                    viewController.presentedViewController?.dismiss(animated: true)
+
                     Task<Void, Never> {
                         do {
                             let matched = try await self.handlePassPhraseEntry(

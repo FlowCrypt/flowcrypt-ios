@@ -151,25 +151,21 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                 )
             case .passPhrase:
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
-                    guard case let .didEndEditing(text) = action else { return }
-                    self?.passPhrase = text
+                    switch action {
+                    case .didEndEditing(let value):
+                        self?.passPhrase = value
+                    case let .didPaste(textField, value):
+                        textField.text = value
+                        self?.submitPassphrase()
+                    default:
+                        break
+                    }
                 }
                 .then {
                     $0.becomeFirstResponder()
                 }
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)
-                    return true
-                }
-                .onShouldChangeCharacters { [weak self] textField, string in
-                    let isTextFieldEmpty = textField.text?.isEmpty ?? true
-                    let isPaste = isTextFieldEmpty && string.count > 1
-
-                    if isPaste {
-                        textField.text = string
-                        self?.submitPassphrase()
-                    }
-
                     return true
                 }
             case .enterPhrase:

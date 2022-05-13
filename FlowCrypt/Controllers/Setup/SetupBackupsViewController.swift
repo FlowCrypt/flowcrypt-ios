@@ -223,25 +223,21 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                 )
             case .passPhrase:
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
-                    guard case let .didEndEditing(value) = action else { return }
-                    self?.passPhrase = value
+                    switch action {
+                    case .didEndEditing(let value):
+                        self?.passPhrase = value
+                    case let .didPaste(textField, value):
+                        textField.text = value
+                        self?.handleButtonPressed()
+                    default:
+                        break
+                    }
                 }
                 .then {
                     $0.becomeFirstResponder()
                 }
                 .onShouldReturn { [weak self] _ in
                     self?.handleButtonPressed()
-                    return true
-                }
-                .onShouldChangeCharacters { [weak self] textField, string in
-                    let isTextFieldEmpty = textField.text?.isEmpty ?? true
-                    let isPaste = isTextFieldEmpty && string.count > 1
-
-                    if isPaste {
-                        textField.text = string
-                        self?.handleButtonPressed()
-                    }
-
                     return true
                 }
             case .action:

@@ -12,6 +12,7 @@ public enum TextFieldActionType {
     case didEndEditing(String?)
     case didBeginEditing(String?)
     case editingChanged(String?)
+    case didPaste(UITextField, String?)
     case deleteBackward(UITextField)
 }
 
@@ -31,7 +32,9 @@ public final class TextFieldNode: ASDisplayNode {
     public typealias ShouldEndEditingAction = (UITextField) -> (Bool)
     public typealias ShouldReturnAction = (UITextField) -> (Bool)
 
-    public var shouldEndEditing: ShouldEndEditingAction?
+    var shouldEndEditing: ShouldEndEditingAction?
+    var shouldReturn: ShouldReturnAction?
+    var shouldChangeCharacters: ShouldChangeAction?
 
     // swiftlint:disable force_cast
     private var textField: TextField {
@@ -127,10 +130,6 @@ public final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    var shouldReturn: ShouldReturnAction?
-
-    var shouldChangeCharacters: ShouldChangeAction?
-
     private lazy var node = ASDisplayNode { TextField() }
 
     private var textFieldAction: TextFieldAction?
@@ -218,7 +217,10 @@ extension TextFieldNode: UITextFieldDelegate {
     }
 
     public func textField(_ textField: UITextField, shouldChangeCharactersIn _: NSRange, replacementString string: String) -> Bool {
-        shouldChangeCharacters?(textField, string) ?? true
+        if string.count > 1 {
+            textFieldAction?(.didPaste(textField, string))
+        }
+        return shouldChangeCharacters?(textField, string) ?? true
     }
 }
 
