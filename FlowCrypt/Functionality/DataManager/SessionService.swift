@@ -159,7 +159,7 @@ extension SessionService: SessionServiceType {
             logger.logWarning("currentAuthType is not resolved")
         }
         do {
-            try encryptedStorage.logoutUser(email: user.email)
+            try encryptedStorage.deleteAccount(email: user.email)
             try passPhraseStorage.removePassPhrases(for: user.email)
             localStorage.cleanup()
         } catch {
