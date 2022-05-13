@@ -88,12 +88,10 @@
 "refresh_key_success" = "Account keys updated";
 "refresh_key_error" = "Error updating account keys: %@";
 
-// KeyServiceError
-"keyServiceError_retrieve_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
-"keyServiceError_retrieve_parse" = "Could not parse keys from storage. Please reinstall the app.";
-"keyServiceError_retrieve_unexpected" = "Could not import key. Please try to relogin.";
-"keyServiceError_retrieve_private" = "Could not import private key. Please try to relogin.";
-"keyServiceError_missing_current_email" = "Missing current email. Please restart the app and try again.";
+// KeypairError
+"KeypairError_no_account_keys_available_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
+"KeypairError_parsing_error" = "Could not parse keys from storage. Please reinstall the app.";
+"KeypairError_expected_public_got_private" = "Could not import private key. Please try to relogin.";
 
 "backupServiceError_parse" = "Key can't be parsed";
 "backupServiceError_email" = "Missing user email";
@@ -103,7 +101,7 @@
 
 // Compose
 "compose_enter_recipient" = "Enter recipient";
-"compose_no_pub_sender" = "Missing sender public key. Is FlowCrypt iOS app well set up?";
+"compose_no_sender_pub_usable" = "Your account keys are not usable for encryption.";
 "compose_recipient_no_pub" = "One or more of your recipients are missing a public key (marked in gray).\n\nPlease ask them to share it with you, or ask them to also set up FlowCrypt.";
 "compose_recipient_revoked" = "One or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.";
 "compose_recipient_expired" = "One or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.";

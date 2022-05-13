@@ -74,16 +74,18 @@ extension InfoCellNode.Input {
                 .attributed(.regular(17), color: .mainTextColor),
             image: #imageLiteral(resourceName: "plus").tinted(.mainTextColor),
             insets: .side(16),
-            backgroundColor: .backgroundColor
+            backgroundColor: .backgroundColor,
+            accessibilityIdentifier: "aid-add-account-btn"
         )
     }
 
     init(_ viewModel: FolderViewModel) {
+        let identifier = viewModel.name.replacingOccurrences(of: " ", with: "-").lowercased()
         self.init(
             attributedText: viewModel.name
                 .attributed(.regular(17), color: .mainTextColor),
             image: viewModel.image,
-            accessibilityIdentifier: "menuBarItem\(viewModel.name.capitalizingFirstLetter())"
+            accessibilityIdentifier: "aid-menu-bar-item-\(identifier)"
         )
     }
 }

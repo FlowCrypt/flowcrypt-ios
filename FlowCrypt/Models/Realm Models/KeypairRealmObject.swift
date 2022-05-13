@@ -13,13 +13,6 @@ enum KeySource: String {
     case ekm
 }
 
-enum KeyInfoError: Error, Equatable {
-    case missingPrivateKey(String)
-    case notEncrypted(String)
-    case missingKeyIds
-    case missingPrimaryFingerprint
-}
-
 final class KeypairRealmObject: Object {
     @Persisted(primaryKey: true) var primaryKey: String
     @Persisted var primaryFingerprint: String
@@ -45,25 +38,23 @@ extension KeypairRealmObject {
     convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
 
-        guard let privateKey = keyDetails.private else {
-            throw KeyInfoError.missingPrivateKey("storing pubkey as private")
+        guard let privateKey = keyDetails.private, let isFullyEncrypted = keyDetails.isFullyEncrypted else {
+            throw KeypairError.missingPrivateKey("storing pubkey as private")
         }
-        guard keyDetails.isFullyEncrypted! else {
-            throw KeyInfoError.notEncrypted("Will not store Private Key that is not fully encrypted")
+        guard isFullyEncrypted else {
+            throw KeypairError.notEncrypted("Will not store Private Key that is not fully encrypted")
         }
         guard keyDetails.ids.isNotEmpty else {
-            throw KeyInfoError.missingKeyIds
+            throw KeypairError.missingKeyIds
+        }
+        guard let primaryFingerprint = keyDetails.ids.first?.fingerprint else {
+            throw KeypairError.missingPrimaryFingerprint
         }
 
         self.`private` = privateKey
         self.`public` = keyDetails.public
         self.allFingerprints.append(objectsIn: keyDetails.ids.map(\.fingerprint))
         self.allLongids.append(objectsIn: keyDetails.ids.map(\.longid))
-
-        guard let primaryFingerprint = self.allFingerprints.first else {
-            throw KeyInfoError.missingPrimaryFingerprint
-        }
-
         self.primaryKey = primaryFingerprint + user.email
         self.primaryFingerprint = primaryFingerprint
         self.passphrase = passphrase

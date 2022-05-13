@@ -128,8 +128,14 @@ extension InboxViewController {
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                NavigationBarItemsView.Input(image: UIImage(named: "help_icn")) { [weak self] in self?.handleInfoTap() },
-                NavigationBarItemsView.Input(image: UIImage(named: "search_icn")) { [weak self] in self?.handleSearchTap() }
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "help_icn"),
+                    accessibilityId: "aid-help-btn"
+                ) { [weak self] in self?.handleInfoTap() },
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "search_icn"),
+                    accessibilityId: "aid-search-btn"
+                ) { [weak self] in self?.handleSearchTap() }
             ]
         )
     }

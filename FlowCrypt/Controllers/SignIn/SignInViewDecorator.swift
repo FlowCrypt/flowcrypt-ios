@@ -37,6 +37,7 @@ extension SigninButtonNode {
             input: SigninButtonNode.Input(buttonType),
             onTap: onTap
         )
+        self.button.accessibilityIdentifier = buttonType.identifier
     }
 }
 
@@ -65,6 +66,14 @@ enum UserSignInType {
         }
     }
 
+    fileprivate var identifier: String {
+        switch self {
+        case .gmail: return "aid-sign-in-gmail-btn"
+        case .outlook: return "aid-sign-in-outlook-btn"
+        case .other: return "aid-sign-in-other-btn"
+        }
+    }
+
     fileprivate var attributedTitle: NSAttributedString {
         NSAttributedString.text(from: title, style: .medium(17), color: .mainTextColor)
     }
@@ -76,6 +85,14 @@ extension SignInViewController.AppLinks: Link {
         case .privacy: return "sign_in_privacy".localized
         case .terms: return "sign_in_terms".localized
         case .security: return "sign_in_security".localized
+        }
+    }
+
+    var identifier: String? {
+        switch self {
+        case .privacy: return "aid-privacy-btn".localized
+        case .terms: return "aid-terms-btn".localized
+        case .security: return "aid-security-btn".localized
         }
     }
 

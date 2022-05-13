@@ -12,12 +12,10 @@ import XCTest
 class KeyMethodsTest: XCTestCase {
 
     var sut: KeyMethods!
-    var decrypter: MockKeyDecrypter!
-    var passPhrase = "Some long frase"
+    var passPhrase = "Some long phrase"
 
     override func setUp() {
-        decrypter = MockKeyDecrypter()
-        sut = KeyMethods(decrypter: decrypter)
+        sut = KeyMethods()
     }
 
     func testEmptyParsingKey() async throws {
@@ -65,20 +63,8 @@ class KeyMethodsTest: XCTestCase {
             _ = try await sut.filterByPassPhraseMatch(keys: keys, passPhrase: passPhrase)
             XCTFail("expected to throw above")
         } catch {
-            XCTAssertEqual(error as? KeyServiceError, KeyServiceError.expectedPrivateGotPublic)
+            XCTAssertEqual(error as? KeypairError, KeypairError.expectedPrivateGotPublic)
         }
-    }
-
-    func testCantDecryptKey() async throws {
-        decrypter.result = .failure(MockError())
-        let result = try await sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
-        XCTAssertTrue(result.isEmpty)
-    }
-
-    func testSuccessDecryption() async throws {
-        decrypter.result = .success(CoreRes.DecryptKey(decryptedKey: "some key"))
-        let result = try await sut.filterByPassPhraseMatch(keys: validKeys, passPhrase: passPhrase)
-        XCTAssertTrue(result.isNotEmpty)
     }
 }
 
@@ -115,17 +101,4 @@ extension KeyMethodsTest {
             revoked: false
         )
     ] }
-}
-
-class MockKeyDecrypter: KeyDecrypter {
-    var result: Result<CoreRes.DecryptKey, MockError> = .success(CoreRes.DecryptKey(decryptedKey: "decrypted"))
-
-    func decryptKey(armoredPrv: String, passphrase: String) throws -> CoreRes.DecryptKey {
-        switch result {
-        case .success(let key):
-            return key
-        case .failure(let error):
-            throw error
-        }
-    }
 }

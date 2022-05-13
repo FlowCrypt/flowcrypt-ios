@@ -6,7 +6,7 @@ import {
   MailFolderScreen
 } from '../../../screenobjects/all-screens';
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
-import {CommonData} from "../../../data";
+import { CommonData } from "../../../data";
 import ContactScreen from "../../../screenobjects/contacts.screen";
 
 
@@ -43,7 +43,7 @@ describe('SETTINGS: ', () => {
     await NewMessageScreen.checkAddedRecipient(fifthRecipientName, 4);
 
     await NewMessageScreen.clickBackButton();
-    await MenuBarScreen.clickMenuIcon();
+    await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.checkUserEmail();
 
     await MenuBarScreen.clickSettingsButton();
@@ -55,7 +55,7 @@ describe('SETTINGS: ', () => {
     await ContactScreen.checkContactOrder(fifthRecipient, 1);
     await ContactScreen.checkContactOrder(fourthRecipient, 2);
     await ContactScreen.checkContactOrder(firstRecipient, 3);
-    await ContactScreen.checkContactOrder(secondRecipient,4);
+    await ContactScreen.checkContactOrder(secondRecipient, 4);
 
     await ContactScreen.clickRemoveButton(1);
 
@@ -63,7 +63,7 @@ describe('SETTINGS: ', () => {
     await ContactScreen.checkContractIsNotDispalyed(fifthRecipient, 1);
     await ContactScreen.checkContactOrder(fourthRecipient, 2);
     await ContactScreen.checkContactOrder(firstRecipient, 3);
-    await ContactScreen.checkContactOrder(secondRecipient,4);
+    await ContactScreen.checkContactOrder(secondRecipient, 4);
 
     await ContactScreen.clickRemoveButton(3);
 
@@ -71,7 +71,7 @@ describe('SETTINGS: ', () => {
     await ContactScreen.checkContractIsNotDispalyed(fifthRecipient, 1);
     await ContactScreen.checkContractIsNotDispalyed(firstRecipient, 3);
     await ContactScreen.checkContactOrder(fourthRecipient, 2);
-    await ContactScreen.checkContactOrder(secondRecipient,4);
+    await ContactScreen.checkContactOrder(secondRecipient, 4);
 
     await ContactScreen.clickBackButton();
     await SettingsScreen.checkSettingsScreen();
@@ -80,6 +80,6 @@ describe('SETTINGS: ', () => {
     await ContactScreen.checkContactScreen();
     await ContactScreen.checkContactOrder(thirdRecipient, 0);
     await ContactScreen.checkContactOrder(fourthRecipient, 1);
-    await ContactScreen.checkContactOrder(secondRecipient,2);
+    await ContactScreen.checkContactOrder(secondRecipient, 2);
   });
 });

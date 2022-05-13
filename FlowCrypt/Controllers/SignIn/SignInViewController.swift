@@ -97,11 +97,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
                     self?.signInWithOutlook()
                 }
             case .other:
-                let otherProviderInput = SigninButtonNode.Input(
-                    title: "sign_in_other".localized.attributed(.medium(17), color: .mainTextColor),
-                    image: UIImage(named: "email_icn")?.tinted(.mainTextColor)
-                )
-                return SigninButtonNode(input: otherProviderInput) { [weak self] in
+                return SigninButtonNode(.other) { [weak self] in
                     self?.proceedToOtherProvider()
                 }
             }

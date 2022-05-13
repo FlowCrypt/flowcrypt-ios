@@ -2,16 +2,17 @@ import BaseScreen from './base.screen';
 import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
 import {
-    EmailProviderScreen
+  EmailProviderScreen
 } from '../screenobjects/all-screens';
 
 const SELECTORS = {
-  PRIVACY_TAB: '~privacy',
-  TERMS_TAB: '~terms',
-  SECURITY_TAB: '~security',
-  CONTINUE_WITH_GOOGLE_BTN: '~Continue with Gmail',
-  CONTINUE_WITH_OUTLOOK_BTN: '~Continue with Outlook',
-  OTHER_EMAIL_PROVIDER_BTN: '~Other email provider',
+  PRIVACY_TAB: '~aid-privacy-btn',
+  TERMS_TAB: '~aid-terms-btn',
+  SECURITY_TAB: '~aid-security-btn',
+  CONTINUE_WITH_GOOGLE_BTN: '~aid-sign-in-gmail-btn',
+  CONTINUE_WITH_OUTLOOK_BTN: '~aid-sign-in-outlook-btn',
+  OTHER_EMAIL_PROVIDER_BTN: '~aid-sign-in-other-btn',
+  // We can't use aid identifier for below fields because belows fields are from google oauth popup
   CONTINUE_BTN: '~Continue',
   CANCEL_BTN: '~Cancel',
   LOGIN_FIELD: '~Email or phone',
@@ -102,7 +103,7 @@ class SplashScreen extends BaseScreen {
   }
 
   clickOtherEmailProvider = async () => {
-    await ElementHelper.waitAndClick(await this.otherEmailProviderButton)  ;
+    await ElementHelper.waitAndClick(await this.otherEmailProviderButton);
   }
 
   clickContinueBtn = async () => {
@@ -168,7 +169,7 @@ class SplashScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(await this.signInAsGoogleAccounLabel);
   }
 
-  loginToOtherEmailProvider = async (email: string  = CommonData.outlookAccount.email, password: string = CommonData.outlookAccount.password!) => {
+  loginToOtherEmailProvider = async (email: string = CommonData.outlookAccount.email, password: string = CommonData.outlookAccount.password!) => {
     await this.clickOtherEmailProvider();
     await EmailProviderScreen.checkEmailProviderScreen();
     await EmailProviderScreen.fillEmail(email);

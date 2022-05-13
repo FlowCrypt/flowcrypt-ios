@@ -80,7 +80,6 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickSearchButton();
 
     await SearchScreen.searchAndClickEmailBySubject(notIntegrityProtectedSubject);
-    await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
     await EmailScreen.checkOpenedEmail(notIntegrityProtectedEmail, notIntegrityProtectedSubject, notIntegrityProtectedText);
     await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
@@ -91,7 +90,6 @@ describe('INBOX: ', () => {
     await MailFolderScreen.clickSearchButton();
 
     await SearchScreen.searchAndClickEmailBySubject(keyMismatchSubject);
-    await MailFolderScreen.clickOnEmailBySubject(keyMismatchSubject);
     await EmailScreen.checkOpenedEmail(keyMismatchName, keyMismatchSubject, keyMismatchText);
     await EmailScreen.checkEncryptionBadge(keyMismatchEncryptedBadge);
     await EmailScreen.checkSignatureBadge(keyMismatchSignatureBadge);
@@ -100,6 +98,5 @@ describe('INBOX: ', () => {
     await BaseScreen.checkModalMessage(keyMismatchAttachmentError);
     await EmailScreen.clickDownloadButton();
     await EmailScreen.checkAttachmentTextView(firstAttachmentBody);
-    await EmailScreen.clickBackButton();
   });
 });

@@ -3,22 +3,22 @@ import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  MENU_ICON: '~menu icn',
-  LOGOUT_BTN: '~menuBarItemLog out',
-  SETTINGS_BTN: '~menuBarItemSettings',
-  INBOX_BTN: '~menuBarItemInbox',
-  SENT_BTN: '~menuBarItemSent',
-  TRASH_BTN: '~menuBarItemTrash',
-  ADD_ACCOUNT_BUTTON: '~Add account'
+  MENU_BTN: '~aid-menu-btn',
+  LOGOUT_BTN: '~aid-menu-bar-item-log-out',
+  SETTINGS_BTN: '~aid-menu-bar-item-settings',
+  INBOX_BTN: '~aid-menu-bar-item-inbox',
+  SENT_BTN: '~aid-menu-bar-item-sent',
+  TRASH_BTN: '~aid-menu-bar-item-trash',
+  ADD_ACCOUNT_BUTTON: '~aid-add-account-btn'
 };
 
 class MenuBarScreen extends BaseScreen {
   constructor() {
-    super(SELECTORS.MENU_ICON);
+    super(SELECTORS.MENU_BTN);
   }
 
-  get menuIcon() {
-    return $(SELECTORS.MENU_ICON);
+  get menuBtn() {
+    return $(SELECTORS.MENU_BTN);
   }
 
   get logoutButton() {
@@ -45,8 +45,8 @@ class MenuBarScreen extends BaseScreen {
     return $(SELECTORS.ADD_ACCOUNT_BUTTON);
   }
 
-  clickMenuIcon = async () => {
-    await ElementHelper.waitAndClick(await this.menuIcon, 1000);
+  clickMenuBtn = async () => {
+    await ElementHelper.waitAndClick(await this.menuBtn, 1000);
     await this.checkMenuBar();
   }
 
@@ -57,10 +57,10 @@ class MenuBarScreen extends BaseScreen {
 
   clickOnUserEmail = async (email: string = CommonData.account.email) => {
     const el = await $(`~${email}`);
-    await ElementHelper.waitAndClick(await el);
+    await ElementHelper.waitAndClick(el);
   }
 
-  clickAddAccountButton = async() => {
+  clickAddAccountButton = async () => {
     await ElementHelper.waitAndClick(await this.addAccountButton);
   }
 
@@ -93,13 +93,13 @@ class MenuBarScreen extends BaseScreen {
   }
 
   checkMenuBarItem = async (menuItem: string) => {
-    const menuBarItem = await $(`~menuBarItem${menuItem}`);
+    const menuBarItem = await $(`~aid-menu-item-${menuItem}`);
     await menuBarItem.waitForDisplayed();
   }
 
   selectAccount = async (order: number) => {
-    const ele = await $(`~aid-account-email-${order-1}`);
-    await ElementHelper.waitAndClick(await ele);
+    const ele = await $(`~aid-account-email-${order - 1}`);
+    await ElementHelper.waitAndClick(ele);
   }
 }
 

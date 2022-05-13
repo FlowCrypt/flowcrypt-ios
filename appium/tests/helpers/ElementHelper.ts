@@ -56,6 +56,14 @@ class ElementHelper {
     await element.click();
   }
 
+  static async waitAndPasteString(element: WebdriverIO.Element, text: string) {
+    const base64Encoded = Buffer.from(text).toString('base64');
+    await driver.setClipboard(base64Encoded);
+    await ElementHelper.waitAndClick(element);
+    const pasteEl = await $('~Paste');
+    await ElementHelper.waitAndClick(pasteEl);
+  }
+
   static waitClickAndType = async (element: WebdriverIO.Element, text: string) => {
     await this.waitAndClick(element);
     await element.setValue(text);
@@ -64,7 +72,7 @@ class ElementHelper {
   //wait for text in element during 15 seconds (if the text doesn't appear during 15s, it will show the error)
   static waitForText = async (element: WebdriverIO.Element, text: string, timeout: number = DEFAULT_TIMEOUT) => {
     await this.waitElementVisible(element);
-    await element.waitUntil(async  function () {
+    await element.waitUntil(async function () {
       return (await element.getText() === text)
     }, {
       timeout: timeout,
@@ -75,7 +83,7 @@ class ElementHelper {
   //wait for value in element during 15 seconds (if the value doesn't appear during 15s, it will show the error)
   static waitForValue = async (element: WebdriverIO.Element, value: string, timeout: number = DEFAULT_TIMEOUT) => {
     await this.waitElementVisible(element);
-    await element.waitUntil(async  function () {
+    await element.waitUntil(async function () {
       return (await element.getValue() === value)
     }, {
       timeout: timeout,
