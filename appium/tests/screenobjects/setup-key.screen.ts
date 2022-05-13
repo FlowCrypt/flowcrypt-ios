@@ -3,13 +3,13 @@ import { CommonData } from '../data';
 import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
-  SET_PASS_PHRASE_BUTTON: '~Set pass phrase',
+  SET_PASS_PHRASE_BUTTON: '~aid-set-pass-phrase-btn',
   ENTER_YOUR_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
   OK_BUTTON: '~Ok',
   CONFIRM_PASS_PHRASE_FIELD: '~textField',
-  LOAD_ACCOUNT_BUTTON: '~load_account',
-  CREATE_NEW_KEY_BUTTON: '~Create a new key',
-  IMPORT_MY_KEY_BUTTON: '~Import my key'
+  LOAD_ACCOUNT_BUTTON: '~aid-load-account-btn',
+  CREATE_NEW_KEY_BUTTON: '~aid-create-new-key-button',
+  IMPORT_MY_KEY_BUTTON: '~aid-import-my-key-button'
 };
 
 class SetupKeyScreen extends BaseScreen {
@@ -37,11 +37,11 @@ class SetupKeyScreen extends BaseScreen {
     return $(SELECTORS.CONFIRM_PASS_PHRASE_FIELD)
   }
 
-  get createNewKeyButton () {
+  get createNewKeyButton() {
     return $(SELECTORS.CREATE_NEW_KEY_BUTTON)
   }
 
-  get importMyKeyButton () {
+  get importMyKeyButton() {
     return $(SELECTORS.IMPORT_MY_KEY_BUTTON)
   }
 
@@ -75,7 +75,7 @@ class SetupKeyScreen extends BaseScreen {
       count++;
     } while ((await (await this.loadAccountButton).isDisplayed() !== true && await (await this.createNewKeyButton).isDisplayed() !== true) && count <= 15);
 
-    if(await (await this.enterPassPhraseField).isDisplayed() !== true) {
+    if (await (await this.enterPassPhraseField).isDisplayed() !== true) {
       await this.clickCreateNewKeyButton();
       await this.fillPassPhrase(text);
       await this.clickSetPassPhraseBtn();
@@ -87,7 +87,7 @@ class SetupKeyScreen extends BaseScreen {
   }
 
   fillPassPhrase = async (passPhrase: string) => {
-    await ElementHelper.waitClickAndType(await this.enterPassPhraseField, passPhrase);
+    await ElementHelper.waitAndPasteString(await this.enterPassPhraseField, passPhrase);
   }
 
   clickSetPassPhraseBtn = async () => {
@@ -99,7 +99,7 @@ class SetupKeyScreen extends BaseScreen {
   }
 
   confirmPassPhrase = async (passPhrase: string) => {
-    await ElementHelper.waitClickAndType(await this.confirmPassPhraseField, passPhrase);
+    await ElementHelper.waitAndPasteString(await this.confirmPassPhraseField, passPhrase);
     await ElementHelper.waitAndClick(await this.okButton);
   }
 

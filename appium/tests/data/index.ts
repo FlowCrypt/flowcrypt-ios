@@ -40,6 +40,10 @@ export const CommonData = {
     secondDate: 'Feb 06',
     thirdDate: 'Feb 07',
   },
+  revokeValidMessage: {
+    subject: 'test revoke valid key from ekm',
+    message: 'Test revoked key'
+  },
   sender: {
     email: 'dmitry@flowcrypt.com',
     name: 'Dmitry at FlowCrypt'

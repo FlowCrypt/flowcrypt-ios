@@ -163,7 +163,11 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
         let navigationButton: UIBarButtonItem
         switch viewControllers.firstIndex(of: viewController) {
         case 0:
-            navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn"), action: nil, accessibilityIdentifier: "menu")
+            navigationButton = NavigationBarActionButton(
+                UIImage(named: "menu_icn"),
+                action: nil,
+                accessibilityIdentifier: "aid-menu-btn"
+            )
         default:
             navigationButton = .defaultBackButton()
         }
@@ -179,9 +183,13 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             sideMenu?.allowPanGesture = true
             sideMenu?.allowLeftSwipe = true
             interactivePopGestureRecognizer?.isEnabled = false
-            navigationButton = NavigationBarActionButton(UIImage(named: "menu_icn")) { [weak self] in
-                self?.toggleSideMenuView()
-            }
+            navigationButton = NavigationBarActionButton(
+                UIImage(named: "menu_icn"),
+                action: { [weak self] in
+                    self?.toggleSideMenuView()
+                },
+                accessibilityIdentifier: "aid-menu-btn"
+            )
             // Hide side bar menu button for InboxViewContainerController
             if viewController is InboxViewContainerController {
                 navigationButton.customView?.isHidden = true

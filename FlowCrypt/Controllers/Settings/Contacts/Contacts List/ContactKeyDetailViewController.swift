@@ -56,9 +56,15 @@ final class ContactKeyDetailViewController: TableNodeViewController {
     private func setupNavigationBarItems() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                .init(image: UIImage(named: "share")) { [weak self] in self?.handleSaveAction() },
-                .init(image: UIImage(named: "copy")) { [weak self] in self?.handleCopyAction() },
-                .init(image: UIImage(systemName: "trash")) { [weak self] in self?.handleRemoveAction() }
+                .init(
+                    image: UIImage(named: "share"), accessibilityId: "aid-share-btn"
+                ) { [weak self] in self?.handleSaveAction() },
+                .init(
+                    image: UIImage(named: "copy"), accessibilityId: "aid-copy-btn"
+                ) { [weak self] in self?.handleCopyAction() },
+                .init(
+                    image: UIImage(systemName: "trash"), accessibilityId: "aid-trash-btn"
+                ) { [weak self] in self?.handleRemoveAction() }
             ]
         )
     }

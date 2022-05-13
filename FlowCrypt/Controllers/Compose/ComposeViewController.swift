@@ -90,6 +90,8 @@ final class ComposeViewController: TableNodeViewController {
     internal var popoverVC: ComposeRecipientPopupViewController!
 
     internal var sectionsList: [Section] = []
+    var composeTextNode: ASCellNode!
+    var composeSubjectNode: ASCellNode!
 
     init(
         appContext: AppContextWithUser,
@@ -120,7 +122,7 @@ final class ComposeViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage,
             messageGateway: appContext.getRequiredMailProvider().messageSender,
             passPhraseService: appContext.passPhraseService,
-            keyService: appContext.keyService,
+            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
             keyMethods: keyMethods,
             enterpriseServer: appContext.enterpriseServer,
             sender: appContext.user.email
@@ -149,6 +151,7 @@ final class ComposeViewController: TableNodeViewController {
 
         setupUI()
         setupNavigationBar()
+        setupNodes()
         observeKeyboardNotifications()
         observerAppStates()
         observeComposeUpdates()
@@ -175,8 +178,6 @@ final class ComposeViewController: TableNodeViewController {
             cancellable.cancel()
         }
         setupSearch()
-
-        evaluateAllRecipients()
     }
 
     override func viewDidLayoutSubviews() {
@@ -190,12 +191,6 @@ final class ComposeViewController: TableNodeViewController {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-
-    private func evaluateAllRecipients() {
-        for recipient in contextToSend.recipients {
-             evaluate(recipient: recipient)
-         }
     }
 
     func update(with message: Message) {

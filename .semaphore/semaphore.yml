@@ -37,7 +37,7 @@ blocks:
         - name: Appium UI tests
           commands:
             - bundle exec fastlane build && ls -la appium
-            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/dev/flowcrypt-ios-2021-12-17-v060-for-ci-migration-test.zip -P ~/git/flowcrypt-ios/appium'
+            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             - cd appium && npm run-script lint
             - unzip flowcrypt-ios-*.zip
             - npm run-script test.mock.all

@@ -46,16 +46,28 @@ extension MessageActionsHandler where Self: UIViewController {
         logger.logInfo("setup navigation bar with \(trashFolderPath ?? "N/A")")
         logger.logInfo("currentFolderPath \(currentFolderPath)")
 
-        let helpButton = NavigationBarItemsView.Input(image: UIImage(named: "help_icn")) { [weak self] in
+        let helpButton = NavigationBarItemsView.Input(
+            image: UIImage(named: "help_icn"),
+            accessibilityId: "aid-help-button"
+        ) { [weak self] in
             self?.handleInfoTap()
         }
-        let archiveButton = NavigationBarItemsView.Input(image: UIImage(named: "archive")) { [weak self] in
+        let archiveButton = NavigationBarItemsView.Input(
+            image: UIImage(named: "archive"),
+            accessibilityId: "aid-archive-button"
+        ) { [weak self] in
             self?.handleArchiveTap()
         }
-        let trashButton = NavigationBarItemsView.Input(image: UIImage(named: "trash")) { [weak self] in
+        let trashButton = NavigationBarItemsView.Input(
+            image: UIImage(named: "trash"),
+            accessibilityId: "aid-delete-button"
+        ) { [weak self] in
             self?.handleTrashTap()
         }
-        let unreadButton = NavigationBarItemsView.Input(image: UIImage(named: "mail")) { [weak self] in
+        let unreadButton = NavigationBarItemsView.Input(
+            image: UIImage(named: "mail"),
+            accessibilityId: "aid-read-button"
+        ) { [weak self] in
             self?.handleMarkUnreadTap()
         }
 

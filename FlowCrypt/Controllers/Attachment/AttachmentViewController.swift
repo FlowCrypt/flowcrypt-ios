@@ -51,7 +51,7 @@ final class AttachmentViewController: UIViewController {
         return textView
     }()
 
-    private let errorLabel: UILabel = {
+    private lazy var errorLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.text = "no_preview_avalable".localized

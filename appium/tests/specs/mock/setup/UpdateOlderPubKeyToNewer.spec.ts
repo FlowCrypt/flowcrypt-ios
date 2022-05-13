@@ -1,15 +1,15 @@
 import { MockApi } from 'api-mocks/mock';
 import {
-    SplashScreen,
-    SetupKeyScreen,
-    PublicKeyDetailsScreen,
-    ContactPublicKeyScreen,
-    MenuBarScreen,
-    SettingsScreen,
-    ContactScreen,
+  SplashScreen,
+  SetupKeyScreen,
+  PublicKeyDetailsScreen,
+  ContactPublicKeyScreen,
+  MenuBarScreen,
+  SettingsScreen,
+  ContactScreen,
 } from '../../../screenobjects/all-screens';
-import {attesterPublicKeySamples} from "../../../../api-mocks/apis/attester/attester-endpoints";
-import {CommonData} from "../../../data";
+import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
+import { CommonData } from "../../../data";
 import DataHelper from "../../../helpers/DataHelper";
 import PublicKeyHelper from "../../../helpers/PublicKeyHelper";
 
@@ -46,10 +46,10 @@ describe('SETUP: ', () => {
       await SetupKeyScreen.setPassPhrase();
 
       await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
-          userEmail,
-          oldSignatureDate,
-          oldFingerprintsValue,
-          userName
+        userEmail,
+        oldSignatureDate,
+        oldFingerprintsValue,
+        userName
       );
       firstFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
 
@@ -61,7 +61,7 @@ describe('SETUP: ', () => {
       await ContactScreen.clickBackButton();
       await SettingsScreen.checkSettingsScreen();
 
-      await MenuBarScreen.clickMenuIcon();
+      await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickInboxButton();
       //stage 2
       mockApi.attesterConfig = {
@@ -70,10 +70,10 @@ describe('SETUP: ', () => {
         }
       };
       await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
-          userEmail,
-          newSignatureDate,
-          newFingerprintsValue,
-          userName
+        userEmail,
+        newSignatureDate,
+        newFingerprintsValue,
+        userName
       );
 
       secondFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
@@ -88,7 +88,7 @@ describe('SETUP: ', () => {
       await ContactScreen.clickBackButton();
       await SettingsScreen.checkSettingsScreen();
 
-      await MenuBarScreen.clickMenuIcon();
+      await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickInboxButton();
       //stage 3
       mockApi.attesterConfig = {
@@ -97,10 +97,10 @@ describe('SETUP: ', () => {
         }
       };
       await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
-          userEmail,
-          newSignatureDate,
-          newFingerprintsValue,
-          userName
+        userEmail,
+        newSignatureDate,
+        newFingerprintsValue,
+        userName
       );
 
       thirdFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
@@ -115,14 +115,14 @@ describe('SETUP: ', () => {
       await ContactScreen.clickBackButton();
       await SettingsScreen.checkSettingsScreen();
 
-      await MenuBarScreen.clickMenuIcon();
+      await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickInboxButton();
 
       await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
-          userEmail,
-          oldSignatureDate,
-          oldFingerprintsValue,
-          userName
+        userEmail,
+        oldSignatureDate,
+        oldFingerprintsValue,
+        userName
       );
 
       fourthFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());

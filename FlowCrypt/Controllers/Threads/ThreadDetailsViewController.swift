@@ -59,7 +59,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         self.messageService = messageService ?? MessageService(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
-            keyService: appContext.keyService,
+            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
             messageProvider: appContext.getRequiredMailProvider().messageProvider,
             passPhraseService: appContext.passPhraseService
         )
@@ -162,19 +162,24 @@ extension ThreadDetailsViewController {
             alert.popoverPresentation(style: .centred(view))
         }
 
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
+
         alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .replyAll))
         alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .forward))
-        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
+        alert.addAction(cancelAction)
 
         present(alert, animated: true, completion: nil)
     }
 
     private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
-        UIAlertAction(
+        let action = UIAlertAction(
             title: type.actionLabel,
             style: .default) { [weak self] _ in
                 self?.composeNewMessage(at: indexPath, quoteType: type)
             }
+        action.accessibilityIdentifier = type.accessibilityIdentifier
+        return action
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {
@@ -224,14 +229,21 @@ extension ThreadDetailsViewController {
         else { return }
 
         let sender = [input.rawMessage.sender].compactMap { $0 }
+        let replyRecipient: [Recipient] = {
+            // When sender is logged in user, then use `to` as reply recipient
+            if !sender.filter({ $0.email == appContext.user.email }).isEmpty {
+                return input.rawMessage.to
+            }
+            return sender
+        }()
 
         let ccRecipients = quoteType == .replyAll ? input.rawMessage.cc : []
         let recipients: [Recipient] = {
             switch quoteType {
             case .reply:
-                return sender
+                return replyRecipient
             case .replyAll:
-                let allRecipients = (input.rawMessage.to + sender).unique()
+                let allRecipients = (input.rawMessage.to + replyRecipient).unique()
                 let filteredRecipients = allRecipients.filter { $0.email != appContext.user.email }
                 return filteredRecipients.isEmpty ? sender : filteredRecipients
             case .forward:
@@ -395,7 +407,9 @@ extension ThreadDetailsViewController {
             }
             self?.show(attachment: attachment)
         }
+        downloadAction.accessibilityIdentifier = "aid-download-button"
         let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
 
         alertController.addAction(downloadAction)
         alertController.addAction(cancelAction)

@@ -55,7 +55,7 @@ extension AttachmentManager: AttachmentManagerType {
 
     func download(_ file: FileType) async {
         do {
-            let url = try await filesManager.save(file: file)
+            let url = try filesManager.save(file: file)
             openDocumentsController(from: url)
         } catch {
             controller?.showToast(

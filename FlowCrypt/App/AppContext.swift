@@ -16,21 +16,21 @@ class AppContext {
     let session: SessionType?
     // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
     let userAccountService: SessionServiceType
-    let keyService: KeyServiceType
+    let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
     let passPhraseService: PassPhraseServiceType
 
     init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
-        keyService: KeyServiceType,
+        keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         passPhraseService: PassPhraseServiceType,
         globalRouter: GlobalRouterType
     ) {
         self.encryptedStorage = encryptedStorage
         self.session = session
         self.userAccountService = userAccountService
-        self.keyService = keyService
+        self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
         self.passPhraseService = passPhraseService
         self.globalRouter = globalRouter
     }
@@ -39,8 +39,8 @@ class AppContext {
     static func setup(globalRouter: GlobalRouterType) async throws -> AppContext {
         let encryptedStorage = try await EncryptedStorage()
         let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
-        let keyService = KeyService(
-            storage: encryptedStorage,
+        let keyAndPassPhraseStorage = KeyAndPassPhraseStorage(
+            encryptedStorage: encryptedStorage,
             passPhraseService: passPhraseService
         )
         return AppContext(
@@ -53,7 +53,7 @@ class AppContext {
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
             ),
-            keyService: keyService,
+            keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             passPhraseService: passPhraseService,
             globalRouter: globalRouter
         )
@@ -64,7 +64,7 @@ class AppContext {
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
-            keyService: keyService,
+            keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             passPhraseService: passPhraseService,
             globalRouter: globalRouter,
             authType: authType,
@@ -125,7 +125,7 @@ class AppContextWithUser: AppContext {
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
-        keyService: KeyServiceType,
+        keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         passPhraseService: PassPhraseServiceType,
         globalRouter: GlobalRouterType,
         authType: AuthType,
@@ -146,7 +146,7 @@ class AppContextWithUser: AppContext {
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
-            keyService: keyService,
+            keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             passPhraseService: passPhraseService,
             globalRouter: globalRouter
         )
