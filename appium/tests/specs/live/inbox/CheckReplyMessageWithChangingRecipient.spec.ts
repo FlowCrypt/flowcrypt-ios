@@ -37,7 +37,7 @@ describe('INBOX: ', () => {
     // check reply message
     await EmailScreen.clickReplyButton();
     await NewMessageScreen.checkFilledComposeEmailInfo({
-      recipients: [firstRecipientName, secondRecipientName],//TODO the CC recipient should be displayed
+      recipients: [firstRecipientName, secondRecipientName],
       subject: replySubject,
       message: quoteText
     });
@@ -45,7 +45,7 @@ describe('INBOX: ', () => {
     await NewMessageScreen.setAddRecipient(newRecipientEmail);
 
     await NewMessageScreen.checkFilledComposeEmailInfo({
-      recipients: [firstRecipientName, newRecipientName],//TODO the CC recipient should be displayed
+      recipients: [firstRecipientName, newRecipientName],
       subject: replySubject,
       message: quoteText
     });
