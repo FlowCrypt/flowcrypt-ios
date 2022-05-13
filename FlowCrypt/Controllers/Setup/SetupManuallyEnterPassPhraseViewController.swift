@@ -161,19 +161,23 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                     self?.view.endEditing(true)
                     return true
                 }
+                .onShouldChangeCharacters { [weak self] textField, string in
+                    let isTextFieldEmpty = textField.text?.isEmpty ?? true
+                    let isPaste = isTextFieldEmpty && string.count > 1
+
+                    if isPaste {
+                        textField.text = string
+                        self?.submitPassphrase()
+                    }
+
+                    return true
+                }
             case .enterPhrase:
                 let input = ButtonCellNode.Input(
                     title: self.decorator.buttonTitle(for: .passPhraseContinue)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
-                    guard let self = self else { return }
-                    Task {
-                        do {
-                            try await self.handleContinueAction()
-                        } catch {
-                            self.showAlert(message: error.errorMessage)
-                        }
-                    }
+                    self?.submitPassphrase()
                 }
             case .chooseAnother:
                 return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
@@ -206,6 +210,16 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
 // MARK: - Actions
 
 extension SetupManuallyEnterPassPhraseViewController {
+    private func submitPassphrase() {
+        Task {
+            do {
+                try await self.handleContinueAction()
+            } catch {
+                self.showAlert(message: error.errorMessage)
+            }
+        }
+    }
+
     private func handleContinueAction() async throws {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }

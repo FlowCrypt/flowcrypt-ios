@@ -148,13 +148,18 @@ extension SetupCreatePassphraseAbstractViewController {
     private func awaitUserPassPhraseEntry() async throws -> String? {
         return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
             DispatchQueue.main.async {
-                // modalTextFieldDelegate = SubmitOnPasteTextFieldDelegate()
-
                 let alert = UIAlertController(
                     title: "setup_pass_phrase_title".localized,
                     message: "setup_pass_phrase_confirm".localized,
                     preferredStyle: .alert
                 )
+
+                self.modalTextFieldDelegate = SubmitOnPasteTextFieldDelegate(
+                    onSubmit: { passPhrase in
+                        alert.dismiss(animated: true)
+                        return continuation.resume(returning: passPhrase)
+                    })
+
                 alert.addTextField { [weak self] textField in
                     textField.isSecureTextEntry = true
                     textField.accessibilityLabel = "textField"
