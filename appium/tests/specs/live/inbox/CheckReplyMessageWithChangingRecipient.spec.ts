@@ -14,7 +14,6 @@ describe('INBOX: ', () => {
   it('test for replying to my own email and changing recipient', async () => {
 
     const senderEmail = CommonData.emailForReplyWithChangingRecipient.senderEmail;
-    const recipientOfOriginalMessage = CommonData.emailForReplyWithChangingRecipient.recipientName;
     const emailSubject = CommonData.emailForReplyWithChangingRecipient.subject;
     const secondMessage = CommonData.emailForReplyWithChangingRecipient.secondMessage;
     const newRecipientEmail = CommonData.emailForReplyWithChangingRecipient.newRecipientEmail;
@@ -38,7 +37,7 @@ describe('INBOX: ', () => {
     // check reply message
     await EmailScreen.clickReplyButton();
     await NewMessageScreen.checkFilledComposeEmailInfo({
-      recipients: [recipientOfOriginalMessage], //TODO This is a bug that needs to be fixed. The reply should still be to original recipients
+      recipients: [firstRecipientName, secondRecipientName],//TODO the CC recipient should be displayed
       subject: replySubject,
       message: quoteText
     });
@@ -46,7 +45,7 @@ describe('INBOX: ', () => {
     await NewMessageScreen.setAddRecipient(newRecipientEmail);
 
     await NewMessageScreen.checkFilledComposeEmailInfo({
-      recipients: [newRecipientName],
+      recipients: [firstRecipientName, newRecipientName],//TODO the CC recipient should be displayed
       subject: replySubject,
       message: quoteText
     });
@@ -65,11 +64,13 @@ describe('INBOX: ', () => {
 
     await NewMessageScreen.deleteAddedRecipientWithDoubleBackspace();
     await NewMessageScreen.setAddRecipientByName('Ioan', newRecipientEmail);
-    await NewMessageScreen.checkFilledComposeEmailInfo({      //TODO need to fix this, app crashes after adding new recipients
+    await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [firstRecipientName, newRecipientName],
       cc: [thirdRecipientName],
       subject: replySubject,
       message: quoteText
     });
+    await NewMessageScreen.clickBackButton();
+    await EmailScreen.checkThreadMessage(senderEmail, emailSubject, secondMessage, 1);
   });
 });
