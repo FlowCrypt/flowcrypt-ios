@@ -35,4 +35,8 @@ class PassPhraseStorageMock: PassPhraseStorageType {
     func getPassPhrases(for email: String) -> [PassPhrase] {
         getPassPhrasesResult()
     }
+
+    func removePassPhrases(for email: String) throws {
+        getPassPhrasesResult = { [] }
+    }
 }

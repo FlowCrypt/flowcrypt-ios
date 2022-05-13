@@ -45,6 +45,9 @@ final class EncryptedStorageMock: EncryptedStorageType {
 
     func cleanup() {
     }
+
+    func logoutUser(email: String) throws {
+    }
 }
 
 extension EncryptedStorageMock {
