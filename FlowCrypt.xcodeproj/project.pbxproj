@@ -1005,6 +1005,7 @@
 		21F836A62652A1B700B2448C /* Functionality */ = {
 			isa = PBXGroup;
 			children = (
+				756CB579282E372A000F056B /* Apis */,
 				9FC4136B2683CBBD004C0A69 /* Mail Provider */,
 				21489B69267B7BC300BDE4AC /* FilesManager */,
 				9F4164162665757700106194 /* PGP */,
@@ -1032,12 +1033,12 @@
 			path = Data;
 			sourceTree = "<group>";
 		};
-		2C03CC14275BB51000887EEB /* Account Server Services */ = {
+		2C03CC14275BB51000887EEB /* Account Server Apis */ = {
 			isa = PBXGroup;
 			children = (
 				2C03CC15275BB53400887EEB /* EnterpriseServerApiTests.swift */,
 			);
-			path = "Account Server Services";
+			path = "Account Server Apis";
 			sourceTree = "<group>";
 		};
 		2C141B2D274572E40038A3F8 /* Common */ = {
@@ -1248,11 +1249,29 @@
 			path = Attachment;
 			sourceTree = "<group>";
 		};
+		756CB577282E3669000F056B /* Api */ = {
+			isa = PBXGroup;
+			children = (
+				2C124DB32728809100A2EFA6 /* ApiCall.swift */,
+				A381F250271C1D1A00A3D13C /* Account Server Apis */,
+				A381F24F271C1CA300A3D13C /* Remote Private Key Apis */,
+				A381F24D271C1C1100A3D13C /* Remote Pub Key Apis */,
+				040FDF1127EDFC5C00CB936A /* IdTokenUtils.swift */,
+			);
+			path = Api;
+			sourceTree = "<group>";
+		};
+		756CB579282E372A000F056B /* Apis */ = {
+			isa = PBXGroup;
+			children = (
+				2C03CC14275BB51000887EEB /* Account Server Apis */,
+			);
+			path = Apis;
+			sourceTree = "<group>";
+		};
 		9F0C3C1F23191F2000299985 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				A381F250271C1D1A00A3D13C /* Account Server Services */,
-				2C124DB32728809100A2EFA6 /* ApiCall.swift */,
 				A3B7C31823F576BA0022D628 /* AppStartup.swift */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
 				21489B81267CC3BC00BDE4AC /* Client Configuration Service */,
@@ -1266,9 +1285,6 @@
 				04722B44281ABD2C00D0242F /* EKMVcHelper.swift */,
 				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
 				D27B911724EFE787002DF0A1 /* Local Contacts Service */,
-				A381F24F271C1CA300A3D13C /* Remote Private Key Services */,
-				A381F24D271C1C1100A3D13C /* Remote Pub Key Services */,
-				040FDF1127EDFC5C00CB936A /* IdTokenUtils.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1353,7 +1369,6 @@
 		9F4163F3266574CF00106194 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				2C03CC14275BB51000887EEB /* Account Server Services */,
 				2C2A3B492719EE4D00B7F27B /* Key Services */,
 				9F5F500C26F90AC800294FA2 /* Client Configuration Service */,
 				9FC7EBB6266EBDF000F3BF5D /* PassPhraseStorageTests */,
@@ -1729,7 +1744,7 @@
 			path = Pgp;
 			sourceTree = "<group>";
 		};
-		A381F24D271C1C1100A3D13C /* Remote Pub Key Services */ = {
+		A381F24D271C1C1100A3D13C /* Remote Pub Key Apis */ = {
 			isa = PBXGroup;
 			children = (
 				211392A4266511E6009202EC /* PubLookup.swift */,
@@ -1737,18 +1752,18 @@
 				21CE25E52650070300ADFF4B /* WkdUrlConstructor.swift */,
 				32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */,
 			);
-			path = "Remote Pub Key Services";
+			path = "Remote Pub Key Apis";
 			sourceTree = "<group>";
 		};
-		A381F24F271C1CA300A3D13C /* Remote Private Key Services */ = {
+		A381F24F271C1CA300A3D13C /* Remote Private Key Apis */ = {
 			isa = PBXGroup;
 			children = (
 				214A023926A3029700C24066 /* EmailKeyManagerApi.swift */,
 			);
-			path = "Remote Private Key Services";
+			path = "Remote Private Key Apis";
 			sourceTree = "<group>";
 		};
-		A381F250271C1D1A00A3D13C /* Account Server Services */ = {
+		A381F250271C1D1A00A3D13C /* Account Server Apis */ = {
 			isa = PBXGroup;
 			children = (
 				32DCAC9C0512037018F434A1 /* BackendApi.swift */,
@@ -1756,7 +1771,7 @@
 				5137CB1327F8E0A900AEF895 /* EnterpriseServerApiHelper.swift */,
 				517C2E312779F91300FECF32 /* Models */,
 			);
-			path = "Account Server Services";
+			path = "Account Server Apis";
 			sourceTree = "<group>";
 		};
 		A3DAD60C22E469E400F2C4CD /* Resources */ = {
@@ -1847,6 +1862,7 @@
 		C132B9C61EC2DCC000763715 /* Functionality */ = {
 			isa = PBXGroup;
 			children = (
+				756CB577282E3669000F056B /* Api */,
 				21623D1926FA860E00A11B9A /* PhotosManager */,
 				215897E6267A551300423694 /* FilesManager */,
 				A370EAB6238697E000685215 /* Pgp */,
