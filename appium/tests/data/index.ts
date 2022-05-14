@@ -86,6 +86,17 @@ export const CommonData = {
     attachmentName: 'image.png',
     encryptedAttachmentName: 'image.png.pgp',
   },
+  emailForReplyWithChangingRecipient: {
+    senderEmail: 'e2e.enterprise.test@flowcrypt.com',
+    recipientName: 'e2e enterprise tests',
+    subject: 'new message for reply',
+    secondMessage: 'Added new text to this message',
+    firstRecipientName: 'Demo key 2',
+    secondRecipientName: 'Dmitry at FlowCrypt',
+    thirdRecipientName: 'FlowCrypt Robot',
+    newRecipientEmail: 'ioan@flowcrypt.com',
+    newRecipientName : 'Ioan at FlowCrypt'
+  },
   simpleEmail: {
     subject: 'Test 1',
     message: 'Test email',
