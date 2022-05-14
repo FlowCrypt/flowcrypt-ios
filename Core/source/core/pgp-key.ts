@@ -409,7 +409,7 @@ export class PgpKey {
   };
 
   public static revoke = async (key: Key): Promise<string | undefined> => {
-    if (!key.isRevoked()) {
+    if (! await key.isRevoked()) {
       if (!key.isPrivate()) throw Error('Revocation of public key not implemented');
       const keypair = await revokeKey({ key: key as PrivateKey, format: 'object' });
       key = keypair.privateKey;
