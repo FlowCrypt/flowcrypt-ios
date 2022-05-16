@@ -74,52 +74,18 @@ final class ComposeMessageService {
         self.onStateChanged = completion
     }
 
-    func prepareSigningKey(viewController: UIViewController?) async throws -> Keypair? {
+    func prepareSigningKey() async throws -> Keypair? {
         // todo - sender email will differ from account email once
         //   https://github.com/FlowCrypt/flowcrypt-ios/issues/1298 is done
         let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
-        guard var signingKey = try await keyMethods.chooseSenderSigningKey(keys: keys, senderEmail: sender) else {
+        guard let signingKey = try await keyMethods.chooseSenderSigningKey(keys: keys, senderEmail: sender) else {
             // todo - throw user error for missing signing key
             return nil
         }
         if signingKey.passphrase == nil {
-            guard let vc = viewController else {
-                throw AppErr.unexpected("missing UIViewController when prompting for pass phrase for signing key")
-            }
-            signingKey.passphrase = try await self.requestMissingPassPhraseWithModal(for: signingKey, viewController: vc)
+            throw ComposeMessageError.promptUserToEnterPassPhraseForSigningKey(signingKey)
         }
         return signingKey
-    }
-
-    @MainActor
-    internal func requestMissingPassPhraseWithModal(for signingKey: Keypair, viewController: UIViewController) async throws -> String {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            let alert = alertsFactory.makePassPhraseAlert(
-                onCancel: {
-                    return continuation.resume(throwing: ComposeMessageError.passPhraseRequired)
-                },
-                onCompletion: { [weak self] passPhrase in
-                    guard let self = self else {
-                        return continuation.resume(throwing: AppErr.nilSelf)
-                    }
-                    Task<Void, Never> {
-                        do {
-                            viewController.presentedViewController?.dismiss(animated: true)
-
-                            let matched = try await self.handlePassPhraseEntry(passPhrase, for: signingKey)
-                            if matched {
-                                return continuation.resume(returning: passPhrase)
-                            } else {
-                                throw ComposeMessageError.passPhraseNoMatch
-                            }
-                        } catch {
-                            return continuation.resume(throwing: error)
-                        }
-                    }
-                }
-            )
-            viewController.present(alert, animated: true, completion: nil)
-        }
     }
 
     func handlePassPhraseEntry(_ passPhrase: String, for signingKey: Keypair) async throws -> Bool {
@@ -145,10 +111,7 @@ final class ComposeMessageService {
     func validateAndProduceSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        includeAttachments: Bool = true,
-        // todo - throw Error on missing pass phrase then catch it in VC
-        //   instead of passing VC it here
-        vcForPassPhraseModal: UIViewController? = nil
+        includeAttachments: Bool = true
     ) async throws -> SendableMsg {
         onStateChanged?(.validatingMessage)
 
@@ -214,7 +177,7 @@ final class ComposeMessageService {
             }
         }
 
-        let signingPrv = try await prepareSigningKey(viewController: vcForPassPhraseModal)
+        let signingPrv = try await prepareSigningKey()
 
         return SendableMsg(
             text: text,
