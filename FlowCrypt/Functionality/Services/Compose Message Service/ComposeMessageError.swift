@@ -57,6 +57,7 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
     case passPhraseRequired
     case passPhraseNoMatch
     case gatewayError(Error)
+    case promptUserToEnterPassPhraseForSigningKey(Keypair)
 
     var description: String {
         switch self {
@@ -68,6 +69,8 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
             return "compose_sign_passphrase_no_match".localized
         case .gatewayError(let error):
             return error.localizedDescription
+        default:
+            return errorMessage
         }
     }
 
