@@ -40,7 +40,7 @@ extension ComposeViewController {
         handleSuccessfullySentMessage()
     }
 
-    internal func requestMissingPassPhraseWithModal(for signingKey: Keypair) {
+    internal func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false) {
         Task {
             let alert = AlertsFactory.makePassPhraseAlert(
                 onCancel: {
@@ -54,7 +54,11 @@ extension ComposeViewController {
                         do {
                             let matched = try await self.composeMessageService.handlePassPhraseEntry(passPhrase, for: signingKey)
                             if matched {
-                                return continuation.resume(returning: passPhrase)
+                                if isDraft {
+                                    self.saveDraftIfNeeded()
+                                } else {
+                                    self.handleSendTap()
+                                }
                             } else {
                                 self.handle(error: ComposeMessageError.passPhraseNoMatch)
                             }
@@ -68,7 +72,6 @@ extension ComposeViewController {
         }
     }
 
-    
     internal func handle(error: Error) {
         UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
@@ -76,8 +79,9 @@ extension ComposeViewController {
 
         if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
             requestMissingPassPhraseWithModal(for: keyPair)
+            return
         }
-        
+
         let hideSpinnerAnimationDuration: TimeInterval = 1
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
             guard let self = self else { return }
