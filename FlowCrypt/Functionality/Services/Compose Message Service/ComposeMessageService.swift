@@ -23,7 +23,7 @@ protocol CoreComposeMessageType {
 final class ComposeMessageService {
 
     private let messageGateway: MessageGateway
-    private let passPhraseService: PassPhraseServiceType
+    private let combinedPassPhraseStorage: CombinedPassPhraseStorageType
     private let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
     private let keyMethods: KeyMethodsType
     private let storage: EncryptedStorageType
@@ -46,7 +46,7 @@ final class ComposeMessageService {
         clientConfiguration: ClientConfiguration,
         encryptedStorage: EncryptedStorageType,
         messageGateway: MessageGateway,
-        passPhraseService: PassPhraseServiceType,
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         keyMethods: KeyMethodsType,
         draftGateway: DraftGateway? = nil,
@@ -56,7 +56,7 @@ final class ComposeMessageService {
         core: CoreComposeMessageType & KeyParser = Core.shared
     ) {
         self.messageGateway = messageGateway
-        self.passPhraseService = passPhraseService
+        self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
         self.keyMethods = keyMethods
         self.draftGateway = draftGateway
@@ -96,7 +96,7 @@ final class ComposeMessageService {
         }
         let matchingKeys = try await keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try passPhraseService.savePassPhrasesInMemory(
+        try combinedPassPhraseStorage.savePassPhrasesInMemory(
             for: sender,
             passPhrase,
             privateKeys: matchingKeys
@@ -170,7 +170,7 @@ final class ComposeMessageService {
                 throw MessageValidationError.subjectContainsPassword
             }
 
-            let allAvailablePassPhrases = try passPhraseService.getPassPhrases(for: sender).map(\.value)
+            let allAvailablePassPhrases = try combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
             if allAvailablePassPhrases.contains(password) {
                 throw MessageValidationError.notUniquePassword
             }
