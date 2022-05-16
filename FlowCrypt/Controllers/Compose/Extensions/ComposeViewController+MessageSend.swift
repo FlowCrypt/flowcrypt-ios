@@ -41,35 +41,33 @@ extension ComposeViewController {
     }
 
     internal func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false) {
-        Task {
-            let alert = AlertsFactory.makePassPhraseAlert(
-                onCancel: {
-                    self.handle(error: ComposeMessageError.passPhraseRequired)
-                },
-                onCompletion: { [weak self] passPhrase in
-                    guard let self = self else {
-                        return
-                    }
-                    Task<Void, Never> {
-                        do {
-                            let matched = try await self.composeMessageService.handlePassPhraseEntry(passPhrase, for: signingKey)
-                            if matched {
-                                if isDraft {
-                                    self.saveDraftIfNeeded()
-                                } else {
-                                    self.handleSendTap()
-                                }
+        let alert = AlertsFactory.makePassPhraseAlert(
+            onCancel: {
+                self.handle(error: ComposeMessageError.passPhraseRequired)
+            },
+            onCompletion: { [weak self] passPhrase in
+                guard let self = self else {
+                    return
+                }
+                Task<Void, Never> {
+                    do {
+                        let matched = try await self.composeMessageService.handlePassPhraseEntry(passPhrase, for: signingKey)
+                        if matched {
+                            if isDraft {
+                                self.saveDraftIfNeeded()
                             } else {
-                                self.handle(error: ComposeMessageError.passPhraseNoMatch)
+                                self.handleSendTap()
                             }
-                        } catch {
-                            self.handle(error: error)
+                        } else {
+                            self.handle(error: ComposeMessageError.passPhraseNoMatch)
                         }
+                    } catch {
+                        self.handle(error: error)
                     }
                 }
-            )
-            present(alert, animated: true, completion: nil)
-        }
+            }
+        )
+        present(alert, animated: true, completion: nil)
     }
 
     internal func handle(error: Error) {
