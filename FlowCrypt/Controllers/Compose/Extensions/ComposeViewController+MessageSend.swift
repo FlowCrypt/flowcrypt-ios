@@ -41,7 +41,7 @@ extension ComposeViewController {
     }
 
     internal func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false) {
-        let alert = AlertsFactory.makePassPhraseAlert(
+        let alert = alertsFactory.makePassPhraseAlert(
             onCancel: {
                 self.handle(error: ComposeMessageError.passPhraseRequired)
             },
@@ -51,7 +51,10 @@ extension ComposeViewController {
                 }
                 Task<Void, Never> {
                     do {
-                        let matched = try await self.composeMessageService.handlePassPhraseEntry(passPhrase, for: signingKey)
+                        let matched = try await self.composeMessageService.handlePassPhraseEntry(
+                            passPhrase,
+                            for: signingKey
+                        )
                         if matched {
                             if isDraft {
                                 self.saveDraftIfNeeded()

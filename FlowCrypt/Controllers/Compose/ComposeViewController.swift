@@ -79,6 +79,7 @@ final class ComposeViewController: TableNodeViewController {
     internal weak var saveDraftTimer: Timer?
     internal var composedLatestDraft: ComposedDraft?
 
+    internal lazy var alertsFactory = AlertsFactory()
     internal var messagePasswordAlertController: UIAlertController?
     internal var didLayoutSubviews = false
     internal var topContentInset: CGFloat {
