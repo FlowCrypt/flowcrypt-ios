@@ -47,14 +47,14 @@ final class KeyMethods: KeyMethodsType {
     }
 
     func chooseSenderSigningKey(keys: [Keypair], senderEmail: String) async throws -> Keypair? {
-        let parsed = try await parseKeys(armored: keys.map { $0.private })
+        let parsed = try await parseKeys(armored: keys.map(\.private))
         guard let usable = parsed.first(where: { $0.isKeyUsable }) else { return nil }
         return keys.first { $0.primaryFingerprint == usable.primaryFingerprint }
     }
 
     func chooseSenderEncryptionKeys(keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
         let senderEmail = senderEmail.lowercased()
-        let parsed = try await parseKeys(armored: keys.map { $0.public })
+        let parsed = try await parseKeys(armored: keys.map(\.public))
         guard parsed.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
@@ -68,12 +68,12 @@ final class KeyMethods: KeyMethodsType {
         if let byAnyUid = filter(keys, usable, ({ $0.pgpUserEmailsLowercased.contains(senderEmail) })) {
             return byAnyUid // if any keys match by any uid, use them
         }
-        return filter(keys, usable, { _ in true }) ?? [] // use any usable keys
+        return filter(keys, usable) ?? [] // use any usable keys
     }
 
-    private func filter(_ toReturn: [Keypair], _ parsed: [KeyDetails], _ criteria: (KeyDetails) -> Bool) -> [Keypair]? {
+    private func filter(_ toReturn: [Keypair], _ parsed: [KeyDetails], _ criteria: ((KeyDetails) -> Bool)? = nil) -> [Keypair]? {
         let filteredPrimaryFingerprints = parsed
-            .filter { criteria($0) }
+            .filter { criteria?($0) ?? true }
             .map { $0.primaryFingerprint }
         let filteredKeypairs = toReturn
             .filter { filteredPrimaryFingerprints.contains($0.primaryFingerprint) }
