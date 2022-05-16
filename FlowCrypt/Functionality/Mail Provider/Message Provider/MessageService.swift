@@ -50,7 +50,7 @@ final class MessageService {
     private let core: Core
     private let logger: Logger
     private let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
-    private let passPhraseService: PassPhraseServiceType
+    private let combinedPassPhraseStorage: CombinedPassPhraseStorageType
     private let pubLookup: PubLookupType
 
     init(
@@ -60,10 +60,10 @@ final class MessageService {
         pubLookup: PubLookupType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         messageProvider: MessageProvider,
-        passPhraseService: PassPhraseServiceType
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType
     ) {
         self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
-        self.passPhraseService = passPhraseService
+        self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.messageProvider = messageProvider
         self.core = core
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
@@ -82,7 +82,7 @@ final class MessageService {
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
-        try passPhraseService.savePassPhrasesInMemory(for: userEmail, passPhrase, privateKeys: matchingKeys)
+        try combinedPassPhraseStorage.savePassPhrasesInMemory(for: userEmail, passPhrase, privateKeys: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 

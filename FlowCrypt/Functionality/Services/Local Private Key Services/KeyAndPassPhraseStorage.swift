@@ -16,18 +16,18 @@ protocol KeyAndPassPhraseStorageType {
 final class KeyAndPassPhraseStorage: KeyAndPassPhraseStorageType {
 
     let encryptedStorage: EncryptedStorageType
-    let passPhraseService: PassPhraseServiceType
+    let combinedPassPhraseStorage: CombinedPassPhraseStorageType
 
     init(
         encryptedStorage: EncryptedStorageType,
-        passPhraseService: PassPhraseServiceType
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType
     ) {
         self.encryptedStorage = encryptedStorage
-        self.passPhraseService = passPhraseService
+        self.combinedPassPhraseStorage = combinedPassPhraseStorage
     }
 
     func getKeypairsWithPassPhrases(email: String) async throws -> [Keypair] {
-        let storedPassPhrases = try passPhraseService.getPassPhrases(for: email)
+        let storedPassPhrases = try combinedPassPhraseStorage.getPassPhrases(for: email)
         var keypairs = try encryptedStorage.getKeypairs(by: email)
         for i in keypairs.indices {
             keypairs[i].passphrase = keypairs[i].passphrase ?? storedPassPhrases

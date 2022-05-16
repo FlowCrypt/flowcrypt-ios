@@ -61,7 +61,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
             messageProvider: appContext.getRequiredMailProvider().messageProvider,
-            passPhraseService: appContext.passPhraseService
+            combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
         guard let threadOperationsProvider = appContext.getRequiredMailProvider().threadOperationsProvider else {
             fatalError("expected threadOperationsProvider on gmail")
