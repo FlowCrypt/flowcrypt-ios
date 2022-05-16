@@ -253,7 +253,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                 )
             }
             for updatedPassPhrase in updatedPassPhrases {
-                try appContext.passPhraseService.updatePassPhrase(
+                try appContext.combinedPassPhraseStorage.updatePassPhrase(
                     with: updatedPassPhrase,
                     storageMethod: storageMethod
                 )
@@ -267,7 +267,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                 )
             }
             for newPassPhrase in newPassPhrases {
-                try appContext.passPhraseService.savePassPhrase(
+                try appContext.combinedPassPhraseStorage.savePassPhrase(
                     with: newPassPhrase,
                     storageMethod: storageMethod
                 )
