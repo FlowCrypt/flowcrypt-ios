@@ -31,7 +31,8 @@ final class ComposeMessageService {
     private let core: CoreComposeMessageType & KeyParser
     private let enterpriseServer: EnterpriseServerApiType
     private let draftGateway: DraftGateway?
-    private lazy var logger: Logger = Logger.nested(Self.self)
+    private lazy var logger = Logger.nested(Self.self)
+    private lazy var alertsFactory = AlertsFactory()
 
     private let sender: String
 
@@ -154,8 +155,8 @@ final class ComposeMessageService {
         }
 
         let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
-                ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
-                : []
+            ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
+            : []
 
         let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
         let validPubKeys = try validate(

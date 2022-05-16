@@ -42,7 +42,7 @@ describe('UPDATE: ', () => {
     await driver.activateApp(bundleId);
     //login and check user
     await SplashScreen.login();
-    await SetupKeyScreen.setPassPhrase();
+    await SetupKeyScreen.setPassPhrase(true);
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickSearchButton();
