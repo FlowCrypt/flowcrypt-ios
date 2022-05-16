@@ -11,7 +11,7 @@ import XCTest
 
 class PassPhraseStorageTests: XCTestCase {
 
-    var sut: PassPhraseService!
+    var sut: CombinedPassPhraseStorage!
     var encryptedStorage: PassPhraseStorageMock!
     var inMemoryStorage: PassPhraseStorageMock!
     let testPassPhraseAccount = "passphrase@account.test"
@@ -20,7 +20,7 @@ class PassPhraseStorageTests: XCTestCase {
         encryptedStorage = PassPhraseStorageMock()
         inMemoryStorage = PassPhraseStorageMock()
 
-        sut = PassPhraseService(
+        sut = CombinedPassPhraseStorage(
             encryptedStorage: encryptedStorage,
             inMemoryStorage: inMemoryStorage
         )

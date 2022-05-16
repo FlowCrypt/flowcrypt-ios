@@ -45,7 +45,7 @@ extension Recipient {
         self.email = email
 
         if let name = person.names?.first {
-            self.name = [name.givenName, name.familyName].compactMap { $0 }.joined(separator: " ")
+            self.name = name.displayName
         } else {
             self.name = nil
         }
