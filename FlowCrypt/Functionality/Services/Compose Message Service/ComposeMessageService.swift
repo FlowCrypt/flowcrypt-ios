@@ -83,7 +83,7 @@ final class ComposeMessageService {
         }
         if signingKey.passphrase == nil {
             guard let vc = viewController else {
-                throw AppErr.unexpected("missing UIViewController when promting for pass phrase for signing key")
+                throw AppErr.unexpected("missing UIViewController when prompting for pass phrase for signing key")
             }
             signingKey.passphrase = try await self.requestMissingPassPhraseWithModal(for: signingKey, viewController: vc)
         }
@@ -223,7 +223,7 @@ final class ComposeMessageService {
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
-            pubKeys: senderKeys.map { $0.public } + validPubKeys,
+            pubKeys: senderKeys.map(\.public) + validPubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )
