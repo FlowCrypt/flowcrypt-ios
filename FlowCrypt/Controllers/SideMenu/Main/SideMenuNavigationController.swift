@@ -46,19 +46,19 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         self?.hideMenu()
     }
 
-    private var menuViewContoller: SideMenuViewController?
+    private var ekmVcHelper: EKMVcHelper?
+    private var menuViewController: SideMenuViewController?
 
     convenience init(appContext: AppContextWithUser, contentViewController: UIViewController) {
         let menu = MyMenuViewController(appContext: appContext)
         self.init(menuViewController: menu, contentViewController: contentViewController)
-        menuViewContoller = menu
+        menuViewController = menu
+        ekmVcHelper = EKMVcHelper(appContext: appContext)
         sideMenu = ENSideMenu(sourceView: view, menuViewController: menu, menuPosition: .left).then {
             $0.bouncingEnabled = false
             $0.delegate = self
             $0.animationDuration = Constants.animationDuration
         }
-        let ekmVcHelper = EKMVcHelper(appContext: appContext)
-        ekmVcHelper.refreshKeysFromEKMIfNeeded(in: self)
     }
 
     override func viewDidLoad() {
@@ -77,6 +77,12 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
         super.viewDidLayoutSubviews()
 
         updateSideMenuSize()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        ekmVcHelper?.refreshKeysFromEKMIfNeeded(in: self)
     }
 
     private func updateSideMenuSize() {
@@ -124,7 +130,7 @@ extension SideMenuNavigationController: ENSideMenuDelegate {
         isStatusBarHidden = true
         setNeedsStatusBarAppearanceUpdate()
         gestureView.frame = view.frame
-        menuViewContoller?.didOpen()
+        menuViewController?.didOpen()
     }
 }
 
