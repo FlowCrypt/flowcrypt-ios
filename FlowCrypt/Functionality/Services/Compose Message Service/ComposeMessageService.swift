@@ -22,19 +22,13 @@ protocol CoreComposeMessageType {
 
 final class ComposeMessageService {
 
-    private let messageGateway: MessageGateway
-    private let combinedPassPhraseStorage: CombinedPassPhraseStorageType
-    private let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
+    private let appContext: AppContextWithUser
     private let keyMethods: KeyMethodsType
-    private let storage: EncryptedStorageType
     private let localContactsProvider: LocalContactsProviderType
     private let core: CoreComposeMessageType & KeyParser
-    private let enterpriseServer: EnterpriseServerApiType
     private let draftGateway: DraftGateway?
     private lazy var logger = Logger.nested(Self.self)
     private lazy var alertsFactory = AlertsFactory()
-
-    private let sender: String
 
     private struct ReplyInfo: Encodable {
         let sender: String
@@ -43,29 +37,20 @@ final class ComposeMessageService {
         let token: String
     }
 
+    private var sender: String { appContext.user.email }
+
     init(
-        clientConfiguration: ClientConfiguration,
-        encryptedStorage: EncryptedStorageType,
-        messageGateway: MessageGateway,
-        combinedPassPhraseStorage: CombinedPassPhraseStorageType,
-        keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
+        appContext: AppContextWithUser,
         keyMethods: KeyMethodsType,
         draftGateway: DraftGateway? = nil,
-        localContactsProvider: LocalContactsProviderType? = nil,
-        enterpriseServer: EnterpriseServerApiType,
-        sender: String,
-        core: CoreComposeMessageType & KeyParser = Core.shared
+        core: CoreComposeMessageType & KeyParser = Core.shared,
+        localContactsProvider: LocalContactsProviderType? = nil
     ) {
-        self.messageGateway = messageGateway
-        self.combinedPassPhraseStorage = combinedPassPhraseStorage
-        self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
+        self.appContext = appContext
         self.keyMethods = keyMethods
         self.draftGateway = draftGateway
-        self.storage = encryptedStorage
-        self.localContactsProvider = localContactsProvider ?? LocalContactsProvider(encryptedStorage: encryptedStorage)
         self.core = core
-        self.enterpriseServer = enterpriseServer
-        self.sender = sender
+        self.localContactsProvider = localContactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
         self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
@@ -77,7 +62,7 @@ final class ComposeMessageService {
     func prepareSigningKey() async throws -> Keypair? {
         // todo - sender email will differ from account email once
         //   https://github.com/FlowCrypt/flowcrypt-ios/issues/1298 is done
-        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
+        let keys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
         guard let signingKey = try await keyMethods.chooseSenderSigningKey(keys: keys, senderEmail: sender) else {
             // todo - throw user error for missing signing key
             return nil
@@ -91,13 +76,13 @@ final class ComposeMessageService {
     func handlePassPhraseEntry(_ passPhrase: String, for signingKey: Keypair) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
         //  let's find all keys that match and save the pass phrase for all
-        let allKeys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
+        let allKeys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
         guard allKeys.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
         let matchingKeys = try await keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try combinedPassPhraseStorage.savePassPhrasesInMemory(
+        try appContext.combinedPassPhraseStorage.savePassPhrasesInMemory(
             for: sender,
             passPhrase,
             privateKeys: matchingKeys
@@ -146,7 +131,7 @@ final class ComposeMessageService {
         //   and then later prioritize / filter by sender email which may be different)
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/1298
         let senderKeys = try await keyMethods.chooseSenderEncryptionKeys(
-            keys: try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
+            keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
             senderEmail: sender
         )
 
@@ -171,7 +156,7 @@ final class ComposeMessageService {
                 throw MessageValidationError.subjectContainsPassword
             }
 
-            let allAvailablePassPhrases = try combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
+            let allAvailablePassPhrases = try appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
             if allAvailablePassPhrases.contains(password) {
                 throw MessageValidationError.notUniquePassword
             }
@@ -189,7 +174,7 @@ final class ComposeMessageService {
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
-            pubKeys: senderKeys.map { $0.public } + validPubKeys,
+            pubKeys: senderKeys.map(\.public) + validPubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )
@@ -267,7 +252,7 @@ final class ComposeMessageService {
                 threadId: threadId
             )
 
-            try await messageGateway.sendMail(
+            try await appContext.getRequiredMailProvider().messageSender.sendMail(
                 input: input,
                 progressHandler: { [weak self] progress in
                     let progressToShow = hasPassword ? 0.5 + progress / 2 : progress
@@ -342,7 +327,7 @@ extension ComposeMessageService {
     }
 
     private func prepareAndUploadPwdEncryptedMsg(message: SendableMsg) async throws -> String {
-        let replyToken = try await enterpriseServer.getReplyToken()
+        let replyToken = try await appContext.enterpriseServer.getReplyToken()
 
         let bodyWithReplyToken = try getPwdMsgBodyWithReplyToken(
             message: message,
@@ -365,7 +350,7 @@ extension ComposeMessageService {
         )
         let details = MessageUploadDetails(from: msgWithReplyToken, replyToken: replyToken)
 
-        return try await enterpriseServer.upload(
+        return try await appContext.enterpriseServer.upload(
             message: pwdEncryptedWithAttachments,
             details: details,
             progressHandler: { [weak self] progress in

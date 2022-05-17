@@ -87,7 +87,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         }
 
         let decrypted = try await call("decryptFile", jsonDict: [
-            "keys": keys.map { $0.prvKeyInfoJsonDictForCore },
+            "keys": keys.map(\.prvKeyInfoJsonDictForCore),
             "msgPwd": msgPwd
         ], data: encrypted)
 
@@ -155,7 +155,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             let text: String
         }
         let json: [String: Any?]? = [
-            "keys": keys.map { $0.prvKeyInfoJsonDictForCore },
+            "keys": keys.map(\.prvKeyInfoJsonDictForCore),
             "isEmail": isEmail,
             "msgPwd": msgPwd,
             "verificationPubkeys": verificationPubKeys
@@ -199,7 +199,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": msg.pubKeys,
-            "signingPrv": msg.signingPrv.ifNotNil { $0.prvKeyInfoJsonDictForCore }
+            "signingPrv": msg.signingPrv.ifNotNil(\.prvKeyInfoJsonDictForCore)
         ], data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
