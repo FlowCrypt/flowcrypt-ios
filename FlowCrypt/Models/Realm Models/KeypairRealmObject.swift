@@ -38,28 +38,17 @@ extension KeypairRealmObject {
     convenience init(_ keyDetails: KeyDetails, passphrase: String?, source: KeySource, user: UserRealmObject) throws {
         self.init()
 
-        guard let privateKey = keyDetails.private, let isFullyEncrypted = keyDetails.isFullyEncrypted else {
-            throw KeypairError.missingPrivateKey("storing pubkey as private")
-        }
-        guard isFullyEncrypted else {
-            throw KeypairError.notEncrypted("Will not store Private Key that is not fully encrypted")
-        }
-        guard keyDetails.ids.isNotEmpty else {
-            throw KeypairError.missingKeyIds
-        }
-        guard let primaryFingerprint = keyDetails.ids.first?.fingerprint else {
-            throw KeypairError.missingPrimaryFingerprint
-        }
+        let keypair = try Keypair(keyDetails, passPhrase: passphrase, source: source.rawValue)
 
-        self.`private` = privateKey
-        self.`public` = keyDetails.public
-        self.allFingerprints.append(objectsIn: keyDetails.ids.map(\.fingerprint))
-        self.allLongids.append(objectsIn: keyDetails.ids.map(\.longid))
-        self.primaryKey = primaryFingerprint + user.email
-        self.primaryFingerprint = primaryFingerprint
+        self.`private` = keypair.private
+        self.`public` = keypair.public
+        self.allFingerprints.append(objectsIn: keypair.allFingerprints)
+        self.allLongids.append(objectsIn: keypair.allLongids)
+        self.primaryKey = keypair.primaryFingerprint + user.email
+        self.primaryFingerprint = keypair.primaryFingerprint
         self.passphrase = passphrase
         self.source = source.rawValue
-        self.lastModified = keyDetails.lastModified ?? 0
+        self.lastModified = keypair.lastModified
         self.user = user
     }
 }
