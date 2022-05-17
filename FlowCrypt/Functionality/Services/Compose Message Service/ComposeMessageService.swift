@@ -173,7 +173,7 @@ final class ComposeMessageService {
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,
-            pubKeys: senderKeys.map { $0.public } + validPubKeys,
+            pubKeys: senderKeys.map(\.public) + validPubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )
