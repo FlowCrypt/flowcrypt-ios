@@ -21,6 +21,10 @@ extension Bundle {
         return FlowCryptBundleType(rawValue: bundleIdentifier) ?? .debug
     }
 
+    public static var isMockDebugBundle: Bool {
+        isDebugBundleWithArgument("--mock-fes-api")
+    }
+
     public static func isDebugBundleWithArgument(_ argument: String) -> Bool {
         guard Bundle.flowCryptBundleType == .debug else { return false }
         return CommandLine.arguments.contains(argument)
