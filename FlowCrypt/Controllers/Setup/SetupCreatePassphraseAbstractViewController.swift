@@ -42,6 +42,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
     }
 
     private var passPhrase: String?
+    private var modalTextFieldDelegate: UITextFieldDelegate?
 
     private lazy var logger = Logger.nested(in: Self.self, with: .setup)
 
@@ -152,9 +153,17 @@ extension SetupCreatePassphraseAbstractViewController {
                     message: "setup_pass_phrase_confirm".localized,
                     preferredStyle: .alert
                 )
-                alert.addTextField { textField in
+
+                self.modalTextFieldDelegate = SubmitOnPasteTextFieldDelegate(
+                    onSubmit: { passPhrase in
+                        alert.dismiss(animated: true)
+                        return continuation.resume(returning: passPhrase)
+                    })
+
+                alert.addTextField { [weak self] textField in
                     textField.isSecureTextEntry = true
                     textField.accessibilityLabel = "textField"
+                    textField.delegate = self?.modalTextFieldDelegate
                 }
                 alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
                     return continuation.resume(returning: nil)
@@ -219,8 +228,15 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                 )
             case .passPhrase:
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
-                    guard case let .didEndEditing(value) = action else { return }
-                    self?.passPhrase = value
+                    switch action {
+                    case .didEndEditing(let value):
+                        self?.passPhrase = value
+                    case let .didPaste(textField, value):
+                        textField.text = value
+                        self?.handleButtonAction()
+                    default:
+                        break
+                    }
                 }
                 .onShouldReturn { [weak self] _ in
                     self?.view.endEditing(true)

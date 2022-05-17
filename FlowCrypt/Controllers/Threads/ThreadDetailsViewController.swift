@@ -14,6 +14,7 @@ import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
     private lazy var logger = Logger.nested(Self.self)
+    private lazy var alertsFactory = AlertsFactory()
 
     class Input {
         var rawMessage: Message
@@ -38,6 +39,8 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let threadOperationsProvider: MessagesThreadOperationsProvider
     private let thread: MessageThread
     private var input: [ThreadDetailsViewController.Input]
+
+    private var textFieldDelegate: UITextFieldDelegate?
 
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
@@ -374,9 +377,7 @@ extension ThreadDetailsViewController {
 
         switch error as? MessageServiceError {
         case let .missingPassPhrase(rawMimeData):
-            handleMissingPassPhrase(for: rawMimeData, at: indexPath)
-        case let .wrongPassPhrase(rawMimeData, passPhrase):
-            handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+            handleWrongPassPhrase(for: rawMimeData, at: indexPath)
         default:
             // TODO: - Ticket - Improve error handling for ThreadDetailsViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -417,8 +418,13 @@ extension ThreadDetailsViewController {
         present(alertController, animated: true)
     }
 
-    private func handleMissingPassPhrase(for rawMimeData: Data, at indexPath: IndexPath) {
-        let alert = AlertsFactory.makePassPhraseAlert(
+    private func handleWrongPassPhrase(_ passPhrase: String? = nil, for rawMimeData: Data, at indexPath: IndexPath) {
+        let title = passPhrase == nil
+            ? "setup_enter_pass_phrase".localized
+            : "setup_wrong_pass_phrase_retry".localized
+
+        let alert = alertsFactory.makePassPhraseAlert(
+            title: title,
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
@@ -427,23 +433,12 @@ extension ThreadDetailsViewController {
             }
         )
 
-        present(alert, animated: true, completion: nil)
-    }
-
-    private func handleWrongPassPhrase(for rawMimeData: Data, with phrase: String, at indexPath: IndexPath) {
-        let alert = AlertsFactory.makePassPhraseAlert(
-            title: "setup_wrong_pass_phrase_retry".localized,
-            onCancel: { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            },
-            onCompletion: { [weak self] passPhrase in
-                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
-            }
-        )
         present(alert, animated: true, completion: nil)
     }
 
     private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
+        presentedViewController?.dismiss(animated: true)
+
         handleFetchProgress(state: .decrypt)
 
         Task {
@@ -462,7 +457,7 @@ extension ThreadDetailsViewController {
                     )
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
-                    handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+                    handleWrongPassPhrase(passPhrase, for: rawMimeData, at: indexPath)
                 }
             } catch {
                 handleError(error, at: indexPath)

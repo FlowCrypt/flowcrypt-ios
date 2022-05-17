@@ -81,6 +81,9 @@
 "error_startup" = "Startup Error";
 "error_login" = "Login Error";
 "error_wrong_app_state" = "Wrong application state. User not found for session %@";
+"error_missing_passphrase" = "Passphrase is missing";
+"error_empty_keys" = "Could not fetch keys";
+"error_attachment_not_found" = "Failed to download attachment";
 
 // Refresh key
 "refresh_key_alert_title" = "Enter pass phrase to keep your account keys up to date.";

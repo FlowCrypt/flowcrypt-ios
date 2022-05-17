@@ -10,7 +10,7 @@ public extension String {
     }
 
     var trimLeadingSlash: String {
-        if count > 0, self[startIndex] == "/" {
+        if isNotEmpty, self[startIndex] == "/" {
             return String(dropFirst())
         }
         return self

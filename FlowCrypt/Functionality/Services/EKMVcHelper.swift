@@ -15,8 +15,10 @@ protocol EKMVcHelperType {
 
 final class EKMVcHelper: EKMVcHelperType {
 
-    let appContext: AppContextWithUser
-    let keyMethods: KeyMethodsType
+    private let appContext: AppContextWithUser
+    private let keyMethods: KeyMethodsType
+
+    private lazy var alertsFactory = AlertsFactory()
 
     init(appContext: AppContextWithUser) {
         self.appContext = appContext
@@ -37,11 +39,9 @@ final class EKMVcHelper: EKMVcHelperType {
                 let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
 
                 let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
-
                 guard keysToUpdate.isNotEmpty else {
                     return
                 }
-
                 guard let passPhrase = try await getPassphrase(in: viewController), passPhrase.isNotEmpty else {
                     return
                 }
@@ -55,6 +55,7 @@ final class EKMVcHelper: EKMVcHelperType {
                         passPhraseStorageMethod: passPhraseStorageMethod
                     )
                 }
+
                 await viewController.showToast("refresh_key_success".localized)
             } catch {
                 // since this is an update function that happens on every startup
@@ -133,7 +134,7 @@ final class EKMVcHelper: EKMVcHelperType {
     @MainActor
     private func requestPassPhraseWithModal(in viewController: UIViewController) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            let alert = AlertsFactory.makePassPhraseAlert(
+            let alert = alertsFactory.makePassPhraseAlert(
                 title: "refresh_key_alert_title".localized,
                 onCancel: {
                     return continuation.resume(returning: "")
@@ -142,6 +143,9 @@ final class EKMVcHelper: EKMVcHelperType {
                     guard let self = self else {
                         return continuation.resume(throwing: AppErr.nilSelf)
                     }
+
+                    viewController.presentedViewController?.dismiss(animated: true)
+
                     Task<Void, Never> {
                         do {
                             let matched = try await self.handlePassPhraseEntry(
@@ -170,7 +174,7 @@ final class EKMVcHelper: EKMVcHelperType {
         _ passPhrase: String
     ) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
-        //  let's find all keys that match and save the pass phrase for all
+        // let's find all keys that match and save the pass phrase for all
         let allKeys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: appContext.user.email)
         guard allKeys.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable

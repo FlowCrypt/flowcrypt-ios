@@ -152,6 +152,7 @@ extension SetupBackupsViewController {
 
     private func handleButtonPressed() {
         view.endEditing(true)
+
         guard let passPhrase = passPhrase else { return }
 
         guard passPhrase.isNotEmpty else {
@@ -222,14 +223,20 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
                 )
             case .passPhrase:
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
-                    guard case let .didEndEditing(value) = action else { return }
-                    self?.passPhrase = value
+                    switch action {
+                    case .didEndEditing(let value):
+                        self?.passPhrase = value
+                    case let .didPaste(textField, value):
+                        textField.text = value
+                        self?.handleButtonPressed()
+                    default:
+                        break
+                    }
                 }
                 .then {
                     $0.becomeFirstResponder()
                 }
                 .onShouldReturn { [weak self] _ in
-                    self?.view.endEditing(true)
                     self?.handleButtonPressed()
                     return true
                 }

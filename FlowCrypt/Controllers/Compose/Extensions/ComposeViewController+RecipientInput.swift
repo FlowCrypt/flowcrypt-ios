@@ -44,6 +44,7 @@ extension ComposeViewController {
         case let .didEndEditing(text): handleEndEditingAction(with: text, for: recipientType)
         case let .editingChanged(text): handleEditingChanged(with: text)
         case .didBeginEditing: handleDidBeginEditing(recipientType: recipientType)
+        case .didPaste: return
         }
     }
 
