@@ -118,14 +118,8 @@ final class ComposeViewController: TableNodeViewController {
             appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
         )
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
-            clientConfiguration: clientConfiguration,
-            encryptedStorage: appContext.encryptedStorage,
-            messageGateway: appContext.getRequiredMailProvider().messageSender,
-            combinedPassPhraseStorage: appContext.combinedPassPhraseStorage,
-            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
-            keyMethods: keyMethods,
-            enterpriseServer: appContext.enterpriseServer,
-            sender: appContext.user.email
+            appContext: appContext,
+            keyMethods: keyMethods
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
