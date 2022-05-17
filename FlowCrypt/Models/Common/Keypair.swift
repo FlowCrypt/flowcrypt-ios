@@ -80,7 +80,7 @@ extension Keypair {
         self.passphrase = passPhrase
         self.source = source
         self.allFingerprints = k.fingerprints
-        self.allLongids = k.ids.map { $0.longid }
+        self.allLongids = k.ids.map(\.longid)
         guard let lastModified = k.lastModified else {
             throw KeypairError.keyMissingSelfSignature
         }
