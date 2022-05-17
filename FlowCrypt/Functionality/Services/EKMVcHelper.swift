@@ -81,7 +81,9 @@ final class EKMVcHelper: EKMVcHelperType {
     private func findKeysToUpdate(from keyDetails: [KeyDetails], localKeys: [Keypair]) throws -> [KeyDetails] {
         var keysToUpdate: [KeyDetails] = []
         for keyDetail in keyDetails {
-            guard keyDetail.isFullyDecrypted ?? false else { throw EmailKeyManagerApiError.keysAreUnexpectedlyEncrypted }
+            guard keyDetail.isFullyDecrypted ?? false else {
+                throw EmailKeyManagerApiError.keysAreUnexpectedlyEncrypted
+            }
             guard let keyLastModified = keyDetail.lastModified else {
                 throw EmailKeyManagerApiError.keysAreInvalid
             }
