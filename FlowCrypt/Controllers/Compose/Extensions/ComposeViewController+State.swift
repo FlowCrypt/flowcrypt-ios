@@ -10,7 +10,7 @@ import UIKit
 
 // MARK: - State Handling
 extension ComposeViewController {
-    internal func updateState(with newState: State) {
+    internal func updateView(with newState: State) {
         if case .searchEmails = newState, !self.shouldDisplaySearchResult {
             return
         }
