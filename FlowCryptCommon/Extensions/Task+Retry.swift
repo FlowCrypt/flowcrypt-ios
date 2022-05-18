@@ -8,7 +8,7 @@
 
 extension Task where Failure == Error {
     @discardableResult
-    static func retrying(
+    static public func retrying(
         priority: TaskPriority? = nil,
         maxRetryCount: Int = 2,
         retryDelayMs: UInt64 = 1000,

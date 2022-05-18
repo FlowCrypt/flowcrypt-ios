@@ -13,7 +13,6 @@
 		04127DFD27E3097E009DF86C /* LocalContactsProviderMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04127DFC27E3097E009DF86C /* LocalContactsProviderMock.swift */; };
 		042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */; };
 		0435F35927E499CA008AEEF6 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0435F35827E499CA008AEEF6 /* SearchViewController.swift */; };
-		0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
 		04722B45281ABD2C00D0242F /* EKMVcHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04722B44281ABD2C00D0242F /* EKMVcHelper.swift */; };
 		049E605927FDB6310089EE2A /* ComposeViewController+Attachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */; };
 		049E605B27FDB6BE0089EE2A /* ComposeViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */; };
@@ -143,6 +142,9 @@
 		601EEE31272B19D200FE445B /* CheckMailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */; };
 		606FE33A2745AA2E009DA039 /* AttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606FE3392745AA2E009DA039 /* AttachmentViewController.swift */; };
 		750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750A6C3C28244A780048E1CC /* OptionalExtensions.swift */; };
+		759739BE2833E986004867CD /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
+		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
+		759739C12833EA94004867CD /* GmailServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CDC25715CF50026EE64 /* GmailServiceError.swift */; };
 		7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
@@ -353,7 +355,6 @@
 		D28A1CBD2525C141003B760B /* CheckBoxTextNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */; };
 		D29AFFF6240939AE00C1387D /* Then.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD22A1B230FE7D0005067A6 /* Then.swift */; };
 		D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29AFFF82409767F00C1387D /* GoogleContactsResponse.swift */; };
-		D2A1D3BA23FD64AB00D626D6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */; };
 		D2A1D3C323FD64AD00D626D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D2A1D3C223FD64AD00D626D6 /* Assets.xcassets */; };
 		D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D2A1D3C423FD64AD00D626D6 /* LaunchScreen.storyboard */; };
@@ -1270,13 +1271,10 @@
 		9F0C3C1F23191F2000299985 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				A3B7C31823F576BA0022D628 /* AppStartup.swift */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
 				21489B81267CC3BC00BDE4AC /* Client Configuration Service */,
 				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */,
 				D227C0E4250538190070F805 /* Folders Services */,
-				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
-				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
 				04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */,
 				5161D87D27A488BD00130518 /* Contacts Service */,
@@ -1559,7 +1557,12 @@
 		9F8220D32633661C004B2009 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				C132B9B31EC2DBD800763715 /* AppDelegate.swift */,
 				2CAF25312756C37E005C7C7C /* AppContext.swift */,
+				A3B7C31823F576BA0022D628 /* AppStartup.swift */,
+				32DCA4B11D4531B3B04D01D1 /* AppErr.swift */,
+				C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */,
+				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -1585,15 +1588,6 @@
 				51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */,
 			);
 			path = "Message Provider";
-			sourceTree = "<group>";
-		};
-		9FB22CB425715C860026EE64 /* Error Handling */ = {
-			isa = PBXGroup;
-			children = (
-				32DCA4B11D4531B3B04D01D1 /* AppErr.swift */,
-				0443C85D27F4A6D700A432AA /* Task+Retry.swift */,
-			);
-			path = "Error Handling";
 			sourceTree = "<group>";
 		};
 		9FB22CFD25715DDF0026EE64 /* Local Private Key Services */ = {
@@ -1817,7 +1811,6 @@
 			isa = PBXGroup;
 			children = (
 				9F8220D32633661C004B2009 /* App */,
-				C132B9B31EC2DBD800763715 /* AppDelegate.swift */,
 				C132B9BA1EC2DBD800763715 /* Assets.xcassets */,
 				949ED9412303E3B400530579 /* Colors.xcassets */,
 				9FD22A1D230FEEC8005067A6 /* Common UI */,
@@ -1866,7 +1859,6 @@
 				A370EAB6238697E000685215 /* Pgp */,
 				D29AFFEE24092F4900C1387D /* DataManager */,
 				9FC4114A25961CD6001180A8 /* Mail Provider */,
-				9FB22CB425715C860026EE64 /* Error Handling */,
 				9F0C3C1F23191F2000299985 /* Services */,
 			);
 			path = Functionality;
@@ -2009,6 +2001,7 @@
 				9F8277952373732000E19C07 /* UIImageExtensions.swift */,
 				9FD5052A278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift */,
 				32DCA7E0AFE19FACB0F233ED /* URLSessionExtensions.swift */,
+				0443C85D27F4A6D700A432AA /* Task+Retry.swift */,
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				D2FD0F682453245E00259FF0 /* Either.swift */,
 				750A6C3C28244A780048E1CC /* OptionalExtensions.swift */,
@@ -2110,8 +2103,8 @@
 		D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */ = {
 			isa = PBXGroup;
 			children = (
-				D2A1D3D023FD83B100D626D6 /* README.md */,
 				D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */,
+				D2A1D3D023FD83B100D626D6 /* README.md */,
 				D2A1D3BD23FD64AB00D626D6 /* ViewController.swift */,
 				D2A1D3C223FD64AD00D626D6 /* Assets.xcassets */,
 				D2F6D12924311E5300DB4065 /* Colors.xcassets */,
@@ -2817,7 +2810,6 @@
 				049E606D27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift in Sources */,
 				2155E9EF26E3628C008FB033 /* Refreshable.swift in Sources */,
 				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
-				0443C85E27F4A6D700A432AA /* Task+Retry.swift in Sources */,
 				D212D36024C1AC0D00035991 /* KeyDetails.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
 				51DDA24E28044F0700EE13A8 /* CheckMailAuthViewDecorator.swift in Sources */,
@@ -2995,11 +2987,13 @@
 				9FD5052927889D8200FAA82F /* UIAlertControllerExtensions.swift in Sources */,
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
 				D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */,
+				759739C12833EA94004867CD /* GmailServiceError.swift in Sources */,
 				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
 				750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
 				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,
 				D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */,
+				759739BE2833E986004867CD /* Task+Retry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3007,8 +3001,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				759739C02833E9E7004867CD /* AppDelegate.swift in Sources */,
 				D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */,
-				D2A1D3BA23FD64AB00D626D6 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
