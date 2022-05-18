@@ -22,7 +22,7 @@ extension ComposeViewController {
                                     .unique()
                                     .sorted()
 
-                updateView(with: .searchEmails(recipients))
+                updateView(newState: .searchEmails(recipients))
             } catch {
                 showAlert(message: error.localizedDescription)
             }

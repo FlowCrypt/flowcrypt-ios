@@ -92,7 +92,7 @@ extension ComposeViewController {
         node.view.keyboardDismissMode = .interactive
         search.send("")
 
-        updateView(with: .main)
+        updateView(newState: .main)
     }
 
     /// This function refreshes recipient cell.

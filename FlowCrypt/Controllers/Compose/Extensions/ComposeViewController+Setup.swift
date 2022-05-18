@@ -46,7 +46,7 @@ extension ComposeViewController {
             $0.view.backgroundView?.addGestureRecognizer(tap)
         }
 
-        updateView(with: .main)
+        updateView(newState: .main)
     }
 
     internal func setupQuote() {
@@ -79,7 +79,7 @@ extension ComposeViewController {
             .removeDuplicates()
             .map { [weak self] query -> String in
                 if query.isEmpty {
-                    self?.updateView(with: .main)
+                    self?.updateView(newState: .main)
                 }
                 return query
             }
