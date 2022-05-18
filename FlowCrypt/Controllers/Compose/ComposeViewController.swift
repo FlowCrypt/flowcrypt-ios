@@ -79,6 +79,7 @@ final class ComposeViewController: TableNodeViewController {
     internal weak var saveDraftTimer: Timer?
     internal var composedLatestDraft: ComposedDraft?
 
+    internal lazy var alertsFactory = AlertsFactory()
     internal var messagePasswordAlertController: UIAlertController?
     internal var didLayoutSubviews = false
     internal var topContentInset: CGFloat {
@@ -118,14 +119,8 @@ final class ComposeViewController: TableNodeViewController {
             appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
         )
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
-            clientConfiguration: clientConfiguration,
-            encryptedStorage: appContext.encryptedStorage,
-            messageGateway: appContext.getRequiredMailProvider().messageSender,
-            passPhraseService: appContext.passPhraseService,
-            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
-            keyMethods: keyMethods,
-            enterpriseServer: appContext.enterpriseServer,
-            sender: appContext.user.email
+            appContext: appContext,
+            keyMethods: keyMethods
         )
         self.filesManager = filesManager
         self.photosManager = photosManager

@@ -18,7 +18,6 @@ enum MessageFetchState {
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
     case missingPassPhrase(_ rawMimeData: Data)
-    case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
     case emptyKeys
     case attachmentNotFound
     case attachmentDecryptFailed(_ message: String)
@@ -28,13 +27,11 @@ extension MessageServiceError {
     var description: String {
         switch self {
         case .missingPassPhrase:
-            return "Passphrase is missing"
-        case .wrongPassPhrase:
-            return "Passphrase is wrong"
+            return "error_missing_passphrase".localized
         case .emptyKeys:
-            return "Could not fetch keys"
+            return "error_empty_keys".localized
         case .attachmentNotFound:
-            return "Failed to download attachment"
+            return "error_attachment_not_found".localized
         case .attachmentDecryptFailed(let message):
             return message
         }
@@ -50,7 +47,7 @@ final class MessageService {
     private let core: Core
     private let logger: Logger
     private let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
-    private let passPhraseService: PassPhraseServiceType
+    private let combinedPassPhraseStorage: CombinedPassPhraseStorageType
     private let pubLookup: PubLookupType
 
     init(
@@ -60,10 +57,10 @@ final class MessageService {
         pubLookup: PubLookupType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         messageProvider: MessageProvider,
-        passPhraseService: PassPhraseServiceType
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType
     ) {
         self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
-        self.passPhraseService = passPhraseService
+        self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.messageProvider = messageProvider
         self.core = core
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
@@ -82,7 +79,7 @@ final class MessageService {
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
-        try passPhraseService.savePassPhrasesInMemory(for: userEmail, passPhrase, privateKeys: matchingKeys)
+        try combinedPassPhraseStorage.savePassPhrasesInMemory(for: userEmail, passPhrase, privateKeys: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 

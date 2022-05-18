@@ -15,8 +15,10 @@ protocol EKMVcHelperType {
 
 final class EKMVcHelper: EKMVcHelperType {
 
-    let appContext: AppContextWithUser
-    let keyMethods: KeyMethodsType
+    private let appContext: AppContextWithUser
+    private let keyMethods: KeyMethodsType
+
+    private lazy var alertsFactory = AlertsFactory()
 
     init(appContext: AppContextWithUser) {
         self.appContext = appContext
@@ -28,7 +30,7 @@ final class EKMVcHelper: EKMVcHelperType {
             do {
                 // Sleep for 3 seconds when mock testing
                 // (This is to prevent refresh key UI test failure in semaphoreCI)
-                if Bundle.isDebugBundleWithArgument("--mock-fes-api") {
+                if Bundle.isMockDebugBundle {
                     try await Task.sleep(nanoseconds: 3 * 1000 * 1_000_000)
                 }
                 let configuration = try await appContext.clientConfigurationService.configuration
@@ -42,11 +44,9 @@ final class EKMVcHelper: EKMVcHelperType {
                 let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
 
                 let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
-
                 guard keysToUpdate.isNotEmpty else {
                     return
                 }
-
                 guard let passPhrase = try await getPassphrase(in: viewController), passPhrase.isNotEmpty else {
                     return
                 }
@@ -60,6 +60,7 @@ final class EKMVcHelper: EKMVcHelperType {
                         passPhraseStorageMethod: passPhraseStorageMethod
                     )
                 }
+
                 await viewController.showToast("refresh_key_success".localized)
             } catch {
                 // since this is an update function that happens on every startup
@@ -75,7 +76,7 @@ final class EKMVcHelper: EKMVcHelperType {
     private func getPassphrase(in viewController: UIViewController) async throws -> String? {
         // If this is called when starting the app, then it doesn't make much difference
         // but conceptually it would be better to look pass phrase both in memory and storage
-        if let passPhrase = try appContext.passPhraseService.getPassPhrases(
+        if let passPhrase = try appContext.combinedPassPhraseStorage.getPassPhrases(
             for: appContext.user.email
         ).first(where: { $0.value.isNotEmpty })?.value {
             return passPhrase
@@ -127,7 +128,7 @@ final class EKMVcHelper: EKMVcHelperType {
             email: appContext.user.email,
             fingerprintsOfAssociatedKey: keyDetail.fingerprints
         )
-        try appContext.passPhraseService.savePassPhrase(
+        try appContext.combinedPassPhraseStorage.savePassPhrase(
             with: passPhraseObj,
             storageMethod: passPhraseStorageMethod
         )
@@ -136,7 +137,7 @@ final class EKMVcHelper: EKMVcHelperType {
     @MainActor
     private func requestPassPhraseWithModal(in viewController: UIViewController) async throws -> String {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-            let alert = AlertsFactory.makePassPhraseAlert(
+            let alert = alertsFactory.makePassPhraseAlert(
                 title: "refresh_key_alert_title".localized,
                 onCancel: {
                     return continuation.resume(returning: "")
@@ -145,6 +146,9 @@ final class EKMVcHelper: EKMVcHelperType {
                     guard let self = self else {
                         return continuation.resume(throwing: AppErr.nilSelf)
                     }
+
+                    viewController.presentedViewController?.dismiss(animated: true)
+
                     Task<Void, Never> {
                         do {
                             let matched = try await self.handlePassPhraseEntry(
@@ -173,14 +177,14 @@ final class EKMVcHelper: EKMVcHelperType {
         _ passPhrase: String
     ) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
-        //  let's find all keys that match and save the pass phrase for all
+        // let's find all keys that match and save the pass phrase for all
         let allKeys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: appContext.user.email)
         guard allKeys.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try appContext.passPhraseService.savePassPhrasesInMemory(for: appContext.user.email, passPhrase, privateKeys: matchingKeys)
+        try appContext.combinedPassPhraseStorage.savePassPhrasesInMemory(for: appContext.user.email, passPhrase, privateKeys: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 }

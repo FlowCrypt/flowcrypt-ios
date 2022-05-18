@@ -1,5 +1,5 @@
 //
-//  PassPhraseStorageService.swift
+//  CombinedPassPhraseStorage.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 02.06.2021.
@@ -70,15 +70,15 @@ protocol PassPhraseStorageType {
     func getPassPhrases(for email: String) throws -> [PassPhrase]
 }
 
-// MARK: - PassPhraseService
-protocol PassPhraseServiceType {
+// MARK: - CombinedPassPhraseStorage
+protocol CombinedPassPhraseStorageType {
     func getPassPhrases(for email: String) throws -> [PassPhrase]
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws
     func savePassPhrasesInMemory(for email: String, _ passPhrase: String, privateKeys: [Keypair]) throws
 }
 
-final class PassPhraseService: PassPhraseServiceType {
+final class CombinedPassPhraseStorage: CombinedPassPhraseStorageType {
     private lazy var logger = Logger.nested(Self.self)
 
     let encryptedStorage: PassPhraseStorageType

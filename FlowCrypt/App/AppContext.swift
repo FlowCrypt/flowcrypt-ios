@@ -17,31 +17,31 @@ class AppContext {
     // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
     let userAccountService: SessionServiceType
     let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
-    let passPhraseService: PassPhraseServiceType
+    let combinedPassPhraseStorage: CombinedPassPhraseStorageType
 
     init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
-        passPhraseService: PassPhraseServiceType,
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType
     ) {
         self.encryptedStorage = encryptedStorage
         self.session = session
         self.userAccountService = userAccountService
         self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
-        self.passPhraseService = passPhraseService
+        self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.globalRouter = globalRouter
     }
 
     @MainActor
     static func setup(globalRouter: GlobalRouterType) async throws -> AppContext {
         let encryptedStorage = try await EncryptedStorage()
-        let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
+        let combinedPassPhraseStorage = CombinedPassPhraseStorage(encryptedStorage: encryptedStorage)
         let keyAndPassPhraseStorage = KeyAndPassPhraseStorage(
             encryptedStorage: encryptedStorage,
-            passPhraseService: passPhraseService
+            combinedPassPhraseStorage: combinedPassPhraseStorage
         )
         return AppContext(
             encryptedStorage: encryptedStorage,
@@ -54,7 +54,7 @@ class AppContext {
                 )
             ),
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
-            passPhraseService: passPhraseService,
+            combinedPassPhraseStorage: combinedPassPhraseStorage,
             globalRouter: globalRouter
         )
     }
@@ -65,7 +65,7 @@ class AppContext {
             session: session,
             userAccountService: userAccountService,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
-            passPhraseService: passPhraseService,
+            combinedPassPhraseStorage: combinedPassPhraseStorage,
             globalRouter: globalRouter,
             authType: authType,
             user: user
@@ -126,7 +126,7 @@ class AppContextWithUser: AppContext {
         session: SessionType?,
         userAccountService: SessionServiceType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
-        passPhraseService: PassPhraseServiceType,
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType,
         authType: AuthType,
         user: User
@@ -147,7 +147,7 @@ class AppContextWithUser: AppContext {
             session: session,
             userAccountService: userAccountService,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
-            passPhraseService: passPhraseService,
+            combinedPassPhraseStorage: combinedPassPhraseStorage,
             globalRouter: globalRouter
         )
     }

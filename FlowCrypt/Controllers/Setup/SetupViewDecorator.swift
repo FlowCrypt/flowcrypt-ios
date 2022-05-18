@@ -11,7 +11,7 @@ import FlowCryptUI
 import UIKit
 
 struct SetupViewInsets {
-    let titleInset = UIEdgeInsets(top: 64, left: 16, bottom: 64, right: 16)
+    let titleInset = UIEdgeInsets.deviceSpecificTextInsets(top: 64, bottom: 64)
     let subTitleInset = UIEdgeInsets.deviceSpecificInsets(top: 8, bottom: 24)
     let dividerInsets = UIEdgeInsets.deviceSpecificInsets(top: 0, bottom: 0)
 }
@@ -92,7 +92,8 @@ struct SetupViewDecorator {
             )
     }
 
-    var subtitleStyle: (String) -> NSAttributedString { { $0.attributed(.regular(17), alignment: .center) }
+    var subtitleStyle: (String) -> NSAttributedString {
+        { $0.attributed(.regular(17), alignment: .center) }
     }
 
     // MARK: Button
@@ -133,7 +134,7 @@ struct SetupViewDecorator {
 }
 
 extension TextFieldCellNode.Input {
-    static let passPhraseTextFieldStyle: TextFieldCellNode.Input = TextFieldCellNode.Input(
+    static let passPhraseTextFieldStyle = TextFieldCellNode.Input(
         placeholder: "setup_enter"
             .localized
             .attributed(
@@ -141,9 +142,9 @@ extension TextFieldCellNode.Input {
                 color: .lightGray,
                 alignment: .center
             ),
-            isSecureTextEntry: true,
-            textInsets: 0,
-            textAlignment: .center,
-            insets: .deviceSpecificInsets(top: 0, bottom: 0)
+        isSecureTextEntry: true,
+        textInsets: 0,
+        textAlignment: .center,
+        insets: .deviceSpecificInsets(top: 0, bottom: 0)
     )
 }

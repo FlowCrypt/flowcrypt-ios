@@ -57,7 +57,7 @@ extension ComposeViewController {
             case .didBeginEditing:
                 self?.userTappedOutSideRecipientsArea = true
                 self?.showRecipientLabelIfNecessary()
-            case .deleteBackward:
+            case .deleteBackward, .didPaste:
                 return
             }
         }

@@ -45,7 +45,7 @@ class SetupKeyScreen extends BaseScreen {
     return $(SELECTORS.IMPORT_MY_KEY_BUTTON)
   }
 
-  setPassPhrase = async (text: string = CommonData.account.passPhrase) => {
+  setPassPhrase = async (withManualSubmit = false, text: string = CommonData.account.passPhrase) => {
     // retrying several times because following login, we switch
     //   from webview to our own view and then to another one several
     //   times, which was causing flaky tests. Originally we did a 10s
@@ -56,9 +56,15 @@ class SetupKeyScreen extends BaseScreen {
       await browser.pause(1000);
       count++;
     } while (await (await this.enterPassPhraseField).isDisplayed() !== true && count <= 15);
-    await this.fillPassPhrase(text);
-    await this.clickSetPassPhraseBtn();
-    await this.confirmPassPhrase(text);
+
+    if (withManualSubmit) {
+      await this.fillPassPhraseManually(text);
+      await this.clickSetPassPhraseBtn();
+      await this.confirmPassPhraseManually(text);
+    } else {
+      await this.fillPassPhrase(text);
+      await this.confirmPassPhrase(text);
+    }
   }
 
   setPassPhraseForOtherProviderEmail = async (text: string = CommonData.outlookAccount.passPhrase) => {
@@ -78,7 +84,6 @@ class SetupKeyScreen extends BaseScreen {
     if (await (await this.enterPassPhraseField).isDisplayed() !== true) {
       await this.clickCreateNewKeyButton();
       await this.fillPassPhrase(text);
-      await this.clickSetPassPhraseBtn();
       await this.confirmPassPhrase(text);
     } else {
       await this.fillPassPhrase(text);
@@ -88,6 +93,10 @@ class SetupKeyScreen extends BaseScreen {
 
   fillPassPhrase = async (passPhrase: string) => {
     await ElementHelper.waitAndPasteString(await this.enterPassPhraseField, passPhrase);
+  }
+
+  fillPassPhraseManually = async (passPhrase: string) => {
+    await ElementHelper.waitClickAndType(await this.enterPassPhraseField, passPhrase);
   }
 
   clickSetPassPhraseBtn = async () => {
@@ -100,6 +109,10 @@ class SetupKeyScreen extends BaseScreen {
 
   confirmPassPhrase = async (passPhrase: string) => {
     await ElementHelper.waitAndPasteString(await this.confirmPassPhraseField, passPhrase);
+  }
+
+  confirmPassPhraseManually = async (passPhrase: string) => {
+    await ElementHelper.waitClickAndType(await this.confirmPassPhraseField, passPhrase);
     await ElementHelper.waitAndClick(await this.okButton);
   }
 

@@ -63,7 +63,6 @@ extension Keypair {
     }
 
     init (_ k: KeyDetails, passPhrase: String?, source: String) throws {
-        // todo - this is duplicate code from KeypairRealmObject
         guard let privateKey = k.private, let isFullyEncrypted = k.isFullyEncrypted else {
             throw KeypairError.missingPrivateKey("storing pubkey as private")
         }
@@ -73,14 +72,16 @@ extension Keypair {
         guard k.ids.isNotEmpty else {
             throw KeypairError.missingKeyIds
         }
-        // end duplicate
-        self.primaryFingerprint = k.primaryFingerprint
+        guard let primaryFingerprint = k.ids.first?.fingerprint else {
+            throw KeypairError.missingPrimaryFingerprint
+        }
+        self.primaryFingerprint = primaryFingerprint
         self.private = privateKey
         self.public = k.public
         self.passphrase = passPhrase
         self.source = source
         self.allFingerprints = k.fingerprints
-        self.allLongids = k.ids.map { $0.longid }
+        self.allLongids = k.ids.map(\.longid)
         guard let lastModified = k.lastModified else {
             throw KeypairError.keyMissingSelfSignature
         }
