@@ -11,6 +11,7 @@ class AppiumHelper {
       bundleId,
       arguments: processArgs
     }
+    await driver.pause(500);
     await driver.execute('mobile: launchApp', args);
   }
 }
