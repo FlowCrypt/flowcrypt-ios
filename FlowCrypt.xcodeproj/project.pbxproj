@@ -923,6 +923,7 @@
 		04B4728A1ECE29D200B8266F /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				5161D87D27A488BD00130518 /* Contact Models */,
 				2C141B2D274572E40038A3F8 /* Common */,
 				9F9AAFFC2383E216000A00F1 /* Document.swift */,
 				9FD22A20230FF9BC005067A6 /* Inbox Models */,
@@ -1126,12 +1127,14 @@
 			path = ObjcException;
 			sourceTree = "<group>";
 		};
-		5161D87D27A488BD00130518 /* Contacts Service */ = {
+		5161D87D27A488BD00130518 /* Contact Models */ = {
 			isa = PBXGroup;
 			children = (
-				D27B912024EFE842002DF0A1 /* Models */,
+				D27B911E24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift */,
+				51B4AE5227144E590001F33B /* PubKey.swift */,
+				51DA5BD52721AB07001C4359 /* PubKeyState.swift */,
 			);
-			path = "Contacts Service";
+			path = "Contact Models";
 			sourceTree = "<group>";
 		};
 		517C2E312779F91300FECF32 /* Models */ = {
@@ -1279,7 +1282,6 @@
 				9F31AB9F232C071700CF87EA /* GlobalRouter.swift */,
 				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
 				04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */,
-				5161D87D27A488BD00130518 /* Contacts Service */,
 				04722B44281ABD2C00D0242F /* EKMVcHelper.swift */,
 				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
 				D27B911724EFE787002DF0A1 /* Local Contacts Service */,
@@ -2022,16 +2024,6 @@
 				D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */,
 			);
 			path = "Local Contacts Service";
-			sourceTree = "<group>";
-		};
-		D27B912024EFE842002DF0A1 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				D27B911E24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift */,
-				51B4AE5227144E590001F33B /* PubKey.swift */,
-				51DA5BD52721AB07001C4359 /* PubKeyState.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 		D28655972424D0BC0066F52E /* Views */ = {
