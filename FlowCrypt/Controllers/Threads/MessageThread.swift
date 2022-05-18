@@ -23,4 +23,12 @@ struct MessageThread: Equatable {
         messages.compactMap(\.subject)
             .first(where: { $0.isNotEmpty })
     }
+
+    var labels: [MessageLabel] {
+        messages.last?.labels ?? []
+    }
+
+    var isInbox: Bool {
+        labels.contains(.inbox)
+    }
 }

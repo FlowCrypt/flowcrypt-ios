@@ -30,7 +30,7 @@ extension Imap: MessageOperationsProvider {
             throw ImapError.missingMessageInfo("intId")
         }
         var flags: MCOMessageFlag = []
-        let imapFlagValues = message.labels.map(\.type.imapFlagValue)
+        let imapFlagValues = message.labels.map(\.imapFlagValue)
         // keep previous flags
         for value in imapFlagValues {
             flags.insert(MCOMessageFlag(rawValue: value))

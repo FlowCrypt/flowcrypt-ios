@@ -41,11 +41,11 @@ extension GmailService: MessagesThreadOperationsProvider {
     }
 
     func moveThreadToTrash(thread: MessageThread) async throws {
-        try await update(thread: thread, labelsToAdd: [.trash])
+        try await update(thread: thread, labelsToAdd: [.trash], labelsToRemove: [.inbox])
     }
 
     func moveThreadToInbox(thread: MessageThread) async throws {
-        try await update(thread: thread, labelsToAdd: [.inbox])
+        try await update(thread: thread, labelsToAdd: [.inbox], labelsToRemove: [.trash])
     }
 
     func markThreadAsUnread(thread: MessageThread, folder: String) async throws {
@@ -76,8 +76,8 @@ extension GmailService: MessagesThreadOperationsProvider {
 
     private func update(
         thread: MessageThread,
-        labelsToAdd: [MessageLabelType] = [],
-        labelsToRemove: [MessageLabelType] = []
+        labelsToAdd: [MessageLabel] = [],
+        labelsToRemove: [MessageLabel] = []
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = thread.identifier else {

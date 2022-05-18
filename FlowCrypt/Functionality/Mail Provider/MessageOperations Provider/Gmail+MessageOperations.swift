@@ -51,15 +51,14 @@ extension GmailService: MessageOperationsProvider {
             message: message,
             labelsToRemove: message.labels
                 .filter(\.isLabel)
-                .map(\.type)
                 .filter(\.isInbox)
         )
     }
 
     private func update(
         message: Message,
-        labelsToAdd: [MessageLabelType] = [],
-        labelsToRemove: [MessageLabelType] = []
+        labelsToAdd: [MessageLabel] = [],
+        labelsToRemove: [MessageLabel] = []
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = message.identifier.stringId else {

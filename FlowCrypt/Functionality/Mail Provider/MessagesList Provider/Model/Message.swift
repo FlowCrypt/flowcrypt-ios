@@ -26,13 +26,12 @@ struct Message: Hashable {
     private(set) var labels: [MessageLabel]
 
     var isMessageRead: Bool {
-        let types = labels.map(\.type)
         // imap
-        if types.contains(.none) {
+        if labels.contains(.none) {
             return false
         }
         // gmail
-        if types.contains(.unread) {
+        if labels.contains(.unread) {
             return false
         }
         return true
@@ -89,10 +88,10 @@ extension Message {
     func markAsRead(_ isRead: Bool) -> Message {
         var copy = self
         if isRead {
-            copy.labels.removeAll(where: { $0.type == .unread || $0.type == .none })
+            copy.labels.removeAll(where: { $0 == .unread || $0 == .none })
         } else {
-            copy.labels.append(MessageLabel(type: .unread))
-            copy.labels.append(MessageLabel(type: .none))
+            copy.labels.append(.unread)
+            copy.labels.append(.none)
         }
         return copy
     }
