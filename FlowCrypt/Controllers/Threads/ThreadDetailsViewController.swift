@@ -500,10 +500,12 @@ extension ThreadDetailsViewController {
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {
-
     private func handleSuccessfulMessage(action: MessageAction) {
         hideSpinner()
-        onComplete(action, .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email))
+        onComplete(
+            action,
+            .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email)
+        )
         navigationController?.popViewController(animated: true)
     }
 
@@ -524,6 +526,10 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
     func handleArchiveTap() {
         handle(action: .archive)
+    }
+
+    func handleMoveToInboxTap() {
+        handle(action: .moveToInbox)
     }
 
     func handleMarkUnreadTap() {
@@ -547,6 +553,8 @@ extension ThreadDetailsViewController: MessageActionsHandler {
                     try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
                 case .moveToTrash:
                     try await threadOperationsProvider.moveThreadToTrash(thread: thread)
+                case .moveToInbox:
+                    try await threadOperationsProvider.moveThreadToInbox(thread: thread)
                 case .permanentlyDelete:
                     try await threadOperationsProvider.delete(thread: thread)
                 }
@@ -644,8 +652,9 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
         logger.logInfo("Back button. Are all messages read \(isRead)")
-        onComplete(MessageAction.markAsRead(isRead),
-                    .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email)
+        onComplete(
+            MessageAction.markAsRead(isRead),
+            .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email)
         )
         navigationController?.popViewController(animated: true)
     }

@@ -129,11 +129,11 @@ extension InboxViewController {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "help_icn"),
+                    image: UIImage(systemName: "questionmark.circle"),
                     accessibilityId: "aid-help-btn"
                 ) { [weak self] in self?.handleInfoTap() },
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "search_icn"),
+                    image: UIImage(systemName: "magnifyingglass"),
                     accessibilityId: "aid-search-btn"
                 ) { [weak self] in self?.handleSearchTap() }
             ]

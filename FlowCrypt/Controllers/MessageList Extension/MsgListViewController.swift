@@ -77,7 +77,7 @@ extension MsgListViewController where Self: UIViewController {
         switch action {
         case .markAsRead(let isRead):
             updateMessage(isRead: isRead, at: indexToUpdate)
-        case .archive, .moveToTrash, .permanentlyDelete:
+        case .archive, .moveToTrash, .moveToInbox, .permanentlyDelete:
             removeMessage(at: indexToUpdate)
         }
     }

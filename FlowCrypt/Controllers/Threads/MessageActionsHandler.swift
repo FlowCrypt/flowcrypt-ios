@@ -19,6 +19,7 @@ protocol MessageActionsHandler: AnyObject {
     func handleAttachmentTap()
     func handleInfoTap()
     func handleArchiveTap()
+    func handleMoveToInboxTap()
     func handleMarkUnreadTap()
 
     func permanentlyDelete()
@@ -34,7 +35,7 @@ extension MessageActionsHandler where Self: UIViewController {
         Task {
             do {
                 let path = try await trashFolderProvider.getTrashFolderPath()
-                setupNavigationBarItems(with: path, user: user)
+                setupNavigationBarItems(trashFolderPath: path, user: user)
             } catch {
                 // todo - handle?
                 logger.logError("setupNavigationBar: \(error)")
@@ -42,30 +43,36 @@ extension MessageActionsHandler where Self: UIViewController {
         }
     }
 
-    private func setupNavigationBarItems(with trashFolderPath: String?, user: User) {
+    private func setupNavigationBarItems(trashFolderPath: String?, user: User) {
         logger.logInfo("setup navigation bar with \(trashFolderPath ?? "N/A")")
         logger.logInfo("currentFolderPath \(currentFolderPath)")
 
         let helpButton = NavigationBarItemsView.Input(
-            image: UIImage(named: "help_icn"),
+            image: UIImage(systemName: "questionmark.circle"),
             accessibilityId: "aid-help-button"
         ) { [weak self] in
             self?.handleInfoTap()
         }
         let archiveButton = NavigationBarItemsView.Input(
-            image: UIImage(named: "archive"),
+            image: UIImage(systemName: "tray.and.arrow.down"),
             accessibilityId: "aid-archive-button"
         ) { [weak self] in
             self?.handleArchiveTap()
         }
+        let moveToInboxButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "tray.and.arrow.up"),
+            accessibilityId: "aid-move-to-inbox-button"
+        ) { [weak self] in
+            self?.handleMoveToInboxTap()
+        }
         let trashButton = NavigationBarItemsView.Input(
-            image: UIImage(named: "trash"),
+            image: UIImage(systemName: "trash"),
             accessibilityId: "aid-delete-button"
         ) { [weak self] in
             self?.handleTrashTap()
         }
         let unreadButton = NavigationBarItemsView.Input(
-            image: UIImage(named: "mail"),
+            image: UIImage(systemName: "envelope"),
             accessibilityId: "aid-read-button"
         ) { [weak self] in
             self?.handleMarkUnreadTap()
@@ -75,20 +82,18 @@ extension MessageActionsHandler where Self: UIViewController {
 
         switch currentFolderPath.lowercased() {
         case trashFolderPath?.lowercased():
-            logger.logInfo("trash - helpButton, trashButton")
+            logger.logInfo("trash - helpButton, moveToInboxButton, trashButton")
             // in case we are in trash folder ([Gmail]/Trash or Deleted for Outlook, etc)
-            // we need to have only help and trash buttons
-            items = [helpButton, trashButton]
-
-        // TODO: - Ticket - Check if this should be fixed
-        case "inbox":
+            // we need to have only help, 'move to inbox' and trash buttons
+            items = [helpButton, moveToInboxButton, trashButton]
+        case "draft":
             // for Gmail inbox we also need to have archive and unread buttons
-            logger.logInfo("inbox - helpButton, archiveButton, trashButton, unreadButton")
-            items = [helpButton, archiveButton, trashButton, unreadButton]
+            logger.logInfo("draft - helpButton, trashButton")
+            items = [helpButton, trashButton]
         default:
             // in any other folders
-            logger.logInfo("default - helpButton, trashButton, unreadButton")
-            items = [helpButton, trashButton, unreadButton]
+            logger.logInfo("default - helpButton, archiveButton, trashButton, unreadButton")
+            items = [helpButton, archiveButton, trashButton, unreadButton]
         }
 
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)

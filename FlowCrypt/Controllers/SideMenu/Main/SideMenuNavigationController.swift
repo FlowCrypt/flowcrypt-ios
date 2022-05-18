@@ -164,7 +164,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
         switch viewControllers.firstIndex(of: viewController) {
         case 0:
             navigationButton = NavigationBarActionButton(
-                UIImage(named: "menu_icn"),
+                UIImage(systemName: "line.3.horizontal"),
                 action: nil,
                 accessibilityIdentifier: "aid-menu-btn"
             )
@@ -184,7 +184,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             sideMenu?.allowLeftSwipe = true
             interactivePopGestureRecognizer?.isEnabled = false
             navigationButton = NavigationBarActionButton(
-                UIImage(named: "menu_icn"),
+                UIImage(systemName: "line.3.horizontal"),
                 action: { [weak self] in
                     self?.toggleSideMenuView()
                 },

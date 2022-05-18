@@ -39,8 +39,8 @@ class SearchViewController: InboxViewController {
             $0.searchResultsUpdater = self
             $0.hidesNavigationBarDuringPresentation = false
             $0.searchBar.tintColor = .white
-            $0.searchBar.setImage(#imageLiteral(resourceName: "search_icn").tinted(.white), for: .search, state: .normal)
-            $0.searchBar.setImage(#imageLiteral(resourceName: "cancel").tinted(.white), for: .clear, state: .normal)
+            $0.searchBar.setImage(UIImage(systemName: "magnifyingglass")?.tinted(.white), for: .search, state: .normal)
+            $0.searchBar.setImage(UIImage(systemName: "xmark")?.tinted(.white), for: .clear, state: .normal)
             $0.searchBar.delegate = self
             $0.searchBar.searchTextField.textColor = .white
         }

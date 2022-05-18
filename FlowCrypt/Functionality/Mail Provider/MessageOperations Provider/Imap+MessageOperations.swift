@@ -47,6 +47,14 @@ extension Imap: MessageOperationsProvider {
         })
     }
 
+    func moveMessageToInbox(message: Message, folderPath: String) async throws {
+        // TODO: Implement
+        guard let identifier = message.identifier.intId else {
+            throw ImapError.missingMessageInfo("intId")
+        }
+        // try await moveMsg(with: identifier, folder: folder, destFolder: trashPath)
+    }
+
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
         guard let identifier = message.identifier.intId else {
             throw ImapError.missingMessageInfo("intId")
@@ -67,7 +75,7 @@ extension Imap: MessageOperationsProvider {
         })
     }
 
-    func delete(message: Message, form folderPath: String?) async throws {
+    func delete(message: Message, from folderPath: String?) async throws {
         guard let identifier = message.identifier.intId else {
             throw ImapError.missingMessageInfo("intId")
         }

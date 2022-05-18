@@ -13,6 +13,7 @@ protocol MessagesThreadOperationsProvider {
     func mark(thread: MessageThread, asRead: Bool, in folder: String) async throws
     func delete(thread: MessageThread) async throws
     func moveThreadToTrash(thread: MessageThread) async throws
+    func moveThreadToInbox(thread: MessageThread) async throws
     func markThreadAsUnread(thread: MessageThread, folder: String) async throws
     func markThreadAsRead(thread: MessageThread, folder: String) async throws
     func archive(thread: MessageThread, in folder: String) async throws
@@ -41,6 +42,10 @@ extension GmailService: MessagesThreadOperationsProvider {
 
     func moveThreadToTrash(thread: MessageThread) async throws {
         try await update(thread: thread, labelsToAdd: [.trash])
+    }
+
+    func moveThreadToInbox(thread: MessageThread) async throws {
+        try await update(thread: thread, labelsToAdd: [.inbox])
     }
 
     func markThreadAsUnread(thread: MessageThread, folder: String) async throws {

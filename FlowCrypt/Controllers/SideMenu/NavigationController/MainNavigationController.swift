@@ -80,7 +80,7 @@ extension UINavigationController {
 extension UIBarButtonItem {
     static func defaultBackButton(with action: (() -> Void)? = nil) -> NavigationBarActionButton {
         NavigationBarActionButton(
-            UIImage(named: "arrow-left-c"),
+            UIImage(systemName: "arrow.backward"),
             action: action,
             accessibilityIdentifier: "aid-back-button"
         )

@@ -37,6 +37,7 @@
 "email_removed" = "Email moved to Trash";
 "email_deleted" = "Email deleted";
 "email_archived" = "Email archived";
+"email_moved_to_inbox" = "Email moved to Inbox";
 
 // MESSAGE
 "message_failed_open" = "Could not open message";
@@ -68,6 +69,7 @@
 // ERROR
 "error_fetch_folders" = "Could not fetch folders";
 "error_move_trash" = "Unable to move message to Trash";
+"error_move_inbox" = "Unable to move message to Inbox";
 "error_archive" = "Unable to archive message";
 "error_permanently_delete" = "Unable to delete message";
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
