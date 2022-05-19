@@ -96,6 +96,7 @@
 "KeypairError_no_account_keys_available_error" = "Could not retrieve keys from DataService. Please restart the app and try again.";
 "KeypairError_parsing_error" = "Could not parse keys from storage. Please reinstall the app.";
 "KeypairError_expected_public_got_private" = "Could not import private key. Please try to relogin.";
+"KeypairError_email_required" = "User email is required for key pair";
 
 "backupServiceError_parse" = "Key can't be parsed";
 "backupServiceError_email" = "Missing user email";

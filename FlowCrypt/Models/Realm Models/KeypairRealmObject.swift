@@ -56,8 +56,12 @@ extension KeypairRealmObject {
 extension KeypairRealmObject {
     /// associated user email
     var account: String {
-        guard let email = user?.email else { fatalError() }
-        return email
+        get throws {
+            guard let email = user?.email else {
+                throw KeypairError.emailRequired
+            }
+            return email
+        }
     }
 }
 

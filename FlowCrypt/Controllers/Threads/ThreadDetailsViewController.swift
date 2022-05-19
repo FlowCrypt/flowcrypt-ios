@@ -59,21 +59,22 @@ final class ThreadDetailsViewController: TableNodeViewController {
         let localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
+        let mailProvider = try appContext.getRequiredMailProvider()
         self.messageService = try messageService ?? MessageService(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
-            messageProvider: try appContext.getRequiredMailProvider().messageProvider,
+            messageProvider: try mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
-        let threadOperationsProvider = try appContext.getRequiredMailProvider().threadOperationsProvider
+        let threadOperationsProvider = try mailProvider.threadOperationsProvider
         self.threadOperationsProvider = threadOperationsProvider
-        self.messageOperationsProvider = try appContext.getRequiredMailProvider().messageOperationsProvider
+        self.messageOperationsProvider = try mailProvider.messageOperationsProvider
         self.trashFolderProvider = TrashFolderProvider(
             user: appContext.user,
             foldersService: FoldersService(
                 encryptedStorage: appContext.encryptedStorage,
-                remoteFoldersProvider: try appContext.getRequiredMailProvider().remoteFoldersProvider
+                remoteFoldersProvider: try mailProvider.remoteFoldersProvider
             )
         )
         self.thread = thread

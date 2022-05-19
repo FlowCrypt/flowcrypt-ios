@@ -28,11 +28,6 @@ final class EKMVcHelper: EKMVcHelperType {
     func refreshKeysFromEKMIfNeeded(in viewController: UIViewController) {
         Task {
             do {
-                // Sleep for 3 seconds when mock testing
-                // (This is to prevent refresh key UI test failure in semaphoreCI)
-                if Bundle.isMockDebugBundle {
-                    try await Task.sleep(nanoseconds: 3 * 1000 * 1_000_000)
-                }
                 let configuration = try await appContext.clientConfigurationService.configuration
                 guard try configuration.checkUsesEKM() == .usesEKM else {
                     return
@@ -87,7 +82,9 @@ final class EKMVcHelper: EKMVcHelperType {
     private func findKeysToUpdate(from keyDetails: [KeyDetails], localKeys: [Keypair]) throws -> [KeyDetails] {
         var keysToUpdate: [KeyDetails] = []
         for keyDetail in keyDetails {
-            guard keyDetail.isFullyDecrypted ?? false else { throw EmailKeyManagerApiError.keysAreUnexpectedlyEncrypted }
+            guard keyDetail.isFullyDecrypted ?? false else {
+                throw EmailKeyManagerApiError.keysAreUnexpectedlyEncrypted
+            }
             guard let keyLastModified = keyDetail.lastModified else {
                 throw EmailKeyManagerApiError.keysAreInvalid
             }

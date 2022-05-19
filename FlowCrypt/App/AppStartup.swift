@@ -35,7 +35,7 @@ struct AppStartup {
                 try await setupSession()
                 try await chooseView(for: window)
             } catch {
-                showErrorAlert(of: error, on: window)
+                showErrorAlert(message: error.errorMessage, on: window)
             }
         }
     }
@@ -52,7 +52,7 @@ struct AppStartup {
         // Added storage access directly because this function logic should be removed in the near future
         let storage = try context.encryptedStorage.storage
         let keyPairs = storage.objects(KeypairRealmObject.self).where({
-            $0.account.equals(context.user.email)
+            $0.user.email.equals(context.user.email)
         }).unique()
 
         for keyPair in keyPairs {
@@ -171,10 +171,13 @@ struct AppStartup {
     }
 
     @MainActor
-    private func showErrorAlert(of error: Error, on window: UIWindow) {
+    private func showErrorAlert(message: String, on window: UIWindow) {
+        if window.rootViewController == nil {
+            window.rootViewController = UIViewController()
+        }
         let alert = UIAlertController(
             title: "error_startup".localized,
-            message: error.errorMessage,
+            message: message,
             preferredStyle: .alert
         )
         let retry = UIAlertAction(
@@ -213,16 +216,7 @@ struct AppStartup {
 
             logger.logError(message)
 
-            if window.rootViewController == nil {
-                window.rootViewController = UIViewController()
-            }
-
-            window.rootViewController?.showAlert(
-                title: "error".localized,
-                message: message,
-                onOk: { fatalError() }
-            )
-
+            showErrorAlert(message: message, on: window)
             return
         }
 

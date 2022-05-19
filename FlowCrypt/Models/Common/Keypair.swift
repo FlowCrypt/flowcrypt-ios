@@ -17,6 +17,7 @@ enum KeypairError: Error, Equatable {
     case keyMissingSelfSignature
     case noAccountKeysAvailable
     case expectedPrivateGotPublic
+    case emailRequired
 }
 
 extension KeypairError: CustomStringConvertible {
@@ -29,6 +30,8 @@ extension KeypairError: CustomStringConvertible {
             return "KeypairError_no_account_keys_available_error".localized
         case .expectedPrivateGotPublic:
             return "KeypairError_expected_public_got_private".localized
+        case .emailRequired:
+            return "KeypairError_email_required".localized
         default:
             return localizedDescription
         }
