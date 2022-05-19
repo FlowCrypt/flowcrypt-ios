@@ -117,8 +117,8 @@ extension EncryptedStorage {
             // remove user and keys for this user
             let userToDelete = users
                 .filter { $0.email == email }
-            let keys = try storage.objects(KeypairRealmObject.self)
-                .filter { try $0.account == email }
+            let keys = storage.objects(KeypairRealmObject.self)
+                .filter { $0.user?.email == email }
             let sessions = storage.objects(SessionRealmObject.self)
                 .filter { $0.email == email }
             let clientConfigurations = storage.objects(ClientConfigurationRealmObject.self)
@@ -176,15 +176,14 @@ extension EncryptedStorage {
     }
 
     func getKeypairs(by email: String) throws -> [Keypair] {
-        // Can't ues where because `where` doesn't support throws
-        return try storage.objects(KeypairRealmObject.self).filter({
-            try $0.account == email
+        return try storage.objects(KeypairRealmObject.self).where({
+            $0.user.email == email
         }).map(Keypair.init)
     }
 
     func doesAnyKeypairExist(for email: String) throws -> Bool {
-        let keys = try storage.objects(KeypairRealmObject.self).filter {
-            try $0.account == email
+        let keys = try storage.objects(KeypairRealmObject.self).where {
+            $0.user.email == email
         }
         return !keys.isEmpty
     }
