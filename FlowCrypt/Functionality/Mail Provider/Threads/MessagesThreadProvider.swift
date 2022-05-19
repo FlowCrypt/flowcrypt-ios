@@ -45,7 +45,7 @@ extension GmailService: MessagesThreadProvider {
     }
 
     private func getThreadsList(using context: FetchMessageContext) async throws -> GTLRGmail_ListThreadsResponse {
-        let query = makeQuery(using: context)
+        let query = try makeQuery(using: context)
         return try await Task.retrying {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListThreadsResponse, Error>) in
                 self.gmailService.executeQuery(query) { _, data, error in
@@ -101,12 +101,12 @@ extension GmailService: MessagesThreadProvider {
         }.value
     }
 
-    private func makeQuery(using context: FetchMessageContext) -> GTLRGmailQuery_UsersThreadsList {
+    private func makeQuery(using context: FetchMessageContext) throws -> GTLRGmailQuery_UsersThreadsList {
         let query = GTLRGmailQuery_UsersThreadsList.query(withUserId: .me)
 
         if let pagination = context.pagination {
             guard case let .byNextPage(token) = pagination else {
-                fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
+                throw GmailServiceError.paginationError(pagination)
             }
             query.pageToken = token
         }

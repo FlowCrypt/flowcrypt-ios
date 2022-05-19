@@ -12,10 +12,10 @@ import MailCore
 extension Imap: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
         guard case let .byNumber(from) = context.pagination else {
-            fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
+            throw GmailServiceError.paginationError(context.pagination)
         }
         guard let folderPath = context.folderPath else {
-            fatalError("Folder path should not be nil for IMAP")
+            throw ImapError.folderRequired
         }
 
         let folderInfo = try await folderInfo(for: folderPath)

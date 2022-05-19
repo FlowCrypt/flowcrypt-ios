@@ -73,6 +73,7 @@
 "error_archive" = "Unable to archive message";
 "error_permanently_delete" = "Unable to delete message";
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
+"error_wrong_mail_provider" = "wrongly using mail provider when not logged in";
 "error_general_text" = "Something went wrong.";
 "error_no_folders" = "There are no folders on your account";
 "error_connection" = "Connection Error";
@@ -327,6 +328,7 @@
 "organisational_rules_ekm_empty_private_keys_error" = "There are no private keys configured for you. Please ask yout systems administrator or help desk";
 "organisational_rules_ekm_keys_are_not_decrypted_error" = "Received private keys are not fully decrypted. Please try login flow again";
 "organisational_rules_ekm_keys_are_unexpectedly_encrypted_error" = "One or more of keys received from EKM are unexpectedly encrypted";
+"organisational_rules_wrong_config" = "Wrong org rules config: using PRV_AUTOIMPORT_OR_AUTOGEN without key_manager_url";
 "organisational_rules_ekm_keys_are_invalid_error" = "One or more of keys received from EKM are invalid";
 "organisational_wrong_email_error" = "Not a valid email %@";
 
@@ -341,6 +343,7 @@
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
 "gmail_service_provider_error_error_message" = "Gmail provider error: %@";
 "gmail_service_invalid_grant_error_message" = "Access to %@ account was revoked.\n\nPlease reconnect the app to Gmail";
+"gmail_service_pagination_error" = "Pagination %@ is not supported for this provider";
 "gmail_service_missing_back_query_error_message" = "Missing backup query: %@";
 "gmail_service_no_access_to_account_message" = "Google login successful.\nNow connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
@@ -362,6 +365,7 @@
 "files_picking_no_camera_access_error_message" = "You may open Settings and give the access to camera";
 "files_picking_files_error_message" = "Could not add an attachment";
 "files_picking_photos_error_message" = "Could not add a photo";
+"files_picking_no_other_source" = "No other image picker's sources should be used";
 "files_picking_videos_error_message" = "Could not add a video";
 "files_picking_size_error_message" = "Total attachments size can not exceed 10 MB";
 
@@ -379,6 +383,8 @@
 "imap_error_no_session" = "Session isn't established";
 "imap_error_provider" = "Provider error %@";
 "imap_error_msg_info" = "Can't parse message without \"%@\"";
+"imap_error_folder_required" = "Folder path should not be nil for IMAP";
+"imap_error_create_search_expression" = "Could not create search expression";
 
 "submit_key_error" = "Failed to submit Public Key";
 

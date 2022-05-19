@@ -11,7 +11,7 @@ import MailCore
 import Foundation
 
 protocol ArmoredPrvWithIdentity {
-    var primaryFingerprint: String { get }
+    var primaryFingerprint: String { get throws }
     func getArmoredPrv() -> String?
 }
 
@@ -36,10 +36,12 @@ extension KeyDetails {
     }
 
     var primaryFingerprint: String {
-        guard let fingerPrint = fingerprints.first else {
-            fatalError("primaryFingerprint for KeyDetail is missing")
+        get throws {
+            guard let fingerPrint = fingerprints.first else {
+                throw AppErr.general("primaryFingerprint for KeyDetail is missing")
+            }
+            return fingerPrint
         }
-        return fingerPrint
     }
 
     var pgpUserEmails: [String] {

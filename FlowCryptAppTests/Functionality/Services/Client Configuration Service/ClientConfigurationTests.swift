@@ -30,22 +30,22 @@ class ClientConfigurationTests: XCTestCase {
     }
 
     func testMustAutoImportOrAutogenPrvWithKeyManager() {
-        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
+        XCTAssertTrue(try ClientConfiguration(raw: RawClientConfiguration(
             flags: [.privateKeyAutoimportOrAutogen],
             keyManagerUrl: "https://ekm.example.com"
         )).mustAutoImportOrAutogenPrvWithKeyManager)
 
-        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(
+        XCTAssertFalse(try ClientConfiguration(raw: RawClientConfiguration(
             flags: [],
             keyManagerUrl: "https://ekm.example.com"
         )).mustAutoImportOrAutogenPrvWithKeyManager)
 
-        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(
+        XCTAssertFalse(try ClientConfiguration(raw: RawClientConfiguration(
             flags: nil,
             keyManagerUrl: "https://ekm.example.com"
         )).mustAutoImportOrAutogenPrvWithKeyManager)
 
-        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(
+        XCTAssertFalse(try ClientConfiguration(raw: RawClientConfiguration(
             flags: [.defaultRememberPassphrase, .hideArmorMeta, .enforceAttesterSubmit],
             keyManagerUrl: "https://ekm.example.com"
         )).mustAutoImportOrAutogenPrvWithKeyManager)
@@ -89,22 +89,22 @@ class ClientConfigurationTests: XCTestCase {
 
     func testCheckDoesNotUseEKM() {
         // EKM should not be used if keyManagerUrl is nil
-        XCTAssert(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: nil)).checkUsesEKM() == .doesNotUseEKM)
+        XCTAssert(try ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: nil)).checkUsesEKM() == .doesNotUseEKM)
 
         // EKM should not be used if keyManagerUrl is nil
-        XCTAssert(ClientConfiguration(raw: RawClientConfiguration(
+        XCTAssert(try ClientConfiguration(raw: RawClientConfiguration(
             flags: [],
             keyManagerUrl: nil
         )).checkUsesEKM() == .doesNotUseEKM)
 
-        XCTAssert(ClientConfiguration(raw: RawClientConfiguration(
+        XCTAssert(try ClientConfiguration(raw: RawClientConfiguration(
             flags: [.forbidStoringPassphrase],
             keyManagerUrl: nil
         )).checkUsesEKM() == .doesNotUseEKM)
     }
 
     func testShouldUseEKM() {
-        XCTAssert(ClientConfiguration(raw: RawClientConfiguration(
+        XCTAssert(try ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
@@ -113,8 +113,8 @@ class ClientConfigurationTests: XCTestCase {
         )).checkUsesEKM() == .usesEKM)
     }
 
-    func testCheckShouldUseEKMShouldFailWithoutValidURL() {
-        let result = ClientConfiguration(raw: RawClientConfiguration(
+    func testCheckShouldUseEKMShouldFailWithoutValidURL() throws {
+        let result = try ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase
@@ -127,9 +127,9 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssert(error == .urlNotValid)
     }
 
-    func testCheckShouldUseEKMFailForAutogen() {
+    func testCheckShouldUseEKMFailForAutogen() throws {
         // No flags
-        var result = ClientConfiguration(raw: RawClientConfiguration(
+        var result = try ClientConfiguration(raw: RawClientConfiguration(
             flags: nil,
             keyManagerUrl: "https://ekm.example.com"
         )).checkUsesEKM()
@@ -140,7 +140,7 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssert(error == .autoImportOrAutogenPrvWithKeyManager)
 
         // Empty flags
-        result = ClientConfiguration(raw: RawClientConfiguration(
+        result = try ClientConfiguration(raw: RawClientConfiguration(
             flags: [],
             keyManagerUrl: "https://ekm.example.com"
         )).checkUsesEKM()
@@ -151,9 +151,9 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssert(emptyFlagsError == .autoImportOrAutogenPrvWithKeyManager)
     }
 
-    func testCheckShouldUseEKMFailForAutoImportOrAutogen() {
+    func testCheckShouldUseEKMFailForAutoImportOrAutogen() throws {
         // Wrong flags (without privateKeyAutoimportOrAutogen flag)
-        let result = ClientConfiguration(raw: RawClientConfiguration(
+        let result = try ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .noAttesterSubmit
             ],
@@ -166,9 +166,9 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssert(wrongFlagError == .autoImportOrAutogenPrvWithKeyManager)
     }
 
-    func testCheckShouldUseEKMFailForAutogenPassPhraseQuietly() {
+    func testCheckShouldUseEKMFailForAutogenPassPhraseQuietly() throws {
         // sut pass mustAutoImportOrAutogenPrvWithKeyManager check
-        let result = ClientConfiguration(raw: RawClientConfiguration(
+        let result = try ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .passphraseQuietAutogen
@@ -182,8 +182,8 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssert(error == .autogenPassPhraseQuietly)
     }
 
-    func testCheckShouldUseEKMFailForMustSubmitAttester() {
-        let result = ClientConfiguration(raw: RawClientConfiguration(
+    func testCheckShouldUseEKMFailForMustSubmitAttester() throws {
+        let result = try ClientConfiguration(raw: RawClientConfiguration(
             flags: [
                 .privateKeyAutoimportOrAutogen,
                 .forbidStoringPassphrase,

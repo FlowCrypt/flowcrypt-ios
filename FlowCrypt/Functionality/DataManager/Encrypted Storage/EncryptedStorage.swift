@@ -118,7 +118,7 @@ extension EncryptedStorage {
             let userToDelete = users
                 .filter { $0.email == email }
             let keys = storage.objects(KeypairRealmObject.self)
-                .filter { $0.account == email }
+                .filter { $0.user?.email == email }
             let sessions = storage.objects(SessionRealmObject.self)
                 .filter { $0.email == email }
             let clientConfigurations = storage.objects(ClientConfigurationRealmObject.self)
@@ -177,13 +177,13 @@ extension EncryptedStorage {
 
     func getKeypairs(by email: String) throws -> [Keypair] {
         return try storage.objects(KeypairRealmObject.self).where({
-            $0.account == email
+            $0.user.email == email
         }).map(Keypair.init)
     }
 
     func doesAnyKeypairExist(for email: String) throws -> Bool {
         let keys = try storage.objects(KeypairRealmObject.self).where {
-            $0.account == email
+            $0.user.email == email
         }
         return !keys.isEmpty
     }

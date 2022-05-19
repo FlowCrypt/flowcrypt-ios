@@ -12,36 +12,36 @@ import XCTest
 class RecipientTests: XCTestCase {
     private let calendar = Calendar.current
 
-    func testRecipientWithRevokedKey() {
-        let recipient = createRecipient(keyExpiration: nil, isKeyRevoked: true)
+    func testRecipientWithRevokedKey() throws {
+        let recipient = try createRecipient(keyExpiration: nil, isKeyRevoked: true)
         XCTAssertEqual(recipient.keyState, .revoked)
     }
 
-    func testRecipientWithExpiredKey() {
+    func testRecipientWithExpiredKey() throws {
         let expiration = Date().timeIntervalSince1970 - 60 * 60
-        let recipient = createRecipient(keyExpiration: Int(expiration))
+        let recipient = try createRecipient(keyExpiration: Int(expiration))
         XCTAssertEqual(recipient.keyState, .expired)
     }
 
-    func testRecipientWithValidKey() {
+    func testRecipientWithValidKey() throws {
         let expiration = Date().timeIntervalSince1970 + 60 * 60
-        let recipient = createRecipient(keyExpiration: Int(expiration))
+        let recipient = try createRecipient(keyExpiration: Int(expiration))
         XCTAssertEqual(recipient.keyState, .active)
         XCTAssertEqual(recipient.pubKeys.first?.emails, ["test@flowcrypt.com"])
 
-        let recipient2 = createRecipient(keyExpiration: nil)
+        let recipient2 = try createRecipient(keyExpiration: nil)
         XCTAssertEqual(recipient2.keyState, .active)
     }
 
-    func testRecipientWithoutPubKey() {
-        let recipient = RecipientWithSortedPubKeys(
+    func testRecipientWithoutPubKey() throws {
+        let recipient = try RecipientWithSortedPubKeys(
             Recipient(email: "test@flowcrypt.com"),
             keyDetails: []
         )
         XCTAssertEqual(recipient.keyState, .empty)
     }
 
-    func testRecipientKeysOrder() {
+    func testRecipientKeysOrder() throws {
         let now = Int(Date().timeIntervalSince1970)
         let revokedKey = EncryptedStorageMock.createFakeKeyDetails(expiration: now + 1 * 3600, revoked: true)
 
@@ -54,26 +54,26 @@ class RecipientTests: XCTestCase {
         let oldExpiredKey = EncryptedStorageMock.createFakeKeyDetails(expiration: now - 2 * 3600)
 
         let keyDetails = [revokedKey, oldExpiredKey, activeKey1, expiredKey, activeKey2, nonExpiringKey, activeKey3]
-        let recipient = RecipientWithSortedPubKeys(
+        let recipient = try RecipientWithSortedPubKeys(
             Recipient(email: "test@flowcrypt.com"),
             keyDetails: keyDetails
         )
 
-        XCTAssertEqual(recipient.pubKeys[0].fingerprint, nonExpiringKey.primaryFingerprint)
-        XCTAssertEqual(recipient.pubKeys[1].fingerprint, activeKey3.primaryFingerprint)
-        XCTAssertEqual(recipient.pubKeys[2].fingerprint, activeKey2.primaryFingerprint)
-        XCTAssertEqual(recipient.pubKeys[3].fingerprint, activeKey1.primaryFingerprint)
-        XCTAssertEqual(recipient.pubKeys[4].fingerprint, expiredKey.primaryFingerprint)
-        XCTAssertEqual(recipient.pubKeys[5].fingerprint, oldExpiredKey.primaryFingerprint)
-        XCTAssertEqual(recipient.pubKeys[6].fingerprint, revokedKey.primaryFingerprint)
+        XCTAssertEqual(recipient.pubKeys[0].fingerprint, try nonExpiringKey.primaryFingerprint)
+        XCTAssertEqual(recipient.pubKeys[1].fingerprint, try activeKey3.primaryFingerprint)
+        XCTAssertEqual(recipient.pubKeys[2].fingerprint, try activeKey2.primaryFingerprint)
+        XCTAssertEqual(recipient.pubKeys[3].fingerprint, try activeKey1.primaryFingerprint)
+        XCTAssertEqual(recipient.pubKeys[4].fingerprint, try expiredKey.primaryFingerprint)
+        XCTAssertEqual(recipient.pubKeys[5].fingerprint, try oldExpiredKey.primaryFingerprint)
+        XCTAssertEqual(recipient.pubKeys[6].fingerprint, try revokedKey.primaryFingerprint)
     }
 
-    private func createRecipient(keyExpiration: Int?, isKeyRevoked: Bool = false) -> RecipientWithSortedPubKeys {
+    private func createRecipient(keyExpiration: Int?, isKeyRevoked: Bool = false) throws -> RecipientWithSortedPubKeys {
         let keyDetails = EncryptedStorageMock.createFakeKeyDetails(
             expiration: keyExpiration,
             revoked: isKeyRevoked
         )
         let recipient = Recipient(email: "test@flowcrypt.com")
-        return RecipientWithSortedPubKeys(recipient, keyDetails: [keyDetails])
+        return try RecipientWithSortedPubKeys(recipient, keyDetails: [keyDetails])
     }
 }

@@ -45,13 +45,13 @@ class InboxViewController: ViewController {
         draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator(),
         isSearch: Bool = false
-    ) {
+    ) throws {
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
         self.inboxDataProvider = provider
 
-        self.draftsListProvider = draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
+        self.draftsListProvider = try draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
         self.isSearch = isSearch
@@ -143,8 +143,8 @@ extension InboxViewController {
 
 // MARK: - Helpers
 extension InboxViewController {
-    private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        appContext
+    private func currentMessagesListPagination(from number: Int? = nil) throws -> MessagesListPagination {
+        try appContext
             .getRequiredMailProvider()
             .currentMessagesListPagination(from: number, token: state.token)
     }
@@ -234,7 +234,7 @@ extension InboxViewController {
 
         Task {
             do {
-                let pagination = currentMessagesListPagination(from: inboxInput.count)
+                let pagination = try currentMessagesListPagination(from: inboxInput.count)
                 state = .fetching
 
                 let context = try await inboxDataProvider.fetchInboxItems(
@@ -380,13 +380,17 @@ extension InboxViewController {
     }
 
     private func handleSearchTap() {
-        let viewController = SearchViewController(
-            appContext: appContext,
-            viewModel: viewModel,
-            provider: self.inboxDataProvider,
-            isSearch: true
-        )
-        navigationController?.pushViewController(viewController, animated: false)
+        do {
+            let viewController = try SearchViewController(
+                appContext: appContext,
+                viewModel: viewModel,
+                provider: self.inboxDataProvider,
+                isSearch: true
+            )
+            navigationController?.pushViewController(viewController, animated: false)
+        } catch {
+            showAlert(message: error.errorMessage)
+        }
     }
 
     @objc private func refresh() {
