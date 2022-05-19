@@ -408,10 +408,9 @@ export class PgpKey {
     throw new Error('No valid signature found in key');
   };
 
-  public static revoke = async (key: Key): Promise<string | undefined> => {
-    if (!key.isRevoked()) {
-      if (!key.isPrivate()) throw Error('Revocation of public key not implemented');
-      const keypair = await revokeKey({ key: key as PrivateKey, format: 'object' });
+  public static revoke = async (key: PrivateKey): Promise<string | undefined> => {
+    if (! await key.isRevoked()) {
+      const keypair = await revokeKey({ key, format: 'object' });
       key = keypair.privateKey;
     }
     const certificate = await key.getRevocationCertificate();
