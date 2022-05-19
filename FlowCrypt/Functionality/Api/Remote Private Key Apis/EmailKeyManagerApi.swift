@@ -18,6 +18,7 @@ enum EmailKeyManagerApiError: Error {
     case keysAreInvalid
     case keysAreUnexpectedlyEncrypted
     case noPrivateKeysUrlString
+    case wrongOrgRule
 }
 
 extension EmailKeyManagerApiError: LocalizedError {
@@ -27,6 +28,8 @@ extension EmailKeyManagerApiError: LocalizedError {
         case .keysAreNotDecrypted: return "organisational_rules_ekm_keys_are_not_decrypted_error".localized
         case .keysAreInvalid: return "organisational_rules_ekm_keys_are_invalid_error".localized
         case .keysAreUnexpectedlyEncrypted: return "organisational_rules_ekm_keys_are_unexpectedly_encrypted_error".localized
+        case .wrongOrgRule:
+            return "organisational_rules_wrong_config".localized
         }
     }
 }

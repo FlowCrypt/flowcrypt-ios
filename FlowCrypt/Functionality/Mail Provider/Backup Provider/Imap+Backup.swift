@@ -32,7 +32,7 @@ extension Imap: BackupProvider {
             folderPaths = [inbox]
         }
 
-        let searchExpr = createSearchBackupExpression(for: email)
+        let searchExpr = try createSearchBackupExpression(for: email)
 
         var uidsForFolders: [UidsContext] = []
         for folder in folderPaths {
@@ -94,22 +94,22 @@ extension Imap: BackupProvider {
         })
     }
 
-    private func subjectsExpr() -> MCOIMAPSearchExpression {
+    private func subjectsExpr() throws -> MCOIMAPSearchExpression {
         let expressions = GeneralConstants.EmailConstant
             .recoverAccountSearchSubject
             .compactMap { MCOIMAPSearchExpression.searchSubject($0) }
         guard let expression = helper.createSearchExpressions(from: expressions) else {
-            fatalError("could not create search expression")
+            throw ImapError.createSearchExpression
         }
         return expression
     }
 
-    private func createSearchBackupExpression(for email: String) -> MCOIMAPSearchExpression {
+    private func createSearchBackupExpression(for email: String) throws -> MCOIMAPSearchExpression {
         let fromToExpr = MCOIMAPSearchExpression.searchAnd(
             MCOIMAPSearchExpression.search(from: email),
             other: MCOIMAPSearchExpression.search(to: email)
         )
-        return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: subjectsExpr())
+        return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: try subjectsExpr())
     }
 }
 

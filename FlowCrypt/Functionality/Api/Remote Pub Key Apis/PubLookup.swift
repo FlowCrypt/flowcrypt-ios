@@ -60,11 +60,11 @@ class PubLookup: PubLookupType {
         if !wkdResult.keys.isEmpty {
             // WKD keys are preferred. The trust level is higher because the recipient
             //  controls the distribution of the keys themselves on their own domain
-            return RecipientWithSortedPubKeys(recipient, keyDetails: wkdResult.keys)
+            return try RecipientWithSortedPubKeys(recipient, keyDetails: wkdResult.keys)
         }
         // Attester keys are less preferred because they come from less trustworthy source
         //   (the FlowCrypt server)
-        return RecipientWithSortedPubKeys(recipient, keyDetails: attesterResult.keys)
+        return try RecipientWithSortedPubKeys(recipient, keyDetails: attesterResult.keys)
     }
 
     func fetchRemoteUpdateLocal(with recipient: Recipient) async throws -> RecipientWithSortedPubKeys {

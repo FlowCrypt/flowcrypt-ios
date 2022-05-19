@@ -30,51 +30,75 @@ final class MailProvider {
     private let services: [MailServiceProvider]
 
     var messageSender: MessageGateway {
-        resolveService(of: MessageGateway.self)
+        get throws {
+            try resolveService(of: MessageGateway.self)
+        }
     }
 
     var remoteFoldersProvider: RemoteFoldersProviderType {
-        resolveService(of: RemoteFoldersProviderType.self)
+        get throws {
+            try resolveService(of: RemoteFoldersProviderType.self)
+        }
     }
 
     var messageListProvider: MessagesListProvider {
-        resolveService(of: MessagesListProvider.self)
+        get throws {
+            try resolveService(of: MessagesListProvider.self)
+        }
     }
 
     var messageProvider: MessageProvider {
-        resolveService(of: MessageProvider.self)
+        get throws {
+            try resolveService(of: MessageProvider.self)
+        }
     }
 
     var messageOperationsProvider: MessageOperationsProvider {
-        resolveService(of: MessageOperationsProvider.self)
+        get throws {
+            try resolveService(of: MessageOperationsProvider.self)
+        }
     }
 
     var messageSearchProvider: MessageSearchProvider {
-        resolveService(of: MessageSearchProvider.self)
+        get throws {
+            try resolveService(of: MessageSearchProvider.self)
+        }
     }
 
     var backupProvider: BackupProvider {
-        resolveService(of: BackupProvider.self)
+        get throws {
+            try resolveService(of: BackupProvider.self)
+        }
     }
 
     var sessionProvider: UsersMailSessionProvider {
-        resolveService(of: UsersMailSessionProvider.self)
+        get throws {
+            try resolveService(of: UsersMailSessionProvider.self)
+        }
     }
 
     var draftGateway: DraftGateway? {
-        resolveOptionalService(of: DraftGateway.self)
+        get throws {
+            resolveOptionalService(of: DraftGateway.self)
+        }
     }
 
     var draftsProvider: DraftsListProvider? {
-        resolveOptionalService(of: DraftsListProvider.self)
+        get throws {
+            resolveOptionalService(of: DraftsListProvider.self)
+        }
     }
 
-    var messagesThreadProvider: MessagesThreadProvider? {
-        resolveService(of: MessagesThreadProvider?.self)
+    var messagesThreadProvider: MessagesThreadProvider {
+        get throws {
+            try resolveService(of: MessagesThreadProvider.self)
+        }
     }
 
-    var threadOperationsProvider: MessagesThreadOperationsProvider? {
-        resolveService(of: MessagesThreadOperationsProvider?.self)
+    var threadOperationsProvider: MessagesThreadOperationsProvider {
+        get throws {
+            try resolveService(of: MessagesThreadOperationsProvider.self)
+        }
     }
 
     init(
@@ -86,9 +110,9 @@ final class MailProvider {
         self.services = MailServiceProviderFactory.services(user: currentUser, delegate: delegate)
     }
 
-    private func resolveService<T>(of type: T.Type) -> T {
+    private func resolveService<T>(of type: T.Type) throws -> T {
         guard let service = services.first(where: { $0.mailServiceProviderType == authType.mailServiceProviderType }) as? T else {
-            fatalError("Email Provider should support this functionality. Can't resolve dependency for \(type)")
+            throw AppErr.general("Email Provider should support this functionality. Can't resolve dependency for \(type)")
         }
         return service
     }

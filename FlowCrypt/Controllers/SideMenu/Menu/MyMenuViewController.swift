@@ -75,9 +75,9 @@ final class MyMenuViewController: ViewController {
         appContext: AppContextWithUser,
         decorator: MyMenuViewDecorator = MyMenuViewDecorator(),
         tableNode: ASTableNode = TableNode()
-    ) {
+    ) throws {
         self.appContext = appContext
-        self.foldersService = appContext.getFoldersService()
+        self.foldersService = try appContext.getFoldersService()
         self.decorator = decorator
         self.tableNode = tableNode
         super.init(node: ASDisplayNode())
@@ -290,16 +290,20 @@ extension MyMenuViewController {
     private func handleFolderTap(with folder: FolderViewModel) {
         switch folder.itemType {
         case .folder:
-            let input = InboxViewModel(folder)
-            let viewController = InboxViewControllerFactory.make(appContext: appContext, viewModel: input)
+            do {
+                let input = InboxViewModel(folder)
+                let viewController = try InboxViewControllerFactory.make(appContext: appContext, viewModel: input)
 
-            if let topController = topController(controllerType: InboxViewController.self),
-               topController.path == folder.path {
-                sideMenuController()?.sideMenu?.hideSideMenu()
-                viewController.startRefreshing()
-                return
+                if let topController = topController(controllerType: InboxViewController.self),
+                   topController.path == folder.path {
+                    sideMenuController()?.sideMenu?.hideSideMenu()
+                    viewController.startRefreshing()
+                    return
+                }
+                sideMenuController()?.setContentViewController(viewController)
+            } catch {
+                showAlert(message: error.errorMessage)
             }
-            sideMenuController()?.setContentViewController(viewController)
         case .settings:
             if topController(controllerType: SettingsViewController.self) != nil {
                 sideMenuController()?.sideMenu?.hideSideMenu()

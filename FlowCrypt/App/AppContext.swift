@@ -73,10 +73,9 @@ class AppContext {
     }
 
     @MainActor
-    func getRequiredMailProvider() -> MailProvider {
+    func getRequiredMailProvider() throws -> MailProvider {
         guard let mailProvider = getOptionalMailProvider() else {
-            // todo - should throw instead
-            fatalError("wrongly using mail provider when not logged in")
+            throw AppErr.wrongMailProvider
         }
         return mailProvider
     }
@@ -96,19 +95,19 @@ class AppContext {
     }
 
     @MainActor
-    func getBackupService() -> BackupService {
-        let mailProvider = self.getRequiredMailProvider()
+    func getBackupService() throws -> BackupService {
+        let mailProvider = try self.getRequiredMailProvider()
         return BackupService(
-            backupProvider: mailProvider.backupProvider,
-            messageSender: mailProvider.messageSender
+            backupProvider: try mailProvider.backupProvider,
+            messageSender: try mailProvider.messageSender
         )
     }
 
     @MainActor
-    func getFoldersService() -> FoldersService {
+    func getFoldersService() throws -> FoldersService {
         return FoldersService(
             encryptedStorage: self.encryptedStorage,
-            remoteFoldersProvider: self.getRequiredMailProvider().remoteFoldersProvider
+            remoteFoldersProvider: try self.getRequiredMailProvider().remoteFoldersProvider
         )
     }
 }

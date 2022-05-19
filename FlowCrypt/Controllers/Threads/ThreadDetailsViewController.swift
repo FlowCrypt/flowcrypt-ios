@@ -59,23 +59,21 @@ final class ThreadDetailsViewController: TableNodeViewController {
         let localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
-        self.messageService = messageService ?? MessageService(
+        self.messageService = try messageService ?? MessageService(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
-            messageProvider: appContext.getRequiredMailProvider().messageProvider,
+            messageProvider: try appContext.getRequiredMailProvider().messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
-        guard let threadOperationsProvider = appContext.getRequiredMailProvider().threadOperationsProvider else {
-            fatalError("expected threadOperationsProvider on gmail")
-        }
+        let threadOperationsProvider = try appContext.getRequiredMailProvider().threadOperationsProvider
         self.threadOperationsProvider = threadOperationsProvider
-        self.messageOperationsProvider = appContext.getRequiredMailProvider().messageOperationsProvider
+        self.messageOperationsProvider = try appContext.getRequiredMailProvider().messageOperationsProvider
         self.trashFolderProvider = TrashFolderProvider(
             user: appContext.user,
             foldersService: FoldersService(
                 encryptedStorage: appContext.encryptedStorage,
-                remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
+                remoteFoldersProvider: try appContext.getRequiredMailProvider().remoteFoldersProvider
             )
         )
         self.thread = thread

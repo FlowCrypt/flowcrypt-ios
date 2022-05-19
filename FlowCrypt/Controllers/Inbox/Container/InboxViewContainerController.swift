@@ -41,9 +41,9 @@ final class InboxViewContainerController: TableNodeViewController {
         appContext: AppContextWithUser,
         foldersService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
-    ) {
+    ) throws {
         self.appContext = appContext
-        self.foldersService = foldersService ?? appContext.getFoldersService()
+        self.foldersService = try foldersService ?? appContext.getFoldersService()
         self.decorator = decorator
         super.init(node: TableNode())
         node.delegate = self
@@ -93,19 +93,23 @@ final class InboxViewContainerController: TableNodeViewController {
         case let .error(error):
             handle(error: error)
         case .loadedFolders(let folders):
-            let folder = folders
-                .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
+            do {
+                let folder = folders
+                    .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
 
-            guard let inbox = folder else {
-                state = .error(InboxViewControllerContainerError.internalError)
-                return
+                guard let inbox = folder else {
+                    state = .error(InboxViewControllerContainerError.internalError)
+                    return
+                }
+                let input = InboxViewModel(inbox)
+                let inboxViewController = try InboxViewControllerFactory.make(
+                    appContext: appContext,
+                    viewModel: input
+                )
+                navigationController?.setViewControllers([inboxViewController], animated: false)
+            } catch {
+                showAlert(message: error.errorMessage)
             }
-            let input = InboxViewModel(inbox)
-            let inboxViewController = InboxViewControllerFactory.make(
-                appContext: appContext,
-                viewModel: input
-            )
-            navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }
 

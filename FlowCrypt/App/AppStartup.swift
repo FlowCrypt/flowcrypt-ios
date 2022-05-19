@@ -96,8 +96,8 @@ struct AppStartup {
                     // TODO: need to remove this after a few versions.
                     // https://github.com/FlowCrypt/flowcrypt-ios/pull/1510#discussion_r861051611
                     try await checkAndUpdateLastModified(context: context)
-                    let controller = InboxViewContainerController(appContext: context)
-                    window.rootViewController = SideMenuNavigationController(
+                    let controller = try InboxViewContainerController(appContext: context)
+                    window.rootViewController = try SideMenuNavigationController(
                         appContext: context,
                         contentViewController: controller
                     )

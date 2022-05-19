@@ -117,7 +117,11 @@ extension BackupOptionsViewController {
     }
 
     private func backupAsFile() {
-        appContext.getBackupService().backupAsFile(keys: backups, for: self)
+        do {
+            try appContext.getBackupService().backupAsFile(keys: backups, for: self)
+        } catch {
+            showAlert(message: error.errorMessage)
+        }
     }
 }
 

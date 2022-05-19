@@ -34,7 +34,7 @@ final class EKMVcHelper: EKMVcHelperType {
                     try await Task.sleep(nanoseconds: 3 * 1000 * 1_000_000)
                 }
                 let configuration = try await appContext.clientConfigurationService.configuration
-                guard configuration.checkUsesEKM() == .usesEKM else {
+                guard try configuration.checkUsesEKM() == .usesEKM else {
                     return
                 }
                 let passPhraseStorageMethod: PassPhraseStorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
@@ -91,7 +91,7 @@ final class EKMVcHelper: EKMVcHelperType {
             guard let keyLastModified = keyDetail.lastModified else {
                 throw EmailKeyManagerApiError.keysAreInvalid
             }
-            if let savedLocalKey = localKeys.first(where: { $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
+            if let savedLocalKey = try localKeys.first(where: { try $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
                 if savedLocalKey.lastModified < keyLastModified {
                     keysToUpdate.append(keyDetail)
                 }

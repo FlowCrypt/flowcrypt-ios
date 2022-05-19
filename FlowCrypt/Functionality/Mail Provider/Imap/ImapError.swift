@@ -12,6 +12,8 @@ enum ImapError: Error {
     case noSession
     case providerError(Error)
     case missingMessageInfo(String)
+    case folderRequired
+    case createSearchExpression
 }
 
 extension ImapError: CustomStringConvertible {
@@ -23,6 +25,10 @@ extension ImapError: CustomStringConvertible {
             return "imap_error_provider".localizeWithArguments(error.localizedDescription)
         case .missingMessageInfo(let message):
             return "imap_error_msg_info".localizeWithArguments(message)
+        case .folderRequired:
+            return "imap_error_folder_required".localized
+        case .createSearchExpression:
+            return "imap_error_create_search_expression".localized
         }
     }
 }
