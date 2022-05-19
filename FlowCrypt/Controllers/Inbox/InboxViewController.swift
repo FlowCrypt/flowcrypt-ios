@@ -33,8 +33,8 @@ class InboxViewController: ViewController {
     var path: String { viewModel.path }
 
     // Search related varaibles
-    internal var isSearch: Bool = false
-    internal var searchedExpression: String = ""
+    internal var isSearch = false
+    internal var searchedExpression = ""
     var shouldBeginFetch = true
 
     init(
