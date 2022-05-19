@@ -49,9 +49,7 @@ extension GmailService: MessageOperationsProvider {
     func archiveMessage(message: Message, folderPath: String) async throws {
         try await update(
             message: message,
-            labelsToRemove: message.labels
-                .filter(\.isLabel)
-                .filter(\.isInbox)
+            labelsToRemove: [.inbox]
         )
     }
 

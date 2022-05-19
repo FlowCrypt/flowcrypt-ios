@@ -31,11 +31,11 @@ extension MessageActionsHandler where Self: UIViewController {
         Logger.nested("MessageActions")
     }
 
-    func setupNavigationBar(user: User) {
+    func setupNavigationBar(thread: MessageThread) {
         Task {
             do {
-                let path = try await trashFolderProvider.getTrashFolderPath()
-                setupNavigationBarItems(trashFolderPath: path, user: user)
+                let path = try await trashFolderProvider.trashFolderPath
+                setupNavigationBarItems(thread: thread, trashFolderPath: path)
             } catch {
                 // todo - handle?
                 logger.logError("setupNavigationBar: \(error)")
@@ -43,7 +43,7 @@ extension MessageActionsHandler where Self: UIViewController {
         }
     }
 
-    private func setupNavigationBarItems(trashFolderPath: String?, user: User) {
+    private func setupNavigationBarItems(thread: MessageThread, trashFolderPath: String?) {
         logger.logInfo("setup navigation bar with \(trashFolderPath ?? "N/A")")
         logger.logInfo("currentFolderPath \(currentFolderPath)")
 
@@ -92,8 +92,13 @@ extension MessageActionsHandler where Self: UIViewController {
             items = [helpButton, trashButton]
         default:
             // in any other folders
-            logger.logInfo("default - helpButton, archiveButton, trashButton, unreadButton")
-            items = [helpButton, archiveButton, trashButton, unreadButton]
+            if thread.isInbox {
+                logger.logInfo("inbox - helpButton, archiveButton, trashButton, unreadButton")
+                items = [helpButton, archiveButton, trashButton, unreadButton]
+            } else {
+                logger.logInfo("archive - helpButton, moveToInboxButton, trashButton, unreadButton")
+                items = [helpButton, moveToInboxButton, trashButton, unreadButton]
+            }
         }
 
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
@@ -110,7 +115,7 @@ extension MessageActionsHandler where Self: UIViewController {
     func handleTrashTap() {
         Task {
             do {
-                let trashPath = try await trashFolderProvider.getTrashFolderPath()
+                let trashPath = try await trashFolderProvider.trashFolderPath
                 guard let trashPath = trashPath else {
                     return
                 }

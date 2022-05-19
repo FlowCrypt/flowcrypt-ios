@@ -38,22 +38,6 @@ enum MessageLabel: Equatable, Hashable {
     }
 }
 
-extension MessageLabel {
-    var isLabel: Bool {
-        guard case .label = self else {
-            return false
-        }
-        return true
-    }
-
-    var isInbox: Bool {
-        guard case .inbox = self else {
-            return false
-        }
-        return true
-    }
-}
-
 // MARK: - IMAP Flags
 extension MessageLabel {
     // swiftlint:disable cyclomatic_complexity
@@ -106,12 +90,7 @@ struct ImapMessageFlags: OptionSet {
 // MARK: - GMAIL
 extension MessageLabel {
     init(gmailLabel: String) {
-        let labels: [MessageLabel] = [.seen, .unread, .starred, .sent, .trash, .draft, .important]
-        let all = labels.map { ($0, $0.value) }
-        guard let label = all.first(where: { $0.1 == gmailLabel })?.0 else {
-            self = .label(gmailLabel)
-            return
-        }
-        self = label
+        let labels: [MessageLabel] = [.seen, .unread, .starred, .sent, .trash, .draft, .important, .inbox]
+        self = labels.first(where: { $0.value == gmailLabel }) ?? .label(gmailLabel)
     }
 }

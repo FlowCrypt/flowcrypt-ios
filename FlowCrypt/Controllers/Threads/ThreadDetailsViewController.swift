@@ -97,7 +97,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
 
-        setupNavigationBar(user: appContext.user)
+        setupNavigationBar(thread: thread)
         expandThreadMessage()
     }
 }
