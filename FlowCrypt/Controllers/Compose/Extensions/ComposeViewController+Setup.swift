@@ -46,11 +46,7 @@ extension ComposeViewController {
             $0.view.backgroundView?.addGestureRecognizer(tap)
         }
 
-<<<<<<< HEAD
-        updateView(with: .main)
-=======
         updateView(newState: .main)
->>>>>>> master
     }
 
     internal func setupQuote() {
