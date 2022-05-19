@@ -48,8 +48,8 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
 
     private var menuViewController: SideMenuViewController?
 
-    convenience init(appContext: AppContextWithUser, contentViewController: UIViewController) {
-        let menu = MyMenuViewController(appContext: appContext)
+    convenience init(appContext: AppContextWithUser, contentViewController: UIViewController) throws {
+        let menu = try MyMenuViewController(appContext: appContext)
         self.init(menuViewController: menu, contentViewController: contentViewController)
         menuViewController = menu
         sideMenu = ENSideMenu(sourceView: view, menuViewController: menu, menuPosition: .left).then {

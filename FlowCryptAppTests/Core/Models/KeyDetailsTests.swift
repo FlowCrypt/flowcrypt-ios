@@ -148,6 +148,6 @@ class KeyDetailsTests: XCTestCase {
         XCTAssertTrue(key.primaryFingerprint == "f1")
         XCTAssertTrue(key.primaryLongid == "l1")
 
-        XCTAssertTrue(key.account == "email")
+        XCTAssertTrue(key.user?.email == "email")
     }
 }

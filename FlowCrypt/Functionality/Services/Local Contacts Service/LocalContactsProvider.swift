@@ -151,7 +151,7 @@ extension LocalContactsProvider {
             .map(\.armored)
             .joined(separator: "\n")
         let parsed = try await core.parseKeys(armoredOrBinary: armoredToParse.data())
-        return RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
+        return try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
     }
 
     private func add(pubKey: PubKey, to recipient: RecipientRealmObject) throws {

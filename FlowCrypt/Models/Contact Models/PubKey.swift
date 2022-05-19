@@ -49,13 +49,13 @@ extension PubKey {
 }
 
 extension PubKey {
-    init(keyDetails: KeyDetails) {
+    init(keyDetails: KeyDetails) throws {
         let keyIds = keyDetails.ids
         let longids = keyIds.map(\.longid)
         let fingerprints = keyIds.map(\.fingerprint)
 
         self.init(
-            primaryFingerprint: keyDetails.primaryFingerprint,
+            primaryFingerprint: try keyDetails.primaryFingerprint,
             armored: keyDetails.public,
             lastSig: keyDetails.lastModified.map { Date(timeIntervalSince1970: TimeInterval($0)) },
             lastChecked: Date(),

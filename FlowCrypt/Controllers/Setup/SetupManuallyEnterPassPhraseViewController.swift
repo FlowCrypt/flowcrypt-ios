@@ -302,7 +302,7 @@ extension SetupManuallyEnterPassPhraseViewController {
         }()
 
         guard let msg = message else {
-            fatalError("Could not be empty, checked all possible casses of updated and imported keys' emptines")
+            throw AppErr.general("Could not be empty, checked all possible casses of updated and imported keys' emptines")
         }
 
         showAlert(title: nil, message: msg) { [weak self] in

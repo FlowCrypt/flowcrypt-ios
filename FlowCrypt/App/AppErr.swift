@@ -20,11 +20,13 @@ enum AppErr: Error, CustomStringConvertible {
     /// when you want to cancel execution without showing any error (eg after user clicks cancel button)
     case silentAbort
     case noCurrentUser
+    case wrongMailProvider
     case general(String)
 
     var description: String {
         switch self {
         case .connection: return "error_app_connection".localized
+        case .wrongMailProvider: return "error_wrong_mail_provider".localized
         case .general(let message), .user(let message), .unexpected(let message):
             return message
         default: return "" // TODO: - provide description for error if needed

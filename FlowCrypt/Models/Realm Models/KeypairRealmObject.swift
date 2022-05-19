@@ -54,14 +54,6 @@ extension KeypairRealmObject {
 }
 
 extension KeypairRealmObject {
-    /// associated user email
-    var account: String {
-        guard let email = user?.email else { fatalError() }
-        return email
-    }
-}
-
-extension KeypairRealmObject {
     static func createPrimaryKey(primaryFingerprint: String, email: String) -> String {
         var hash = SHA256()
         hash.update(data: primaryFingerprint.data())
