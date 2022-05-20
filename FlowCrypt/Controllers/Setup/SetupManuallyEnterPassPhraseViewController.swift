@@ -237,14 +237,14 @@ extension SetupManuallyEnterPassPhraseViewController {
         try importKeys(with: keyDetails, and: passPhrase)
     }
 
-    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) throws {
-        let keysToUpdate = existedKeys
+    private func importKeys(with existingKeys: [KeyDetails], and passPhrase: String) throws {
+        let keysToUpdate = existingKeys
             .getUniqueByFingerprintByPreferingLatestLastModified()
-            .filter { existedKey in
-                return fetchedKeys.contains(where: { $0.fingerprints == existedKey.fingerprints })
+            .filter { existingKey in
+                return fetchedKeys.contains(where: { $0.fingerprints == existingKey.fingerprints })
             }
         let newKeysToAdd = fetchedKeys.filter { fetchedKey in
-            return !existedKeys.contains(where: { $0.fingerprints == fetchedKey.fingerprints })
+            return !existingKeys.contains(where: { $0.fingerprints == fetchedKey.fingerprints })
         }
 
         try appContext.encryptedStorage.putKeypairs(
