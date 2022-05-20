@@ -86,16 +86,16 @@ extension Array where Element == KeyDetails {
     }
     
     func getUniqueByFingerprintByPreferingLatestLastModified() -> [KeyDetails] {
-        var newArray: [KeyDetails] = []
+        var uniqueKeyDetails: [KeyDetails] = []
         for keyDetail in self {
-            if let keyIndex = newArray.firstIndex(where: { $0.fingerprints == keyDetail.fingerprints }) {
-                if newArray[keyIndex].lastModified ?? 0 < keyDetail.lastModified ?? 0 {
-                    newArray[keyIndex] = keyDetail
+            if let keyIndex = uniqueKeyDetails.firstIndex(where: { $0.fingerprints == keyDetail.fingerprints }) {
+                if uniqueKeyDetails[keyIndex].lastModified ?? 0 < keyDetail.lastModified ?? 0 {
+                    uniqueKeyDetails[keyIndex] = keyDetail
                 }
             } else {
-                newArray.append(keyDetail)
+                uniqueKeyDetails.append(keyDetail)
             }
         }
-        return newArray
+        return uniqueKeyDetails
     }
 }
