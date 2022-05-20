@@ -14,3 +14,9 @@ struct KeyAlgo: Decodable {
     let bits: Int?
     let curve: String?
 }
+
+extension KeyAlgo: Equatable {
+    static func == (lhs: KeyAlgo, rhs: KeyAlgo) -> Bool {
+        lhs.algorithmId == rhs.algorithmId
+    }
+}

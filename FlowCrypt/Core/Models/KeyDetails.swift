@@ -72,17 +72,13 @@ extension KeyDetails {
 }
 
 // MARK: - CustomStringConvertible, Hashable, Equatable
-extension KeyDetails: CustomStringConvertible, Hashable, Equatable {
+extension KeyDetails: CustomStringConvertible, Hashable {
     var description: String {
         "public = \(`public`) ### ids = \(ids) ### users = \(users) ### algo = \(algo.debugDescription)"
     }
 
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.ids.first)
-    }
-
-    static func == (lhs: KeyDetails, rhs: KeyDetails) -> Bool {
-        lhs.ids == rhs.ids
     }
 }
 

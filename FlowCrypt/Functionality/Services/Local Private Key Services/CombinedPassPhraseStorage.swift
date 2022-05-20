@@ -14,7 +14,7 @@ enum PassPhraseStorageMethod {
 }
 
 // MARK: - Data Object
-struct PassPhrase: Codable, Hashable, Equatable {
+struct PassPhrase: Codable, Hashable {
     let value: String
     let email: String
     let fingerprintsOfAssociatedKey: [String]
@@ -33,14 +33,6 @@ struct PassPhrase: Codable, Hashable, Equatable {
 
     func withUpdatedDate() -> PassPhrase {
         PassPhrase(value: self.value, email: self.email, fingerprintsOfAssociatedKey: self.fingerprintsOfAssociatedKey, date: Date())
-    }
-
-    // (tom) todo - this is a confusing thing to do
-    // when comparing pass phrases to one another, you would expect that it's compared by the pass phrase string
-    // itself, and not by primary fingerprint of the associated key. I understand this is being used somewhere,
-    // but I suggest to refactor it to avoid defining this == overload.
-    static func == (lhs: PassPhrase, rhs: PassPhrase) -> Bool {
-        lhs.primaryFingerprintOfAssociatedKey == rhs.primaryFingerprintOfAssociatedKey
     }
 
     // similarly here
