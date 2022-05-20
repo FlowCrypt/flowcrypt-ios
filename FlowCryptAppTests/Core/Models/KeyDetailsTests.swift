@@ -13,43 +13,6 @@ class KeyDetailsTests: XCTestCase {
 
     let user = UserRealmObject(name: "name", email: "email", imap: nil, smtp: nil)
 
-    func testHashable() {
-        let keyDetail = KeyDetails(
-            public: "public",
-            private: "private",
-            isFullyDecrypted: true,
-            isFullyEncrypted: true,
-            ids: [
-                KeyId(longid: "1", fingerprint: "1")
-            ],
-            created: 123,
-            lastModified: 1,
-            expiration: 2,
-            users: [],
-            algo: nil,
-            revoked: false
-        )
-
-        let keyDetailWithSameKeyId = KeyDetails(
-            public: "public2",
-            private: "private2",
-            isFullyDecrypted: true,
-            isFullyEncrypted: true,
-            ids: [
-                KeyId(longid: "1", fingerprint: "1")
-            ],
-            created: 123,
-            lastModified: 1,
-            expiration: 2,
-            users: [],
-            algo: nil,
-            revoked: false
-        )
-
-        let set = Set([keyDetail, keyDetailWithSameKeyId])
-        XCTAssert(set.count == 1)
-    }
-
     func testInitWithEmptyPrivateThrowsError() {
         let keyDetail = KeyDetails(
             public: "public",

@@ -72,13 +72,9 @@ extension KeyDetails {
 }
 
 // MARK: - CustomStringConvertible, Hashable, Equatable
-extension KeyDetails: CustomStringConvertible, Hashable {
+extension KeyDetails: CustomStringConvertible {
     var description: String {
         "public = \(`public`) ### ids = \(ids) ### users = \(users) ### algo = \(algo.debugDescription)"
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(self.ids.first)
     }
 }
 
@@ -87,5 +83,19 @@ extension Array where Element == KeyDetails {
     // concatenated private keys, joined with a newline
     var joinedPrivateKey: String {
         compactMap(\.private).joined(separator: "\n")
+    }
+    
+    func getUniqueByFingerprintByPreferingLatestLastModified() -> [KeyDetails] {
+        var newArray: [KeyDetails] = []
+        for keyDetail in self {
+            if let keyIndex = newArray.firstIndex(where: { $0.fingerprints == keyDetail.fingerprints }) {
+                if newArray[keyIndex].lastModified ?? 0 < keyDetail.lastModified ?? 0 {
+                    newArray[keyIndex] = keyDetail
+                }
+            } else {
+                newArray.append(keyDetail)
+            }
+        }
+        return newArray
     }
 }
