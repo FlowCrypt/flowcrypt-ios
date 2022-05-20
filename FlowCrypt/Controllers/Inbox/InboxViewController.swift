@@ -80,11 +80,11 @@ class InboxViewController: ViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+
         tableNode.frame = node.bounds
 
-        if isSearch {
-            return
-        }
+        if isSearch { return }
+
         let offset: CGFloat = 16
         let size = CGSize(width: 50, height: 50)
 
@@ -435,7 +435,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(with: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
+        open(message: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {

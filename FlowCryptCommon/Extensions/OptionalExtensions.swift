@@ -18,3 +18,9 @@ extension Optional {
         }
     }
 }
+
+extension Optional where Wrapped: Collection {
+    public var isEmptyOrNil: Bool {
+        self?.isEmpty ?? true
+    }
+}

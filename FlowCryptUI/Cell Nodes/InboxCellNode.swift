@@ -15,24 +15,30 @@ public final class InboxCellNode: CellNode {
         public let countText: NSAttributedString?
         public let dateText: NSAttributedString
         public let messageText: NSAttributedString?
+        public let badgeText: NSAttributedString?
 
         public init(
             emailText: NSAttributedString,
             countText: NSAttributedString?,
             dateText: NSAttributedString,
-            messageText: NSAttributedString?
+            messageText: NSAttributedString?,
+            badgeText: NSAttributedString?
         ) {
             self.emailText = emailText
             self.countText = countText
             self.dateText = dateText
             self.messageText = messageText
+            self.badgeText = badgeText
         }
     }
+
+    private let input: Input
 
     private let emailNode = ASTextNode2()
     private let countNode: ASTextNode2?
     private let dateNode = ASTextNode2()
-    private lazy var messageNode: ASTextNode2? = ASTextNode2()
+    private lazy var messageNode = ASTextNode2()
+    private lazy var badgeNode = ASTextNode2()
     private let separatorNode = ASDisplayNode()
 
     public init(input: Input) {
@@ -41,14 +47,23 @@ public final class InboxCellNode: CellNode {
             node.attributedText = $0
             return node
         })
+        self.input = input
+
         super.init()
+
         emailNode.attributedText = input.emailText
         dateNode.attributedText = input.dateText
 
         if let message = input.messageText {
-            messageNode?.attributedText = message
-            messageNode?.maximumNumberOfLines = 1
-            messageNode?.truncationMode = .byTruncatingTail
+            messageNode.attributedText = message
+            messageNode.maximumNumberOfLines = 1
+            messageNode.truncationMode = .byTruncatingTail
+        }
+
+        if let badgeText = input.badgeText {
+            badgeNode.attributedText = badgeText
+            badgeNode.cornerRadius = 6
+            badgeNode.clipsToBounds = true
         }
 
         emailNode.maximumNumberOfLines = 1
@@ -68,6 +83,11 @@ public final class InboxCellNode: CellNode {
             return spec
         }()
 
+        let badgeStack = ASStackLayoutSpec.horizontal()
+        badgeStack.alignItems = .center
+        badgeStack.spacing = 4
+        badgeStack.children = [messageNode, badgeNode]
+
         let nameLocationStack = ASStackLayoutSpec.vertical()
         nameLocationStack.spacing = 6
         nameLocationStack.style.flexShrink = 1.0
@@ -75,11 +95,7 @@ public final class InboxCellNode: CellNode {
         separatorNode.style.flexGrow = 1.0
         separatorNode.style.preferredSize.height = 1.0
 
-        if let messageNode = messageNode {
-            nameLocationStack.children = [emailElement, messageNode]
-        } else {
-            nameLocationStack.children = [emailElement]
-        }
+        nameLocationStack.children = [emailElement, badgeStack]
 
         let headerStackSpec = ASStackLayoutSpec(
             direction: .horizontal,

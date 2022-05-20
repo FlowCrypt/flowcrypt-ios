@@ -18,6 +18,7 @@ struct InboxRenderable {
     let messageCount: Int
     let subtitle: String
     let dateString: String
+    let badge: String?
     var isRead: Bool
 
     let date: Date
@@ -44,11 +45,12 @@ extension InboxRenderable {
         self.isRead = message.isMessageRead
         self.date = message.date
         self.wrappedType = .message(message)
+        self.badge = nil
     }
 
     init(thread: MessageThread, folderPath: String?, activeUserEmail: String) {
 
-        self.title = InboxRenderable.messageTitle(activeUserEmail: activeUserEmail, with: thread, and: folderPath)
+        self.title = InboxRenderable.messageTitle(for: thread, folderPath: folderPath)
 
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missing_subject".localized
@@ -63,10 +65,13 @@ extension InboxRenderable {
         }
         self.date = date ?? Date()
         self.wrappedType = .thread(thread)
+
+        // show 'inbox' badge in 'All Mail' folder
+        self.badge = folderPath.isEmptyOrNil && thread.isInbox ? "inbox" : nil
     }
 
-    private static func messageTitle(activeUserEmail: String, with thread: MessageThread, and folderPath: String?) -> String {
-        // for now its not exactly clear how titles on other folders should looks like
+    private static func messageTitle(for thread: MessageThread, folderPath: String?) -> String {
+        // for now its not exactly clear how titles on other folders should look like
         // so in scope of this PR we are applying this title presentation only for "sent" folder
         if folderPath == MessageLabel.sent.value {
             let recipients = thread.messages
@@ -75,7 +80,6 @@ extension InboxRenderable {
                 .unique()
                 .joined(separator: ", ")
             return "To: \(recipients)"
-
         } else {
             return thread.messages
                 .compactMap(\.sender?.shortName)

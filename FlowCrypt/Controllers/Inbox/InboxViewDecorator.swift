@@ -14,6 +14,7 @@ extension InboxCellNode.Input {
         let email = element.title
         let date = element.dateString
         let msg = element.subtitle
+        let badge = element.badge
         let isMessageRead = element.isRead
 
         let style: NSAttributedString.Style = isMessageRead
@@ -28,6 +29,18 @@ extension InboxCellNode.Input {
             ? .lightGray
             : .mainTextUnreadColor
 
+        let badgeText: NSAttributedString?
+        if let badge = badge {
+            let attributes: [NSAttributedString.Key: Any] = [
+                .foregroundColor: UIColor.white.cgColor,
+                .font: NSAttributedString.Style.regular(11).font,
+                .backgroundColor: UIColor.main.cgColor
+            ]
+            badgeText = NSAttributedString(string: " \(badge) ", attributes: attributes)
+        } else {
+            badgeText = nil
+        }
+
         self.init(
             emailText: NSAttributedString.text(from: email, style: style, color: textColor),
             countText: {
@@ -36,7 +49,8 @@ extension InboxCellNode.Input {
                 return NSAttributedString.text(from: "(\(count))", style: style, color: textColor)
             }(),
             dateText: NSAttributedString.text(from: date, style: style, color: dateColor),
-            messageText: NSAttributedString.text(from: msg, style: style, color: textColor)
+            messageText: NSAttributedString.text(from: msg, style: style, color: textColor),
+            badgeText: badgeText
         )
     }
 }
