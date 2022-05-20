@@ -127,8 +127,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
         guard let keys = keys else {
             return
         }
-        for key in keys {
-            try storage.write {
+        try storage.write {
+            for key in keys {
                 storage.delete(key)
             }
         }
