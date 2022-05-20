@@ -24,7 +24,7 @@ final class LocalContactsProviderMock: LocalContactsProviderType {
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys] { [] }
 
     var retrievePubKeysResult: ((String) -> ([String]))!
-    func retrievePubKeys(for email: String) -> [String] {
+    func retrievePubKeys(for email: String, shouldUpdateLastUsed: Bool) -> [String] {
         retrievePubKeysResult(email)
     }
 
