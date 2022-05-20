@@ -16,7 +16,7 @@ enum ContactsError: Error {
 }
 
 protocol PublicKeyProvider {
-    func retrievePubKeys(for email: String) throws -> [String]
+    func retrievePubKeys(for email: String, shouldUpdateLastUsed: Bool) throws -> [String]
     func removePubKey(with fingerprint: String, for email: String) throws
 }
 
@@ -51,17 +51,18 @@ final class LocalContactsProvider {
 }
 
 extension LocalContactsProvider: LocalContactsProviderType {
-    func retrievePubKeys(for email: String) throws -> [String] {
+    func retrievePubKeys(for email: String, shouldUpdateLastUsed: Bool) throws -> [String] {
         guard let object = try find(with: email) else { return [] }
 
-        do {
-            try storage.write {
-                object.lastUsed = Date()
+        if shouldUpdateLastUsed {
+            do {
+                try storage.write {
+                    object.lastUsed = Date()
+                }
+            } catch {
+                logger.logError("fail to update last used property \(error)")
             }
-        } catch {
-            logger.logError("fail to update last used property \(error)")
         }
-
         return object.pubKeys.map(\.armored)
     }
 

@@ -227,7 +227,7 @@ extension MessageService {
     private func fetchVerificationPubKeys(for sender: Recipient?, onlyLocal: Bool) async throws -> [String] {
         guard let sender = sender else { return [] }
 
-        let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email)
+        let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email, shouldUpdateLastUsed: false)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
         guard let contact = try? await pubLookup.fetchRemoteUpdateLocal(with: sender)
