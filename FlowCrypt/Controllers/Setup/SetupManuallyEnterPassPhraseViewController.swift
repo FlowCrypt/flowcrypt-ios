@@ -238,9 +238,11 @@ extension SetupManuallyEnterPassPhraseViewController {
     }
 
     private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) throws {
-        let keysToUpdate = existedKeys.filter { existedKey in
-            return fetchedKeys.contains(where: { $0.fingerprints == existedKey.fingerprints })
-        }
+        let keysToUpdate = existedKeys
+            .getUniqueByFingerprintByPreferingLatestLastModified()
+            .filter { existedKey in
+                return fetchedKeys.contains(where: { $0.fingerprints == existedKey.fingerprints })
+            }
         let newKeysToAdd = fetchedKeys.filter { fetchedKey in
             return !existedKeys.contains(where: { $0.fingerprints == fetchedKey.fingerprints })
         }
