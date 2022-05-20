@@ -35,12 +35,13 @@ struct PassPhrase: Codable, Hashable, Equatable {
         PassPhrase(value: self.value, email: self.email, fingerprintsOfAssociatedKey: self.fingerprintsOfAssociatedKey, date: Date())
     }
 
-    // (tom) todo - this is a confusing thing to do
-    // when comparing pass phrases to one another, you would expect that it's compared by the pass phrase string
-    // itself, and not by primary fingerprint of the associated key. I understand this is being used somewhere,
-    // but I suggest to refactor it to avoid defining this == overload.
+    // We still need == operator here because we use `withUpdatedDate` to set `date` field to up-to-date
+    // Therfore, 2 passphrases might be treated differently even though
+    // they are exactly same if we don't implement custom == operator
     static func == (lhs: PassPhrase, rhs: PassPhrase) -> Bool {
-        lhs.primaryFingerprintOfAssociatedKey == rhs.primaryFingerprintOfAssociatedKey
+        return lhs.primaryFingerprintOfAssociatedKey == rhs.primaryFingerprintOfAssociatedKey
+                && lhs.value == rhs.value
+                && lhs.email == rhs.email
     }
 
     // similarly here

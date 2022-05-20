@@ -50,7 +50,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         fetchedKeys: [KeyDetails]
     ) {
         self.appContext = appContext
-        self.fetchedKeys = fetchedKeys.unique()
+        self.fetchedKeys = fetchedKeys.getUniqueByFingerprintByPreferingLatestLastModified()
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
@@ -237,9 +237,15 @@ extension SetupManuallyEnterPassPhraseViewController {
         try importKeys(with: keyDetails, and: passPhrase)
     }
 
-    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) throws {
-        let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
-        let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
+    private func importKeys(with existingKeys: [KeyDetails], and passPhrase: String) throws {
+        let keysToUpdate = existingKeys
+            .getUniqueByFingerprintByPreferingLatestLastModified()
+            .filter { existingKey in
+                return fetchedKeys.contains(where: { $0.fingerprints == existingKey.fingerprints })
+            }
+        let newKeysToAdd = fetchedKeys.filter { fetchedKey in
+            return !existingKeys.contains(where: { $0.fingerprints == fetchedKey.fingerprints })
+        }
 
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: newKeysToAdd,
