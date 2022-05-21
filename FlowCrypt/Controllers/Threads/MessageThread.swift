@@ -32,3 +32,16 @@ struct MessageThread: Equatable {
         labels.contains(.inbox)
     }
 }
+
+extension MessageThread {
+    mutating func updateLabels(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel]) {
+        guard var lastMessage = messages.popLast() else { return }
+
+        lastMessage.updateLabels(
+            labelsToAdd: labelsToAdd,
+            labelsToRemove: labelsToRemove
+        )
+
+        messages.append(lastMessage)
+    }
+}

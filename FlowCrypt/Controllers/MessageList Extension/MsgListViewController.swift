@@ -16,6 +16,7 @@ protocol MsgListViewController {
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int?
     func updateMessage(isRead: Bool, at index: Int)
+    func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int)
     func removeMessage(at index: Int)
 }
 
@@ -82,8 +83,15 @@ extension MsgListViewController where Self: UIViewController {
         case .moveToTrash, .permanentlyDelete:
             removeMessage(at: indexToUpdate)
         case .archive, .moveToInbox:
-            if path.isEmpty { return } // no need to remove in 'All Mail' folder
-            removeMessage(at: indexToUpdate)
+            if path.isEmpty { // no need to remove in 'All Mail' folder
+                updateMessage(
+                    labelsToAdd: action == .moveToInbox ? [.inbox] : [],
+                    labelsToRemove: action == .archive ? [.inbox] : [],
+                    at: indexToUpdate
+                )
+            } else {
+                removeMessage(at: indexToUpdate)
+            }
         }
     }
 }

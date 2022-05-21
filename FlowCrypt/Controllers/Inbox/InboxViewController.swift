@@ -509,6 +509,24 @@ extension InboxViewController: MsgListViewController {
         }
     }
 
+    func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int) {
+        guard let input = inboxInput[safe: index] else {
+            return
+        }
+
+        switch input.wrappedType {
+        case .thread(var thread):
+            thread.updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+        case .message(var message):
+            message.updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+        }
+
+        let animationDuration = 0.3
+        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
+            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        }
+    }
+
     func removeMessage(at index: Int) {
         guard inboxInput[safe: index] != nil else { return }
         logger.logInfo("Try to remove at \(index)")

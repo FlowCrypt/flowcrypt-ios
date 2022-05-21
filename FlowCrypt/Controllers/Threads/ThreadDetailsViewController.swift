@@ -303,8 +303,7 @@ extension ThreadDetailsViewController {
         Task {
             do {
                 try await messageOperationsProvider.markAsRead(message: message, folder: currentFolderPath)
-                let updatedMessage = input[index].rawMessage.markAsRead(true)
-                input[index].rawMessage = updatedMessage
+                input[index].rawMessage.markAsRead(true)
                 node.reloadSections(IndexSet(integer: index), with: .fade)
             } catch {
                 showToast("message_mark_read_error".localizeWithArguments(error.localizedDescription))

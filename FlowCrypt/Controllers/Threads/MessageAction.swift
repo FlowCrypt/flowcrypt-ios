@@ -10,7 +10,7 @@ import Foundation
 
 typealias MessageActionCompletion = (MessageAction, InboxRenderable) -> Void
 
-enum MessageAction {
+enum MessageAction: Equatable {
     case moveToTrash, moveToInbox, archive, markAsRead(Bool), permanentlyDelete
 
     var text: String? {

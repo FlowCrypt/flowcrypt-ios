@@ -85,19 +85,26 @@ extension Message {
 }
 
 extension Message {
-    func markAsRead(_ isRead: Bool) -> Message {
-        var copy = self
+    mutating func markAsRead(_ isRead: Bool) {
         if isRead {
-            copy.labels.removeAll(where: { $0 == .unread || $0 == .none })
+            updateLabels(labelsToRemove: [.unread, .none])
         } else {
-            copy.labels.append(.unread)
-            copy.labels.append(.none)
+            updateLabels(labelsToAdd: [.unread, .none])
         }
-        return copy
     }
 
     var allRecipients: [Recipient] {
         [to, cc, bcc].flatMap { $0 }
+    }
+}
+
+extension Message {
+    mutating func updateLabels(
+        labelsToAdd: [MessageLabel] = [],
+        labelsToRemove: [MessageLabel] = []
+    ) {
+        labels.removeAll(where: { labelsToRemove.contains($0) })
+        labels.append(contentsOf: labelsToAdd)
     }
 }
 
