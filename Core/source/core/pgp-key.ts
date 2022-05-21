@@ -9,11 +9,15 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, strToHex } from '../platform/util';
-// eslint-disable-next-line max-len
-import { AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID, PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey, SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID } from 'openpgp';
+import {
+  AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID,
+  PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey,
+  SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID
+} from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 import { Str } from './common';
+
 const readToEnd = requireStreamReadToEnd();
 
 export type Contact = {
@@ -76,7 +80,13 @@ export interface KeyDetails {
     curve?: string;
   };
 }
+
 export type PrvPacket = (SecretKeyPacket | SecretSubkeyPacket);
+
+type KeyRevocationResult = {
+  key: PrivateKey;
+  revocationCertificate: string;
+};
 
 export class PgpKey {
   public static create = async (userIds: UserID[], variant: KeyAlgo, passphrase: string):
@@ -408,16 +418,21 @@ export class PgpKey {
     throw new Error('No valid signature found in key');
   };
 
-  public static revoke = async (key: PrivateKey): Promise<string | undefined> => {
+  public static revoke = async (key: PrivateKey): Promise<KeyRevocationResult | undefined> => {
     if (! await key.isRevoked()) {
       const keypair = await revokeKey({ key, format: 'object' });
       key = keypair.privateKey;
     }
     const certificate = await key.getRevocationCertificate();
-    if (!certificate || typeof certificate === 'string') {
-      return certificate || undefined;
+    if (!certificate) {
+      return undefined;
+    } else if (typeof certificate === 'string') {
+      return { key, revocationCertificate: certificate };
     } else {
-      return await readToEnd(certificate as MaybeStream<string>);
+      return {
+        key,
+        revocationCertificate: await readToEnd(certificate as MaybeStream<string>)
+      };
     }
   };
 }

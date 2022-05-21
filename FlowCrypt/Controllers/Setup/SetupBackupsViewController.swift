@@ -122,7 +122,10 @@ extension SetupBackupsViewController {
 
     private func recoverAccount(with backups: [KeyDetails], and passPhrase: String) async throws {
         logger.logInfo("Start recoverAccount with \(backups.count) keys")
-        let matchingKeyBackups = Set(try await keyMethods.filterByPassPhraseMatch(keys: backups, passPhrase: passPhrase))
+        let matchingKeyBackups = try await keyMethods.filterByPassPhraseMatch(
+            keys: backups,
+            passPhrase: passPhrase
+        ).getUniqueByFingerprintByPreferingLatestLastModified()
         logger.logInfo("matchingKeyBackups = \(matchingKeyBackups.count)")
         guard matchingKeyBackups.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
