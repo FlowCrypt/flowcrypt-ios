@@ -22,6 +22,7 @@ final class PubKeyRealmObject: Object {
     @Persisted var longids: List<String>
     @Persisted var fingerprints: List<String>
     @Persisted var created: Date?
+    @Persisted var isRevoked: Bool
 }
 
 extension PubKeyRealmObject {
@@ -31,7 +32,8 @@ extension PubKeyRealmObject {
                      expiresOn: Date? = nil,
                      longids: [String] = [],
                      fingerprints: [String] = [],
-                     created: Date? = nil) throws {
+                     created: Date? = nil,
+                     isRevoked: Bool) throws {
         self.init()
 
         self.armored = armored
@@ -39,6 +41,7 @@ extension PubKeyRealmObject {
         self.lastChecked = lastChecked
         self.expiresOn = expiresOn
         self.created = created
+        self.isRevoked = isRevoked
 
         self.longids.append(objectsIn: longids)
         self.fingerprints.append(objectsIn: fingerprints)
@@ -60,7 +63,8 @@ extension PubKeyRealmObject {
             expiresOn: key.expiresOn,
             longids: key.longids,
             fingerprints: key.fingerprints,
-            created: key.created
+            created: key.created,
+            isRevoked: key.isRevoked
         )
     }
 }
