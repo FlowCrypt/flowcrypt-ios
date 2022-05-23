@@ -22,7 +22,7 @@ final class PubKeyRealmObject: Object {
     @Persisted var longids: List<String>
     @Persisted var fingerprints: List<String>
     @Persisted var created: Date?
-    @Persisted var isRevoked: Bool
+    @Persisted var isRevoked = false
 }
 
 extension PubKeyRealmObject {

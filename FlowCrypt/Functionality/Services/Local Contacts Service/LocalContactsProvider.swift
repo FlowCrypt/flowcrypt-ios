@@ -164,6 +164,7 @@ extension LocalContactsProvider {
 
     private func update(pubKey: PubKey, for recipient: RecipientRealmObject, at index: Int) throws {
         guard
+            !recipient.pubKeys[index].isRevoked, // Do not ever update key if it's revoked key
             let existingKeyLastSig = recipient.pubKeys[index].lastSig,
             let updateKeyLastSig = pubKey.lastSig,
             updateKeyLastSig > existingKeyLastSig
