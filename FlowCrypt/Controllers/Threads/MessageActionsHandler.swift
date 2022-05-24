@@ -95,9 +95,12 @@ extension MessageActionsHandler where Self: UIViewController {
             if thread.isInbox {
                 logger.logInfo("inbox - helpButton, archiveButton, trashButton, unreadButton")
                 items = [helpButton, archiveButton, trashButton, unreadButton]
-            } else {
+            } else if thread.isArchived {
                 logger.logInfo("archive - helpButton, moveToInboxButton, trashButton, unreadButton")
                 items = [helpButton, moveToInboxButton, trashButton, unreadButton]
+            } else {
+                logger.logInfo("sent - helpButton, trashButton, unreadButton")
+                items = [helpButton, trashButton, unreadButton]
             }
         }
 

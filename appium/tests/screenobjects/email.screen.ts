@@ -20,7 +20,7 @@ const SELECTORS = {
   REPLY_ALL_BUTTON: '~aid-reply-all-button',
   HELP_BUTTON: '~aid-help-button',
   ARCHIVE_BUTTON: '~aid-archive-button',
-  MOVE_TO_INBOX_BUTTON: 'aid-move-to-inbox-button',
+  MOVE_TO_INBOX_BUTTON: '~aid-move-to-inbox-button',
   DELETE_BUTTON: '~aid-delete-button',
   READ_BUTTON: '~aid-read-button',
   DOWNLOAD_BUTTON: '~aid-download-button',
@@ -250,7 +250,7 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.confirmDeletingButton);
   }
 
-  checkSentEmailActions = async () => {
+  checkInboxEmailActions = async () => {
     await ElementHelper.waitElementVisible(await this.helpButton);
     await ElementHelper.waitElementVisible(await this.archiveButton);
     await ElementHelper.waitElementVisible(await this.deleteButton);

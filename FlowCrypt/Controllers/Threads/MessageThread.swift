@@ -20,28 +20,28 @@ struct MessageThread: Equatable {
     var messages: [Message]
 
     var subject: String? {
-        messages.compactMap(\.subject)
+        messages
+            .compactMap(\.subject)
             .first(where: { $0.isNotEmpty })
     }
 
-    var labels: [MessageLabel] {
-        messages.last?.labels ?? []
+    var labels: Set<MessageLabel> {
+        Set(messages.flatMap(\.labels))
     }
 
     var isInbox: Bool {
         labels.contains(.inbox)
     }
+
+    var isArchived: Bool {
+        !labels.contains(.inbox) && !labels.contains(.sent)
+    }
 }
 
 extension MessageThread {
     mutating func updateLabels(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel]) {
-        guard var lastMessage = messages.popLast() else { return }
-
-        lastMessage.updateLabels(
-            labelsToAdd: labelsToAdd,
-            labelsToRemove: labelsToRemove
-        )
-
-        messages.append(lastMessage)
+        for index in messages.indices {
+            messages[index].updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+        }
     }
 }
