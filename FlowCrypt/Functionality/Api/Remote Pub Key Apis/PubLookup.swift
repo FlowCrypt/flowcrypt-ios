@@ -71,7 +71,7 @@ class PubLookup: PubLookupType {
         let remoteRecipient = try await self.lookup(recipient: recipient) // This is recipient info from remote
         if let localContact = try await localContactsProvider.searchRecipient(with: recipient.email), // First check if we have local saved contact
           localContact.keyState == .revoked, // Check if local contact key is revoked because if local contact key state is revoked, we should not use further keys with same fingerprints. Instead we should use local revoked key from now on
-          localContact.pubKeys == remoteRecipient.pubKeys { // Even local saved key is revoked key, we should use newer(remote) key if fingerprints(pubkeys) are not same
+           localContact.pubKeys.map(\.primaryFingerprint) == remoteRecipient.pubKeys.map(\.primaryFingerprint) { // Even local saved key is revoked key, we should use newer(remote) key if fingerprints(pubkeys) are not same
            return localContact
         }
         try localContactsProvider.updateKeys(for: remoteRecipient)
