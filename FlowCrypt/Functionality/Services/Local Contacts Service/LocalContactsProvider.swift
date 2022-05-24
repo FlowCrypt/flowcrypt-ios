@@ -97,7 +97,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        guard let recipient = try find(with: email).map(Recipient.init) else { return nil }
+        guard let recipient = try find(with: email).ifNotNil(Recipient.init) else { return nil }
         return try await parseRecipient(from: recipient)
     }
 

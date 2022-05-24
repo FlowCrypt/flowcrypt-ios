@@ -57,7 +57,7 @@ describe('SETUP: ', () => {
       };
       await NewMessageScreen.deleteAddedRecipient(0);
       await NewMessageScreen.setAddRecipient(contactEmail);
-      await NewMessageScreen.checkAddedRecipientColor('Test2', 0, 'green');
+      await NewMessageScreen.checkAddedRecipientColor(contactName, 0, 'green');
     });
   });
 });
