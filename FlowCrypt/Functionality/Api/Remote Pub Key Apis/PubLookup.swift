@@ -69,6 +69,9 @@ class PubLookup: PubLookupType {
 
     func fetchRemoteUpdateLocal(with recipient: Recipient) async throws {
         let remoteRecipient = try await self.lookup(recipient: recipient)
+        if remoteRecipient.pubKeys.isEmpty {
+            throw ContactsError.keyMissing
+        }
         try localContactsProvider.updateKeys(for: remoteRecipient)
     }
 }
