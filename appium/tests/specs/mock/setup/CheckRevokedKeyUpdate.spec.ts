@@ -9,7 +9,7 @@ import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
 
 describe('SETUP: ', () => {
 
-  it('check revoked key update logic', async () => {
+  it('will not update a revoked public key with valid one', async () => {
 
     const mockApi = new MockApi();
     const contactEmail = 'available.on@attester.test';
@@ -48,6 +48,17 @@ describe('SETUP: ', () => {
       // Because we already have revoked key on local
       await NewMessageScreen.setAddRecipient(contactEmail);
       await NewMessageScreen.checkAddedRecipientColor(contactName, 0, 'red');
+
+      // Now check if other recipients display fine 
+      const testEmail = 'test@example.com';
+      mockApi.attesterConfig = {
+        servedPubkeys: {
+          [testEmail]: ekmKeySamples.key1.pub!
+        }
+      };
+      await NewMessageScreen.deleteAddedRecipient(0);
+      await NewMessageScreen.setAddRecipient(testEmail);
+      await NewMessageScreen.checkAddedRecipientColor('Test2', 0, 'green');
     });
   });
 });
