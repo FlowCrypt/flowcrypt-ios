@@ -45,6 +45,11 @@ extension ComposeViewController {
                 if let contact = try await localContactsProvider.searchRecipient(with: recipient.email) {
                     localContact = contact
                     handleEvaluation(for: contact)
+                    // Do not fetch remote key if local stored key is revoked key
+                    if contact.keyState == .revoked {
+                        showRecipientLabelIfNecessary()
+                        return
+                    }
                 }
 
                 let contact = Recipient(recipient: recipient)
