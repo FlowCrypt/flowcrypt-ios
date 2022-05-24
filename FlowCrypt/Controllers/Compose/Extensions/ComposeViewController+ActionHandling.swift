@@ -48,9 +48,12 @@ extension ComposeViewController {
                 }
 
                 let contact = Recipient(recipient: recipient)
-                let contactWithFetchedKeys = try await pubLookup.fetchRemoteUpdateLocal(with: contact)
+                try await pubLookup.fetchRemoteUpdateLocal(with: contact)
 
-                handleEvaluation(for: contactWithFetchedKeys)
+                if let updatedContact = try await localContactsProvider.searchRecipient(with: recipient.email) {
+                    handleEvaluation(for: updatedContact)
+                }
+
                 showRecipientLabelIfNecessary()
             } catch {
                 handleEvaluation(error: error, with: recipient.email, contact: localContact)

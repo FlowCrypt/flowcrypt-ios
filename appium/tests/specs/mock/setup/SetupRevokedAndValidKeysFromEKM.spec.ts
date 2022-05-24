@@ -4,7 +4,7 @@ import {
   SetupKeyScreen,
 } from '../../../screenobjects/all-screens';
 import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
-import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
+import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
 import MailFolderHelper from 'tests/helpers/MailFolderHelper';
@@ -35,7 +35,7 @@ describe('SETUP: ', () => {
     };
 
     mockApi.ekmConfig = {
-      returnKeys: [ekmPrivateKeySamples.e2eRevokedKey.prv, ekmPrivateKeySamples.e2eValidKey.prv]
+      returnKeys: [ekmKeySamples.e2eRevokedKey.prv, ekmKeySamples.e2eValidKey.prv]
     };
 
     await mockApi.withMockedApis(async () => {

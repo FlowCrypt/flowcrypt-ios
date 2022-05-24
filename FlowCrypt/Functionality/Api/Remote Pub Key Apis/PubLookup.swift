@@ -8,7 +8,7 @@
 
 protocol PubLookupType {
     func lookup(recipient: Recipient) async throws -> RecipientWithSortedPubKeys
-    func fetchRemoteUpdateLocal(with recipient: Recipient) async throws -> RecipientWithSortedPubKeys
+    func fetchRemoteUpdateLocal(with recipient: Recipient) async throws
 }
 
 class PubLookup: PubLookupType {
@@ -67,9 +67,8 @@ class PubLookup: PubLookupType {
         return try RecipientWithSortedPubKeys(recipient, keyDetails: attesterResult.keys)
     }
 
-    func fetchRemoteUpdateLocal(with recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
-        let recipient = try await self.lookup(recipient: recipient)
-        try localContactsProvider.updateKeys(for: recipient)
-        return recipient
+    func fetchRemoteUpdateLocal(with recipient: Recipient) async throws {
+        let remoteRecipient = try await self.lookup(recipient: recipient)
+        try localContactsProvider.updateKeys(for: remoteRecipient)
     }
 }

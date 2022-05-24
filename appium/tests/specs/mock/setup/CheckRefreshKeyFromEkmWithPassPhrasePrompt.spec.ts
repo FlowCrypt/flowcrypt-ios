@@ -4,7 +4,7 @@ import {
   SetupKeyScreen,
   SplashScreen,
 } from '../../../screenobjects/all-screens';
-import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
+import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { CommonData } from "../../../data";
 import RefreshKeyScreen from "../../../screenobjects/refresh-key.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
@@ -26,7 +26,7 @@ describe('SETUP: ', () => {
       }
     };
     mockApi.ekmConfig = {
-      returnKeys: [ekmPrivateKeySamples.key0.prv]
+      returnKeys: [ekmKeySamples.key0.prv]
     }
 
     await mockApi.withMockedApis(async () => {
@@ -34,11 +34,11 @@ describe('SETUP: ', () => {
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
 
       // stage 2 - prompt appears / wrong pass phrase rejected / cancel
       mockApi.ekmConfig = {
-        returnKeys: [ekmPrivateKeySamples.key0.prv, ekmPrivateKeySamples.key1.prv]
+        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
       }
       await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
@@ -48,7 +48,7 @@ describe('SETUP: ', () => {
       await RefreshKeyScreen.clickOkButton();
       await RefreshKeyScreen.cancelRefresh();
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
 
       // stage 3 - new key gets added
       await AppiumHelper.restartApp(processArgs);
@@ -57,11 +57,11 @@ describe('SETUP: ', () => {
       await RefreshKeyScreen.clickOkButton();
       await BaseScreen.checkToastMessage(successMessage);
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0, ekmPrivateKeySamples.key1]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0, ekmKeySamples.key1]);
 
       // stage 4 - modified key gets updated, removed key does not get removed
       mockApi.ekmConfig = {
-        returnKeys: [ekmPrivateKeySamples.key0Updated.prv]
+        returnKeys: [ekmKeySamples.key0Updated.prv]
       }
       await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
@@ -69,15 +69,15 @@ describe('SETUP: ', () => {
       await RefreshKeyScreen.clickOkButton();
       await BaseScreen.checkToastMessage(successMessage);
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0Updated, ekmPrivateKeySamples.key1]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0Updated, ekmKeySamples.key1]);
 
       // stage 5 - older version of key does not get updated
       mockApi.ekmConfig = {
-        returnKeys: [ekmPrivateKeySamples.key0.prv]
+        returnKeys: [ekmKeySamples.key0.prv]
       }
       await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.key0Updated, ekmPrivateKeySamples.key1]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0Updated, ekmKeySamples.key1]);
     });
   });
 });

@@ -4,7 +4,7 @@ import {
   SetupKeyScreen,
 } from '../../../screenobjects/all-screens';
 import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
-import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
+import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
@@ -41,7 +41,7 @@ describe('SETUP: ', () => {
     };
 
     mockApi.ekmConfig = {
-      returnKeys: [ekmPrivateKeySamples.e2eRevokedKey.prv]
+      returnKeys: [ekmKeySamples.e2eRevokedKey.prv]
     };
 
     await mockApi.withMockedApis(async () => {
