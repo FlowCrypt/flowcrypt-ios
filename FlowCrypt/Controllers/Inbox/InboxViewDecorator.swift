@@ -31,12 +31,7 @@ extension InboxCellNode.Input {
 
         let badgeText: NSAttributedString?
         if let badge = badge {
-            let attributes: [NSAttributedString.Key: Any] = [
-                .foregroundColor: UIColor.white.cgColor,
-                .font: NSAttributedString.Style.regular(11).font,
-                .backgroundColor: UIColor.main.cgColor
-            ]
-            badgeText = NSAttributedString(string: " \(badge) ", attributes: attributes)
+            badgeText = badge.attributed(.regular(10), color: .white)
         } else {
             badgeText = nil
         }
