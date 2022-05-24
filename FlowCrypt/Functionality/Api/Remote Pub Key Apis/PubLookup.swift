@@ -72,7 +72,7 @@ class PubLookup: PubLookupType {
         // Return local contact(with revoked key) if local stored key is revoked key and fingerprints are same
         if let contact = try await localContactsProvider.searchRecipient(with: recipient.email),
            contact.keyState == .revoked,
-           contact.pubKeys == recipient.pubKeys {
+           contact.primaryFingerprint == recipient.primaryFingerprint {
             return contact
         }
         try localContactsProvider.updateKeys(for: recipient)
