@@ -483,43 +483,31 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 // MARK: - MsgListViewController
 extension InboxViewController: MsgListViewController {
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
-        let index = inboxInput.firstIndex(where: {
-            $0.title == message.title
-            && $0.subtitle == message.subtitle
-        })
+        let index = inboxInput.firstIndex(of: message)
         logger.logInfo("Try to update message at \(String(describing: index))")
         return index
     }
 
     func updateMessage(isRead: Bool, at index: Int) {
-        guard var input = inboxInput[safe: index] else {
-            return
-        }
+        guard inboxInput.count > index else { return }
+
         logger.logInfo("Mark as read \(isRead) at \(index)")
-        input.isRead = isRead
-        inboxInput[index] = input
+        inboxInput[index].isRead = isRead
 
         if inboxInput[index].wrappedMessage == nil {
             refresh()
         } else {
             let animationDuration = 0.3
             DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
-                self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+                self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
             }
         }
     }
 
     func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int) {
-        guard let input = inboxInput[safe: index] else {
-            return
-        }
+        guard inboxInput.count > index else { return }
 
-        switch input.wrappedType {
-        case .thread(var thread):
-            thread.updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
-        case .message(var message):
-            message.updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
-        }
+        inboxInput[index].updateMessage(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
 
         let animationDuration = 0.3
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
@@ -529,8 +517,8 @@ extension InboxViewController: MsgListViewController {
 
     func removeMessage(at index: Int) {
         guard inboxInput[safe: index] != nil else { return }
-        logger.logInfo("Try to remove at \(index)")
 
+        logger.logInfo("Try to remove at \(index)")
         inboxInput.remove(at: index)
 
         guard inboxInput.isNotEmpty else {

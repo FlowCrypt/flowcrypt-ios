@@ -502,7 +502,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
         hideSpinner()
         onComplete(
             action,
-            .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email)
+            .init(thread: thread, folderPath: currentFolderPath)
         )
         navigationController?.popViewController(animated: true)
     }
@@ -652,7 +652,7 @@ extension ThreadDetailsViewController: NavigationChildController {
         logger.logInfo("Back button. Are all messages read \(isRead)")
         onComplete(
             MessageAction.markAsRead(isRead),
-            .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email)
+            .init(thread: thread, folderPath: currentFolderPath)
         )
         navigationController?.popViewController(animated: true)
     }

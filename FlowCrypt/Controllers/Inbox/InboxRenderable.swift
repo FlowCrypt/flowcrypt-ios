@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct InboxRenderable {
+struct InboxRenderable: Equatable {
     enum WrappedType: Equatable {
         case message(Message)
         case thread(MessageThread)
@@ -18,12 +18,14 @@ struct InboxRenderable {
     let messageCount: Int
     let subtitle: String
     let dateString: String
-    let badge: String?
+    var badge: String?
     var isRead: Bool
 
     let date: Date
 
-    let wrappedType: WrappedType
+    var wrappedType: WrappedType
+
+    private let folderPath: String?
 }
 
 extension InboxRenderable {
@@ -46,9 +48,10 @@ extension InboxRenderable {
         self.date = message.date
         self.wrappedType = .message(message)
         self.badge = nil
+        self.folderPath = nil
     }
 
-    init(thread: MessageThread, folderPath: String?, activeUserEmail: String) {
+    init(thread: MessageThread, folderPath: String?) {
 
         self.title = InboxRenderable.messageTitle(for: thread, folderPath: folderPath)
 
@@ -65,9 +68,9 @@ extension InboxRenderable {
         }
         self.date = date ?? Date()
         self.wrappedType = .thread(thread)
+        self.folderPath = folderPath
 
-        // show 'inbox' badge in 'All Mail' folder
-        self.badge = folderPath.isEmptyOrNil && thread.isInbox ? "inbox" : nil
+        self.updateBadge()
     }
 
     private static func messageTitle(for thread: MessageThread, folderPath: String?) -> String {
@@ -85,6 +88,29 @@ extension InboxRenderable {
                 .compactMap(\.sender?.shortName)
                 .unique()
                 .joined(separator: ",")
+        }
+    }
+
+    mutating func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel]) {
+        switch wrappedType {
+        case .thread(var thread):
+            thread.updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+            wrappedType = .thread(thread)
+        case .message(var message):
+            message.updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+            wrappedType = .message(message)
+        }
+
+        updateBadge()
+    }
+
+    mutating func updateBadge() {
+        // show 'inbox' badge in 'All Mail' folder
+        switch wrappedType {
+        case .thread(let thread):
+            self.badge = folderPath.isEmptyOrNil && thread.isInbox ? "inbox" : nil
+        case .message:
+            self.badge = nil
         }
     }
 }

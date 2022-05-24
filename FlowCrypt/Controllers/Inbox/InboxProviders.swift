@@ -33,8 +33,7 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         let inboxData = result.threads.map {
             InboxRenderable(
                 thread: $0,
-                folderPath: context.folderPath,
-                activeUserEmail: userEmail
+                folderPath: context.folderPath
             )
         }
 
