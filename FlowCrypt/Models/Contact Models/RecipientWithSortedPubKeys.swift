@@ -39,7 +39,6 @@ extension RecipientWithSortedPubKeys {
 
     var keyState: PubKeyState { pubKeys.first?.keyState ?? .empty }
     var activePubKeys: [PubKey] { pubKeys.filter { $0.keyState == .active } }
-    var primaryFingerprint: String { pubKeys.first?.primaryFingerprint ?? "" }
 
     private var sortedPubKeys: [PubKey] {
         _pubKeys
