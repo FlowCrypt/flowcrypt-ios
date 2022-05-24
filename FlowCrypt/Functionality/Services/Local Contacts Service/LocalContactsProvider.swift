@@ -88,8 +88,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
         }
 
         for pubKey in recipient.pubKeys {
-            if let index = recipientObject.pubKeys.firstIndex(where: { $0.primaryFingerprint == pubKey.fingerprint }) {
-                try update(storedRecipient: recipientObject, updateAtIndex: index, newPubKey: pubKey)
+            if let storedPubKey = recipientObject.pubKeys.first(where: { $0.primaryFingerprint == pubKey.fingerprint }) {
+                try update(storedPubKey: storedPubKey, newPubKey: pubKey)
             } else {
                 try add(pubKey: pubKey, to: recipientObject)
             }
@@ -162,8 +162,7 @@ extension LocalContactsProvider {
         }
     }
 
-    private func update(storedRecipient: RecipientRealmObject, updateAtIndex: Int, newPubKey: PubKey) throws {
-        let storedPubKey = storedRecipient.pubKeys[updateAtIndex]
+    private func update(storedPubKey: PubKeyRealmObject, newPubKey: PubKey) throws {
         guard
             // Do not ever update key if it's revoked key
             !storedPubKey.isRevoked,
