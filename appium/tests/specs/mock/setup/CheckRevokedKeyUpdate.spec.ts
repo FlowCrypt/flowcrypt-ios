@@ -49,15 +49,14 @@ describe('SETUP: ', () => {
       await NewMessageScreen.setAddRecipient(contactEmail);
       await NewMessageScreen.checkAddedRecipientColor(contactName, 0, 'red');
 
-      // Now check if other recipients display fine 
-      const testEmail = 'test@example.com';
+      // Now check if other functioning key (different fingerprint than revoked one) works fine
       mockApi.attesterConfig = {
         servedPubkeys: {
-          [testEmail]: ekmKeySamples.key1.pub!
+          [contactEmail]: ekmKeySamples.key1.pub!
         }
       };
       await NewMessageScreen.deleteAddedRecipient(0);
-      await NewMessageScreen.setAddRecipient(testEmail);
+      await NewMessageScreen.setAddRecipient(contactEmail);
       await NewMessageScreen.checkAddedRecipientColor('Test2', 0, 'green');
     });
   });

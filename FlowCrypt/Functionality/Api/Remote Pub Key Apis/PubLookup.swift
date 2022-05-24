@@ -69,6 +69,12 @@ class PubLookup: PubLookupType {
 
     func fetchRemoteUpdateLocal(with recipient: Recipient) async throws -> RecipientWithSortedPubKeys {
         let recipient = try await self.lookup(recipient: recipient)
+        // Return local contact(with revoked key) if local stored key is revoked key and fingerprints are same
+        if let contact = try await localContactsProvider.searchRecipient(with: recipient.email),
+           contact.keyState == .revoked,
+           contact.pubKeys == recipient.pubKeys {
+            return contact
+        }
         try localContactsProvider.updateKeys(for: recipient)
         return recipient
     }

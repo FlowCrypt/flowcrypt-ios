@@ -163,8 +163,10 @@ extension LocalContactsProvider {
     }
 
     private func update(pubKey: PubKey, for recipient: RecipientRealmObject, at index: Int) throws {
+        let recipientPubKey = recipient.pubKeys[index]
         guard
-            !recipient.pubKeys[index].isRevoked, // Do not ever update key if it's revoked key
+            // Do not ever update key if it's revoked key (need to check fingerprint though)
+            !(recipientPubKey.isRevoked && recipientPubKey.primaryFingerprint == pubKey.primaryFingerprint),
             let existingKeyLastSig = recipient.pubKeys[index].lastSig,
             let updateKeyLastSig = pubKey.lastSig,
             updateKeyLastSig > existingKeyLastSig
