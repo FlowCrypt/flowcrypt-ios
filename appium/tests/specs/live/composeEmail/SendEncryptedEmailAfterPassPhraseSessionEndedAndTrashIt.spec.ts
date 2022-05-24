@@ -4,6 +4,7 @@ import {
   MailFolderScreen,
   NewMessageScreen,
   EmailScreen,
+  MenuBarScreen,
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -13,7 +14,7 @@ import MailFolderHelper from 'tests/helpers/MailFolderHelper';
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('user is able to send encrypted email when pass phrase session ended + move to trash, delete', async () => {
+  it('user is able to send encrypted email when pass phrase session ended + archive, move to trash, delete', async () => {
 
     const contactEmail = CommonData.recipient.email;
     const contactName = CommonData.recipient.name;
@@ -52,6 +53,15 @@ describe('COMPOSE EMAIL: ', () => {
     await EmailScreen.clickOkButton();
     await MailFolderScreen.checkInboxScreen();
 
+    await MailFolderHelper.openSentEmail(emailSubject);
+    await EmailScreen.checkSentEmailActions();
+    await EmailScreen.clickArchiveButton();
+    await MailFolderScreen.checkSentScreen();
+    await MenuBarScreen.clickMenuBtn();
+    await MenuBarScreen.clickAllMailButton();
+    await MailFolderScreen.clickOnEmailBySubject(emailSubject);
+    await EmailScreen.checkArchivedEmailActions();
+    await MailFolderHelper.openSentEmail(emailSubject);
     await MailFolderHelper.deleteSentEmail(emailSubject, emailText);
   });
 });

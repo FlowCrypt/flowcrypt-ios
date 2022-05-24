@@ -16,13 +16,15 @@ class MailFolderHelper {
     expect(emailsCountBeforeScroll).toBeLessThan(emailsCountAfterScroll);
   }
 
-  static deleteSentEmail = async (subject: string, message: string) => {
+  static openSentEmail = async (subject: string) => {
     await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickSentButton();
     await MailFolderScreen.checkSentScreen();
-
-    //Check sent email
     await MailFolderScreen.clickOnEmailBySubject(subject);
+  }
+
+  static deleteSentEmail = async (subject: string, message: string) => {
+    //Check sent email
     await EmailScreen.checkOpenedEmail(CommonData.account.email, subject, message);
     //Delete sent email
     await EmailScreen.clickDeleteButton();

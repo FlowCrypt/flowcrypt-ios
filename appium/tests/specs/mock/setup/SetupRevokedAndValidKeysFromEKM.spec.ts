@@ -53,6 +53,7 @@ describe('SETUP: ', () => {
       await NewMessageScreen.clickSendButton();
       await MailFolderScreen.checkInboxScreen();
 
+      await MailFolderHelper.openSentEmail(emailSubject);
       await MailFolderHelper.deleteSentEmail(emailSubject, emailText);
     });
   });
