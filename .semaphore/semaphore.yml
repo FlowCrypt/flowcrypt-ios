@@ -35,11 +35,11 @@ blocks:
           commands:
             - xcversion select 13.4
             - bundle exec fastlane build && ls -la appium
-            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
+            # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             - cd appium && npm run-script lint
-            - unzip flowcrypt-ios-*.zip
+            # - unzip flowcrypt-ios-*.zip
             - npm run-script test.mock.all
-            - npm run-script test.live.all
+            # - npm run-script test.live.all
       epilogue:
         always:
           commands:
@@ -50,33 +50,33 @@ blocks:
             - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
             - artifact push job ~/git/flowcrypt-ios/appium/video/*.mp4
 
-  - name: TypeScript + Swift tests
-    dependencies: []
-    run:
-      when: 'change_in(''/'', {exclude: [''/appium/package.json'', ''/appium/package-lock.json'']})'
-    execution_time_limit:
-      minutes: 45
-    task:
-      env_vars:
-        - name: LANG
-          value: en_US.UTF-8
-        - name: SEMAPHORE_GIT_DIR
-          value: /Users/semaphore/git/flowcrypt-ios
-      prologue:
-        commands:
-          - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
-          - sem-version node 16 && mkdir .custom-npm && cd .custom-npm && npm install npm@8.1.2 && cd ..
-          - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules )
-      jobs:
-        - name: TypeScript tests + code quality
-          commands:
-            - cd Core
-            - ../.custom-npm/node_modules/.bin/npm test
-            - ../.custom-npm/node_modules/.bin/npm run tslint
-            - ../.custom-npm/node_modules/.bin/npm run eslint
-        - name: Swift tests
-          commands:
-            - bundle exec fastlane test
+  # - name: TypeScript + Swift tests
+  #   dependencies: []
+  #   run:
+  #     when: 'change_in(''/'', {exclude: [''/appium/package.json'', ''/appium/package-lock.json'']})'
+  #   execution_time_limit:
+  #     minutes: 45
+  #   task:
+  #     env_vars:
+  #       - name: LANG
+  #         value: en_US.UTF-8
+  #       - name: SEMAPHORE_GIT_DIR
+  #         value: /Users/semaphore/git/flowcrypt-ios
+  #     prologue:
+  #       commands:
+  #         - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
+  #         - sem-version node 16 && mkdir .custom-npm && cd .custom-npm && npm install npm@8.1.2 && cd ..
+  #         - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules )
+  #     jobs:
+  #       - name: TypeScript tests + code quality
+  #         commands:
+  #           - cd Core
+  #           - ../.custom-npm/node_modules/.bin/npm test
+  #           - ../.custom-npm/node_modules/.bin/npm run tslint
+  #           - ../.custom-npm/node_modules/.bin/npm run eslint
+  #       - name: Swift tests
+  #         commands:
+  #           - bundle exec fastlane test
 after_pipeline:
   task:
     jobs:
