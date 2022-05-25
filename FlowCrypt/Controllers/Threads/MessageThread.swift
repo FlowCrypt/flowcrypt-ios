@@ -20,7 +20,28 @@ struct MessageThread: Equatable {
     var messages: [Message]
 
     var subject: String? {
-        messages.compactMap(\.subject)
+        messages
+            .compactMap(\.subject)
             .first(where: { $0.isNotEmpty })
+    }
+
+    var labels: Set<MessageLabel> {
+        Set(messages.flatMap(\.labels))
+    }
+
+    var isInbox: Bool {
+        labels.contains(.inbox)
+    }
+
+    var isArchived: Bool {
+        !labels.contains(.inbox) && !labels.contains(.sent)
+    }
+}
+
+extension MessageThread {
+    mutating func update(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel]) {
+        for index in messages.indices {
+            messages[index].update(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+        }
     }
 }

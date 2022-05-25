@@ -30,7 +30,7 @@ extension Imap: MessageOperationsProvider {
             throw ImapError.missingMessageInfo("intId")
         }
         var flags: MCOMessageFlag = []
-        let imapFlagValues = message.labels.map(\.type.imapFlagValue)
+        let imapFlagValues = message.labels.map(\.imapFlagValue)
         // keep previous flags
         for value in imapFlagValues {
             flags.insert(MCOMessageFlag(rawValue: value))
@@ -45,6 +45,13 @@ extension Imap: MessageOperationsProvider {
                 flags: flags
             ).start { error in respond(error) }
         })
+    }
+
+    func moveMessageToInbox(message: Message, folderPath: String) async throws {
+        // should be implemented later
+        guard message.identifier.intId != nil else {
+            throw ImapError.missingMessageInfo("intId")
+        }
     }
 
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
@@ -67,7 +74,7 @@ extension Imap: MessageOperationsProvider {
         })
     }
 
-    func delete(message: Message, form folderPath: String?) async throws {
+    func delete(message: Message, from folderPath: String?) async throws {
         guard let identifier = message.identifier.intId else {
             throw ImapError.missingMessageInfo("intId")
         }

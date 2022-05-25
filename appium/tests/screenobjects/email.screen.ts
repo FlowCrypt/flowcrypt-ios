@@ -18,7 +18,11 @@ const SELECTORS = {
   MENU_BUTTON: '~aid-message-menu-button',
   FORWARD_BUTTON: '~aid-forward-button',
   REPLY_ALL_BUTTON: '~aid-reply-all-button',
+  HELP_BUTTON: '~aid-help-button',
+  ARCHIVE_BUTTON: '~aid-archive-button',
+  MOVE_TO_INBOX_BUTTON: '~aid-move-to-inbox-button',
   DELETE_BUTTON: '~aid-delete-button',
+  READ_BUTTON: '~aid-read-button',
   DOWNLOAD_BUTTON: '~aid-download-button',
   CANCEL_BUTTON: '~aid-cancel-button',
   CONFIRM_DELETING: '~Ok',
@@ -90,8 +94,24 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.REPLY_ALL_BUTTON);
   }
 
+  get helpButton() {
+    return $(SELECTORS.HELP_BUTTON);
+  }
+
+  get archiveButton() {
+    return $(SELECTORS.ARCHIVE_BUTTON);
+  }
+
+  get moveToInboxButton() {
+    return $(SELECTORS.MOVE_TO_INBOX_BUTTON);
+  }
+
   get deleteButton() {
     return $(SELECTORS.DELETE_BUTTON)
+  }
+
+  get readButton() {
+    return $(SELECTORS.READ_BUTTON);
   }
 
   get confirmDeletingButton() {
@@ -218,12 +238,30 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.replyAllButton);
   }
 
+  clickArchiveButton = async () => {
+    await ElementHelper.waitAndClick(await this.archiveButton);
+  }
+
   clickDeleteButton = async () => {
     await ElementHelper.waitAndClick(await this.deleteButton);
   }
 
   confirmDelete = async () => {
     await ElementHelper.waitAndClick(await this.confirmDeletingButton);
+  }
+
+  checkInboxEmailActions = async () => {
+    await ElementHelper.waitElementVisible(await this.helpButton);
+    await ElementHelper.waitElementVisible(await this.archiveButton);
+    await ElementHelper.waitElementVisible(await this.deleteButton);
+    await ElementHelper.waitElementVisible(await this.readButton);
+  }
+
+  checkArchivedEmailActions = async () => {
+    await ElementHelper.waitElementVisible(await this.helpButton);
+    await ElementHelper.waitElementVisible(await this.moveToInboxButton);
+    await ElementHelper.waitElementVisible(await this.deleteButton);
+    await ElementHelper.waitElementVisible(await this.readButton);
   }
 
   checkRecipientsButton = async (value: string) => {

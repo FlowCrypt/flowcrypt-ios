@@ -24,6 +24,10 @@ extension Imap: MessagesThreadOperationsProvider {
         throw error
     }
 
+    func moveThreadToInbox(thread: MessageThread) async throws {
+        throw error
+    }
+
     func markThreadAsUnread(thread: MessageThread, folder: String) async throws {
         throw error
     }

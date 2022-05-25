@@ -147,8 +147,7 @@ extension Message {
         }
 
         let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
-        let labelTypes: [MessageLabelType] = message.labelIds?.map(MessageLabelType.init) ?? []
-        let labels = labelTypes.map(MessageLabel.init)
+        let labels: [MessageLabel] = message.labelIds?.map(MessageLabel.init) ?? []
 
         var sender: Recipient?
         var subject: String?
