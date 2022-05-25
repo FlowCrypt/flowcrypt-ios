@@ -89,7 +89,8 @@ final class EKMVcHelper: EKMVcHelperType {
                 throw EmailKeyManagerApiError.keysAreInvalid
             }
             if let savedLocalKey = try localKeys.first(where: { try $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
-                if savedLocalKey.lastModified < keyLastModified {
+                // Do not update key if local saved key is revoked one
+                if savedLocalKey.lastModified < keyLastModified, savedLocalKey.isRevoked {
                     keysToUpdate.append(keyDetail)
                 }
             } else {
