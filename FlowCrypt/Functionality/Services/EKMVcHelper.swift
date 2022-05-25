@@ -63,7 +63,9 @@ final class EKMVcHelper: EKMVcHelperType {
                 if error is ApiError {
                     return
                 }
-                await viewController.showAlert(message: "refresh_key_error".localizeWithArguments(error.errorMessage))
+                await viewController.showAlert(
+                    message: "refresh_key_error".localizeWithArguments(error.errorMessage)
+                )
             }
         }
     }
