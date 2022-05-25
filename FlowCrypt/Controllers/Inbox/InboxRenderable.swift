@@ -108,7 +108,9 @@ extension InboxRenderable {
         // show 'inbox' badge in 'All Mail' folder
         switch wrappedType {
         case .thread(let thread):
-            self.badge = folderPath.isEmptyOrNil && thread.isInbox ? "folder_all_inbox".lowercased() : nil
+            self.badge = folderPath.isEmptyOrNil && thread.isInbox
+                ? "folder_all_inbox".localized.lowercased()
+                : nil
         case .message:
             self.badge = nil
         }
