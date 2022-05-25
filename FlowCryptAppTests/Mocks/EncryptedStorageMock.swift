@@ -46,6 +46,9 @@ final class EncryptedStorageMock: EncryptedStorageType {
     func cleanup() {
     }
 
+    func removeKeypairs(keypairs: [Keypair]) throws {
+    }
+
     func deleteAccount(email: String) throws {
     }
 }

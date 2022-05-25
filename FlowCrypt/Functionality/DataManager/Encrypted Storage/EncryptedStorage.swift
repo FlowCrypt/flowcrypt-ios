@@ -20,6 +20,7 @@ protocol EncryptedStorageType {
 
     func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) throws
     func getKeypairs(by email: String) throws -> [Keypair]
+    func removeKeypairs(keypairs: [Keypair]) throws
 
     func validate() throws
     func cleanup() throws
@@ -185,6 +186,12 @@ extension EncryptedStorage {
         return try storage.objects(KeypairRealmObject.self).where({
             $0.user.email == email
         }).map(Keypair.init)
+    }
+
+    func removeKeypairs(keypairs: [Keypair]) throws {
+        try storage.write {
+            try storage.delete(keypairs.map(KeypairRealmObject.init))
+        }
     }
 
     func doesAnyKeypairExist(for email: String) throws -> Bool {
