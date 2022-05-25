@@ -29,13 +29,6 @@ extension InboxCellNode.Input {
             ? .lightGray
             : .mainTextUnreadColor
 
-        let badgeText: NSAttributedString?
-        if let badge = badge {
-            badgeText = badge.attributed(.regular(10), color: .white)
-        } else {
-            badgeText = nil
-        }
-
         self.init(
             emailText: NSAttributedString.text(from: email, style: style, color: textColor),
             countText: {
@@ -45,7 +38,7 @@ extension InboxCellNode.Input {
             }(),
             dateText: NSAttributedString.text(from: date, style: style, color: dateColor),
             messageText: NSAttributedString.text(from: msg, style: style, color: textColor),
-            badgeText: badgeText
+            badgeText: badge?.attributed(.regular(10), color: .white)
         )
     }
 }
