@@ -8,6 +8,7 @@ class AppiumHelper {
     const bundleId = CommonData.bundleId.id;
     await driver.terminateApp(bundleId);
     await driver.pause(1500);
+    await driver.activateApp("com.apple.Preferences");
     const args = {
       bundleId,
       arguments: processArgs
