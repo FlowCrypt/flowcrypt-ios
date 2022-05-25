@@ -24,12 +24,14 @@ struct TrashFolderProvider {
 }
 
 extension TrashFolderProvider: TrashFolderProviderType {
-    func getTrashFolderPath() async throws -> String? {
-        if let path = localStorage.trashFolderPath {
-            return path
-        } else {
-            _ = try await foldersService.fetchFolders(isForceReload: true, for: self.user)
-            return localStorage.trashFolderPath
+    var trashFolderPath: String? {
+        get async throws {
+            if let path = localStorage.trashFolderPath {
+                return path
+            } else {
+                _ = try await foldersService.fetchFolders(isForceReload: true, for: self.user)
+                return localStorage.trashFolderPath
+            }
         }
     }
 }

@@ -15,17 +15,17 @@ extension ComposeViewController {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "help_icn")
+                    image: UIImage(systemName: "questionmark.circle")
                 ) { [weak self] in
                     self?.handleInfoTap()
                 },
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "paperclip")
+                    image: UIImage(systemName: "paperclip")
                 ) { [weak self] in
                     self?.handleAttachTap()
                 },
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "android-send"),
+                    image: UIImage(systemName: "paperplane"),
                     accessibilityId: "aid-compose-send"
                 ) { [weak self] in
                     self?.handleSendTap()

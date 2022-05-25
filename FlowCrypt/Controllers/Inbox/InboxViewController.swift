@@ -80,11 +80,11 @@ class InboxViewController: ViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+
         tableNode.frame = node.bounds
 
-        if isSearch {
-            return
-        }
+        if isSearch { return }
+
         let offset: CGFloat = 16
         let size = CGSize(width: 50, height: 50)
 
@@ -129,11 +129,11 @@ extension InboxViewController {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "help_icn"),
+                    image: UIImage(systemName: "questionmark.circle"),
                     accessibilityId: "aid-help-btn"
                 ) { [weak self] in self?.handleInfoTap() },
                 NavigationBarItemsView.Input(
-                    image: UIImage(named: "search_icn"),
+                    image: UIImage(systemName: "magnifyingglass"),
                     accessibilityId: "aid-search-btn"
                 ) { [weak self] in self?.handleSearchTap() }
             ]
@@ -435,7 +435,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(with: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
+        open(message: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
@@ -483,36 +483,42 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 // MARK: - MsgListViewController
 extension InboxViewController: MsgListViewController {
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
-        let index = inboxInput.firstIndex(where: {
-            $0.title == message.title
-            && $0.subtitle == message.subtitle
-        })
+        let index = inboxInput.firstIndex(of: message)
         logger.logInfo("Try to update message at \(String(describing: index))")
         return index
     }
 
     func updateMessage(isRead: Bool, at index: Int) {
-        guard var input = inboxInput[safe: index] else {
-            return
-        }
+        guard inboxInput.count > index else { return }
+
         logger.logInfo("Mark as read \(isRead) at \(index)")
-        input.isRead = isRead
-        inboxInput[index] = input
+        inboxInput[index].isRead = isRead
 
         if inboxInput[index].wrappedMessage == nil {
             refresh()
         } else {
             let animationDuration = 0.3
             DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
-                self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+                self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
             }
+        }
+    }
+
+    func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int) {
+        guard inboxInput.count > index else { return }
+
+        inboxInput[index].updateMessage(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+
+        let animationDuration = 0.3
+        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
+            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
         }
     }
 
     func removeMessage(at index: Int) {
         guard inboxInput[safe: index] != nil else { return }
-        logger.logInfo("Try to remove at \(index)")
 
+        logger.logInfo("Try to remove at \(index)")
         inboxInput.remove(at: index)
 
         guard inboxInput.isNotEmpty else {

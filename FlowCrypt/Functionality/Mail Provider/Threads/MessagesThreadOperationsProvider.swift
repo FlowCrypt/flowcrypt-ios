@@ -13,6 +13,7 @@ protocol MessagesThreadOperationsProvider {
     func mark(thread: MessageThread, asRead: Bool, in folder: String) async throws
     func delete(thread: MessageThread) async throws
     func moveThreadToTrash(thread: MessageThread) async throws
+    func moveThreadToInbox(thread: MessageThread) async throws
     func markThreadAsUnread(thread: MessageThread, folder: String) async throws
     func markThreadAsRead(thread: MessageThread, folder: String) async throws
     func archive(thread: MessageThread, in folder: String) async throws
@@ -40,7 +41,11 @@ extension GmailService: MessagesThreadOperationsProvider {
     }
 
     func moveThreadToTrash(thread: MessageThread) async throws {
-        try await update(thread: thread, labelsToAdd: [.trash])
+        try await update(thread: thread, labelsToAdd: [.trash], labelsToRemove: [.inbox])
+    }
+
+    func moveThreadToInbox(thread: MessageThread) async throws {
+        try await update(thread: thread, labelsToAdd: [.inbox], labelsToRemove: [.trash])
     }
 
     func markThreadAsUnread(thread: MessageThread, folder: String) async throws {
@@ -71,8 +76,8 @@ extension GmailService: MessagesThreadOperationsProvider {
 
     private func update(
         thread: MessageThread,
-        labelsToAdd: [MessageLabelType] = [],
-        labelsToRemove: [MessageLabelType] = []
+        labelsToAdd: [MessageLabel] = [],
+        labelsToRemove: [MessageLabel] = []
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = thread.identifier else {
