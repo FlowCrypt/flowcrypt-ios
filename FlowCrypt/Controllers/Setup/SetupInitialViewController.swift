@@ -142,15 +142,19 @@ extension SetupInitialViewController {
     }
 
     private func decideIfEKMshouldBeUsed() {
-        switch clientConfiguration.checkUsesEKM() {
-        case .usesEKM:
-            state = .fetchingKeysFromEKM
-        case .doesNotUseEKM:
-            state = .searchingKeyBackupsInInbox
-        case .inconsistentClientConfiguration(let error):
-            showAlert(message: error.description) { [weak self] in
-                self?.signOut()
+        do {
+            switch try clientConfiguration.checkUsesEKM() {
+            case .usesEKM:
+                state = .fetchingKeysFromEKM
+            case .doesNotUseEKM:
+                state = .searchingKeyBackupsInInbox
+            case .inconsistentClientConfiguration(let error):
+                showAlert(message: error.description) { [weak self] in
+                    self?.signOut()
+                }
             }
+        } catch {
+            showAlert(message: error.errorMessage)
         }
     }
 
@@ -258,6 +262,8 @@ extension SetupInitialViewController {
             )
             return ButtonCellNode(input: input) { [weak self] in
                 self?.proceedToCreatingNewKey()
+            }.then {
+                $0.button.accessibilityIdentifier = "aid-create-new-key-button"
             }
         case .importKey:
             let input = ButtonCellNode.Input(
@@ -265,6 +271,8 @@ extension SetupInitialViewController {
             )
             return ButtonCellNode(input: input) { [weak self] in
                 self?.proceedToKeyImport()
+            }.then {
+                $0.button.accessibilityIdentifier = "aid-import-my-key-button"
             }
         case .anotherAccount:
             return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in

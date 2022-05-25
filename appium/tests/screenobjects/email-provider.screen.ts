@@ -4,8 +4,8 @@ import TouchHelper from "../helpers/TouchHelper";
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
-  EMAIL_PROVIDER_HEADER: '~navigationItemEmail Provider',
-  CONNECT_BUTTON: '~Connect',
+  EMAIL_PROVIDER_HEADER: '~aid-navigation-item-email-provider',
+  CONNECT_BUTTON: '~aid-connect-button',
   EMAIL_FIELD: '~aid-email-textfield',
   PASSWORD_FIELD: '~aid-password-textfield',
   RETURN_BUTTON: '~Return',

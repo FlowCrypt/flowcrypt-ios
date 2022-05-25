@@ -53,7 +53,7 @@ class CoreTypesTest: XCTestCase {
         XCTAssertEqual(msgCopy.password, msg.password)
     }
 
-    func test_key_details_with_same_fingerprints() {
+    func test_get_unique_by_fingerprint_by_prefering_latest_last_modified() {
         let firstKeyDetail = KeyDetails(
             public: "public1",
             private: "private1",
@@ -84,7 +84,7 @@ class CoreTypesTest: XCTestCase {
                 )
             ],
             created: 0,
-            lastModified: nil,
+            lastModified: 5000,
             expiration: nil,
             users: [],
             algo: nil,
@@ -96,13 +96,14 @@ class CoreTypesTest: XCTestCase {
             secondKeyDetail
         ]
 
-        let result = given.unique()
+        let result = given.getUniqueByFingerprintByPreferingLatestLastModified()
 
         XCTAssertEqual(
             result.count,
             1,
             "If the [KeyDetails] contains two keys with the same fingerprint, only one should be added"
         )
+        XCTAssertEqual(result[0].public, "public2")
     }
 
     func test_key_ids_with_same_fingerprint() {

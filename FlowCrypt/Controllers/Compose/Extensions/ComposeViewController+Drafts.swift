@@ -34,18 +34,20 @@ extension ComposeViewController {
 //        return result
     }
 
-    private func saveDraftIfNeeded() {
+    internal func saveDraftIfNeeded() {
         guard shouldSaveDraft() else { return }
         Task {
             do {
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
                     input: input,
                     contextToSend: contextToSend,
-                    includeAttachments: false,
-                    viewController: self
+                    includeAttachments: false
                 )
                 try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
             } catch {
+                if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
+                    requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
+                }
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast

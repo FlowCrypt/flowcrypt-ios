@@ -33,8 +33,8 @@ class InboxViewController: ViewController {
     var path: String { viewModel.path }
 
     // Search related varaibles
-    internal var isSearch: Bool = false
-    internal var searchedExpression: String = ""
+    internal var isSearch = false
+    internal var searchedExpression = ""
     var shouldBeginFetch = true
 
     init(
@@ -45,13 +45,13 @@ class InboxViewController: ViewController {
         draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator(),
         isSearch: Bool = false
-    ) {
+    ) throws {
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
         self.inboxDataProvider = provider
 
-        self.draftsListProvider = draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
+        self.draftsListProvider = try draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
         self.isSearch = isSearch
@@ -128,8 +128,14 @@ extension InboxViewController {
     private func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
-                NavigationBarItemsView.Input(image: UIImage(named: "help_icn")) { [weak self] in self?.handleInfoTap() },
-                NavigationBarItemsView.Input(image: UIImage(named: "search_icn")) { [weak self] in self?.handleSearchTap() }
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "help_icn"),
+                    accessibilityId: "aid-help-btn"
+                ) { [weak self] in self?.handleInfoTap() },
+                NavigationBarItemsView.Input(
+                    image: UIImage(named: "search_icn"),
+                    accessibilityId: "aid-search-btn"
+                ) { [weak self] in self?.handleSearchTap() }
             ]
         )
     }
@@ -137,8 +143,8 @@ extension InboxViewController {
 
 // MARK: - Helpers
 extension InboxViewController {
-    private func currentMessagesListPagination(from number: Int? = nil) -> MessagesListPagination {
-        appContext
+    private func currentMessagesListPagination(from number: Int? = nil) throws -> MessagesListPagination {
+        try appContext
             .getRequiredMailProvider()
             .currentMessagesListPagination(from: number, token: state.token)
     }
@@ -228,7 +234,7 @@ extension InboxViewController {
 
         Task {
             do {
-                let pagination = currentMessagesListPagination(from: inboxInput.count)
+                let pagination = try currentMessagesListPagination(from: inboxInput.count)
                 state = .fetching
 
                 let context = try await inboxDataProvider.fetchInboxItems(
@@ -374,13 +380,17 @@ extension InboxViewController {
     }
 
     private func handleSearchTap() {
-        let viewController = SearchViewController(
-            appContext: appContext,
-            viewModel: viewModel,
-            provider: self.inboxDataProvider,
-            isSearch: true
-        )
-        navigationController?.pushViewController(viewController, animated: false)
+        do {
+            let viewController = try SearchViewController(
+                appContext: appContext,
+                viewModel: viewModel,
+                provider: self.inboxDataProvider,
+                isSearch: true
+            )
+            navigationController?.pushViewController(viewController, animated: false)
+        } catch {
+            showAlert(message: error.errorMessage)
+        }
     }
 
     @objc private func refresh() {

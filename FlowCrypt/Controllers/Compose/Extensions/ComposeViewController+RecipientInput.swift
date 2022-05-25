@@ -44,6 +44,7 @@ extension ComposeViewController {
         case let .didEndEditing(text): handleEndEditingAction(with: text, for: recipientType)
         case let .editingChanged(text): handleEditingChanged(with: text)
         case .didBeginEditing: handleDidBeginEditing(recipientType: recipientType)
+        case .didPaste: return
         }
     }
 
@@ -91,7 +92,7 @@ extension ComposeViewController {
         node.view.keyboardDismissMode = .interactive
         search.send("")
 
-        updateState(with: .main)
+        updateView(newState: .main)
     }
 
     /// This function refreshes recipient cell.

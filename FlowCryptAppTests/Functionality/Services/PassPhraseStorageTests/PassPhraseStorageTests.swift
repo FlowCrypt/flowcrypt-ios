@@ -11,7 +11,7 @@ import XCTest
 
 class PassPhraseStorageTests: XCTestCase {
 
-    var sut: PassPhraseService!
+    var sut: CombinedPassPhraseStorage!
     var encryptedStorage: PassPhraseStorageMock!
     var inMemoryStorage: PassPhraseStorageMock!
     let testPassPhraseAccount = "passphrase@account.test"
@@ -20,7 +20,7 @@ class PassPhraseStorageTests: XCTestCase {
         encryptedStorage = PassPhraseStorageMock()
         inMemoryStorage = PassPhraseStorageMock()
 
-        sut = PassPhraseService(
+        sut = CombinedPassPhraseStorage(
             encryptedStorage: encryptedStorage,
             inMemoryStorage: inMemoryStorage
         )
@@ -40,10 +40,12 @@ class PassPhraseStorageTests: XCTestCase {
     func testGetValidPassPhraseFromStorage() throws {
         let passPhrase1 = PassPhrase(
             value: "some",
+            email: testPassPhraseAccount,
             fingerprintsOfAssociatedKey: ["11","12"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
+            email: testPassPhraseAccount,
             fingerprintsOfAssociatedKey: ["21","22"]
         )
 
@@ -70,6 +72,7 @@ class PassPhraseStorageTests: XCTestCase {
         let savedDate = Date()
         let localPassPhrase = PassPhrase(
             value: "value",
+            email: testPassPhraseAccount,
             fingerprintsOfAssociatedKey: ["f1"],
             date: savedDate
         )
@@ -85,10 +88,12 @@ class PassPhraseStorageTests: XCTestCase {
     func testBothStorageContainsValidPassPhrase() throws {
         let passPhrase1 = PassPhrase(
             value: "some",
+            email: testPassPhraseAccount,
             fingerprintsOfAssociatedKey: ["A123"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
+            email: testPassPhraseAccount,
             fingerprintsOfAssociatedKey: ["A123"]
         )
         encryptedStorage.getPassPhrasesResult = {
@@ -98,6 +103,7 @@ class PassPhraseStorageTests: XCTestCase {
         let savedDate = Date()
         let localPassPhrase = PassPhrase(
             value: "value",
+            email: testPassPhraseAccount,
             fingerprintsOfAssociatedKey: ["123444"],
             date: savedDate
         )
@@ -109,7 +115,11 @@ class PassPhraseStorageTests: XCTestCase {
     }
 
     func testSavePassPhraseInPersistenStorage() throws {
-        let passPhraseToSave = PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"])
+        let passPhraseToSave = PassPhrase(
+            value: "pass",
+            email: testPassPhraseAccount,
+            fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"]
+        )
 
         let expectation = XCTestExpectation()
         expectation.expectedFulfillmentCount = 1
@@ -118,7 +128,11 @@ class PassPhraseStorageTests: XCTestCase {
         // encrypted storage contains pass phrase which should be saved locally
         encryptedStorage.getPassPhrasesResult = {
             [
-                PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "adfnhjfg"])
+                PassPhrase(
+                    value: "pass",
+                    email: self.testPassPhraseAccount,
+                    fingerprintsOfAssociatedKey: ["fingerprint 1", "adfnhjfg"]
+                )
             ]
         }
 
@@ -137,7 +151,11 @@ class PassPhraseStorageTests: XCTestCase {
     }
 
     func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() throws {
-        let passPhraseToSave = PassPhrase(value: "pass", fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"])
+        let passPhraseToSave = PassPhrase(
+            value: "pass",
+            email: testPassPhraseAccount,
+            fingerprintsOfAssociatedKey: ["fingerprint 1", "123333"]
+        )
 
         let expectation = XCTestExpectation()
         expectation.isInverted = true

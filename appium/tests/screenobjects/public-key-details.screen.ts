@@ -5,70 +5,70 @@ import moment from 'moment'
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
-  SHARE_BUTTON: '~share',
-  COPY_BUTTON: '~copy',
-  KEY_LABEL: '~Key',
+  SHARE_BUTTON: '~aid-share-btn',
+  COPY_BUTTON: '~aid-copy-btn',
+  KEY_LABEL: '~aid-signature-key-label',
   PUBLIC_KEY_VALUE: '~aid-signature-key',
-  TRASH_BUTTON: '~trash',
-  SIGNATURE_LABEL: '~Signature',
+  TRASH_BUTTON: '~aid-trash-btn',
+  SIGNATURE_LABEL: '~aid-signature-date-label',
   SIGNATURE_VALUE: '~aid-signature-date',
-  LAST_FETCHED_DATE_LABEL: '~Last fetched',
+  LAST_FETCHED_DATE_LABEL: '~aid-signature-fetched-date-label',
   LAST_FETCHED_DATE_VALUE: '~aid-signature-fetched-date',
   FINGERPRINTS_VALUE: '~aid-signature-fingerprints',
-  FINGERPRINTS_LABEL: '~Fingerprints'
+  FINGERPRINTS_LABEL: '~aid-signature-fingerprints-label'
 };
 
 class PublicKeyDetailsScreen extends BaseScreen {
   constructor() {
-      super(SELECTORS.BACK_BTN);
+    super(SELECTORS.BACK_BTN);
   }
 
   get trashButton() {
-      return $(SELECTORS.TRASH_BUTTON);
+    return $(SELECTORS.TRASH_BUTTON);
   }
 
   get copyButton() {
-      return $(SELECTORS.COPY_BUTTON);
+    return $(SELECTORS.COPY_BUTTON);
   }
 
   get shareButton() {
-      return $(SELECTORS.SHARE_BUTTON)
+    return $(SELECTORS.SHARE_BUTTON)
   }
 
   get backButton() {
-      return $(SELECTORS.BACK_BTN);
+    return $(SELECTORS.BACK_BTN);
   }
 
   get keyLabel() {
-      return $(SELECTORS.KEY_LABEL);
+    return $(SELECTORS.KEY_LABEL);
   }
 
   get signatureLabel() {
-      return $(SELECTORS.SIGNATURE_LABEL)
+    return $(SELECTORS.SIGNATURE_LABEL)
   }
 
   get signatureValue() {
-      return $(SELECTORS.SIGNATURE_VALUE);
+    return $(SELECTORS.SIGNATURE_VALUE);
   }
 
   get publicKeyValue() {
-      return $(SELECTORS.PUBLIC_KEY_VALUE);
+    return $(SELECTORS.PUBLIC_KEY_VALUE);
   }
 
   get lastFetchedDateLabel() {
-      return $(SELECTORS.LAST_FETCHED_DATE_LABEL)
+    return $(SELECTORS.LAST_FETCHED_DATE_LABEL)
   }
 
   get lastFetchedDateValue() {
-      return $(SELECTORS.LAST_FETCHED_DATE_VALUE)
+    return $(SELECTORS.LAST_FETCHED_DATE_VALUE)
   }
 
   get fingerprintsLabel() {
-      return $(SELECTORS.FINGERPRINTS_LABEL);
+    return $(SELECTORS.FINGERPRINTS_LABEL);
   }
 
   get fingerprintsValue() {
-      return $(SELECTORS.FINGERPRINTS_VALUE)
+    return $(SELECTORS.FINGERPRINTS_VALUE)
   }
 
   checkPublicKeyDetailsScreen = async () => {

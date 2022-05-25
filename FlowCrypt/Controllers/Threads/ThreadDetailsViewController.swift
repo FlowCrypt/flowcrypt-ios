@@ -14,6 +14,7 @@ import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
     private lazy var logger = Logger.nested(Self.self)
+    private lazy var alertsFactory = AlertsFactory()
 
     class Input {
         var rawMessage: Message
@@ -39,6 +40,8 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let thread: MessageThread
     private var input: [ThreadDetailsViewController.Input]
 
+    private var textFieldDelegate: UITextFieldDelegate?
+
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
         thread.path
@@ -56,23 +59,22 @@ final class ThreadDetailsViewController: TableNodeViewController {
         let localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
-        self.messageService = messageService ?? MessageService(
+        let mailProvider = try appContext.getRequiredMailProvider()
+        self.messageService = try messageService ?? MessageService(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
-            keyService: appContext.keyService,
-            messageProvider: appContext.getRequiredMailProvider().messageProvider,
-            passPhraseService: appContext.passPhraseService
+            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
+            messageProvider: try mailProvider.messageProvider,
+            combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
-        guard let threadOperationsProvider = appContext.getRequiredMailProvider().threadOperationsProvider else {
-            fatalError("expected threadOperationsProvider on gmail")
-        }
+        let threadOperationsProvider = try mailProvider.threadOperationsProvider
         self.threadOperationsProvider = threadOperationsProvider
-        self.messageOperationsProvider = appContext.getRequiredMailProvider().messageOperationsProvider
+        self.messageOperationsProvider = try mailProvider.messageOperationsProvider
         self.trashFolderProvider = TrashFolderProvider(
             user: appContext.user,
             foldersService: FoldersService(
                 encryptedStorage: appContext.encryptedStorage,
-                remoteFoldersProvider: appContext.getRequiredMailProvider().remoteFoldersProvider
+                remoteFoldersProvider: try mailProvider.remoteFoldersProvider
             )
         )
         self.thread = thread
@@ -162,19 +164,24 @@ extension ThreadDetailsViewController {
             alert.popoverPresentation(style: .centred(view))
         }
 
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
+
         alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .replyAll))
         alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .forward))
-        alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
+        alert.addAction(cancelAction)
 
         present(alert, animated: true, completion: nil)
     }
 
     private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
-        UIAlertAction(
+        let action = UIAlertAction(
             title: type.actionLabel,
             style: .default) { [weak self] _ in
                 self?.composeNewMessage(at: indexPath, quoteType: type)
             }
+        action.accessibilityIdentifier = type.accessibilityIdentifier
+        return action
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {
@@ -224,14 +231,21 @@ extension ThreadDetailsViewController {
         else { return }
 
         let sender = [input.rawMessage.sender].compactMap { $0 }
+        let replyRecipient: [Recipient] = {
+            // When sender is logged in user, then use `to` as reply recipient
+            if !sender.filter({ $0.email == appContext.user.email }).isEmpty {
+                return input.rawMessage.to
+            }
+            return sender
+        }()
 
         let ccRecipients = quoteType == .replyAll ? input.rawMessage.cc : []
         let recipients: [Recipient] = {
             switch quoteType {
             case .reply:
-                return sender
+                return replyRecipient
             case .replyAll:
-                let allRecipients = (input.rawMessage.to + sender).unique()
+                let allRecipients = (input.rawMessage.to + replyRecipient).unique()
                 let filteredRecipients = allRecipients.filter { $0.email != appContext.user.email }
                 return filteredRecipients.isEmpty ? sender : filteredRecipients
             case .forward:
@@ -362,9 +376,7 @@ extension ThreadDetailsViewController {
 
         switch error as? MessageServiceError {
         case let .missingPassPhrase(rawMimeData):
-            handleMissingPassPhrase(for: rawMimeData, at: indexPath)
-        case let .wrongPassPhrase(rawMimeData, passPhrase):
-            handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+            handleWrongPassPhrase(for: rawMimeData, at: indexPath)
         default:
             // TODO: - Ticket - Improve error handling for ThreadDetailsViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -395,7 +407,9 @@ extension ThreadDetailsViewController {
             }
             self?.show(attachment: attachment)
         }
+        downloadAction.accessibilityIdentifier = "aid-download-button"
         let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
 
         alertController.addAction(downloadAction)
         alertController.addAction(cancelAction)
@@ -403,8 +417,13 @@ extension ThreadDetailsViewController {
         present(alertController, animated: true)
     }
 
-    private func handleMissingPassPhrase(for rawMimeData: Data, at indexPath: IndexPath) {
-        let alert = AlertsFactory.makePassPhraseAlert(
+    private func handleWrongPassPhrase(_ passPhrase: String? = nil, for rawMimeData: Data, at indexPath: IndexPath) {
+        let title = passPhrase == nil
+            ? "setup_enter_pass_phrase".localized
+            : "setup_wrong_pass_phrase_retry".localized
+
+        let alert = alertsFactory.makePassPhraseAlert(
+            title: title,
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
@@ -413,23 +432,12 @@ extension ThreadDetailsViewController {
             }
         )
 
-        present(alert, animated: true, completion: nil)
-    }
-
-    private func handleWrongPassPhrase(for rawMimeData: Data, with phrase: String, at indexPath: IndexPath) {
-        let alert = AlertsFactory.makePassPhraseAlert(
-            title: "setup_wrong_pass_phrase_retry".localized,
-            onCancel: { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            },
-            onCompletion: { [weak self] passPhrase in
-                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
-            }
-        )
         present(alert, animated: true, completion: nil)
     }
 
     private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
+        presentedViewController?.dismiss(animated: true)
+
         handleFetchProgress(state: .decrypt)
 
         Task {
@@ -448,7 +456,7 @@ extension ThreadDetailsViewController {
                     )
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
-                    handleWrongPassPhrase(for: rawMimeData, with: passPhrase, at: indexPath)
+                    handleWrongPassPhrase(passPhrase, for: rawMimeData, at: indexPath)
                 }
             } catch {
                 handleError(error, at: indexPath)

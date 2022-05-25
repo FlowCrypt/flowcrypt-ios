@@ -4,11 +4,12 @@ import {
   SetupKeyScreen,
 } from '../../../screenobjects/all-screens';
 import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
-import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
+import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
-import BaseScreen from "../../../screenobjects/base.screen";
+import MailFolderHelper from 'tests/helpers/MailFolderHelper';
 import { CommonData } from "../../../data";
+import DataHelper from 'tests/helpers/DataHelper';
 
 
 describe('SETUP: ', () => {
@@ -18,14 +19,8 @@ describe('SETUP: ', () => {
     const mockApi = new MockApi();
     const recipientEmail = CommonData.recipient.email;
     const recipientName = CommonData.recipient.name;
-    const emailSubject = CommonData.simpleEmail.subject;
-    const emailText = CommonData.simpleEmail.message;
-
-    const noPrivateKeyError = 'Error\n' +
-      'Could not compose message\n' +
-      '\n' +
-      'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e';
-
+    const emailSubject = CommonData.revokeValidMessage.subject + DataHelper.uniqueValue();
+    const emailText = CommonData.revokeValidMessage.message;
 
     mockApi.fesConfig = {
       clientConfiguration: {
@@ -40,7 +35,7 @@ describe('SETUP: ', () => {
     };
 
     mockApi.ekmConfig = {
-      returnKeys: [ekmPrivateKeySamples.e2eRevokedKey.prv, ekmPrivateKeySamples.e2eValidKey.prv]
+      returnKeys: [ekmKeySamples.e2eRevokedKey.prv, ekmKeySamples.e2eValidKey.prv]
     };
 
     await mockApi.withMockedApis(async () => {
@@ -56,8 +51,9 @@ describe('SETUP: ', () => {
         message: emailText
       });
       await NewMessageScreen.clickSendButton();
-      //TODO need to fix, the error should not be displayed for this case
-      await BaseScreen.checkModalMessage(noPrivateKeyError);
+      await MailFolderScreen.checkInboxScreen();
+
+      await MailFolderHelper.deleteSentEmail(emailSubject, emailText);
     });
   });
 });

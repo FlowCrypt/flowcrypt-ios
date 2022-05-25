@@ -16,7 +16,7 @@ enum ContactsError: Error {
 }
 
 protocol PublicKeyProvider {
-    func retrievePubKeys(for email: String) throws -> [String]
+    func retrievePubKeys(for email: String, shouldUpdateLastUsed: Bool) throws -> [String]
     func removePubKey(with fingerprint: String, for email: String) throws
 }
 
@@ -51,17 +51,18 @@ final class LocalContactsProvider {
 }
 
 extension LocalContactsProvider: LocalContactsProviderType {
-    func retrievePubKeys(for email: String) throws -> [String] {
+    func retrievePubKeys(for email: String, shouldUpdateLastUsed: Bool) throws -> [String] {
         guard let object = try find(with: email) else { return [] }
 
-        do {
-            try storage.write {
-                object.lastUsed = Date()
+        if shouldUpdateLastUsed {
+            do {
+                try storage.write {
+                    object.lastUsed = Date()
+                }
+            } catch {
+                logger.logError("fail to update last used property \(error)")
             }
-        } catch {
-            logger.logError("fail to update last used property \(error)")
         }
-
         return object.pubKeys.map(\.armored)
     }
 
@@ -87,8 +88,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
         }
 
         for pubKey in recipient.pubKeys {
-            if let index = recipientObject.pubKeys.firstIndex(where: { $0.primaryFingerprint == pubKey.fingerprint }) {
-                try update(pubKey: pubKey, for: recipientObject, at: index)
+            if let storedPubKey = recipientObject.pubKeys.first(where: { $0.primaryFingerprint == pubKey.fingerprint }) {
+                try update(storedPubKey: storedPubKey, newPubKey: pubKey)
             } else {
                 try add(pubKey: pubKey, to: recipientObject)
             }
@@ -96,7 +97,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys? {
-        guard let recipient = try find(with: email).map(Recipient.init) else { return nil }
+        guard let recipient = try find(with: email).ifNotNil(Recipient.init) else { return nil }
         return try await parseRecipient(from: recipient)
     }
 
@@ -126,8 +127,8 @@ extension LocalContactsProvider: LocalContactsProviderType {
         guard let keys = keys else {
             return
         }
-        for key in keys {
-            try storage.write {
+        try storage.write {
+            for key in keys {
                 storage.delete(key)
             }
         }
@@ -151,7 +152,7 @@ extension LocalContactsProvider {
             .map(\.armored)
             .joined(separator: "\n")
         let parsed = try await core.parseKeys(armoredOrBinary: armoredToParse.data())
-        return RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
+        return try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
     }
 
     private func add(pubKey: PubKey, to recipient: RecipientRealmObject) throws {
@@ -161,17 +162,19 @@ extension LocalContactsProvider {
         }
     }
 
-    private func update(pubKey: PubKey, for recipient: RecipientRealmObject, at index: Int) throws {
+    private func update(storedPubKey: PubKeyRealmObject, newPubKey: PubKey) throws {
         guard
-            let existingKeyLastSig = recipient.pubKeys[index].lastSig,
-            let updateKeyLastSig = pubKey.lastSig,
+            // Do not ever update key if it's revoked key
+            !storedPubKey.isRevoked,
+            let existingKeyLastSig = storedPubKey.lastSig,
+            let updateKeyLastSig = newPubKey.lastSig,
             updateKeyLastSig > existingKeyLastSig
         else {
             return
         }
 
         try storage.write {
-            recipient.pubKeys[index].update(from: pubKey)
+            storedPubKey.update(from: newPubKey)
         }
     }
 }

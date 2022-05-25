@@ -16,32 +16,32 @@ class AppContext {
     let session: SessionType?
     // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
     let userAccountService: SessionServiceType
-    let keyService: KeyServiceType
-    let passPhraseService: PassPhraseServiceType
+    let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
+    let combinedPassPhraseStorage: CombinedPassPhraseStorageType
 
     init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
-        keyService: KeyServiceType,
-        passPhraseService: PassPhraseServiceType,
+        keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType
     ) {
         self.encryptedStorage = encryptedStorage
         self.session = session
         self.userAccountService = userAccountService
-        self.keyService = keyService
-        self.passPhraseService = passPhraseService
+        self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
+        self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.globalRouter = globalRouter
     }
 
     @MainActor
     static func setup(globalRouter: GlobalRouterType) async throws -> AppContext {
         let encryptedStorage = try await EncryptedStorage()
-        let passPhraseService = PassPhraseService(encryptedStorage: encryptedStorage)
-        let keyService = KeyService(
-            storage: encryptedStorage,
-            passPhraseService: passPhraseService
+        let combinedPassPhraseStorage = CombinedPassPhraseStorage(encryptedStorage: encryptedStorage)
+        let keyAndPassPhraseStorage = KeyAndPassPhraseStorage(
+            encryptedStorage: encryptedStorage,
+            combinedPassPhraseStorage: combinedPassPhraseStorage
         )
         return AppContext(
             encryptedStorage: encryptedStorage,
@@ -53,8 +53,8 @@ class AppContext {
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
             ),
-            keyService: keyService,
-            passPhraseService: passPhraseService,
+            keyAndPassPhraseStorage: keyAndPassPhraseStorage,
+            combinedPassPhraseStorage: combinedPassPhraseStorage,
             globalRouter: globalRouter
         )
     }
@@ -64,8 +64,8 @@ class AppContext {
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
-            keyService: keyService,
-            passPhraseService: passPhraseService,
+            keyAndPassPhraseStorage: keyAndPassPhraseStorage,
+            combinedPassPhraseStorage: combinedPassPhraseStorage,
             globalRouter: globalRouter,
             authType: authType,
             user: user
@@ -73,10 +73,9 @@ class AppContext {
     }
 
     @MainActor
-    func getRequiredMailProvider() -> MailProvider {
+    func getRequiredMailProvider() throws -> MailProvider {
         guard let mailProvider = getOptionalMailProvider() else {
-            // todo - should throw instead
-            fatalError("wrongly using mail provider when not logged in")
+            throw AppErr.wrongMailProvider
         }
         return mailProvider
     }
@@ -96,19 +95,19 @@ class AppContext {
     }
 
     @MainActor
-    func getBackupService() -> BackupService {
-        let mailProvider = self.getRequiredMailProvider()
+    func getBackupService() throws -> BackupService {
+        let mailProvider = try self.getRequiredMailProvider()
         return BackupService(
-            backupProvider: mailProvider.backupProvider,
-            messageSender: mailProvider.messageSender
+            backupProvider: try mailProvider.backupProvider,
+            messageSender: try mailProvider.messageSender
         )
     }
 
     @MainActor
-    func getFoldersService() -> FoldersService {
+    func getFoldersService() throws -> FoldersService {
         return FoldersService(
             encryptedStorage: self.encryptedStorage,
-            remoteFoldersProvider: self.getRequiredMailProvider().remoteFoldersProvider
+            remoteFoldersProvider: try self.getRequiredMailProvider().remoteFoldersProvider
         )
     }
 }
@@ -125,8 +124,8 @@ class AppContextWithUser: AppContext {
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
         userAccountService: SessionServiceType,
-        keyService: KeyServiceType,
-        passPhraseService: PassPhraseServiceType,
+        keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType,
         authType: AuthType,
         user: User
@@ -146,8 +145,8 @@ class AppContextWithUser: AppContext {
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
-            keyService: keyService,
-            passPhraseService: passPhraseService,
+            keyAndPassPhraseStorage: keyAndPassPhraseStorage,
+            combinedPassPhraseStorage: combinedPassPhraseStorage,
             globalRouter: globalRouter
         )
     }

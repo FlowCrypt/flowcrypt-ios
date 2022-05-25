@@ -16,7 +16,8 @@ struct ContactKeyDetailDecorator {
         return LabelCellNode.Input(
             title: attributedTitle(for: part),
             text: content(for: key, part: part),
-            accessibilityIdentifier: accessibilityIdentifier(for: part)
+            accessibilityIdentifier: accessibilityIdentifier(for: part),
+            labelAccessibilityIdentifier: "\(accessibilityIdentifier(for: part))-label"
         )
     }
 
@@ -76,7 +77,7 @@ struct ContactKeyDetailDecorator {
         return df.string(from: date)
     }
 
-    private func accessibilityIdentifier(for part: ContactKeyDetailViewController.Part) -> String? {
+    private func accessibilityIdentifier(for part: ContactKeyDetailViewController.Part) -> String {
         switch part {
         case .armored:
             return "aid-signature-key"

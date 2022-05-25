@@ -97,7 +97,11 @@ extension BackupSelectKeyViewController {
     }
 
     private func backupAsFile() {
-        appContext.getBackupService().backupAsFile(keys: backupsContext.map(\.0), for: self)
+        do {
+            try appContext.getBackupService().backupAsFile(keys: backupsContext.map(\.0), for: self)
+        } catch {
+            showAlert(message: error.errorMessage)
+        }
     }
 }
 

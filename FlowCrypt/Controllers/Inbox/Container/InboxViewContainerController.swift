@@ -29,9 +29,10 @@ final class InboxViewContainerController: TableNodeViewController {
         case loadedFolders([FolderViewModel])
     }
 
-    let appContext: AppContextWithUser
-    let foldersService: FoldersServiceType
-    let decorator: InboxViewControllerContainerDecorator
+    private let appContext: AppContextWithUser
+    private let foldersService: FoldersServiceType
+    private let decorator: InboxViewControllerContainerDecorator
+    private let ekmVcHelper: EKMVcHelper?
 
     private var state: State = .loading {
         didSet { handleNewState() }
@@ -41,10 +42,12 @@ final class InboxViewContainerController: TableNodeViewController {
         appContext: AppContextWithUser,
         foldersService: FoldersServiceType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
-    ) {
+    ) throws {
         self.appContext = appContext
-        self.foldersService = foldersService ?? appContext.getFoldersService()
+        self.foldersService = try foldersService ?? appContext.getFoldersService()
         self.decorator = decorator
+        self.ekmVcHelper = EKMVcHelper(appContext: appContext)
+
         super.init(node: TableNode())
         node.delegate = self
         node.dataSource = self
@@ -93,19 +96,24 @@ final class InboxViewContainerController: TableNodeViewController {
         case let .error(error):
             handle(error: error)
         case .loadedFolders(let folders):
-            let folder = folders
-                .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
+            do {
+                let folder = folders
+                    .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
 
-            guard let inbox = folder else {
-                state = .error(InboxViewControllerContainerError.internalError)
-                return
+                guard let inbox = folder else {
+                    state = .error(InboxViewControllerContainerError.internalError)
+                    return
+                }
+                let input = InboxViewModel(inbox)
+                let inboxViewController = try InboxViewControllerFactory.make(
+                    appContext: appContext,
+                    viewModel: input
+                )
+                navigationController?.setViewControllers([inboxViewController], animated: false)
+                ekmVcHelper?.refreshKeysFromEKMIfNeeded(in: inboxViewController)
+            } catch {
+                showAlert(message: error.errorMessage)
             }
-            let input = InboxViewModel(inbox)
-            let inboxViewController = InboxViewControllerFactory.make(
-                appContext: appContext,
-                viewModel: input
-            )
-            navigationController?.setViewControllers([inboxViewController], animated: false)
         }
     }
 

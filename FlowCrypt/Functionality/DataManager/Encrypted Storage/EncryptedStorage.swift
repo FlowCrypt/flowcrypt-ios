@@ -23,6 +23,7 @@ protocol EncryptedStorageType {
 
     func validate() throws
     func cleanup() throws
+    func deleteAccount(email: String) throws
 
     static func removeStorageFile() throws
 }
@@ -43,6 +44,7 @@ final class EncryptedStorage: EncryptedStorageType {
         case version7
         case version8
         case version9
+        case version10
 
         var version: SchemaVersion {
             switch self {
@@ -58,6 +60,8 @@ final class EncryptedStorage: EncryptedStorageType {
                 return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 8)
             case .version9:
                 return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 9)
+            case .version10:
+                return SchemaVersion(appVersion: "1.0.7", dbSchemaVersion: 10)
             }
         }
     }
@@ -65,7 +69,7 @@ final class EncryptedStorage: EncryptedStorageType {
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
-    private let currentSchema: EncryptedStorageSchema = .version9
+    private let currentSchema: EncryptedStorageSchema = .version10
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
     private let storageEncryptionKey: Data
@@ -103,8 +107,8 @@ final class EncryptedStorage: EncryptedStorageType {
 }
 
 // MARK: - LogOut
-extension EncryptedStorage: LogOutHandler {
-    func logOutUser(email: String) throws {
+extension EncryptedStorage {
+    func deleteAccount(email: String) throws {
         let storage = try storage
 
         let users = storage.objects(UserRealmObject.self)
@@ -117,7 +121,7 @@ extension EncryptedStorage: LogOutHandler {
             let userToDelete = users
                 .filter { $0.email == email }
             let keys = storage.objects(KeypairRealmObject.self)
-                .filter { $0.account == email }
+                .filter { $0.user?.email == email }
             let sessions = storage.objects(SessionRealmObject.self)
                 .filter { $0.email == email }
             let clientConfigurations = storage.objects(ClientConfigurationRealmObject.self)
@@ -176,13 +180,13 @@ extension EncryptedStorage {
 
     func getKeypairs(by email: String) throws -> [Keypair] {
         return try storage.objects(KeypairRealmObject.self).where({
-            $0.account == email
+            $0.user.email == email
         }).map(Keypair.init)
     }
 
     func doesAnyKeypairExist(for email: String) throws -> Bool {
         let keys = try storage.objects(KeypairRealmObject.self).where {
-            $0.account == email
+            $0.user.email == email
         }
         return !keys.isEmpty
     }
@@ -222,6 +226,14 @@ extension EncryptedStorage: PassPhraseStorageType {
         return try storage.objects(KeypairRealmObject.self)
             .where({ $0.user.email == email })
             .compactMap(PassPhrase.init)
+    }
+
+    func removePassPhrases(for email: String) throws {
+        let keyPairs = try storage.objects(KeypairRealmObject.self)
+            .where({ $0.user.email == email })
+        for keyPair in keyPairs {
+            try updateKeys(with: keyPair.primaryFingerprint, passphrase: nil)
+        }
     }
 }
 

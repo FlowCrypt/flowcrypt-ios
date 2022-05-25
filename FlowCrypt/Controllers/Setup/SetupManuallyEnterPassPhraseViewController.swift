@@ -31,7 +31,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
 
     private var passPhrase: String?
 
-    var storageMethod: StorageMethod = .persistent {
+    var storageMethod: PassPhraseStorageMethod = .persistent {
         didSet {
             handleSelectedPassPhraseOption()
         }
@@ -50,7 +50,7 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         fetchedKeys: [KeyDetails]
     ) {
         self.appContext = appContext
-        self.fetchedKeys = fetchedKeys.unique()
+        self.fetchedKeys = fetchedKeys.getUniqueByFingerprintByPreferingLatestLastModified()
         self.email = email
         self.decorator = decorator
         self.keyMethods = keyMethods
@@ -151,8 +151,15 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                 )
             case .passPhrase:
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
-                    guard case let .didEndEditing(text) = action else { return }
-                    self?.passPhrase = text
+                    switch action {
+                    case .didEndEditing(let value):
+                        self?.passPhrase = value
+                    case let .didPaste(textField, value):
+                        textField.text = value
+                        self?.submitPassphrase()
+                    default:
+                        break
+                    }
                 }
                 .then {
                     $0.becomeFirstResponder()
@@ -166,14 +173,7 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
                     title: self.decorator.buttonTitle(for: .passPhraseContinue)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
-                    guard let self = self else { return }
-                    Task {
-                        do {
-                            try await self.handleContinueAction()
-                        } catch {
-                            self.showAlert(message: error.errorMessage)
-                        }
-                    }
+                    self?.submitPassphrase()
                 }
             case .chooseAnother:
                 return ButtonCellNode(input: .chooseAnotherAccount) { [weak self] in
@@ -206,6 +206,16 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
 // MARK: - Actions
 
 extension SetupManuallyEnterPassPhraseViewController {
+    private func submitPassphrase() {
+        Task {
+            do {
+                try await self.handleContinueAction()
+            } catch {
+                self.showAlert(message: error.errorMessage)
+            }
+        }
+    }
+
     private func handleContinueAction() async throws {
         view.endEditing(true)
         guard let passPhrase = passPhrase else { return }
@@ -227,9 +237,15 @@ extension SetupManuallyEnterPassPhraseViewController {
         try importKeys(with: keyDetails, and: passPhrase)
     }
 
-    private func importKeys(with existedKeys: [KeyDetails], and passPhrase: String) throws {
-        let keysToUpdate = Array(Set(existedKeys).intersection(fetchedKeys))
-        let newKeysToAdd = Array(Set(fetchedKeys).subtracting(existedKeys))
+    private func importKeys(with existingKeys: [KeyDetails], and passPhrase: String) throws {
+        let keysToUpdate = existingKeys
+            .getUniqueByFingerprintByPreferingLatestLastModified()
+            .filter { existingKey in
+                return fetchedKeys.contains(where: { $0.fingerprints == existingKey.fingerprints })
+            }
+        let newKeysToAdd = fetchedKeys.filter { fetchedKey in
+            return !existingKeys.contains(where: { $0.fingerprints == fetchedKey.fingerprints })
+        }
 
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: newKeysToAdd,
@@ -246,17 +262,31 @@ extension SetupManuallyEnterPassPhraseViewController {
 
         if storageMethod == .memory {
             let updatedPassPhrases = keysToUpdate.map {
-                PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
+                PassPhrase(
+                    value: passPhrase,
+                    email: email,
+                    fingerprintsOfAssociatedKey: $0.fingerprints
+                )
             }
             for updatedPassPhrase in updatedPassPhrases {
-                try appContext.passPhraseService.updatePassPhrase(with: updatedPassPhrase, storageMethod: storageMethod)
+                try appContext.combinedPassPhraseStorage.updatePassPhrase(
+                    with: updatedPassPhrase,
+                    storageMethod: storageMethod
+                )
             }
 
             let newPassPhrases = newKeysToAdd.map {
-                PassPhrase(value: passPhrase, fingerprintsOfAssociatedKey: $0.fingerprints)
+                PassPhrase(
+                    value: passPhrase,
+                    email: email,
+                    fingerprintsOfAssociatedKey: $0.fingerprints
+                )
             }
             for newPassPhrase in newPassPhrases {
-                try appContext.passPhraseService.savePassPhrase(with: newPassPhrase, storageMethod: storageMethod)
+                try appContext.combinedPassPhraseStorage.savePassPhrase(
+                    with: newPassPhrase,
+                    storageMethod: storageMethod
+                )
             }
         }
 
@@ -278,7 +308,7 @@ extension SetupManuallyEnterPassPhraseViewController {
         }()
 
         guard let msg = message else {
-            fatalError("Could not be empty, checked all possible casses of updated and imported keys' emptines")
+            throw AppErr.general("Could not be empty, checked all possible casses of updated and imported keys' emptines")
         }
 
         showAlert(title: nil, message: msg) { [weak self] in

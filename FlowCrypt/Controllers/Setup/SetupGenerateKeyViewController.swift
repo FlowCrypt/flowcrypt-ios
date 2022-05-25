@@ -57,7 +57,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
 
     func setupAccount(
         passPhrase: String,
-        storageMethod: StorageMethod
+        storageMethod: PassPhraseStorageMethod
     ) async throws {
         try await validateAndConfirmNewPassPhraseOrReject(passPhrase: passPhrase)
 
@@ -74,9 +74,13 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         if storageMethod == .memory {
             let passPhrase = PassPhrase(
                 value: passPhrase,
+                email: appContext.user.email,
                 fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints
             )
-            try appContext.passPhraseService.savePassPhrase(with: passPhrase, storageMethod: .memory)
+            try appContext.combinedPassPhraseStorage.savePassPhrase(
+                with: passPhrase,
+                storageMethod: .memory
+            )
         }
 
         // sending welcome email is not crucial, so we don't handle errors
@@ -86,7 +90,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
     }
 
-    private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: StorageMethod, passPhrase: String) throws {
+    private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: PassPhraseStorageMethod, passPhrase: String) throws {
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,

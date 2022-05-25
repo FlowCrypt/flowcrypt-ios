@@ -277,14 +277,19 @@ class NewMessageScreen extends BaseScreen {
   }
 
   deleteAddedRecipientWithBackspace = async (order: number, type = 'to') => {
-    await this.showRecipientPopup(order, type)
+    await this.showRecipientPopup(order, type);
+    await driver.sendKeys(['\b']); // backspace
+  }
+
+  deleteAddedRecipientWithDoubleBackspace = async () => {
+    await driver.sendKeys(['\b']); // backspace
     await driver.sendKeys(['\b']); // backspace
   }
 
   checkCopyForAddedRecipient = async (email: string, order: number, type = 'to') => {
     await this.showRecipientPopup(order, type);
     await ElementHelper.waitAndClick(await this.recipientPopupCopyButton);
-    const base64Encoded = new Buffer(email).toString('base64');
+    const base64Encoded = Buffer.from(email).toString('base64');
     expect(await driver.getClipboard('plaintext')).toEqual(base64Encoded);
   }
 

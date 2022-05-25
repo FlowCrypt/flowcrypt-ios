@@ -4,7 +4,7 @@ import {
   SetupKeyScreen,
 } from '../../../screenobjects/all-screens';
 import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
-import { ekmPrivateKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
+import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
@@ -21,10 +21,12 @@ describe('SETUP: ', () => {
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
 
+    // When private key is revoked key, there are no public keys to pick. So missing sender public key error occurs.
+
+
     const noPrivateKeyError = 'Error\n' +
-      'Could not compose message\n' +
-      '\n' +
-      'Error: Error encrypting message: Could not find valid key packet for signing in key bf79556b2cad5c1e';
+      'Could not compose message\n\n' +
+      'Your account keys are not usable for encryption.';
 
     mockApi.fesConfig = {
       clientConfiguration: {
@@ -39,7 +41,7 @@ describe('SETUP: ', () => {
     };
 
     mockApi.ekmConfig = {
-      returnKeys: [ekmPrivateKeySamples.e2eRevokedKey.prv]
+      returnKeys: [ekmKeySamples.e2eRevokedKey.prv]
     };
 
     await mockApi.withMockedApis(async () => {

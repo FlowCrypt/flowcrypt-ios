@@ -15,7 +15,7 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     case weakPassword
     case subjectContainsPassword
     case notUniquePassword
-    case missingPublicKey
+    case noUsableAccountKeys
     case noPubRecipients
     case revokedKeyRecipients
     case expiredKeyRecipients
@@ -36,8 +36,8 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
             return "compose_password_subject_error".localized
         case .notUniquePassword:
             return "compose_password_passphrase_error".localized
-        case .missingPublicKey:
-            return "compose_no_pub_sender".localized
+        case .noUsableAccountKeys:
+            return "compose_no_sender_pub_usable".localized
         case .noPubRecipients:
             return "compose_recipient_no_pub".localized
         case .revokedKeyRecipients:
@@ -57,6 +57,7 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
     case passPhraseRequired
     case passPhraseNoMatch
     case gatewayError(Error)
+    case promptUserToEnterPassPhraseForSigningKey(Keypair)
 
     var description: String {
         switch self {
@@ -68,6 +69,8 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
             return "compose_sign_passphrase_no_match".localized
         case .gatewayError(let error):
             return error.localizedDescription
+        default:
+            return errorMessage
         }
     }
 

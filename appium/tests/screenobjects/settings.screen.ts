@@ -1,7 +1,7 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
 const SELECTORS = {
-  MENU_ICON: '~menu icn',
+  MENU_ICON: '~aid-menu-button',
 };
 
 class SettingsScreen extends BaseScreen {

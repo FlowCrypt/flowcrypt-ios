@@ -125,7 +125,7 @@ extension ComposeViewController {
 
     internal func handleContactsPermissionError(_ error: Error) {
         guard let gmailUserError = error as? GoogleUserServiceError,
-           case .userNotAllowedAllNeededScopes(let missingScopes) = gmailUserError
+           case .userNotAllowedAllNeededScopes(let missingScopes, _) = gmailUserError
         else { return }
 
         let scopes = missingScopes.map(\.title).joined(separator: ", ")

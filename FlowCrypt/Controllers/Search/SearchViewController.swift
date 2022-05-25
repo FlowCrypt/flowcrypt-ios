@@ -26,7 +26,7 @@ class SearchViewController: InboxViewController {
 
     private func setupSearchUI() {
         view.backgroundColor = .backgroundColor
-        view.accessibilityIdentifier = "searchViewController"
+        view.accessibilityIdentifier = "aid-search-view-controller"
 
         title = "search_title".localized
         state = .searchStart
@@ -58,7 +58,7 @@ class SearchViewController: InboxViewController {
                 alignment: .left
             )
         searchController.searchBar.searchTextField.textColor = .white
-        searchController.searchBar.searchTextField.accessibilityIdentifier = "searchAllEmailField"
+        searchController.searchBar.searchTextField.accessibilityIdentifier = "aid-search-all-emails-field"
     }
 }
 

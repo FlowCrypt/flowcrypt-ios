@@ -68,7 +68,7 @@ extension GmailService: DraftsListProvider {
 
         if let pagination = context.pagination {
             guard case let .byNextPage(token) = pagination else {
-                fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
+                throw GmailServiceError.paginationError(pagination)
             }
             query.pageToken = token
         }
@@ -98,7 +98,7 @@ extension GmailService {
 
         if let pagination = context.pagination {
             guard case let .byNextPage(token) = pagination else {
-                fatalError("Pagination \(String(describing: context.pagination)) is not supported for this provider")
+                throw GmailServiceError.paginationError(pagination)
             }
             query.pageToken = token
         }

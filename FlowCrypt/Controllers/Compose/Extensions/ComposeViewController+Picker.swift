@@ -21,7 +21,9 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
         switch picker.sourceType {
         case .camera:
             composeMessageAttachment = MessageAttachment(cameraSourceMediaInfo: info)
-        default: fatalError("No other image picker's sources should be used")
+        default:
+            showAlert(message: "files_picking_no_other_source".localized)
+            return
         }
 
         guard let attachment = composeMessageAttachment else {

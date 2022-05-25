@@ -2,10 +2,9 @@
 //  EncryptedStorageMock.swift
 //  FlowCryptAppTests
 //
-//  Created by  Ivan Ushakov on 01.12.2021
+//  Created by  Ivan Ushakov on 01.12.2021
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-
 @testable import FlowCrypt
 import RealmSwift
 
@@ -45,6 +44,9 @@ final class EncryptedStorageMock: EncryptedStorageType {
     }
 
     func cleanup() {
+    }
+
+    func deleteAccount(email: String) throws {
     }
 }
 

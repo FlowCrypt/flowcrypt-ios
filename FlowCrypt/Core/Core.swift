@@ -76,7 +76,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
     
     // MARK: Files
-    func decryptFile(encrypted: Data, keys: [PrvKeyInfo], msgPwd: String?) async throws -> CoreRes.DecryptFile {
+    func decryptFile(encrypted: Data, keys: [Keypair], msgPwd: String?) async throws -> CoreRes.DecryptFile {
         struct DecryptFileRaw: Decodable {
             let decryptSuccess: DecryptSuccess?
             let decryptErr: DecryptErr?
@@ -87,7 +87,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         }
 
         let decrypted = try await call("decryptFile", jsonDict: [
-            "keys": try keys.map { try $0.toJsonEncodedDict() },
+            "keys": keys.map(\.prvKeyInfoJsonDictForCore),
             "msgPwd": msgPwd
         ], data: encrypted)
 
@@ -145,7 +145,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     func parseDecryptMsg(
         encrypted: Data,
-        keys: [PrvKeyInfo],
+        keys: [Keypair],
         msgPwd: String?,
         isEmail: Bool,
         verificationPubKeys: [String]
@@ -155,7 +155,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             let text: String
         }
         let json: [String: Any?]? = [
-            "keys": try keys.map { try $0.toJsonEncodedDict() },
+            "keys": keys.map(\.prvKeyInfoJsonDictForCore),
             "isEmail": isEmail,
             "msgPwd": msgPwd,
             "verificationPubkeys": verificationPubKeys
@@ -199,7 +199,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": msg.pubKeys,
-            "signingPrv": msg.signingPrv?.jsonDict
+            "signingPrv": msg.signingPrv.ifNotNil(\.prvKeyInfoJsonDictForCore)
         ], data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }

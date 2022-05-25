@@ -18,7 +18,6 @@ enum MessageFetchState {
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
     case missingPassPhrase(_ rawMimeData: Data)
-    case wrongPassPhrase(_ rawMimeData: Data, _ passPhrase: String)
     case emptyKeys
     case attachmentNotFound
     case attachmentDecryptFailed(_ message: String)
@@ -28,13 +27,11 @@ extension MessageServiceError {
     var description: String {
         switch self {
         case .missingPassPhrase:
-            return "Passphrase is missing"
-        case .wrongPassPhrase:
-            return "Passphrase is wrong"
+            return "error_missing_passphrase".localized
         case .emptyKeys:
-            return "Could not fetch keys"
+            return "error_empty_keys".localized
         case .attachmentNotFound:
-            return "Failed to download attachment"
+            return "error_attachment_not_found".localized
         case .attachmentDecryptFailed(let message):
             return message
         }
@@ -49,8 +46,8 @@ final class MessageService {
     private let localContactsProvider: LocalContactsProviderType
     private let core: Core
     private let logger: Logger
-    private let keyService: KeyServiceType
-    private let passPhraseService: PassPhraseServiceType
+    private let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
+    private let combinedPassPhraseStorage: CombinedPassPhraseStorageType
     private let pubLookup: PubLookupType
 
     init(
@@ -58,12 +55,12 @@ final class MessageService {
         keyMethods: KeyMethodsType = KeyMethods(),
         localContactsProvider: LocalContactsProviderType,
         pubLookup: PubLookupType,
-        keyService: KeyServiceType,
+        keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         messageProvider: MessageProvider,
-        passPhraseService: PassPhraseServiceType
+        combinedPassPhraseStorage: CombinedPassPhraseStorageType
     ) {
-        self.keyService = keyService
-        self.passPhraseService = passPhraseService
+        self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
+        self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.messageProvider = messageProvider
         self.core = core
         self.logger = Logger.nested(in: Self.self, with: "MessageService")
@@ -73,7 +70,7 @@ final class MessageService {
     }
 
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String, userEmail: String) async throws -> Bool {
-        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
@@ -82,7 +79,7 @@ final class MessageService {
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
-        try passPhraseService.savePassPhrasesInMemory(passPhrase, for: matchingKeys)
+        try combinedPassPhraseStorage.savePassPhrasesInMemory(for: userEmail, passPhrase, privateKeys: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 
@@ -112,7 +109,7 @@ final class MessageService {
         onlyLocalKeys: Bool,
         userEmail: String
     ) async throws -> ProcessedMessage {
-        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         guard keys.isNotEmpty else {
             throw MessageServiceError.emptyKeys
         }
@@ -130,16 +127,14 @@ final class MessageService {
 
         return try await processMessage(
             rawMimeData: rawMimeData,
-            sender: sender,
-            with: decrypted,
-            keys: keys
+            with: decrypted
         )
     }
 
     func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
         guard attachment.isEncrypted else { return attachment }
 
-        let keys = try await keyService.getPrvKeyInfo(email: userEmail)
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys, msgPwd: nil)
 
         if let decryptErr = decrypted.decryptErr {
@@ -155,16 +150,11 @@ final class MessageService {
 
     private func processMessage(
         rawMimeData: Data,
-        sender: Recipient?,
-        with decrypted: CoreRes.ParseDecryptMsg,
-        keys: [PrvKeyInfo]
+        with decrypted: CoreRes.ParseDecryptMsg
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
-        let attachments = try await getAttachments(
-            blocks: decrypted.blocks,
-            keys: keys
-        )
+        let attachments = try await getAttachments(blocks: decrypted.blocks)
         let messageType: ProcessedMessage.MessageType
         let text: String
         let signature: ProcessedMessage.MessageSignature?
@@ -207,8 +197,7 @@ final class MessageService {
     }
 
     private func getAttachments(
-        blocks: [MsgBlock],
-        keys: [PrvKeyInfo]
+        blocks: [MsgBlock]
     ) async throws -> [MessageAttachment] {
         let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
         let attachments: [MessageAttachment] = attachmentBlocks.compactMap { block in
@@ -238,10 +227,11 @@ extension MessageService {
     private func fetchVerificationPubKeys(for sender: Recipient?, onlyLocal: Bool) async throws -> [String] {
         guard let sender = sender else { return [] }
 
-        let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email)
+        let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email, shouldUpdateLastUsed: false)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
-        guard let contact = try? await pubLookup.fetchRemoteUpdateLocal(with: sender)
+        try? await pubLookup.fetchRemoteUpdateLocal(with: sender)
+        guard let contact = try await localContactsProvider.searchRecipient(with: sender.email)
         else { return [] }
 
         return contact.pubKeys.map(\.armored)
