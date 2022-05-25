@@ -1,4 +1,4 @@
-import { ekmPrivateKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
+import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import {
   SplashScreen,
   SetupKeyScreen,
@@ -24,7 +24,7 @@ describe('SETTINGS: ', () => {
     await SettingsScreen.checkSettingsScreen();
     await SettingsScreen.clickOnSettingItem('Keys');
 
-    await KeysScreen.checkKeysScreen([ekmPrivateKeySamples.e2e, ekmPrivateKeySamples.flowcryptCompability]);
+    await KeysScreen.checkKeysScreen([ekmKeySamples.e2e, ekmKeySamples.flowcryptCompability]);
     await KeysScreen.clickOnKey();
 
     await KeysScreen.checkSelectedKeyScreen();

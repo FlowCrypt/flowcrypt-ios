@@ -40,6 +40,31 @@ struct AppStartup {
         }
     }
 
+    // Update `isRevoked` value (PubKeyRealmObject `isRevoked` was added in realm schema version 10[2022 May 23th])
+    // Need to set correct `isRevoked` value when user first opens app from older versions
+    @MainActor
+    private func checkAndUpdateIsRevoked(context: AppContextWithUser) async throws {
+        let revokedUpdatedFlag = "IS_PUB_KEY_REVOKED_UPDATED"
+        let userDefaults = UserDefaults.standard
+        if userDefaults.bool(forKey: revokedUpdatedFlag) {
+           return
+        }
+        // Added storage access directly because this function logic should be removed in the near future
+        let storage = try context.encryptedStorage.storage
+        let pubKeyObjects = storage.objects(PubKeyRealmObject.self).unique()
+
+        for pubKeyObject in pubKeyObjects {
+            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: pubKeyObject.armored.data())
+            try storage.write {
+                if let keyDetail = parsedKey.keyDetails.first {
+                    pubKeyObject.isRevoked = keyDetail.revoked
+                }
+            }
+        }
+
+        userDefaults.set(true, forKey: revokedUpdatedFlag)
+    }
+
     // Update `lastModified` value (KeyPairRealm `lastModified` was added in realm schema version 9)
     // Need to set correct `lastModified` value when user first opens app from older versions
     @MainActor
@@ -96,6 +121,8 @@ struct AppStartup {
                     // TODO: need to remove this after a few versions.
                     // https://github.com/FlowCrypt/flowcrypt-ios/pull/1510#discussion_r861051611
                     try await checkAndUpdateLastModified(context: context)
+                    // This one too.(which was added in schema 10)
+                    try await checkAndUpdateIsRevoked(context: context)
                     let controller = try InboxViewContainerController(appContext: context)
                     window.rootViewController = try SideMenuNavigationController(
                         appContext: context,
