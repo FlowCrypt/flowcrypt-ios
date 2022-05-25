@@ -87,9 +87,9 @@ extension Message {
 extension Message {
     mutating func markAsRead(_ isRead: Bool) {
         if isRead {
-            updateLabels(labelsToRemove: [.unread, .none])
+            update(labelsToRemove: [.unread, .none])
         } else {
-            updateLabels(labelsToAdd: [.unread, .none])
+            update(labelsToAdd: [.unread, .none])
         }
     }
 
@@ -99,7 +99,7 @@ extension Message {
 }
 
 extension Message {
-    mutating func updateLabels(
+    mutating func update(
         labelsToAdd: [MessageLabel] = [],
         labelsToRemove: [MessageLabel] = []
     ) {

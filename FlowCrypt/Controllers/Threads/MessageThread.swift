@@ -39,9 +39,9 @@ struct MessageThread: Equatable {
 }
 
 extension MessageThread {
-    mutating func updateLabels(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel]) {
+    mutating func update(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel]) {
         for index in messages.indices {
-            messages[index].updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+            messages[index].update(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
         }
     }
 }

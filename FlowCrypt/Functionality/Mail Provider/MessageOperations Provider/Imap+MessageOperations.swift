@@ -48,11 +48,10 @@ extension Imap: MessageOperationsProvider {
     }
 
     func moveMessageToInbox(message: Message, folderPath: String) async throws {
-        // TODO: Implement
-        guard let identifier = message.identifier.intId else {
+        // should be implemented later
+        guard message.identifier.intId != nil else {
             throw ImapError.missingMessageInfo("intId")
         }
-        // try await moveMsg(with: identifier, folder: folder, destFolder: trashPath)
     }
 
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {

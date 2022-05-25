@@ -94,10 +94,10 @@ extension InboxRenderable {
     mutating func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel]) {
         switch wrappedType {
         case .thread(var thread):
-            thread.updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+            thread.update(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
             wrappedType = .thread(thread)
         case .message(var message):
-            message.updateLabels(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+            message.update(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
             wrappedType = .message(message)
         }
 
@@ -108,7 +108,7 @@ extension InboxRenderable {
         // show 'inbox' badge in 'All Mail' folder
         switch wrappedType {
         case .thread(let thread):
-            self.badge = folderPath.isEmptyOrNil && thread.isInbox ? "inbox" : nil
+            self.badge = folderPath.isEmptyOrNil && thread.isInbox ? "folder_all_inbox".lowercased() : nil
         case .message:
             self.badge = nil
         }
