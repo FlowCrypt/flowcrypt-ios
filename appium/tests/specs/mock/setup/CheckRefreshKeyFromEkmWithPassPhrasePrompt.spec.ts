@@ -59,9 +59,9 @@ describe('SETUP: ', () => {
       await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmKeySamples.key0, ekmKeySamples.key1]);
 
-      // stage 4 - modified key gets updated, removed key does not get removed
+      // stage 4 - modified key gets updated
       mockApi.ekmConfig = {
-        returnKeys: [ekmKeySamples.key0Updated.prv]
+        returnKeys: [ekmKeySamples.key0Updated.prv, ekmKeySamples.key1.prv]
       }
       await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
@@ -73,7 +73,7 @@ describe('SETUP: ', () => {
 
       // stage 5 - older version of key does not get updated
       mockApi.ekmConfig = {
-        returnKeys: [ekmKeySamples.key0.prv]
+        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
       }
       await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();

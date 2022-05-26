@@ -477,7 +477,10 @@ VUiiqPCTkaE+FhjPMB2ArkK6l/U2IYb0M729KwgezEUa+sURNc98/Vtv3mJ8wWhz
 HS91YXTwD0LQWetwKHgh8JzAEXvWL+uXYjJpu0ih65Q6kSqj2TQES6gHMmHGNa2X
 /PB3LNLm1Qo=
 =+NfR
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
+    primaryFingerprint: 'E583 B442 1B0B 30C4 C99B D80E BA90 6726 82E7 10C7',
+    renderedPrimaryUid: 'Test1 <test1@example.net>',
+    renderedDateCreated: '4/21/22',
   },
   key1: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----

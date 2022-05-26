@@ -38,6 +38,8 @@ final class EKMVcHelper: EKMVcHelperType {
                 let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
                 let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
 
+                try removeLocalKeysIfNeeded(from: fetchedKeys, localKeys: localKeys)
+
                 let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
                 guard keysToUpdate.isNotEmpty else {
                     return
@@ -89,7 +91,8 @@ final class EKMVcHelper: EKMVcHelperType {
                 throw EmailKeyManagerApiError.keysAreInvalid
             }
             if let savedLocalKey = try localKeys.first(where: { try $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
-                if savedLocalKey.lastModified < keyLastModified {
+                // Do not update key if local saved key is revoked one
+                if savedLocalKey.lastModified < keyLastModified, !savedLocalKey.isRevoked {
                     keysToUpdate.append(keyDetail)
                 }
             } else {
@@ -97,6 +100,17 @@ final class EKMVcHelper: EKMVcHelperType {
             }
         }
         return keysToUpdate
+    }
+
+    private func removeLocalKeysIfNeeded(from serverKeys: [KeyDetails], localKeys: [Keypair]) throws {
+        var keypairsToDelete: [Keypair] = []
+        for localKey in localKeys {
+            // Delete locally saved key if it's removed from server and locally saved key is not revoked key
+            if try !serverKeys.contains(where: { try $0.primaryFingerprint == localKey.primaryFingerprint }), !localKey.isRevoked {
+                keypairsToDelete.append(localKey)
+            }
+        }
+        try appContext.encryptedStorage.removeKeypairs(keypairs: keypairsToDelete)
     }
 
     private func saveKeyToLocal(

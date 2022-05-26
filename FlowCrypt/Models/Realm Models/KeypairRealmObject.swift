@@ -24,6 +24,7 @@ final class KeypairRealmObject: Object {
     @Persisted var user: UserRealmObject?
     @Persisted var allFingerprints: List<String>
     @Persisted var allLongids: List<String>
+    @Persisted var isRevoked = false
 
     var primaryLongid: String {
         allLongids[0]
@@ -50,6 +51,7 @@ extension KeypairRealmObject {
         self.source = source.rawValue
         self.lastModified = keypair.lastModified
         self.user = user
+        self.isRevoked = keypair.isRevoked
     }
 }
 
