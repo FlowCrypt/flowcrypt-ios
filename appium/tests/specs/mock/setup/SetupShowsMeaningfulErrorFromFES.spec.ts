@@ -27,8 +27,8 @@ describe('SETUP: ', () => {
       mockApi.fesConfig = {
         returnError: {
           code: 400,
-          message: "some client err",
-          format: "wrong-text",
+          message: 'some client err',
+          format: 'wrong-text',
         }
       };
 
