@@ -16,6 +16,12 @@ export class FesHttpErr extends HttpErr {
   }
 }
 
+export class FesPlainHttpErr extends HttpErr {
+  public formatted = (): unknown => {
+    return this.message
+  }
+}
+
 export const getMockFesEndpoints = (
   mockConfig: MockConfig,
   fesConfig: FesConfig | undefined
@@ -70,7 +76,11 @@ export const getMockFesEndpoints = (
 
 const throwErrorIfConfigSaysSo = (config: FesConfig) => {
   if (config.returnError) {
-    throw new FesHttpErr(config.returnError.message, config.returnError.code);
+    if (config.returnError.format == "wrong-text") {
+      throw new FesPlainHttpErr(config.returnError.message, config.returnError.code);
+    } else {
+      throw new FesHttpErr(config.returnError.message, config.returnError.code);
+    }
   }
 }
 
