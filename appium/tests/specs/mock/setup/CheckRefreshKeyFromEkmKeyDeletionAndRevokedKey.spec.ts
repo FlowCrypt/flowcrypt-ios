@@ -42,7 +42,7 @@ describe('SETUP: ', () => {
       await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmKeySamples.key0Revoked]);
 
-      // stage 3 - updated key (with different fingerprint as revoked key) gets added
+      // stage 3 - another key (with different fingerprint compared to the revoked key) gets added
       mockApi.ekmConfig = {
         returnKeys: [ekmKeySamples.key0Revoked.prv, ekmKeySamples.key1.prv]
       }
