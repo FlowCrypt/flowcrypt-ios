@@ -44,6 +44,7 @@ struct Keypair: ArmoredPrvWithIdentity, Equatable {
     var allFingerprints: [String]
     var allLongids: [String]
     var lastModified: Int
+    var isRevoked: Bool
 
     var primaryLongid: String {
         allLongids[0]
@@ -60,6 +61,7 @@ extension Keypair {
         self.allFingerprints = object.allFingerprints.map { $0 }
         self.allLongids = object.allLongids.map { $0 }
         self.lastModified = object.lastModified
+        self.isRevoked = object.isRevoked
     }
 
     init (_ k: KeyDetails, passPhrase: String?, source: String) throws {
@@ -82,6 +84,7 @@ extension Keypair {
         self.source = source
         self.allFingerprints = k.fingerprints
         self.allLongids = k.ids.map(\.longid)
+        self.isRevoked = k.revoked
         guard let lastModified = k.lastModified else {
             throw KeypairError.keyMissingSelfSignature
         }
