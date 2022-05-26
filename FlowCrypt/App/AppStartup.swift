@@ -65,6 +65,31 @@ struct AppStartup {
         userDefaults.set(true, forKey: revokedUpdatedFlag)
     }
 
+    // Update `isRevoked` value (KeypairRealmObject `isRevoked` was added in realm schema version 11[2022 May 25th])
+    // Need to set correct `isRevoked` value when user first opens app from older versions
+    @MainActor
+    private func checkAndUpdateKeyPairIsRevoked(context: AppContextWithUser) async throws {
+        let revokedUpdatedFlag = "IS_KEY_PAIR_REVOKED_UPDATED"
+        let userDefaults = UserDefaults.standard
+        if userDefaults.bool(forKey: revokedUpdatedFlag) {
+           return
+        }
+        // Added storage access directly because this function logic should be removed in the near future
+        let storage = try context.encryptedStorage.storage
+        let keyPairObjects = storage.objects(KeypairRealmObject.self).unique()
+
+        for keyPairObject in keyPairObjects {
+            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: keyPairObject.private.data())
+            try storage.write {
+                if let keyDetail = parsedKey.keyDetails.first {
+                    keyPairObject.isRevoked = keyDetail.revoked
+                }
+            }
+        }
+
+        userDefaults.set(true, forKey: revokedUpdatedFlag)
+    }
+
     // Update `lastModified` value (KeyPairRealm `lastModified` was added in realm schema version 9)
     // Need to set correct `lastModified` value when user first opens app from older versions
     @MainActor
@@ -123,6 +148,8 @@ struct AppStartup {
                     try await checkAndUpdateLastModified(context: context)
                     // This one too.(which was added in schema 10)
                     try await checkAndUpdateIsRevoked(context: context)
+                    // This was added in schema 11
+                    try await checkAndUpdateKeyPairIsRevoked(context: context)
                     let controller = try InboxViewContainerController(appContext: context)
                     window.rootViewController = try SideMenuNavigationController(
                         appContext: context,

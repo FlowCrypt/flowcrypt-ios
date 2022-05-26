@@ -20,6 +20,7 @@ protocol EncryptedStorageType {
 
     func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) throws
     func getKeypairs(by email: String) throws -> [Keypair]
+    func removeKeypairs(keypairs: [Keypair]) throws
 
     func validate() throws
     func cleanup() throws
@@ -45,6 +46,7 @@ final class EncryptedStorage: EncryptedStorageType {
         case version8
         case version9
         case version10
+        case version11
 
         var version: SchemaVersion {
             switch self {
@@ -62,6 +64,8 @@ final class EncryptedStorage: EncryptedStorageType {
                 return SchemaVersion(appVersion: "0.2.0", dbSchemaVersion: 9)
             case .version10:
                 return SchemaVersion(appVersion: "1.0.7", dbSchemaVersion: 10)
+            case .version11:
+                return SchemaVersion(appVersion: "1.1.0", dbSchemaVersion: 11)
             }
         }
     }
@@ -69,7 +73,7 @@ final class EncryptedStorage: EncryptedStorageType {
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
-    private let currentSchema: EncryptedStorageSchema = .version10
+    private let currentSchema: EncryptedStorageSchema = .version11
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
     private let storageEncryptionKey: Data
@@ -182,6 +186,18 @@ extension EncryptedStorage {
         return try storage.objects(KeypairRealmObject.self).where({
             $0.user.email == email
         }).map(Keypair.init)
+    }
+
+    func removeKeypairs(keypairs: [Keypair]) throws {
+        let fingerprintsToBeDeleted = keypairs.map(\.primaryFingerprint)
+        let keypairRealmObjectsToDelete = try storage
+            .objects(KeypairRealmObject.self)
+            .where({ keypairRealmObject in
+                keypairRealmObject.primaryFingerprint.in(fingerprintsToBeDeleted)
+        })
+        try storage.write {
+            try storage.delete(keypairRealmObjectsToDelete)
+        }
     }
 
     func doesAnyKeypairExist(for email: String) throws -> Bool {

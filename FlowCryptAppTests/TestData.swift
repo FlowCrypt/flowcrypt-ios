@@ -15,7 +15,8 @@ struct TestData {
         source: "test",
         allFingerprints: [""],
         allLongids: ["063635B3E33EB14C"],
-        lastModified: 0
+        lastModified: 0,
+        isRevoked: false
     )
 
     static let k1 = Keypair(
@@ -25,7 +26,8 @@ struct TestData {
         source: "test",
         allFingerprints: [""],
         allLongids: ["3E8BF521DF439206"],
-        lastModified: 0
+        lastModified: 0,
+        isRevoked: false
     )
 
     static let k2rsa2048 = Keypair(
@@ -36,7 +38,8 @@ struct TestData {
         source: "test",
         allFingerprints: [""],
         allLongids: ["3A30F4CC0A9A8F10"],
-        lastModified: 0
+        lastModified: 0,
+        isRevoked: false
     )
 
     static let k3rsa4096 = Keypair(
@@ -47,7 +50,8 @@ struct TestData {
         source: "test",
         allFingerprints: [""],
         allLongids: ["7C307E6F2092962D"],
-        lastModified: 0
+        lastModified: 0,
+        isRevoked: false
     )
 
     static let matchingEncryptedMsg = "-----BEGIN PGP MESSAGE-----\r\nVersion: FlowCrypt 6.9.2 Gmail Encryption\r\nComment: Seamlessly send and receive encrypted email\r\n\r\nwV4DCv5+q0kWfdoSAQdA59SzeKU0efRDXSuzoFGHMDdQMujqEQHEaD0AdD21\r\nF3MwAHBc7I5rQmf+h5YvPcG4AaLIIWuC05lUt2NSpk6WPixleHTlo87wNspC\r\n6mCcPBtmwV4D1pPs8ZqVF5kSAQdA5Fmry/eWkZ5BORCTa/HQE5FXple74KpE\r\n6iQBuG7ODzEwdOc33533LE9OehrvhpAsmrGVR7tQfct5UAWYq7Qj3SL/jgMq\r\nfBYJbvHCQFOoRR4VwcBMAwurnAGLJl0iAQf/Rst9i88egj3Ax1gMv+K06F9J\r\nzOw+McaGcc0ob0DO30IOa5OjOaAzjRxQqMLkbG9xQfhhDU0jUsYSP/AX6utf\r\nBDFjndvUcPnoTiP4vvxDuFot3w3K0p1wWqXOR9oUJCb2HpcmBMKUbiJ+qM2D\r\nf5a1McbZeWZJCngXwS7ty76X6xpfVFi/DzeHVe7ryohZPfGB7gCS3scD46Pj\r\nifjgwJhyDjYkCh16voLjWJMOuZdKDIURi7pdnD1C1MexR3gpF9lYuNjkbPvA\r\nmWzT4cBKOTpnmclX8+3wXZ0qPegWAJ1jN0nGHsQAm4MBR3hsM8qZO0FungZF\r\nr3K4WuWx+GK5uFL988HBTAMpGvuIPzZ0jgEP/2Fvg/dg9PbeFaqB3anxRecF\r\nBeaMx0837yqPFxMNz3A8VPR3N+KkjqyBXospe/mKqJcpVIz2KWuqQchgN7xd\r\ny6BzsJ5Nfimvht8nLInQhzp944pfSYeCSYKUAG9z2ZnTNYlzW/c8Ko719nx8\r\nzzukZPmHGJGy8tu3eTHRPyLCBzGJNmQpPw4q/D/SQuWndc/pGv25gWmJi0xn\r\n3+ZQXUPqCRNwc76kEdlLmA23GyHwZGwwoUs2Q9j7fmPx6WLusII4HeGwNKRb\r\nf3B8mFTESwObYnqxXaShPFVFmabUtcWAEmT7Mjw2S1JeOMkHzi7vNcxRY9ld\r\noSTrwL/JeN7N1OOhZr1ow8CByumsPZErB3LHVbNXN4nui8587KibqiNMMOMw\r\nmd28+x0NN8PyIyCwhaz2B+Ekbp3gwLESbqXWa65+HsRiUCE8DBVUrewJMI8y\r\niUcfFyuS+i45nbAeVDf9r4nhcGYoOgXn+ho63ayWVdv4hZtDjg7RO2+M2B2Y\r\norRXlqOtUwutTEXl7mHnfWd0Yi5TOgZOoHkkYhX7GSd9OlFcK91s15OsFWCM\r\nH0SPj5mPEFB73xIGO8oWFE3ZLddIOB98Y38lyHy6ygJ760mX7E0BKNY8zzlS\r\nM1q1NhXdgdUzAhYgvy9jERtdl+REQemvXmeq5u2wSUFwM6N81mlLEsi8T3bY\r\n0kkBas9hguq98M52EU2F887pCB8pcIKvvWmDfxdRda3J5Fs9VvBQN3rU0Mgv\r\nWGGc0+GRUZW/uq603ywgnzIiz2R2N9TS6xviZnhF\r\n=wtE6\r\n-----END PGP MESSAGE-----\r\n"
