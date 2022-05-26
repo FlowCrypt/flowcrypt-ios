@@ -9,6 +9,7 @@ const SELECTORS = {
   INBOX_BTN: '~aid-menu-bar-item-inbox',
   SENT_BTN: '~aid-menu-bar-item-sent',
   TRASH_BTN: '~aid-menu-bar-item-trash',
+  ALL_MAIL_BTN: '~aid-menu-bar-item-all-mail',
   ADD_ACCOUNT_BUTTON: '~aid-add-account-btn'
 };
 
@@ -39,6 +40,10 @@ class MenuBarScreen extends BaseScreen {
 
   get trashButton() {
     return $(SELECTORS.TRASH_BTN)
+  }
+
+  get allMailButton() {
+    return $(SELECTORS.ALL_MAIL_BTN)
   }
 
   get addAccountButton() {
@@ -90,6 +95,10 @@ class MenuBarScreen extends BaseScreen {
 
   clickTrashButton = async () => {
     await ElementHelper.waitAndClick(await this.trashButton);
+  }
+
+  clickAllMailButton = async () => {
+    await ElementHelper.waitAndClick(await this.allMailButton);
   }
 
   checkMenuBarItem = async (menuItem: string) => {

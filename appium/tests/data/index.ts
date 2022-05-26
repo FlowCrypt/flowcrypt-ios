@@ -40,6 +40,9 @@ export const CommonData = {
     secondDate: 'Feb 06',
     thirdDate: 'Feb 07',
   },
+  archivedThread: {
+    subject: 'Archived thread'
+  },
   revokeValidMessage: {
     subject: 'test revoke valid key from ekm',
     message: 'Test revoked key'
@@ -95,7 +98,7 @@ export const CommonData = {
     secondRecipientName: 'Dmitry at FlowCrypt',
     thirdRecipientName: 'FlowCrypt Robot',
     newRecipientEmail: 'ioan@flowcrypt.com',
-    newRecipientName : 'Ioan at FlowCrypt'
+    newRecipientName: 'Ioan at FlowCrypt'
   },
   simpleEmail: {
     subject: 'Test 1',

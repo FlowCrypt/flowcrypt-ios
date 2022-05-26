@@ -15,7 +15,7 @@ struct FolderViewModel {
         case folder, settings, logOut
     }
 
-    static var empty = FolderViewModel(name: "", path: "", image: nil, itemType: .folder)
+    static let empty = FolderViewModel(name: "", path: "", image: nil, itemType: .folder)
 
     let name: String
     let path: String

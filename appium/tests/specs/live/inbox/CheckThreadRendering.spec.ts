@@ -2,7 +2,8 @@ import {
   SplashScreen,
   SetupKeyScreen,
   MailFolderScreen,
-  EmailScreen
+  EmailScreen,
+  MenuBarScreen
 } from '../../../screenobjects/all-screens';
 import { CommonData } from '../../../data';
 
@@ -18,14 +19,22 @@ describe('INBOX: ', () => {
     const dateFirst = CommonData.threadMessage.firstDate;
     const dateSecond = CommonData.threadMessage.secondDate;
     const dateThird = CommonData.threadMessage.thirdDate;
+    const archivedThreadSubject = CommonData.archivedThread.subject;
 
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickOnEmailBySubject(emailSubject);
-    await EmailScreen.checkThreadMessage(senderName, emailSubject, thirdMessage,2, dateThird);
+    await EmailScreen.checkInboxEmailActions();
+    await EmailScreen.checkThreadMessage(senderName, emailSubject, thirdMessage, 2, dateThird);
     await EmailScreen.checkThreadMessage(userEmail, emailSubject, secondMessage, 1, dateSecond);
     await EmailScreen.checkThreadMessage(senderName, emailSubject, firstMessage, 0, dateFirst);
+    await EmailScreen.clickBackButton();
+
+    await MenuBarScreen.clickMenuBtn();
+    await MenuBarScreen.clickAllMailButton();
+    await MailFolderScreen.clickOnEmailBySubject(archivedThreadSubject);
+    await EmailScreen.checkArchivedEmailActions();
   });
 });

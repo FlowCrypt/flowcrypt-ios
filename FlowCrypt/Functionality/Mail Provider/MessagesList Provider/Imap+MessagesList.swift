@@ -48,7 +48,7 @@ extension Imap: MessagesListProvider {
 extension Message {
     init(imapMessage: MCOIMAPMessage) {
         // swiftlint:disable compiler_protocol_init
-        let labels = Array(arrayLiteral: imapMessage.flags).map(MessageLabelType.init).map(MessageLabel.init)
+        let labels = Array(arrayLiteral: imapMessage.flags).map(MessageLabel.init)
         var sender: Recipient?
         if let senderAddress = imapMessage.header.from ?? imapMessage.header.sender,
            senderAddress.mailbox != nil,

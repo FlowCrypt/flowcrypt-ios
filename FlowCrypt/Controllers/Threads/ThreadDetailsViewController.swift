@@ -96,7 +96,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
 
-        setupNavigationBar(user: appContext.user)
+        setupNavigationBar(thread: thread)
         expandThreadMessage()
     }
 }
@@ -303,8 +303,7 @@ extension ThreadDetailsViewController {
         Task {
             do {
                 try await messageOperationsProvider.markAsRead(message: message, folder: currentFolderPath)
-                let updatedMessage = input[index].rawMessage.markAsRead(true)
-                input[index].rawMessage = updatedMessage
+                input[index].rawMessage.markAsRead(true)
                 node.reloadSections(IndexSet(integer: index), with: .fade)
             } catch {
                 showToast("message_mark_read_error".localizeWithArguments(error.localizedDescription))
@@ -499,10 +498,12 @@ extension ThreadDetailsViewController {
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {
-
     private func handleSuccessfulMessage(action: MessageAction) {
         hideSpinner()
-        onComplete(action, .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email))
+        onComplete(
+            action,
+            .init(thread: thread, folderPath: currentFolderPath)
+        )
         navigationController?.popViewController(animated: true)
     }
 
@@ -523,6 +524,10 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
     func handleArchiveTap() {
         handle(action: .archive)
+    }
+
+    func handleMoveToInboxTap() {
+        handle(action: .moveToInbox)
     }
 
     func handleMarkUnreadTap() {
@@ -546,6 +551,8 @@ extension ThreadDetailsViewController: MessageActionsHandler {
                     try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
                 case .moveToTrash:
                     try await threadOperationsProvider.moveThreadToTrash(thread: thread)
+                case .moveToInbox:
+                    try await threadOperationsProvider.moveThreadToInbox(thread: thread)
                 case .permanentlyDelete:
                     try await threadOperationsProvider.delete(thread: thread)
                 }
@@ -643,8 +650,9 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
         logger.logInfo("Back button. Are all messages read \(isRead)")
-        onComplete(MessageAction.markAsRead(isRead),
-                    .init(thread: thread, folderPath: currentFolderPath, activeUserEmail: appContext.user.email)
+        onComplete(
+            MessageAction.markAsRead(isRead),
+            .init(thread: thread, folderPath: currentFolderPath)
         )
         navigationController?.popViewController(animated: true)
     }
