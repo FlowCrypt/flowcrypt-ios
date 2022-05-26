@@ -189,8 +189,14 @@ extension EncryptedStorage {
     }
 
     func removeKeypairs(keypairs: [Keypair]) throws {
+        let fingerprintsToBeDeleted = keypairs.map(\.primaryFingerprint)
+        let keypairRealmObjectsToDelete = try storage
+            .objects(KeypairRealmObject.self)
+            .where({ keypairRealmObject in
+                keypairRealmObject.primaryFingerprint.in(fingerprintsToBeDeleted)
+        })
         try storage.write {
-            try storage.delete(keypairs.map(KeypairRealmObject.init))
+            try storage.delete(keypairRealmObjectsToDelete)
         }
     }
 

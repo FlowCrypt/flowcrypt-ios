@@ -92,7 +92,7 @@ final class EKMVcHelper: EKMVcHelperType {
             }
             if let savedLocalKey = try localKeys.first(where: { try $0.primaryFingerprint == keyDetail.primaryFingerprint }) {
                 // Do not update key if local saved key is revoked one
-                if savedLocalKey.lastModified < keyLastModified, savedLocalKey.isRevoked {
+                if savedLocalKey.lastModified < keyLastModified, !savedLocalKey.isRevoked {
                     keysToUpdate.append(keyDetail)
                 }
             } else {
@@ -106,7 +106,7 @@ final class EKMVcHelper: EKMVcHelperType {
         var keypairsToDelete: [Keypair] = []
         for localKey in localKeys {
             // Delete locally saved key if it's removed from server and locally saved key is not revoked key
-            if try !serverKeys.contains(where: { try $0.primaryFingerprint == localKey.primaryFingerprint }), localKey.isRevoked {
+            if try !serverKeys.contains(where: { try $0.primaryFingerprint == localKey.primaryFingerprint }), !localKey.isRevoked {
                 keypairsToDelete.append(localKey)
             }
         }
