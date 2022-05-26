@@ -34,15 +34,15 @@ describe('SETUP: ', () => {
       await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
 
       // stage 2 - EKM down
-      mockApi.ekmConfig = {
-        returnError: {
-          code: 500,
-          message: 'Test EKM down'
-        }
-      }
-      await AppiumHelper.restartApp(processArgs);
-      await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
+      // mockApi.ekmConfig = {
+      //   returnError: {
+      //     code: 500,
+      //     message: 'Test EKM down'
+      //   }
+      // }
+      // await AppiumHelper.restartApp(processArgs);
+      // await KeysScreen.openScreenFromSideMenu();
+      // await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
 
       // stage 3 - error shown to user
       mockApi.ekmConfig = {

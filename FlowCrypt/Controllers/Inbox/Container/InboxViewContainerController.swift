@@ -110,10 +110,7 @@ final class InboxViewContainerController: TableNodeViewController {
                     viewModel: input
                 )
                 navigationController?.setViewControllers([inboxViewController], animated: false)
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                    self?.ekmVcHelper?.refreshKeysFromEKMIfNeeded(in: inboxViewController)
-                }
+                ekmVcHelper?.refreshKeysFromEKMIfNeeded(in: inboxViewController)
             } catch {
                 showAlert(message: error.errorMessage)
             }
