@@ -15,11 +15,11 @@ public final class NavigationBarActionButton: UIBarButtonItem {
 
     private var onAction: (() -> Void)?
 
-    public convenience init(_ image: UIImage?, action: (() -> Void)?, accessibilityIdentifier: String? = nil) {
+    public convenience init(imageSystemName: String, action: (() -> Void)?, accessibilityIdentifier: String? = nil) {
         self.init()
         onAction = action
         customView = LeftAlignedIconButton(type: .system).with {
-            $0.setImage(image, for: .normal)
+            $0.setImage(UIImage(systemName: imageSystemName), for: .normal)
             $0.frame.size = Constants.buttonSize
             $0.addTarget(self, action: #selector(tap), for: .touchUpInside)
             $0.accessibilityIdentifier = accessibilityIdentifier

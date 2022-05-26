@@ -15,25 +15,32 @@ public final class InboxCellNode: CellNode {
         public let countText: NSAttributedString?
         public let dateText: NSAttributedString
         public let messageText: NSAttributedString?
+        public let badgeText: NSAttributedString?
 
         public init(
             emailText: NSAttributedString,
             countText: NSAttributedString?,
             dateText: NSAttributedString,
-            messageText: NSAttributedString?
+            messageText: NSAttributedString?,
+            badgeText: NSAttributedString?
         ) {
             self.emailText = emailText
             self.countText = countText
             self.dateText = dateText
             self.messageText = messageText
+            self.badgeText = badgeText
         }
     }
+
+    private let input: Input
 
     private let emailNode = ASTextNode2()
     private let countNode: ASTextNode2?
     private let dateNode = ASTextNode2()
-    private lazy var messageNode: ASTextNode2? = ASTextNode2()
     private let separatorNode = ASDisplayNode()
+
+    private lazy var messageNode = ASTextNode2()
+    private lazy var badgeNode = ASTextNode()
 
     public init(input: Input) {
         countNode = input.countText.map({
@@ -41,14 +48,25 @@ public final class InboxCellNode: CellNode {
             node.attributedText = $0
             return node
         })
+        self.input = input
+
         super.init()
+
         emailNode.attributedText = input.emailText
         dateNode.attributedText = input.dateText
 
         if let message = input.messageText {
-            messageNode?.attributedText = message
-            messageNode?.maximumNumberOfLines = 1
-            messageNode?.truncationMode = .byTruncatingTail
+            messageNode.attributedText = message
+            messageNode.maximumNumberOfLines = 1
+            messageNode.truncationMode = .byTruncatingTail
+        }
+
+        if let badgeText = input.badgeText {
+            badgeNode.textContainerInset = .init(top: 1, left: 6, bottom: 1, right: 6)
+            badgeNode.attributedText = badgeText
+            badgeNode.cornerRadius = 6
+            badgeNode.clipsToBounds = true
+            badgeNode.backgroundColor = .main
         }
 
         emailNode.maximumNumberOfLines = 1
@@ -75,10 +93,16 @@ public final class InboxCellNode: CellNode {
         separatorNode.style.flexGrow = 1.0
         separatorNode.style.preferredSize.height = 1.0
 
-        if let messageNode = messageNode {
-            nameLocationStack.children = [emailElement, messageNode]
+        if input.badgeText != nil {
+            messageNode.style.flexShrink = 1.0
+            let messageStack = ASStackLayoutSpec.horizontal()
+            messageStack.style.flexShrink = 1.0
+            messageStack.alignItems = .center
+            messageStack.spacing = 6
+            messageStack.children = [messageNode, badgeNode]
+            nameLocationStack.children = [emailElement, messageStack]
         } else {
-            nameLocationStack.children = [emailElement]
+            nameLocationStack.children = [emailElement, messageNode]
         }
 
         let headerStackSpec = ASStackLayoutSpec(

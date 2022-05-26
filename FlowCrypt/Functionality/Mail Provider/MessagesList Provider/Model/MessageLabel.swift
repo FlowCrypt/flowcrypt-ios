@@ -9,18 +9,7 @@
 import Foundation
 import MailCore
 
-struct MessageLabel: Equatable, Hashable {
-    let type: MessageLabelType
-
-    var isLabel: Bool {
-        guard case .label = type else {
-            return false
-        }
-        return true
-    }
-}
-
-enum MessageLabelType: Equatable, Hashable {
+enum MessageLabel: Equatable, Hashable {
     case inbox
     case seen
     case unread
@@ -49,17 +38,8 @@ enum MessageLabelType: Equatable, Hashable {
     }
 }
 
-extension MessageLabelType {
-    var isInbox: Bool {
-        guard case .inbox = self else {
-            return false
-        }
-        return true
-    }
-}
-
 // MARK: - IMAP Flags
-extension MessageLabelType {
+extension MessageLabel {
     // swiftlint:disable cyclomatic_complexity
     init(imapFlag: MCOMessageFlag) {
         switch imapFlag {
@@ -108,16 +88,9 @@ struct ImapMessageFlags: OptionSet {
 }
 
 // MARK: - GMAIL
-extension MessageLabelType {
+extension MessageLabel {
     init(gmailLabel: String) {
-        let types: [MessageLabelType] = [.seen, .unread, .starred, .sent, .trash, .draft, .important]
-        let all = types.map { type in
-            (type, type.value)
-        }
-        guard let label = all.first(where: { $0.1 == gmailLabel })?.0 else {
-            self = .label(gmailLabel)
-            return
-        }
-        self = label
+        let labels: [MessageLabel] = [.seen, .unread, .starred, .sent, .trash, .draft, .important, .inbox]
+        self = labels.first(where: { $0.value == gmailLabel }) ?? .label(gmailLabel)
     }
 }

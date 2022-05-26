@@ -90,7 +90,11 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
     }
 
-    private func putKeypairsInEncryptedStorage(encryptedPrv: CoreRes.GenerateKey, storageMethod: PassPhraseStorageMethod, passPhrase: String) throws {
+    private func putKeypairsInEncryptedStorage(
+        encryptedPrv: CoreRes.GenerateKey,
+        storageMethod: PassPhraseStorageMethod,
+        passPhrase: String
+    ) throws {
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
             passPhrase: storageMethod == .persistent ? passPhrase: nil,

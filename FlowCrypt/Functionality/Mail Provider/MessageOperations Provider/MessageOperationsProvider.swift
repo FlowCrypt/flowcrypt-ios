@@ -11,7 +11,8 @@ import FlowCryptCommon
 
 protocol MessageOperationsProvider {
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws
-    func delete(message: Message, form folderPath: String?) async throws
+    func delete(message: Message, from folderPath: String?) async throws
+    func moveMessageToInbox(message: Message, folderPath: String) async throws
     func archiveMessage(message: Message, folderPath: String) async throws
     func markAsUnread(message: Message, folder: String) async throws
     func markAsRead(message: Message, folder: String) async throws

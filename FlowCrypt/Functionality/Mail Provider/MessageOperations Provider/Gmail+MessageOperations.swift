@@ -18,11 +18,15 @@ extension GmailService: MessageOperationsProvider {
         try await update(message: message, labelsToRemove: [.unread])
     }
 
+    func moveMessageToInbox(message: Message, folderPath: String) async throws {
+        try await update(message: message, labelsToAdd: [.inbox])
+    }
+
     func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
         try await update(message: message, labelsToAdd: [.trash])
     }
 
-    func delete(message: Message, form folderPath: String?) async throws {
+    func delete(message: Message, from folderPath: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = message.identifier.stringId else {
                 return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
@@ -45,17 +49,14 @@ extension GmailService: MessageOperationsProvider {
     func archiveMessage(message: Message, folderPath: String) async throws {
         try await update(
             message: message,
-            labelsToRemove: message.labels
-                .filter(\.isLabel)
-                .map(\.type)
-                .filter { $0.isInbox }
+            labelsToRemove: [.inbox]
         )
     }
 
     private func update(
         message: Message,
-        labelsToAdd: [MessageLabelType] = [],
-        labelsToRemove: [MessageLabelType] = []
+        labelsToAdd: [MessageLabel] = [],
+        labelsToRemove: [MessageLabel] = []
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = message.identifier.stringId else {
