@@ -57,5 +57,6 @@ extension String {
     static let to = "to"
     static let cc = "cc"
     static let bcc = "bcc"
+    static let replyTo = "reply-to"
     static let identifier = "Message-ID"
 }
