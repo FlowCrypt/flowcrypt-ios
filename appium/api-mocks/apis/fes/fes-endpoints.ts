@@ -16,6 +16,17 @@ export class FesHttpErr extends HttpErr {
   }
 }
 
+export class FesWrongFormatHttpErr extends HttpErr {
+  public formatted = (): unknown => {
+    return {
+      "wrongFieldError": {
+        "wrongFieldCode": this.statusCode,
+        "wrongFieldMessage": this.message,
+      }
+    }
+  }
+}
+
 export class FesPlainHttpErr extends HttpErr {
   public formatted = (): unknown => {
     return this.message
@@ -76,10 +87,13 @@ export const getMockFesEndpoints = (
 
 const throwErrorIfConfigSaysSo = (config: FesConfig) => {
   if (config.returnError) {
-    if (config.returnError.format == "wrong-text") {
-      throw new FesPlainHttpErr(config.returnError.message, config.returnError.code);
-    } else {
-      throw new FesHttpErr(config.returnError.message, config.returnError.code);
+    switch (config.returnError.format) {
+      case "wrong-text":
+        throw new FesPlainHttpErr(config.returnError.message, config.returnError.code);
+      case "wrong-json":
+        throw new FesWrongFormatHttpErr(config.returnError.message, config.returnError.code);
+      default:
+        throw new FesHttpErr(config.returnError.message, config.returnError.code);
     }
   }
 }

@@ -14,9 +14,7 @@ public extension Error {
         case let self as CustomStringConvertible:
             return String(describing: self)
         default:
-            return localizedDescription.trimmingCharacters(
-                in: CharacterSet(charactersIn: "\"") // remove quotes from error message
-            )
+            return localizedDescription
         }
     }
 }
