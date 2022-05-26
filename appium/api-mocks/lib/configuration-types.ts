@@ -21,7 +21,7 @@ type Fes$ClientConfiguration = {
 };
 
 export type FesConfig = {
-  returnError?: { code: number, message: string },
+  returnError?: { code: number, message: string, format?: 'wrong-json' | 'wrong-text'},
   clientConfiguration?: Fes$ClientConfiguration
 };
 
