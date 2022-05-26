@@ -61,7 +61,7 @@ describe('SETUP: ', () => {
 
       // stage 4 - older version of key does not get updated
       mockApi.ekmConfig = {
-        returnKeys: [ekmKeySamples.key0.prv]
+        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
       }
       await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();
