@@ -173,6 +173,11 @@ export const CommonData = {
     passphrasePasswordErrorMessage: 'Error\nPlease do not use your private key pass phrase as a password for this message.\n\nYou should come up with some other unique password that you can share with recipient.',
     subjectPasswordErrorMessage: 'Error\nPlease do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don\'t need a password.'
   },
+  honorReplyTo: {
+    sender: 'flowcrypt.compatibility@gmail.com',
+    replyToEmail: 'reply@domain.com',
+    subject: 'Honor reply-to address - plain'
+  },
   recipientWithExpiredPublicKey: {
     email: 'expired@flowcrypt.com',
     name: 'expired key'
