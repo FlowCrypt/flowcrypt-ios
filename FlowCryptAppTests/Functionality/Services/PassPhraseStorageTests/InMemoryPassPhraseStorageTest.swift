@@ -77,6 +77,7 @@ class InMemoryPassPhraseProviderMock: InMemoryPassPhraseProviderType {
     var passPhrases: Set<PassPhrase> = []
 
     func save(passPhrase: PassPhrase) {
+        passPhrases.remove(passPhrase)
         passPhrases.insert(passPhrase)
     }
 
