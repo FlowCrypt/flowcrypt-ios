@@ -232,8 +232,11 @@ extension ThreadDetailsViewController {
 
         let sender = [input.rawMessage.sender].compactMap { $0 }
         let replyRecipient: [Recipient] = {
+            if input.rawMessage.replyTo.isNotEmpty {
+                return input.rawMessage.replyTo
+            }
             // When sender is logged in user, then use `to` as reply recipient
-            if !sender.filter({ $0.email == appContext.user.email }).isEmpty {
+            if sender.contains(where: { $0.email == appContext.user.email }) {
                 return input.rawMessage.to
             }
             return sender
