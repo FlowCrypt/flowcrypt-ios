@@ -154,6 +154,7 @@ extension Message {
         var to: String?
         var cc: String?
         var bcc: String?
+        var replyTo: String?
 
         for messageHeader in messageHeaders.compactMap({ $0 }) {
             guard let name = messageHeader.name?.lowercased(),
@@ -166,6 +167,7 @@ extension Message {
             case .to: to = value
             case .cc: cc = value
             case .bcc: bcc = value
+            case .replyTo: replyTo = value
             default: break
             }
         }
@@ -185,7 +187,8 @@ extension Message {
             raw: message.raw,
             to: to,
             cc: cc,
-            bcc: bcc
+            bcc: bcc,
+            replyTo: replyTo
         )
     }
 }

@@ -17,6 +17,7 @@ struct Message: Hashable {
     let to: [Recipient]
     let cc: [Recipient]
     let bcc: [Recipient]
+    let replyTo: [Recipient]
     let subject: String?
     let size: Int?
     let attachmentIds: [String]
@@ -50,7 +51,8 @@ struct Message: Hashable {
         raw: String? = nil,
         to: String? = nil,
         cc: String? = nil,
-        bcc: String? = nil
+        bcc: String? = nil,
+        replyTo: String? = nil
     ) {
         self.identifier = identifier
         self.date = date
@@ -65,6 +67,7 @@ struct Message: Hashable {
         self.to = Message.parseRecipients(to)
         self.cc = Message.parseRecipients(cc)
         self.bcc = Message.parseRecipients(bcc)
+        self.replyTo = Message.parseRecipients(replyTo)
     }
 }
 
