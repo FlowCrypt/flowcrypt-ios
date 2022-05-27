@@ -37,6 +37,9 @@ class InboxViewController: ViewController {
     internal var searchedExpression = ""
     var shouldBeginFetch = true
 
+    private let ekmVcHelper: EKMVcHelper
+    private var didRefreshKeys = false
+
     init(
         appContext: AppContextWithUser,
         viewModel: InboxViewModel,
@@ -50,6 +53,7 @@ class InboxViewController: ViewController {
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
         self.inboxDataProvider = provider
+        self.ekmVcHelper = EKMVcHelper(appContext: appContext)
 
         self.draftsListProvider = try draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
@@ -71,6 +75,15 @@ class InboxViewController: ViewController {
             setupUI()
             setupNavigationBar()
         }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        guard !didRefreshKeys else { return }
+
+        ekmVcHelper.refreshKeysFromEKMIfNeeded(in: self)
+        didRefreshKeys = true
     }
 
     override func viewWillAppear(_ animated: Bool) {
