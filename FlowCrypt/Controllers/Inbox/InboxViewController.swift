@@ -39,6 +39,7 @@ class InboxViewController: ViewController {
 
     private let ekmVcHelper: EKMVcHelper
     private var didRefreshKeys = false
+    private var didLayoutSubviews = false
 
     init(
         appContext: AppContextWithUser,
@@ -94,31 +95,23 @@ class InboxViewController: ViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        tableNode.frame = node.bounds
+        guard !didLayoutSubviews else { return }
 
-        if isSearch { return }
+        setupElements()
 
-        let offset: CGFloat = 16
-        let size = CGSize(width: 50, height: 50)
-
-        composeButton.frame = CGRect(
-            x: node.bounds.maxX - offset - size.width,
-            y: node.bounds.maxY - offset - size.height - safeAreaWindowInsets.bottom,
-            width: size.width,
-            height: size.height
-        )
-        composeButton.cornerRadius = size.width / 2
+        didLayoutSubviews = true
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         tableNode.reloadData()
+        setupElements()
     }
 }
 
 // MARK: - UI
 extension InboxViewController {
-    func setupUI() {
+    private func setupUI() {
         title = inboxTitle
         navigationItem.setAccessibility(id: inboxTitle)
 
@@ -151,6 +144,23 @@ extension InboxViewController {
                 ) { [weak self] in self?.handleSearchTap() }
             ]
         )
+    }
+
+    private func setupElements() {
+        tableNode.frame = node.bounds
+
+        if isSearch { return }
+
+        let offset: CGFloat = 16
+        let size = CGSize(width: 50, height: 50)
+
+        composeButton.frame = CGRect(
+            x: node.bounds.maxX - offset - size.width,
+            y: node.bounds.maxY - offset - size.height - safeAreaWindowInsets.bottom,
+            width: size.width,
+            height: size.height
+        )
+        composeButton.cornerRadius = size.width / 2
     }
 }
 
