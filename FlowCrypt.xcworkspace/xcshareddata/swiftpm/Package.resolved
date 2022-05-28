@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/google-api-objectivec-client-for-rest",
       "state" : {
-        "revision" : "3228334d0584cb9174796fecbe628a723be70452",
-        "version" : "1.7.0"
+        "revision" : "e6c87ff8f67e36375eefdcae79521e2942a8dd1f",
+        "version" : "2.0.0"
       }
     },
     {

@@ -282,7 +282,7 @@ export class Api<REQ, RES> {
 }
 
 export class HttpErr extends Error {
-  constructor(message: string, public statusCode: number) {
+  constructor(message: string, public statusCode: number = 400) {
     super(message);
   }
   public formatted = (): unknown => {
