@@ -4,8 +4,7 @@ import * as forge from 'node-forge';
 import { AddressObject, ParsedMail, StructuredHeader } from 'mailparser';
 import { ITestMsgStrategy, UnsuportableStrategyError } from './strategy-base';
 import { Buf } from '../../../core/buf';
-import { Config } from '../util';
-// import { expect } from 'chai';
+import { Config } from '../config';
 import { GoogleData } from '../google-data';
 import { HttpErr } from '../../../lib/api';
 import { MsgUtil } from '../../../core/crypto/pgp/msg-util';
@@ -86,8 +85,9 @@ class SignedMessageTestStrategy implements ITestMsgStrategy {
     if (!decrypted.signature) {
       throw new HttpErr(`Error: The message isn't signed.`);
     }
-    if (!decrypted.signature.signerLongids.includes(this.signedBy)) {
-      throw new HttpErr(`Error: expected message signed by ${this.signedBy} but was actually signed by ${decrypted.signature.signerLongids.length} other signers`);
+    if (!(decrypted.signature.signer?.longid == this.signedBy)) {
+      // TODO
+      throw new HttpErr(`Error: expected message signed by ${this.signedBy} but was actually signed by ${decrypted.signature.signer?.longid.length} other signers`);
     }
     const content = decrypted.content.toUtfStr();
     if (!content.includes(this.expectedText)) {

@@ -244,5 +244,5 @@ export const CommonData = {
   keyManagerURL: {
     mockServer: 'http://127.0.0.1:8001/ekm'
   },
-  mockProcessArgs: ['--mock-fes-api', '--mock-attester-api']
+  mockProcessArgs: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api']
 };
