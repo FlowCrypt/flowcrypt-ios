@@ -43,6 +43,8 @@ fastlane/README.md
 
 test-ci-secrets.json
 
+node_modules
+
 # appium
 appium/node_modules
 appium/package-lock.json
