@@ -96,7 +96,7 @@ class InboxViewController: ViewController {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 //        tableNode.reloadData()
-        setupElements()
+//        setupElements()
     }
 }
 
