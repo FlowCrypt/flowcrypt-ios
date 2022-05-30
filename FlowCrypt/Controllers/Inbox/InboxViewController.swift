@@ -494,13 +494,9 @@ extension InboxViewController: MsgListViewController {
         logger.logInfo("Mark as read \(isRead) at \(index)")
         inboxInput[index].isRead = isRead
 
-        if inboxInput[index].wrappedMessage == nil {
-            refresh()
-        } else {
-            let animationDuration = 0.3
-            DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
-                self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-            }
+        let animationDuration = 0.3
+        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
+            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
         }
     }
 
