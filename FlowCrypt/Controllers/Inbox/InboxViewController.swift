@@ -38,7 +38,6 @@ class InboxViewController: ViewController {
     var shouldBeginFetch = true
 
     private let ekmVcHelper: EKMVcHelper
-    private var didRefreshKeys = false
     private var didLayoutSubviews = false
 
     init(
@@ -78,15 +77,6 @@ class InboxViewController: ViewController {
         }
     }
 
-//    override func viewDidAppear(_ animated: Bool) {
-//        super.viewDidAppear(animated)
-//
-//        guard !didRefreshKeys else { return }
-//
-//
-//        didRefreshKeys = true
-//    }
-
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
@@ -103,11 +93,11 @@ class InboxViewController: ViewController {
         didLayoutSubviews = true
     }
 
-//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-//        super.traitCollectionDidChange(previousTraitCollection)
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
 //        tableNode.reloadData()
-//        setupElements()
-//    }
+        setupElements()
+    }
 }
 
 // MARK: - UI
