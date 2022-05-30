@@ -20,13 +20,17 @@ class AlertsFactory {
         onCancel: @escaping CancelCompletion,
         onCompletion: @escaping PassPhraseCompletion
     ) -> UIAlertController {
-        textFieldDelegate = SubmitOnPasteTextFieldDelegate(onSubmit: onCompletion)
-
         let alert = UIAlertController(
             title: title,
             message: nil,
             preferredStyle: .alert
         )
+
+        textFieldDelegate = SubmitOnPasteTextFieldDelegate(onSubmit: { passPhrase in
+            alert.dismiss(animated: true, completion: {
+                onCompletion(passPhrase)
+            })
+        })
 
         alert.addTextField { [weak self] tf in
             tf.isSecureTextEntry = true

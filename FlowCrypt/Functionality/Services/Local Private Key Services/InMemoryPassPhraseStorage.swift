@@ -84,7 +84,7 @@ final class InMemoryPassPhraseProvider: InMemoryPassPhraseProviderType {
     }
 
     func save(passPhrase: PassPhrase) {
-        passPhrases.insert(passPhrase)
+        passPhrases.update(with: passPhrase)
     }
 
     func remove(passPhrases passPhrasesToDelete: Set<PassPhrase>) {
