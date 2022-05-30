@@ -78,14 +78,14 @@ class InboxViewController: ViewController {
         }
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        guard !didRefreshKeys else { return }
-
-        ekmVcHelper.refreshKeysFromEKMIfNeeded(in: self)
-        didRefreshKeys = true
-    }
+//    override func viewDidAppear(_ animated: Bool) {
+//        super.viewDidAppear(animated)
+//
+//        guard !didRefreshKeys else { return }
+//
+//
+//        didRefreshKeys = true
+//    }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -98,15 +98,16 @@ class InboxViewController: ViewController {
         guard !didLayoutSubviews else { return }
 
         setupElements()
+        ekmVcHelper.refreshKeysFromEKMIfNeeded(in: self)
 
         didLayoutSubviews = true
     }
 
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        tableNode.reloadData()
-        setupElements()
-    }
+//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        super.traitCollectionDidChange(previousTraitCollection)
+//        tableNode.reloadData()
+//        setupElements()
+//    }
 }
 
 // MARK: - UI
@@ -219,7 +220,7 @@ extension InboxViewController {
         }
     }
 
-    internal func getSearchQuery() -> String? {
+    private func getSearchQuery() -> String? {
         var searchQuery: String?
         if searchedExpression.isNotEmpty {
             searchQuery = "\(searchedExpression) OR subject:\(searchedExpression)"
