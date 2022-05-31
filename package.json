@@ -23,12 +23,12 @@
   },
   "lint-staged": {
     "Core/*.{js,ts}": [
-      "cd Core && npm test",
       "cd Core && npm run tslint",
       "cd Core && npm run eslint"
     ],
     "appium/*.{js,ts}": [
-      "cd appium && npm run eslint"
+      "cd appium && npm run lint:fix",
+      "cd appium && npm run lint"
     ]
   }
 }
