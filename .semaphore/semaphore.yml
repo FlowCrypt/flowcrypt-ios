@@ -74,6 +74,9 @@ blocks:
             - ../.custom-npm/node_modules/.bin/npm test
             - ../.custom-npm/node_modules/.bin/npm run tslint
             - ../.custom-npm/node_modules/.bin/npm run eslint
+            - cd ..
+            - cd appium
+            - ../.custom-npm/node_modules/.bin/npm run lint
         - name: Swift tests
           commands:
             - bundle exec fastlane test
