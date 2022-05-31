@@ -28,7 +28,6 @@
       "cd Core && npm run eslint"
     ],
     "appium/*.{js,ts}": [
-      "cd appium && npm test",
       "cd appium && npm run eslint"
     ]
   }
