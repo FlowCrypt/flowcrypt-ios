@@ -75,8 +75,7 @@ blocks:
             - npm test
             - npm run tslint
             - npm run eslint
-            - cd ..
-            - cd appium
+            - cd ../appium
             - npm run lint
         - name: Swift tests
           commands:
