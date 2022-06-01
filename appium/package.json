@@ -9,8 +9,8 @@
     "test.mock.all": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all",
     "test.mock": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all --jasmineOpts.grep",
     "test": "npm run-script build.app && npm run-script only.test.all",
-    "lint": "cd .. && ./appium/node_modules/.bin/eslint appium/ --ext .ts",
-    "lint:fix": "cd .. && ./appium/node_modules/.bin/eslint appium/ --ext .ts --fix"
+    "lint": "npx eslint --ext .ts api-mocks tests",
+    "lint:fix": "npx eslint --ext .ts api-mocks tests --fix"
   },
   "author": "FlowCrypt a. s.",
   "license": "proprietary",
