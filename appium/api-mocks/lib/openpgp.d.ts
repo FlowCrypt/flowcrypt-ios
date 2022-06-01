@@ -6,7 +6,6 @@
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 /* tslint:disable:only-arrow-functions variable-name max-line-length no-null-keyword ban-types */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 declare namespace OpenPGP {
 
@@ -189,6 +188,7 @@ declare namespace OpenPGP {
       public s2k: { type: string } | null;
       public encrypt(passphrase: string): Promise<boolean>;
       public decrypt(passphrase: string): Promise<true>;
+      public validate(): Promise<any>;
     }
 
     export class Userid extends BasePacket {
@@ -203,6 +203,7 @@ declare namespace OpenPGP {
       public s2k: { type: string } | null;
       public encrypt(passphrase: string): Promise<boolean>;
       public decrypt(passphrase: string): Promise<true>;
+      public validate(): Promise<any>;
     }
 
     export class Signature extends BasePacket {
@@ -873,6 +874,7 @@ declare namespace OpenPGP {
       public getCreationTime(): Date;
       public getAlgorithmInfo(): AlgorithmInfo;
       public getKeyId(): Keyid;
+      public validate(): Promise<any>;
     }
 
     class SubKey {
