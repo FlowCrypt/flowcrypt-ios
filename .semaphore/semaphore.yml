@@ -65,7 +65,7 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
-          - sem-version node 16 && mkdir .custom-npm && cd .custom-npm && npm install npm@8.1.2 && cd ..
+          - 'wget https://github.com/FlowCrypt/flowcrypt-ios/files/8811545/custom-npm.zip -P ~/git/flowcrypt-ios/appium'
           - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules )
       jobs:
         - name: TypeScript tests + code quality
