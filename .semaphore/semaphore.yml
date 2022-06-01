@@ -10,6 +10,7 @@ auto_cancel:
   running:
     when: branch != 'master'
 blocks:
+
   - name: Appium UI tests
     dependencies: []
     run:
@@ -28,7 +29,7 @@ blocks:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
-          - sem-version node 16 && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
+          - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
       jobs:
         - name: Appium UI tests
           commands:
@@ -48,6 +49,7 @@ blocks:
           commands:
             - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
             - artifact push job ~/git/flowcrypt-ios/appium/video/*.mp4
+
   - name: TypeScript + Swift tests
     dependencies: []
     run:
@@ -64,7 +66,7 @@ blocks:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
           - sem-version node 16 && mkdir .custom-npm && cd .custom-npm && npm install npm@8.1.2 && cd ..
-          - ( cd Core && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules )
+          - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules )
       jobs:
         - name: TypeScript tests + code quality
           commands:
