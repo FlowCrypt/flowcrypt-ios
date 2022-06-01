@@ -68,6 +68,7 @@ blocks:
           - 'wget https://github.com/FlowCrypt/flowcrypt-ios/files/8811587/custom-npm.zip -P ~/git/flowcrypt-ios'
           - unzip custom-npm.zip
           - ( cd Core && cache restore core-npm && ../.custom-npm/node_modules/.bin/npm install && cache store core-npm node_modules )
+          - ( cd appium && cache restore appium-npm && ../.custom-npm/node_modules/.bin/npm install && cache store appium-npm node_modules )
       jobs:
         - name: TypeScript tests + code quality
           commands:
