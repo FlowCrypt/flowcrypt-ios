@@ -65,6 +65,7 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
+          - npm install -g npm@8.11.0
           - ( cd Core && cache restore core-npm && npm install && cache store core-npm node_modules )
           - ( cd appium && cache restore appium-npm && npm install && cache store appium-npm node_modules )
       jobs:
