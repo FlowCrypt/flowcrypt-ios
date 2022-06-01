@@ -2,7 +2,8 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: "appium/tsconfig.eslint.json"
+    project: "tsconfig.eslint.json",
+    tsconfigRootDir: __dirname,
   },
   plugins: [
     '@typescript-eslint',
