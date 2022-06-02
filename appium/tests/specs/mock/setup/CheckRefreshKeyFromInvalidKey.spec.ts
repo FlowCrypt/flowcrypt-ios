@@ -6,11 +6,12 @@ import {
 } from '../../../screenobjects/all-screens';
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { CommonData } from "../../../data";
+import BaseScreen from "../../../screenobjects/base.screen";
 import AppiumHelper from "../../../helpers/AppiumHelper";
 
 describe('SETUP: ', () => {
 
-  it('EKM server error handled gracefully', async () => {
+  it('EKM invalid key update error handled gracefully', async () => {
 
     const mockApi = new MockApi();
     const processArgs = CommonData.mockProcessArgs;
@@ -32,14 +33,13 @@ describe('SETUP: ', () => {
       await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
 
-      // stage 2 - EKM down
+      // stage 2 - error shown to user
       mockApi.ekmConfig = {
-        returnError: {
-          code: 500,
-          message: 'Test EKM down'
-        }
+        returnKeys: [ekmKeySamples.key0.prv.substring(0, 300)]
       }
       await AppiumHelper.restartApp(processArgs);
+      await BaseScreen.checkModalMessage(CommonData.refreshingKeysFromEkm.errorMessage);
+      await BaseScreen.clickOkButtonOnError();
       await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
     });

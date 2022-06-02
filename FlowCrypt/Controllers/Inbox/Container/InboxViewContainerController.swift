@@ -32,7 +32,7 @@ final class InboxViewContainerController: TableNodeViewController {
     private let appContext: AppContextWithUser
     private let foldersService: FoldersServiceType
     private let decorator: InboxViewControllerContainerDecorator
-    private let ekmVcHelper: EKMVcHelper?
+    private let ekmVcHelper: EKMVcHelper
 
     private var state: State = .loading {
         didSet { handleNewState() }
@@ -110,7 +110,7 @@ final class InboxViewContainerController: TableNodeViewController {
                     viewModel: input
                 )
                 navigationController?.setViewControllers([inboxViewController], animated: false)
-                ekmVcHelper?.refreshKeysFromEKMIfNeeded(in: inboxViewController)
+                ekmVcHelper.refreshKeysFromEKMIfNeeded(in: inboxViewController)
             } catch {
                 showAlert(message: error.errorMessage)
             }
