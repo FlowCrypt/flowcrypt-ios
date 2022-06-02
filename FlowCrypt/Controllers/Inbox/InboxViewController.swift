@@ -37,7 +37,6 @@ class InboxViewController: ViewController {
     internal var searchedExpression = ""
     var shouldBeginFetch = true
 
-    private let ekmVcHelper: EKMVcHelper
     private var didLayoutSubviews = false
 
     init(
@@ -53,7 +52,6 @@ class InboxViewController: ViewController {
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
         self.inboxDataProvider = provider
-        self.ekmVcHelper = EKMVcHelper(appContext: appContext)
 
         self.draftsListProvider = try draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
         self.decorator = decorator
@@ -88,7 +86,6 @@ class InboxViewController: ViewController {
         guard !didLayoutSubviews else { return }
 
         setupElements()
-        ekmVcHelper.refreshKeysFromEKMIfNeeded(in: self)
 
         didLayoutSubviews = true
     }
