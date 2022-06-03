@@ -16,7 +16,7 @@ import SwiftyRSA // for rsa
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8]
     func decryptRsaNoPadding(_ rsaPrvDerBase64: String, _ encryptedBase64: String) -> String
     func modPow(_ base: String, _ exponent: String, _ modulo: String) -> String
-    func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) throws -> [UInt8]
+    func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8]
 
     func setTimeout(_ callback: JSValue, _ ms: Double) -> String
     func clearTimeout(_ identifier: String)
@@ -72,7 +72,7 @@ final class CoreHost: NSObject, CoreHostExports {
     // there tend to be two keys to decrypt in an armored key, so that makes it 300 ms
     // I suspect it could be optimised to 50ms per pass, or 100ms total
     // but still better than 20 SECONDS per pass in JS
-    func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) throws -> [UInt8] {
+    func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8] {
         let dataGroupSize = 750 // performance optimisation
         let data = salt + passphrase
         let dataRepeatCount = Int((Float(count - prefix.count) / Float(max(data.count, 1))).rounded(.up))
@@ -86,7 +86,7 @@ final class CoreHost: NSObject, CoreHostExports {
         }
         let subArr = isp[0 ..< prefix.count + count] // free
         let hashable = Data(subArr) // takes 18 ms just recreating data, could be shaved off by passing ArraySlice to hash
-        return try hashDigest(name: algo, data: hashable) // takes 30 ms for sha256 16mb
+        return try! hashDigest(name: algo, data: hashable) // takes 30 ms for sha256 16mb
     }
 
     // JavaScriptCore does not come with a RNG, use one from Swift
