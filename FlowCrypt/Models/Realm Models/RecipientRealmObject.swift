@@ -22,14 +22,14 @@ extension RecipientRealmObject {
         name: String?,
         lastUsed: Date?,
         keys: [PubKey]
-    ) {
+    ) throws {
         self.init()
         self.email = email
         self.name = name ?? ""
         self.lastUsed = lastUsed
 
-        let realmKeys = keys
-            .compactMap { try? PubKeyRealmObject($0) }
+        let realmKeys = try keys
+            .compactMap { try PubKeyRealmObject($0) }
         for realmKey in realmKeys {
             self.pubKeys.append(realmKey)
         }
@@ -37,8 +37,8 @@ extension RecipientRealmObject {
 }
 
 extension RecipientRealmObject {
-    convenience init(_ recipient: RecipientWithSortedPubKeys) {
-        self.init(
+    convenience init(_ recipient: RecipientWithSortedPubKeys) throws {
+        try self.init(
             email: recipient.email,
             name: recipient.name,
             lastUsed: recipient.lastUsed,

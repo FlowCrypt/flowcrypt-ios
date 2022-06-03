@@ -74,16 +74,16 @@ class AppContext {
 
     @MainActor
     func getRequiredMailProvider() throws -> MailProvider {
-        guard let mailProvider = getOptionalMailProvider() else {
+        guard let mailProvider = try getOptionalMailProvider() else {
             throw AppErr.wrongMailProvider
         }
         return mailProvider
     }
 
     @MainActor
-    func getOptionalMailProvider() -> MailProvider? {
+    func getOptionalMailProvider() throws -> MailProvider? {
         guard
-            let currentUser = try? encryptedStorage.activeUser,
+            let currentUser = try encryptedStorage.activeUser,
             let currentAuthType = currentUser.authType
         else { return nil }
 

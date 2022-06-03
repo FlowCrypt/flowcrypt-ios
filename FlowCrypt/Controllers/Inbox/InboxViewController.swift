@@ -370,9 +370,13 @@ extension InboxViewController {
 
         switch error {
         case GmailServiceError.invalidGrant:
-            appContext.globalRouter.renderMissingPermissionsView(
-                appContext: appContext
-            )
+            do {
+                try appContext.globalRouter.renderMissingPermissionsView(
+                    appContext: appContext
+                )
+            } catch {
+                showAlert(message: error.errorMessage)
+            }
         default:
             let appError = AppErr(error)
             switch appError {

@@ -67,7 +67,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func save(recipient: RecipientWithSortedPubKeys) throws {
-        try save(RecipientRealmObject(recipient))
+        try save(try RecipientRealmObject(recipient))
     }
 
     func remove(recipient: RecipientWithSortedPubKeys) throws {
@@ -83,7 +83,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
 
     func updateKeys(for recipient: RecipientWithSortedPubKeys) throws {
         guard let recipientObject = try find(with: recipient.email) else {
-            try save(RecipientRealmObject(recipient))
+            try save(try RecipientRealmObject(recipient))
             return
         }
 
