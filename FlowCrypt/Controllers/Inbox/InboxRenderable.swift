@@ -35,6 +35,12 @@ extension InboxRenderable {
         }
         return message
     }
+    var wrappedThread: MessageThread? {
+        guard case .thread(let thread) = wrappedType else {
+            return nil
+        }
+        return thread
+    }
 }
 
 extension InboxRenderable {
@@ -57,9 +63,7 @@ extension InboxRenderable {
 
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missing_subject".localized
-        self.isRead = !thread.messages
-            .map(\.isMessageRead)
-            .contains(false)
+        self.isRead = thread.isRead
         let date = thread.messages.last?.date
         if let date = date {
             self.dateString = DateFormatter().formatDate(date)

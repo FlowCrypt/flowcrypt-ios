@@ -97,16 +97,20 @@ final class ThreadDetailsViewController: TableNodeViewController {
         node.dataSource = self
 
         setupNavigationBar(thread: thread)
-        expandThreadMessage()
+        expandThreadMessageAndMarkAsRead()
+    }
+
+    private func expandThreadMessageAndMarkAsRead() {
+        Task {
+            try await threadOperationsProvider.mark(thread: thread, asRead: true, in: currentFolderPath)
+        }
+        let indexOfSectionToExpand = input.firstIndex(where: { $0.rawMessage.isMessageRead == false }) ?? input.count - 1
+        let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand + 1)
+        handleExpandTap(at: indexPath)
     }
 }
 
 extension ThreadDetailsViewController {
-    private func expandThreadMessage() {
-        let indexOfSectionToExpand = thread.messages.firstIndex(where: { $0.isMessageRead == false }) ?? input.count - 1
-        let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand + 1)
-        handleExpandTap(at: indexPath)
-    }
 
     private func handleExpandTap(at indexPath: IndexPath) {
         guard let threadNode = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode else {
@@ -297,22 +301,6 @@ extension ThreadDetailsViewController {
             }
         }
     }
-
-    private func markAsRead(at index: Int) {
-        guard let message = input[safe: index]?.rawMessage else {
-            return
-        }
-
-        Task {
-            do {
-                try await messageOperationsProvider.markAsRead(message: message, folder: currentFolderPath)
-                input[index].rawMessage.markAsRead(true)
-                node.reloadSections(IndexSet(integer: index), with: .fade)
-            } catch {
-                showToast("message_mark_read_error".localizeWithArguments(error.localizedDescription))
-            }
-        }
-    }
 }
 
 extension ThreadDetailsViewController {
@@ -355,8 +343,6 @@ extension ThreadDetailsViewController {
         if !isAlreadyProcessed {
             input[messageIndex].processedMessage = processedMessage
             input[messageIndex].isExpanded = true
-
-            markAsRead(at: messageIndex)
 
             UIView.animate(
                 withDuration: 0.2,
@@ -551,7 +537,9 @@ extension ThreadDetailsViewController: MessageActionsHandler {
                     try await threadOperationsProvider.archive(thread: thread, in: currentFolderPath)
                 case .markAsRead(let isRead):
                     guard !isRead else { return }
-                    try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
+                    Task { // Run mark as unread operation in another thread
+                        try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
+                    }
                 case .moveToTrash:
                     try await threadOperationsProvider.moveThreadToTrash(thread: thread)
                 case .moveToInbox:
@@ -651,10 +639,9 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
 extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
-        let isRead = input.contains(where: { $0.rawMessage.isMessageRead })
-        logger.logInfo("Back button. Are all messages read \(isRead)")
+        logger.logInfo("Back button. Messages are all read")
         onComplete(
-            MessageAction.markAsRead(isRead),
+            MessageAction.markAsRead(true),
             .init(thread: thread, folderPath: currentFolderPath)
         )
         navigationController?.popViewController(animated: true)
