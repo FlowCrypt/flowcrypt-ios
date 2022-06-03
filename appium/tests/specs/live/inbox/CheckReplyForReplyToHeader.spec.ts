@@ -26,6 +26,7 @@ describe('INBOX: ', () => {
 
     // check reply message
     await EmailScreen.clickReplyButton();
+    await NewMessageScreen.showRecipientLabelIfNeeded();
     await NewMessageScreen.checkFilledComposeEmailInfo({
       recipients: [CommonData.honorReplyTo.replyToEmail],
       subject: replySubject,

@@ -37,6 +37,8 @@ class InboxViewController: ViewController {
     internal var searchedExpression = ""
     var shouldBeginFetch = true
 
+    private var didLayoutSubviews = false
+
     init(
         appContext: AppContextWithUser,
         viewModel: InboxViewModel,
@@ -81,31 +83,26 @@ class InboxViewController: ViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        tableNode.frame = node.bounds
+        guard !didLayoutSubviews else { return }
 
-        if isSearch { return }
+        setupElements()
 
-        let offset: CGFloat = 16
-        let size = CGSize(width: 50, height: 50)
-
-        composeButton.frame = CGRect(
-            x: node.bounds.maxX - offset - size.width,
-            y: node.bounds.maxY - offset - size.height - safeAreaWindowInsets.bottom,
-            width: size.width,
-            height: size.height
-        )
-        composeButton.cornerRadius = size.width / 2
+        didLayoutSubviews = true
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+
+        guard didLayoutSubviews else { return }
+
+        setupElements()
         tableNode.reloadData()
     }
 }
 
 // MARK: - UI
 extension InboxViewController {
-    func setupUI() {
+    private func setupUI() {
         title = inboxTitle
         navigationItem.setAccessibility(id: inboxTitle)
 
@@ -138,6 +135,23 @@ extension InboxViewController {
                 ) { [weak self] in self?.handleSearchTap() }
             ]
         )
+    }
+
+    private func setupElements() {
+        tableNode.frame = node.bounds
+
+        if isSearch { return }
+
+        let offset: CGFloat = 16
+        let size = CGSize(width: 50, height: 50)
+
+        composeButton.frame = CGRect(
+            x: node.bounds.maxX - offset - size.width,
+            y: node.bounds.maxY - offset - size.height - safeAreaWindowInsets.bottom,
+            width: size.width,
+            height: size.height
+        )
+        composeButton.cornerRadius = size.width / 2
     }
 }
 
@@ -196,7 +210,7 @@ extension InboxViewController {
         }
     }
 
-    internal func getSearchQuery() -> String? {
+    private func getSearchQuery() -> String? {
         var searchQuery: String?
         if searchedExpression.isNotEmpty {
             searchQuery = "\(searchedExpression) OR subject:\(searchedExpression)"
@@ -483,7 +497,9 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 // MARK: - MsgListViewController
 extension InboxViewController: MsgListViewController {
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
-        let index = inboxInput.firstIndex(of: message)
+        let index = inboxInput.firstIndex(where: {
+            $0.title == message.title && $0.subtitle == message.subtitle && $0.wrappedType == message.wrappedType
+        })
         logger.logInfo("Try to update message at \(String(describing: index))")
         return index
     }
@@ -493,6 +509,17 @@ extension InboxViewController: MsgListViewController {
 
         logger.logInfo("Mark as read \(isRead) at \(index)")
         inboxInput[index].isRead = isRead
+
+        // Mark wrapped message/thread(all mails in thread) as read/unread
+        if var wrappedThread = inboxInput[index].wrappedThread {
+            for i in 0 ..< wrappedThread.messages.count {
+                wrappedThread.messages[i].markAsRead(isRead)
+            }
+            inboxInput[index].wrappedType = .thread(wrappedThread)
+        } else if var wrappedMessage = inboxInput[index].wrappedMessage {
+            wrappedMessage.markAsRead(isRead)
+            inboxInput[index].wrappedType = .message(wrappedMessage)
+        }
 
         let animationDuration = 0.3
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
