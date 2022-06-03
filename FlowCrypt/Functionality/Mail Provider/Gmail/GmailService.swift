@@ -21,7 +21,7 @@ class GmailService: MailServiceProvider {
         let service = GTLRGmailService()
 
         if Bundle.isDebugBundleWithArgument("--mock-gmail-api") {
-            service.rootURLString = "http://127.0.0.1:8001/"
+            service.rootURLString = "https://127.0.0.1:8001/"
         }
 
         if gmailUserService.authorization == nil {

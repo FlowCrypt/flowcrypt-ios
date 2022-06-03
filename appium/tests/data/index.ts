@@ -242,7 +242,7 @@ export const CommonData = {
     errorMessage: 'Error\nError updating account keys: '
   },
   keyManagerURL: {
-    mockServer: 'http://127.0.0.1:8001/ekm'
+    mockServer: 'https://127.0.0.1:8001/ekm'
   },
   mockProcessArgs: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api']
 };

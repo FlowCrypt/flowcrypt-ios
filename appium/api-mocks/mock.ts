@@ -35,7 +35,7 @@ export class MockApi {
   private port = 8001;
   private logger: Logger = console.log // change here to log to a file instead
 
-  public mockConfig: MockConfig = { serverUrl: `http://127.0.0.1:${this.port}` };
+  public mockConfig: MockConfig = { serverUrl: `https://127.0.0.1:${this.port}` };
 
   public fesConfig: FesConfig | undefined = undefined;
   public googleConfig: GoogleConfig | undefined = undefined;
@@ -58,7 +58,7 @@ export class MockApi {
       () => getMockGoogleEndpoints(this.mockConfig, this.googleConfig),
       () => getMockEkmEndpoints(this.mockConfig, this.ekmConfig),
       () => getMockWkdEndpoints(this.mockConfig, this.wkdConfig),
-    ], undefined, false);
+    ], undefined, true);
     await api.listen(this.port);
     try {
       await testRunner();

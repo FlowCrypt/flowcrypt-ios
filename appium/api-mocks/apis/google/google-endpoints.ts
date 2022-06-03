@@ -13,7 +13,7 @@ import { lousyRandom } from '../../lib/mock-util';
 
 type DraftSaveModel = { message: { raw: string, threadId: string } };
 
-const allowedRecipients: Array<string> = ['flowcrypt.compatibility@gmail.com', 'manualcopypgp@flowcrypt.com',
+export const allowedRecipients: Array<string> = ['flowcrypt.compatibility@gmail.com', 'manualcopypgp@flowcrypt.com',
   'censored@email.com', 'test@email.com', 'human@flowcrypt.com', 'human+nopgp@flowcrypt.com', 'expired.on.attester@domain.com',
   'ci.tests.gmail@flowcrypt.test', 'smime1@recipient.com', 'smime2@recipient.com', 'smime@recipient.com',
   'smime.attachment@recipient.com', 'auto.refresh.expired.key@recipient.com', 'to@example.com', 'cc@example.com', 'bcc@example.com',
@@ -37,12 +37,10 @@ export const getMockGoogleEndpoints = (
   }
 
   return {
-    '/o/oauth2/auth': async ({ query: { client_id, response_type, access_type, state, redirect_uri, scope, login_hint, proceed } }, req) => {
-      if (isGet(req) && client_id === oauth.clientId && response_type === 'code' && access_type === 'offline' && state && redirect_uri === oauth.redirectUri && scope) { // auth screen
+    '/o/oauth2/auth': async ({ query: { client_id, response_type, state, redirect_uri, scope, login_hint } }, req) => {
+      if (isGet(req) && client_id === oauth.clientId && response_type === 'code' && state && redirect_uri === oauth.redirectUri && scope) { // auth screen
         if (!login_hint) {
           return oauth.renderText('choose account with login_hint');
-        } else if (!proceed) {
-          return oauth.renderText('redirect with proceed=true to continue');
         } else {
           return oauth.successPage(login_hint, state);
         }

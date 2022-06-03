@@ -99,7 +99,8 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
         super.init()
-        self.runWarmupQuery()
+        // TODO:
+        // self.runWarmupQuery()
     }
 
     private enum Constants {
@@ -237,8 +238,19 @@ extension GoogleUserService {
         if let userEmail = userEmail {
             additionalParameters["login_hint"] = userEmail
         }
+        let configuration: OIDServiceConfiguration
+        if Bundle.isDebugBundleWithArgument("--mock-gmail-api") {
+            configuration = OIDServiceConfiguration(
+                // TODO
+                authorizationEndpoint: URL(string: "https://127.0.0.1:8001/o/oauth2/auth")!,
+                tokenEndpoint: URL(string: "https://127.0.0.1:8001/token")!
+            )
+            additionalParameters["login_hint"] = "e2e.enterprise.test@flowcrypt.com"
+        } else {
+            configuration = GTMAppAuthFetcherAuthorization.configurationForGoogle()
+        }
         return OIDAuthorizationRequest(
-            configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
+            configuration: configuration,
             clientId: GeneralConstants.Gmail.clientID,
             scopes: scopes.map(\.value),
             redirectURL: GeneralConstants.Gmail.redirectURL,

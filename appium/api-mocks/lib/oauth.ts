@@ -10,9 +10,9 @@ const authURL = 'https://localhost:8001';
 
 export class OauthMock {
 
-  public clientId = '717284730244-ostjo2fdtr3ka4q9td69tdr9acmmru2p.apps.googleusercontent.com';
+  public clientId = '679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc.apps.googleusercontent.com';
   public expiresIn = 2 * 60 * 60; // 2hrs in seconds
-  public redirectUri = 'urn:ietf:wg:oauth:2.0:oob:auto';
+  public redirectUri = 'com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect';
 
   private authCodesByAcct: { [acct: string]: string } = {};
   private refreshTokenByAuthCode: { [authCode: string]: string } = {};
@@ -33,7 +33,16 @@ export class OauthMock {
     this.refreshTokenByAuthCode[authCode] = refreshToken;
     this.accessTokenByRefreshToken[refreshToken] = accessToken;
     this.acctByAccessToken[accessToken] = acct;
-    return this.htmlPage(`Success code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&error=`, `Authorized successfully, please return to app`);
+    // return {
+    //   "access_token": accessToken,
+    //   "expires_in": 3599,
+    //   "refresh_token": refreshToken,
+    //   "scope": "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://mail.google.com/ openid",
+    //   "token_type": "Bearer",
+    //   // "id_token": this.generateIdToken()
+    // }
+    return `com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&authuser=0&prompt=consent`;
+    // return this.htmlPage(`Success code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&error=`, `Authorized successfully, please return to app`);
   }
 
   public getRefreshTokenResponse = (code: string) => {

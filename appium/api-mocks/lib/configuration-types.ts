@@ -21,7 +21,7 @@ type Fes$ClientConfiguration = {
 };
 
 export type FesConfig = {
-  returnError?: { code: number, message: string, format?: 'wrong-json' | 'wrong-text'},
+  returnError?: { code: number, message: string, format?: 'wrong-json' | 'wrong-text' },
   clientConfiguration?: Fes$ClientConfiguration
 };
 
@@ -33,12 +33,12 @@ export type AttesterConfig = {
 };
 
 export type GoogleConfig = {
-  allowedRecipients: [string]
+  allowedRecipients: string[]
 };
 
 export type WkdConfig = {};
 
 export type EkmConfig = {
-    returnKeys?: string[]
-    returnError?: { code: number, message: string },
+  returnKeys?: string[]
+  returnError?: { code: number, message: string },
 };
