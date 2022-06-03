@@ -483,7 +483,9 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 // MARK: - MsgListViewController
 extension InboxViewController: MsgListViewController {
     func getUpdatedIndex(for message: InboxRenderable) -> Int? {
-        let index = inboxInput.firstIndex(of: message)
+        let index = inboxInput.firstIndex(where: {
+            $0.title == message.title && $0.subtitle == message.subtitle && $0.wrappedType == message.wrappedType
+        })
         logger.logInfo("Try to update message at \(String(describing: index))")
         return index
     }
@@ -493,6 +495,17 @@ extension InboxViewController: MsgListViewController {
 
         logger.logInfo("Mark as read \(isRead) at \(index)")
         inboxInput[index].isRead = isRead
+
+        // Mark wrapped message/thread(all mails in thread) as read/unread
+        if var wrappedThread = inboxInput[index].wrappedThread {
+            for i in 0 ..< wrappedThread.messages.count {
+                wrappedThread.messages[i].markAsRead(isRead)
+            }
+            inboxInput[index].wrappedType = .thread(wrappedThread)
+        } else if var wrappedMessage = inboxInput[index].wrappedMessage {
+            wrappedMessage.markAsRead(isRead)
+            inboxInput[index].wrappedType = .message(wrappedMessage)
+        }
 
         let animationDuration = 0.3
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
