@@ -238,7 +238,6 @@ class NewMessageScreen extends BaseScreen {
   checkAddedRecipient = async (recipient: string, order = 0, type = 'to') => {
     await this.showRecipientInputIfNeeded();
     const recipientCell = await $(`~aid-${type}-${order}-label`);
-    await ElementHelper.waitElementVisible(recipientCell);
     await ElementHelper.waitForValue(recipientCell, `  ${recipient}  `);
   }
 
