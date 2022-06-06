@@ -36,6 +36,10 @@ struct MessageThread: Equatable {
     var isArchived: Bool {
         !labels.contains(.inbox) && !labels.contains(.sent)
     }
+
+    var isRead: Bool {
+        !messages.contains(where: { !$0.isMessageRead })
+    }
 }
 
 extension MessageThread {
