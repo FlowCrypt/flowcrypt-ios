@@ -19,7 +19,7 @@
   "homepage": "https://github.com/FlowCrypt/flowcrypt-ios#readme",
   "devDependencies": {
     "husky": "^8.0.1",
-    "lint-staged": "^12.4.3"
+    "lint-staged": "^13.0.0"
   },
   "lint-staged": {
     "*.ts": [

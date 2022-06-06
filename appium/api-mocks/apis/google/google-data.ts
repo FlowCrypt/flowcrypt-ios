@@ -103,7 +103,7 @@ export class GoogleData {
    *   3) click "download api export"
    *   4) save the json file to exported-messages folder
    */
-  private static exportedMsgsPath = './test/source/mock/google/exported-messages/';
+  private static exportedMsgsPath = './api-mocks/apis/google/exported-messages/';
 
   private exludePplSearchQuery = /(?:-from|-to):"?([a-zA-Z0-9@.\-_]+)"?/g;
   private includePplSearchQuery = /(?:from|to):"?([a-zA-Z0-9@.\-_]+)"?/g;
@@ -173,6 +173,17 @@ export class GoogleData {
   constructor(private acct: string) {
     if (!DATA[acct]) {
       throw new Error('Missing DATA: use withInitializedData instead of direct constructor');
+    }
+  }
+
+  public getUserInfo = () => {
+    return {
+      id: '1',
+      email: 'e2e.enterprise.test@flowcrypt.com',
+      name: 'First Last',
+      given_name: 'First',
+      family_name: 'Last',
+      picture: '',
     }
   }
 

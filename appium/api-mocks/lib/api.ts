@@ -40,8 +40,10 @@ export class Api<REQ, RES> {
     this.apiName = apiName;
     if (useHttps) {
       this.server = https.createServer({
-        key: readFileSync('./api-mocks/mock-ssl-cert/key.pem.mock'),
-        cert: readFileSync('./api-mocks/mock-ssl-cert/cert.pem.mock')
+        key: readFileSync('./localhost+2-key.pem'),
+        cert: readFileSync('./localhost+2.pem'),
+        requestCert: false,
+        rejectUnauthorized: false,
       }, this.serverRequestListener);
     } else {
       this.server = http.createServer(this.serverRequestListener);
@@ -129,7 +131,8 @@ export class Api<REQ, RES> {
     }
     const handler = this.chooseHandler(req);
     if (handler) {
-      return this.fmtHandlerRes(await handler(this.parseReqBody(await this.collectReq(req), req), req), res);
+      const parsedReqBody = this.parseReqBody(await this.collectReq(req), req);
+      return this.fmtHandlerRes(await handler(parsedReqBody, req), res);
     }
     if ((req.url === '/' || req.url === `${this.urlPrefix}/`) && (req.method === 'GET' || req.method === 'HEAD')) {
       res.setHeader('content-type', 'application/json');
@@ -190,6 +193,7 @@ export class Api<REQ, RES> {
       throw new Error(`Don't know how to decide mock response content-type header`);
     }
     serverRes.setHeader('Access-Control-Allow-Origin', '*');
+
     return this.fmtRes(handlerRes);
   }
 
@@ -236,26 +240,42 @@ export class Api<REQ, RES> {
         req.url!.startsWith('/upload/') || // gmail message send
         req.url!.startsWith('/api/message/upload') || // flowcrypt.com/api pwd msg
         (req.url!.startsWith('/attester/pub/') && req.method === 'POST') || // attester submit
-        req.url!.startsWith('/api/v1/message') // FES pwd msg
+        req.url!.startsWith('/api/v1/message') || // FES pwd msg
+        req.url!.startsWith('/token')
       ) {
         parsedBody = body.toString();
       } else {
         parsedBody = JSON.parse(body.toString());
       }
     }
-    return { query: this.parseUrlQuery(req.url!), body: parsedBody } as unknown as REQ;
+
+    if (req.url!.startsWith('/token')) {
+      return { query: this.parseUrlQuery(body.toString()), body: parsedBody } as unknown as REQ;
+    } else {
+      return { query: this.parseUrlQuery(req.url!), body: parsedBody } as unknown as REQ;
+    }
   }
 
   private throttledResponse = async (response: http.ServerResponse, data: Buffer) => {
-    const chunkSize = 100 * 1024;
-    for (let i = 0; i < data.length; i += chunkSize) {
-      const chunk = data.slice(i, i + chunkSize);
-      response.write(chunk);
-      if (i > 0) {
-        await this.sleep(this.throttleChunkMsDownload / 1000);
+    if (data.toString().startsWith('com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect')) {
+      response.writeHead(302, {
+        Location: data.toString()
+      });
+      response.write(data);
+      response.end();
+    } else {
+      const chunkSize = 100 * 1024;
+      for (let i = 0; i < data.length; i += chunkSize) {
+        const chunk = data.slice(i, i + chunkSize);
+        response.write(chunk);
+        if (i > 0) {
+          await this.sleep(this.throttleChunkMsDownload / 1000);
+        }
       }
+
+      response.end();
     }
-    response.end();
+
   }
 
   private sleep = async (seconds: number) => {
@@ -264,10 +284,7 @@ export class Api<REQ, RES> {
 
   private parseUrlQuery = (url: string): { [k: string]: string } => {
     const queryIndex = url.indexOf('?');
-    if (!queryIndex) {
-      return {};
-    }
-    const queryStr = url.substring(queryIndex + 1);
+    const queryStr = !queryIndex ? url : url.substring(queryIndex + 1);
     const valuePairs = queryStr.split('&');
     const params: { [k: string]: string } = {};
     for (const valuePair of valuePairs) {

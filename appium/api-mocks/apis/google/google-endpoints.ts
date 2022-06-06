@@ -37,21 +37,30 @@ export const getMockGoogleEndpoints = (
   }
 
   return {
-    '/o/oauth2/auth': async ({ query: { client_id, response_type, state, redirect_uri, scope, login_hint } }, req) => {
+    '/o/oauth2/auth': async ({ query: { client_id, nonce, response_type, state, redirect_uri, scope, login_hint } }, req) => {
       if (isGet(req) && client_id === oauth.clientId && response_type === 'code' && state && redirect_uri === oauth.redirectUri && scope) { // auth screen
         if (!login_hint) {
           return oauth.renderText('choose account with login_hint');
         } else {
-          return oauth.successPage(login_hint, state);
+          return oauth.successPage(login_hint, state, nonce);
         }
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
-    '/token': async ({ query: { grant_type, refreshToken, client_id, code } }, req) => {
+    '/token': async ({ query: { grant_type, refresh_token, client_id, code } }, req) => {
+      console.log(`${grant_type}, ${refresh_token}, ${client_id}, ${code}`);
       if (isPost(req) && grant_type === 'authorization_code' && code && client_id === oauth.clientId) { // auth code from auth screen gets exchanged for access and refresh tokens
         return oauth.getRefreshTokenResponse(code);
-      } else if (isPost(req) && grant_type === 'refresh_token' && refreshToken && client_id === oauth.clientId) { // here also later refresh token gets exchanged for access token
-        return oauth.getAccessTokenResponse(refreshToken);
+      } else if (isPost(req) && grant_type === 'refresh_token' && refresh_token && client_id === oauth.clientId) { // here also later refresh token gets exchanged for access token
+        return oauth.getAccessTokenResponse(refresh_token);
+      }
+      throw new Error(`Method not implemented for ${req.url}: ${req.method}`);
+    },
+    '/oauth2/v2/userinfo': async (parsedReq, req) => {
+      const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
+      if (isGet(req)) {
+        const profile = (await GoogleData.withInitializedData(acct)).getUserInfo();
+        return profile;
       }
       throw new Error(`Method not implemented for ${req.url}: ${req.method}`);
     },

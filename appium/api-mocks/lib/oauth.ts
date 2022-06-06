@@ -25,7 +25,7 @@ export class OauthMock {
     return this.htmlPage(text, text);
   }
 
-  public successPage = (acct: string, state: string) => {
+  public successPage = (acct: string, state: string, nonce: string) => {
     const authCode = `mock-auth-code-${acct.replace(/[^a-z0-9]+/g, '')}`;
     const refreshToken = `mock-refresh-token-${acct.replace(/[^a-z0-9]+/g, '')}`;
     const accessToken = `mock-access-token-${acct.replace(/[^a-z0-9]+/g, '')}`;
@@ -33,16 +33,7 @@ export class OauthMock {
     this.refreshTokenByAuthCode[authCode] = refreshToken;
     this.accessTokenByRefreshToken[refreshToken] = accessToken;
     this.acctByAccessToken[accessToken] = acct;
-    // return {
-    //   "access_token": accessToken,
-    //   "expires_in": 3599,
-    //   "refresh_token": refreshToken,
-    //   "scope": "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://mail.google.com/ openid",
-    //   "token_type": "Bearer",
-    //   // "id_token": this.generateIdToken()
-    // }
-    return `com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&authuser=0&prompt=consent`;
-    // return this.htmlPage(`Success code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&error=`, `Authorized successfully, please return to app`);
+    return `${this.redirectUri}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&authuser=0&prompt=consent&nonce=${encodeURIComponent(nonce)}`;
   }
 
   public getRefreshTokenResponse = (code: string) => {
@@ -50,7 +41,7 @@ export class OauthMock {
     const access_token = this.getAccessToken(refresh_token);
     const acct = this.acctByAccessToken[access_token];
     const id_token = this.generateIdToken(acct);
-    return { access_token, refresh_token, expires_in: this.expiresIn, id_token, token_type: 'refresh_token' }; // guessed the token_type
+    return { access_token, refresh_token, expires_in: this.expiresIn, id_token: id_token, nonce: "123", token_type: 'Bearer', scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://mail.google.com/ openid" }; // guessed the token_type
   }
 
   public getAccessTokenResponse = (refreshToken: string) => {
@@ -58,7 +49,7 @@ export class OauthMock {
       const access_token = this.getAccessToken(refreshToken);
       const acct = this.acctByAccessToken[access_token];
       const id_token = this.generateIdToken(acct);
-      return { access_token, expires_in: this.expiresIn, id_token, token_type: 'Bearer' };
+      return { access_token, expires_in: this.expiresIn, id_token, token_type: 'Bearer', nonce: "123" };
     } catch (e) {
       throw new HttpErr('invalid_grant', Status.BAD_REQUEST);
     }
@@ -126,10 +117,10 @@ export class MockJwt {
   public static new = (email: string, expiresIn = 1 * 60 * 60): string => {
     const data = {
       at_hash: 'at_hash',
-      exp: expiresIn,
-      iat: 123,
+      exp: Math.round(Date.now() / 1000) + expiresIn,
+      iat: Math.round(Date.now() / 1000),
       sub: 'sub',
-      aud: 'aud',
+      aud: '679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc.apps.googleusercontent.com', // should be client_id
       azp: 'azp',
       iss: authURL,
       name: 'First Last',
@@ -139,8 +130,9 @@ export class MockJwt {
       given_name: 'First',
       email,
       email_verified: true,
+      nonce: '123'
     };
-    const newIdToken = `fakeheader.${Buf.fromUtfStr(JSON.stringify(data)).toBase64UrlStr()}.${Str.sloppyRandom(30)}`;
+    const newIdToken = `eyJhbGciOiJSUzI1NiIsImtpZCI6Ijc0ODNhMDg4ZDRmZmMwMDYwOWYwZTIyZjNjMjJkYTVmZTM5MDZjY2MiLCJ0eXAiOiJKV1QifQ.${Buf.fromUtfStr(JSON.stringify(data)).toBase64UrlStr()}.${Str.sloppyRandom(30)}`;
     return newIdToken;
   }
 

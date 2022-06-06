@@ -99,6 +99,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
         super.init()
+
         // TODO:
         // self.runWarmupQuery()
     }
@@ -249,14 +250,17 @@ extension GoogleUserService {
         } else {
             configuration = GTMAppAuthFetcherAuthorization.configurationForGoogle()
         }
-        return OIDAuthorizationRequest(
-            configuration: configuration,
-            clientId: GeneralConstants.Gmail.clientID,
-            scopes: scopes.map(\.value),
-            redirectURL: GeneralConstants.Gmail.redirectURL,
-            responseType: OIDResponseTypeCode,
-            additionalParameters: additionalParameters
-        )
+
+        return OIDAuthorizationRequest(configuration: configuration, clientId: GeneralConstants.Gmail.clientID, clientSecret: nil, scope: scopes.map(\.value).joined(separator: " "), redirectURL: GeneralConstants.Gmail.redirectURL, responseType: OIDResponseTypeCode, state: "xdXZGPC4DeaXbZIrwcuw2V5SA9OtV6oUBN3GLmxRdu0", nonce: "123", codeVerifier: nil, codeChallenge: nil, codeChallengeMethod: nil, additionalParameters: additionalParameters)
+//        return OIDAuthorizationRequest(
+//            configuration: configuration,
+//            clientId: GeneralConstants.Gmail.clientID,
+//            scopes: scopes.map(\.value),
+//            redirectURL: GeneralConstants.Gmail.redirectURL,
+//            responseType: OIDResponseTypeCode,
+//            additionalParameters: additionalParameters,
+//            nonce: "123"
+//        )
     }
 
     // save auth session to keychain
@@ -281,6 +285,9 @@ extension GoogleUserService {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLROauth2_Userinfo, Error>) in
             let query = GTLROauth2Query_UserinfoGet.query()
             let authService = GTLROauth2Service()
+            if Bundle.isDebugBundleWithArgument("--mock-gmail-api") {
+                authService.rootURLString = "https://127.0.0.1:8001/"
+            }
             authService.authorizer = authorization
             authService.executeQuery(query) { _, data, error in
                 if let error = error {
