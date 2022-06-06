@@ -48,7 +48,6 @@ export const getMockGoogleEndpoints = (
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
     '/token': async ({ query: { grant_type, refresh_token, client_id, code } }, req) => {
-      console.log(`${grant_type}, ${refresh_token}, ${client_id}, ${code}`);
       if (isPost(req) && grant_type === 'authorization_code' && code && client_id === oauth.clientId) { // auth code from auth screen gets exchanged for access and refresh tokens
         return oauth.getRefreshTokenResponse(code);
       } else if (isPost(req) && grant_type === 'refresh_token' && refresh_token && client_id === oauth.clientId) { // here also later refresh token gets exchanged for access token
