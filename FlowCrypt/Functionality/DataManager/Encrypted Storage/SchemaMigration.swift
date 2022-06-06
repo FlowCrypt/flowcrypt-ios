@@ -49,6 +49,7 @@ extension SchemaMigration.Properties {
         case customKeyserverUrl
         case keyManagerUrl
         case disallowAttesterSearchForDomains
+        case allowAttesterSearchOnlyForDomains
         case enforceKeygenAlgo
         case enforceKeygenExpireMonths
         case userEmail

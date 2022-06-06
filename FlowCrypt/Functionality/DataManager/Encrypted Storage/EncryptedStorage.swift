@@ -47,6 +47,7 @@ final class EncryptedStorage: EncryptedStorageType {
         case version9
         case version10
         case version11
+        case version12
 
         var version: SchemaVersion {
             switch self {
@@ -66,6 +67,8 @@ final class EncryptedStorage: EncryptedStorageType {
                 return SchemaVersion(appVersion: "1.0.7", dbSchemaVersion: 10)
             case .version11:
                 return SchemaVersion(appVersion: "1.1.0", dbSchemaVersion: 11)
+            case .version12:
+                return SchemaVersion(appVersion: "1.1.0", dbSchemaVersion: 12)
             }
         }
     }
@@ -73,7 +76,7 @@ final class EncryptedStorage: EncryptedStorageType {
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
-    private let currentSchema: EncryptedStorageSchema = .version11
+    private let currentSchema: EncryptedStorageSchema = .version12
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
     private let storageEncryptionKey: Data
