@@ -12,33 +12,54 @@ describe('SETUP: ', () => {
   it('respects allow_attester_search_only_for_domains and ignore disallow_attester_search_for_domains if it\'s present', async () => {
 
     const mockApi = new MockApi();
+    const enabledEmail = 'attester@enabled.test';
+    const disabledEmail = 'attester@disabled.test';
+    const enabledUserName = 'Tom James Holub';
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
         key_manager_url: "https://ekm.flowcrypt.com",
-        disallow_attester_search_for_domains: ["disabled.test"]
+        allow_attester_search_only_for_domains: ["enabled.test"],
       }
     };
     mockApi.attesterConfig = {
       servedPubkeys: {
-        'attester@disabled.test': attesterPublicKeySamples.valid,
-        'attester@enabled.test': attesterPublicKeySamples.valid
+        [enabledEmail]: attesterPublicKeySamples.valid,
+        [disabledEmail]: attesterPublicKeySamples.valid
       }
     };
 
     await mockApi.withMockedApis(async () => {
+      // stage 1: setup
       await SplashScreen.login();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
 
-      // Adding recipients
-      await NewMessageScreen.setAddRecipient('attester@disabled.test');
-      await NewMessageScreen.setAddRecipient('attester@enabled.test');
-
+      // stage 2: check if allow_attester_search_only_for_domains is respected
+      await NewMessageScreen.setAddRecipient(disabledEmail);
+      await NewMessageScreen.setAddRecipient(enabledEmail);
       // Checking added recipients color
-      await NewMessageScreen.checkAddedRecipientColor('attester@disabled.test', 0, 'gray');
-      await NewMessageScreen.checkAddedRecipientColor('Tom James Holub', 1, 'green');
+      await NewMessageScreen.checkAddedRecipientColor(disabledEmail, 0, 'gray');
+      await NewMessageScreen.checkAddedRecipientColor(enabledUserName, 1, 'green');
+      await NewMessageScreen.deleteAddedRecipientWithDoubleBackspace();
+      await NewMessageScreen.deleteAddedRecipientWithDoubleBackspace();
+
+      // stage 2: check if disallow_attester_search_for_domains not respected when allow_attester_search_only_for_domains is set
+      mockApi.fesConfig = {
+        clientConfiguration: {
+          flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
+          key_manager_url: "https://ekm.flowcrypt.com",
+          allow_attester_search_only_for_domains: ["enabled.test"],
+          disallow_attester_search_for_domains: ["*"]
+        }
+      };
+      // stage 2: check if allow_attester_search_only_for_domains is respected
+      await NewMessageScreen.setAddRecipient(disabledEmail);
+      await NewMessageScreen.setAddRecipient(enabledEmail);
+      // Checking added recipients color
+      await NewMessageScreen.checkAddedRecipientColor(disabledEmail, 0, 'gray');
+      await NewMessageScreen.checkAddedRecipientColor(enabledUserName, 1, 'green');
     });
   });
 });
