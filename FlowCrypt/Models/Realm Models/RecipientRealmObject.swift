@@ -37,7 +37,7 @@ extension RecipientRealmObject {
 }
 
 extension RecipientRealmObject {
-    convenience init(_ recipient: RecipientWithSortedPubKeys) throws {
+    convenience init(_ recipient: RecipientWithSortedPubKeys) {
         self.init(
             email: recipient.email,
             name: recipient.name,
