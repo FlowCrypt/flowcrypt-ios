@@ -210,13 +210,17 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     func renderMissingPermissionsView(appContext: AppContext) {
-        let email = (try? appContext.encryptedStorage.activeUser?.email) ?? ""
-        let controller = CheckMailAuthViewController(
-            appContext: appContext,
-            decorator: CheckMailAuthViewDecorator(type: .invalidGrant(email)),
-            email: email
-        )
-        keyWindow.rootViewController = MainNavigationController(rootViewController: controller)
-        keyWindow.makeKeyAndVisible()
+        do {
+            let email = try appContext.encryptedStorage.activeUser?.email ?? ""
+            let controller = CheckMailAuthViewController(
+                appContext: appContext,
+                decorator: CheckMailAuthViewDecorator(type: .invalidGrant(email)),
+                email: email
+            )
+            keyWindow.rootViewController = MainNavigationController(rootViewController: controller)
+            keyWindow.makeKeyAndVisible()
+        } catch {
+            keyWindow.rootViewController?.showAlert(message: error.errorMessage)
+        }
     }
 }

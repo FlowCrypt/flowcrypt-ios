@@ -120,9 +120,7 @@ final class InboxViewContainerController: TableNodeViewController {
     private func handle(error: Error) {
         switch error {
         case GmailServiceError.invalidGrant:
-            appContext.globalRouter.renderMissingPermissionsView(
-                appContext: appContext
-            )
+            appContext.globalRouter.renderMissingPermissionsView(appContext: appContext)
         default:
             showAlert(
                 message: error.errorMessage,

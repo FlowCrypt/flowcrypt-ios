@@ -230,6 +230,7 @@ extension MessageService {
         let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email, shouldUpdateLastUsed: false)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
+        // try? because we may ignore update remote result
         try? await pubLookup.fetchRemoteUpdateLocal(with: sender)
         guard let contact = try await localContactsProvider.searchRecipient(with: sender.email)
         else { return [] }
