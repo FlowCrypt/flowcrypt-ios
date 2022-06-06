@@ -15,13 +15,14 @@ type Fes$ClientConfiguration = {
   flags?: Fes$ClientConfiguration$flag[],
   custom_keyserver_url?: string,
   key_manager_url?: string,
+  allow_attester_search_only_for_domains?: string[],
   disallow_attester_search_for_domains?: string[],
   enforce_keygen_algo?: string,
   enforce_keygen_expire_months?: number,
 };
 
 export type FesConfig = {
-  returnError?: { code: number, message: string, format?: 'wrong-json' | 'wrong-text'},
+  returnError?: { code: number, message: string, format?: 'wrong-json' | 'wrong-text' },
   clientConfiguration?: Fes$ClientConfiguration
 };
 
@@ -39,6 +40,6 @@ export type GoogleConfig = {
 export type WkdConfig = {};
 
 export type EkmConfig = {
-    returnKeys?: string[]
-    returnError?: { code: number, message: string },
+  returnKeys?: string[]
+  returnError?: { code: number, message: string },
 };
