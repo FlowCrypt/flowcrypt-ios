@@ -132,9 +132,8 @@ class ClientConfiguration {
         }
 
         // When allow_attester_search_only_for_domains is set, ignore other flags
-        let onlyAllowedDomains = raw.allowAttesterSearchOnlyForDomains ?? []
-        if onlyAllowedDomains.isNotEmpty {
-            return onlyAllowedDomains.contains(recipientDomain)
+        if let allowAttesterSearchOnlyForDomains = raw.allowAttesterSearchOnlyForDomains {
+            return allowAttesterSearchOnlyForDomains.contains(recipientDomain)
         }
 
         let disallowedDomains = raw.disallowAttesterSearchForDomains ?? []
