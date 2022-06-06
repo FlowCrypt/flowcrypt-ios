@@ -13,7 +13,7 @@ import UIKit
 protocol GlobalRouterType {
     func proceed()
     func signIn(appContext: AppContext, route: GlobalRoutingType, email: String?) async
-    func renderMissingPermissionsView(appContext: AppContext) throws
+    func renderMissingPermissionsView(appContext: AppContext)
     func askForContactsPermission(for route: GlobalRoutingType, appContext: AppContextWithUser) async throws
     func switchActive(user: User, appContext: AppContext) async throws
     func signOut(appContext: AppContext) async throws
@@ -209,14 +209,18 @@ extension GlobalRouter: GlobalRouterType {
         keyWindow.makeKeyAndVisible()
     }
 
-    func renderMissingPermissionsView(appContext: AppContext) throws {
-        let email = try appContext.encryptedStorage.activeUser?.email ?? ""
-        let controller = CheckMailAuthViewController(
-            appContext: appContext,
-            decorator: CheckMailAuthViewDecorator(type: .invalidGrant(email)),
-            email: email
-        )
-        keyWindow.rootViewController = MainNavigationController(rootViewController: controller)
-        keyWindow.makeKeyAndVisible()
+    func renderMissingPermissionsView(appContext: AppContext) {
+        do {
+            let email = try appContext.encryptedStorage.activeUser?.email ?? ""
+            let controller = CheckMailAuthViewController(
+                appContext: appContext,
+                decorator: CheckMailAuthViewDecorator(type: .invalidGrant(email)),
+                email: email
+            )
+            keyWindow.rootViewController = MainNavigationController(rootViewController: controller)
+            keyWindow.makeKeyAndVisible()
+        } catch {
+            keyWindow.rootViewController?.showAlert(message: error.errorMessage)
+        }
     }
 }

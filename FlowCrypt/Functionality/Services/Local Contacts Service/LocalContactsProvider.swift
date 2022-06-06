@@ -67,7 +67,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
     }
 
     func save(recipient: RecipientWithSortedPubKeys) throws {
-        try save(try RecipientRealmObject(recipient))
+        try save(RecipientRealmObject(recipient))
     }
 
     func remove(recipient: RecipientWithSortedPubKeys) throws {
