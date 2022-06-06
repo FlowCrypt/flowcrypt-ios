@@ -131,7 +131,7 @@ struct AppStartup {
 
     /// todo - refactor so that it doesn't need getOptionalMailProvider
     private func renewSessionIfValid() async throws {
-        guard let mailProvider = await appContext.getOptionalMailProvider() else {
+        guard let mailProvider = try await appContext.getOptionalMailProvider() else {
             return
         }
         return try await mailProvider.sessionProvider.renewSession()
@@ -262,7 +262,7 @@ struct AppStartup {
         let session = appContext.session
 
         guard
-            let user = try? appContext.encryptedStorage.activeUser,
+            let user = try appContext.encryptedStorage.activeUser,
             let authType = user.authType
         else {
             let sessionName = appContext.session?.description ?? "nil"
