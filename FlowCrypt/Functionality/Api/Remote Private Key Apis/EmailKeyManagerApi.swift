@@ -70,6 +70,11 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         let response = try await ApiCall.call(request)
         let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
 
+        let validKeys = try await validate(decryptedPrivateKeysResponse: decryptedPrivateKeysResponse)
+        return validKeys
+    }
+
+    func validate(decryptedPrivateKeysResponse: DecryptedPrivateKeysResponse) async throws -> [KeyDetails] {
         var keys: [KeyDetails] = []
         for privateKey in decryptedPrivateKeysResponse.privateKeys {
             let parsedPrivateKey = try await core.parseKeys(armoredOrBinary: privateKey.decryptedPrivateKey.data())
@@ -84,7 +89,6 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             }
             keys.append(contentsOf: parsedPrivateKey.keyDetails)
         }
-
         return keys
     }
 
