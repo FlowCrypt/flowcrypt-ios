@@ -35,6 +35,7 @@ struct RawClientConfiguration: Codable, Equatable {
     let customKeyserverUrl: String?
     let keyManagerUrl: String?
     let fesUrl: String?
+    let allowAttesterSearchOnlyForDomains: [String]?
     let disallowAttesterSearchForDomains: [String]?
     let enforceKeygenAlgo: String?
     let enforceKeygenExpireMonths: Int?
@@ -44,6 +45,7 @@ struct RawClientConfiguration: Codable, Equatable {
         customKeyserverUrl: String? = nil,
         keyManagerUrl: String? = nil,
         fesUrl: String? = nil,
+        allowAttesterSearchOnlyForDomains: [String]? = nil,
         disallowAttesterSearchForDomains: [String]? = nil,
         enforceKeygenAlgo: String? = nil,
         enforceKeygenExpireMonths: Int? = nil
@@ -52,6 +54,7 @@ struct RawClientConfiguration: Codable, Equatable {
         self.customKeyserverUrl = customKeyserverUrl
         self.keyManagerUrl = keyManagerUrl
         self.fesUrl = fesUrl
+        self.allowAttesterSearchOnlyForDomains = allowAttesterSearchOnlyForDomains
         self.disallowAttesterSearchForDomains = disallowAttesterSearchForDomains
         self.enforceKeygenAlgo = enforceKeygenAlgo
         self.enforceKeygenExpireMonths = enforceKeygenExpireMonths
@@ -77,18 +80,17 @@ extension RawClientConfiguration {
             decodedFlags = try? JSONDecoder().decode([String].self, from: flagsData)
         }
 
-        var decodedDisallowAttesterSearchForDomains: [String]?
-        if let disallowAttesterSearchForDomainsData = object?.disallowAttesterSearchForDomains {
-            decodedDisallowAttesterSearchForDomains = try? JSONDecoder()
-                .decode([String].self, from: disallowAttesterSearchForDomainsData)
-        }
-
         self.init(
             flags: decodedFlags?.compactMap(ClientConfigurationFlag.init),
             customKeyserverUrl: unwrappedObject.customKeyserverUrl,
             keyManagerUrl: unwrappedObject.keyManagerUrl,
             fesUrl: unwrappedObject.fesUrl,
-            disallowAttesterSearchForDomains: decodedDisallowAttesterSearchForDomains,
+            allowAttesterSearchOnlyForDomains: try? object?.allowAttesterSearchOnlyForDomains.ifNotNil {
+                try JSONDecoder().decode([String].self, from: $0)
+            },
+            disallowAttesterSearchForDomains: try? object?.disallowAttesterSearchForDomains.ifNotNil {
+                try JSONDecoder().decode([String].self, from: $0)
+            },
             enforceKeygenAlgo: unwrappedObject.enforceKeygenAlgo,
             enforceKeygenExpireMonths: unwrappedObject.enforceKeygenExpireMonths
         )

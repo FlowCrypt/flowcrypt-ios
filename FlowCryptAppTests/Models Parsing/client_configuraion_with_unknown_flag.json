@@ -2,6 +2,7 @@
   "flags": ["NO_PRV_BACKUP", "NO_KEY_MANAGER_PUB_LOOKUP", "ANY_RANDOM_NEW_FLAG_THAT_IS_NOT_PRESENT_IN_FLAGS_ENUM"],
   "custom_keyserver_url": "https://hello",
   "key_manager_url": "https://there",
+  "allow_attester_search_only_for_domains": [],
   "disallow_attester_search_for_domains": [],
   "enforce_keygen_algo": "curve25519",
   "enforce_keygen_expire_months": 12

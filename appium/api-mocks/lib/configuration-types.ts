@@ -15,6 +15,7 @@ type Fes$ClientConfiguration = {
   flags?: Fes$ClientConfiguration$flag[],
   custom_keyserver_url?: string,
   key_manager_url?: string,
+  allow_attester_search_only_for_domains?: string[],
   disallow_attester_search_for_domains?: string[],
   enforce_keygen_algo?: string,
   enforce_keygen_expire_months?: number,

@@ -127,15 +127,21 @@ class ClientConfiguration {
     /// Some orgs have a list of email domains where they do NOT want such emails to be looked up on public sources (such as Attester)
     /// This is because they already have other means to obtain public keys for these domains, such as from their own internal keyserver
     func canLookupThisRecipientOnAttester(recipient: String) throws -> Bool {
+        guard let recipientDomain = recipient.emailParts?.domain else {
+            throw AppErr.general("organisational_wrong_email_error".localizeWithArguments(recipient))
+        }
+
+        // When allow_attester_search_only_for_domains is set, ignore other flags
+        if let allowAttesterSearchOnlyForDomains = raw.allowAttesterSearchOnlyForDomains {
+            return allowAttesterSearchOnlyForDomains.contains(recipientDomain)
+        }
+
         let disallowedDomains = raw.disallowAttesterSearchForDomains ?? []
 
         if disallowedDomains.contains("*") {
             return false
         }
 
-        guard let recipientDomain = recipient.emailParts?.domain else {
-            throw AppErr.general("organisational_wrong_email_error".localizeWithArguments(recipient))
-        }
         return !disallowedDomains.contains(recipientDomain)
     }
 

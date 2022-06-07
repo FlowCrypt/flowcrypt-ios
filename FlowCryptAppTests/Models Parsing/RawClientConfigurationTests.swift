@@ -31,6 +31,7 @@ class RawClientConfigurationTests: XCTestCase {
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.customKeyserverUrl != nil)
         XCTAssert(model?.keyManagerUrl != nil)
+        XCTAssert(model?.allowAttesterSearchOnlyForDomains != nil)
         XCTAssert(model?.disallowAttesterSearchForDomains != nil)
         XCTAssert(model?.enforceKeygenAlgo != nil)
         XCTAssert(model?.enforceKeygenExpireMonths != nil)
@@ -51,6 +52,7 @@ class RawClientConfigurationTests: XCTestCase {
 
         XCTAssert(model?.customKeyserverUrl == nil)
         XCTAssert(model?.keyManagerUrl == nil)
+        XCTAssert(model?.allowAttesterSearchOnlyForDomains == nil)
         XCTAssert(model?.disallowAttesterSearchForDomains == nil)
     }
 
@@ -70,6 +72,7 @@ class RawClientConfigurationTests: XCTestCase {
         XCTAssert(model?.enforceKeygenExpireMonths == nil)
         XCTAssert(model?.customKeyserverUrl == nil)
         XCTAssert(model?.keyManagerUrl == nil)
+        XCTAssert(model?.allowAttesterSearchOnlyForDomains == nil)
         XCTAssert(model?.disallowAttesterSearchForDomains == nil)
     }
 
@@ -85,6 +88,7 @@ class RawClientConfigurationTests: XCTestCase {
         XCTAssert(model?.flags != nil)
         XCTAssert(model?.customKeyserverUrl != nil)
         XCTAssert(model?.keyManagerUrl != nil)
+        XCTAssert(model?.allowAttesterSearchOnlyForDomains != nil)
         XCTAssert(model?.disallowAttesterSearchForDomains != nil)
         XCTAssert(model?.enforceKeygenAlgo != nil)
         XCTAssert(model?.enforceKeygenExpireMonths != nil)
