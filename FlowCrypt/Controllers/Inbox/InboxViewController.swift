@@ -213,7 +213,11 @@ extension InboxViewController {
     private func getSearchQuery() -> String? {
         var searchQuery: String?
         if searchedExpression.isNotEmpty {
-            searchQuery = "\(searchedExpression) OR subject:\(searchedExpression)"
+            if !searchedExpression.starts(with: "subject:") {
+                searchQuery = "\(searchedExpression) OR subject:\(searchedExpression)"
+            } else {
+                searchQuery = searchedExpression
+            }
         }
         return searchQuery
     }

@@ -11,9 +11,9 @@ import { MockApi } from "../../../../api-mocks/mock";
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { allowedRecipients } from '../../../../api-mocks/apis/google/google-endpoints';
 
-describe('COMPOSE EMAIL: ', () => {
+describe('INBOX: ', () => {
 
-  it('check filled compose email after reopening app and text autoscroll', async () => {
+  it('user is able to view text email and recipients list', async () => {
 
     const senderName = CommonData.recipientsListEmail.senderName;
     const emailSubject = CommonData.recipientsListEmail.subject;
@@ -38,17 +38,17 @@ describe('COMPOSE EMAIL: ', () => {
     }
 
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
 
-      // await MailFolderScreen.clickSearchButton();
-      // await SearchScreen.searchAndClickEmailBySubject(emailSubject);
+      await MailFolderScreen.clickSearchButton();
+      await SearchScreen.searchAndClickEmailBySubject(emailSubject);
 
-      // await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
-      // await EmailScreen.checkRecipientsButton(recipientsButton);
-      // await EmailScreen.clickRecipientsButton();
-      // await EmailScreen.checkRecipientsList(toLabel, ccLabel, bccLabel);
+      await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
+      await EmailScreen.checkRecipientsButton(recipientsButton);
+      await EmailScreen.clickRecipientsButton();
+      await EmailScreen.checkRecipientsList(toLabel, ccLabel, bccLabel);
     });
   });
 });

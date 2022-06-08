@@ -119,8 +119,10 @@ export class GoogleData {
       };
       const dir = GoogleData.exportedMsgsPath;
       const filenames: string[] = await new Promise((res, rej) => readdir(dir, (e, f) => e ? rej(e) : res(f)));
-      const filePromises = filenames.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
+      const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
+      const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
       const files = await Promise.all(filePromises) as Uint8Array[];
+
       for (const file of files) {
         const utfStr = new TextDecoder().decode(file);
         const json = JSON.parse(utfStr) as ExportedMsg;
@@ -249,7 +251,8 @@ export class GoogleData {
   };
 
   public searchMessages = (q: string) => {
-    const subject = (q.match(/subject:"([^"]+)"/) || [])[1];
+    const subject = (q.match(/subject: '([^"]+)'/) || [])[1];
+
     if (subject) {
       // if any subject query found, all else is ignored
       // messages just filtered by subject
@@ -291,10 +294,12 @@ export class GoogleData {
     return DATA[this.acct].labels;
   };
 
-  public getThreads = (labelIds: string[] = []) => {
+  public getThreads = (labelIds: string[] = [], query?: string) => {
+    const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
     const threads: GmailThread[] = [];
     for (const thread of this.getMessagesAndDrafts().
       filter(m => labelIds.length ? (m.labelIds || []).some(l => labelIds.includes(l)) : true).
+      filter(m => subject ? GoogleData.msgSubject(m).toLowerCase().includes(subject) : true).
       map(m => ({ historyId: m.historyId, id: m.threadId!, snippet: `MOCK SNIPPET: ${GoogleData.msgSubject(m)}` }))) {
       if (thread.id && !threads.map(t => t.id).includes(thread.id)) {
         threads.push(thread);
