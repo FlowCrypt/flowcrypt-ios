@@ -50,7 +50,6 @@ final class EKMVcHelper: EKMVcHelperType {
 
                 for keyDetail in keysToUpdate {
                     try await saveKeyToLocal(
-                        in: viewController,
                         context: appContext,
                         keyDetail: keyDetail,
                         passPhrase: passPhrase,
@@ -116,7 +115,6 @@ final class EKMVcHelper: EKMVcHelperType {
     }
 
     private func saveKeyToLocal(
-        in viewController: UIViewController,
         context: AppContextWithUser,
         keyDetail: KeyDetails,
         passPhrase: String,

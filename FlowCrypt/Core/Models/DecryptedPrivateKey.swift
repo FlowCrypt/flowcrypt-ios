@@ -9,13 +9,9 @@
 import Foundation
 
 struct DecryptedPrivateKeysResponse: Decodable {
-
     let privateKeys: [DecryptedPrivateKey]
 
-    static let empty = DecryptedPrivateKeysResponse(privateKeys: [])
-}
-
-struct DecryptedPrivateKey: Decodable {
-
-    let decryptedPrivateKey: String
+    struct DecryptedPrivateKey: Decodable {
+        let decryptedPrivateKey: String
+    }
 }
