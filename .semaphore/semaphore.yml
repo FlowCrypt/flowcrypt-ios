@@ -34,12 +34,11 @@ blocks:
         - name: Appium UI tests
           commands:
             - xcversion select 13.4
-            - open -a Simulator --args -CurrentDeviceUDID $(xcrun simctl list devices | grep "iPhone 13" | grep -E -o -i "([0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})")
             - bundle exec fastlane build && ls -la appium
             - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             - cd appium && npm run-script lint
             - unzip flowcrypt-ios-*.zip
-            - xcrun simctl keychain "iPhone 13" add-root-cert ./appium/api-mocks/mock-ssl-cert/cert.pem
+            - sh cert.sh
             - npm run-script test.mock.all
             # - npm run-script test.live.all
       epilogue:
