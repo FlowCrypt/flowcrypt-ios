@@ -12,6 +12,6 @@ do
   sleep 1
 done
 
-sleep 10
+sleep 20
 
-xcrun simctl keychain "iPhone 13" add-root-cert ./appium/api-mocks/mock-ssl-cert/cert.pem
+xcrun simctl keychain booted add-root-cert ./appium/api-mocks/mock-ssl-cert/cert.pem
