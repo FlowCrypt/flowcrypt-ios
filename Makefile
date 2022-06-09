@@ -2,9 +2,10 @@
 all: ui_tests
 
 dependencies:
-	gem install bundler:2.3.11
+	gem install bundler:2.3.15
 	bundle config set path 'vendor/bundle'
 	bundle install
+	sh Scripts/generate-mock-cert.sh 127.0.0.1
 
 ui_tests: dependencies
 	bundle exec fastlane test_ui --verbose

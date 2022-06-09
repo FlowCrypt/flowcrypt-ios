@@ -34,6 +34,7 @@ blocks:
         - name: Appium UI tests
           commands:
             - xcversion select 13.4
+            - xcrun simctl keychain "iPhone 13" add-root-cert ./appium/api-mocks/mock-ssl-cert/cert.pem
             - bundle exec fastlane build && ls -la appium
             - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             - cd appium && npm run-script lint
@@ -65,7 +66,7 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
-          - npm install -g npm@8.11.0
+          - npm install -g npm@8.12.1
           - ( cd Core && cache restore core-npm && npm install && cache store core-npm node_modules )
           - ( cd appium && cache restore appium-npm && npm install && cache store appium-npm node_modules )
       jobs:

@@ -48,6 +48,7 @@ node_modules
 # appium
 appium/node_modules
 appium/package-lock.json
+appium/api-mocks/mock-ssl-cert
 appium/tmp
 appium/.env
 appium/FlowCrypt.app
