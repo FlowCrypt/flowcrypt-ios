@@ -3,7 +3,6 @@
 import * as https from 'https';
 import * as http from 'http';
 import { readFileSync } from 'fs';
-// tslint:disable:await-returned-promise
 
 export type HandlersDefinition = Handlers<{ query: { [k: string]: string; }; body?: unknown; }, unknown>;
 

@@ -19,4 +19,3 @@ snapshots: dependencies
 	bundle exec fastlane snapshot
 	cd fastlane/screenshots
 	fastlane frameit
-
