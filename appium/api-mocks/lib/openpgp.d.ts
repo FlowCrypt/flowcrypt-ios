@@ -21,6 +21,7 @@ declare namespace OpenPGP {
     algorithm: string;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface BaseStream<T extends Uint8Array | string> { }
   interface WebStream<T extends Uint8Array | string> extends BaseStream<T> { // copied+simplified version of ReadableStream from lib.dom.d.ts
     readonly locked: boolean; getReader: Function; pipeThrough: Function; pipeTo: Function; tee: Function;

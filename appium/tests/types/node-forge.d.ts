@@ -106,7 +106,7 @@ declare module "node-forge" {
     interface oids {
       [key: string]: string;
     }
-    var oids: oids;
+    const oids: oids;
 
     namespace rsa {
       type EncryptionScheme = 'RSAES-PKCS1-V1_5' | 'RSA-OAEP' | 'RAW' | 'NONE' | null;
@@ -399,6 +399,7 @@ declare module "node-forge" {
 
     function encryptedPrivateKeyToPem(obj: asn1.Asn1): PEM;
 
+    // eslint-disable-next-line @typescript-eslint/adjacent-overload-signatures
     function decryptRsaPrivateKey(pem: PEM, password: string): PrivateKey;
 
     function encryptRsaPrivateKey(privateKey: PrivateKey, password: string, options?: EncryptionOptions): PEM;

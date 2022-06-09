@@ -39,7 +39,7 @@ blocks:
             - cd appium && npm run-script lint
             - unzip flowcrypt-ios-*.zip
             - npm run-script test.mock.all
-            - npm run-script test.live.all
+            # - npm run-script test.live.all
       epilogue:
         always:
           commands:
