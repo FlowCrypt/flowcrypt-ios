@@ -85,6 +85,7 @@
 		5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		510BB63527BE92CC00B1011F /* RecipientBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510BB63427BE92CC00B1011F /* RecipientBase.swift */; };
 		51114DB6280EB699006C252A /* gmp-interface.m in Sources */ = {isa = PBXBuildFile; fileRef = 51114DB5280EB699006C252A /* gmp-interface.m */; };
+		511737682851F31700337B9F /* GoogleScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511737672851F31700337B9F /* GoogleScope.swift */; };
 		511D07E12769FBBA0050417B /* MessagePasswordCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */; };
 		511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */; };
 		512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */ = {isa = PBXBuildFile; productRef = 512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */; };
@@ -544,6 +545,7 @@
 		51114DB5280EB699006C252A /* gmp-interface.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "gmp-interface.m"; sourceTree = "<group>"; };
 		51114DB7280EB6B9006C252A /* gmp-interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "gmp-interface.h"; sourceTree = "<group>"; };
 		51114DBA280EBB78006C252A /* gmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
+		511737672851F31700337B9F /* GoogleScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleScope.swift; sourceTree = "<group>"; };
 		511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePasswordCellNode.swift; sourceTree = "<group>"; };
 		511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithPaddingNode.swift; sourceTree = "<group>"; };
 		5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailViewController.swift; sourceTree = "<group>"; };
@@ -1129,6 +1131,16 @@
 			path = ObjcException;
 			sourceTree = "<group>";
 		};
+		511737662851F30400337B9F /* Google User Service */ = {
+			isa = PBXGroup;
+			children = (
+				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
+				04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */,
+				511737672851F31700337B9F /* GoogleScope.swift */,
+			);
+			path = "Google User Service";
+			sourceTree = "<group>";
+		};
 		513DC086284F15F600FAD5F2 /* Remote Private Key Apis */ = {
 			isa = PBXGroup;
 			children = (
@@ -1288,8 +1300,7 @@
 				21489B81267CC3BC00BDE4AC /* Client Configuration Service */,
 				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */,
 				D227C0E4250538190070F805 /* Folders Services */,
-				9F0C3C0F2316DD5B00299985 /* GoogleUserService.swift */,
-				04A1724927F2FD2F00B79559 /* GoogleUserService+Contacts.swift */,
+				511737662851F30400337B9F /* Google User Service */,
 				04722B44281ABD2C00D0242F /* EKMVcHelper.swift */,
 				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
 				D27B911724EFE787002DF0A1 /* Local Contacts Service */,
@@ -2869,6 +2880,7 @@
 				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
 				21489B7A267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift in Sources */,
 				5180CB9327357B67001FC7EF /* RawClientConfiguration.swift in Sources */,
+				511737682851F31700337B9F /* GoogleScope.swift in Sources */,
 				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,
 				601EEE31272B19D200FE445B /* CheckMailAuthViewController.swift in Sources */,
 				2CB1BF2127611138008E1898 /* SchemaMigration.swift in Sources */,

@@ -26,6 +26,10 @@ extension Bundle {
         return CommandLine.arguments.contains(argument)
     }
 
+    public static var isMockGmailApi: Bool {
+        isDebugBundleWithArgument("--mock-gmail-api")
+    }
+
     public static func isEnterprise() -> Bool {
         if flowCryptBundleType == .enterprise {
             return true // for production

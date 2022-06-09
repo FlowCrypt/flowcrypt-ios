@@ -20,8 +20,8 @@ extension GoogleUserService {
     private var peopleService: GTLRPeopleServiceService {
         let service = GTLRPeopleServiceService()
 
-        if Bundle.isDebugBundleWithArgument("--mock-gmail-api") {
-            service.rootURLString = "https://127.0.0.1:8001/"
+        if Bundle.isMockGmailApi {
+            service.rootURLString = GeneralConstants.Mock.backendUrl
         }
 
         if authorization == nil {

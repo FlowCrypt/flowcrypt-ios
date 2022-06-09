@@ -100,8 +100,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         self.currentUserEmail = currentUserEmail
         super.init()
 
-        // TODO:
-        // self.runWarmupQuery()
+        self.runWarmupQuery()
     }
 
     private enum Constants {
@@ -125,6 +124,17 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     var authorization: GTMAppAuthFetcherAuthorization? {
         getAuthorizationForCurrentUser()
+    }
+
+    var authorizationConfiguration: OIDServiceConfiguration {
+        if Bundle.isMockGmailApi {
+            return OIDServiceConfiguration(
+                authorizationEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)o/oauth2/auth")!,
+                tokenEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)token")!
+            )
+        } else {
+            return GTMAppAuthFetcherAuthorization.configurationForGoogle()
+        }
     }
 }
 
@@ -236,22 +246,22 @@ extension GoogleUserService {
 
     private func makeAuthorizationRequest(scopes: [GoogleScope], userEmail: String? = nil) -> OIDAuthorizationRequest {
         var additionalParameters = ["include_granted_scopes": "true"]
+
         if let userEmail = userEmail {
             additionalParameters["login_hint"] = userEmail
-        }
-        let configuration: OIDServiceConfiguration
-        if Bundle.isDebugBundleWithArgument("--mock-gmail-api") {
-            configuration = OIDServiceConfiguration(
-                // TODO
-                authorizationEndpoint: URL(string: "https://127.0.0.1:8001/o/oauth2/auth")!,
-                tokenEndpoint: URL(string: "https://127.0.0.1:8001/token")!
-            )
-            additionalParameters["login_hint"] = "e2e.enterprise.test@flowcrypt.com"
-        } else {
-            configuration = GTMAppAuthFetcherAuthorization.configurationForGoogle()
+        } else if Bundle.isMockGmailApi {
+            additionalParameters["login_hint"] = GeneralConstants.Mock.userEmail
         }
 
-        return OIDAuthorizationRequest(configuration: configuration, clientId: GeneralConstants.Gmail.clientID, clientSecret: nil, scope: scopes.map(\.value).joined(separator: " "), redirectURL: GeneralConstants.Gmail.redirectURL, responseType: OIDResponseTypeCode, state: "xdXZGPC4DeaXbZIrwcuw2V5SA9OtV6oUBN3GLmxRdu0", nonce: "123", codeVerifier: nil, codeChallenge: nil, codeChallengeMethod: nil, additionalParameters: additionalParameters)
+//        return OIDAuthorizationRequest(
+//            configuration: authorizationConfiguration,
+//            clientId: GeneralConstants.Gmail.clientID,
+//            scopes: scopes.map(\.value),
+//            redirectURL: GeneralConstants.Gmail.redirectURL,
+//            responseType: OIDResponseTypeCode,
+//            additionalParameters: additionalParameters
+//        )
+        return OIDAuthorizationRequest(configuration: authorizationConfiguration, clientId: GeneralConstants.Gmail.clientID, clientSecret: nil, scope: scopes.map(\.value).joined(separator: " "), redirectURL: GeneralConstants.Gmail.redirectURL, responseType: OIDResponseTypeCode, state: "xdXZGPC4DeaXbZIrwcuw2V5SA9OtV6oUBN3GLmxRdu0", nonce: "123", codeVerifier: nil, codeChallenge: nil, codeChallengeMethod: nil, additionalParameters: additionalParameters)
 //        return OIDAuthorizationRequest(
 //            configuration: configuration,
 //            clientId: GeneralConstants.Gmail.clientID,
@@ -285,8 +295,8 @@ extension GoogleUserService {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLROauth2_Userinfo, Error>) in
             let query = GTLROauth2Query_UserinfoGet.query()
             let authService = GTLROauth2Service()
-            if Bundle.isDebugBundleWithArgument("--mock-gmail-api") {
-                authService.rootURLString = "https://127.0.0.1:8001/"
+            if Bundle.isMockGmailApi {
+                authService.rootURLString = GeneralConstants.Mock.backendUrl
             }
             authService.authorizer = authorization
             authService.executeQuery(query) { _, data, error in
