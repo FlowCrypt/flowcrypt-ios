@@ -5,6 +5,7 @@ dependencies:
 	gem install bundler:2.3.15
 	bundle config set path 'vendor/bundle'
 	bundle install
+	brew install openssl
 	sh Scripts/generate-mock-cert.sh 127.0.0.1
 
 ui_tests: dependencies
