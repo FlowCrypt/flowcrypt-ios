@@ -62,20 +62,6 @@ describe('SETUP: ', () => {
       // Checking added recipients color
       await NewMessageScreen.checkAddedRecipientColor(disabledEmail, 0, 'gray');
       await NewMessageScreen.checkAddedRecipientColor(enabledUserName, 1, 'green');
-
-      // stage 4: check if no domains are allowed when allow_attester_search_only_for_domains: [] is set
-      mockApi.fesConfig = {
-        clientConfiguration: {
-          flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-          key_manager_url: "https://ekm.flowcrypt.com",
-          allow_attester_search_only_for_domains: [],
-        }
-      };
-      await AppiumHelper.restartApp(processArgs);
-      await MailFolderScreen.clickCreateEmail(1000);
-      await NewMessageScreen.setAddRecipient('empty-setting@enabled.test');
-      // Checking added recipients color
-      await NewMessageScreen.checkAddedRecipientColor('empty-setting@enabled.test', 0, 'gray');
     });
   });
 });
