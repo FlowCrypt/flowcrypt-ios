@@ -72,7 +72,7 @@ describe('SETUP: ', () => {
         }
       };
       await AppiumHelper.restartApp(processArgs);
-      await MailFolderScreen.clickCreateEmail();
+      await MailFolderScreen.clickCreateEmail(1000);
       await NewMessageScreen.setAddRecipient('empty-setting@enabled.test');
       // Checking added recipients color
       await NewMessageScreen.checkAddedRecipientColor('empty-setting@enabled.test', 0, 'gray');
