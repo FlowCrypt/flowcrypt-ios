@@ -24,6 +24,7 @@ class PubLookup: PubLookupType {
     private struct LookupResult {
         let keys: [KeyDetails]
         let source: LookupSource
+        var error: Error?
     }
 
     init(
@@ -44,7 +45,11 @@ class PubLookup: PubLookupType {
                 LookupResult(keys: try await self.wkd.lookup(email: recipient.email), source: .wkd)
             }
             tg.addTask {
-                LookupResult(keys: try await self.attesterApi.lookup(email: recipient.email), source: .attester)
+                do {
+                    return LookupResult(keys: try await self.attesterApi.lookup(email: recipient.email), source: .attester)
+                } catch {
+                    return LookupResult(keys: [], source: .attester, error: error)
+                }
             }
             for try await result in tg {
                 results.append(result)
@@ -61,6 +66,10 @@ class PubLookup: PubLookupType {
             // WKD keys are preferred. The trust level is higher because the recipient
             //  controls the distribution of the keys themselves on their own domain
             return try RecipientWithSortedPubKeys(recipient, keyDetails: wkdResult.keys)
+        }
+        // If no keys are found from WKD and attester returns error, then throw error
+        if let attesterError = attesterResult.error {
+            throw attesterError
         }
         // Attester keys are less preferred because they come from less trustworthy source
         //   (the FlowCrypt server)
