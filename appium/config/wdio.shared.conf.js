@@ -12,7 +12,7 @@ exports.config = {
   runner: 'local',
   framework: 'jasmine',
   jasmineOpts: {
-    defaultTimeoutInterval: 60000,
+    defaultTimeoutInterval: 600000,
     requires: ['tsconfig-paths/register']
   },
   sync: true,
@@ -20,7 +20,7 @@ exports.config = {
   deprecationWarnings: true,
   bail: 0,
   waitforTimeout: 15000,
-  connectionRetryTimeout: 9000,
+  connectionRetryTimeout: 90000,
   connectionRetryCount: 1,
   maxInstancesPerCapability: 1,
   reporters: [

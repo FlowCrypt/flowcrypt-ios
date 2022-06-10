@@ -36,11 +36,10 @@ blocks:
             - xcversion select 13.4
             - sh ./appium/cert.sh
             # - bundle exec fastlane build && ls -la appium
-            - cd appium
+            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
+            - cd appium && npm run-script lint
+            - unzip flowcrypt-ios-*.zip
             - npm run-script test.mock 'user is able to view text email and recipients list'
-            # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
-            # - cd appium && npm run-script lint
-            # - unzip flowcrypt-ios-*.zip
             # - npm run-script test.mock.all
             # - npm run-script test.live.all
       epilogue:
