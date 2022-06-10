@@ -45,6 +45,7 @@ describe('INBOX: ', () => {
       await ElementHelper.waitAndClick(await $('~About'));
       await ElementHelper.waitAndClick(await $('~Certificate Trust Settings'));
 
+      await browser.pause(10000);
       const path = join(process.cwd(), './tmp');
       await driver.saveScreenshot(`${path}/certificates.png`);
       // await SplashScreen.mockLogin();
