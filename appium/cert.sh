@@ -16,6 +16,6 @@ sleep 20
 
 xcrun simctl keychain booted add-root-cert ./appium/api-mocks/mock-ssl-cert/cert.pem
 
-sleep 5
+sleep 10
 
 xcrun simctl shutdown $IOS_SIM_UDID

@@ -10,6 +10,8 @@ import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { allowedRecipients } from '../../../../api-mocks/apis/google/google-endpoints';
+import ElementHelper from 'tests/helpers/ElementHelper';
+import { join } from 'path';
 
 describe('INBOX: ', () => {
 
@@ -38,17 +40,24 @@ describe('INBOX: ', () => {
     }
 
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.mockLogin();
-      await SetupKeyScreen.setPassPhrase();
-      await MailFolderScreen.checkInboxScreen();
+      await driver.activateApp("com.apple.Preferences");
+      await ElementHelper.waitAndClick(await $('~General'));
+      await ElementHelper.waitAndClick(await $('~About'));
+      await ElementHelper.waitAndClick(await $('~Certificate Trust Settings'));
 
-      await MailFolderScreen.clickSearchButton();
-      await SearchScreen.searchAndClickEmailBySubject(emailSubject);
+      const path = join(process.cwd(), './tmp');
+      await driver.saveScreenshot(`${path}/certificates.png`);
+      // await SplashScreen.mockLogin();
+      // await SetupKeyScreen.setPassPhrase();
+      // await MailFolderScreen.checkInboxScreen();
 
-      await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
-      await EmailScreen.checkRecipientsButton(recipientsButton);
-      await EmailScreen.clickRecipientsButton();
-      await EmailScreen.checkRecipientsList(toLabel, ccLabel, bccLabel);
+      // await MailFolderScreen.clickSearchButton();
+      // await SearchScreen.searchAndClickEmailBySubject(emailSubject);
+
+      // await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
+      // await EmailScreen.checkRecipientsButton(recipientsButton);
+      // await EmailScreen.clickRecipientsButton();
+      // await EmailScreen.checkRecipientsList(toLabel, ccLabel, bccLabel);
     });
   });
 });
