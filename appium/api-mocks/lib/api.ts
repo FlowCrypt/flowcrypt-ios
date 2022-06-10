@@ -3,6 +3,7 @@
 import * as https from 'https';
 import * as http from 'http';
 import { readFileSync } from 'fs';
+import { oauth } from './oauth';
 
 export type HandlersDefinition = Handlers<{ query: { [k: string]: string; }; body?: unknown; }, unknown>;
 
@@ -254,7 +255,7 @@ export class Api<REQ, RES> {
   }
 
   private throttledResponse = async (response: http.ServerResponse, data: Buffer) => {
-    if (data.toString().startsWith('com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect')) {
+    if (data.toString().startsWith(oauth.redirectUri)) {
       response.writeHead(302, {
         Location: data.toString()
       });

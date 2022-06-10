@@ -253,24 +253,14 @@ extension GoogleUserService {
             additionalParameters["login_hint"] = GeneralConstants.Mock.userEmail
         }
 
-//        return OIDAuthorizationRequest(
-//            configuration: authorizationConfiguration,
-//            clientId: GeneralConstants.Gmail.clientID,
-//            scopes: scopes.map(\.value),
-//            redirectURL: GeneralConstants.Gmail.redirectURL,
-//            responseType: OIDResponseTypeCode,
-//            additionalParameters: additionalParameters
-//        )
-        return OIDAuthorizationRequest(configuration: authorizationConfiguration, clientId: GeneralConstants.Gmail.clientID, clientSecret: nil, scope: scopes.map(\.value).joined(separator: " "), redirectURL: GeneralConstants.Gmail.redirectURL, responseType: OIDResponseTypeCode, state: "xdXZGPC4DeaXbZIrwcuw2V5SA9OtV6oUBN3GLmxRdu0", nonce: "123", codeVerifier: nil, codeChallenge: nil, codeChallengeMethod: nil, additionalParameters: additionalParameters)
-//        return OIDAuthorizationRequest(
-//            configuration: configuration,
-//            clientId: GeneralConstants.Gmail.clientID,
-//            scopes: scopes.map(\.value),
-//            redirectURL: GeneralConstants.Gmail.redirectURL,
-//            responseType: OIDResponseTypeCode,
-//            additionalParameters: additionalParameters,
-//            nonce: "123"
-//        )
+        return OIDAuthorizationRequest(
+            configuration: authorizationConfiguration,
+            clientId: GeneralConstants.Gmail.clientID,
+            scopes: scopes.map(\.value),
+            redirectURL: GeneralConstants.Gmail.redirectURL,
+            responseType: OIDResponseTypeCode,
+            additionalParameters: additionalParameters
+        )
     }
 
     // save auth session to keychain
