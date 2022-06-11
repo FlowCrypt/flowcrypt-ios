@@ -2,12 +2,12 @@ IOS_SIM_UDID=$(xcrun simctl list devices available 15.5 | grep "iPhone 13 (" | g
 SIMULATOR_PATH='/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator'
 
 if [ -z "$IOS_SIM_UDID" ]; then
-  IOS_SIM_UDID = $(xcrun simctl create com.apple.CoreSimulator.SimDeviceType.iPhone-13 com.apple.CoreSimulator.SimRuntime.iOS-15-5)
+  IOS_SIM_UDID = $(xcrun simctl create 'iPhone 13' com.apple.CoreSimulator.SimDeviceType.iPhone-13 com.apple.CoreSimulator.SimRuntime.iOS-15-5)
 fi
 
-echo "Found UUID of iPhone 13 - ${IOS_SIM_UDID}"
-
 xcrun simctl list devices available 15.5
+
+echo "Found UUID of iPhone 13 - ${IOS_SIM_UDID}"
 
 open -a "$SIMULATOR_PATH" --args -CurrentDeviceUDID $IOS_SIM_UDID
 
