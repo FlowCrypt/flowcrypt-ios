@@ -4,7 +4,8 @@
     "id": "17d7fd72ba9707ad",
     "threadId": "17d7fd5908ff1270",
     "labelIds": [
-      "SENT"
+      "INBOX",
+      "UNREAD"
     ],
     "snippet": "Test message for CC and BCC recipients -- signature",
     "payload": {

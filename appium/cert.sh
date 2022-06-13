@@ -2,10 +2,6 @@ sleep 15
 
 xcrun simctl list devices available 15.5
 
-echo '-----'
-
-xcrun xctrace list devices
-
 IOS_SIM_UDID=$(xcrun simctl list devices available 15.5 | grep "iPhone 13 (" | grep -E -o -i "([0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12})")
 SIMULATOR_PATH='/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app/Contents/MacOS/Simulator'
 
