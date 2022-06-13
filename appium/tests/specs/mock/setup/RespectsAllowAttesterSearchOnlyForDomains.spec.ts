@@ -34,7 +34,7 @@ describe('SETUP: ', () => {
 
     await mockApi.withMockedApis(async () => {
       // stage 1: setup
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();

@@ -42,7 +42,7 @@ describe('SETUP: ', () => {
 
     await mockApi.withMockedApis(async () => {
       //stage 1
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
 
       await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(

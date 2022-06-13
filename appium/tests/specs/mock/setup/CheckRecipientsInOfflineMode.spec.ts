@@ -36,7 +36,7 @@ describe('COMPOSE EMAIL: ', () => {
     };
 
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
 

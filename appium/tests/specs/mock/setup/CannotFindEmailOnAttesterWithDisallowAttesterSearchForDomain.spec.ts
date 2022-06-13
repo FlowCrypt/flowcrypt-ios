@@ -1,8 +1,8 @@
 import { MockApi } from 'api-mocks/mock';
 import {
-    SplashScreen,
+  SplashScreen,
 } from '../../../screenobjects/all-screens';
-import {attesterPublicKeySamples} from "../../../../api-mocks/apis/attester/attester-endpoints";
+import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
 import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
@@ -27,12 +27,12 @@ describe('SETUP: ', () => {
     };
 
     await mockApi.withMockedApis(async () => {
-        await SplashScreen.login();
-        await SetupKeyScreen.setPassPhrase();
-        await MailFolderScreen.checkInboxScreen();
-        await MailFolderScreen.clickCreateEmail();
-        await NewMessageScreen.setAddRecipient('available.on@attester.test');
-        await NewMessageScreen.checkAddedRecipientColor('available.on@attester.test', 0, 'gray');
+      await SplashScreen.mockLogin();
+      await SetupKeyScreen.setPassPhrase();
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickCreateEmail();
+      await NewMessageScreen.setAddRecipient('available.on@attester.test');
+      await NewMessageScreen.checkAddedRecipientColor('available.on@attester.test', 0, 'gray');
     });
   });
 });
