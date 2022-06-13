@@ -13,6 +13,8 @@ import { allowedRecipients } from '../../../../api-mocks/apis/google/google-endp
 import ElementHelper from 'tests/helpers/ElementHelper';
 import { join } from 'path';
 
+import { readFileSync } from 'fs';
+
 describe('INBOX: ', () => {
 
   it('user is able to view text email and recipients list', async () => {
@@ -38,6 +40,9 @@ describe('INBOX: ', () => {
     mockApi.googleConfig = {
       allowedRecipients: allowedRecipients
     }
+
+    const base64 = readFileSync('./api-mocks/mock-ssl-cert/cert.pem').toString('base64');
+    await driver.execute('mobile: installCertificate', { content: base64 })
 
     await mockApi.withMockedApis(async () => {
       await driver.pause(4000);
