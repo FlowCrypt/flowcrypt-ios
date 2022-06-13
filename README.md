@@ -27,6 +27,9 @@ bundle exec pod install
 
 Recommended to develop and run tests only using `Debug FlowCrypt` scheme
 
+## Code Design
+See [Code Design README](./code-design.md)
+
 ## UI Tests
 
 See [Appium README](./appium/README.md)
