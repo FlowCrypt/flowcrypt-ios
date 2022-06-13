@@ -13,8 +13,6 @@ import { allowedRecipients } from '../../../../api-mocks/apis/google/google-endp
 import ElementHelper from 'tests/helpers/ElementHelper';
 import { join } from 'path';
 
-import { readFileSync } from 'fs';
-
 describe('INBOX: ', () => {
 
   it('user is able to view text email and recipients list', async () => {
@@ -41,30 +39,18 @@ describe('INBOX: ', () => {
       allowedRecipients: allowedRecipients
     }
 
-    const base64 = readFileSync('./api-mocks/mock-ssl-cert/cert.pem').toString('base64');
-    await driver.execute('mobile: installCertificate', { content: base64 })
-
     await mockApi.withMockedApis(async () => {
-      await driver.pause(4000);
-      await driver.activateApp("com.apple.Preferences");
-      await ElementHelper.waitAndClick(await $('~General'));
-      await ElementHelper.waitAndClick(await $('~About'));
-      await ElementHelper.waitAndClick(await $('~Certificate Trust Settings'));
+      await SplashScreen.mockLogin();
+      await SetupKeyScreen.setPassPhrase();
+      await MailFolderScreen.checkInboxScreen();
 
-      await driver.pause(8000);
-      const path = join(process.cwd(), './tmp');
-      await driver.saveScreenshot(`${path}/certificates.png`);
-      // await SplashScreen.mockLogin();
-      // await SetupKeyScreen.setPassPhrase();
-      // await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickSearchButton();
+      await SearchScreen.searchAndClickEmailBySubject(emailSubject);
 
-      // await MailFolderScreen.clickSearchButton();
-      // await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-
-      // await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
-      // await EmailScreen.checkRecipientsButton(recipientsButton);
-      // await EmailScreen.clickRecipientsButton();
-      // await EmailScreen.checkRecipientsList(toLabel, ccLabel, bccLabel);
+      await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
+      await EmailScreen.checkRecipientsButton(recipientsButton);
+      await EmailScreen.clickRecipientsButton();
+      await EmailScreen.checkRecipientsList(toLabel, ccLabel, bccLabel);
     });
   });
 });

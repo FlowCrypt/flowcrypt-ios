@@ -10,6 +10,7 @@ import { getMockEkmEndpoints } from './apis/ekm/ekm-endpoints';
 import { getMockWkdEndpoints } from './apis/wkd/wkd-endpoints';
 import { getMockFesEndpoints } from './apis/fes/fes-endpoints';
 import { AttesterConfig, EkmConfig, FesConfig, GoogleConfig, Logger, MockConfig, WkdConfig } from './lib/configuration-types';
+import { readFileSync } from 'fs';
 
 /**
  * const mockApi = new MockApi();
@@ -45,6 +46,10 @@ export class MockApi {
 
   public withMockedApis = async (testRunner: () => Promise<void>) => {
     const logger = this.logger;
+
+    const base64 = readFileSync('./api-mocks/mock-ssl-cert/cert.pem').toString('base64');
+    await driver.execute('mobile: installCertificate', { content: base64 })
+
     class LoggedApi<REQ, RES> extends Api<REQ, RES> {
       protected throttleChunkMsUpload = 5;
       protected throttleChunkMsDownload = 10;
