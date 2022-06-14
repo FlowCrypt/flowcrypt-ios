@@ -32,6 +32,6 @@ subjectAltName = @alt_names
 IP.1 = $IP
 " > local.cnf
 
-openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout key.pem -out cert.pem -config local.cnf
+openssl req -x509 -nodes -days 730 -newkey rsa:2048 -keyout key.pem.mock -out cert.pem.mock -config local.cnf
 rm local.cnf
-mv key.pem cert.pem ./appium/api-mocks/mock-ssl-cert
+mv key.pem.mock cert.pem.mock ./appium/api-mocks/mock-ssl-cert

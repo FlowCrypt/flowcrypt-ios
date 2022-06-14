@@ -47,7 +47,7 @@ export class MockApi {
   public withMockedApis = async (testRunner: () => Promise<void>) => {
     const logger = this.logger;
 
-    const base64 = readFileSync('./api-mocks/mock-ssl-cert/cert.pem').toString('base64');
+    const base64 = readFileSync('./api-mocks/mock-ssl-cert/cert.pem.mock').toString('base64');
     await driver.execute('mobile: installCertificate', { content: base64 })
 
     class LoggedApi<REQ, RES> extends Api<REQ, RES> {

@@ -20,7 +20,7 @@ class GmailService: MailServiceProvider {
     var gmailService: GTLRService {
         let service = GTLRGmailService()
 
-        if Bundle.isMockGmailApi {
+        if Bundle.shouldUseMockGmailApi {
             service.rootURLString = GeneralConstants.Mock.backendUrl
         }
 

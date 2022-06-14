@@ -40,8 +40,8 @@ export class Api<REQ, RES> {
     this.apiName = apiName;
     if (useHttps) {
       this.server = https.createServer({
-        key: readFileSync('./api-mocks/mock-ssl-cert/key.pem'),
-        cert: readFileSync('./api-mocks/mock-ssl-cert/cert.pem')
+        key: readFileSync('./api-mocks/mock-ssl-cert/key.pem.mock'),
+        cert: readFileSync('./api-mocks/mock-ssl-cert/cert.pem.mock')
       }, this.serverRequestListener);
     } else {
       this.server = http.createServer(this.serverRequestListener);

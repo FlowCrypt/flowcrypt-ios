@@ -26,7 +26,7 @@ extension Bundle {
         return CommandLine.arguments.contains(argument)
     }
 
-    public static var isMockGmailApi: Bool {
+    public static var shouldUseMockGmailApi: Bool {
         isDebugBundleWithArgument("--mock-gmail-api")
     }
 

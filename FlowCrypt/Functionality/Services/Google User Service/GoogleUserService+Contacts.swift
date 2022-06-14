@@ -20,7 +20,7 @@ extension GoogleUserService {
     private var peopleService: GTLRPeopleServiceService {
         let service = GTLRPeopleServiceService()
 
-        if Bundle.isMockGmailApi {
+        if Bundle.shouldUseMockGmailApi {
             service.rootURLString = GeneralConstants.Mock.backendUrl
         }
 
