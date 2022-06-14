@@ -12,6 +12,7 @@ import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/at
 import { CommonData } from "../../../data";
 import DataHelper from "../../../helpers/DataHelper";
 import PublicKeyHelper from "../../../helpers/PublicKeyHelper";
+import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 
 
 describe('SETUP: ', () => {
@@ -25,7 +26,7 @@ describe('SETUP: ', () => {
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: "https://ekm.flowcrypt.com",
+        key_manager_url: CommonData.keyManagerURL.mockServer,
       }
     };
     mockApi.attesterConfig = {
@@ -33,6 +34,9 @@ describe('SETUP: ', () => {
         'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
       }
     };
+    mockApi.ekmConfig = {
+      returnKeys: [ekmKeySamples.e2eValidKey.prv]
+    }
     const userEmail = CommonData.updateRecipientPublicKey.email;
     const userName = CommonData.updateRecipientPublicKey.name;
     const oldSignatureDate = CommonData.updateRecipientPublicKey.oldSignatureDate;

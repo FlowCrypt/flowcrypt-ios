@@ -9,9 +9,6 @@ import {
 import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
-import { allowedRecipients } from '../../../../api-mocks/apis/google/google-endpoints';
-import ElementHelper from 'tests/helpers/ElementHelper';
-import { join } from 'path';
 
 describe('INBOX: ', () => {
 
@@ -34,9 +31,6 @@ describe('INBOX: ', () => {
     };
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.e2eValidKey.prv]
-    }
-    mockApi.googleConfig = {
-      allowedRecipients: allowedRecipients
     }
 
     await mockApi.withMockedApis(async () => {

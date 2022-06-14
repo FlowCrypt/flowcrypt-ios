@@ -127,7 +127,7 @@ export class MockJwt {
       iat: Math.round(Date.now() / 1000),
       sub: 'sub',
       aud: oauth.clientId,
-      azp: 'azp',
+      azp: oauth.clientId,
       iss: authURL,
       name: 'First Last',
       picture: 'picture',

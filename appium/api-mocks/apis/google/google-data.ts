@@ -114,7 +114,9 @@ export class GoogleData {
         drafts: [], messages: [], attachments: {}, labels:
           [
             { id: 'INBOX', name: 'Inbox', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
-            { id: 'DRAFT', name: 'Drafts', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' }
+            { id: 'SENT', name: 'Sent', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
+            { id: 'DRAFT', name: 'Drafts', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
+            { id: 'TRASH', name: 'Trash', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
           ]
       };
       const dir = GoogleData.exportedMsgsPath;

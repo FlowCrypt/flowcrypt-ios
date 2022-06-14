@@ -32,10 +32,6 @@ export const getMockGoogleEndpoints = (
   googleConfig: GoogleConfig | undefined
 ): HandlersDefinition => {
 
-  if (!googleConfig) {
-    return {};
-  }
-
   return {
     '/o/oauth2/auth': async ({ query: { client_id, nonce, response_type, state, redirect_uri, scope, login_hint } }, req) => {
       if (isGet(req) && client_id === oauth.clientId && response_type === 'code' && state && redirect_uri === oauth.redirectUri && scope) { // auth screen
