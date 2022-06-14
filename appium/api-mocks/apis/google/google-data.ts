@@ -253,7 +253,7 @@ export class GoogleData {
   };
 
   public searchMessages = (q: string) => {
-    const subject = (q.match(/subject: '([^"]+)'/) || [])[1];
+    const subject = (q.match(/subject: "([^"]+)"/) || [])[1];
 
     if (subject) {
       // if any subject query found, all else is ignored

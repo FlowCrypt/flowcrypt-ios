@@ -211,15 +211,11 @@ extension InboxViewController {
     }
 
     private func getSearchQuery() -> String? {
-        var searchQuery: String?
-        if searchedExpression.isNotEmpty {
-            if !searchedExpression.starts(with: "subject:") {
-                searchQuery = "\(searchedExpression) OR subject:\(searchedExpression)"
-            } else {
-                searchQuery = searchedExpression
-            }
-        }
-        return searchQuery
+        guard searchedExpression.isNotEmpty else { return nil }
+
+        guard !searchedExpression.hasPrefix("subject:") else { return searchedExpression }
+
+        return "\(searchedExpression) OR subject:\(searchedExpression)"
     }
 
     internal func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
@@ -231,6 +227,7 @@ extension InboxViewController {
                 } else {
                     state = .fetching
                 }
+
                 let context = try await inboxDataProvider.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: isSearch ? nil : viewModel.path, // pass nil in search screen to search for all folders

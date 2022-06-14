@@ -52,8 +52,6 @@ describe('SETUP: ', () => {
       });
       await NewMessageScreen.clickSendButton();
       await MailFolderScreen.checkInboxScreen();
-
-      await MailFolderHelper.deleteSentEmail(emailSubject, emailText);
     });
   });
 });
