@@ -299,6 +299,18 @@ export const getMockGoogleEndpoints = (
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
+    '/gmail/v1/users/me/messages/send': async (parsedReq, req) => {
+      // TODO: Create new message from parsedReq.body.raw
+      if (isPost(req)) {
+        return {
+          id: '123',
+          threadId: '123',
+          labelIds: ['SENT']
+        }
+      }
+
+      throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
+    },
   };
 }
 

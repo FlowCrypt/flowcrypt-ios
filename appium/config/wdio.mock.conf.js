@@ -21,7 +21,7 @@ config.capabilities = [
     newCommandTimeout: 10000,
     wdaLaunchTimeout: 300000,
     wdaConnectionTimeout: 600000,
-    wdaStartupRetries: 1,
+    wdaStartupRetries: 4,
     wdaStartupRetryInterval: 120000,
   },
 ];

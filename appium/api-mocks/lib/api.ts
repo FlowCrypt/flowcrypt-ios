@@ -239,7 +239,7 @@ export class Api<REQ, RES> {
         req.url!.startsWith('/api/message/upload') || // flowcrypt.com/api pwd msg
         (req.url!.startsWith('/attester/pub/') && req.method === 'POST') || // attester submit
         req.url!.startsWith('/api/v1/message') || // FES pwd msg
-        req.url!.startsWith('/token')
+        req.url!.startsWith('/token') // gmail auth token
       ) {
         parsedBody = body.toString();
       } else {
@@ -247,15 +247,13 @@ export class Api<REQ, RES> {
       }
     }
 
-    if (req.url!.startsWith('/token')) {
-      return { query: this.parseUrlQuery(body.toString()), body: parsedBody } as unknown as REQ;
-    } else {
-      return { query: this.parseUrlQuery(req.url!), body: parsedBody } as unknown as REQ;
-    }
+    const query = req.url!.startsWith('/token') ? this.parseUrlQuery(body.toString()) : this.parseUrlQuery(req.url!);
+    return { query: query, body: parsedBody } as unknown as REQ;
   }
 
   private throttledResponse = async (response: http.ServerResponse, data: Buffer) => {
     if (data.toString().startsWith(oauth.redirectUri)) {
+      // send redirect for mobile app auth
       response.writeHead(302, {
         Location: data.toString()
       });
