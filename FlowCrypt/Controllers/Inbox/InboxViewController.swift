@@ -461,7 +461,13 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
             switch self.state {
             case .empty:
-                return TextCellNode(input: self.decorator.emptyStateNodeInput(for: size, title: self.inboxTitle))
+                return EmptyCellNode(
+                    input: self.decorator.emptyStateNodeInput(
+                        for: size,
+                        title: self.inboxTitle,
+                        imageName: self.viewModel.path.mailFolderIcon
+                    )
+                )
             case .searchStart:
                 return TextCellNode(input: self.decorator.initialNodeInput(for: size, withSpinner: false))
             case .searchEmpty:

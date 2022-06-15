@@ -44,18 +44,12 @@ extension InboxCellNode.Input {
 }
 
 struct InboxViewDecorator {
-    func emptyStateNodeInput(for size: CGSize, title: String) -> TextCellNode.Input {
-        TextCellNode.Input(
+    func emptyStateNodeInput(for size: CGSize, title: String, imageName: String) -> EmptyCellNode.Input {
+        EmptyCellNode.Input(
             backgroundColor: .backgroundColor,
             title: title + " " + "empty".localized,
-            withSpinner: false,
             size: size,
-            insets: UIEdgeInsets(
-                top: size.height / 2,
-                left: 0,
-                bottom: 0,
-                right: 0
-            )
+            imageName: imageName
         )
     }
 
