@@ -4,7 +4,7 @@ import * as forge from 'node-forge';
 import { AddressObject, ParsedMail, StructuredHeader } from 'mailparser';
 import { ITestMsgStrategy, UnsuportableStrategyError } from './strategy-base';
 import { Buf } from '../../../core/buf';
-import { Config } from '../config';
+import { Config } from '../../../lib/config';
 import { GoogleData } from '../google-data';
 import { HttpErr } from '../../../lib/api';
 import { MsgUtil } from '../../../core/crypto/pgp/msg-util';
@@ -148,43 +148,6 @@ class NewMessageCCAndBCCTestStrategy implements ITestMsgStrategy {
   };
 }
 
-class SmimeEncryptedMessageStrategy implements ITestMsgStrategy {
-  public test = async (mimeMsg: ParsedMail) => {
-    expect((mimeMsg.headers.get('content-type') as StructuredHeader).value).toEqual('application/pkcs7-mime');
-    expect((mimeMsg.headers.get('content-type') as StructuredHeader).params.name).toEqual('smime.p7m');
-    expect((mimeMsg.headers.get('content-type') as StructuredHeader).params['smime-type']).toEqual('enveloped-data');
-    expect(mimeMsg.headers.get('content-transfer-encoding')).toEqual('base64');
-    expect((mimeMsg.headers.get('content-disposition') as StructuredHeader).value).toEqual('attachment');
-    expect((mimeMsg.headers.get('content-disposition') as StructuredHeader).params.filename).toEqual('smime.p7m');
-    expect(mimeMsg.headers.get('content-description')).toEqual('S/MIME Encrypted Message');
-    expect(mimeMsg.attachments!.length).toEqual(1);
-    expect(mimeMsg.attachments![0].contentType).toEqual('application/pkcs7-mime');
-    expect(mimeMsg.attachments![0].filename).toEqual('smime.p7m');
-    const withAttachments = mimeMsg.subject?.includes(' with attachment');
-    expect(mimeMsg.attachments![0].size).toBeGreaterThan(withAttachments ? 20000 : 300);
-    const msg = new Buf(mimeMsg.attachments![0].content).toRawBytesStr();
-    const p7 = forge.pkcs7.messageFromAsn1(forge.asn1.fromDer(msg));
-    expect(p7.type).toEqual(ENVELOPED_DATA_OID);
-    if (p7.type === ENVELOPED_DATA_OID) {
-      const key = SmimeKey.parse(testConstants.testKeyMultipleSmimeCEA2D53BB9D24871);
-      const decrypted = SmimeKey.decryptMessage(p7, key);
-      const decryptedMessage = Buf.with(decrypted).toRawBytesStr();
-      if (mimeMsg.subject?.includes(' signed ')) {
-        expect(decryptedMessage).toContain('smime-type=signed-data');
-        // todo: parse PKCS#7, check that is of SIGNED_DATA_OID content type, extract content?
-        // todo: #4046
-      } else {
-        expect(decryptedMessage).toContain('This text should be encrypted into PKCS#7 data');
-        if (withAttachments) {
-          const nestedMimeMsg = await Parse.parseMixed(decryptedMessage);
-          expect(nestedMimeMsg.attachments!.length).toEqual(3);
-          expect(nestedMimeMsg.attachments![0].content.toString()).toEqual(`small text file\nnot much here\nthis worked\n`);
-        }
-      }
-    }
-  };
-}
-
 class SmimeSignedMessageStrategy implements ITestMsgStrategy {
   public test = async (mimeMsg: ParsedMail) => {
     expect((mimeMsg.headers.get('content-type') as StructuredHeader).value).toEqual('application/pkcs7-mime');
@@ -225,12 +188,6 @@ export class TestBySubjectStrategyContext {
       this.strategy = new SaveMessageInStorageStrategy();
     } else if (subject.includes('Message With Test Text')) {
       this.strategy = new SaveMessageInStorageStrategy();
-    } else if (subject.includes('send with single S/MIME cert')) {
-      this.strategy = new SmimeEncryptedMessageStrategy();
-    } else if (subject.includes('send with several S/MIME certs')) {
-      this.strategy = new SmimeEncryptedMessageStrategy();
-    } else if (subject.includes('S/MIME message')) {
-      this.strategy = new SmimeEncryptedMessageStrategy();
     } else if (subject.includes('send signed S/MIME without attachment')) {
       this.strategy = new SmimeSignedMessageStrategy();
     } else if (GMAIL_RECOVERY_EMAIL_SUBJECTS.includes(subject)) {

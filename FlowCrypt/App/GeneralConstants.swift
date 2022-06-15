@@ -17,7 +17,7 @@ enum GeneralConstants {
     }
 
     enum Mock {
-        static let backendUrl = "https://127.0.0.1:8001/"
+        static let backendUrl = "https://127.0.0.1:8001"
         static let userEmail = "e2e.enterprise.test@flowcrypt.com"
     }
 
