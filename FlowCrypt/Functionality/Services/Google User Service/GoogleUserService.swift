@@ -99,6 +99,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
         super.init()
+
         self.runWarmupQuery()
     }
 
@@ -123,6 +124,17 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     var authorization: GTMAppAuthFetcherAuthorization? {
         getAuthorizationForCurrentUser()
+    }
+
+    var authorizationConfiguration: OIDServiceConfiguration {
+        if Bundle.shouldUseMockGmailApi {
+            return OIDServiceConfiguration(
+                authorizationEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)o/oauth2/auth")!,
+                tokenEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)token")!
+            )
+        } else {
+            return GTMAppAuthFetcherAuthorization.configurationForGoogle()
+        }
     }
 }
 
@@ -234,11 +246,15 @@ extension GoogleUserService {
 
     private func makeAuthorizationRequest(scopes: [GoogleScope], userEmail: String? = nil) -> OIDAuthorizationRequest {
         var additionalParameters = ["include_granted_scopes": "true"]
+
         if let userEmail = userEmail {
             additionalParameters["login_hint"] = userEmail
+        } else if Bundle.shouldUseMockGmailApi {
+            additionalParameters["login_hint"] = GeneralConstants.Mock.userEmail
         }
+
         return OIDAuthorizationRequest(
-            configuration: GTMAppAuthFetcherAuthorization.configurationForGoogle(),
+            configuration: authorizationConfiguration,
             clientId: GeneralConstants.Gmail.clientID,
             scopes: scopes.map(\.value),
             redirectURL: GeneralConstants.Gmail.redirectURL,
@@ -269,6 +285,9 @@ extension GoogleUserService {
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLROauth2_Userinfo, Error>) in
             let query = GTLROauth2Query_UserinfoGet.query()
             let authService = GTLROauth2Service()
+            if Bundle.shouldUseMockGmailApi {
+                authService.rootURLString = GeneralConstants.Mock.backendUrl
+            }
             authService.authorizer = authorization
             authService.executeQuery(query) { _, data, error in
                 if let error = error {

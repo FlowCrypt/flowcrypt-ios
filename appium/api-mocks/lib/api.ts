@@ -3,7 +3,7 @@
 import * as https from 'https';
 import * as http from 'http';
 import { readFileSync } from 'fs';
-// tslint:disable:await-returned-promise
+import { oauth } from './oauth';
 
 export type HandlersDefinition = Handlers<{ query: { [k: string]: string; }; body?: unknown; }, unknown>;
 
@@ -129,7 +129,8 @@ export class Api<REQ, RES> {
     }
     const handler = this.chooseHandler(req);
     if (handler) {
-      return this.fmtHandlerRes(await handler(this.parseReqBody(await this.collectReq(req), req), req), res);
+      const parsedReqBody = this.parseReqBody(await this.collectReq(req), req);
+      return this.fmtHandlerRes(await handler(parsedReqBody, req), res);
     }
     if ((req.url === '/' || req.url === `${this.urlPrefix}/`) && (req.method === 'GET' || req.method === 'HEAD')) {
       res.setHeader('content-type', 'application/json');
@@ -190,6 +191,7 @@ export class Api<REQ, RES> {
       throw new Error(`Don't know how to decide mock response content-type header`);
     }
     serverRes.setHeader('Access-Control-Allow-Origin', '*');
+
     return this.fmtRes(handlerRes);
   }
 
@@ -236,26 +238,40 @@ export class Api<REQ, RES> {
         req.url!.startsWith('/upload/') || // gmail message send
         req.url!.startsWith('/api/message/upload') || // flowcrypt.com/api pwd msg
         (req.url!.startsWith('/attester/pub/') && req.method === 'POST') || // attester submit
-        req.url!.startsWith('/api/v1/message') // FES pwd msg
+        req.url!.startsWith('/api/v1/message') || // FES pwd msg
+        req.url!.startsWith('/token') // gmail auth token
       ) {
         parsedBody = body.toString();
       } else {
         parsedBody = JSON.parse(body.toString());
       }
     }
-    return { query: this.parseUrlQuery(req.url!), body: parsedBody } as unknown as REQ;
+
+    const query = req.url!.startsWith('/token') ? this.parseUrlQuery(body.toString()) : this.parseUrlQuery(req.url!);
+    return { query: query, body: parsedBody } as unknown as REQ;
   }
 
   private throttledResponse = async (response: http.ServerResponse, data: Buffer) => {
-    const chunkSize = 100 * 1024;
-    for (let i = 0; i < data.length; i += chunkSize) {
-      const chunk = data.slice(i, i + chunkSize);
-      response.write(chunk);
-      if (i > 0) {
-        await this.sleep(this.throttleChunkMsDownload / 1000);
+    if (data.toString().startsWith(oauth.redirectUri)) {
+      // send redirect for mobile app auth
+      response.writeHead(302, {
+        Location: data.toString()
+      });
+      response.write(data);
+      response.end();
+    } else {
+      const chunkSize = 100 * 1024;
+      for (let i = 0; i < data.length; i += chunkSize) {
+        const chunk = data.slice(i, i + chunkSize);
+        response.write(chunk);
+        if (i > 0) {
+          await this.sleep(this.throttleChunkMsDownload / 1000);
+        }
       }
+
+      response.end();
     }
-    response.end();
+
   }
 
   private sleep = async (seconds: number) => {
@@ -264,10 +280,7 @@ export class Api<REQ, RES> {
 
   private parseUrlQuery = (url: string): { [k: string]: string } => {
     const queryIndex = url.indexOf('?');
-    if (!queryIndex) {
-      return {};
-    }
-    const queryStr = url.substring(queryIndex + 1);
+    const queryStr = !queryIndex ? url : url.substring(queryIndex + 1);
     const valuePairs = queryStr.split('&');
     const params: { [k: string]: string } = {};
     for (const valuePair of valuePairs) {
@@ -282,7 +295,7 @@ export class Api<REQ, RES> {
 }
 
 export class HttpErr extends Error {
-  constructor(message: string, public statusCode: number) {
+  constructor(message: string, public statusCode: number = 400) {
     super(message);
   }
   public formatted = (): unknown => {

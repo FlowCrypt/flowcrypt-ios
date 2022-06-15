@@ -39,7 +39,7 @@ describe('SETUP: ', () => {
     };
 
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
@@ -52,8 +52,6 @@ describe('SETUP: ', () => {
       });
       await NewMessageScreen.clickSendButton();
       await MailFolderScreen.checkInboxScreen();
-
-      await MailFolderHelper.deleteSentEmail(emailSubject, emailText);
     });
   });
 });

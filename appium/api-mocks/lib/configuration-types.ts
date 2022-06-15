@@ -34,7 +34,7 @@ export type AttesterConfig = {
 };
 
 export type GoogleConfig = {
-  allowedRecipients: [string]
+  allowedRecipients: string[]
 };
 
 export type WkdConfig = {};

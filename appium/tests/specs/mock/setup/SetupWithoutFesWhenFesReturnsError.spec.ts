@@ -1,7 +1,7 @@
 import { MockApi } from 'api-mocks/mock';
 import {
-    SetupKeyScreen,
-    SplashScreen,
+  SetupKeyScreen,
+  SplashScreen,
 } from '../../../screenobjects/all-screens';
 
 
@@ -16,7 +16,7 @@ describe('SETUP: ', () => {
       }
     };
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await SetupKeyScreen.checkNoBackupsFoundScreen();
     });
   });

@@ -6,6 +6,8 @@ import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/at
 import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
+import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
+import { CommonData } from 'tests/data';
 
 describe('SETUP: ', () => {
 
@@ -15,7 +17,7 @@ describe('SETUP: ', () => {
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: "https://ekm.flowcrypt.com",
+        key_manager_url: CommonData.keyManagerURL.mockServer,
         disallow_attester_search_for_domains: ["disabled.test"]
       }
     };
@@ -25,9 +27,12 @@ describe('SETUP: ', () => {
         'attester@enabled.test': attesterPublicKeySamples.valid
       }
     };
+    mockApi.ekmConfig = {
+      returnKeys: [ekmKeySamples.e2eValidKey.prv]
+    }
 
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
