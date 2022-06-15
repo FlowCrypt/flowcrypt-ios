@@ -19,8 +19,8 @@ struct EnterpriseServerApiHelper {
     }
 
     private func constructUrlBase(emailDomain: String) -> String {
-        guard !Bundle.isMockDebugBundle else {
-            return "http://127.0.0.1:8001/fes" // mock
+        guard !Bundle.isDebugBundleWithArgument("--mock-fes-api") else {
+            return "\(GeneralConstants.Mock.backendUrl)fes" // mock
         }
         return "https://fes.\(emailDomain)" // live
     }

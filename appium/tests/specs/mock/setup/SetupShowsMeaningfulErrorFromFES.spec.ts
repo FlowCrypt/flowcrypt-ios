@@ -20,9 +20,9 @@ describe('SETUP: ', () => {
       }
     };
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await BaseScreen.checkModalMessage('Login Error\n' +
-        'EnterpriseServerApi 400 message:some client err GET http://127.0.0.1:8001/fes/api/');
+        'EnterpriseServerApi 400 message:some client err GET https://127.0.0.1:8001/fes/api/');
 
       mockApi.fesConfig = {
         returnError: {
@@ -33,7 +33,7 @@ describe('SETUP: ', () => {
       };
 
       await AppiumHelper.restartApp(processArgs);
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await BaseScreen.checkModalMessage('Login Error\n"some client err"');
 
       mockApi.fesConfig = {
@@ -45,7 +45,7 @@ describe('SETUP: ', () => {
       };
 
       await AppiumHelper.restartApp(processArgs);
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await BaseScreen.checkModalMessage('Login Error\n' +
         '{"wrongFieldError":{"wrongFieldCode":400,"wrongFieldMessage":"some client err"}}');
     });

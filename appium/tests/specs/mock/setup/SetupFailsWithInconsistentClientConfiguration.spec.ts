@@ -15,7 +15,7 @@ describe('SETUP: ', () => {
       }
     };
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await BaseScreen.checkModalMessage('Error\n' + 'Please check if key manager url set correctly');
     });
   });

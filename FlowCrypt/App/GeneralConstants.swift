@@ -13,7 +13,12 @@ enum GeneralConstants {
     }
 
     enum Global {
-        static let attachmentSizeLimit: Int = 10_000_000
+        static let attachmentSizeLimit = 10_000_000
+    }
+
+    enum Mock {
+        static let backendUrl = "https://127.0.0.1:8001/"
+        static let userEmail = "e2e.enterprise.test@flowcrypt.com"
     }
 
     enum EmailConstant {
@@ -24,36 +29,5 @@ enum GeneralConstants {
             "CryptUP Account Backup",
             "All you need to know about CryptUP (contains a backup)"
         ]
-    }
-}
-
-enum GoogleScope: CaseIterable {
-    case userInfo, userEmail, mail, contacts, otherContacts
-
-    var value: String {
-        switch self {
-        case .userInfo: return "https://www.googleapis.com/auth/userinfo.profile"
-        case .userEmail: return "https://www.googleapis.com/auth/userinfo.email"
-        case .mail: return "https://mail.google.com/"
-        case .contacts: return "https://www.googleapis.com/auth/contacts"
-        case .otherContacts: return "https://www.googleapis.com/auth/contacts.other.readonly"
-        }
-    }
-}
-
-extension GoogleScope {
-    var title: String {
-        switch self {
-        case .userInfo:
-            return "User Info"
-        case .userEmail:
-            return "User Email"
-        case .mail:
-            return "Gmail"
-        case .contacts:
-            return "Contacts"
-        case .otherContacts:
-            return "Other Contacts"
-        }
     }
 }

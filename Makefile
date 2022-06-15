@@ -2,7 +2,7 @@
 all: ui_tests
 
 dependencies:
-	gem install bundler:2.3.11
+	gem install bundler:2.3.15
 	bundle config set path 'vendor/bundle'
 	bundle install
 
@@ -18,4 +18,3 @@ snapshots: dependencies
 	bundle exec fastlane snapshot
 	cd fastlane/screenshots
 	fastlane frameit
-
