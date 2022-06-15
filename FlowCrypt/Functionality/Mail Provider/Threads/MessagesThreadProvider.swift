@@ -15,7 +15,7 @@ protocol MessagesThreadProvider {
 
 extension GmailService: MessagesThreadProvider {
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext {
-        let threadsList = (try await getThreadsList(using: context))
+        let threadsList = try await getThreadsList(using: context)
         let requests = threadsList.threads?
             .compactMap { (thread) -> (String, String?)? in
                 guard let id = thread.identifier else {

@@ -242,6 +242,10 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.archiveButton);
   }
 
+  clickMoveToInboxButton = async () => {
+    await ElementHelper.waitAndClick(await this.moveToInboxButton);
+  }
+
   clickDeleteButton = async () => {
     await ElementHelper.waitAndClick(await this.deleteButton);
   }

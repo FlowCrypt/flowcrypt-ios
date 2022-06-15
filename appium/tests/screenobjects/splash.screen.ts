@@ -161,11 +161,15 @@ class SplashScreen extends BaseScreen {
     }
   }
 
-  login = async (email: string = CommonData.account.email, password: string = CommonData.account.password!) => {
+  login = async (email: string = CommonData.account.email, password: string = CommonData.account.password!, isMock = false) => {
     await this.clickContinueWithGmail();
     await this.clickContinueBtn();
-    await this.changeLanguage();
-    await this.gmailLogin(email, password);
+
+    if (!isMock) {
+      await this.changeLanguage();
+      await this.gmailLogin(email, password);
+    }
+
     await ElementHelper.waitElementInvisible(await this.signInAsGoogleAccounLabel);
   }
 
@@ -175,6 +179,10 @@ class SplashScreen extends BaseScreen {
     await EmailProviderScreen.fillEmail(email);
     await EmailProviderScreen.fillPassword(password);
     await EmailProviderScreen.clickConnectBtn();
+  }
+
+  mockLogin = async () => {
+    await this.login('', '', true);
   }
 }
 

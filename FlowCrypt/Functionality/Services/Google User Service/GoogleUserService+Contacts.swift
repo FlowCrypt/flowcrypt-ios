@@ -20,6 +20,10 @@ extension GoogleUserService {
     private var peopleService: GTLRPeopleServiceService {
         let service = GTLRPeopleServiceService()
 
+        if Bundle.shouldUseMockGmailApi {
+            service.rootURLString = GeneralConstants.Mock.backendUrl
+        }
+
         if authorization == nil {
             logger.logWarning("authorization for current user is nil")
         }

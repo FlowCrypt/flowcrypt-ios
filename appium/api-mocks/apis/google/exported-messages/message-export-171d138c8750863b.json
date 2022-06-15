@@ -1,5 +1,5 @@
 {
-  "acctEmail": "flowcrypt.compatibility@gmail.com",
+  "acctEmail": "e2e.enterprise.test@flowcrypt.com",
   "full": {
     "id": "171d138c8750863b",
     "threadId": "171d138c8750863b",
@@ -40,7 +40,7 @@
         },
         {
           "name": "To",
-          "value": "flowcrypt.compatibility@gmail.com"
+          "value": "e2e.enterprise.test@flowcrypt.com"
         }
       ],
       "body": {

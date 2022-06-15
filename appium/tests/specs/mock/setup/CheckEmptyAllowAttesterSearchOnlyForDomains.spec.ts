@@ -1,4 +1,6 @@
+import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import { MockApi } from 'api-mocks/mock';
+import { CommonData } from 'tests/data';
 import {
   SplashScreen
 } from '../../../screenobjects/all-screens';
@@ -14,13 +16,16 @@ describe('SETUP: ', () => {
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: "https://ekm.flowcrypt.com",
+        key_manager_url: CommonData.keyManagerURL.mockServer,
         allow_attester_search_only_for_domains: [],
       }
     };
+    mockApi.ekmConfig = {
+      returnKeys: [ekmKeySamples.e2eValidKey.prv]
+    }
 
     await mockApi.withMockedApis(async () => {
-      await SplashScreen.login();
+      await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();

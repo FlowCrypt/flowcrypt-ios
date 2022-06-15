@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const libsDir = 'source/lib';
-const bundleDir = 'build/bundles'
+const bundleDir = 'build/bundles';
 const bundleRawDir = `${bundleDir}/raw`;
 const bundleWipDir = `${bundleDir}/wip`;
 
@@ -18,7 +18,7 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
   if (!filename.startsWith('entrypoint-')) {
     const src = fs.readFileSync(`${bundleRawDir}/${filename}`).toString();
     const importableName = `dereq_${filename.replace(/\.js$/, '').replace(/^(node|bare)-/, '').replace(/-/g, '_')}`;
-    let fixedExportSrc = src.replace(/^module\.exports =\n/, `const ${importableName} =\n`);
+    const fixedExportSrc = src.replace(/^module\.exports =\n/, `const ${importableName} =\n`);
     fs.writeFileSync(`${bundleWipDir}/${filename}`, fixedExportSrc);
   }
 }
