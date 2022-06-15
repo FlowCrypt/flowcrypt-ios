@@ -78,10 +78,6 @@ export interface KeyIdentity {
 export interface KeyInfoWithIdentity extends KeyInfo, KeyIdentity {
 }
 
-export interface KeyInfoWithIdentityAndOptionalPp extends KeyInfoWithIdentity {
-  passphrase?: string;
-}
-
 export interface TypedKeyInfo extends KeyInfo, KeyIdentity {
 }
 
