@@ -46,7 +46,7 @@ class PwdEncryptedMessageWithFesIdTokenTestStrategy implements ITestMsgStrategy 
     if (!mimeMsg.text?.includes(`${expectedSenderEmail} has sent you a password-encrypted email`)) {
       throw new HttpErr(`Error checking sent text in:\n\n${mimeMsg.text}`);
     }
-    if (!mimeMsg.text?.includes('http://fes.standardsubdomainfes.test:8001/message/FES-MOCK-MESSAGE-ID')) {
+    if (!mimeMsg.text?.includes('http://fes.standardsubdomainfes.test:8001/message/FES-MOCK-MESSAGE-ID')) { // lgtm [js/incomplete-url-substring-sanitization]
       throw new HttpErr(`Error: cannot find pwd encrypted FES link in:\n\n${mimeMsg.text}`);
     }
     if (!mimeMsg.text?.includes('Follow this link to open it')) {
