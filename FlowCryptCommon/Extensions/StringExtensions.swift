@@ -67,7 +67,7 @@ public extension String {
         case "TRASH":
             return "trash"
         case "DRAFT":
-            return "note"
+            return "square.and.pencil"
         case "SPAM":
             return "exclamationmark.shield"
         case "STARRED":
