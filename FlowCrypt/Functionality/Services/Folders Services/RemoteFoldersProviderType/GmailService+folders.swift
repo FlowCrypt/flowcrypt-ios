@@ -11,7 +11,11 @@ import GoogleAPIClientForREST_Gmail
 
 extension GmailService: RemoteFoldersProviderType {
     enum Constants {
-        static let allMailFolder = Folder(path: "", name: "All Mail", image: nil)
+        static let allMailFolder = Folder(
+            path: "",
+            name: "folder_all_mail".localized,
+            image: UIImage(systemName: "tag")?.jpegData(compressionQuality: 1.0)
+        )
     }
 
     func fetchFolders() async throws -> [Folder] {
@@ -76,10 +80,34 @@ private extension Folder {
         if standardGmailLabels.contains(name) {
             name = "folder_\(name.replacingOccurrences(of: " ", with: "_"))".localized
         }
+        let image: String = {
+            switch path {
+            case "INBOX":
+                return "envelope"
+            case "CHAT":
+                return "message"
+            case "SENT":
+                return "paperplane"
+            case "IMPORTANT":
+                return "tag"
+            case "TRASH":
+                return "trash"
+            case "DRAFT":
+                return "note"
+            case "SPAM":
+                return "exclamationmark.shield"
+            case "STARRED":
+                return "star"
+            case "UNREAD":
+                return "envelope.badge"
+            default:
+                return "tag"
+            }
+        }()
         self.init(
             path: path,
             name: name,
-            image: nil
+            image: UIImage(systemName: image)?.jpegData(compressionQuality: 1.0)
         )
     }
 }
