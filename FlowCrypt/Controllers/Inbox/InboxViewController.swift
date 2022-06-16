@@ -335,8 +335,12 @@ extension InboxViewController {
     private func handleNew(_ input: InboxContext) {
         shouldBeginFetch = false
         inboxInput = input.data
-        if inboxInput.isEmpty && isSearch {
-            state = .searchEmpty
+        if inboxInput.isEmpty {
+            if isSearch {
+                state = .searchEmpty
+            } else {
+                state = .empty
+            }
         } else {
             state = .fetched(input.pagination)
         }
@@ -457,7 +461,13 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
             switch self.state {
             case .empty:
-                return TextCellNode(input: self.decorator.emptyStateNodeInput(for: size, title: self.inboxTitle))
+                return EmptyCellNode(
+                    input: self.decorator.emptyStateNodeInput(
+                        for: size,
+                        title: self.inboxTitle,
+                        imageName: self.viewModel.path.mailFolderIcon
+                    )
+                )
             case .searchStart:
                 return TextCellNode(input: self.decorator.initialNodeInput(for: size, withSpinner: false))
             case .searchEmpty:

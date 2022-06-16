@@ -40,7 +40,7 @@ extension FolderViewModel {
         self.init(
             name: object.name,
             path: object.path,
-            image: object.image.flatMap(UIImage.init),
+            image: object.image.flatMap(UIImage.init) ?? UIImage(systemName: object.path.mailFolderIcon),
             itemType: ItemType(rawValue: object.itemType) ?? .folder
         )
     }
