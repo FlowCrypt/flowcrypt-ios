@@ -53,13 +53,13 @@ extension FolderViewModel {
             FolderViewModel(
                 name: "folder_settings".localized,
                 path: "",
-                image: UIImage(named: "settings")?.tinted(.mainTextColor),
+                image: UIImage(systemName: "gearshape"),
                 itemType: .settings
             ),
             FolderViewModel(
                 name: "log_out".localized,
                 path: "",
-                image: UIImage(named: "exit")?.tinted(.mainTextColor),
+                image: UIImage(systemName: "rectangle.portrait.and.arrow.right"),
                 itemType: .logOut
             )
         ]

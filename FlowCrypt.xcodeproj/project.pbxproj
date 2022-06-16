@@ -151,6 +151,7 @@
 		75588F8F285777AB00E595D1 /* GmailService+SendAs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F89285777AB00E595D1 /* GmailService+SendAs.swift */; };
 		75588F90285777AB00E595D1 /* LocalSendAsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F8A285777AB00E595D1 /* LocalSendAsProvider.swift */; };
 		75588F9228577BFA00E595D1 /* SendAsRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F9128577BFA00E595D1 /* SendAsRealmObject.swift */; };
+		756BB990285A19C100F73140 /* EmptyCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756BB98F285A19C100F73140 /* EmptyCellNode.swift */; };
 		759739BE2833E986004867CD /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
 		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */; };
@@ -616,6 +617,7 @@
 		75588F89285777AB00E595D1 /* GmailService+SendAs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GmailService+SendAs.swift"; sourceTree = "<group>"; };
 		75588F8A285777AB00E595D1 /* LocalSendAsProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalSendAsProvider.swift; sourceTree = "<group>"; };
 		75588F9128577BFA00E595D1 /* SendAsRealmObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAsRealmObject.swift; sourceTree = "<group>"; };
+		756BB98F285A19C100F73140 /* EmptyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionService.swift; sourceTree = "<group>"; };
@@ -2203,6 +2205,7 @@
 				5133B6732716E5EA00C95463 /* LabelCellNode.swift */,
 				04DE04DC27E098010055CB86 /* ComposeRecipientCellNode.swift */,
 				7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */,
+				756BB98F285A19C100F73140 /* EmptyCellNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -3010,6 +3013,7 @@
 				D26F132724509EB6009175BA /* RecipientEmailsCellNodeInput.swift in Sources */,
 				D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */,
 				040CF0DA2809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift in Sources */,
+				756BB990285A19C100F73140 /* EmptyCellNode.swift in Sources */,
 				D27177512425678F00BDA9A9 /* KeySettingCellNode.swift in Sources */,
 				5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				D27177462424D59800BDA9A9 /* InboxCellNode.swift in Sources */,
