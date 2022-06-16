@@ -12,10 +12,10 @@ import Foundation
 protocol KeyMethodsType {
     func filterByPassPhraseMatch<T: ArmoredPrvWithIdentity>(keys: [T], passPhrase: String) async throws -> [T]
     func parseKeys(armored: [String]) async throws -> [KeyDetails]
-    func chooseSenderKeys(for type: ChooseSenderKeysType, keys: [Keypair], senderEmail: String) async throws -> [Keypair]
+    func chooseSenderKeys(for type: KeyUsage, keys: [Keypair], senderEmail: String) async throws -> [Keypair]
 }
 
-enum ChooseSenderKeysType {
+enum KeyUsage {
     case encryption
     case signing
 }
@@ -50,7 +50,7 @@ final class KeyMethods: KeyMethodsType {
         return parsed.keyDetails
     }
 
-    func chooseSenderKeys(for type: ChooseSenderKeysType, keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
+    func chooseSenderKeys(for type: KeyUsage, keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
         let senderEmail = senderEmail.lowercased()
         let parsed = try await parseKeys(armored: keys.map(type == .encryption ? \.public : \.private))
         guard parsed.isNotEmpty else {

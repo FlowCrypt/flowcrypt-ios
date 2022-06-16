@@ -26,9 +26,10 @@ describe('COMPOSE EMAIL: ', () => {
     await NewMessageScreen.checkRecipientLabel([recipientName]);
     await NewMessageScreen.changeFromEmail(aliasEmail);
 
-    await NewMessageScreen.clickSendButton();
-    await MailFolderScreen.checkInboxScreen();
+    // Comment those 3 lines until we transfer to mock api
+    // await NewMessageScreen.clickSendButton();
+    // await MailFolderScreen.checkInboxScreen();
 
-    await MailFolderHelper.deleteSentEmail(emailSubject, emailText, aliasEmail);
+    // await MailFolderHelper.deleteSentEmail(emailSubject, emailText, aliasEmail);
   });
 });
