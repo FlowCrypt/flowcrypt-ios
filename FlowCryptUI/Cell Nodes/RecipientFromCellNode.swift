@@ -25,6 +25,7 @@ final public class RecipientFromCellNode: CellNode {
 
     lazy var valueTextNode: ASTextNode2 = {
         let textNode = ASTextNode2()
+        textNode.accessibilityIdentifier = "aid-from-value-node"
         return textNode
     }()
 
@@ -38,7 +39,7 @@ final public class RecipientFromCellNode: CellNode {
         let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .light)
         let image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
         let button = ASButtonNode()
-        button.accessibilityIdentifier = "aid-recipients-toggle-button"
+        button.accessibilityIdentifier = "aid-from-toggle-button"
         button.setImage(image, for: .normal)
         button.contentEdgeInsets = UIEdgeInsets(top: 3, left: 0, bottom: 0, right: 0)
         button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
