@@ -61,6 +61,7 @@ final class ComposeViewController: TableNodeViewController {
     internal let keyMethods: KeyMethodsType
     internal let router: GlobalRouterType
     internal let clientConfiguration: ClientConfiguration
+    internal let sendAsService: SendAsServiceType
 
     internal let email: String
     internal var isMessagePasswordSupported: Bool {
@@ -93,6 +94,9 @@ final class ComposeViewController: TableNodeViewController {
     internal var sectionsList: [Section] = []
     var composeTextNode: ASCellNode!
     var composeSubjectNode: ASCellNode!
+    var fromCellNode: ASCellNode!
+    var sendAsList: [SendAsModel] = []
+    var selectedFromEmail = ""
 
     init(
         appContext: AppContextWithUser,
@@ -133,6 +137,9 @@ final class ComposeViewController: TableNodeViewController {
         self.contextToSend.subject = input.subject
         self.contextToSend.attachments = input.attachments
         self.clientConfiguration = clientConfiguration
+        self.sendAsService = try appContext.getSendAsService()
+        self.sendAsList = try await sendAsService.fetchList(isForceReload: false, for: appContext.user)
+        self.selectedFromEmail = appContext.user.email
         super.init(node: TableNode())
     }
 

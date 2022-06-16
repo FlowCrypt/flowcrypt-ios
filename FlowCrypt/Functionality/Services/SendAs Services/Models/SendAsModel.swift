@@ -13,6 +13,13 @@ struct SendAsModel {
     let sendAsEmail: String
     let isDefault: Bool
     let verificationStatus: SendAsVerificationStatus
+
+    var descriptoin: String {
+        if displayName == "" {
+            return "\(sendAsEmail)"
+        }
+        return "\(sendAsEmail) (\(displayName))"
+    }
 }
 
 enum SendAsVerificationStatus: String {

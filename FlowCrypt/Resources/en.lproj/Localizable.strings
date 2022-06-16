@@ -129,6 +129,7 @@
 "compose_message_sent" = "Message sent";
 "compose_enter_subject" = "Enter subject";
 "compose_enter_secure" = "Enter secure message";
+"compose_recipient_from" = "From";
 "compose_recipient_to" = "To";
 "compose_recipient_cc" = "Cc";
 "compose_recipient_bcc" = "Bcc";

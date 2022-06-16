@@ -144,6 +144,7 @@
 		601EEE31272B19D200FE445B /* CheckMailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */; };
 		606FE33A2745AA2E009DA039 /* AttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606FE3392745AA2E009DA039 /* AttachmentViewController.swift */; };
 		750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750A6C3C28244A780048E1CC /* OptionalExtensions.swift */; };
+		7536E72D285B00EA00A50043 /* RecipientFromCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */; };
 		75588F8B285777AB00E595D1 /* SendAsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F83285777AB00E595D1 /* SendAsService.swift */; };
 		75588F8C285777AB00E595D1 /* SendAsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F85285777AB00E595D1 /* SendAsModel.swift */; };
 		75588F8D285777AB00E595D1 /* RemoteSendAsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F87285777AB00E595D1 /* RemoteSendAsProvider.swift */; };
@@ -608,6 +609,7 @@
 		601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMailAuthViewController.swift; sourceTree = "<group>"; };
 		606FE3392745AA2E009DA039 /* AttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentViewController.swift; sourceTree = "<group>"; };
 		750A6C3C28244A780048E1CC /* OptionalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalExtensions.swift; sourceTree = "<group>"; };
+		7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFromCellNode.swift; sourceTree = "<group>"; };
 		75588F83285777AB00E595D1 /* SendAsService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendAsService.swift; sourceTree = "<group>"; };
 		75588F85285777AB00E595D1 /* SendAsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendAsModel.swift; sourceTree = "<group>"; };
 		75588F87285777AB00E595D1 /* RemoteSendAsProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteSendAsProvider.swift; sourceTree = "<group>"; };
@@ -2200,6 +2202,7 @@
 				D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */,
 				5133B6732716E5EA00C95463 /* LabelCellNode.swift */,
 				04DE04DC27E098010055CB86 /* ComposeRecipientCellNode.swift */,
+				7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -3011,6 +3014,7 @@
 				5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				D27177462424D59800BDA9A9 /* InboxCellNode.swift in Sources */,
 				D27177472424D59800BDA9A9 /* TextCellNode.swift in Sources */,
+				7536E72D285B00EA00A50043 /* RecipientFromCellNode.swift in Sources */,
 				51B9EE6F27567B520080B2D5 /* MessageRecipientsNode.swift in Sources */,
 				D211CE6E23FC354200D1CE38 /* CellNode.swift in Sources */,
 				D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */,

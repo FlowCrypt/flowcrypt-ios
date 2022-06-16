@@ -75,6 +75,48 @@ extension ComposeViewController {
         }
     }
 
+    internal func setupFromNode() {
+        fromCellNode = RecipientFromCellNode(
+            fromEmail: selectedFromEmail,
+            toggleButtonAction: {
+                self.presentSendAsActionSheet()
+            }
+        )
+    }
+
+    private func presentSendAsActionSheet() {
+        let alert = UIAlertController(
+            title: nil,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
+
+        for aliasEmail in sendAsList {
+            let action = UIAlertAction(
+                title: aliasEmail.descriptoin,
+                style: .default) { [weak self] _ in
+                    self?.changeSendAs(to: aliasEmail.sendAsEmail)
+                }
+            action.accessibilityIdentifier = "send-as-\(aliasEmail)"
+            alert.addAction(action)
+        }
+        alert.addAction(cancelAction)
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func changeSendAs(to email: String) {
+        guard let section = sectionsList.firstIndex(of: .recipients(.from)),
+              let fromCell = node.nodeForRow(at: IndexPath(row: 0, section: section)) as? RecipientFromCellNode else {
+            return
+        }
+        fromCell.fromEmail = email
+        self.selectedFromEmail = email
+    }
+    
     internal func messagePasswordNode() -> ASCellNode {
         let input = contextToSend.hasMessagePassword
         ? decorator.styledFilledMessagePasswordInput()
