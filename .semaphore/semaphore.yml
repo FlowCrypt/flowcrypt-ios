@@ -10,7 +10,7 @@ auto_cancel:
   running:
     when: branch != 'master'
 blocks:
-  - name: Appium UI tests
+  - name: Appium UI Tests(Initialization)
     dependencies: []
     run:
       when: 'change_in(''/'', {exclude: [''/Core/package.json'', ''/Core/package-lock.json'']})'
@@ -27,14 +27,14 @@ blocks:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
           - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
       jobs:
-        - name: Appium UI tests
+        - name: Build Xcode Project
           commands:
             - xcversion select 13.4.1
             - bundle exec fastlane build
       epilogue:
         always:
           commands:
-            - artifact push job ~/git/flowcrypt-ios/appium/FlowCrypt.app
+            - cd appium && artifact push job FlowCrypt.app
   - name: TypeScript + Swift tests
     dependencies: []
     run:
@@ -67,7 +67,7 @@ blocks:
             - bundle exec fastlane test
   - name: Mock Tests
     dependencies:
-      - Appium UI tests
+      - Appium UI Tests(Initialization)
     task:
       env_vars:
         - name: LANG
@@ -91,7 +91,7 @@ blocks:
       jobs:
         - name: Run mock tests
           commands:
-            - artifact pull job FlowCrypt.app
+            - cd appium && artifact pull job FlowCrypt.app
             - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             - unzip flowcrypt-ios-*.zip
             - npm run-script test.mock.all
@@ -99,7 +99,7 @@ blocks:
         - name: flowcrypt-ios-ci-secrets
   - name: Live Tests
     dependencies:
-      - Appium UI tests
+      - Appium UI Tests(Initialization)
     task:
       env_vars:
         - name: LANG
@@ -109,7 +109,7 @@ blocks:
       jobs:
         - name: Run live tests
           commands:
-            - artifact pull job FlowCrypt.app
+            - cd appium && artifact pull job FlowCrypt.app
             - npm run-script test.live.all
       secrets:
         - name: flowcrypt-ios-ci-secrets
