@@ -100,7 +100,11 @@ extension ComposeViewController {
                 style: .default) { [weak self] _ in
                     self?.changeSendAs(to: aliasEmail.sendAsEmail)
                 }
-            action.accessibilityIdentifier = "send-as-\(aliasEmail)"
+            // Remove @, . in email part as appium throws error for identifiers which contain @, .
+            let emailIentifier = aliasEmail.sendAsEmail
+                .replacingOccurrences(of: "@", with: "-")
+                .replacingOccurrences(of: ".", with: "-")
+            action.accessibilityIdentifier = "aid-send-as-\(emailIentifier)"
             alert.addAction(action)
         }
         alert.addAction(cancelAction)

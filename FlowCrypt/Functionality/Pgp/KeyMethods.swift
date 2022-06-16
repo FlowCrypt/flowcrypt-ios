@@ -12,7 +12,12 @@ import Foundation
 protocol KeyMethodsType {
     func filterByPassPhraseMatch<T: ArmoredPrvWithIdentity>(keys: [T], passPhrase: String) async throws -> [T]
     func parseKeys(armored: [String]) async throws -> [KeyDetails]
-    func chooseSenderKeys(keys: [Keypair], senderEmail: String, forEncryptionFlag: Bool) async throws -> [Keypair]
+    func chooseSenderKeys(for type: ChooseSenderKeysType, keys: [Keypair], senderEmail: String) async throws -> [Keypair]
+}
+
+enum ChooseSenderKeysType {
+    case encryption
+    case signing
 }
 
 final class KeyMethods: KeyMethodsType {
@@ -45,9 +50,9 @@ final class KeyMethods: KeyMethodsType {
         return parsed.keyDetails
     }
 
-    func chooseSenderKeys(keys: [Keypair], senderEmail: String, forEncryptionFlag: Bool) async throws -> [Keypair] {
+    func chooseSenderKeys(for type: ChooseSenderKeysType, keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
         let senderEmail = senderEmail.lowercased()
-        let parsed = try await parseKeys(armored: keys.map(forEncryptionFlag ? \.public : \.private))
+        let parsed = try await parseKeys(armored: keys.map(type == .encryption ? \.public : \.private))
         guard parsed.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
@@ -60,6 +65,12 @@ final class KeyMethods: KeyMethodsType {
         }
         if let byAnyUid = try filter(keys, usable, ({ $0.pgpUserEmailsLowercased.contains(senderEmail) })) {
             return byAnyUid // if any keys match by any uid, use them
+        }
+        // for encryption, even when we cannot find key by the right uid, we can use the keys that don't match uid
+        // It won't cause much trouble for encryption, but it does for signature verification,
+        // and that's why we're treating them differently. We can be more lenient for encryption.
+        if type == .encryption {
+            return try filter(keys, usable) ?? [] // use any usable keys
         }
         return []
     }

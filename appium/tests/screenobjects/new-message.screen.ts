@@ -5,6 +5,8 @@ import TouchHelper from "../helpers/TouchHelper";
 const SELECTORS = {
   RECIPIENT_LIST_LABEL: '~aid-recipient-list-text',
   TOGGLE_RECIPIENTS_BUTTON: '~aid-recipients-toggle-button',
+  TOGGLE_FROM_BUTTON: '~aid-from-toggle-button',
+  FROM_VALUE_NODE: '~aid-from-value-node',
   SUBJECT_FIELD: '~aid-subject-text-field',
   COMPOSE_SECURITY_MESSAGE: '~aid-message-text-view',
   RECIPIENTS_LIST: '~aid-recipients-list',
@@ -44,6 +46,14 @@ class NewMessageScreen extends BaseScreen {
 
   get toggleRecipientsButton() {
     return $(SELECTORS.TOGGLE_RECIPIENTS_BUTTON);
+  }
+
+  get toggleFromButton() {
+    return $(SELECTORS.TOGGLE_FROM_BUTTON);
+  }
+
+  get fromValueNode() {
+    return $(SELECTORS.FROM_VALUE_NODE);
   }
 
   get recipientListLabel() {
@@ -171,6 +181,13 @@ class NewMessageScreen extends BaseScreen {
     await this.setComposeSecurityMessage(message);
     await this.setSubject(subject);
   };
+
+  changeFromEmail = async (email: string) => {
+    await this.showRecipientInputIfNeeded();
+    await ElementHelper.waitAndClick(await this.toggleFromButton);
+    await ElementHelper.waitAndClick(await $(`~aid-send-as-${email.replace(/@/, '-').replace(/\./g, '-')}`));
+    await ElementHelper.checkStaticText(await this.fromValueNode, email);
+  }
 
   checkRecipientLabel = async (recipientList: string[]) => {
     await this.showRecipientLabelIfNeeded();
