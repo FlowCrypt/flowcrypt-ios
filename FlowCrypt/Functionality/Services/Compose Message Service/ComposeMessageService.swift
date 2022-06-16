@@ -59,11 +59,11 @@ final class ComposeMessageService {
         self.onStateChanged = completion
     }
 
-    func prepareSigningKey(senderEmail: String) async throws -> Keypair? {
-        let keys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: senderEmail)
-        guard let signingKey = try await keyMethods.chooseSenderSigningKey(keys: keys, senderEmail: senderEmail) else {
-            // todo - throw user error for missing signing key
-            return nil
+    func prepareSigningKey(senderEmail: String) async throws -> Keypair {
+        let keys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
+        let signingKeys = try await keyMethods.chooseSenderKeys(keys: keys, senderEmail: senderEmail, forEncryptionFlag: false)
+        guard let signingKey = signingKeys.first else {
+            throw ComposeMessageError.noKeysFoundForSign(keys.count, senderEmail)
         }
         if signingKey.passphrase == nil {
             throw ComposeMessageError.promptUserToEnterPassPhraseForSigningKey(signingKey)
@@ -125,9 +125,10 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        let senderKeys = try await keyMethods.chooseSenderEncryptionKeys(
+        let senderKeys = try await keyMethods.chooseSenderKeys(
             keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
-            senderEmail: senderEmail
+            senderEmail: senderEmail,
+            forEncryptionFlag: true
         )
 
         guard senderKeys.isNotEmpty else {

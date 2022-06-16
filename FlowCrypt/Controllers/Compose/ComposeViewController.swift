@@ -139,6 +139,7 @@ final class ComposeViewController: TableNodeViewController {
         self.clientConfiguration = clientConfiguration
         self.sendAsService = try appContext.getSendAsService()
         self.sendAsList = try await sendAsService.fetchList(isForceReload: false, for: appContext.user)
+        self.sendAsList = self.sendAsList.filter { $0.verificationStatus == .accepted || $0.isDefault }
         self.selectedFromEmail = appContext.user.email
         super.init(node: TableNode())
     }

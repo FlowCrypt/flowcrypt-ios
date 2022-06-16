@@ -117,6 +117,7 @@
 "compose_password_subject_error" = "Please do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don't need a password.";
 "compose_sign_passphrase_required" = "Passphrase is required for message signing.";
 "compose_sign_passphrase_no_match" = "This pass phrase did not match your signing private key.";
+"compose_sign_no_keys" = "Cannot sign message: none of your %@ account keys can be used for sending address %@";
 "compose_password_placeholder" = "Tap to add password for recipients who don't have encryption set up.";
 "compose_password_set_message" = "Web portal password added";
 "compose_password_modal_title" = "Set web portal password";
