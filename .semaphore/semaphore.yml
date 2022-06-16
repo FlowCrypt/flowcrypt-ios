@@ -34,7 +34,7 @@ blocks:
       epilogue:
         always:
           commands:
-            - cd appium && artifact push job FlowCrypt.app
+            - cd appium && artifact push project FlowCrypt.app
   - name: TypeScript + Swift tests
     dependencies: []
     run:
@@ -79,7 +79,7 @@ blocks:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
           - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i
-          - artifact pull job FlowCrypt.app
+          - artifact pull project FlowCrypt.app
       epilogue:
         always:
           commands:
