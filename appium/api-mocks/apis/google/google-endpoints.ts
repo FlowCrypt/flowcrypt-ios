@@ -1,7 +1,7 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 import { GoogleConfig, MockConfig } from '../../lib/configuration-types';
-import { HandlersDefinition, HttpErr, Status } from '../../lib/api';
+import { HandlersDefinition, HttpErr, Status, TemporaryRedirectHttpErr } from '../../lib/api';
 import { GoogleData } from './google-data';
 import Parse, { ParseMsgResult } from '../../util/parse';
 import { isDelete, isGet, isPost, isPut, parseResourceId } from '../../lib/mock-util';
@@ -38,7 +38,7 @@ export const getMockGoogleEndpoints = (
         if (!login_hint) {
           return oauth.renderText('choose account with login_hint');
         } else {
-          return oauth.successPage(login_hint, state, nonce);
+          return oauth.generateAuthTokensAndRedirectUrl(login_hint, state, nonce);
         }
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);

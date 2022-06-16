@@ -286,7 +286,7 @@ extension GoogleUserService {
             let query = GTLROauth2Query_UserinfoGet.query()
             let authService = GTLROauth2Service()
             if Bundle.shouldUseMockGmailApi {
-                authService.rootURLString = GeneralConstants.Mock.backendUrl
+                authService.rootURLString = GeneralConstants.Mock.backendUrl + "/"
             }
             authService.authorizer = authorization
             authService.executeQuery(query) { _, data, error in

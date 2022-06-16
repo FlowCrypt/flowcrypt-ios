@@ -58,7 +58,15 @@ export class Api<REQ, RES> {
         process.exit(1);
       }
     }).catch((e) => {
-      if (e instanceof HttpErr) {
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('content-type', 'application/json');
+
+      if (e instanceof TemporaryRedirectHttpErr) {
+        response.writeHead(302, {
+          Location: e.redirectUrl
+        });
+        response.write(Buffer.from(e.redirectUrl, "utf-8"));
+      } else if (e instanceof HttpErr) {
         response.statusCode = e.statusCode;
         e.stack = undefined;
       } else {
@@ -69,10 +77,10 @@ export class Api<REQ, RES> {
           console.error(`url:${request.method}:${request.url}`, e);
         }
       }
-      response.setHeader('Access-Control-Allow-Origin', '*');
-      response.setHeader('content-type', 'application/json');
+
       const formattedErr = this.fmtErr(e);
       response.end(formattedErr);
+
       try {
         this.log(Date.now() - start, request, response, formattedErr);
       } catch (e) {
@@ -130,7 +138,8 @@ export class Api<REQ, RES> {
     const handler = this.chooseHandler(req);
     if (handler) {
       const parsedReqBody = this.parseReqBody(await this.collectReq(req), req);
-      return this.fmtHandlerRes(await handler(parsedReqBody, req), res);
+      const handledRequest = await handler(parsedReqBody, req);
+      return this.fmtHandlerRes(handledRequest, res);
     }
     if ((req.url === '/' || req.url === `${this.urlPrefix}/`) && (req.method === 'GET' || req.method === 'HEAD')) {
       res.setHeader('content-type', 'application/json');
@@ -307,3 +316,11 @@ export class HttpErr extends Error {
   }
 }
 
+export class TemporaryRedirectHttpErr extends Error {
+  public redirectUrl: string;
+
+  constructor(redirectUrl: string) {
+    super();
+    this.redirectUrl = redirectUrl;
+  }
+}

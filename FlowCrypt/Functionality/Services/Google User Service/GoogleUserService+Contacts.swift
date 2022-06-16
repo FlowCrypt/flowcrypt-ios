@@ -21,7 +21,7 @@ extension GoogleUserService {
         let service = GTLRPeopleServiceService()
 
         if Bundle.shouldUseMockGmailApi {
-            service.rootURLString = GeneralConstants.Mock.backendUrl
+            service.rootURLString = GeneralConstants.Mock.backendUrl + "/"
         }
 
         if authorization == nil {
