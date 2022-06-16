@@ -16,7 +16,7 @@ struct SendAsModel {
 
     var descriptoin: String {
         if displayName == "" {
-            return "\(sendAsEmail)"
+            return sendAsEmail
         }
         return "\(sendAsEmail) (\(displayName))"
     }
