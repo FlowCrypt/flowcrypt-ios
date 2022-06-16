@@ -29,12 +29,8 @@ export class GoogleErr extends HttpErr {
 
 export const getMockGoogleEndpoints = (
   mockConfig: MockConfig,
-  googleConfig: GoogleConfig | undefined
+  googleConfig?: GoogleConfig
 ): HandlersDefinition => {
-
-  if (!googleConfig) {
-    return {};
-  }
 
   return {
     '/o/oauth2/auth': async ({ query: { client_id, nonce, response_type, state, redirect_uri, scope, login_hint } }, req) => {

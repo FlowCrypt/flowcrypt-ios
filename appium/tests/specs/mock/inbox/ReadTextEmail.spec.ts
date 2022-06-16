@@ -8,7 +8,7 @@ import {
 import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
-import { GoogleMockMessage } from 'api-mocks/lib/configuration-types';
+import { GoogleMockMessage } from '../../../../api-mocks/apis/google/google-messages';
 
 describe('INBOX: ', () => {
 

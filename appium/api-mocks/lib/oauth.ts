@@ -6,7 +6,6 @@ import { Buf } from '../core/buf';
 import { Str } from '../core/common';
 
 const authURL = 'https://localhost:8001';
-// tslint:disable:variable-name
 
 export class OauthMock {
 
