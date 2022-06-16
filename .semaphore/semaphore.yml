@@ -10,7 +10,6 @@ auto_cancel:
   running:
     when: branch != 'master'
 blocks:
-
   - name: Appium UI tests
     dependencies: []
     run:
@@ -18,8 +17,6 @@ blocks:
     execution_time_limit:
       minutes: 115
     task:
-      secrets:
-        - name: flowcrypt-ios-ci-secrets
       env_vars:
         - name: LANG
           value: en_US.UTF-8
@@ -28,28 +25,16 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
-          - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
           - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
       jobs:
         - name: Appium UI tests
           commands:
             - xcversion select 13.4.1
-            - bundle exec fastlane build && ls -la appium
-            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
-            - cd appium && npm run-script lint
-            - unzip flowcrypt-ios-*.zip
-            - npm run-script test.mock.all
-            - npm run-script test.live.all
+            - bundle exec fastlane build
       epilogue:
         always:
           commands:
-            - artifact push job ~/git/flowcrypt-ios/appium/tmp
-            - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
-        on_fail:
-          commands:
-            - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
-            - artifact push job ~/git/flowcrypt-ios/appium/video/*.mp4
-
+            - artifact push job ~/git/flowcrypt-ios/appium/FlowCrypt.app
   - name: TypeScript + Swift tests
     dependencies: []
     run:
@@ -80,6 +65,68 @@ blocks:
         - name: Swift tests
           commands:
             - bundle exec fastlane test
+  - name: Mock Tests
+    dependencies:
+      - Appium UI tests
+    task:
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+        - name: SEMAPHORE_GIT_DIR
+          value: /Users/semaphore/git/flowcrypt-ios
+      prologue:
+        commands:
+          - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies
+          - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
+          - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i
+      epilogue:
+        always:
+          commands:
+            - artifact push job ~/git/flowcrypt-ios/appium/tmp
+            - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
+        on_fail:
+          commands:
+            - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
+            - artifact push job ~/git/flowcrypt-ios/appium/video/*.mp4
+      jobs:
+        - name: Run mock tests
+          commands:
+            - artifact pull job FlowCrypt.app
+            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
+            - unzip flowcrypt-ios-*.zip
+            - npm run-script test.mock.all
+      secrets:
+        - name: flowcrypt-ios-ci-secrets
+  - name: Live Tests
+    dependencies:
+      - Appium UI tests
+    task:
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+        - name: SEMAPHORE_GIT_DIR
+          value: /Users/semaphore/git/flowcrypt-ios
+      jobs:
+        - name: Run live tests
+          commands:
+            - artifact pull job FlowCrypt.app
+            - npm run-script test.live.all
+      secrets:
+        - name: flowcrypt-ios-ci-secrets
+      prologue:
+        commands:
+          - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies
+          - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
+          - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i
+      epilogue:
+        always:
+          commands:
+            - artifact push job ~/git/flowcrypt-ios/appium/tmp
+            - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
+        on_fail:
+          commands:
+            - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
+            - artifact push job ~/git/flowcrypt-ios/appium/video/*.mp4
 after_pipeline:
   task:
     jobs:
