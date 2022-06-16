@@ -2,13 +2,13 @@ import {
   SplashScreen,
   SetupKeyScreen,
   MailFolderScreen,
-  EmailScreen,
-  SearchScreen
+  EmailScreen
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
+import { GoogleMockMessage } from 'api-mocks/lib/configuration-types';
 
 describe('INBOX: ', () => {
 
@@ -32,14 +32,19 @@ describe('INBOX: ', () => {
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.e2eValidKey.prv]
     }
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          messages: [GoogleMockMessage.CcAndBccTest],
+        }
+      }
+    }
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
-
-      await MailFolderScreen.clickSearchButton();
-      await SearchScreen.searchAndClickEmailBySubject(emailSubject);
+      await MailFolderScreen.clickOnEmailBySubject(emailSubject);
 
       await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
       await EmailScreen.checkRecipientsButton(recipientsButton);

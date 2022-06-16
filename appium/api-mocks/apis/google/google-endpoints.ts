@@ -1,7 +1,7 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 import { GoogleConfig, MockConfig } from '../../lib/configuration-types';
-import { HandlersDefinition, HttpErr, Status, TemporaryRedirectHttpErr } from '../../lib/api';
+import { HandlersDefinition, HttpErr, Status } from '../../lib/api';
 import { GoogleData } from './google-data';
 import Parse, { ParseMsgResult } from '../../util/parse';
 import { isDelete, isGet, isPost, isPut, parseResourceId } from '../../lib/mock-util';
@@ -32,6 +32,10 @@ export const getMockGoogleEndpoints = (
   googleConfig: GoogleConfig | undefined
 ): HandlersDefinition => {
 
+  if (!googleConfig) {
+    return {};
+  }
+
   return {
     '/o/oauth2/auth': async ({ query: { client_id, nonce, response_type, state, redirect_uri, scope, login_hint } }, req) => {
       if (isGet(req) && client_id === oauth.clientId && response_type === 'code' && state && redirect_uri === oauth.redirectUri && scope) { // auth screen
@@ -54,7 +58,7 @@ export const getMockGoogleEndpoints = (
     '/oauth2/v2/userinfo': async (parsedReq, req) => {
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
-        const profile = (await GoogleData.withInitializedData(acct)).getUserInfo();
+        const profile = (await GoogleData.withInitializedData(acct, googleConfig)).getUserInfo();
         return profile;
       }
       throw new Error(`Method not implemented for ${req.url}: ${req.method}`);
@@ -169,7 +173,7 @@ export const getMockGoogleEndpoints = (
     '/gmail/v1/users/me/messages': async ({ query: { q } }, req) => { // search messages
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req) && q) {
-        const msgs = (await GoogleData.withInitializedData(acct)).searchMessages(q);
+        const msgs = (await GoogleData.withInitializedData(acct, googleConfig)).searchMessages(q);
         return { messages: msgs.map(({ id, threadId }) => ({ id, threadId })), resultSizeEstimate: msgs.length };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
@@ -178,7 +182,7 @@ export const getMockGoogleEndpoints = (
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
         const id = parseResourceId(req.url!);
-        const data = await GoogleData.withInitializedData(acct);
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
         if (req.url!.includes('/attachments/')) {
           const attachment = data.getAttachment(id);
           if (attachment) {
@@ -197,14 +201,14 @@ export const getMockGoogleEndpoints = (
     '/gmail/v1/users/me/labels': async (parsedReq, req) => {
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
-        return { labels: (await GoogleData.withInitializedData(acct)).getLabels() };
+        return { labels: (await GoogleData.withInitializedData(acct, googleConfig)).getLabels() };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
     '/gmail/v1/users/me/threads': async (parsedReq, req) => {
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
-        const threads = (await GoogleData.withInitializedData(acct)).getThreads([parsedReq.query.labelIds].filter(i => i), parsedReq.query.q); // todo: support arrays?
+        const threads = (await GoogleData.withInitializedData(acct, googleConfig)).getThreads([parsedReq.query.labelIds].filter(i => i), parsedReq.query.q); // todo: support arrays?
         return { threads, resultSizeEstimate: threads.length };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
@@ -216,7 +220,7 @@ export const getMockGoogleEndpoints = (
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
         const id = parseResourceId(req.url!);
-        const msgs = (await GoogleData.withInitializedData(acct)).getMessagesAndDraftsByThread(id);
+        const msgs = (await GoogleData.withInitializedData(acct, googleConfig)).getMessagesAndDraftsByThread(id);
         if (!msgs.length) {
           const statusCode = id === '16841ce0ce5cb74d' ? 404 : 400; // intentionally testing missing thread
           throw new HttpErr(`MOCK thread not found for ${acct}: ${id}`, statusCode);
@@ -251,7 +255,7 @@ export const getMockGoogleEndpoints = (
         const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
         const body = parsedReq.body as DraftSaveModel;
         if (body && body.message && body.message.raw && typeof body.message.raw === 'string') {
-          if (body.message.threadId && !(await GoogleData.withInitializedData(acct)).getThreads().find(t => t.id === body.message.threadId)) {
+          if (body.message.threadId && !(await GoogleData.withInitializedData(acct, googleConfig)).getThreads().find(t => t.id === body.message.threadId)) {
             throw new HttpErr('The thread you are replying to not found', 404);
           }
           const decoded = await Parse.convertBase64ToMimeMsg(body.message.raw);
@@ -273,7 +277,7 @@ export const getMockGoogleEndpoints = (
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
         const id = parseResourceId(req.url!);
-        const data = (await GoogleData.withInitializedData(acct));
+        const data = (await GoogleData.withInitializedData(acct, googleConfig));
         const draft = data.getDraft(id);
         if (draft) {
           return { id: draft.id, message: draft };
@@ -286,11 +290,11 @@ export const getMockGoogleEndpoints = (
         }
         const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
         if ((mimeMsg.subject || '').includes('saving and rendering a draft with image')) {
-          const data = (await GoogleData.withInitializedData(acct));
+          const data = (await GoogleData.withInitializedData(acct, googleConfig));
           data.addDraft('draft_with_image', raw, mimeMsg);
         }
         if ((mimeMsg.subject || '').includes('RTL')) {
-          const data = (await GoogleData.withInitializedData(acct));
+          const data = (await GoogleData.withInitializedData(acct, googleConfig));
           data.addDraft(`draft_with_rtl_text_${mimeMsg.subject?.includes('rich text') ? 'rich' : 'plain'}`, raw, mimeMsg);
         }
         return {};

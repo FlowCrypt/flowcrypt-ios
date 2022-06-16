@@ -1,6 +1,7 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 import { Dict } from '../core/common';
+import { GoogleMockMessage } from '../apis/google/google-messages';
 
 export type Logger = (line: string) => void;
 
@@ -34,8 +35,12 @@ export type AttesterConfig = {
 };
 
 export type GoogleConfig = {
-  allowedRecipients: string[]
+  accounts: { [email: string]: GoogleMockAccount }
 };
+
+export type GoogleMockAccount = {
+  messages: GoogleMockMessage[]
+}
 
 export type WkdConfig = {};
 
