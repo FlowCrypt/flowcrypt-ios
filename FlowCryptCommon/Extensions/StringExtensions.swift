@@ -53,6 +53,31 @@ public extension String {
     func capitalizingFirstLetter() -> String {
         prefix(1).uppercased() + self.lowercased().dropFirst()
     }
+
+    var mailFolderIcon: String {
+        switch self {
+        case "INBOX":
+            return "envelope"
+        case "CHAT":
+            return "message"
+        case "SENT":
+            return "paperplane"
+        case "IMPORTANT":
+            return "tag"
+        case "TRASH":
+            return "trash"
+        case "DRAFT":
+            return "square.and.pencil"
+        case "SPAM":
+            return "exclamationmark.shield"
+        case "STARRED":
+            return "star"
+        case "UNREAD":
+            return "envelope.badge"
+        default:
+            return "tag"
+        }
+    }
 }
 
 public extension NSAttributedString {

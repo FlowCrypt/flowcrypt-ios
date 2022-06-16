@@ -44,6 +44,7 @@ public final class InfoCellNode: CellNode {
         self.textNode.accessibilityIdentifier = input?.accessibilityIdentifier
 
         self.imageNode.image = input?.image
+        self.imageNode.contentMode = .scaleAspectFit
         self.automaticallyManagesSubnodes = true
 
         if let backgroundColor = input?.backgroundColor {
