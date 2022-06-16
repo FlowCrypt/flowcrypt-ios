@@ -83,7 +83,7 @@ private extension Folder {
         self.init(
             path: path,
             name: name,
-            image: UIImage(systemName: path.mailFolderIcon)?.jpegData(compressionQuality: 1.0)
+            image: nil
         )
     }
 }
