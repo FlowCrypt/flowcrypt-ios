@@ -41,7 +41,7 @@ extension ComposeViewController {
 
     internal func hideRecipientLabel() {
         self.shouldShowEmailRecipientsLabel = false
-        self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+        self.reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
     }
 
     internal func setupSubjectNode() {
