@@ -35,7 +35,7 @@ extension ComposeViewController {
         if !self.shouldShowEmailRecipientsLabel {
             self.shouldShowEmailRecipientsLabel = true
             self.userTappedOutSideRecipientsArea = false
-            self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+            self.reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
         }
     }
 
@@ -77,11 +77,11 @@ extension ComposeViewController {
 
     internal func setupFromNode() {
         fromCellNode = RecipientFromCellNode(
-            fromEmail: selectedFromEmail,
             toggleButtonAction: {
                 self.presentSendAsActionSheet()
             }
         )
+        fromCellNode.fromEmail = selectedFromEmail
     }
 
     private func presentSendAsActionSheet() {
@@ -116,7 +116,7 @@ extension ComposeViewController {
         fromCell.fromEmail = email
         self.selectedFromEmail = email
     }
-    
+
     internal func messagePasswordNode() -> ASCellNode {
         let input = contextToSend.hasMessagePassword
         ? decorator.styledFilledMessagePasswordInput()

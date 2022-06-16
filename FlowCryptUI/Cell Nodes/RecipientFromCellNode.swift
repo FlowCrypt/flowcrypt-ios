@@ -28,9 +28,9 @@ final public class RecipientFromCellNode: CellNode {
         return textNode
     }()
 
-    public var fromEmail: String {
+    public var fromEmail: String? {
         didSet {
-            self.valueTextNode.attributedText = fromEmail.attributed(.regular(17))
+            self.valueTextNode.attributedText = fromEmail?.attributed(.regular(17))
         }
     }
 
@@ -48,9 +48,7 @@ final public class RecipientFromCellNode: CellNode {
 
     var toggleButtonAction: (() -> Void)?
 
-    public init(fromEmail: String,
-                toggleButtonAction: (() -> Void)?) {
-        self.fromEmail = fromEmail
+    public init(toggleButtonAction: (() -> Void)?) {
         super.init()
         self.toggleButtonAction = toggleButtonAction
     }

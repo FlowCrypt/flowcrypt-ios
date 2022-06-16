@@ -39,6 +39,7 @@ extension ComposeViewController {
         Task {
             do {
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
+                    senderEmail: selectedFromEmail,
                     input: input,
                     contextToSend: contextToSend,
                     includeAttachments: false

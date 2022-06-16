@@ -25,7 +25,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (.main, .recipients(.to)):
             return shouldShowEmailRecipientsLabel ? 0 : 1
         case (.main, .recipients(.from)):
-            return !shouldShowEmailRecipientsLabel && true ? 1 : 0
+            return !shouldShowEmailRecipientsLabel && sendAsList.count > 1 ? 1 : 0
         case (.main, .recipients(.cc)), (.main, .recipients(.bcc)):
             return !shouldShowEmailRecipientsLabel && shouldShowAllRecipientTypes ? 1 : 0
         case (.main, .password):

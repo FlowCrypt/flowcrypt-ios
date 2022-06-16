@@ -94,7 +94,7 @@ final class ComposeViewController: TableNodeViewController {
     internal var sectionsList: [Section] = []
     var composeTextNode: ASCellNode!
     var composeSubjectNode: ASCellNode!
-    var fromCellNode: ASCellNode!
+    var fromCellNode: RecipientFromCellNode!
     var sendAsList: [SendAsModel] = []
     var selectedFromEmail = ""
 
