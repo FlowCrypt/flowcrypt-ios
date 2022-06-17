@@ -82,7 +82,7 @@ export class MockApi {
       }
     };
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
+      returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.e2eValidKey.prv, ekmKeySamples.key1.prv]
     }
     mockApi.googleConfig = {
       accounts: {

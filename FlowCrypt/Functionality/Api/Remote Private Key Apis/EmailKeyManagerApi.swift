@@ -68,7 +68,11 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             headers: headers
         )
         let response = try await ApiCall.call(request)
-        let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
+        
+        let decryptedPrivateKeysResponse = try JSONDecoder().decode(
+            DecryptedPrivateKeysResponse.self,
+            from: response.data
+        )
 
         let validKeys = try await validate(decryptedPrivateKeysResponse: decryptedPrivateKeysResponse)
         return validKeys

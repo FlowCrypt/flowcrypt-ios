@@ -834,6 +834,9 @@ IhPau4An6++uNwWsofFdykkzKQC8jKwfAbwTIUzN9Y3JB0d2JWImuWuYh16i
 DIrJWDZS1/jHri5aobOT+wrms7wV77y9uUXSi+aipSOQynb+CdsfUVqKBa20
 Uw==
 =C1hl
------END PGP PRIVATE KEY BLOCK-----`
-  }
+-----END PGP PRIVATE KEY BLOCK-----`,
+    primaryFingerprint: '7E0E C171 4CF4 094A 13F7 6735 9FF6 31D6 3A85 327C',
+    renderedPrimaryUid: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
+    renderedDateCreated: '4/22/22'
+  },
 };

@@ -29,7 +29,7 @@ class PublicKeyScreen extends BaseScreen {
     const publicKeyEl = await this.publicKey;
     await publicKeyEl.waitForExist();
     const pubkeyValue = await publicKeyEl.getAttribute('value');
-    await expect(pubkeyValue).toContain("-----BEGIN PGP PUBLIC KEY BLOCK-----");
+    expect(pubkeyValue).toContain("-----BEGIN PGP PUBLIC KEY BLOCK-----");
   }
 
   clickBackButton = async () => {
