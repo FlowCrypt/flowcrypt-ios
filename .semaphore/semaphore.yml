@@ -83,12 +83,12 @@ blocks:
       epilogue:
         always:
           commands:
-            - artifact push workflow ~/git/flowcrypt-ios/appium/tmp
+            - artifact push job ~/git/flowcrypt-ios/appium/tmp
             - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
         on_fail:
           commands:
-            - artifact push workflow ~/Library/Logs/DiagnosticReports/FlowCrypt_*
-            - artifact push workflow ~/git/flowcrypt-ios/appium/video/*.mp4
+            - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
+            - artifact push job ~/git/flowcrypt-ios/appium/video/*.mp4
       jobs:
         - name: Run mock tests
           commands:
