@@ -19,7 +19,7 @@ final public class RecipientFromCellNode: CellNode {
         let textNode = ASTextNode2()
         let textTitle = "compose_recipient_from".localized
         textNode.attributedText = textTitle.attributed(.regular(17), color: .lightGray, alignment: .left)
-        textNode.style.preferredSize = CGSize(width: 42, height: 32)
+        textNode.style.preferredSize = CGSize(width: 45, height: 20)
         return textNode
     }()
 
@@ -57,13 +57,13 @@ final public class RecipientFromCellNode: CellNode {
     public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0)
 
-        toggleButtonNode.style.preferredSize = CGSize(width: 40, height: 32)
+        toggleButtonNode.style.preferredSize = CGSize(width: 40, height: 28)
 
         let stack = ASStackLayoutSpec.horizontal()
         stack.verticalAlignment = .center
         valueTextNode.style.flexGrow = 1
 
-        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0), child: labelTextNode)
+        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0), child: labelTextNode)
         stack.children = [textNodeStack, valueTextNode, toggleButtonNode]
 
         return ASInsetLayoutSpec(insets: insets, child: stack)
