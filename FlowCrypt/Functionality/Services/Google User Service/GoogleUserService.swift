@@ -129,8 +129,8 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
     var authorizationConfiguration: OIDServiceConfiguration {
         if Bundle.shouldUseMockGmailApi {
             return OIDServiceConfiguration(
-                authorizationEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)o/oauth2/auth")!,
-                tokenEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)token")!
+                authorizationEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)/o/oauth2/auth")!,
+                tokenEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)/token")!
             )
         } else {
             return GTMAppAuthFetcherAuthorization.configurationForGoogle()
@@ -286,7 +286,7 @@ extension GoogleUserService {
             let query = GTLROauth2Query_UserinfoGet.query()
             let authService = GTLROauth2Service()
             if Bundle.shouldUseMockGmailApi {
-                authService.rootURLString = GeneralConstants.Mock.backendUrl
+                authService.rootURLString = GeneralConstants.Mock.backendUrl + "/"
             }
             authService.authorizer = authorization
             authService.executeQuery(query) { _, data, error in

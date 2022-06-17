@@ -16,12 +16,12 @@ public enum FlowCryptBundleType: String {
 
 extension Bundle {
 
-    public static var flowCryptBundleType: FlowCryptBundleType {
+    static var flowCryptBundleType: FlowCryptBundleType {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return .debug }
         return FlowCryptBundleType(rawValue: bundleIdentifier) ?? .debug
     }
 
-    public static func isDebugBundleWithArgument(_ argument: String) -> Bool {
+    static func isDebugBundleWithArgument(_ argument: String) -> Bool {
         guard Bundle.flowCryptBundleType == .debug else { return false }
         return CommandLine.arguments.contains(argument)
     }
@@ -30,7 +30,15 @@ extension Bundle {
         isDebugBundleWithArgument("--mock-gmail-api")
     }
 
-    public static func isEnterprise() -> Bool {
+    public static var shouldUseMockFesApi: Bool {
+        isDebugBundleWithArgument("--mock-fes-api")
+    }
+
+    public static var shouldUseMockAttesterApi: Bool {
+        isDebugBundleWithArgument("--mock-attester-api")
+    }
+
+    public static var isEnterprise: Bool {
         if flowCryptBundleType == .enterprise {
             return true // for production
         }

@@ -33,8 +33,8 @@ final class AttesterApi: AttesterApiType {
     }
 
     private func constructUrlBase() -> String {
-        guard !Bundle.isDebugBundleWithArgument("--mock-attester-api") else {
-            return "\(GeneralConstants.Mock.backendUrl)attester" // mock
+        guard !Bundle.shouldUseMockAttesterApi else {
+            return "\(GeneralConstants.Mock.backendUrl)/attester" // mock
         }
         return "https://flowcrypt.com/attester" // live
     }

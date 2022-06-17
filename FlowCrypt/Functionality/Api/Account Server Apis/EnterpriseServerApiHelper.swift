@@ -19,8 +19,8 @@ struct EnterpriseServerApiHelper {
     }
 
     private func constructUrlBase(emailDomain: String) -> String {
-        guard !Bundle.isDebugBundleWithArgument("--mock-fes-api") else {
-            return "\(GeneralConstants.Mock.backendUrl)fes" // mock
+        guard !Bundle.shouldUseMockFesApi else {
+            return "\(GeneralConstants.Mock.backendUrl)/fes" // mock
         }
         return "https://fes.\(emailDomain)" // live
     }
@@ -51,7 +51,7 @@ struct EnterpriseServerApiHelper {
             }
 
             guard isExpectedFesServiceResponse(responseData: response.data) else {
-                if Bundle.isEnterprise() { // on enterprise build, FES is expected to be running
+                if Bundle.isEnterprise { // on enterprise build, FES is expected to be running
                     throw AppErr.general("Unpexpected response from FlowCrypt Enterprise Server")
                 }
                 return nil // on consumer installations, we only use FES if it returns as expected
@@ -75,7 +75,7 @@ struct EnterpriseServerApiHelper {
     }
 
     private func shouldTolerateWhenCallingOpportunistically(_ error: Error) async -> Bool {
-        if Bundle.isEnterprise() {
+        if Bundle.isEnterprise {
             return false // FlowCrypt Enterprise Server (FES) required on enterprise bundle
         }
         // on consumer release, FES is called opportunistically - if it's there, it will be used
@@ -91,7 +91,7 @@ struct EnterpriseServerApiHelper {
         } else {
             // we got network error from FES because internet actually doesn't work
             // throw original error so user can retry
-            return false // do not tolertate the error
+            return false // do not tolerate the error
         }
     }
 

@@ -21,7 +21,7 @@ class GmailService: MailServiceProvider {
         let service = GTLRGmailService()
 
         if Bundle.shouldUseMockGmailApi {
-            service.rootURLString = GeneralConstants.Mock.backendUrl
+            service.rootURLString = GeneralConstants.Mock.backendUrl + "/"
         }
 
         if gmailUserService.authorization == nil {

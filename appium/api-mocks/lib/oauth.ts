@@ -1,12 +1,11 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-import { HttpErr, Status } from './api';
+import { HttpErr, Status, TemporaryRedirectHttpErr } from './api';
 
 import { Buf } from '../core/buf';
 import { Str } from '../core/common';
 
 const authURL = 'https://localhost:8001';
-// tslint:disable:variable-name
 
 export class OauthMock {
 
@@ -26,7 +25,7 @@ export class OauthMock {
     return this.htmlPage(text, text);
   }
 
-  public successPage = (acct: string, state: string, nonce: string) => {
+  public generateAuthTokensAndRedirectUrl = (acct: string, state: string, nonce: string) => {
     const authCode = `mock-auth-code-${acct.replace(/[^a-z0-9]+/g, '')}`;
     const refreshToken = `mock-refresh-token-${acct.replace(/[^a-z0-9]+/g, '')}`;
     const accessToken = `mock-access-token-${acct.replace(/[^a-z0-9]+/g, '')}`;
@@ -35,7 +34,9 @@ export class OauthMock {
     this.accessTokenByRefreshToken[refreshToken] = accessToken;
     this.acctByAccessToken[accessToken] = acct;
     this.nonceByAcct[acct] = nonce;
-    return `${this.redirectUri}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&authuser=0&prompt=consent&nonce=${encodeURIComponent(nonce)}`;
+
+    const redirectUri = `${this.redirectUri}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&authuser=0&prompt=consent&nonce=${encodeURIComponent(nonce)}`;
+    throw new TemporaryRedirectHttpErr(redirectUri);
   }
 
   public getRefreshTokenResponse = (code: string) => {

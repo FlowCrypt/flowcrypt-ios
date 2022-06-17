@@ -3,6 +3,7 @@
 import { AddressObject, ParsedMail, StructuredHeader } from 'mailparser';
 import { readFile, readdir } from 'fs';
 import { lousyRandom } from '../../lib/mock-util';
+import { GoogleConfig } from 'api-mocks/lib/configuration-types';
 
 type GmailMsg$header = { name: string, value: string };
 type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
@@ -108,7 +109,7 @@ export class GoogleData {
   private exludePplSearchQuery = /(?:-from|-to):"?([a-zA-Z0-9@.\-_]+)"?/g;
   private includePplSearchQuery = /(?:from|to):"?([a-zA-Z0-9@.\-_]+)"?/g;
 
-  public static withInitializedData = async (acct: string): Promise<GoogleData> => {
+  public static withInitializedData = async (acct: string, config?: GoogleConfig): Promise<GoogleData> => {
     if (typeof DATA[acct] === 'undefined') {
       const acctData: AcctDataFile = {
         drafts: [], messages: [], attachments: {}, labels:
@@ -124,11 +125,15 @@ export class GoogleData {
       const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
       const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
       const files = await Promise.all(filePromises) as Uint8Array[];
+      const msgSubjects = config?.accounts[acct].messages.map(m => m.toString());
 
       for (const file of files) {
         const utfStr = new TextDecoder().decode(file);
         const json = JSON.parse(utfStr) as ExportedMsg;
-        if (json.acctEmail === acct) {
+        const subject = GoogleData.msgSubject(json.full);
+        const isValidMsg = msgSubjects ? msgSubjects.includes(subject) : json.acctEmail === acct;
+
+        if (isValidMsg) {
           Object.assign(acctData.attachments, json.attachments);
           json.full.raw = json.raw.raw;
           if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
@@ -183,7 +188,7 @@ export class GoogleData {
   public getUserInfo = () => {
     return {
       id: '1',
-      email: 'e2e.enterprise.test@flowcrypt.com',
+      email: this.acct,
       name: 'First Last',
       given_name: 'First',
       family_name: 'Last',
