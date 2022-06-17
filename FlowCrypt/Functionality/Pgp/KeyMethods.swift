@@ -12,8 +12,12 @@ import Foundation
 protocol KeyMethodsType {
     func filterByPassPhraseMatch<T: ArmoredPrvWithIdentity>(keys: [T], passPhrase: String) async throws -> [T]
     func parseKeys(armored: [String]) async throws -> [KeyDetails]
-    func chooseSenderSigningKey(keys: [Keypair], senderEmail: String) async throws -> Keypair?
-    func chooseSenderEncryptionKeys(keys: [Keypair], senderEmail: String) async throws -> [Keypair]
+    func chooseSenderKeys(for type: KeyUsage, keys: [Keypair], senderEmail: String) async throws -> [Keypair]
+}
+
+enum KeyUsage {
+    case encryption
+    case signing
 }
 
 final class KeyMethods: KeyMethodsType {
@@ -46,15 +50,9 @@ final class KeyMethods: KeyMethodsType {
         return parsed.keyDetails
     }
 
-    func chooseSenderSigningKey(keys: [Keypair], senderEmail: String) async throws -> Keypair? {
-        let parsed = try await parseKeys(armored: keys.map(\.private))
-        guard let usable = parsed.first(where: { $0.isKeyUsable }) else { return nil }
-        return try keys.first { try $0.primaryFingerprint == usable.primaryFingerprint }
-    }
-
-    func chooseSenderEncryptionKeys(keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
+    func chooseSenderKeys(for type: KeyUsage, keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
         let senderEmail = senderEmail.lowercased()
-        let parsed = try await parseKeys(armored: keys.map(\.public))
+        let parsed = try await parseKeys(armored: keys.map(type == .encryption ? \.public : \.private))
         guard parsed.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
@@ -68,7 +66,13 @@ final class KeyMethods: KeyMethodsType {
         if let byAnyUid = try filter(keys, usable, ({ $0.pgpUserEmailsLowercased.contains(senderEmail) })) {
             return byAnyUid // if any keys match by any uid, use them
         }
-        return try filter(keys, usable) ?? [] // use any usable keys
+        // for encryption, even when we cannot find key by the right uid, we can use the keys that don't match uid
+        // It won't cause much trouble for encryption, but it does for signature verification,
+        // and that's why we're treating them differently. We can be more lenient for encryption.
+        if type == .encryption {
+            return try filter(keys, usable) ?? [] // use any usable keys
+        }
+        return []
     }
 
     private func filter(_ toReturn: [Keypair], _ parsed: [KeyDetails], _ criteria: ((KeyDetails) -> Bool)? = nil) throws -> [Keypair]? {

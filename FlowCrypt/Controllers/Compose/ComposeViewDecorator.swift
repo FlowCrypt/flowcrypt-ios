@@ -151,6 +151,8 @@ struct ComposeViewDecorator {
             return calculatedRecipientsCcPartHeight
         case .bcc:
             return calculatedRecipientsBccPartHeight
+        default:
+            return 0
         }
     }
 
@@ -172,6 +174,8 @@ struct ComposeViewDecorator {
             self.calculatedRecipientsCcPartHeight = layoutHeight
         case .bcc:
             self.calculatedRecipientsBccPartHeight = layoutHeight
+        default:
+            break
         }
         completion?()
     }

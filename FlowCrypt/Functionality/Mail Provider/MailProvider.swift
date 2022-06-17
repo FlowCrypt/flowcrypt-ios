@@ -41,6 +41,12 @@ final class MailProvider {
         }
     }
 
+    var remoteSendAsProvider: RemoteSendAsProviderType {
+        get throws {
+            try resolveService(of: RemoteSendAsProviderType.self)
+        }
+    }
+
     var messageListProvider: MessagesListProvider {
         get throws {
             try resolveService(of: MessagesListProvider.self)

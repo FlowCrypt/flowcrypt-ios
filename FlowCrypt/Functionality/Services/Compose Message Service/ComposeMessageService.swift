@@ -59,13 +59,11 @@ final class ComposeMessageService {
         self.onStateChanged = completion
     }
 
-    func prepareSigningKey() async throws -> Keypair? {
-        // todo - sender email will differ from account email once
-        //   https://github.com/FlowCrypt/flowcrypt-ios/issues/1298 is done
+    func prepareSigningKey(senderEmail: String) async throws -> Keypair {
         let keys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
-        guard let signingKey = try await keyMethods.chooseSenderSigningKey(keys: keys, senderEmail: sender) else {
-            // todo - throw user error for missing signing key
-            return nil
+        let signingKeys = try await keyMethods.chooseSenderKeys(for: .signing, keys: keys, senderEmail: senderEmail)
+        guard let signingKey = signingKeys.first else {
+            throw ComposeMessageError.noKeysFoundForSign(keys.count, senderEmail)
         }
         if signingKey.passphrase == nil {
             throw ComposeMessageError.promptUserToEnterPassPhraseForSigningKey(signingKey)
@@ -94,6 +92,7 @@ final class ComposeMessageService {
 
     // MARK: - Validation
     func validateAndProduceSendableMsg(
+        senderEmail: String,
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
         includeAttachments: Bool = true
@@ -126,13 +125,10 @@ final class ComposeMessageService {
 
         let subject = contextToSend.subject ?? "(no subject)"
 
-        // todo - need to use account email here instead of sender
-        //   once sendAs aliases are implemented (we pull keys by account email,
-        //   and then later prioritize / filter by sender email which may be different)
-        // https://github.com/FlowCrypt/flowcrypt-ios/issues/1298
-        let senderKeys = try await keyMethods.chooseSenderEncryptionKeys(
+        let senderKeys = try await keyMethods.chooseSenderKeys(
+            for: .encryption,
             keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
-            senderEmail: sender
+            senderEmail: senderEmail
         )
 
         guard senderKeys.isNotEmpty else {
@@ -162,7 +158,7 @@ final class ComposeMessageService {
             }
         }
 
-        let signingPrv = try await prepareSigningKey()
+        let signingPrv = try await prepareSigningKey(senderEmail: senderEmail)
 
         return SendableMsg(
             text: text,
@@ -170,7 +166,7 @@ final class ComposeMessageService {
             to: contextToSend.recipientEmails(type: .to),
             cc: contextToSend.recipientEmails(type: .cc),
             bcc: contextToSend.recipientEmails(type: .bcc),
-            from: sender,
+            from: senderEmail,
             subject: subject,
             replyToMimeMsg: replyToMimeMsg,
             atts: sendableAttachments,

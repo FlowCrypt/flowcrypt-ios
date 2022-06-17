@@ -110,6 +110,14 @@ class AppContext {
             remoteFoldersProvider: try self.getRequiredMailProvider().remoteFoldersProvider
         )
     }
+
+    @MainActor
+    func getSendAsService() throws -> SendAsService {
+        return SendAsService(
+            encryptedStorage: self.encryptedStorage,
+            remoteSendAsProvider: try self.getRequiredMailProvider().remoteSendAsProvider
+        )
+    }
 }
 
 class AppContextWithUser: AppContext {
