@@ -25,7 +25,6 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
-          - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
       jobs:
         - name: Build Xcode Project
           commands:
@@ -34,7 +33,7 @@ blocks:
       epilogue:
         always:
           commands:
-            - cd appium && artifact push project FlowCrypt.app
+            - cd appium && artifact push workflow FlowCrypt.app
   - name: TypeScript + Swift tests
     dependencies: []
     run:
@@ -78,8 +77,8 @@ blocks:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
-          - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i
-          - artifact pull project FlowCrypt.app
+          - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
+          - artifact pull workflow FlowCrypt.app
       epilogue:
         always:
           commands:
@@ -92,11 +91,11 @@ blocks:
       jobs:
         - name: Run mock tests
           commands:
-            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
-            - unzip flowcrypt-ios-*.zip
             - npm run-script test.mock.all
         - name: Run Live tests
           commands:
+            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
+            - unzip flowcrypt-ios-*.zip
             - npm run-script test.live.all
       secrets:
         - name: flowcrypt-ios-ci-secrets
