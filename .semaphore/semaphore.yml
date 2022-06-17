@@ -10,7 +10,7 @@ auto_cancel:
   running:
     when: branch != 'master'
 blocks:
-  - name: Appium UI Tests(Initialization)
+  - name: Build
     dependencies: []
     run:
       when: 'change_in(''/'', {exclude: [''/Core/package.json'', ''/Core/package-lock.json'']})'
@@ -64,9 +64,9 @@ blocks:
         - name: Swift tests
           commands:
             - bundle exec fastlane test
-  - name: Appium UI Tests
+  - name: UI Tests
     dependencies:
-      - Appium UI Tests(Initialization)
+      - Build
     task:
       env_vars:
         - name: LANG
