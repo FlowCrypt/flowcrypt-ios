@@ -8,7 +8,6 @@ import {
 import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
-import { GoogleMockMessage } from '../../../../api-mocks/apis/google/google-messages';
 
 describe('INBOX: ', () => {
 
@@ -35,7 +34,7 @@ describe('INBOX: ', () => {
     mockApi.googleConfig = {
       accounts: {
         'e2e.enterprise.test@flowcrypt.com': {
-          messages: [GoogleMockMessage.CcAndBccTest],
+          messages: ['CC and BCC test'],
         }
       }
     }

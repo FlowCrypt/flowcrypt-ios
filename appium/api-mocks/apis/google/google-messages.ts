@@ -1,5 +1,4 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-export enum GoogleMockMessage {
-  CcAndBccTest = 'CC and BCC test'
-}
+export type GoogleMockAccountEmail = 'e2e.enterprise.test@flowcrypt.com' | 'e2e.consumer.tests@outlook.com';
+export type GoogleMockMessage = 'CC and BCC test' | 'Your FlowCrypt Backup';
