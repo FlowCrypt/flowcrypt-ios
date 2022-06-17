@@ -29,7 +29,7 @@ final public class RecipientEmailsCellNode: CellNode {
         let textTitle = "compose_recipient_\(type)".localized
         textNode.attributedText = textTitle.attributed(.regular(17), color: .lightGray, alignment: .left)
         textNode.isAccessibilityElement = true
-        textNode.style.preferredSize.width = 35
+        textNode.style.preferredSize.width = 42
         return textNode
     }()
 

@@ -31,6 +31,7 @@ final class InboxViewContainerController: TableNodeViewController {
 
     private let appContext: AppContextWithUser
     private let foldersService: FoldersServiceType
+    private let sendAsService: SendAsServiceType
     private let decorator: InboxViewControllerContainerDecorator
     private let ekmVcHelper: EKMVcHelper
 
@@ -45,6 +46,7 @@ final class InboxViewContainerController: TableNodeViewController {
     ) throws {
         self.appContext = appContext
         self.foldersService = try foldersService ?? appContext.getFoldersService()
+        self.sendAsService = try appContext.getSendAsService()
         self.decorator = decorator
         self.ekmVcHelper = EKMVcHelper(appContext: appContext)
 
@@ -60,7 +62,14 @@ final class InboxViewContainerController: TableNodeViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        fetchSendAsList()
         fetchInboxFolder()
+    }
+
+    private func fetchSendAsList() {
+        Task {
+            try await sendAsService.fetchList(isForceReload: true, for: appContext.user)
+        }
     }
 
     private func fetchInboxFolder() {

@@ -68,6 +68,7 @@ extension ComposeViewController {
     internal func setupNodes() {
         setupTextNode()
         setupSubjectNode()
+        setupFromNode()
     }
 }
 

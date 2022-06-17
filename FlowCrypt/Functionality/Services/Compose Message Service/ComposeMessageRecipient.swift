@@ -23,7 +23,7 @@ extension ComposeMessageRecipient: Equatable {
 }
 
 enum RecipientType: String, CaseIterable, Hashable {
-    case to, cc, bcc
+    case from, to, cc, bcc
 }
 
 extension RecipientType {

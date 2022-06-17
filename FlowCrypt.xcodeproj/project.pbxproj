@@ -144,6 +144,13 @@
 		601EEE31272B19D200FE445B /* CheckMailAuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */; };
 		606FE33A2745AA2E009DA039 /* AttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606FE3392745AA2E009DA039 /* AttachmentViewController.swift */; };
 		750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750A6C3C28244A780048E1CC /* OptionalExtensions.swift */; };
+		7536E72D285B00EA00A50043 /* RecipientFromCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */; };
+		75588F8B285777AB00E595D1 /* SendAsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F83285777AB00E595D1 /* SendAsService.swift */; };
+		75588F8C285777AB00E595D1 /* SendAsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F85285777AB00E595D1 /* SendAsModel.swift */; };
+		75588F8D285777AB00E595D1 /* RemoteSendAsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F87285777AB00E595D1 /* RemoteSendAsProvider.swift */; };
+		75588F8F285777AB00E595D1 /* GmailService+SendAs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F89285777AB00E595D1 /* GmailService+SendAs.swift */; };
+		75588F90285777AB00E595D1 /* LocalSendAsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F8A285777AB00E595D1 /* LocalSendAsProvider.swift */; };
+		75588F9228577BFA00E595D1 /* SendAsRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F9128577BFA00E595D1 /* SendAsRealmObject.swift */; };
 		756BB990285A19C100F73140 /* EmptyCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756BB98F285A19C100F73140 /* EmptyCellNode.swift */; };
 		759739BE2833E986004867CD /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
 		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
@@ -603,6 +610,13 @@
 		601EEE30272B19D200FE445B /* CheckMailAuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckMailAuthViewController.swift; sourceTree = "<group>"; };
 		606FE3392745AA2E009DA039 /* AttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentViewController.swift; sourceTree = "<group>"; };
 		750A6C3C28244A780048E1CC /* OptionalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalExtensions.swift; sourceTree = "<group>"; };
+		7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFromCellNode.swift; sourceTree = "<group>"; };
+		75588F83285777AB00E595D1 /* SendAsService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendAsService.swift; sourceTree = "<group>"; };
+		75588F85285777AB00E595D1 /* SendAsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendAsModel.swift; sourceTree = "<group>"; };
+		75588F87285777AB00E595D1 /* RemoteSendAsProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteSendAsProvider.swift; sourceTree = "<group>"; };
+		75588F89285777AB00E595D1 /* GmailService+SendAs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GmailService+SendAs.swift"; sourceTree = "<group>"; };
+		75588F8A285777AB00E595D1 /* LocalSendAsProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalSendAsProvider.swift; sourceTree = "<group>"; };
+		75588F9128577BFA00E595D1 /* SendAsRealmObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAsRealmObject.swift; sourceTree = "<group>"; };
 		756BB98F285A19C100F73140 /* EmptyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
@@ -1274,6 +1288,34 @@
 			path = Attachment;
 			sourceTree = "<group>";
 		};
+		75588F82285777AB00E595D1 /* SendAs Services */ = {
+			isa = PBXGroup;
+			children = (
+				75588F83285777AB00E595D1 /* SendAsService.swift */,
+				75588F84285777AB00E595D1 /* Models */,
+				75588F86285777AB00E595D1 /* RemoteSendAsProviderType */,
+				75588F8A285777AB00E595D1 /* LocalSendAsProvider.swift */,
+			);
+			path = "SendAs Services";
+			sourceTree = "<group>";
+		};
+		75588F84285777AB00E595D1 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				75588F85285777AB00E595D1 /* SendAsModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		75588F86285777AB00E595D1 /* RemoteSendAsProviderType */ = {
+			isa = PBXGroup;
+			children = (
+				75588F87285777AB00E595D1 /* RemoteSendAsProvider.swift */,
+				75588F89285777AB00E595D1 /* GmailService+SendAs.swift */,
+			);
+			path = RemoteSendAsProviderType;
+			sourceTree = "<group>";
+		};
 		756CB577282E3669000F056B /* Api */ = {
 			isa = PBXGroup;
 			children = (
@@ -1298,6 +1340,7 @@
 		9F0C3C1F23191F2000299985 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				75588F82285777AB00E595D1 /* SendAs Services */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
 				21489B81267CC3BC00BDE4AC /* Client Configuration Service */,
 				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */,
@@ -1315,6 +1358,7 @@
 			children = (
 				21489B79267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift */,
 				D274724324FD1932006BA6EF /* FolderRealmObject.swift */,
+				75588F9128577BFA00E595D1 /* SendAsRealmObject.swift */,
 				04B4728B1ECE29D200B8266F /* KeypairRealmObject.swift */,
 				51B4AE50271444580001F33B /* PubKeyRealmObject.swift */,
 				D27B911C24EFE806002DF0A1 /* RecipientRealmObject.swift */,
@@ -2160,6 +2204,7 @@
 				D28A1CBC2525C141003B760B /* CheckBoxTextNode.swift */,
 				5133B6732716E5EA00C95463 /* LabelCellNode.swift */,
 				04DE04DC27E098010055CB86 /* ComposeRecipientCellNode.swift */,
+				7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */,
 				756BB98F285A19C100F73140 /* EmptyCellNode.swift */,
 			);
 			path = "Cell Nodes";
@@ -2706,8 +2751,10 @@
 				2C08F6BE273FA7B900EE1610 /* Version5SchemaMigration.swift in Sources */,
 				049E607127FDBC690089EE2A /* ComposeViewController+Drafts.swift in Sources */,
 				5A39F441239EF17F001F4607 /* LegalViewDecorator.swift in Sources */,
+				75588F8F285777AB00E595D1 /* GmailService+SendAs.swift in Sources */,
 				9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */,
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
+				75588F9228577BFA00E595D1 /* SendAsRealmObject.swift in Sources */,
 				9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */,
 				9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageService.swift in Sources */,
 				5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */,
@@ -2793,6 +2840,7 @@
 				D21574B724376852006B094F /* ConnectionType.swift in Sources */,
 				9F7920F52667CEF100DA3D80 /* PassPhraseSaveable.swift in Sources */,
 				9F8839142721EB5000669B56 /* MessageAction.swift in Sources */,
+				75588F8C285777AB00E595D1 /* SendAsModel.swift in Sources */,
 				04722B45281ABD2C00D0242F /* EKMVcHelper.swift in Sources */,
 				9F6F3BEF26ADF5DE005BD9C6 /* ComposeMessageError.swift in Sources */,
 				5ADEDCAF23A3EA9E00EC495E /* KeySettingsViewDecorator.swift in Sources */,
@@ -2825,6 +2873,7 @@
 				2C141B2C274572D50038A3F8 /* Recipient.swift in Sources */,
 				9F0C3C142316E69300299985 /* User.swift in Sources */,
 				049E606D27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift in Sources */,
+				75588F90285777AB00E595D1 /* LocalSendAsProvider.swift in Sources */,
 				2155E9EF26E3628C008FB033 /* Refreshable.swift in Sources */,
 				9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */,
 				D212D36024C1AC0D00035991 /* KeyDetails.swift in Sources */,
@@ -2833,6 +2882,7 @@
 				9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
 				D2F41371243CC76F0066AFB5 /* SessionRealmObject.swift in Sources */,
+				75588F8B285777AB00E595D1 /* SendAsService.swift in Sources */,
 				049E606127FDB9370089EE2A /* ComposeViewController+Setup.swift in Sources */,
 				9F9362192573D10E0009912F /* Imap+Message.swift in Sources */,
 				32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */,
@@ -2849,6 +2899,7 @@
 				51DA5BD62721AB07001C4359 /* PubKeyState.swift in Sources */,
 				D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */,
 				9F003D6D25EA8F3200EB38C0 /* SessionService.swift in Sources */,
+				75588F8D285777AB00E595D1 /* RemoteSendAsProvider.swift in Sources */,
 				5180CB9527357BB0001FC7EF /* WkdApi.swift in Sources */,
 				D29AFFF92409767F00C1387D /* GoogleContactsResponse.swift in Sources */,
 				9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */,
@@ -2967,6 +3018,7 @@
 				5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				D27177462424D59800BDA9A9 /* InboxCellNode.swift in Sources */,
 				D27177472424D59800BDA9A9 /* TextCellNode.swift in Sources */,
+				7536E72D285B00EA00A50043 /* RecipientFromCellNode.swift in Sources */,
 				51B9EE6F27567B520080B2D5 /* MessageRecipientsNode.swift in Sources */,
 				D211CE6E23FC354200D1CE38 /* CellNode.swift in Sources */,
 				D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */,

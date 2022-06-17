@@ -8,6 +8,10 @@ export const CommonData = {
     folder: 'Gmail enterprise folder',
     name: 'e2e'
   },
+  alias: {
+    email: "demo@flowcrypt.com",
+    subject: 'Check send email as alias'
+  },
   outlookAccount: {
     email: 'e2e.consumer.tests@outlook.com',
     password: process.env.E2E_CONSUMER_TESTS_OUTLOOK_PASSWORD,

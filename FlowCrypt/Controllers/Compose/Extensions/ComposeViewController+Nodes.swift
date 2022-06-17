@@ -35,13 +35,13 @@ extension ComposeViewController {
         if !self.shouldShowEmailRecipientsLabel {
             self.shouldShowEmailRecipientsLabel = true
             self.userTappedOutSideRecipientsArea = false
-            self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+            self.reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
         }
     }
 
     internal func hideRecipientLabel() {
         self.shouldShowEmailRecipientsLabel = false
-        self.reload(sections: [.recipientsLabel, .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+        self.reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
     }
 
     internal func setupSubjectNode() {
@@ -73,6 +73,52 @@ extension ComposeViewController {
         .then {
             $0.attributedText = decorator.styledTitle(with: contextToSend.subject)
         }
+    }
+
+    internal func setupFromNode() {
+        fromCellNode = RecipientFromCellNode(
+            toggleButtonAction: {
+                self.presentSendAsActionSheet()
+            }
+        )
+        fromCellNode.fromEmail = selectedFromEmail
+    }
+
+    private func presentSendAsActionSheet() {
+        let alert = UIAlertController(
+            title: nil,
+            message: nil,
+            preferredStyle: .actionSheet
+        )
+
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
+
+        for aliasEmail in sendAsList {
+            let action = UIAlertAction(
+                title: aliasEmail.descriptoin,
+                style: .default) { [weak self] _ in
+                    self?.changeSendAs(to: aliasEmail.sendAsEmail)
+                }
+            // Remove @, . in email part as appium throws error for identifiers which contain @, .
+            let emailIentifier = aliasEmail.sendAsEmail
+                .replacingOccurrences(of: "@", with: "-")
+                .replacingOccurrences(of: ".", with: "-")
+            action.accessibilityIdentifier = "aid-send-as-\(emailIentifier)"
+            alert.addAction(action)
+        }
+        alert.addAction(cancelAction)
+
+        present(alert, animated: true, completion: nil)
+    }
+
+    private func changeSendAs(to email: String) {
+        guard let section = sectionsList.firstIndex(of: .recipients(.from)),
+              let fromCell = node.nodeForRow(at: IndexPath(row: 0, section: section)) as? RecipientFromCellNode else {
+            return
+        }
+        fromCell.fromEmail = email
+        self.selectedFromEmail = email
     }
 
     internal func messagePasswordNode() -> ASCellNode {
