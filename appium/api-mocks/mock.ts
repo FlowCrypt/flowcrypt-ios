@@ -6,16 +6,17 @@ import { Api } from './lib/api';
 import * as http from 'http';
 import { getMockAttesterEndpoints } from './apis/attester/attester-endpoints';
 import { getMockGoogleEndpoints } from './apis/google/google-endpoints';
-import { getMockEkmEndpoints } from './apis/ekm/ekm-endpoints';
+import { ekmKeySamples, getMockEkmEndpoints } from './apis/ekm/ekm-endpoints';
 import { getMockWkdEndpoints } from './apis/wkd/wkd-endpoints';
 import { getMockFesEndpoints } from './apis/fes/fes-endpoints';
 import { AttesterConfig, EkmConfig, FesConfig, GoogleConfig, Logger, MockConfig, WkdConfig } from './lib/configuration-types';
 import { readFileSync } from 'fs';
+import { CommonData } from 'tests/data';
 
 /**
  * const mockApi = new MockApi();
- * mockApi.fesConfiguration = { clientConfiguration: {flags: []} });
- * mockApi.configureAttester = {
+ * mockApi.fesConfig = { clientConfiguration: {flags: []} });
+ * mockApi.attesterConfig = {
  *    enableSubmittingPubkeys: false,
  *    availablePubkeys: {
  *        'recipient@example.com': attesterPublicKeySamples.valid
@@ -24,10 +25,10 @@ import { readFileSync } from 'fs';
  * await mockApi.withMockedApis(async () => {
  *    // here goes your test spec code
  *    // later maybe you want to change some config on the fly
- *    mockApi.fesConfiguration = { clientConfiguration: {flags: ['NO_PRV_BACKUP']} });
+ *    mockApi.fesConfig = { clientConfiguration: {flags: ['NO_PRV_BACKUP']} });
  *    // now run some more appium code, mock will be serving with updated config
  *    // or let's say you want to one of the mock servers offline
- *    mockApi.fesConfiguration = undefined
+ *    mockApi.fesConfig = undefined
  *    // continue testing, mock will be responding HTTP 404 to all requests
  * });
  */
@@ -72,5 +73,25 @@ export class MockApi {
     }
   };
 
+  static get e2eMock() {
+    const mockApi = new MockApi();
+    mockApi.fesConfig = {
+      clientConfiguration: {
+        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
+        key_manager_url: CommonData.keyManagerURL.mockServer,
+      }
+    };
+    mockApi.ekmConfig = {
+      returnKeys: [ekmKeySamples.e2eValidKey.prv]
+    }
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          messages: ['CC and BCC test', 'Test 1'],
+        }
+      }
+    }
+    return mockApi
+  }
 }
 

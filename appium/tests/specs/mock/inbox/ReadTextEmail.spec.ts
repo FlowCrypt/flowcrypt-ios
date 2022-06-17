@@ -7,7 +7,6 @@ import {
 
 import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
-import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 
 describe('INBOX: ', () => {
 
@@ -21,25 +20,7 @@ describe('INBOX: ', () => {
     const ccLabel = CommonData.recipientsListEmail.cc;
     const bccLabel = CommonData.recipientsListEmail.bcc;
 
-    const mockApi = new MockApi();
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
-    };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
-    }
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          messages: ['CC and BCC test'],
-        }
-      }
-    }
-
-    await mockApi.withMockedApis(async () => {
+    await MockApi.e2eMock.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
