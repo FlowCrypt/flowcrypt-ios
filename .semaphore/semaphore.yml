@@ -100,6 +100,8 @@ blocks:
             - npm run-script test.live.all
       secrets:
         - name: flowcrypt-ios-ci-secrets
+    run:
+      when: 'change_in(''/'', {exclude: [''/Core/package.json'', ''/Core/package-lock.json'']})'
 after_pipeline:
   task:
     jobs:
