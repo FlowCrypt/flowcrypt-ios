@@ -87,6 +87,7 @@ export class MockApi {
     mockApi.googleConfig = {
       accounts: {
         'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [{ displayName: 'Dima FlowCrypt', email: 'dmitry@flowcrypt.com' }],
           messages: ['CC and BCC test', 'Test 1'],
         }
       }

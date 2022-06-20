@@ -3,7 +3,8 @@
 import { AddressObject, ParsedMail, StructuredHeader } from 'mailparser';
 import { readFile, readdir } from 'fs';
 import { lousyRandom } from '../../lib/mock-util';
-import { GoogleConfig } from 'api-mocks/lib/configuration-types';
+import { GoogleConfig, GoogleMockContact } from 'api-mocks/lib/configuration-types';
+import { GoogleMockAccountEmail } from './google-messages';
 
 type GmailMsg$header = { name: string, value: string };
 type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
@@ -12,7 +13,7 @@ type GmailMsg$payload = { partId?: string, filename?: string, parts?: GmailMsg$p
 type GmailMsg$labelId = 'INBOX' | 'UNREAD' | 'CATEGORY_PERSONAL' | 'IMPORTANT' | 'SENT' | 'CATEGORY_UPDATES' | 'DRAFT';
 type GmailThread = { historyId: string; id: string; snippet: string; };
 type Label = { id: string, name: string, messageListVisibility: 'show' | 'hide', labelListVisibility: 'labelShow' | 'labelHide', type: 'system' };
-type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[] };
+type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[], contacts: GoogleMockContact[] };
 type ExportedMsg = { acctEmail: string, full: GmailMsg, raw: GmailMsg, attachments: { [id: string]: { data: string, size: number } } };
 
 export class GmailMsg {
@@ -109,10 +110,11 @@ export class GoogleData {
   private exludePplSearchQuery = /(?:-from|-to):"?([a-zA-Z0-9@.\-_]+)"?/g;
   private includePplSearchQuery = /(?:from|to):"?([a-zA-Z0-9@.\-_]+)"?/g;
 
-  public static withInitializedData = async (acct: string, config?: GoogleConfig): Promise<GoogleData> => {
+  public static withInitializedData = async (acct: GoogleMockAccountEmail, config?: GoogleConfig): Promise<GoogleData> => {
     if (typeof DATA[acct] === 'undefined') {
+      const contacts = config?.accounts[acct]?.contacts ?? [];
       const acctData: AcctDataFile = {
-        drafts: [], messages: [], attachments: {}, labels:
+        drafts: [], messages: [], attachments: {}, contacts: contacts, labels:
           [
             { id: 'INBOX', name: 'Inbox', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
             { id: 'SENT', name: 'Sent', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
@@ -125,7 +127,7 @@ export class GoogleData {
       const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
       const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
       const files = await Promise.all(filePromises) as Uint8Array[];
-      const msgSubjects = config?.accounts[acct].messages.map(m => m.toString());
+      const msgSubjects = config?.accounts[acct]?.messages.map(m => m.toString());
 
       for (const file of files) {
         const utfStr = new TextDecoder().decode(file);
@@ -314,6 +316,13 @@ export class GoogleData {
     }
     return threads;
   };
+
+  public searchContacts = (query: string) => {
+    return DATA[this.acct].contacts.filter(contact => {
+      const contactData = [contact.displayName, contact.email].join().toLowerCase();
+      return contactData.includes(query.toLowerCase());
+    });
+  }
 
   // returns ordinary messages and drafts
   private getMessagesAndDrafts = () => {

@@ -39,7 +39,13 @@ export type GoogleConfig = {
 };
 
 export type GoogleMockAccount = {
+  contacts: GoogleMockContact[]
   messages: GoogleMockMessage[]
+}
+
+export type GoogleMockContact = {
+  displayName: string,
+  email: string
 }
 
 export type WkdConfig = {};
