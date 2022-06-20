@@ -120,7 +120,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         )
 
         let response: MessageUploadResponse = try await performRequest(
-            email: details.from,
+            email: email,
             url: "/api/v1/message",
             headers: [contentTypeHeader],
             method: .post,
