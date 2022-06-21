@@ -2,7 +2,6 @@ import { MockApi } from 'api-mocks/mock';
 import {
   EmailScreen,
   MailFolderScreen, NewMessageScreen,
-  SearchScreen,
   SetupKeyScreen,
   SplashScreen
 } from '../../../screenobjects/all-screens';
@@ -14,11 +13,7 @@ describe('COMPOSE EMAIL: ', () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
-
-      // signed+encrypted message
-      await MailFolderScreen.clickSearchButton();
-
-      await SearchScreen.searchAndClickEmailBySubject('Signed and encrypted message');
+      await MailFolderScreen.clickOnEmailBySubject('Test 1');
 
       // check message text field focus for reply message
       await EmailScreen.clickReplyButton();

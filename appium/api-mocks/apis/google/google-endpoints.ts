@@ -6,7 +6,6 @@ import { GoogleData } from './google-data';
 import Parse from '../../util/parse';
 import { isDelete, isGet, isPost, isPut, parseResourceId } from '../../lib/mock-util';
 import { oauth } from '../../lib/oauth';
-import { CommonData } from 'tests/data';
 import { GoogleMockAccountEmail } from './google-messages';
 
 type DraftSaveModel = { message: { raw: string, threadId: string } };
