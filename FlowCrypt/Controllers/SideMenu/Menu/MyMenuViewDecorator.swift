@@ -84,7 +84,7 @@ extension InfoCellNode.Input {
         self.init(
             attributedText: viewModel.name
                 .attributed(.regular(17), color: .mainTextColor),
-            image: viewModel.image,
+            image: viewModel.image?.tinted(.mainTextColor),
             accessibilityIdentifier: "aid-menu-bar-item-\(identifier)"
         )
     }
