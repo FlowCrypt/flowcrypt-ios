@@ -58,9 +58,7 @@ extension AttachmentManager: AttachmentManagerType {
             let url = try filesManager.save(file: file)
             openDocumentsController(from: url)
         } catch {
-            controller?.showToast(
-                "\("message_attachment_saved_with_error".localized) \(error.localizedDescription)"
-            )
+            controller?.showToast("message_attachment_saved_with_error".localizeWithArguments(error.localizedDescription))
         }
     }
 }
