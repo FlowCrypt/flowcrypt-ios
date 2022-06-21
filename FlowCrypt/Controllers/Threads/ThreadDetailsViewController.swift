@@ -212,7 +212,10 @@ extension ThreadDetailsViewController {
         }
 
         if attachment.isEncrypted {
-            let decryptedAttachment = try await messageService.decrypt(attachment: attachment, userEmail: appContext.user.email)
+            let decryptedAttachment = try await messageService.decrypt(
+                attachment: attachment,
+                userEmail: appContext.user.email
+            )
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
             input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment

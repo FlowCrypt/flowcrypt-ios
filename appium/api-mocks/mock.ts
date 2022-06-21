@@ -4,7 +4,7 @@
 
 import { Api } from './lib/api';
 import * as http from 'http';
-import { getMockAttesterEndpoints } from './apis/attester/attester-endpoints';
+import { attesterPublicKeySamples, getMockAttesterEndpoints } from './apis/attester/attester-endpoints';
 import { getMockGoogleEndpoints } from './apis/google/google-endpoints';
 import { ekmKeySamples, getMockEkmEndpoints } from './apis/ekm/ekm-endpoints';
 import { getMockWkdEndpoints } from './apis/wkd/wkd-endpoints';
@@ -96,7 +96,11 @@ export class MockApi {
       }
     }
     mockApi.attesterConfig = {
-      servedPubkeys: {}
+      servedPubkeys: {
+        'expired@flowcrypt.com': attesterPublicKeySamples.expired,
+        'revoked@flowcrypt.com': attesterPublicKeySamples.revoked,
+        'robot@flowcrypt.com': attesterPublicKeySamples.valid
+      }
     };
     return mockApi
   }

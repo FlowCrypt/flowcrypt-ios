@@ -182,7 +182,7 @@ export const getMockGoogleEndpoints = (
           data.addDraft('draft_with_image', raw, mimeMsg);
         }
         if ((mimeMsg.subject || '').includes('RTL')) {
-          const data = (await GoogleData.withInitializedData(acct, googleConfig));
+          const data = await GoogleData.withInitializedData(acct, googleConfig);
           data.addDraft(`draft_with_rtl_text_${mimeMsg.subject?.includes('rich text') ? 'rich' : 'plain'}`, raw, mimeMsg);
         }
         return {};
