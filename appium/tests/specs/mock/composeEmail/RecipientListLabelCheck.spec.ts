@@ -7,6 +7,8 @@ import {
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
+import { MockApi } from 'api-mocks/mock';
+import TouchHelper from 'tests/helpers/TouchHelper';
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -20,18 +22,20 @@ describe('COMPOSE EMAIL: ', () => {
     const subject = "Test recipient list label subject"
     const message = "Test recipient list label message"
 
-    await SplashScreen.login();
-    await SetupKeyScreen.setPassPhrase();
-    await MailFolderScreen.checkInboxScreen();
+    await MockApi.e2eMock.withMockedApis(async () => {
+      await SplashScreen.mockLogin();
+      await SetupKeyScreen.setPassPhrase();
+      await MailFolderScreen.checkInboxScreen();
 
-    // Go to Contacts screen
-    await MenuBarScreen.clickMenuBtn();
-    await MenuBarScreen.checkUserEmail();
+      // Check current user email
+      await MenuBarScreen.clickMenuBtn();
+      await MenuBarScreen.checkUserEmail();
+      await TouchHelper.tapScreen('centerRight');
 
-    // Add first contact
-    await MailFolderScreen.clickCreateEmail();
-    await NewMessageScreen.composeEmail(recipientEmail, subject, message, ccRecipientEmail, bccRecipientEmail);
-    await NewMessageScreen.checkRecipientLabel([recipientName, ccRecipientName, bccRecipientEmail]);
-
+      // Add first contact
+      await MailFolderScreen.clickCreateEmail();
+      await NewMessageScreen.composeEmail(recipientEmail, subject, message, ccRecipientEmail, bccRecipientEmail);
+      await NewMessageScreen.checkRecipientLabel([recipientName, ccRecipientName, bccRecipientEmail]);
+    });
   });
 });
