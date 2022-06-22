@@ -451,8 +451,11 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        guard let message = inboxInput[safe: indexPath.row] else {
+            return
+        }
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(message: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
+        open(message: message, path: viewModel.path, appContext: appContext)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
