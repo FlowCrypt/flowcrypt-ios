@@ -33,7 +33,6 @@ describe('SETUP: ', () => {
       };
 
       await AppiumHelper.restartApp(processArgs);
-      await SplashScreen.mockLogin();
       await BaseScreen.checkModalMessage('Login Error\n"some client err"');
 
       mockApi.fesConfig = {
@@ -45,7 +44,6 @@ describe('SETUP: ', () => {
       };
 
       await AppiumHelper.restartApp(processArgs);
-      await SplashScreen.mockLogin();
       await BaseScreen.checkModalMessage('Login Error\n' +
         '{"wrongFieldError":{"wrongFieldCode":400,"wrongFieldMessage":"some client err"}}');
     });
