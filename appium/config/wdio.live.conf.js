@@ -37,7 +37,8 @@ config.capabilities = [
     wdaLaunchTimeout: 300000,
     wdaConnectionTimeout: 600000,
     wdaStartupRetries: 4,
-    wdaStartupRetryInterval: 120000
+    wdaStartupRetryInterval: 120000,
+    isHeadless: process.env.CI ? true : false
   },
 ];
 
