@@ -9,8 +9,9 @@ export const CommonData = {
     name: 'e2e'
   },
   alias: {
-    email: "demo@flowcrypt.com",
-    subject: 'Check send email as alias'
+    email: "test2@example.net",
+    subject: 'Check send email as alias',
+    message: 'Test message'
   },
   outlookAccount: {
     email: 'e2e.consumer.tests@outlook.com',

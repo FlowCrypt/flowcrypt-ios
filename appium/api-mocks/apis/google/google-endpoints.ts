@@ -2,7 +2,7 @@
 
 import { GoogleConfig, MockConfig } from '../../lib/configuration-types';
 import { HandlersDefinition, HttpErr, Status } from '../../lib/api';
-import { GoogleData } from './google-data';
+import { GmailMsg, GoogleData } from './google-data';
 import Parse from '../../util/parse';
 import { isDelete, isGet, isPost, isPut, parseResourceId } from '../../lib/mock-util';
 import { oauth } from '../../lib/oauth';
@@ -75,6 +75,19 @@ export const getMockGoogleEndpoints = (
           treatAsAlias: false,
           verificationStatus: 'accepted'
         }];
+        if (acct == 'e2e.enterprise.test@flowcrypt.com') {
+          const alias = 'test2@example.net';
+          sendAs.push({
+            sendAsEmail: alias,
+            displayName: 'Demo Alias',
+            replyToAddress: alias,
+            signature: '',
+            isDefault: false,
+            isPrimary: false,
+            treatAsAlias: false,
+            verificationStatus: 'accepted'
+          });
+        }
         return { sendAs };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
@@ -87,7 +100,7 @@ export const getMockGoogleEndpoints = (
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
-    '/gmail/v1/users/me/messages/?': async ({ query: { format } }, req) => { // get msg or attachment
+    '/gmail/v1/users/me/messages/?': async (parsedReq, req) => { // get msg or attachment
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
         const id = parseResourceId(req.url!);
@@ -101,7 +114,18 @@ export const getMockGoogleEndpoints = (
         }
         const msg = data.getMessage(id);
         if (msg) {
-          return GoogleData.fmtMsg(msg, format);
+          return GoogleData.fmtMsg(msg, parsedReq.query.format);
+        }
+        throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
+      } else if (isPost(req)) {
+        const urlData = req.url!.split('/');
+        const id = urlData[urlData.length - 2];
+        // const body = parsedReq.body as LabelsModifyModel;
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
+        const msg = data.getMessage(id);
+        if (msg) {
+          //   msg.updateLabels(body.addLabelIds, body.removeLabelIds);
+          return GoogleData.fmtMsg(msg, parsedReq.query.format);
         }
         throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
       }
@@ -192,13 +216,14 @@ export const getMockGoogleEndpoints = (
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
     '/gmail/v1/users/me/messages/send': async (parsedReq, req) => {
-      // TODO: Create new message from parsedReq.body.raw
+      const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
+
       if (isPost(req)) {
-        return {
-          id: '123',
-          threadId: '123',
-          labelIds: ['SENT']
-        }
+        const raw = (parsedReq.body as any)?.raw as string; // tslint:disable-line: no-unsafe-any
+        const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
+        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        data.addMessage('123', raw, mimeMsg);
+        return {}
       }
 
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);

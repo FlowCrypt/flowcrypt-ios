@@ -99,7 +99,9 @@ export class MockApi {
       servedPubkeys: {
         'expired@flowcrypt.com': attesterPublicKeySamples.expired,
         'revoked@flowcrypt.com': attesterPublicKeySamples.revoked,
-        'robot@flowcrypt.com': attesterPublicKeySamples.valid
+        'robot@flowcrypt.com': attesterPublicKeySamples.valid,
+        'test2@example.net': attesterPublicKeySamples.valid,
+        'dmitry@flowcrypt.com': attesterPublicKeySamples.valid
       }
     };
     return mockApi

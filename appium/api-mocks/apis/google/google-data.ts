@@ -34,6 +34,8 @@ export class GmailMsg {
     this.threadId = msg.id;
     this.labelIds = [msg.labelId];
     this.raw = msg.raw;
+    this.sizeEstimate = new Blob([msg.raw]).size;
+
     const contentTypeHeader = msg.mimeMsg.headers.get('content-type')! as StructuredHeader;
     const toHeader = msg.mimeMsg.headers.get('to')! as AddressObject;
     const fromHeader = msg.mimeMsg.headers.get('from')! as AddressObject;
@@ -42,6 +44,7 @@ export class GmailMsg {
     const messageIdHeader = msg.mimeMsg.headers.get('message-id')! as string;
     const mimeVersionHeader = msg.mimeMsg.headers.get('mime-version')! as string;
     let body;
+
     if (msg.mimeMsg.text) {
       const textBase64 = Buffer.from(msg.mimeMsg.text, 'utf-8').toString('base64');
       body = { attachmentId: '', size: textBase64.length, data: textBase64 };
@@ -49,6 +52,7 @@ export class GmailMsg {
       const htmlBase64 = Buffer.from(msg.mimeMsg.html, 'utf-8').toString('base64');
       body = { attachmentId: '', size: htmlBase64.length, data: htmlBase64 };
     }
+    this.internalDate = Math.floor(dateHeader.getTime() / 1000);
     this.payload = {
       mimeType: contentTypeHeader.value,
       headers: [
@@ -279,6 +283,11 @@ export class GoogleData {
       return this.searchMessagesByPeople(includePeople, excludePeople);
     }
     return [];
+  };
+
+  public addMessage = (id: string, raw: string, mimeMsg: ParsedMail) => {
+    const msg = new GmailMsg({ labelId: 'SENT', id, raw, mimeMsg });
+    DATA[this.acct].messages.push(msg);
   };
 
   public addDraft = (id: string, raw: string, mimeMsg: ParsedMail) => {

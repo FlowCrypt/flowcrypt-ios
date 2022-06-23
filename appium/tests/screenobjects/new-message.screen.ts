@@ -260,7 +260,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   getActiveElementId = async () => {
-    await browser.pause(100);
+    await browser.pause(500);
     const activeElement = (await driver.getActiveElement()) as unknown as { ELEMENT: string };
     return activeElement.ELEMENT;
   }
@@ -340,7 +340,7 @@ class NewMessageScreen extends BaseScreen {
   checkAddedAttachment = async (name: string) => {
     await (await this.deleteAttachmentButton).waitForDisplayed();
     const label = await this.attachmentNameLabel;
-    await ElementHelper.waitForValue(await label, name);
+    await ElementHelper.waitForValue(label, name);
   }
 
   checkRecipientEvaluationWhenTapOutside = async (type = 'to') => {
