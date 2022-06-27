@@ -162,6 +162,10 @@
 "folder_STARRED" = "Starred";
 "folder_UNREAD" = "Unread";
 "folder_ALL_MAIL" = "All Mail";
+"folder_empty_spam_introduce" = "Items that have been in Spam more than 30 days will be automatically deleted.";
+"folder_empty_spam_button_text" = "Empty spam now";
+"folder_empty_trash_introduce" = "Items that have been in Trash more than 30 days will be automatically deleted.";
+"folder_empty_trash_button_text" = "Empty trash now";
 
 // Sign in
 "sign_in_privacy" = "Privacy";

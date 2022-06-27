@@ -29,6 +29,9 @@ class InboxViewController: ViewController {
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
     }
+    private var shouldShowEmptyView: Bool {
+        !inboxInput.isEmpty && (viewModel.path == "SPAM" || viewModel.path == "TRASH")
+    }
 
     var path: String { viewModel.path }
 
@@ -441,7 +444,9 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         switch state {
         case .empty, .idle, .searchStart, .searching, .searchEmpty, .error:
             return 1
-        case .fetching, .fetched, .refresh:
+        case .fetched, .refresh:
+            return shouldShowEmptyView ? inboxInput.count + 1 : inboxInput.count
+        case .fetching:
             return inboxInput.count
         }
     }
@@ -482,7 +487,16 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 node.accessibilityIdentifier = "aid-inbox-idle-node"
                 return node
             case .fetched, .refresh:
-                guard let input = self.inboxInput[safe: indexPath.row] else {
+                var rowNumber = indexPath.row
+                if self.shouldShowEmptyView {
+                    if indexPath.row == 0 {
+                        return EmptyFolerCellNode(path: self.viewModel.path, emptyFolder: {
+
+                        })
+                    }
+                    rowNumber -= 1
+                }
+                guard let input = self.inboxInput[safe: rowNumber] else {
                     return TextCellNode.loading
                 }
                 return InboxCellNode(input: .init(input))

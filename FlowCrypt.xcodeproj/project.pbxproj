@@ -154,6 +154,7 @@
 		756BB990285A19C100F73140 /* EmptyCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 756BB98F285A19C100F73140 /* EmptyCellNode.swift */; };
 		759739BE2833E986004867CD /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
 		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
+		75DCE6A02869EBC0003435F1 /* EmptyFolerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolerCellNode.swift */; };
 		7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
@@ -618,6 +619,7 @@
 		75588F8A285777AB00E595D1 /* LocalSendAsProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalSendAsProvider.swift; sourceTree = "<group>"; };
 		75588F9128577BFA00E595D1 /* SendAsRealmObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendAsRealmObject.swift; sourceTree = "<group>"; };
 		756BB98F285A19C100F73140 /* EmptyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellNode.swift; sourceTree = "<group>"; };
+		75DCE69F2869EBC0003435F1 /* EmptyFolerCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolerCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionService.swift; sourceTree = "<group>"; };
@@ -2206,6 +2208,7 @@
 				04DE04DC27E098010055CB86 /* ComposeRecipientCellNode.swift */,
 				7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */,
 				756BB98F285A19C100F73140 /* EmptyCellNode.swift */,
+				75DCE69F2869EBC0003435F1 /* EmptyFolerCellNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -3016,6 +3019,7 @@
 				756BB990285A19C100F73140 /* EmptyCellNode.swift in Sources */,
 				D27177512425678F00BDA9A9 /* KeySettingCellNode.swift in Sources */,
 				5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
+				75DCE6A02869EBC0003435F1 /* EmptyFolerCellNode.swift in Sources */,
 				D27177462424D59800BDA9A9 /* InboxCellNode.swift in Sources */,
 				D27177472424D59800BDA9A9 /* TextCellNode.swift in Sources */,
 				7536E72D285B00EA00A50043 /* RecipientFromCellNode.swift in Sources */,
