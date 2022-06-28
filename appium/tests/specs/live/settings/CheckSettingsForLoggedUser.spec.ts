@@ -24,7 +24,7 @@ describe('SETTINGS: ', () => {
     await SettingsScreen.checkSettingsScreen();
     await SettingsScreen.clickOnSettingItem('Keys');
 
-    await KeysScreen.checkKeysScreen([ekmKeySamples.demoUser, ekmKeySamples.e2e, ekmKeySamples.flowcryptCompability]);
+    await KeysScreen.checkKeysScreen([ekmKeySamples.e2e, ekmKeySamples.flowcryptCompability, ekmKeySamples.flowcryptCompabilityOther]);
     await KeysScreen.clickOnKey();
 
     await KeysScreen.checkSelectedKeyScreen();
