@@ -7,7 +7,6 @@ import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/at
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
-import MailFolderHelper from 'tests/helpers/MailFolderHelper';
 import { CommonData } from "../../../data";
 import DataHelper from 'tests/helpers/DataHelper';
 
@@ -18,7 +17,7 @@ describe('SETUP: ', () => {
 
     const mockApi = new MockApi();
     const recipientEmail = CommonData.recipient.email;
-    const recipientName = CommonData.recipient.name;
+    const recipientName = CommonData.recipient.mockKeyName;
     const emailSubject = CommonData.revokeValidMessage.subject + DataHelper.uniqueValue();
     const emailText = CommonData.revokeValidMessage.message;
 
