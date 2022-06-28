@@ -17,7 +17,7 @@ describe('SETUP: ', () => {
 
     const mockApi = new MockApi();
     const recipientEmail = CommonData.recipient.email;
-    const recipientName = CommonData.recipient.mockKeyName;
+    const recipientName = CommonData.recipient.name;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
 

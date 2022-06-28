@@ -67,7 +67,6 @@ export const CommonData = {
   },
   recipient: {
     email: 'robot@flowcrypt.com',
-    mockKeyName: 'Tom James Holub',
     name: 'FlowCrypt Robot',
   },
   bundleId: {
