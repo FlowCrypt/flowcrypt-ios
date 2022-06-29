@@ -28,7 +28,7 @@ describe('UPDATE: ', () => {
     const senderName = CommonData.sender.name;
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
-    const liveKeys = [ekmKeySamples.demoUser, ekmKeySamples.e2e, ekmKeySamples.flowcryptCompability];
+    const liveKeys = [ekmKeySamples.e2e, ekmKeySamples.flowcryptCompability, ekmKeySamples.flowcryptCompabilityOther];
 
     //terminate current app version
     await driver.terminateApp(bundleId);

@@ -64,7 +64,7 @@ export const CommonData = {
   secondContact: {
     contactName: 'Demo',
     email: 'demo@flowcrypt.com',
-    name: 'Demo key 2',
+    name: 'Demo User',
   },
   recipient: {
     email: 'robot@flowcrypt.com',
