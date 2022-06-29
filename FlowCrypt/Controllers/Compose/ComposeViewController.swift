@@ -180,7 +180,7 @@ final class ComposeViewController: TableNodeViewController {
         for cancellable in cancellable {
             cancellable.cancel()
         }
-        
+
         setupSearch()
     }
 

@@ -17,7 +17,7 @@ describe('SETUP: ', () => {
     const mockApi = new MockApi();
     const enabledEmail = 'attester@enabled.test';
     const disabledEmail = 'attester@disabled.test';
-    const enabledUserName = 'Tom James Holub';
+    const enabledUserName = CommonData.validMockUser.name;
     const processArgs = CommonData.mockProcessArgs;
     mockApi.fesConfig = {
       clientConfiguration: {

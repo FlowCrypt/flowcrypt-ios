@@ -322,6 +322,7 @@ extension ThreadDetailsViewController {
                     userEmail: appContext.user.email,
                     progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
+
                 if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
                     retryVerifyingSignatureWithRemotelyFetchedKeys(

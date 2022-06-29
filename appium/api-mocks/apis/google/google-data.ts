@@ -34,7 +34,7 @@ export class GmailMsg {
     this.threadId = msg.id;
     this.labelIds = [msg.labelId];
     this.raw = msg.raw;
-    this.sizeEstimate = new Blob([msg.raw]).size;
+    this.sizeEstimate = Buffer.byteLength(msg.raw, "utf-8");
 
     const contentTypeHeader = msg.mimeMsg.headers.get('content-type')! as StructuredHeader;
     const toHeader = msg.mimeMsg.headers.get('to')! as AddressObject;
@@ -52,7 +52,7 @@ export class GmailMsg {
       const htmlBase64 = Buffer.from(msg.mimeMsg.html, 'utf-8').toString('base64');
       body = { attachmentId: '', size: htmlBase64.length, data: htmlBase64 };
     }
-    this.internalDate = Math.floor(dateHeader.getTime() / 1000);
+    this.internalDate = dateHeader.getTime();
     this.payload = {
       mimeType: contentTypeHeader.value,
       headers: [
@@ -285,9 +285,10 @@ export class GoogleData {
     return [];
   };
 
-  public addMessage = (id: string, raw: string, mimeMsg: ParsedMail) => {
+  public addMessage = (raw: string, mimeMsg: ParsedMail) => {
+    const id = lousyRandom();
     const msg = new GmailMsg({ labelId: 'SENT', id, raw, mimeMsg });
-    DATA[this.acct].messages.push(msg);
+    DATA[this.acct].messages.unshift(msg);
   };
 
   public addDraft = (id: string, raw: string, mimeMsg: ParsedMail) => {

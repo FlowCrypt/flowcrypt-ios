@@ -222,7 +222,7 @@ export const getMockGoogleEndpoints = (
         const raw = (parsedReq.body as any)?.raw as string; // tslint:disable-line: no-unsafe-any
         const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
-        data.addMessage('123', raw, mimeMsg);
+        data.addMessage(raw, mimeMsg);
         return {}
       }
 
