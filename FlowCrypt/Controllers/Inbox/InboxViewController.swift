@@ -16,6 +16,7 @@ class InboxViewController: ViewController {
     private let appContext: AppContextWithUser
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
+    private let emptyInboxProvider: EmptyInboxProvider
     private let refreshControl = UIRefreshControl()
     internal let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
@@ -57,6 +58,7 @@ class InboxViewController: ViewController {
         self.inboxDataProvider = provider
 
         self.draftsListProvider = try draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
+        self.emptyInboxProvider = try appContext.getRequiredMailProvider().emptyInboxProvider
         self.decorator = decorator
         self.tableNode = TableNode()
         self.isSearch = isSearch
@@ -491,7 +493,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 if self.shouldShowEmptyView {
                     if indexPath.row == 0 {
                         return EmptyFolerCellNode(path: self.viewModel.path, emptyFolder: {
-
+                            self.emptyInboxFolder()
                         })
                     }
                     rowNumber -= 1
@@ -515,6 +517,18 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                         size: size
                     )
                 )
+            }
+        }
+    }
+
+    private func emptyInboxFolder() {
+        Task {
+            do {
+                self.showSpinner()
+                try await self.emptyInboxProvider.emptyFolder(path: viewModel.path)
+                self.hideSpinner()
+            } catch {
+                self.showAlert(message: error.errorMessage)
             }
         }
     }
