@@ -11,9 +11,6 @@ import MailCore
 
 extension Imap: EmptyInboxProvider {
     func emptyFolder(path: String) async throws {
-//        let context = FetchMessageContext(folderPath: path, count: nil, pagination: .byNumber(total: 1000))
-//        let list = try await fetchMessages(using: context)
-//        let messageIdentifiers = list.messages.compactMap(\.identifier.intId)
         try await batchDeleteMessages(identifiers: [], from: path)
     }
 }

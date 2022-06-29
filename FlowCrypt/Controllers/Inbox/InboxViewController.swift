@@ -531,6 +531,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 self.showSpinner()
                 try await self.emptyInboxProvider.emptyFolder(path: viewModel.path)
                 self.state = .empty
+                self.inboxInput = []
                 await tableNode.reloadData()
                 self.hideSpinner()
             } catch {
