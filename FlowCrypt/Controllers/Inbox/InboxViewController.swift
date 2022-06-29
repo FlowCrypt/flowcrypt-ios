@@ -462,7 +462,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         if shouldShowEmptyView {
             rowNumber -= 1
         }
-        guard let message = inboxInput[safe: indexPath.row] else {
+        guard let message = inboxInput[safe: rowNumber] else {
             return
         }
         tableNode.deselectRow(at: indexPath, animated: true)
@@ -530,6 +530,8 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             do {
                 self.showSpinner()
                 try await self.emptyInboxProvider.emptyFolder(path: viewModel.path)
+                self.state = .empty
+                await tableNode.reloadData()
                 self.hideSpinner()
             } catch {
                 self.showAlert(message: error.errorMessage)
