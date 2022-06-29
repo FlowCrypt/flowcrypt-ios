@@ -45,8 +45,9 @@ describe('SETUP: ', () => {
         returnKeys: [ekmKeySamples.key0.prv]
       }
       await AppiumHelper.restartApp(processArgs);
+      await SetupKeyScreen.setPassPhrase();
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
     });
   });
 });
