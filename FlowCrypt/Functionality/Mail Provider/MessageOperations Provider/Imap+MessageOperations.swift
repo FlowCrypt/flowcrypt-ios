@@ -85,6 +85,10 @@ extension Imap: MessageOperationsProvider {
         try await expungeMsgs(folder: folderPath)
     }
 
+    func emptyFolder(path: String) async throws {
+        try await batchDeleteMessages(identifiers: [], from: path)
+    }
+
     func batchDeleteMessages(identifiers: [String], from folderPath: String?) async throws {
         guard let folderPath = folderPath else {
             throw ImapError.missingMessageInfo("folderPath")

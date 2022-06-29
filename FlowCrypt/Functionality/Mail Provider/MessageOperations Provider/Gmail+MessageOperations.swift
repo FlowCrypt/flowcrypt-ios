@@ -46,6 +46,13 @@ extension GmailService: MessageOperationsProvider {
         }
     }
 
+    func emptyFolder(path: String) async throws {
+        let context = FetchMessageContext(folderPath: path, count: nil, pagination: nil)
+        let list = try await fetchMessagesList(using: context)
+        let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
+        try await batchDeleteMessages(identifiers: messageIdentifiers, from: path)
+    }
+
     func batchDeleteMessages(identifiers: [String], from folderPath: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let request = GTLRGmail_BatchDeleteMessagesRequest()

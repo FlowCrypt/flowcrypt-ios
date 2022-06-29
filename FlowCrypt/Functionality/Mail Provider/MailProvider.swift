@@ -95,12 +95,6 @@ final class MailProvider {
         }
     }
 
-    var emptyInboxProvider: EmptyInboxProvider {
-        get throws {
-            try resolveService(of: EmptyInboxProvider.self)
-        }
-    }
-
     var messagesThreadProvider: MessagesThreadProvider {
         get throws {
             try resolveService(of: MessagesThreadProvider.self)

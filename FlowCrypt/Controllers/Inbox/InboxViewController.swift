@@ -16,7 +16,7 @@ class InboxViewController: ViewController {
     private let appContext: AppContextWithUser
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
-    private let emptyInboxProvider: EmptyInboxProvider
+    private let messageOperationsProvider: MessageOperationsProvider
     private let refreshControl = UIRefreshControl()
     internal let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
@@ -57,8 +57,9 @@ class InboxViewController: ViewController {
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
         self.inboxDataProvider = provider
 
-        self.draftsListProvider = try draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
-        self.emptyInboxProvider = try appContext.getRequiredMailProvider().emptyInboxProvider
+        let mailProvider = try appContext.getRequiredMailProvider()
+        self.draftsListProvider = try draftsListProvider ?? mailProvider.draftsProvider
+        self.messageOperationsProvider = try mailProvider.messageOperationsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
         self.isSearch = isSearch
@@ -529,7 +530,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         Task {
             do {
                 self.showSpinner()
-                try await self.emptyInboxProvider.emptyFolder(path: viewModel.path)
+                try await self.messageOperationsProvider.emptyFolder(path: viewModel.path)
                 self.state = .empty
                 self.inboxInput = []
                 await tableNode.reloadData()
