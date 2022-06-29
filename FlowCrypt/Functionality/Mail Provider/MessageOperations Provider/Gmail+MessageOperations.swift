@@ -47,10 +47,18 @@ extension GmailService: MessageOperationsProvider {
     }
 
     func emptyFolder(path: String) async throws {
-        let context = FetchMessageContext(folderPath: path, count: nil, pagination: nil)
-        let list = try await fetchMessagesList(using: context)
-        let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
+        let messageIdentifiers = try await fetchAllMessageIdentifers(for: path)
         try await batchDeleteMessages(identifiers: messageIdentifiers, from: path)
+    }
+
+    private func fetchAllMessageIdentifers(for path: String, token: String? = nil, result: [String] = []) async throws -> [String] {
+        let context = FetchMessageContext(folderPath: path, count: 500, pagination: .byNextPage(token: token))
+        let list = try await fetchMessagesList(using: context)
+        var newResult = (list.messages?.compactMap(\.identifier) ?? []) + result
+        if let nextPageToken = list.nextPageToken {
+            newResult = try await fetchAllMessageIdentifers(for: path, token: nextPageToken, result: newResult)
+        }
+        return newResult
     }
 
     func batchDeleteMessages(identifiers: [String], from folderPath: String?) async throws {
