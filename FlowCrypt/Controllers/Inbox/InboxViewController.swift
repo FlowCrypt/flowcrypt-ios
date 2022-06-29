@@ -31,7 +31,7 @@ class InboxViewController: ViewController {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
     }
     private var shouldShowEmptyView: Bool {
-        !inboxInput.isEmpty && (viewModel.path == "SPAM" || viewModel.path == "TRASH")
+        inboxInput.isNotEmpty && (viewModel.path == "SPAM" || viewModel.path == "TRASH")
     }
 
     var path: String { viewModel.path }
@@ -458,6 +458,10 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        var rowNumber = indexPath.row
+        if shouldShowEmptyView {
+            rowNumber -= 1
+        }
         guard let message = inboxInput[safe: indexPath.row] else {
             return
         }
