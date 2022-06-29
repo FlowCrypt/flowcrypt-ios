@@ -13,7 +13,7 @@ import MailFolderHelper from 'tests/helpers/MailFolderHelper';
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('user is able to send encrypted email when pass phrase session ended', async () => {
+  it('user is able to send encrypted email when pass phrase session ended + move to trash, delete', async () => {
 
     const contactEmail = CommonData.recipient.email;
     const contactName = CommonData.recipient.name;
