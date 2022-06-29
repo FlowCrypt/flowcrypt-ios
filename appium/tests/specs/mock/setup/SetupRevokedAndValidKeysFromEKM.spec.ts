@@ -7,7 +7,6 @@ import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/at
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
-import MailFolderHelper from 'tests/helpers/MailFolderHelper';
 import { CommonData } from "../../../data";
 import DataHelper from 'tests/helpers/DataHelper';
 
