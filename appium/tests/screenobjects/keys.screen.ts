@@ -18,6 +18,7 @@ const SELECTORS = {
   SHARE_BUTTON: '~aid-key-share',
   SHOW_PRIVATE_KEY_BUTTON: '~aid-key-private-info',
   BACK_BUTTON: '~aid-back-button',
+  EMPTY_VIEW: '~aid-key-empty-view'
 };
 
 class KeysScreen extends BaseScreen {
@@ -67,6 +68,14 @@ class KeysScreen extends BaseScreen {
 
   get backButton() {
     return $(SELECTORS.BACK_BUTTON)
+  }
+
+  get emptyView() {
+    return $(SELECTORS.EMPTY_VIEW)
+  }
+
+  checkIfKeysAreEmpty = async () => {
+    await ElementHelper.waitElementVisible(await this.emptyView);
   }
 
   checkKeysScreen = async (keys: KeyDetailInfo[]) => {

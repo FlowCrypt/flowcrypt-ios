@@ -16,17 +16,20 @@ public final class EmptyCellNode: CellNode {
         let title: String
         let size: CGSize
         let imageName: String?
+        let accessibilityIdentifier: String?
 
         public init(
             backgroundColor: UIColor,
             title: String,
             size: CGSize,
-            imageName: String? = nil
+            imageName: String? = nil,
+            accessibilityIdentifier: String? = nil
         ) {
             self.backgroundColor = backgroundColor
             self.title = title
             self.size = size
             self.imageName = imageName
+            self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 
@@ -53,6 +56,7 @@ public final class EmptyCellNode: CellNode {
         )
         imageNode.image = UIImage(systemName: input.imageName ?? "")?.tinted(.main)
         backgroundColor = input.backgroundColor
+        accessibilityIdentifier = input.accessibilityIdentifier
     }
 
     public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {

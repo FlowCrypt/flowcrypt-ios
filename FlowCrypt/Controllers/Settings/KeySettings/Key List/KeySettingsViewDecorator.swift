@@ -7,6 +7,8 @@
 //
 
 import FlowCryptCommon
+import FlowCryptUI
+import UIKit
 import Foundation
 
 extension DateFormatter {
@@ -41,5 +43,15 @@ struct KeySettingsViewDecorator {
     func attributedDateCreated(with key: KeyDetails) -> NSAttributedString {
         dateFormatter.string(from: key.created.toDate())
             .attributed(.medium(12))
+    }
+
+    func emptyNodeInput() -> EmptyCellNode.Input {
+        EmptyCellNode.Input(
+            backgroundColor: .backgroundColor,
+            title: "keys_empty".localized,
+            size: CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height - 100),
+            imageName: "key",
+            accessibilityIdentifier: "aid-key-empty-view"
+        )
     }
 }

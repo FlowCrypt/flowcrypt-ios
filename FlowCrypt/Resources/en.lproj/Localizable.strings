@@ -25,6 +25,7 @@
 "bcc" = "bcc";
 "log_out" = "Log out";
 "empty" = "is empty";
+"keys_empty" = "No keys found";
 "re" = "Re: ";
 "fwd" = "Fwd: ";
 "unknown" = "UNKNOWN";

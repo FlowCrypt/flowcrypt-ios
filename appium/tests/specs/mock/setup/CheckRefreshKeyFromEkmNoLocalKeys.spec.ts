@@ -38,7 +38,7 @@ describe('SETUP: ', () => {
       }
       await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([]);
+      await KeysScreen.checkIfKeysAreEmpty();
 
       // stage 3 - check situation when there are no local keys but keys are returned from EKM
       mockApi.ekmConfig = {
