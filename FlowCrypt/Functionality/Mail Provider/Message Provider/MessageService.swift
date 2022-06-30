@@ -19,6 +19,7 @@ enum MessageFetchState {
 enum MessageServiceError: Error, CustomStringConvertible {
     case missingPassPhrase(_ rawMimeData: Data)
     case emptyKeys
+    case emptyKeysForEKM
     case attachmentNotFound
     case attachmentDecryptFailed(_ message: String)
 }
@@ -30,6 +31,8 @@ extension MessageServiceError {
             return "error_missing_passphrase".localized
         case .emptyKeys:
             return "error_empty_keys".localized
+        case .emptyKeysForEKM:
+            return "error_empty_keys_for_ekm".localized
         case .attachmentNotFound:
             return "error_attachment_not_found".localized
         case .attachmentDecryptFailed(let message):
@@ -88,6 +91,7 @@ final class MessageService {
         folder: String,
         onlyLocalKeys: Bool,
         userEmail: String,
+        isUsingKeyManager: Bool,
         progressHandler: ((MessageFetchState) -> Void)?
     ) async throws -> ProcessedMessage {
         let rawMimeData = try await messageProvider.fetchMsg(
@@ -99,7 +103,8 @@ final class MessageService {
             mime: rawMimeData,
             sender: input.sender,
             onlyLocalKeys: onlyLocalKeys,
-            userEmail: userEmail
+            userEmail: userEmail,
+            isUsingKeyManager: isUsingKeyManager
         )
     }
 
@@ -107,10 +112,14 @@ final class MessageService {
         mime rawMimeData: Data,
         sender: Recipient?,
         onlyLocalKeys: Bool,
-        userEmail: String
+        userEmail: String,
+        isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
         let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         guard keys.isNotEmpty else {
+            if isUsingKeyManager {
+                throw MessageServiceError.emptyKeysForEKM
+            }
             throw MessageServiceError.emptyKeys
         }
         let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)

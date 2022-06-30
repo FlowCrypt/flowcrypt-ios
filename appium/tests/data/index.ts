@@ -222,6 +222,9 @@ export const CommonData = {
       '\n' +
       'This will likely download a corrupted file. Download anyway?',
     invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.',
+    decryptMessageWithNoKeys: 'Error\n' +
+      'Could not open message\n\n' +
+      'Your account has no keys. Please check with your Help Desk or IT department.',
   },
   decryptErrorBadge: {
     badgeText: 'decrypt error'
