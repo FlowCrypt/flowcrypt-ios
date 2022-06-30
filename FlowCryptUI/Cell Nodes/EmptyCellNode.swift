@@ -36,11 +36,11 @@ public final class EmptyCellNode: CellNode {
     private let size: CGSize
     private let textNode = ASTextNode2()
     private let imageNode: ASImageNode = {
-        let image = ASImageNode()
-        image.contentMode = .scaleAspectFit
-        image.style.preferredSize = CGSize(width: 100, height: 100)
-        image.alpha = 0.5
-        return image
+        let imageNode = ASImageNode()
+        imageNode.contentMode = .scaleAspectFit
+        imageNode.style.preferredSize = CGSize(width: 100, height: 100)
+        imageNode.alpha = 0.5
+        return imageNode
     }()
 
     public init(input: Input) {
@@ -54,7 +54,8 @@ public final class EmptyCellNode: CellNode {
             color: .lightGray,
             alignment: .center
         )
-        imageNode.image = UIImage(systemName: input.imageName ?? "")?.tinted(.main)
+        let configuration = UIImage.SymbolConfiguration(pointSize: 100)
+        imageNode.image = UIImage(systemName: input.imageName ?? "", withConfiguration: configuration)?.tinted(.main)
         backgroundColor = input.backgroundColor
         accessibilityIdentifier = input.accessibilityIdentifier
     }
@@ -68,6 +69,9 @@ public final class EmptyCellNode: CellNode {
             children: [imageNode, textNode]
         )
         spec.style.preferredSize = size
-        return ASCenterLayoutSpec(child: spec)
+        return ASInsetLayoutSpec(
+            insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16),
+            child: ASCenterLayoutSpec(child: spec)
+        )
     }
 }
