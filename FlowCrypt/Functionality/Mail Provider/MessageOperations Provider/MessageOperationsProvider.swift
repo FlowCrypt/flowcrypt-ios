@@ -16,4 +16,6 @@ protocol MessageOperationsProvider {
     func archiveMessage(message: Message, folderPath: String) async throws
     func markAsUnread(message: Message, folder: String) async throws
     func markAsRead(message: Message, folder: String) async throws
+    func emptyFolder(path: String) async throws
+    func batchDeleteMessages(identifiers: [String], from folderPath: String?) async throws
 }

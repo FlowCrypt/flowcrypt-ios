@@ -104,6 +104,36 @@ public extension UIViewController {
         present(alert, animated: true, completion: nil)
     }
 
+    @MainActor
+    func showConfirmAlert(
+        title: String? = "warning".localized,
+        message: String,
+        confirmActionTitle: String = "confirm".localized,
+        cancelActionTitle: String = "cancel".localized,
+        onConfirm: ((UIAlertAction) -> Void)?,
+        onCancel: ((UIAlertAction) -> Void)? = nil
+    ) {
+        self.view.hideAllToasts()
+        hideSpinner()
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        let confirm = UIAlertAction(
+            title: confirmActionTitle,
+            style: .cancel,
+            handler: onConfirm
+        )
+        let cancel = UIAlertAction(
+            title: cancelActionTitle,
+            style: .default,
+            handler: onCancel)
+        alert.addAction(confirm)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
+    }
+
     func keyboardHeight(from notification: Notification) -> CGFloat {
         (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
     }

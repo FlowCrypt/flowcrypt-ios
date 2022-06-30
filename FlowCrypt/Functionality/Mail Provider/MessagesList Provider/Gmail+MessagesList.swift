@@ -93,7 +93,7 @@ extension GmailService: DraftsListProvider {
 }
 
 extension GmailService {
-    private func fetchMessagesList(using context: FetchMessageContext) async throws -> GTLRGmail_ListMessagesResponse {
+    func fetchMessagesList(using context: FetchMessageContext) async throws -> GTLRGmail_ListMessagesResponse {
         let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
 
         if let pagination = context.pagination {
