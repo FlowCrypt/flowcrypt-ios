@@ -25,7 +25,7 @@
 "bcc" = "bcc";
 "log_out" = "Log out";
 "empty" = "is empty";
-"keys_empty" = "No keys found";
+"keys_empty" = "You have no account keys. The app will have limited functionality until there are keys available for your account.";
 "re" = "Re: ";
 "fwd" = "Fwd: ";
 "unknown" = "UNKNOWN";
