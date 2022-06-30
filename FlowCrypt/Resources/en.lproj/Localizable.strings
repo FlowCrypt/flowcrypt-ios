@@ -85,7 +85,8 @@
 "error_login" = "Login Error";
 "error_wrong_app_state" = "Wrong application state. User not found for session %@";
 "error_missing_passphrase" = "Passphrase is missing";
-"error_empty_keys" = "Could not fetch keys";
+"error_empty_keys_for_ekm" = "Could not open message\n\nYour account has no keys. Please check with your Help Desk or IT department.";
+"error_empty_keys" = "Could not open message\n\nYour account has no keys. Please log out and set up your account again.";
 "error_attachment_not_found" = "Failed to download attachment";
 
 // Refresh key
