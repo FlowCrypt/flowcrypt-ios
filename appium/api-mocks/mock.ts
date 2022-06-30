@@ -82,14 +82,14 @@ export class MockApi {
       }
     };
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eMock.prv] //[ekmKeySamples.e2eValidKey.prv] // [ekmKeySamples.key0.prv, ekmKeySamples.e2eValidKey.prv, ekmKeySamples.key1.prv]
+      returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.e2eMock.prv, ekmKeySamples.key1.prv]
     }
     mockApi.googleConfig = {
       accounts: {
         'e2e.enterprise.test@flowcrypt.com': {
           contacts: [
-            { displayName: 'Dima Flowcrypt', email: 'dmitry@flowcrypt.com' },
-            { displayName: 'Demo', email: 'demo@flowcrypt.com' }
+            { displayName: CommonData.contact.contactName, email: CommonData.contact.email },
+            { displayName: CommonData.expiredMockUser.name, email: CommonData.expiredMockUser.email },
           ],
           messages: ['CC and BCC test', 'Test 1', 'Signed and encrypted message', 'Honor reply-to address - plain', 'email with text attachment', 'Message with cc and multiple recipients and attachment'],
         }
@@ -103,6 +103,7 @@ export class MockApi {
         'test2@example.net': attesterPublicKeySamples.valid,
         'dmitry@flowcrypt.com': attesterPublicKeySamples.dmitry,
         'valid@domain.test': attesterPublicKeySamples.valid,
+        'expired@domain.test': attesterPublicKeySamples.expired,
         'e2e.enterprise.test@flowcrypt.com': ekmKeySamples.e2eMock.pub!
       }
     };

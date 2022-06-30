@@ -130,7 +130,7 @@ IFHT6XB7omSYuiRVRzcmwArfz7MWtHhnoaiSCw==
 =14sq
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: '8AFE CEBC F035 87E5 9AC6 B839 7C7C 9866 123B 5070',
-    renderedPrimaryUid: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
+    renderedPrimaryUid: 'e2e enterprise test <e2e.enterprise.test@flowcrypt.com>',
     renderedDateCreated: '6/28/22'
   },
   flowcryptCompability: {

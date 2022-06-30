@@ -64,7 +64,7 @@ class ContactsScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await $(user));
   }
 
-  checkContractIsNotDispalyed = async (email: string, order: number) => {
+  checkContactIsNotDisplayed = async (email: string, order: number) => {
     const user = `-ios class chain:**/XCUIElementTypeOther[\`label == "${order}"\`]/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
     await ElementHelper.waitElementInvisible(await $(user));
   }

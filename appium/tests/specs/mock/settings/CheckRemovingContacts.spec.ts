@@ -14,18 +14,18 @@ import { MockApi } from 'api-mocks/mock';
 describe('SETTINGS: ', () => {
 
   it('check correct removing contacts', async () => {
-    await MockApi.e2eMock.withMockedApis(async () => {
-      const firstRecipient = CommonData.contact.email;
-      const firstRecipientName = CommonData.contact.name;
-      const secondRecipient = CommonData.secondContact.email;
-      const secondRecipientName = CommonData.secondContact.name;
-      const thirdRecipient = CommonData.recipient.email;
-      const thirdRecipientName = CommonData.recipient.name;
-      const fourthRecipient = CommonData.recipientWithExpiredPublicKey.email;
-      const fourthRecipientName = CommonData.recipientWithExpiredPublicKey.name;
-      const fifthRecipient = CommonData.recipientWithRevokedPublicKey.email;
-      const fifthRecipientName = CommonData.recipientWithRevokedPublicKey.name;
+    const firstRecipient = CommonData.contact.email;
+    const firstRecipientName = CommonData.contact.name;
+    const secondRecipient = CommonData.secondContact.email;
+    const secondRecipientName = CommonData.secondContact.name;
+    const thirdRecipient = CommonData.recipient.email;
+    const thirdRecipientName = CommonData.recipient.name;
+    const fourthRecipient = CommonData.expiredMockUser.email;
+    const fourthRecipientName = CommonData.expiredMockUser.name;
+    const fifthRecipient = CommonData.recipientWithRevokedPublicKey.email;
+    const fifthRecipientName = CommonData.recipientWithRevokedPublicKey.name;
 
+    await MockApi.e2eMock.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
@@ -60,7 +60,7 @@ describe('SETTINGS: ', () => {
       await ContactScreen.clickRemoveButton(1);
 
       await ContactScreen.checkContactOrder(thirdRecipient, 0);
-      await ContactScreen.checkContractIsNotDispalyed(fifthRecipient, 1);
+      await ContactScreen.checkContactIsNotDisplayed(fifthRecipient, 1);
       await ContactScreen.checkContactOrder(fourthRecipient, 2);
       await ContactScreen.checkContactOrder(firstRecipient, 3);
       await ContactScreen.checkContactOrder(secondRecipient, 4);
@@ -68,8 +68,8 @@ describe('SETTINGS: ', () => {
       await ContactScreen.clickRemoveButton(3);
 
       await ContactScreen.checkContactOrder(thirdRecipient, 0);
-      await ContactScreen.checkContractIsNotDispalyed(fifthRecipient, 1);
-      await ContactScreen.checkContractIsNotDispalyed(firstRecipient, 3);
+      await ContactScreen.checkContactIsNotDisplayed(fifthRecipient, 1);
+      await ContactScreen.checkContactIsNotDisplayed(firstRecipient, 3);
       await ContactScreen.checkContactOrder(fourthRecipient, 2);
       await ContactScreen.checkContactOrder(secondRecipient, 4);
 
