@@ -2,18 +2,16 @@ import { MockApi } from 'api-mocks/mock';
 import {
   SplashScreen,
 } from '../../../screenobjects/all-screens';
-import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
 import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
 import { CommonData } from 'tests/data';
-import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 
 describe('SETUP: ', () => {
 
   it('cannot find email on attester with disallow_attester_search_for_domains=*', async () => {
 
-    const mockApi = new MockApi();
+    const mockApi = MockApi.e2eMock;
 
     mockApi.fesConfig = {
       clientConfiguration: {
@@ -22,14 +20,6 @@ describe('SETUP: ', () => {
         disallow_attester_search_for_domains: ["*"]
       }
     };
-    mockApi.attesterConfig = {
-      servedPubkeys: {
-        'available.on@attester.test': attesterPublicKeySamples.valid
-      }
-    };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
-    }
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

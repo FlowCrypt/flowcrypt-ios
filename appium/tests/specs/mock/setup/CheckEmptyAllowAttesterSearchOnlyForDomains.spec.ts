@@ -1,4 +1,3 @@
-import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import { MockApi } from 'api-mocks/mock';
 import { CommonData } from 'tests/data';
 import {
@@ -12,7 +11,7 @@ describe('SETUP: ', () => {
 
   it('check if no domains are allowed when allow_attester_search_only_for_domains: [] is set', async () => {
 
-    const mockApi = new MockApi();
+    const mockApi = MockApi.e2eMock;
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
@@ -20,9 +19,6 @@ describe('SETUP: ', () => {
         allow_attester_search_only_for_domains: [],
       }
     };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
-    }
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

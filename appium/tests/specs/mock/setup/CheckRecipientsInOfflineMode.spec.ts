@@ -20,7 +20,6 @@ describe('COMPOSE EMAIL: ', () => {
     const revokedEmail = CommonData.revokedMockUser.email;
     const revokedName = CommonData.revokedMockUser.name;
 
-
     const mockApi = new MockApi();
     mockApi.fesConfig = {
       clientConfiguration: {

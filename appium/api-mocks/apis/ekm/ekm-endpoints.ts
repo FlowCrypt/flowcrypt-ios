@@ -129,9 +129,9 @@ FggACQUCYsK4ewIbDAAhCRBtQvWTuOLnehYhBAbl1D0QWLsZ0oSVAm1C9ZO4
 q7V04nlz4Utksu7UwxNaj6pjP1I92kSa3364Dg==
 =zP35
 -----END PGP PUBLIC KEY BLOCK-----`,
-    primaryFingerprint: '8AFE CEBC F035 87E5 9AC6 B839 7C7C 9866 123B 5070',
-    renderedPrimaryUid: 'e2e enterprise test <e2e.enterprise.test@flowcrypt.com>',
-    renderedDateCreated: '6/28/22'
+    primaryFingerprint: '06E5 D43D 1058 BB19 D284 9502 6D42 F593 B8E2 E77A',
+    renderedPrimaryUid: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
+    renderedDateCreated: '7/4/22',
   },
   dmitry: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----

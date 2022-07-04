@@ -285,4 +285,19 @@ oXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS
 zZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==
 =bMwq
 -----END PGP PUBLIC KEY BLOCK-----`,
+  robot: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: FlowCrypt iOS 0.2 Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+xjMEYsM6KRYJKwYBBAHaRw8BAQdADKgbtPI+a+2y/fDh5CxVqvc6wbSvmMe3
+TcSHCT+Go/XNJUZsb3dDcnlwdCBSb2JvdCA8cm9ib3RAZmxvd2NyeXB0LmNv
+bT7CdwQQFgoAHwUCYsM6KQYLCQcIAwIEFQgKAgMWAgECGQECGwMCHgEACgkQ
+9OtwbUUrhUR8qAEA802mHSF6vtppMqUFBAKduJX8LmrKtX8FssMcq/9HTT8A
+/R615Nm1seyrNuC2J2TdTqYG5O2i6fUWlqGldOzrwpYOzjgEYsM6KRIKKwYB
+BAGXVQEFAQEHQJ0nskrHuPK0drUMJOo3j3VPVxdEDudw1mlaLowJfl0TAwEI
+B8JhBBgWCAAJBQJiwzopAhsMAAoJEPTrcG1FK4VEh4YBALYL4hcYE8/nUgHd
+i0Bd7uutnnkRdCDPTvY5ub4ZDrHGAQCFIYc+Mp6zZdR1s/3kIpjrcg6mOtmj
+7Xox/a0FLLQsCQ==
+=+AGT
+-----END PGP PUBLIC KEY BLOCK-----`,
 };
