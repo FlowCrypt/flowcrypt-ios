@@ -106,7 +106,8 @@ export class MockApi {
         'dmitry@flowcrypt.com': ekmKeySamples.dmitry.pub!,
         'valid@domain.test': attesterPublicKeySamples.valid,
         'expired@domain.test': attesterPublicKeySamples.expired,
-        'e2e.enterprise.test@flowcrypt.com': ekmKeySamples.e2eMock.pub!
+        'e2e.enterprise.test@flowcrypt.com': ekmKeySamples.e2eMock.pub!,
+        'demo@flowcrypt.com': ekmKeySamples.demoUser.pub!,
       }
     };
     mockApi.wkdConfig = {}
