@@ -89,6 +89,7 @@ export class MockApi {
         'e2e.enterprise.test@flowcrypt.com': {
           contacts: [
             { displayName: CommonData.contact.contactName, email: CommonData.contact.email },
+            { displayName: CommonData.secondContact.contactName, email: CommonData.secondContact.email },
             { displayName: CommonData.expiredMockUser.name, email: CommonData.expiredMockUser.email },
           ],
           messages: ['CC and BCC test', 'Test 1', 'Signed and encrypted message', 'Honor reply-to address - plain', 'email with text attachment', 'Message with cc and multiple recipients and attachment'],
@@ -101,12 +102,13 @@ export class MockApi {
         'revoked@flowcrypt.com': attesterPublicKeySamples.revoked,
         'robot@flowcrypt.com': attesterPublicKeySamples.valid,
         'test2@example.net': attesterPublicKeySamples.valid,
-        'dmitry@flowcrypt.com': attesterPublicKeySamples.dmitry,
+        'dmitry@flowcrypt.com': ekmKeySamples.dmitry.pub!,
         'valid@domain.test': attesterPublicKeySamples.valid,
         'expired@domain.test': attesterPublicKeySamples.expired,
         'e2e.enterprise.test@flowcrypt.com': ekmKeySamples.e2eMock.pub!
       }
     };
+    mockApi.wkdConfig = {}
     return mockApi
   }
 }

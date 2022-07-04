@@ -286,7 +286,7 @@ export class GoogleData {
   };
 
   public addMessage = (raw: string, mimeMsg: ParsedMail) => {
-    const id = lousyRandom();
+    const id = `msg_id_${lousyRandom()}`;
     const msg = new GmailMsg({ labelId: 'SENT', id, raw, mimeMsg });
     DATA[this.acct].messages.unshift(msg);
   };

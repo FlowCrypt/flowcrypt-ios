@@ -50,8 +50,8 @@ class WkdApi: WkdApiType {
         }
         let results: [InternalResult] = try await withThrowingTaskGroup(of: InternalResult.self) { tg in
             var results: [InternalResult] = []
-            tg.addTask { try await self.urlLookup(advancedUrl, method: .advanced) }
-            tg.addTask { try await self.urlLookup(directUrl, method: .direct) }
+            tg.addTask { try await self.urlLookup(advancedUrl) }
+            tg.addTask { try await self.urlLookup(directUrl) }
             for try await result in tg {
                 results.append(result)
             }
@@ -80,7 +80,7 @@ class WkdApi: WkdApiType {
             .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
     }
 
-    private func urlLookup(_ urls: WkdUrls, method: WkdMethod) async throws -> InternalResult {
+    private func urlLookup(_ urls: WkdUrls) async throws -> InternalResult {
         do {
             let request = ApiCall.Request(
                 apiName: Constants.apiName,
@@ -90,7 +90,7 @@ class WkdApi: WkdApiType {
             _ = try await ApiCall.call(request)
         } catch {
             Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
-            return InternalResult(hasPolicy: false, keys: nil, method: method)
+            return InternalResult(hasPolicy: false, keys: nil, method: urls.method)
         }
 
         let request = ApiCall.Request(
@@ -100,14 +100,14 @@ class WkdApi: WkdApiType {
             tolerateStatus: [404]
         )
         let pubKeyResponse = try await ApiCall.call(request)
-        if !pubKeyResponse.data.toStr().isEmpty {
+        if pubKeyResponse.data.toStr().isNotEmpty {
             Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(urls.pubKeys) and will try to extract Public Keys")
         }
 
         if pubKeyResponse.status == 404 {
-            return InternalResult(hasPolicy: true, keys: nil, method: method)
+            return InternalResult(hasPolicy: true, keys: nil, method: urls.method)
         }
 
-        return InternalResult(hasPolicy: true, keys: pubKeyResponse.data, method: method)
+        return InternalResult(hasPolicy: true, keys: pubKeyResponse.data, method: urls.method)
     }
 }
