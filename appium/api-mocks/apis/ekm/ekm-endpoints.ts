@@ -71,7 +71,7 @@ export interface KeyDetailInfo {
   renderedDateCreated?: string;
 }
 
-type KeySampleName = 'e2e' | 'flowcryptCompability' | 'flowcryptCompabilityOther' | 'demoUser' | 'key0' | 'key0Updated' | 'key0Revoked' | 'key1' | 'e2eRevokedKey' | 'e2eValidKey' | 'dmitry';
+type KeySampleName = 'e2e' | 'flowcryptCompability' | 'flowcryptCompabilityOther' | 'demoUser' | 'key0' | 'key0Updated' | 'key0Revoked' | 'key1' | 'e2eRevokedKey' | 'e2eValidKey' | 'dmitry' | 'ioan';
 
 export const ekmKeySamples: Record<KeySampleName, KeyDetailInfo> = {
   e2e: {
@@ -113,42 +113,51 @@ CwkIBwUVCgkICwIeAQAKCRClTYK+FSHSDsUNAP9+YFUHDOCxJLmv6HZI6y2o
     renderedDateCreated: '9/22/21'
   },
   dmitry: {
-    prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: FlowCrypt iOS 0.2 Gmail Encryption
-Comment: Seamlessly send and receive encrypted email
-
-xYYEYsRAEBYJKwYBBAHaRw8BAQdARh+eLplgXC3aG1u5WOI+L1EHGiAgL8tC
-+visdYG0nmf+CQMIxZxHKNgJL8zgO+x4bGWizCreXzU2ZfGkt93ZZkjwcvYF
-UAqm675kYPaqextEalzYJeW4UBQpfzv7QRLpNzlFF/BSndn+yuq46HWoBJ/p
-wM0lRGltYSBGbG93Y3J5cHQgPGRtaXRyeUBmbG93Y3J5cHQuY29tPsJ3BBAW
-CgAfBQJixEAQBgsJBwgDAgQVCAoCAxYCAQIZAQIbAwIeAQAKCRBbBTpr91AJ
-+WiGAQCD+Mxll/tOeKk0zbva9pA67M3DJplLlBB+4x/YpPsAeQD/eU/w9dSA
-0/eEJEJBsmkn9v4XzHPXLofiCmVhRQqEYQTHiwRixEAQEgorBgEEAZdVAQUB
-AQdATr9UFKZh8gdx6gVQ7uHg3k8j2qmAFyEDv63LaWyP/VADAQgH/gkDCLmS
-RvWtjAmh4Dn9UV3i4aoPDP2+15Bm+HXEpcMd8Xar1iFyJWzKwMxAS+EFj3gf
-1PSp0b7bG10v1jD8mQhrq2Zah/gm1KT6UiOwAjw6lFrCYQQYFggACQUCYsRA
-EAIbDAAKCRBbBTpr91AJ+XDJAQCMHpXoOXCetOxsyWbTXChqAmcBIPFSMvDk
-eW95jZmOfgEA7ad2fqhXB/K9Hjq3O9IMcRYKwGdMJeDPtA4JYvhZfAU=
-=ETrI
------END PGP PRIVATE KEY BLOCK-----`,
+    prv: '',
     pub: `-----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: FlowCrypt iOS 0.2 Gmail Encryption
 Comment: Seamlessly send and receive encrypted email
 
-xjMEYsRHHxYJKwYBBAHaRw8BAQdAw6TW8AOmlsi4oBZSi0oM+GJvfn8qJODq
-s/toaX0gMqTNJURpbWEgRmxvd2NyeXB0IDxkbWl0cnlAZmxvd2NyeXB0LmNv
-bT7CdwQQFgoAHwUCYsRHHwYLCQcIAwIEFQgKAgMWAgECGQECGwMCHgEACgkQ
-yL4AV8H9d3o8jgD+KcdH997mKO3iRK2uwPeaBoZwYNLM8hoRSk3APp47yTYB
-AKVIFXnMw0EsfX4PeexKZe4wR36vEKxF2zyL2fw4xSEHzjgEYsRHHxIKKwYB
-BAGXVQEFAQEHQHYZYklxf3Z38O7DSAl23JGW/nI6WCVF50vdPYrKBO5xAwEI
-B8JhBBgWCAAJBQJixEcfAhsMAAoJEMi+AFfB/Xd6uH8BAMMUK1TgEb94Li/O
-NBIAN/iDe/JsM+5XWE+B5wLLi8iHAQD1RpbqHaLUCqIlAckTKExIAuP+Xpz4
-XYrSRtGMvgA0CA==
-=Tp3O
+xjMEYUshmBYJKwYBBAHaRw8BAQdA5tLk3YwLYktTfvkXxilYB9DM8bE0Dd/6
+HNoZ/c31r6vNKkRtaXRyeSBhdCBGbG93Q3J5cHQgPGRtaXRyeUBmbG93Y3J5
+cHQuY29tPsJ4BBMWCgAgBQJhSyGYAhsDBRYCAwEABAsJCAcFFQoJCAsCHgEC
+GQEACgkQuYpNJn+CTMy9YQEA8x95bDSeNcNW9HcqUTz/itpcRwTH5al0mgEH
+fpGm9jsA/RzGfy74Taak5CM2jRWgkVdGT4HM+kLny+/EUGt4TekIwn4EExYK
+ACYCGwMFFgIDAQAECwkIBwUVCgkICwIeAQIZAQUCYUsiagWJAmWrZwAKCRC5
+ik0mf4JMzLfoAP0Y3hmf4znQYx8L22VBLblOe64sGXg8VoTC1aP2j/j76wEA
+8ZdKnjPNxRh7HUyvRPglBXkIdGQu8TWNWHSXfp6sKAHOOARhSyGYEgorBgEE
+AZdVAQUBAQdAjaOLl2/42RJqh0IRqnvUVDafmbXdj2w5q6dF4NwP6FEDAQgH
+wnUEGBYKAB0FAmFLIZgCGwwFFgIDAQAECwkIBwUVCgkICwIeAQAKCRC5ik0m
+f4JMzPMmAP9M/ZblvC8qvZc0jmiNjKFvQxZFaweWA+ZSs901t5YjLwD9GZ4S
+WMjnrYNZKoVB3cEUnZKCsK37bY2OLNa6xE5WNQ7CewQYFgoAIwIbDAUWAgMB
+AAQLCQgHBRUKCQgLAh4BBQJhSyJqBYkCZatnAAoJELmKTSZ/gkzMr4wA/RZs
+OrSGH2z0J2kk59CcfJAyeoPS33Olwp4SuOQrO7BNAP4/EZibzpxuGpnFXMab
+ztBO0a0VzYkmuENvVz0hIuvfAQ==
+=m5CI
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: '8AFE CEBC F035 87E5 9AC6 B839 7C7C 9866 123B 5070',
     renderedPrimaryUid: 'dmitry <dmitry@flowcrypt.com>',
     renderedDateCreated: '6/28/22'
+  },
+  ioan: {
+    prv: '',
+    pub: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: FlowCrypt iOS 0.2 Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+xjMEYicmihYJKwYBBAHaRw8BAQdAoVcOeCHFBigukEd2irPaUmVPBdTDrpgj
+/vZdryBFvUHNJklvYW4gYXQgRmxvd0NyeXB0IDxpb2FuQGZsb3djcnlwdC5j
+b20+wrYEExYKAEcFAmInJooJkJs5ASDX+41RFqEE94GZ7D0/50t8iXqnmzkB
+INf7jVECngECmwMFlgIDAQAEiwkIBwWVCgkICwWJAYmmdQKZAQAhCRCbOQEg
+1/uNURYhBPeBmew9P+dLfIl6p5s5ASDX+41RVEgBAJmD6RMfDIwD8pQHz9BQ
+a7N6P6TE5p6/Y8wZLxuMJmBDAQC9l5RrjHHx0MnmsJ+7MLXMjoy9FKqW/1cm
+qJXJIsbFDs44BGInJooSCisGAQQBl1UBBQEBB0Ars/VEsgvjuRWNdaW5raXk
+j86TScsuwsaIyzZ5plpcYQMBCAfCdQQYFgoAHQUCYicmigKeAQKbDAWWAgMB
+AASLCQgHBZUKCQgLAAoJEJs5ASDX+41RueYA/ixPnWLYX6tP0oR81hOWS6dH
+r9FLVFOGo9cLLDfqwMR5AP9A4dgF5OprbpTvNJDeuTwfKOWREm/HNYyiBuUb
+yBWYAw==
+=n23p
+-----END PGP PUBLIC KEY BLOCK-----`,
   },
   flowcryptCompability: {
     prv: '',
