@@ -75,6 +75,19 @@ export class GmailMsg {
       this.payload.headers!.push({ name: 'Date', value: dateHeader.toString() });
     }
   }
+
+  public updateLabels = (addLabels: string[], removeLabels: string[]) => {
+    const addLabelsIds = addLabels as GmailMsg$labelId[];
+    const removeLabelsIds = removeLabels as GmailMsg$labelId[];
+
+    if (addLabelsIds) {
+      this.labelIds?.concat(addLabelsIds);
+    }
+
+    if (removeLabelsIds) {
+      this.labelIds?.filter((l) => !removeLabelsIds.includes(l));
+    }
+  }
 }
 
 export class GmailParser {
@@ -263,6 +276,23 @@ export class GoogleData {
     return DATA[this.acct].messages.filter(m => m.threadId === threadId);
   };
 
+  public updateThreadLabels = (threadId: string, addLabels: string[], removeLabels: string[]) => {
+    const addLabelsIds = addLabels as GmailMsg$labelId[];
+    const removeLabelsIds = removeLabels as GmailMsg$labelId[];
+
+    for (const index in DATA[this.acct].messages) {
+      if (DATA[this.acct].messages[index].threadId == threadId) {
+        if (addLabelsIds) {
+          DATA[this.acct].messages[index].labelIds = DATA[this.acct].messages[index].labelIds?.concat(addLabelsIds);
+        }
+
+        if (removeLabelsIds) {
+          DATA[this.acct].messages[index].labelIds = DATA[this.acct].messages[index].labelIds?.filter((l) => !removeLabelsIds.includes(l));
+        }
+      }
+    }
+  }
+
   public searchMessages = (q: string) => {
     const subject = (q.match(/subject: "([^"]+)"/) || [])[1];
 
@@ -290,6 +320,10 @@ export class GoogleData {
     const msg = new GmailMsg({ labelId: 'SENT', id, raw, mimeMsg });
     DATA[this.acct].messages.unshift(msg);
   };
+
+  public deleteThread = (threadId: string) => {
+    DATA[this.acct].messages = DATA[this.acct].messages.filter(m => m.threadId != threadId);
+  }
 
   public addDraft = (id: string, raw: string, mimeMsg: ParsedMail) => {
     const draft = new GmailMsg({ labelId: 'DRAFT', id, raw, mimeMsg });

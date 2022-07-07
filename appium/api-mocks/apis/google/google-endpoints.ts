@@ -2,13 +2,14 @@
 
 import { GoogleConfig, MockConfig } from '../../lib/configuration-types';
 import { HandlersDefinition, HttpErr, Status } from '../../lib/api';
-import { GmailMsg, GoogleData } from './google-data';
+import { GoogleData } from './google-data';
 import Parse from '../../util/parse';
 import { isDelete, isGet, isPost, isPut, parseResourceId } from '../../lib/mock-util';
 import { oauth } from '../../lib/oauth';
 import { GoogleMockAccountEmail } from './google-messages';
 
 type DraftSaveModel = { message: { raw: string, threadId: string } };
+type LabelsModifyModel = { addLabelIds: string[], removeLabelIds: string[] }
 
 export const getMockGoogleEndpoints = (
   mockConfig: MockConfig,
@@ -118,9 +119,10 @@ export const getMockGoogleEndpoints = (
         }
         throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
       } else if (isPost(req)) {
+        // TODO
         const urlData = req.url!.split('/');
         const id = urlData[urlData.length - 2];
-        // const body = parsedReq.body as LabelsModifyModel;
+        const body = parsedReq.body as LabelsModifyModel;
         const data = await GoogleData.withInitializedData(acct, googleConfig);
         const msg = data.getMessage(id);
         if (msg) {
@@ -146,7 +148,7 @@ export const getMockGoogleEndpoints = (
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
-    '/gmail/v1/users/me/threads/?': async ({ query: { format } }, req) => {
+    '/gmail/v1/users/me/threads/?': async (parsedReq, req) => {
       if (req.url!.match(/\/modify$/)) {
         return {};
       }
@@ -158,7 +160,23 @@ export const getMockGoogleEndpoints = (
           const statusCode = id === '16841ce0ce5cb74d' ? 404 : 400; // intentionally testing missing thread
           throw new HttpErr(`MOCK thread not found for ${acct}: ${id}`, statusCode);
         }
-        return { id, historyId: msgs[0].historyId, messages: msgs.map(m => GoogleData.fmtMsg(m, format)) };
+        return { id, historyId: msgs[0].historyId, messages: msgs.map(m => GoogleData.fmtMsg(m, parsedReq.query.format)) };
+      } else if (isPost(req)) {
+        const urlData = req.url!.split('/');
+        const id = urlData[urlData.length - 2];
+        const body = parsedReq.body as LabelsModifyModel;
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
+        data.updateThreadLabels(id, body.addLabelIds, body.removeLabelIds);
+        const msg = data.getMessage(id);
+        if (msg) {
+          return GoogleData.fmtMsg(msg, parsedReq.query.format);
+        }
+        throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
+      } else if (isDelete(req)) {
+        const id = parseResourceId(req.url!);
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
+        data.deleteThread(id);
+        return {}
       }
       return {}
     },
@@ -172,7 +190,7 @@ export const getMockGoogleEndpoints = (
           }
           const decoded = await Parse.convertBase64ToMimeMsg(body.message.raw);
           if (!decoded.text?.startsWith('[flowcrypt:') && !decoded.text?.startsWith('(saving of this draft was interrupted - to decrypt it, send it to yourself)')) {
-            throw new Error(`The "flowcrypt" draft prefix was not found in the draft. Instead starts with: ${decoded.text?.substr(0, 100)}`);
+            throw new Error(`The "flowcrypt" draft prefix was not found in the draft. Instead starts with: ${decoded.text?.substring(0, 100)}`);
           }
           return {
             id: 'mockfakedraftsave', message: {

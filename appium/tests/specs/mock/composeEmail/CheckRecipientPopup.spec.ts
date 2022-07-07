@@ -7,8 +7,8 @@ describe('COMPOSE EMAIL: ', () => {
 
   it('check added recipient popup', async () => {
 
-    const recipient1 = CommonData.emailWithMultipleRecipientsWithCC.sender;
-    const recipient1Name = CommonData.emailWithMultipleRecipientsWithCC.senderName;
+    const recipient1 = CommonData.contact.email;
+    const recipient1Name = CommonData.contact.name;
     const recipient2 = CommonData.recipientWithExpiredPublicKey.email;
     const recipient2Name = CommonData.recipientWithExpiredPublicKey.name;
     const recipient3 = CommonData.recipientWithRevokedPublicKey.email;

@@ -17,7 +17,7 @@ describe('COMPOSE EMAIL: ', () => {
   it('user is able to send encrypted email when pass phrase session ended + move to trash, delete', async () => {
 
     const contactEmail = CommonData.contact.email;
-    const contactName = CommonData.contact.name;
+    const contactName = CommonData.contact.contactName;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const passPhrase = CommonData.account.passPhrase;

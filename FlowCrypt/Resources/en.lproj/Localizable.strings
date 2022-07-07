@@ -10,6 +10,7 @@
 "retry_title" = "Retry";
 "ok" = "Ok";
 "cancel" = "Cancel";
+"delete" = "Delete";
 "download" = "Download";
 "set" = "Set";
 "open" = "Open";
