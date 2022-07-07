@@ -71,11 +71,27 @@ export interface KeyDetailInfo {
   renderedDateCreated?: string;
 }
 
-type KeySampleName = 'e2e' | 'e2eMock' | 'flowcryptCompability' | 'flowcryptCompabilityOther' | 'demoUser' | 'key0' | 'key0Updated' | 'key0Revoked' | 'key1' | 'e2eRevokedKey' | 'e2eValidKey' | 'dmitry';
+type KeySampleName = 'e2e' | 'flowcryptCompability' | 'flowcryptCompabilityOther' | 'demoUser' | 'key0' | 'key0Updated' | 'key0Revoked' | 'key1' | 'e2eRevokedKey' | 'e2eValidKey' | 'dmitry';
 
 export const ekmKeySamples: Record<KeySampleName, KeyDetailInfo> = {
   e2e: {
-    prv: '',
+    prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
+Version: FlowCrypt iOS 0.2 Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+xVgEYUsiUhYJKwYBBAHaRw8BAQdAWssVJKjkDqTo78c6oRUWQzBU5EeM1jyt
+sIYX7PzZh9YAAQDXVj2lUqakC1UZVWZIV20p24ChUiFPKq8eoBJcidGTug1/
+zThlMmUgZW50ZXJwcmlzZSB0ZXN0cyA8ZTJlLmVudGVycHJpc2UudGVzdEBm
+bG93Y3J5cHQuY29tPsJ4BBMWCgAgBQJhSyJSAhsDBRYCAwEABAsJCAcFFQoJ
+CAsCHgECGQEACgkQpU2CvhUh0g61lAEAxpoopYFtUPeyc2fHjcnr752JexUz
+UxgYl/jvaRRmknQBALpAWDFeXzF0IoVHTkPHS+k36e0EOLbiqCOdkAr6dW0E
+x10EYUsiUhIKKwYBBAGXVQEFAQEHQKVu4sErxAiQiah13r2QjT7d8R4mljS3
+f4CnjMhboWFNAwEIBwAA/2Y2skVU8IptDMgEmPDVqzA+AlSB9lH/zPls72+b
+yUBoEdPCdQQYFgoAHQUCYUsiUgIbDAUWAgMBAAQLCQgHBRUKCQgLAh4BAAoJ
+EKVNgr4VIdIOxQ0A/35gVQcM4LEkua/odkjrLajcdabX3cK4CgHaZYsSDpyc
+AQCiKrdPqzmvlfzzRjH5V0lIemiwS3NtC0GvOXz3/9JtAQ==
+=tQPu
+-----END PGP PRIVATE KEY BLOCK-----`,
     pub: `-----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: FlowCrypt iOS 0.2 Gmail Encryption
 Comment: Seamlessly send and receive encrypted email
@@ -95,43 +111,6 @@ CwkIBwUVCgkICwIeAQAKCRClTYK+FSHSDsUNAP9+YFUHDOCxJLmv6HZI6y2o
     primaryFingerprint: '3810 0D21 F173 26E4 4786 9DA7 A54D 82BE 1521 D20E',
     renderedPrimaryUid: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
     renderedDateCreated: '9/22/21'
-  },
-  e2eMock: {
-    prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: FlowCrypt iOS 0.2 Gmail Encryption
-Comment: Seamlessly send and receive encrypted email
-
-xVgEYsK4exYJKwYBBAHaRw8BAQdAdgUJ8KhIKRbvVUVd5MrVBzIyaqRLdjoq
-ygbY25+OvH8AAP0cdtwANRm8+sz6rZSflijf5Lbcz+rMw9W0YS5fJUnRvhPk
-zThlMmUgZW50ZXJwcmlzZSB0ZXN0cyA8ZTJlLmVudGVycHJpc2UudGVzdEBm
-bG93Y3J5cHQuY29tPsKMBBAWCgAdBQJiwrh7BAsJBwgDFQgKBBYAAgECGQEC
-GwMCHgEAIQkQbUL1k7ji53oWIQQG5dQ9EFi7GdKElQJtQvWTuOLnegZSAP9K
-iAmxBerePqJ2Wj6FvXl2VdZFY8c9jiMXUXpZdVkZRAEAwZyWCP9ED242Wreg
-952Vb2+9MwsWXMnGimYsUZGGjQnHXQRiwrh7EgorBgEEAZdVAQUBAQdAmsWq
-l5mUBXB5+PVQ3c8vy21d6DQ8ozx6xvpuB6qJ8lUDAQgHAAD/SOHOjTdLY8Fb
-sLEDsIVByUg3XNzmyW4S9hqPkz46cXgQoMJ4BBgWCAAJBQJiwrh7AhsMACEJ
-EG1C9ZO44ud6FiEEBuXUPRBYuxnShJUCbUL1k7ji53oyeQEAvu6kRjHlK8nL
-6bBk+FGki1TBWUysALvnby4oIfGwZOAA/2g6NFSrtXTieXPhS2Sy7tTDE1qP
-qmM/Uj3aRJrffrgO
-=6iwP
------END PGP PRIVATE KEY BLOCK-----`,
-    pub: `-----BEGIN PGP PUBLIC KEY BLOCK-----
-
-xjMEYsK4exYJKwYBBAHaRw8BAQdAdgUJ8KhIKRbvVUVd5MrVBzIyaqRLdjoq
-ygbY25+OvH/NOGUyZSBlbnRlcnByaXNlIHRlc3RzIDxlMmUuZW50ZXJwcmlz
-ZS50ZXN0QGZsb3djcnlwdC5jb20+wowEEBYKAB0FAmLCuHsECwkHCAMVCAoE
-FgACAQIZAQIbAwIeAQAhCRBtQvWTuOLnehYhBAbl1D0QWLsZ0oSVAm1C9ZO4
-4ud6BlIA/0qICbEF6t4+onZaPoW9eXZV1kVjxz2OIxdRell1WRlEAQDBnJYI
-/0QPbjZat6D3nZVvb70zCxZcycaKZixRkYaNCc44BGLCuHsSCisGAQQBl1UB
-BQEBB0CaxaqXmZQFcHn49VDdzy/LbV3oNDyjPHrG+m4HqonyVQMBCAfCeAQY
-FggACQUCYsK4ewIbDAAhCRBtQvWTuOLnehYhBAbl1D0QWLsZ0oSVAm1C9ZO4
-4ud6MnkBAL7upEYx5SvJy+mwZPhRpItUwVlMrAC7528uKCHxsGTgAP9oOjRU
-q7V04nlz4Utksu7UwxNaj6pjP1I92kSa3364Dg==
-=zP35
------END PGP PUBLIC KEY BLOCK-----`,
-    primaryFingerprint: '06E5 D43D 1058 BB19 D284 9502 6D42 F593 B8E2 E77A',
-    renderedPrimaryUid: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
-    renderedDateCreated: '7/4/22',
   },
   dmitry: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----

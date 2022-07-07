@@ -22,7 +22,7 @@ describe('SETUP: ', () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmKeySamples.key0, ekmKeySamples.e2eMock, ekmKeySamples.key1]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0, ekmKeySamples.e2e, ekmKeySamples.key1]);
 
       // stage 2 - erase local keys
       mockApi.ekmConfig = {

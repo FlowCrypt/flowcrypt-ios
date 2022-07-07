@@ -79,8 +79,8 @@ export const CommonData = {
   },
   encryptedEmailWithAttachment: {
     sender: 'flowcrypt.compatibility@gmail.com',
-    subject: 'email with text attachment',
-    message: 'this email contains text attachment',
+    subject: 'Message with cc and multiple recipients and text attachment',
+    message: 'This email has cc and multiple recipients and text attachment',
     attachmentName: 'simple.txt',
     encryptedAttachmentName: 'simple.txt.pgp'
   },
