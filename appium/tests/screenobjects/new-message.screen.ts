@@ -301,6 +301,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   deleteAddedRecipientWithDoubleBackspace = async () => {
+    await this.showRecipientInputIfNeeded();
     await driver.sendKeys(['\b']); // backspace
     await driver.sendKeys(['\b']); // backspace
   }

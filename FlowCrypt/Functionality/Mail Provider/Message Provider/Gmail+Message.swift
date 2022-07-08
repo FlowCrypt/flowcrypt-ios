@@ -41,8 +41,7 @@ extension GmailService: MessageProvider {
 
                 progressHandler?(.decrypt)
 
-                let decoded = Bundle.shouldUseMockGmailApi ? GTLRDecodeBase64(raw) : GTLRDecodeWebSafeBase64(raw)
-                guard let decoded = decoded else {
+                guard let decoded = GTLRDecodeWebSafeBase64(raw) else {
                     return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
                 }
 

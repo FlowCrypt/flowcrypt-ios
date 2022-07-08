@@ -1,0 +1,86 @@
+{
+  "acctEmail": "e2e.enterprise.test@flowcrypt.com",
+  "full": {
+    "id": "17d71e6ea1e3ada1",
+    "threadId": "17d71e6ea1e3ada1",
+    "labelIds": [
+      "INBOX"
+    ],
+    "snippet": "-----BEGIN PGP SIGNED MESSAGE----- Hash: SHA512 Signed only message where the pubkey is not available -----BEGIN PGP SIGNATURE----- Version: FlowCrypt Email Encryption 8.2.0 Comment: Seamlessly send",
+    "payload": {
+      "partId": "",
+      "mimeType": "multipart/mixed",
+      "filename": "",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "multipart/mixed; boundary=\"----sinikael-?=_1-16382934209490.21718800783931247\""
+        },
+        {
+          "name": "Openpgp",
+          "value": "id=A54D82BE1521D20E"
+        },
+        {
+          "name": "From",
+          "value": "e2e.enterprise.test@flowcrypt.com"
+        },
+        {
+          "name": "To",
+          "value": "e2e.enterprise.test@flowcrypt.com"
+        },
+        {
+          "name": "Subject",
+          "value": "Signed only message where the pubkey is not available"
+        },
+        {
+          "name": "Date",
+          "value": "Tue, 30 Nov 2021 09:30:22 -0800"
+        },
+        {
+          "name": "MIME-Version",
+          "value": "1.0"
+        }
+      ],
+      "body": {
+        "size": 0
+      },
+      "parts": [
+        {
+          "partId": "0",
+          "mimeType": "text/plain",
+          "filename": "",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            },
+            {
+              "name": "Content-Transfer-Encoding",
+              "value": "quoted-printable"
+            }
+          ],
+          "body": {
+            "size": 441,
+            "data": "DQotLS0tLUJFR0lOIFBHUCBTSUdORUQgTUVTU0FHRS0tLS0tDQpIYXNoOiBTSEE1MTINCg0KU2lnbmVkIG9ubHkgbWVzc2FnZSB3aGVyZSB0aGUgcHVia2V5IGlzIG5vdCBhdmFpbGFibGUNCi0tLS0tQkVHSU4gUEdQIFNJR05BVFVSRS0tLS0tDQpWZXJzaW9uOiBGbG93Q3J5cHQgRW1haWwgRW5jcnlwdGlvbiA4LjIuMA0KQ29tbWVudDogU2VhbWxlc3NseSBzZW5kIGFuZCByZWNlaXZlIGVuY3J5cHRlZCBlbWFpbA0KDQp3blVFQVJZS0FBWUZBbUdtWDZ3QUlRa1FwVTJDdmhVaDBnNFdJUVE0RUEwaDhYTW01RWVHbmFlbFRZSysNCkZTSFNEdUs3QVFDMUFqK1RjV0kzc2MvNGs4OCtxTUxDMXM1RjdIZjdVd25vdmdkTDcvaHB0Z0QvU2ZlOA0KaDRoQzZkWjRuVGlsUU8vZGY3YnQ1VUdaZEU2MWI1NnhwRWQzd0FnPQ0KPWprMC8NCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ0K"
+          }
+        }
+      ]
+    },
+    "sizeEstimate": 1216,
+    "historyId": "74186",
+    "internalDate": "1638293422000"
+  },
+  "attachments": {},
+  "raw": {
+    "id": "17d71e6ea1e3ada1",
+    "threadId": "17d71e6ea1e3ada1",
+    "labelIds": [
+      "INBOX"
+    ],
+    "snippet": "-----BEGIN PGP SIGNED MESSAGE----- Hash: SHA512 Signed only message where the pubkey is not available -----BEGIN PGP SIGNATURE----- Version: FlowCrypt Email Encryption 8.2.0 Comment: Seamlessly send",
+    "sizeEstimate": 1216,
+    "raw": "UmVjZWl2ZWQ6IGZyb20gNzE3Mjg0NzMwMjQ0DQoJbmFtZWQgdW5rbm93bg0KCWJ5IGdtYWlsYXBpLmdvb2dsZS5jb20NCgl3aXRoIEhUVFBSRVNUOw0KCVR1ZSwgMzAgTm92IDIwMjEgMDk6MzA6MjIgLTA4MDANCkNvbnRlbnQtVHlwZTogbXVsdGlwYXJ0L21peGVkOw0KIGJvdW5kYXJ5PSItLS0tc2luaWthZWwtPz1fMS0xNjM4MjkzNDIwOTQ5MC4yMTcxODgwMDc4MzkzMTI0NyINCk9wZW5wZ3A6IGlkPUE1NEQ4MkJFMTUyMUQyMEUNCkZyb206IFVua25vd24gcHVibGljIGtleSA8dW5rbm93bi5wdWJsaWMua2V5QGV4YW1wbGUuY29tPg0KVG86IGUyZSBlbnRlcnByaXNlIHRlc3QgYXQgRmxvd0NyeXB0IDxlMmUuZW50ZXJwcmlzZS50ZXN0QGZsb3djcnlwdC5jb20-DQpTdWJqZWN0OiBTaWduZWQgb25seSBtZXNzYWdlIHdoZXJlIHRoZSBwdWJrZXkgaXMgbm90IGF2YWlsYWJsZQ0KRGF0ZTogVHVlLCAzMCBOb3YgMjAyMSAwOTozMDoyMiAtMDgwMA0KTWVzc2FnZS1JZDogPENBR0trSlVaNENoRjM9YnZfOUxMRURyYjBhOWdCTFhlUmZTdDJFMjNwUkplM2tPS3hRZ0BtYWlsLmdtYWlsLmNvbT4NCk1JTUUtVmVyc2lvbjogMS4wDQoNCi0tLS0tLXNpbmlrYWVsLT89XzEtMTYzODI5MzQyMDk0OTAuMjE3MTg4MDA3ODM5MzEyNDcNCkNvbnRlbnQtVHlwZTogdGV4dC9wbGFpbg0KQ29udGVudC1UcmFuc2Zlci1FbmNvZGluZzogcXVvdGVkLXByaW50YWJsZQ0KDQoNCi0tLS0tQkVHSU4gUEdQIFNJR05FRCBNRVNTQUdFLS0tLS0NCkhhc2g6IFNIQTUxMg0KDQpTaWduZWQgb25seSBtZXNzYWdlIHdoZXJlIHRoZSBwdWJrZXkgaXMgbm90IGF2YWlsYWJsZQ0KLS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0NClZlcnNpb246IEZsb3dDcnlwdCBFbWFpbCBFbmNyeXB0aW9uIDguMi4wDQpDb21tZW50OiBTZWFtbGVzc2x5IHNlbmQgYW5kIHJlY2VpdmUgZW5jcnlwdGVkIGVtYWlsDQoNCnduVUVBUllLQUFZRkFtR21YNndBSVFrUXBVMkN2aFVoMGc0V0lRUTRFQTBoOFhNbTVFZUduYWVsVFlLKw0KRlNIU0R1SzdBUUMxQWorVGNXSTNzYy80azg4K3FNTEMxczVGN0hmN1V3bm92Z2RMNy9ocHRnRC9TZmU4DQpoNGhDNmRaNG5UaWxRTy9kZjdidDVVR1pkRTYxYjU2eHBFZDN3QWc9M0QNCj0zRGprMC8NCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ0KDQotLS0tLS1zaW5pa2FlbC0_PV8xLTE2MzgyOTM0MjA5NDkwLjIxNzE4ODAwNzgzOTMxMjQ3LS0NCg==",
+    "historyId": "74186",
+    "internalDate": "1638293422000"
+  }
+}
