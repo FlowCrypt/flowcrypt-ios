@@ -14,7 +14,7 @@ describe('INBOX: ', () => {
 
   it('user is able to view encrypted email with attachment', async () => {
 
-    const senderName = CommonData.encryptedEmailWithAttachment.sender;
+    const senderName = CommonData.encryptedEmailWithAttachment.senderName;
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
     const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
