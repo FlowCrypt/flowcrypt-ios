@@ -136,10 +136,6 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.RECIPIENT_SPINNER);
   }
 
-  getRecipientsList = async (type: string) => {
-    return $(`~aid-recipients-list-${type}`);
-  }
-
   getRecipientsTextField = async (type: string) => {
     return $(`~aid-recipients-text-field-${type}`);
   }
@@ -210,19 +206,25 @@ class NewMessageScreen extends BaseScreen {
     const element = await this.filledSubject(emailInfo.subject);
     await element.waitForDisplayed();
 
-    await this.checkRecipientsList(emailInfo.recipients);
+    if (await this.recipientListLabel.isDisplayed()) {
+      const allRecipients = [...emailInfo.recipients, ...emailInfo.cc ?? [], ...emailInfo.bcc ?? []];
+      await this.checkRecipientLabel(allRecipients);
+    } else {
+      await this.checkRecipientsList(emailInfo.recipients);
 
-    if (emailInfo.cc) {
-      await this.checkRecipientsList(emailInfo.cc, 'cc');
+      if (emailInfo.cc) {
+        await this.checkRecipientsList(emailInfo.cc, 'cc');
+      }
+
+      if (emailInfo.bcc) {
+        await this.checkRecipientsList(emailInfo.bcc, 'bcc');
+      }
+
+      if (emailInfo.attachmentName !== undefined) {
+        await this.checkAddedAttachment(emailInfo.attachmentName);
+      }
     }
 
-    if (emailInfo.bcc) {
-      await this.checkRecipientsList(emailInfo.bcc, 'bcc');
-    }
-
-    if (emailInfo.attachmentName !== undefined) {
-      await this.checkAddedAttachment(emailInfo.attachmentName);
-    }
   };
 
   checkRecipientsTextFieldIsInvisible = async (type = 'to') => {

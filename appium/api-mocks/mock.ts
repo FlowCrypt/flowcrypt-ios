@@ -92,6 +92,7 @@ export class MockApi {
             { displayName: CommonData.secondContact.contactName, email: CommonData.secondContact.email },
             { displayName: CommonData.recipient.name, email: CommonData.recipient.email },
             { displayName: CommonData.expiredMockUser.name, email: CommonData.expiredMockUser.email },
+            { displayName: 'FlowCrypt Compatibility', email: 'flowcrypt.compatibility@gmail.com' }
           ],
           messages: ['CC and BCC test', 'Test 1', 'Signed and encrypted message', 'Honor reply-to address - plain', 'email with text attachment', 'Message with cc and multiple recipients and text attachment', 'new message for reply'],
         }
@@ -108,7 +109,7 @@ export class MockApi {
         'expired@domain.test': attesterPublicKeySamples.expired,
         'e2e.enterprise.test@flowcrypt.com': ekmKeySamples.e2e.pub!,
         'demo@flowcrypt.com': ekmKeySamples.demoUser.pub!,
-        'flowcrypt.compatibility@gmail.com': ekmKeySamples.flowcryptCompability.pub!,
+        'flowcrypt.compatibility@gmail.com': ekmKeySamples.flowcryptCompabilityOther.pub!,
         'ioan@flowcrypt.com': ekmKeySamples.ioan.pub!
       }
     };

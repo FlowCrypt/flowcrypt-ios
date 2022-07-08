@@ -39,12 +39,12 @@ describe('INBOX: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickOnEmailBySubject(emailSubject);
 
-      //try to see encrypted message with wrong pass phrase
+      // try to see encrypted message with wrong pass phrase
       await EmailScreen.enterPassPhrase(wrongPassPhrase);
       await EmailScreen.clickOkButton();
       await EmailScreen.checkWrongPassPhraseErrorMessage();
 
-      //check attachment after setting correct pass phrase
+      // check attachment after setting correct pass phrase
       await EmailScreen.enterPassPhrase(correctPassPhrase);
       await EmailScreen.clickOkButton();
       await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
@@ -64,7 +64,7 @@ describe('INBOX: ', () => {
 
       await MailFolderScreen.clickOnEmailBySubject(emailSubject);
       await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
-      await EmailScreen.checkAttachment(attachmentName);
+      await EmailScreen.checkAttachment(encryptedAttachmentName);
       await EmailScreen.clickOnAttachmentCell();
 
       await AttachmentScreen.checkAttachment(attachmentName);

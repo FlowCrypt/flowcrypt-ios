@@ -13,13 +13,13 @@ describe('INBOX: ', () => {
 
   it('user is able to reply or forward email and check info from composed email', async () => {
 
-    const senderEmail = CommonData.emailWithMultipleRecipientsWithCC.sender;
-    const senderName = CommonData.emailWithMultipleRecipientsWithCC.senderName;
-    const recipientName = CommonData.emailWithMultipleRecipientsWithCC.recipientName;
-    const ccEmail = CommonData.emailWithMultipleRecipientsWithCC.cc;
-    const emailSubject = CommonData.emailWithMultipleRecipientsWithCC.subject;
-    const emailText = CommonData.emailWithMultipleRecipientsWithCC.message;
-    const encryptedAttachmentName = CommonData.emailWithMultipleRecipientsWithCC.encryptedAttachmentName;
+    const senderEmail = CommonData.encryptedEmailWithAttachment.sender;
+    const senderName = CommonData.encryptedEmailWithAttachment.senderName;
+    const recipientName = CommonData.encryptedEmailWithAttachment.recipientName;
+    const ccName = CommonData.encryptedEmailWithAttachment.cc;
+    const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
+    const emailText = CommonData.encryptedEmailWithAttachment.message;
+    const encryptedAttachmentName = CommonData.encryptedEmailWithAttachment.encryptedAttachmentName;
 
     const replySubject = `Re: ${emailSubject}`;
     const forwardSubject = `Fwd: ${emailSubject}`;
@@ -51,7 +51,7 @@ describe('INBOX: ', () => {
         recipients: [recipientName, senderName],
         subject: replySubject,
         message: quoteText,
-        cc: [ccEmail]
+        cc: [ccName]
       });
       await NewMessageScreen.clickBackButton();
 
