@@ -866,9 +866,9 @@ Xv00dJYlZNadimW3VzVoDTp25ZH1lw/bTlQrklYjdSzBo0fcyXBMF435EJlsJRcX
 xa0hb0caoaEpLJCj45Us7oBH13jDk1ySt/bkYpI8fRvg
 =EY/L
 -----END PGP PUBLIC KEY BLOCK-----`,
-    primaryFingerprint: '253A 04BA DCEB FE46 E0A2 7AFB E792 D184 312E B299',
-    renderedPrimaryUid: 'Test2 <test2@example.net>',
-    renderedDateCreated: '4/21/22',
+    primaryFingerprint: 'F9CE DAA4 BE95 A007 4343 E069 4B5A 2FFC E62D 9501',
+    renderedPrimaryUid: 'FlowCrypt Compatibility <flowcrypt.compatibility@gmail.com>',
+    renderedDateCreated: '11/3/17',
   },
   e2eRevokedKey: {
     prv: `
