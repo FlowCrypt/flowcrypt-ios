@@ -139,7 +139,7 @@ export const CommonData = {
     bcc: 'e2e.enterprise.test@flowcrypt.com'
   },
   encryptedMDCHashMismatchEmail: {
-    senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
     subject: 'encrypted - MDC hash mismatch - modification detected - should fail',
     message: 'bad_mdc: Security threat - opening this message is dangerous because it was modified in transit.',
   },
@@ -158,7 +158,7 @@ export const CommonData = {
   notIntegrityProtected: {
     subject: 'not integrity protected - should show a warning and not decrypt automatically',
     message: 'Message is missing integrity checks (MDC). The sender should update their outdated software and resend.',
-    senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
   },
   keyMismatch: {
     subject: 'key mismatch unexpectedly produces a modal',
