@@ -77,7 +77,7 @@ export const getMockGoogleEndpoints = (
           verificationStatus: 'accepted'
         }];
         if (acct == 'e2e.enterprise.test@flowcrypt.com') {
-          const alias = 'test2@example.net';
+          const alias = 'flowcrypt.compatibility@gmail.com';
           sendAs.push({
             sendAsEmail: alias,
             displayName: 'Demo Alias',

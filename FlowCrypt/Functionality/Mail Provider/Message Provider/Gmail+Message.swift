@@ -45,7 +45,13 @@ extension GmailService: MessageProvider {
                     return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
                 }
 
-                return continuation.resume(returning: decoded)
+                // TODO
+                let fixedDecoded = decoded.toStr()
+                    .replacingOccurrences(of: "\0", with: "")
+                    .replacingOccurrences(of: "sinikael-?=", with: "sinikael-=")
+                    .data()
+
+                return continuation.resume(returning: fixedDecoded)
             }
         }
     }
