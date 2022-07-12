@@ -18,13 +18,7 @@ describe('SETUP: ', () => {
     const successMessage = CommonData.refreshingKeysFromEkm.updatedSuccessfully;
     const processArgs = CommonData.mockProcessArgs;
 
-    const mockApi = new MockApi();
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
-    };
+    const mockApi = MockApi.e2eMock;
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.key0.prv]
     }

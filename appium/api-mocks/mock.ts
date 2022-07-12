@@ -112,7 +112,8 @@ export class MockApi {
         'demo@flowcrypt.com': ekmKeySamples.demoUser.pub!,
         'flowcrypt.compatibility@gmail.com': ekmKeySamples.flowcryptCompabilityOther.pub!,
         'ioan@flowcrypt.com': ekmKeySamples.ioan.pub!,
-        'sunitnandi834@gmail.com': ekmKeySamples.sunit.pub!
+        'sunitnandi834@gmail.com': ekmKeySamples.sunit.pub!,
+        'available.on@attester.test': attesterPublicKeySamples.valid
       }
     };
     mockApi.wkdConfig = {}

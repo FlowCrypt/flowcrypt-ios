@@ -1,6 +1,5 @@
 import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import { MockApi } from 'api-mocks/mock';
-import { CommonData } from 'tests/data';
 import {
   SplashScreen
 } from '../../../screenobjects/all-screens';
@@ -12,16 +11,10 @@ describe('SETUP: ', () => {
 
   it('will not update a revoked public key with valid one', async () => {
 
-    const mockApi = new MockApi();
+    const mockApi = MockApi.e2eMock;
     const contactEmail = 'available.on@attester.test';
     const contactName = 'Test1';
 
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer
-      }
-    };
     mockApi.attesterConfig = {
       servedPubkeys: {
         [contactEmail]: ekmKeySamples.key0Revoked.pub!
