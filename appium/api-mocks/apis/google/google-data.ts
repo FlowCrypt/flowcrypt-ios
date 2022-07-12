@@ -173,8 +173,6 @@ export class GoogleData {
       throw new Error(`Unknown format: ${format}`);
     }
     const msgCopy = JSON.parse(JSON.stringify(m)) as GmailMsg;
-    // fix raw for iOS parser
-    msgCopy.raw = msgCopy.raw?.replace('sinikael-?=', 'sinikael-=');
     if (format === 'raw') {
       if (!msgCopy.raw) {
         throw new Error(`MOCK: format=raw missing data for message id ${m.id}. Solution: add them to ./test/source/mock/data/google/exported-messages`);
@@ -273,7 +271,12 @@ export class GoogleData {
 
   public addMessage = (raw: string, mimeMsg: ParsedMail) => {
     const id = `msg_id_${lousyRandom()}`;
-    const msg = new GmailMsg({ labelId: 'SENT', id, raw, mimeMsg });
+
+    // fix raw for iOS parser
+    const decodedRaw = Buffer.from(raw, 'base64').toString().replace(/sinikael-\?=/g, 'sinikael-=');
+    const rawBase64 = Buffer.from(decodedRaw).toString('base64');
+
+    const msg = new GmailMsg({ labelId: 'SENT', id, raw: rawBase64, mimeMsg });
     DATA[this.acct].messages.unshift(msg);
   };
 

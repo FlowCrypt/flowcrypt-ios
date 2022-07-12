@@ -107,6 +107,7 @@ export class MockApi {
         'dmitry@flowcrypt.com': ekmKeySamples.dmitry.pub!,
         'valid@domain.test': attesterPublicKeySamples.valid,
         'expired@domain.test': attesterPublicKeySamples.expired,
+        'revoked@domain.test': attesterPublicKeySamples.revoked,
         'e2e.enterprise.test@flowcrypt.com': ekmKeySamples.e2e.pub!,
         'demo@flowcrypt.com': ekmKeySamples.demoUser.pub!,
         'flowcrypt.compatibility@gmail.com': ekmKeySamples.flowcryptCompabilityOther.pub!,

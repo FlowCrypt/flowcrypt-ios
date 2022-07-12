@@ -6,8 +6,6 @@ import {
 } from '../../../screenobjects/all-screens';
 import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
-import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
-import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -20,23 +18,7 @@ describe('COMPOSE EMAIL: ', () => {
     const revokedEmail = CommonData.revokedMockUser.email;
     const revokedName = CommonData.revokedMockUser.name;
 
-    const mockApi = new MockApi();
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
-    };
-    mockApi.attesterConfig = {
-      servedPubkeys: {
-        'valid@domain.test': attesterPublicKeySamples.valid,
-        'expired@domain.test': attesterPublicKeySamples.expired,
-        'revoked@domain.test': attesterPublicKeySamples.revoked,
-      }
-    };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
-    }
+    const mockApi = MockApi.e2eMock
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

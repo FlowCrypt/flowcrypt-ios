@@ -12,25 +12,15 @@ describe('SETUP: ', () => {
 
   it('EKM server error handled gracefully', async () => {
 
-    const mockApi = new MockApi();
+    const mockApi = MockApi.e2eMock;
     const processArgs = CommonData.mockProcessArgs;
-
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
-    };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.key0.prv]
-    }
 
     await mockApi.withMockedApis(async () => {
       // stage 1 - setup
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0, ekmKeySamples.e2e, ekmKeySamples.key1]);
 
       // stage 2 - EKM down
       mockApi.ekmConfig = {
@@ -41,7 +31,7 @@ describe('SETUP: ', () => {
       }
       await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0, ekmKeySamples.e2e, ekmKeySamples.key1]);
     });
   });
 });
