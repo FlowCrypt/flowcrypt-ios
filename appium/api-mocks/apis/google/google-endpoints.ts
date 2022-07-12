@@ -50,17 +50,25 @@ export const getMockGoogleEndpoints = (
 
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       const contacts = (await GoogleData.withInitializedData(acct, googleConfig)).searchContacts(query);
-      return {
-        results: contacts.map(contact => {
-          return { person: { emailAddresses: [{ metadata: { primary: true }, value: contact.email }], names: [{ metadata: { primary: true }, displayName: contact.displayName }] } }
-        })
-      };
+      const results = contacts.map(contact => {
+        return {
+          person: {
+            emailAddresses: [
+              { metadata: { primary: true }, value: contact.email }
+            ],
+            names: [
+              { metadata: { primary: true }, displayName: contact.displayName }
+            ]
+          }
+        }
+      })
+      return { results: results };
     },
     '/v1/otherContacts:search': async (_, req) => {
       if (!isGet(req)) {
         throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
       }
-      // TODO: Check if needed in tests
+
       return {}
     },
     '/gmail/v1/users/me/settings/sendAs': async (parsedReq, req) => {
@@ -118,6 +126,17 @@ export const getMockGoogleEndpoints = (
           return GoogleData.fmtMsg(msg, parsedReq.query.format);
         }
         throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
+      } else if (isPost(req)) {
+        const urlData = req.url!.split('/');
+        const id = urlData[urlData.length - 2];
+        const body = parsedReq.body as LabelsModifyModel;
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
+        data.updateMessageLabels(body.addLabelIds, body.removeLabelIds, id);
+        const msg = data.getMessage(id);
+        if (msg) {
+          return GoogleData.fmtMsg(msg, parsedReq.query.format);
+        }
+        throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
@@ -151,15 +170,14 @@ export const getMockGoogleEndpoints = (
         return { id, historyId: msgs[0].historyId, messages: msgs.map(m => GoogleData.fmtMsg(m, parsedReq.query.format)) };
       } else if (isPost(req)) {
         const urlData = req.url!.split('/');
-        const id = urlData[urlData.length - 2];
+        const threadId = urlData[urlData.length - 2];
         const body = parsedReq.body as LabelsModifyModel;
         const data = await GoogleData.withInitializedData(acct, googleConfig);
-        data.updateThreadLabels(id, body.addLabelIds, body.removeLabelIds);
-        const msg = data.getMessage(id);
-        if (msg) {
-          return GoogleData.fmtMsg(msg, parsedReq.query.format);
-        }
-        throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
+        data.updateMessageLabels(body.addLabelIds, body.removeLabelIds, undefined, threadId);
+        const msgs = data.getMessagesByThread(threadId).map(msg => {
+          return GoogleData.fmtMsg(msg, parsedReq.query.format)
+        });
+        return msgs;
       } else if (isDelete(req)) {
         const id = parseResourceId(req.url!);
         const data = await GoogleData.withInitializedData(acct, googleConfig);

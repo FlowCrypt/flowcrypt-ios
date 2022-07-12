@@ -81,11 +81,11 @@ export class GmailMsg {
     const removeLabelsIds = removeLabels as GmailMsg$labelId[];
 
     if (addLabelsIds) {
-      this.labelIds?.concat(addLabelsIds);
+      this.labelIds = this.labelIds?.concat(addLabelsIds);
     }
 
     if (removeLabelsIds) {
-      this.labelIds?.filter((l) => !removeLabelsIds.includes(l));
+      this.labelIds = this.labelIds?.filter((l) => !removeLabelsIds.includes(l));
     }
   }
 }
@@ -215,43 +215,6 @@ export class GoogleData {
     }
   }
 
-  public storeSentMessage = (parsedMail: ParsedMail, base64Msg: string, id: string): string => {
-    let bodyContentAtt: { data: string; size: number; filename?: string; id: string } | undefined;
-    for (const attachment of parsedMail.attachments || []) {
-      const attId = lousyRandom();
-      const gmailAtt = { data: attachment.content.toString('base64'), size: attachment.size, filename: attachment.filename, id: attId };
-      DATA[this.acct].attachments[attId] = gmailAtt;
-      if (attachment.filename === 'encrypted.asc') {
-        bodyContentAtt = gmailAtt;
-      }
-    }
-    let body: GmailMsg$payload$body;
-    const htmlOrText = parsedMail.html || parsedMail.text;
-    if (htmlOrText) {
-      body = { data: htmlOrText, size: htmlOrText.length };
-    } else if (bodyContentAtt) {
-      body = { attachmentId: bodyContentAtt.id, size: bodyContentAtt.size };
-    } else {
-      throw new Error('MOCK storeSentMessage: no parsedMail body, no appropriate bodyContentAtt');
-    }
-    const barebonesGmailMsg: GmailMsg = { // todo - could be improved - very barebones
-      id,
-      threadId: null, // tslint:disable-line:no-null-keyword
-      historyId: '',
-      labelIds: ['SENT' as GmailMsg$labelId],
-      payload: {
-        headers: [
-          { name: 'Subject', value: parsedMail.subject || '' },
-          { name: 'Message-ID', value: parsedMail.messageId || '' }
-        ],
-        body
-      },
-      raw: base64Msg
-    };
-    DATA[this.acct].messages.push(barebonesGmailMsg);
-    return barebonesGmailMsg.id;
-  };
-
   public getMessage = (id: string): GmailMsg | undefined => {
     return DATA[this.acct].messages.find(m => m.id === id);
   };
@@ -276,19 +239,10 @@ export class GoogleData {
     return DATA[this.acct].messages.filter(m => m.threadId === threadId);
   };
 
-  public updateThreadLabels = (threadId: string, addLabels: string[], removeLabels: string[]) => {
-    const addLabelsIds = addLabels as GmailMsg$labelId[];
-    const removeLabelsIds = removeLabels as GmailMsg$labelId[];
-
+  public updateMessageLabels = (addLabels: string[], removeLabels: string[], messageId?: string, threadId?: string) => {
     for (const index in DATA[this.acct].messages) {
-      if (DATA[this.acct].messages[index].threadId == threadId) {
-        if (addLabelsIds) {
-          DATA[this.acct].messages[index].labelIds = DATA[this.acct].messages[index].labelIds?.concat(addLabelsIds);
-        }
-
-        if (removeLabelsIds) {
-          DATA[this.acct].messages[index].labelIds = DATA[this.acct].messages[index].labelIds?.filter((l) => !removeLabelsIds.includes(l));
-        }
+      if ((messageId && DATA[this.acct].messages[index].id == messageId) || (threadId && DATA[this.acct].messages[index].threadId == threadId)) {
+        DATA[this.acct].messages[index].updateLabels(addLabels, removeLabels);
       }
     }
   }
