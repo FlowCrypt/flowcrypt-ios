@@ -118,18 +118,6 @@ export const getMockGoogleEndpoints = (
           return GoogleData.fmtMsg(msg, parsedReq.query.format);
         }
         throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
-      } else if (isPost(req)) {
-        // TODO
-        const urlData = req.url!.split('/');
-        const id = urlData[urlData.length - 2];
-        const body = parsedReq.body as LabelsModifyModel;
-        const data = await GoogleData.withInitializedData(acct, googleConfig);
-        const msg = data.getMessage(id);
-        if (msg) {
-          //   msg.updateLabels(body.addLabelIds, body.removeLabelIds);
-          return GoogleData.fmtMsg(msg, parsedReq.query.format);
-        }
-        throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },

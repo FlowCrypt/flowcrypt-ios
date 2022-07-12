@@ -45,7 +45,8 @@ extension GmailService: MessageProvider {
                     return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
                 }
 
-                // TODO
+                // Remove special characters produced by GTLRDecodeWebSafeBase64
+                // possibly can be fixed in Core code
                 let fixedDecoded = decoded.toStr()
                     .replacingOccurrences(of: "\0", with: "")
                     .replacingOccurrences(of: "sinikael-?=", with: "sinikael-=")

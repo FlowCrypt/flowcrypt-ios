@@ -149,7 +149,7 @@ export class GoogleData {
       for (const file of files) {
         const utfStr = new TextDecoder().decode(file);
         const json = JSON.parse(utfStr) as ExportedMsg;
-        const subject = GoogleData.msgSubject(json.full);
+        const subject = GoogleData.msgSubject(json.full).replace('Re: ', '');
         const isValidMsg = msgSubjects ? msgSubjects.includes(subject) : json.acctEmail === acct;
 
         if (isValidMsg) {

@@ -13,6 +13,7 @@ import {
   SearchScreen,
   PublicKeyDetailsScreen
 } from '../../../screenobjects/all-screens';
+import MailFolderHelper from "../../../helpers/MailFolderHelper";
 import { CommonData } from "../../../data";
 
 describe('UPDATE: ', () => {
@@ -29,6 +30,7 @@ describe('UPDATE: ', () => {
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
     const liveKeys = [ekmKeySamples.e2e, ekmKeySamples.flowcryptCompability, ekmKeySamples.flowcryptCompabilityOther];
+    const firstEmailSubject = CommonData.simpleEmail.subject;
 
     //terminate current app version
     await driver.terminateApp(bundleId);
@@ -128,5 +130,17 @@ describe('UPDATE: ', () => {
     await EmailScreen.enterPassPhrase(correctPassPhrase);
     await EmailScreen.clickOkButton();
     await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
+
+    await EmailScreen.clickBackButton();
+    await SearchScreen.clickBackButton();
+
+    // check inbox pagination
+    await MailFolderScreen.checkInboxScreen();
+    await MailFolderHelper.checkPagination(firstEmailSubject);
+
+    await MailFolderScreen.scrollUpToFirstEmail();
+    await MailFolderScreen.refreshMailList();
+
+    await MailFolderHelper.checkPagination(firstEmailSubject);
   });
 });
