@@ -173,6 +173,8 @@ export class GoogleData {
       throw new Error(`Unknown format: ${format}`);
     }
     const msgCopy = JSON.parse(JSON.stringify(m)) as GmailMsg;
+    // fix raw for iOS parser
+    msgCopy.raw = msgCopy.raw?.replace('sinikael-?=', 'sinikael-=');
     if (format === 'raw') {
       if (!msgCopy.raw) {
         throw new Error(`MOCK: format=raw missing data for message id ${m.id}. Solution: add them to ./test/source/mock/data/google/exported-messages`);
