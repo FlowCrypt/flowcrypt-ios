@@ -1,7 +1,6 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 import { ParsedMail, simpleParser } from "mailparser";
-import { Buf } from '../core/buf';
 
 type ThreadIdObject = {
   threadId: string;
