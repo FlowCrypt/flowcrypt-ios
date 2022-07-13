@@ -1,4 +1,5 @@
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
 import {
   EmailScreen,
   MailFolderScreen, NewMessageScreen,
@@ -9,11 +10,27 @@ import {
 describe('COMPOSE EMAIL: ', () => {
 
   it('check caret position for reply and forward', async () => {
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+    const subject = 'Test 1';
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [],
+          messages: [subject],
+        }
+      }
+    };
+    mockApi.attesterConfig = {};
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
-      await MailFolderScreen.clickOnEmailBySubject('Test 1');
+      await MailFolderScreen.clickOnEmailBySubject(subject);
 
       // check message text field focus for reply message
       await EmailScreen.clickReplyButton();

@@ -8,14 +8,30 @@ import {
 import { CommonData } from '../../../data';
 import BaseScreen from "../../../screenobjects/base.screen";
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('COMPOSE EMAIL: ', () => {
 
   it('user should enter correct email address into recipients', async () => {
 
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [],
+          messages: [],
+        }
+      }
+    };
+    mockApi.attesterConfig = {};
+    mockApi.wkdConfig = {}
+
     const invalidRecipientError = CommonData.errors.invalidRecipient;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();

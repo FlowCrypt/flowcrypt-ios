@@ -7,22 +7,44 @@ import {
 
 import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
 
   it('check filled compose email after reopening app and text autoscroll', async () => {
+    const recipient = MockUserList.dmitry;
+    const ccRecipient = MockUserList.demo;
+    const bccRecipient = MockUserList.robot;
 
-    const recipientEmail = CommonData.contact.email;
-    const recipientName = CommonData.contact.name;
-    const ccRecipientEmail = CommonData.secondContact.email;
-    const ccRecipientName = CommonData.secondContact.name;
-    const bccRecipientEmail = CommonData.recipient.email;
-    const bccRecipientName = CommonData.recipient.name;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const longEmailText = CommonData.longEmail.message;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [
+            MockUserList.dmitry, MockUserList.demo, MockUserList.robot
+          ],
+          messages: [],
+        }
+      }
+    };
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
+        [MockUserList.demo.email]: MockUserList.demo.pub!,
+        [MockUserList.robot.email]: MockUserList.robot.pub!
+      }
+    };
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
@@ -34,24 +56,24 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.clickBackButton();
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText, ccRecipientEmail, bccRecipientEmail);
+      await NewMessageScreen.composeEmail(recipient.email, emailSubject, emailText, ccRecipient.email, bccRecipient.email);
 
       await NewMessageScreen.checkFilledComposeEmailInfo({
-        recipients: [recipientName],
+        recipients: [recipient.name],
         subject: emailSubject,
         message: emailText,
-        cc: [ccRecipientName],
-        bcc: [bccRecipientName]
+        cc: [ccRecipient.name],
+        bcc: [bccRecipient.name]
       });
 
       await driver.background(3);
 
       await NewMessageScreen.checkFilledComposeEmailInfo({
-        recipients: [recipientName],
+        recipients: [recipient.name],
         subject: emailSubject,
         message: emailText,
-        cc: [ccRecipientName],
-        bcc: [bccRecipientName]
+        cc: [ccRecipient.name],
+        bcc: [bccRecipient.name]
       });
     });
   });

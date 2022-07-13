@@ -88,11 +88,11 @@ export class MockApi {
       accounts: {
         'e2e.enterprise.test@flowcrypt.com': {
           contacts: [
-            { displayName: CommonData.contact.contactName, email: CommonData.contact.email },
-            { displayName: CommonData.secondContact.contactName, email: CommonData.secondContact.email },
-            { displayName: CommonData.recipient.name, email: CommonData.recipient.email },
-            { displayName: CommonData.expiredMockUser.name, email: CommonData.expiredMockUser.email },
-            { displayName: CommonData.alias.name, email: CommonData.alias.email }
+            // { displayName: CommonData.contact.contactName, email: CommonData.contact.email },
+            // { displayName: CommonData.secondContact.contactName, email: CommonData.secondContact.email },
+            // { displayName: CommonData.recipient.name, email: CommonData.recipient.email },
+            // { displayName: CommonData.expiredMockUser.name, email: CommonData.expiredMockUser.email },
+            // { displayName: CommonData.alias.name, email: CommonData.alias.email }
           ],
           messages: ['CC and BCC test', 'Test 1', 'Signed and encrypted message', 'Signed only message', 'Signed only message with detached signature', 'Signed only message where the pubkey is not available', 'Signed only message that was tempered during transit', 'Partially signed only message', 'Honor reply-to address - plain', 'email with text attachment', 'Message with cc and multiple recipients and text attachment', 'new message for reply', 'encrypted - MDC hash mismatch - modification detected - should fail', 'message encrypted for another public key (only one pubkey used)', 'wrong checksum', 'not integrity protected - should show a warning and not decrypt automatically', 'key mismatch unexpectedly produces a modal', 'test thread rendering', 'Archived thread'],
         }
