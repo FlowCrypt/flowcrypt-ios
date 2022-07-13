@@ -3,8 +3,9 @@
 import { AddressObject, ParsedMail, StructuredHeader } from 'mailparser';
 import { readFile, readdir } from 'fs';
 import { lousyRandom } from '../../lib/mock-util';
-import { GoogleConfig, GoogleMockContact } from 'api-mocks/lib/configuration-types';
+import { GoogleConfig } from 'api-mocks/lib/configuration-types';
 import { GoogleMockAccountEmail } from './google-messages';
+import { MockUser } from 'api-mocks/mock-data';
 
 type GmailMsg$header = { name: string, value: string };
 type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
@@ -13,7 +14,7 @@ type GmailMsg$payload = { partId?: string, filename?: string, parts?: GmailMsg$p
 type GmailMsg$labelId = 'INBOX' | 'UNREAD' | 'CATEGORY_PERSONAL' | 'IMPORTANT' | 'SENT' | 'CATEGORY_UPDATES' | 'DRAFT';
 type GmailThread = { historyId: string; id: string; snippet: string; };
 type Label = { id: string, name: string, messageListVisibility: 'show' | 'hide', labelListVisibility: 'labelShow' | 'labelHide', type: 'system' };
-type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[], contacts: GoogleMockContact[] };
+type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[], contacts: MockUser[] };
 type ExportedMsg = { acctEmail: string, full: GmailMsg, raw: GmailMsg, attachments: { [id: string]: { data: string, size: number } } };
 
 export class GmailMsg {
@@ -322,7 +323,7 @@ export class GoogleData {
 
   public searchContacts = (query: string) => {
     return DATA[this.acct].contacts.filter(contact => {
-      const contactData = [contact.displayName, contact.email].join().toLowerCase();
+      const contactData = [contact.name, contact.email].join(' ').toLowerCase();
       return contactData.includes(query.toLowerCase());
     });
   }

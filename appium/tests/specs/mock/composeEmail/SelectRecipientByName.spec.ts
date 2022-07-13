@@ -10,20 +10,38 @@ import {
   PublicKeyDetailsScreen
 } from '../../../screenobjects/all-screens';
 
-import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
 
   it('user is able to select recipient from contact list using contact name', async () => {
 
-    const firstContactEmail = CommonData.contact.email;
-    const firstContactName = CommonData.contact.contactName;
+    const firstContact = MockUserList.dmitry;
+    const secondContact = MockUserList.demo;
 
-    const secondContactEmail = CommonData.secondContact.email;
-    const secondContactName = CommonData.secondContact.contactName;
+    const mockApi = new MockApi();
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [firstContact, secondContact],
+          messages: [],
+        }
+      }
+    };
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [firstContact.email]: firstContact.pub!,
+        [secondContact.email]: secondContact.pub!
+      }
+    };
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
@@ -46,14 +64,14 @@ describe('COMPOSE EMAIL: ', () => {
 
       // Add first contact
       await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.setAddRecipientByName(firstContactName, firstContactEmail);
-      await NewMessageScreen.checkAddedRecipient(firstContactName);
+      await NewMessageScreen.setAddRecipientByName(firstContact.name, firstContact.email);
+      await NewMessageScreen.checkAddedRecipient(firstContact.name);
       await NewMessageScreen.clickBackButton();
 
       // Add second contact
       await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.setAddRecipientByName(secondContactName, secondContactEmail);
-      await NewMessageScreen.checkAddedRecipient(secondContactName);
+      await NewMessageScreen.setAddRecipientByName(secondContact.name, secondContact.email);
+      await NewMessageScreen.checkAddedRecipient(secondContact.name);
       await NewMessageScreen.clickBackButton();
 
       // Go to Contacts screen
@@ -65,13 +83,13 @@ describe('COMPOSE EMAIL: ', () => {
       await SettingsScreen.clickOnSettingItem('Contacts');
 
       await ContactScreen.checkContactScreen();
-      await ContactScreen.checkContact(firstContactName);
-      await ContactScreen.checkContact(secondContactName);
+      await ContactScreen.checkContact(firstContact.name);
+      await ContactScreen.checkContact(secondContact.name);
 
       // Go to Contact screen
-      await ContactScreen.clickOnContact(firstContactName);
+      await ContactScreen.clickOnContact(firstContact.name);
 
-      await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail, firstContactName);
+      await ContactPublicKeyScreen.checkPgpUserId(firstContact.email, firstContact.name);
       await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
       await ContactPublicKeyScreen.clickOnFingerPrint();
       await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();

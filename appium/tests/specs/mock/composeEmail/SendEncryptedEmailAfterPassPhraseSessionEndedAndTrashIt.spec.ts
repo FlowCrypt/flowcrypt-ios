@@ -11,13 +11,15 @@ import BaseScreen from "../../../screenobjects/base.screen";
 import MailFolderHelper from 'tests/helpers/MailFolderHelper';
 import { MockApi } from 'api-mocks/mock';
 import AppiumHelper from 'tests/helpers/AppiumHelper';
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
+import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 
 describe('COMPOSE EMAIL: ', () => {
 
   it('user is able to send encrypted email when pass phrase session ended + move to trash, delete', async () => {
 
-    const contactEmail = CommonData.contact.email;
-    const contactName = CommonData.contact.name;
+    const contact = MockUserList.dmitry;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const passPhrase = CommonData.account.passPhrase;
@@ -25,7 +27,27 @@ describe('COMPOSE EMAIL: ', () => {
     const wrongPassPhrase = "wrong";
     const processArgs = CommonData.mockProcessArgs;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [contact],
+          messages: [],
+        }
+      }
+    };
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [contact.email]: contact.pub!,
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!
+      }
+    };
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
@@ -35,9 +57,9 @@ describe('COMPOSE EMAIL: ', () => {
 
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.composeEmail(contactEmail, emailSubject, emailText);
+      await NewMessageScreen.composeEmail(contact.email, emailSubject, emailText);
       await NewMessageScreen.checkFilledComposeEmailInfo({
-        recipients: [contactName],
+        recipients: [contact.name],
         subject: emailSubject,
         message: emailText
       });

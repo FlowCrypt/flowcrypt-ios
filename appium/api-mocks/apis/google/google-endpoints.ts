@@ -57,7 +57,7 @@ export const getMockGoogleEndpoints = (
               { metadata: { primary: true }, value: contact.email }
             ],
             names: [
-              { metadata: { primary: true }, displayName: contact.displayName }
+              { metadata: { primary: true }, displayName: contact.name }
             ]
           }
         }

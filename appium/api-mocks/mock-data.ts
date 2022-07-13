@@ -4,9 +4,29 @@ export type MockUser = {
   pub?: string
 }
 
-export type MockUserName = 'dmitry' | 'demo' | 'robot';
+export type MockUserName = 'e2e' | 'dmitry' | 'demo' | 'robot' | 'expired' | 'revoked';
 
 export const MockUserList: Record<MockUserName, MockUser> = {
+  e2e: {
+    email: 'e2e.enterprise.test@flowcrypt.com',
+    name: 'e2e enterprise test',
+    pub: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: FlowCrypt iOS 0.2 Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+xjMEYUsiUhYJKwYBBAHaRw8BAQdAWssVJKjkDqTo78c6oRUWQzBU5EeM1jyt
+sIYX7PzZh9bNOGUyZSBlbnRlcnByaXNlIHRlc3RzIDxlMmUuZW50ZXJwcmlz
+ZS50ZXN0QGZsb3djcnlwdC5jb20+wngEExYKACAFAmFLIlICGwMFFgIDAQAE
+CwkIBwUVCgkICwIeAQIZAQAKCRClTYK+FSHSDrWUAQDGmiilgW1Q97JzZ8eN
+yevvnYl7FTNTGBiX+O9pFGaSdAEAukBYMV5fMXQihUdOQ8dL6Tfp7QQ4tuKo
+I52QCvp1bQTOOARhSyJSEgorBgEEAZdVAQUBAQdApW7iwSvECJCJqHXevZCN
+Pt3xHiaWNLd/gKeMyFuhYU0DAQgHwnUEGBYKAB0FAmFLIlICGwwFFgIDAQAE
+CwkIBwUVCgkICwIeAQAKCRClTYK+FSHSDsUNAP9+YFUHDOCxJLmv6HZI6y2o
+3HWm193CuAoB2mWLEg6cnAEAoiq3T6s5r5X880Yx+VdJSHposEtzbQtBrzl8
+9//SbQE=
+=n4ak
+-----END PGP PUBLIC KEY BLOCK-----`
+  },
   dmitry: {
     email: 'dmitry@flowcrypt.com',
     name: 'Dmitry at FlowCrypt',
@@ -160,6 +180,51 @@ B8JhBBgWCAAJBQJiwzopAhsMAAoJEPTrcG1FK4VEh4YBALYL4hcYE8/nUgHd
 i0Bd7uutnnkRdCDPTvY5ub4ZDrHGAQCFIYc+Mp6zZdR1s/3kIpjrcg6mOtmj
 7Xox/a0FLLQsCQ==
 =+AGT
+-----END PGP PUBLIC KEY BLOCK-----`
+  },
+  expired: {
+    email: 'expired@flowcrypt.com',
+    name: 'expired key',
+    pub: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: FlowCrypt iOS 0.2 Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+xjMEYW8A6BYJKwYBBAHaRw8BAQdAcdakYLj0UoCYB+atCEkNjUP7SSD7r7iq
+VRkrZjqpzafNI2V4cGlyZWQga2V5IDxleHBpcmVkQGZsb3djcnlwdC5jb20+
+wngEExYKACAFAmFvAOgCGwMFFgIDAQAECwkIBwUVCgkICwIeAQIZAQAKCRAv
+B68u47oY6BfyAP4/fDJuxAsvo8XQ3N4ovA9D/H7VyTnu89ku8pKIQImhgwEA
+0Mkinhg3eYtc5eG8BVHXZyFNte+JIKLwJPxv3NZ6KQXCfgQTFgoAJgIbAwUW
+AgMBAAQLCQgHBRUKCQgLAh4BAhkBBQJhbwE3BYkAAayXAAoJEC8Hry7juhjo
+92sA/AovlTncTQHb2+JOnha3WCPraiiUjdZTPlVksz0yZTMlAQCfI0E0WnKV
+1W9uXaBZMTkSzzv0BTtSr9MNAMhl+52HB844BGFvAOgSCisGAQQBl1UBBQEB
+B0Ace7wKz8QEpIf3B17RiX185nwA0nUe8Ng+SYrT/inxXQMBCAfCdQQYFgoA
+HQUCYW8A6AIbDAUWAgMBAAQLCQgHBRUKCQgLAh4BAAoJEC8Hry7juhjo4z8B
+AIxiBFwVSeC80FX+DrBEPH2tZURnoJnqNzcf/Hz03gp5AP90vsuJHXLyd+xx
+nGjRZ3go4jom7MU77w5GtHuvfObRC8J7BBgWCgAjAhsMBRYCAwEABAsJCAcF
+FQoJCAsCHgEFAmFvATcFiQABrJcACgkQLwevLuO6GOgHPgEAhfcecP1GG/dp
+1sbpsBfwJJKK+bJhiyYlB5izgpxslk4A/0wNujSC9MOusPziwgebviKxZQXP
+T4gbgCg6JBONQ8MM
+=Cabr
+-----END PGP PUBLIC KEY BLOCK-----`
+  },
+  revoked: {
+    email: 'revoked@flowcrypt.com',
+    name: 'revoekd@flowcrypt.com',
+    pub: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+Version: FlowCrypt iOS 0.2 Gmail Encryption
+Comment: Seamlessly send and receive encrypted email
+
+xjMEYW8BThYJKwYBBAHaRw8BAQdAYtEoS4d+3cwQWXcs3lvMQueypexTYai7
+uXQmxqyOoKrCjAQgFgoAHQUCYW8CLBYhBDkxt0E9uy+mDO+Fzl8Vl4kQoXgK
+ACEJEF8Vl4kQoXgKFiEEOTG3QT27L6YM74XOXxWXiRCheAqk5AEApn8X3Oe7
+EFgdfo5lkgh6ubpmgyRUpfYHkQE2/S6K+T0BAPGs2py515aUVAgiRy7bJuoY
+DKKbOPL1Npd0bgenKgMGzRVyZXZvZWtkQGZsb3djcnlwdC5jb23CXgQTFgoA
+BgUCYW8BawAKCRBfFZeJEKF4ChD/AP9gdm4riyAzyGhD4P8ZGW3GtREk56sW
+RBB3A/+RUX+qbAEA3FWCs2bUl6pmasXP8QAi0/zoruZiShR2Y2mVAM3T1ATN
+FXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ
+oXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS
+zZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==
+=bMwq
 -----END PGP PUBLIC KEY BLOCK-----`
   },
 };

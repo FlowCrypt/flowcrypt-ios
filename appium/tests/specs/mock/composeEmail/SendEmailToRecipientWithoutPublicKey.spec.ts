@@ -8,6 +8,7 @@ import {
 import { CommonData } from '../../../data';
 import BaseScreen from '../../../screenobjects/base.screen';
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -24,7 +25,22 @@ describe('COMPOSE EMAIL: ', () => {
     const subjectPasswordErrorMessage = CommonData.recipientWithoutPublicKey.subjectPasswordErrorMessage;
     const addedPasswordMessage = CommonData.recipientWithoutPublicKey.addedPasswordMessage;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [],
+          messages: [],
+        }
+      }
+    };
+    mockApi.attesterConfig = {};
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
