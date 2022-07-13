@@ -125,15 +125,6 @@ describe('UPDATE: ', () => {
     await MenuBarScreen.clickInboxButton();
     await MailFolderScreen.checkInboxScreen();
 
-    await MailFolderScreen.clickSearchButton();
-    await SearchScreen.searchAndClickEmailBySubject(emailSubject);
-    await EmailScreen.enterPassPhrase(correctPassPhrase);
-    await EmailScreen.clickOkButton();
-    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
-
-    await EmailScreen.clickBackButton();
-    await SearchScreen.clickBackButton();
-
     // check inbox pagination
     await MailFolderScreen.checkInboxScreen();
     await MailFolderHelper.checkPagination(firstEmailSubject);
@@ -142,5 +133,11 @@ describe('UPDATE: ', () => {
     await MailFolderScreen.refreshMailList();
 
     await MailFolderHelper.checkPagination(firstEmailSubject);
+
+    await MailFolderScreen.clickSearchButton();
+    await SearchScreen.searchAndClickEmailBySubject(emailSubject);
+    await EmailScreen.enterPassPhrase(correctPassPhrase);
+    await EmailScreen.clickOkButton();
+    await EmailScreen.checkOpenedEmail(senderName, emailSubject, emailText);
   });
 });

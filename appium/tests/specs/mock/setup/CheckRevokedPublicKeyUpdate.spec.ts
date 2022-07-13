@@ -21,7 +21,7 @@ describe('SETUP: ', () => {
       }
     };
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
+      returnKeys: [ekmKeySamples.e2e.prv]
     }
 
     await mockApi.withMockedApis(async () => {

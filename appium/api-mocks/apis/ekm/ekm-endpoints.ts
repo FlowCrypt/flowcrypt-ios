@@ -71,7 +71,7 @@ export interface KeyDetailInfo {
   renderedDateCreated?: string;
 }
 
-type KeySampleName = 'e2e' | 'flowcryptCompability' | 'flowcryptCompabilityOther' | 'demoUser' | 'key0' | 'key0Updated' | 'key0Revoked' | 'key1' | 'e2eRevokedKey' | 'e2eValidKey' | 'dmitry' | 'ioan' | 'sunit';
+type KeySampleName = 'e2e' | 'flowcryptCompability' | 'flowcryptCompabilityOther' | 'demoUser' | 'key0' | 'key0Updated' | 'key0Revoked' | 'key1' | 'e2eRevokedKey' | 'dmitry' | 'ioan' | 'sunit';
 
 export const ekmKeySamples: Record<KeySampleName, KeyDetailInfo> = {
   e2e: {
@@ -944,76 +944,6 @@ pojfAZbWHcKn2vZgEtUYdkAwFQ6wEZs=
 =zPzB
 -----END PGP PRIVATE KEY BLOCK-----
     `
-  },
-  e2eValidKey: {
-    prv: `
-    -----BEGIN PGP PRIVATE KEY BLOCK-----
-Version: FlowCrypt iOS 0.2 Gmail Encryption
-Comment: Seamlessly send and receive encrypted email
-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
-Uw==
-=C1hl
------END PGP PRIVATE KEY BLOCK-----`,
-    primaryFingerprint: '7E0E C171 4CF4 094A 13F7 6735 9FF6 31D6 3A85 327C',
-    renderedPrimaryUid: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
-    renderedDateCreated: '4/22/22'
   },
   sunit: {
     prv: '',

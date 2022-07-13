@@ -19,7 +19,7 @@ describe('SETUP: ', () => {
     const emailText = CommonData.revokeValidMessage.message;
 
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eRevokedKey.prv, ekmKeySamples.e2eValidKey.prv]
+      returnKeys: [ekmKeySamples.e2eRevokedKey.prv, ekmKeySamples.e2e.prv]
     };
 
     await mockApi.withMockedApis(async () => {
