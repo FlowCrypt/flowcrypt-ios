@@ -61,6 +61,7 @@ describe('SETUP: ', () => {
         }
       };
       await AppiumHelper.restartApp(processArgs);
+      await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.setAddRecipient(disabledEmail);
       await NewMessageScreen.setAddRecipient(enabledEmail);

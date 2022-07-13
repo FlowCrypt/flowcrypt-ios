@@ -13,9 +13,15 @@ describe('SETUP: ', () => {
 
   it('app auto updates keys from EKM during startup without pass phrase prompt', async () => {
 
-    const mockApi = MockApi.e2eMock;
+    const mockApi = new MockApi();
     const processArgs = CommonData.mockProcessArgs;
 
+    mockApi.fesConfig = {
+      clientConfiguration: {
+        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN"],
+        key_manager_url: CommonData.keyManagerURL.mockServer,
+      }
+    };
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.key0.prv]
     }
