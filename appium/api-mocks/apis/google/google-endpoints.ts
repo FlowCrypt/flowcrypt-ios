@@ -74,30 +74,8 @@ export const getMockGoogleEndpoints = (
     '/gmail/v1/users/me/settings/sendAs': async (parsedReq, req) => {
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
-        const sendAs = [{
-          sendAsEmail: acct,
-          displayName: 'First Last',
-          replyToAddress: acct,
-          signature: '',
-          isDefault: true,
-          isPrimary: true,
-          treatAsAlias: false,
-          verificationStatus: 'accepted'
-        }];
-        if (acct == 'e2e.enterprise.test@flowcrypt.com') {
-          const alias = 'flowcrypt.compatibility@gmail.com';
-          sendAs.push({
-            sendAsEmail: alias,
-            displayName: 'Demo Alias',
-            replyToAddress: alias,
-            signature: '',
-            isDefault: false,
-            isPrimary: false,
-            treatAsAlias: false,
-            verificationStatus: 'accepted'
-          });
-        }
-        return { sendAs };
+        const aliases = (await GoogleData.withInitializedData(acct, googleConfig)).getAliases();
+        return { sendAs: aliases };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },

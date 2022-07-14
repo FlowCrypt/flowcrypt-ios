@@ -4,6 +4,17 @@ export type MockUser = {
   pub?: string
 }
 
+export type MockUserAlias = {
+  sendAsEmail: string
+  displayName: string
+  replyToAddress: string
+  signature: string
+  isDefault: boolean
+  isPrimary: boolean
+  treatAsAlias: boolean
+  verificationStatus: string
+}
+
 export type MockUserName = 'e2e' | 'dmitry' | 'demo' | 'robot' | 'expired' | 'revoked';
 
 export const MockUserList: Record<MockUserName, MockUser> = {

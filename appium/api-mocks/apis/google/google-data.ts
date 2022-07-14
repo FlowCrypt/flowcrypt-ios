@@ -5,7 +5,7 @@ import { readFile, readdir } from 'fs';
 import { lousyRandom } from '../../lib/mock-util';
 import { GoogleConfig } from 'api-mocks/lib/configuration-types';
 import { GoogleMockAccountEmail } from './google-messages';
-import { MockUser } from 'api-mocks/mock-data';
+import { MockUser, MockUserAlias } from 'api-mocks/mock-data';
 
 type GmailMsg$header = { name: string, value: string };
 type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
@@ -14,7 +14,7 @@ type GmailMsg$payload = { partId?: string, filename?: string, parts?: GmailMsg$p
 type GmailMsg$labelId = 'INBOX' | 'UNREAD' | 'CATEGORY_PERSONAL' | 'IMPORTANT' | 'SENT' | 'CATEGORY_UPDATES' | 'DRAFT';
 type GmailThread = { historyId: string; id: string; snippet: string; };
 type Label = { id: string, name: string, messageListVisibility: 'show' | 'hide', labelListVisibility: 'labelShow' | 'labelHide', type: 'system' };
-type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[], contacts: MockUser[] };
+type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[], contacts: MockUser[], aliases: MockUserAlias[] };
 type ExportedMsg = { acctEmail: string, full: GmailMsg, raw: GmailMsg, attachments: { [id: string]: { data: string, size: number } } };
 
 export class GmailMsg {
@@ -131,8 +131,21 @@ export class GoogleData {
   public static withInitializedData = async (acct: GoogleMockAccountEmail, config?: GoogleConfig): Promise<GoogleData> => {
     if (typeof DATA[acct] === 'undefined') {
       const contacts = config?.accounts[acct]?.contacts ?? [];
+      const alias: MockUserAlias = {
+        sendAsEmail: acct,
+        displayName: '',
+        replyToAddress: acct,
+        signature: '',
+        isDefault: true,
+        isPrimary: true,
+        treatAsAlias: false,
+        verificationStatus: 'accepted'
+      };
+      const aliases = [...[alias], ...config?.accounts[acct]?.aliases ?? []]
       const acctData: AcctDataFile = {
-        drafts: [], messages: [], attachments: {}, contacts: contacts, labels:
+        drafts: [], messages: [], attachments: {}, contacts: contacts,
+        aliases: aliases,
+        labels:
           [
             { id: 'INBOX', name: 'Inbox', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
             { id: 'SENT', name: 'Sent', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
@@ -214,6 +227,10 @@ export class GoogleData {
       family_name: 'Last',
       picture: '',
     }
+  }
+
+  public getAliases = () => {
+    return DATA[this.acct].aliases;
   }
 
   public getMessage = (id: string): GmailMsg | undefined => {

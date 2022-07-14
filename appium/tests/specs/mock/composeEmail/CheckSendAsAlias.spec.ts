@@ -1,3 +1,4 @@
+import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
@@ -20,10 +21,22 @@ describe('COMPOSE EMAIL: ', () => {
     const mockApi = new MockApi();
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
-    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.ekmConfig = {
+      returnKeys: [ekmKeySamples.key1.prv, ekmKeySamples.e2e.prv]
+    }
     mockApi.googleConfig = {
       accounts: {
         'e2e.enterprise.test@flowcrypt.com': {
+          aliases: [{
+            sendAsEmail: aliasEmail,
+            displayName: 'Demo Alias',
+            replyToAddress: aliasEmail,
+            signature: '',
+            isDefault: false,
+            isPrimary: false,
+            treatAsAlias: false,
+            verificationStatus: 'accepted'
+          }],
           contacts: [recipient],
           messages: [],
         }
@@ -36,7 +49,7 @@ describe('COMPOSE EMAIL: ', () => {
     };
     mockApi.wkdConfig = {}
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
