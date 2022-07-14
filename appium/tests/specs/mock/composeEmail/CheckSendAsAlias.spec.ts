@@ -21,9 +21,7 @@ describe('COMPOSE EMAIL: ', () => {
     const mockApi = new MockApi();
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.key1.prv, ekmKeySamples.e2e.prv]
-    }
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.googleConfig = {
       accounts: {
         'e2e.enterprise.test@flowcrypt.com': {

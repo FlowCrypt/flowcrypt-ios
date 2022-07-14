@@ -1,4 +1,5 @@
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
 import {
   SplashScreen,
   SetupKeyScreen,
@@ -11,7 +12,22 @@ describe('LOGIN: ', () => {
 
   it('user should be able to cancel login + login + logout', async () => {
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [],
+          messages: [],
+        }
+      }
+    };
+    mockApi.attesterConfig = {};
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.clickContinueWithGmail();
       await SplashScreen.clickCancelButton();
       await SplashScreen.checkLoginPage();

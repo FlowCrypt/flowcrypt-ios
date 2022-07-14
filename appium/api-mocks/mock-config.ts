@@ -5,7 +5,7 @@ import { CommonData } from '../tests/data';
 export class MockApiConfig {
   static get defaultEnterpriseEkmConfiguration(): EkmConfig {
     return {
-      returnKeys: [ekmKeySamples.e2e.prv]
+      returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.e2e.prv, ekmKeySamples.key1.prv]
     };
   }
 

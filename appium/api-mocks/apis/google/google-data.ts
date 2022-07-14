@@ -131,7 +131,7 @@ export class GoogleData {
   public static withInitializedData = async (acct: GoogleMockAccountEmail, config?: GoogleConfig): Promise<GoogleData> => {
     if (typeof DATA[acct] === 'undefined') {
       const contacts = config?.accounts[acct]?.contacts ?? [];
-      const alias: MockUserAlias = {
+      const aliases: MockUserAlias[] = [{
         sendAsEmail: acct,
         displayName: '',
         replyToAddress: acct,
@@ -140,11 +140,11 @@ export class GoogleData {
         isPrimary: true,
         treatAsAlias: false,
         verificationStatus: 'accepted'
-      };
-      const aliases = [...[alias], ...config?.accounts[acct]?.aliases ?? []]
+      }];
+      const additionalAliases = config?.accounts[acct]?.aliases ?? [];
       const acctData: AcctDataFile = {
         drafts: [], messages: [], attachments: {}, contacts: contacts,
-        aliases: aliases,
+        aliases: [...aliases, ...additionalAliases],
         labels:
           [
             { id: 'INBOX', name: 'Inbox', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
