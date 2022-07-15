@@ -26,14 +26,9 @@ describe('COMPOSE EMAIL: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          contacts: [contactWithExpiredKey, contactWithRevokedKey],
-          messages: [],
-        }
-      }
-    };
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      contacts: [contactWithExpiredKey, contactWithRevokedKey],
+    });
     mockApi.attesterConfig = {
       servedPubkeys: {
         [contactWithExpiredKey.email]: contactWithExpiredKey.pub!,

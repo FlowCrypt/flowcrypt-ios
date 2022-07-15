@@ -15,18 +15,13 @@ describe('COMPOSE EMAIL: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          contacts: [recipient1, recipient2, recipient3],
-          messages: [],
-        }
-      }
-    };
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      contacts: [recipient1, recipient2, recipient3],
+    });
     mockApi.attesterConfig = {};
     mockApi.wkdConfig = {}
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();

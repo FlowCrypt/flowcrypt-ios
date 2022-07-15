@@ -25,14 +25,9 @@ describe('SETTINGS: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          contacts: [recipient1, recipient2, recipient3, recipient4, recipient5],
-          messages: [],
-        }
-      }
-    };
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      contacts: [recipient1, recipient2, recipient3, recipient4, recipient5],
+    });
     mockApi.attesterConfig = {
       servedPubkeys: {
         [recipient1.email]: recipient1.pub!,

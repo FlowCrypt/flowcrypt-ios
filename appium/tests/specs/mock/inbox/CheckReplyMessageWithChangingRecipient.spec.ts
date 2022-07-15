@@ -8,6 +8,8 @@ import {
 
 import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
 
@@ -25,7 +27,28 @@ describe('INBOX: ', () => {
     const replySubject = `Re: ${emailSubject}`;
     const quoteText = `${senderEmail} wrote:\n > ${secondMessage}`;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [],
+          messages: [
+            'new message for reply'
+          ],
+        }
+      }
+    };
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+
+      }
+    };
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();

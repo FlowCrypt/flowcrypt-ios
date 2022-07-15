@@ -19,14 +19,7 @@ describe('SETTINGS: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          contacts: [],
-          messages: [],
-        }
-      }
-    };
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com');
     mockApi.attesterConfig = {};
     mockApi.wkdConfig = {}
 

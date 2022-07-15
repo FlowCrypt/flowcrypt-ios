@@ -1,5 +1,6 @@
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 import {
   EmailScreen,
   MailFolderScreen, NewMessageScreen,
@@ -15,14 +16,9 @@ describe('COMPOSE EMAIL: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          contacts: [],
-          messages: [subject],
-        }
-      }
-    };
+    mockApi.addGoogleAccount(MockUserList.e2e.email, {
+      messages: [subject],
+    });
     mockApi.attesterConfig = {};
     mockApi.wkdConfig = {}
 

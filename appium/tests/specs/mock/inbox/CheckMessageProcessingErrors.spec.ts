@@ -8,6 +8,8 @@ import {
 import { CommonData } from '../../../data';
 import BaseScreen from 'tests/screenobjects/base.screen';
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
 
@@ -43,8 +45,42 @@ describe('INBOX: ', () => {
     const firstAttachmentName = CommonData.keyMismatch.firstAttachmentName;
     const firstAttachmentBody = CommonData.keyMismatch.firstAttachmentBody;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
-      // await browser.pause(600000);
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.googleConfig = {
+      accounts: {
+        'e2e.enterprise.test@flowcrypt.com': {
+          contacts: [],
+          messages: [
+            'encrypted - MDC hash mismatch - modification detected - should fail',
+            'message encrypted for another public key (only one pubkey used)',
+            'wrong checksum',
+            'not integrity protected - should show a warning and not decrypt automatically',
+            'key mismatch unexpectedly produces a modal'
+          ],
+        }
+      }
+    };
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: [
+        'encrypted - MDC hash mismatch - modification detected - should fail',
+        'message encrypted for another public key (only one pubkey used)',
+        'wrong checksum',
+        'not integrity protected - should show a warning and not decrypt automatically',
+        'key mismatch unexpectedly produces a modal'
+      ],
+    });
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [MockUserList.sunit.email]: MockUserList.sunit.pub!,
+        [MockUserList.flowcryptCompatibility.email]: MockUserList.flowcryptCompatibility.pub!
+      }
+    };
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();

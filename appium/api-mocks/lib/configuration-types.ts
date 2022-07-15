@@ -41,8 +41,8 @@ export type GoogleConfig = {
 
 export type GoogleMockAccount = {
   aliases?: MockUserAlias[]
-  contacts: MockUser[]
-  messages: GoogleMockMessage[]
+  contacts?: MockUser[]
+  messages?: GoogleMockMessage[]
 }
 
 export type WkdConfig = {};

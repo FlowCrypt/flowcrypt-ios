@@ -4,14 +4,14 @@
 
 import { Api } from './lib/api';
 import * as http from 'http';
-import { attesterPublicKeySamples, getMockAttesterEndpoints } from './apis/attester/attester-endpoints';
+import { getMockAttesterEndpoints } from './apis/attester/attester-endpoints';
 import { getMockGoogleEndpoints } from './apis/google/google-endpoints';
-import { ekmKeySamples, getMockEkmEndpoints } from './apis/ekm/ekm-endpoints';
+import { getMockEkmEndpoints } from './apis/ekm/ekm-endpoints';
 import { getMockWkdEndpoints } from './apis/wkd/wkd-endpoints';
 import { getMockFesEndpoints } from './apis/fes/fes-endpoints';
-import { AttesterConfig, EkmConfig, FesConfig, GoogleConfig, Logger, MockConfig, WkdConfig } from './lib/configuration-types';
+import { AttesterConfig, EkmConfig, FesConfig, GoogleConfig, GoogleMockAccount, Logger, MockConfig, WkdConfig } from './lib/configuration-types';
 import { readFileSync } from 'fs';
-import { CommonData } from 'tests/data';
+import { GoogleMockAccountEmail } from './apis/google/google-messages';
 
 /**
  * const mockApi = new MockApi();
@@ -37,13 +37,41 @@ export class MockApi {
   private port = 8001;
   private logger: Logger = console.log // change here to log to a file instead
 
-  public mockConfig: MockConfig = { serverUrl: `https://127.0.0.1:${this.port}` };
+  private _mockConfig: MockConfig = { serverUrl: `https://127.0.0.1:${this.port}` };
 
-  public fesConfig: FesConfig | undefined = undefined;
-  public googleConfig: GoogleConfig | undefined = undefined;
-  public wkdConfig: WkdConfig | undefined = undefined;
-  public ekmConfig: EkmConfig | undefined = undefined;
-  public attesterConfig: AttesterConfig | undefined = undefined;
+  private _fesConfig: FesConfig | undefined = undefined;
+  private _googleConfig: GoogleConfig | undefined = undefined;
+  private _wkdConfig: WkdConfig | undefined = undefined;
+  private _ekmConfig: EkmConfig | undefined = undefined;
+  private _attesterConfig: AttesterConfig | undefined = undefined;
+
+  public set fesConfig(config: FesConfig) {
+    this._fesConfig = config;
+  }
+
+  public set wkdConfig(config: WkdConfig) {
+    this._wkdConfig = config;
+  }
+
+  public set ekmConfig(config: EkmConfig) {
+    this._ekmConfig = config;
+  }
+
+  public set attesterConfig(config: AttesterConfig) {
+    this._attesterConfig = config;
+  }
+
+  public addGoogleAccount(email: GoogleMockAccountEmail, account: GoogleMockAccount = {}) {
+    if (!this._googleConfig) {
+      this._googleConfig = {
+        accounts: {
+          [email]: account
+        }
+      }
+    } else {
+      this._googleConfig.accounts[email] = account;
+    }
+  }
 
   public withMockedApis = async (testRunner: () => Promise<void>) => {
     const logger = this.logger;
@@ -59,11 +87,11 @@ export class MockApi {
       }
     }
     const api = new LoggedApi<{ query: { [k: string]: string }, body?: unknown }, unknown>('api-mock', [
-      () => getMockFesEndpoints(this.mockConfig, this.fesConfig),
-      () => getMockAttesterEndpoints(this.mockConfig, this.attesterConfig),
-      () => getMockGoogleEndpoints(this.mockConfig, this.googleConfig),
-      () => getMockEkmEndpoints(this.mockConfig, this.ekmConfig),
-      () => getMockWkdEndpoints(this.mockConfig, this.wkdConfig),
+      () => getMockFesEndpoints(this._mockConfig, this._fesConfig),
+      () => getMockAttesterEndpoints(this._mockConfig, this._attesterConfig),
+      () => getMockGoogleEndpoints(this._mockConfig, this._googleConfig),
+      () => getMockEkmEndpoints(this._mockConfig, this._ekmConfig),
+      () => getMockWkdEndpoints(this._mockConfig, this._wkdConfig),
     ], undefined, true);
     await api.listen(this.port);
     try {

@@ -27,14 +27,9 @@ describe('INBOX: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          contacts: [],
-          messages: ['Message with cc and multiple recipients and text attachment'],
-        }
-      }
-    };
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: ['Message with cc and multiple recipients and text attachment'],
+    });
     mockApi.attesterConfig = {
       servedPubkeys: {
         [MockUserList.e2e.email]: MockUserList.e2e.pub!
