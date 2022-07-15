@@ -31,19 +31,16 @@ describe('INBOX: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          contacts: [],
-          messages: [
-            'new message for reply'
-          ],
-        }
-      }
-    };
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: ['new message for reply'],
+    });
     mockApi.attesterConfig = {
       servedPubkeys: {
-
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!,
+        [MockUserList.demo.email]: MockUserList.demo.pub!,
+        [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
+        [MockUserList.robot.email]: MockUserList.robot.pub!,
+        [MockUserList.ioan.email]: MockUserList.ioan.pub!,
       }
     };
     mockApi.wkdConfig = {}

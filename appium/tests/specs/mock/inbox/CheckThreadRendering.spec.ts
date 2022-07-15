@@ -7,6 +7,8 @@ import {
 } from '../../../screenobjects/all-screens';
 import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
 
@@ -22,7 +24,21 @@ describe('INBOX: ', () => {
     const dateThird = CommonData.threadMessage.thirdDate;
     const archivedThreadSubject = CommonData.archivedThread.subject;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: ['test thread rendering', 'Archived thread'],
+    });
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
+      }
+    };
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();

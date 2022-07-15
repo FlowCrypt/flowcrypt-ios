@@ -8,6 +8,7 @@ import {
 import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
 import AppiumHelper from 'tests/helpers/AppiumHelper';
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('INBOX: ', () => {
 
@@ -18,7 +19,17 @@ describe('INBOX: ', () => {
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: ['Test 1'],
+    });
+    mockApi.attesterConfig = {};
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
 

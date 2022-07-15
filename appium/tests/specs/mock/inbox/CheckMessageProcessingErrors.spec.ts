@@ -49,20 +49,6 @@ describe('INBOX: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          contacts: [],
-          messages: [
-            'encrypted - MDC hash mismatch - modification detected - should fail',
-            'message encrypted for another public key (only one pubkey used)',
-            'wrong checksum',
-            'not integrity protected - should show a warning and not decrypt automatically',
-            'key mismatch unexpectedly produces a modal'
-          ],
-        }
-      }
-    };
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
       messages: [
         'encrypted - MDC hash mismatch - modification detected - should fail',

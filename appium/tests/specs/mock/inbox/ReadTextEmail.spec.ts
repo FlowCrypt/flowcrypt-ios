@@ -7,6 +7,8 @@ import {
 
 import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
 
@@ -20,7 +22,23 @@ describe('INBOX: ', () => {
     const ccLabel = CommonData.recipientsListEmail.cc;
     const bccLabel = CommonData.recipientsListEmail.bcc;
 
-    await MockApi.e2eMock.withMockedApis(async () => {
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: ['CC and BCC test'],
+    });
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [MockUserList.flowcryptCompatibility.email]: MockUserList.flowcryptCompatibility.pub!,
+        [MockUserList.robot.email]: MockUserList.robot.pub!,
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!
+      }
+    };
+    mockApi.wkdConfig = {}
+
+    await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
