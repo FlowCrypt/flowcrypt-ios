@@ -12,6 +12,7 @@ describe('SETUP: ', () => {
 
   it('cannot find email on attester with disallow_attester_search_for_domains=*', async () => {
     const mockApi = new MockApi();
+    const recipient = 'available.on@attester.test';
 
     mockApi.fesConfig = {
       clientConfiguration: {
@@ -27,8 +28,8 @@ describe('SETUP: ', () => {
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.setAddRecipient('available.on@attester.test');
-      await NewMessageScreen.checkAddedRecipientColor('available.on@attester.test', 0, 'gray');
+      await NewMessageScreen.setAddRecipient(recipient);
+      await NewMessageScreen.checkAddedRecipientColor(recipient, 0, 'gray');
     });
   });
 });

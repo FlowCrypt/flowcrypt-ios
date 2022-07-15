@@ -153,29 +153,33 @@ export class GoogleData {
             { id: 'TRASH', name: 'Trash', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
           ]
       };
-      const dir = GoogleData.exportedMsgsPath;
-      const filenames: string[] = await new Promise((res, rej) => readdir(dir, (e, f) => e ? rej(e) : res(f)));
-      const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
-      const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
-      const files = await Promise.all(filePromises) as Uint8Array[];
-      const msgSubjects = config?.accounts[acct]?.messages?.map(m => m.toString());
 
-      for (const file of files) {
-        const utfStr = new TextDecoder().decode(file);
-        const json = JSON.parse(utfStr) as ExportedMsg;
-        const subject = GoogleData.msgSubject(json.full).replace('Re: ', '');
-        const isValidMsg = msgSubjects ? msgSubjects.includes(subject) : json.acctEmail === acct;
+      if (config?.accounts[acct]?.messages) {
+        const dir = GoogleData.exportedMsgsPath;
+        const filenames: string[] = await new Promise((res, rej) => readdir(dir, (e, f) => e ? rej(e) : res(f)));
+        const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
+        const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
+        const files = await Promise.all(filePromises) as Uint8Array[];
+        const msgSubjects = config?.accounts[acct]?.messages?.map(m => m.toString());
 
-        if (isValidMsg) {
-          Object.assign(acctData.attachments, json.attachments);
-          json.full.raw = json.raw.raw;
-          if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
-            acctData.drafts.push(json.full);
-          } else {
-            acctData.messages.push(json.full);
+        for (const file of files) {
+          const utfStr = new TextDecoder().decode(file);
+          const json = JSON.parse(utfStr) as ExportedMsg;
+          const subject = GoogleData.msgSubject(json.full).replace('Re: ', '');
+          const isValidMsg = msgSubjects ? msgSubjects.includes(subject) : json.acctEmail === acct;
+
+          if (isValidMsg) {
+            Object.assign(acctData.attachments, json.attachments);
+            json.full.raw = json.raw.raw;
+            if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
+              acctData.drafts.push(json.full);
+            } else {
+              acctData.messages.push(json.full);
+            }
           }
         }
       }
+
       DATA[acct] = acctData;
     }
     return new GoogleData(acct);

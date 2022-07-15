@@ -9,6 +9,7 @@ import { CommonData } from '../../../data';
 import BaseScreen from '../../../screenobjects/base.screen';
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -29,6 +30,11 @@ describe('COMPOSE EMAIL: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!
+      }
+    }
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
