@@ -9,12 +9,20 @@ import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { CommonData } from "../../../data";
 import AppiumHelper from "../../../helpers/AppiumHelper";
 import BaseScreen from 'tests/screenobjects/base.screen';
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('SETUP: ', () => {
 
   it('check decrypt message when there are no keys available', async () => {
 
-    const mockApi = MockApi.e2eMock;
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com');
+    mockApi.attesterConfig = {};
+    mockApi.wkdConfig = {}
+
     const processArgs = CommonData.mockProcessArgs;
 
     await mockApi.withMockedApis(async () => {

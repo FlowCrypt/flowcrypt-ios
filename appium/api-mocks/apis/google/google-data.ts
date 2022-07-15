@@ -158,7 +158,7 @@ export class GoogleData {
       const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
       const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
       const files = await Promise.all(filePromises) as Uint8Array[];
-      const msgSubjects = config?.accounts[acct]?.messages.map(m => m.toString());
+      const msgSubjects = config?.accounts[acct]?.messages?.map(m => m.toString());
 
       for (const file of files) {
         const utfStr = new TextDecoder().decode(file);

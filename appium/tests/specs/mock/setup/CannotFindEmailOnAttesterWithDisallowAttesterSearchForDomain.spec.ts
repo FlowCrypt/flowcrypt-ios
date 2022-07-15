@@ -6,12 +6,12 @@ import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
 import { CommonData } from 'tests/data';
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('SETUP: ', () => {
 
   it('cannot find email on attester with disallow_attester_search_for_domains=*', async () => {
-
-    const mockApi = MockApi.e2eMock;
+    const mockApi = new MockApi();
 
     mockApi.fesConfig = {
       clientConfiguration: {
@@ -20,6 +20,10 @@ describe('SETUP: ', () => {
         disallow_attester_search_for_domains: ["*"]
       }
     };
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com');
+    mockApi.attesterConfig = {};
+    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
