@@ -19,6 +19,9 @@ describe('SETUP: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: ['CC and BCC test']
+    })
 
     const processArgs = CommonData.mockProcessArgs;
 
