@@ -19,6 +19,7 @@ describe('SETUP: ', () => {
     const disabledEmail = 'attester@disabled.test';
     const enabledUserName = CommonData.validMockUser.name;
     const processArgs = CommonData.mockProcessArgs;
+
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
@@ -35,7 +36,6 @@ describe('SETUP: ', () => {
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.e2e.prv]
     }
-    mockApi.wkdConfig = {};
 
     await mockApi.withMockedApis(async () => {
       // stage 1: setup

@@ -35,7 +35,6 @@ describe('COMPOSE EMAIL: ', () => {
         [ccRecipient.email]: ccRecipient.pub!
       }
     };
-    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

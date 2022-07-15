@@ -7,14 +7,15 @@ import {
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { CommonData } from "../../../data";
 import AppiumHelper from "../../../helpers/AppiumHelper";
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('SETUP: ', () => {
 
   it('handle situation when refreshing keys from EKM and have no local keys', async () => {
-
-    const mockApi = MockApi.e2eMock;
+    const mockApi = new MockApi();
     const processArgs = CommonData.mockProcessArgs;
 
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.key0.prv]
     }

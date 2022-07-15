@@ -26,8 +26,6 @@ describe('INBOX: ', () => {
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
       messages: ['Test 1'],
     });
-    mockApi.attesterConfig = {};
-    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

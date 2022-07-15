@@ -1,5 +1,6 @@
 import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import { MockApi } from 'api-mocks/mock';
+import { MockApiConfig } from 'api-mocks/mock-config';
 import {
   SplashScreen
 } from '../../../screenobjects/all-screens';
@@ -11,18 +12,19 @@ describe('SETUP: ', () => {
 
   it('will not update a revoked public key with valid one', async () => {
 
-    const mockApi = MockApi.e2eMock;
+    const mockApi = new MockApi();
     const contactEmail = 'available.on@attester.test';
     const contactName = 'Test1';
 
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = {
+      returnKeys: [ekmKeySamples.e2e.prv]
+    }
     mockApi.attesterConfig = {
       servedPubkeys: {
         [contactEmail]: ekmKeySamples.key0Revoked.pub!
       }
     };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2e.prv]
-    }
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

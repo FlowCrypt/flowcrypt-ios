@@ -9,6 +9,7 @@ import { CommonData } from "../../../data";
 import RefreshKeyScreen from "../../../screenobjects/refresh-key.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
 import AppiumHelper from "../../../helpers/AppiumHelper";
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('SETUP: ', () => {
 
@@ -18,7 +19,9 @@ describe('SETUP: ', () => {
     const successMessage = CommonData.refreshingKeysFromEkm.updatedSuccessfully;
     const processArgs = CommonData.mockProcessArgs;
 
-    const mockApi = MockApi.e2eMock;
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.key0.prv]
     }

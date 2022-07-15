@@ -37,7 +37,6 @@ describe('SETTINGS: ', () => {
         [recipient5.email]: recipient5.pub!,
       }
     };
-    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

@@ -40,7 +40,6 @@ describe('COMPOSE EMAIL: ', () => {
         [MockUserList.e2e.email]: MockUserList.e2e.pub!
       }
     };
-    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

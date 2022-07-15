@@ -39,7 +39,6 @@ describe('INBOX: ', () => {
         [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
       }
     };
-    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

@@ -7,13 +7,16 @@ import {
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { CommonData } from "../../../data";
 import AppiumHelper from "../../../helpers/AppiumHelper";
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('SETUP: ', () => {
 
   it('EKM server error handled gracefully', async () => {
-
-    const mockApi = MockApi.e2eMock;
+    const mockApi = new MockApi();
     const processArgs = CommonData.mockProcessArgs;
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
 
     await mockApi.withMockedApis(async () => {
       // stage 1 - setup

@@ -18,8 +18,13 @@ describe('COMPOSE EMAIL: ', () => {
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
       contacts: [recipient1, recipient2, recipient3],
     });
-    mockApi.attesterConfig = {};
-    mockApi.wkdConfig = {}
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [recipient1.email]: recipient1.pub!,
+        [recipient2.email]: recipient2.pub!,
+        [recipient3.email]: recipient3.pub!,
+      }
+    };
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

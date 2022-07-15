@@ -30,7 +30,6 @@ describe('SETUP: ', () => {
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.e2e.prv]
     }
-    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

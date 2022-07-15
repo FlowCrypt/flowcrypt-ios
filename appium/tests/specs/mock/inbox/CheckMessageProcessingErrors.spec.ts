@@ -64,7 +64,6 @@ describe('INBOX: ', () => {
         [MockUserList.flowcryptCompatibility.email]: MockUserList.flowcryptCompatibility.pub!
       }
     };
-    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

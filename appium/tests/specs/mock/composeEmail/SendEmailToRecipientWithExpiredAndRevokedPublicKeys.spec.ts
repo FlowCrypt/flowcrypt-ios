@@ -35,7 +35,6 @@ describe('COMPOSE EMAIL: ', () => {
         [contactWithRevokedKey.email]: contactWithRevokedKey.pub!
       }
     };
-    mockApi.wkdConfig = {}
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

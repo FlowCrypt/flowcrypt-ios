@@ -8,13 +8,15 @@ import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
 import { CommonData } from "../../../data";
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 
 describe('SETUP: ', () => {
 
   it('test that returns only revoked key from EKM during setup', async () => {
 
-    const mockApi = MockApi.e2eMock;
+    const mockApi = new MockApi();
 
     const recipientEmail = CommonData.recipient.email;
     const recipientName = CommonData.recipient.name;
@@ -26,8 +28,14 @@ describe('SETUP: ', () => {
       'Could not compose message\n\n' +
       'Your account keys are not usable for encryption.';
 
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.e2eRevokedKey.prv]
+    };
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [MockUserList.robot.email]: MockUserList.robot.pub!
+      }
     };
 
     await mockApi.withMockedApis(async () => {
