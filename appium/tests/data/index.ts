@@ -62,15 +62,6 @@ export const CommonData = {
     email: 'dmitry@flowcrypt.com',
     name: 'Dmitry at FlowCrypt'
   },
-  secondContact: {
-    contactName: 'Demo',
-    email: 'demo@flowcrypt.com',
-    name: 'Demo User',
-  },
-  recipient: {
-    email: 'robot@flowcrypt.com',
-    name: 'FlowCrypt Robot',
-  },
   bundleId: {
     id: 'com.flowcrypt.as.ios.debug',
   },
@@ -188,14 +179,6 @@ export const CommonData = {
     replyToEmail: 'reply@domain.com',
     subject: 'Honor reply-to address - plain'
   },
-  recipientWithExpiredPublicKey: {
-    email: 'expired@flowcrypt.com',
-    name: 'expired key'
-  },
-  recipientWithRevokedPublicKey: {
-    email: 'revoked@flowcrypt.com',
-    name: 'revoekd@flowcrypt.com'
-  },
   errors: {
     noPublicKey: 'Error\n' +
       'Could not compose message\n' +
@@ -240,14 +223,6 @@ export const CommonData = {
   validMockUser: {
     email: 'valid@domain.test',
     name: 'Tom James Holub'
-  },
-  expiredMockUser: {
-    email: 'expired@domain.test',
-    name: 'expired.on.attester@domain.com'
-  },
-  revokedMockUser: {
-    email: 'revoked@domain.test',
-    name: 'revoekd@flowcrypt.com'
   },
   refreshingKeysFromEkm: {
     wrongPassPhrase: 'Error\nIncorrect pass phrase. Please try again.',

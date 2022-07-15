@@ -18,8 +18,7 @@ describe('SETUP: ', () => {
 
     const mockApi = new MockApi();
 
-    const recipientEmail = CommonData.recipient.email;
-    const recipientName = CommonData.recipient.name;
+    const recipient = MockUserList.robot;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
 
@@ -44,9 +43,9 @@ describe('SETUP: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
 
-      await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);
+      await NewMessageScreen.composeEmail(recipient.email, emailSubject, emailText);
       await NewMessageScreen.checkFilledComposeEmailInfo({
-        recipients: [recipientName],
+        recipients: [recipient.name],
         subject: emailSubject,
         message: emailText
       });
