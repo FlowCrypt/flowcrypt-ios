@@ -1,0 +1,72 @@
+{
+  "acctEmail": "e2e.enterprise.test@flowcrypt.com",
+  "full": {
+    "id": "17963aa512ecfe35",
+    "threadId": "17963aa512ecfe35",
+    "labelIds": [
+      "CATEGORY_PERSONAL",
+      "INBOX"
+    ],
+    "snippet": "Test email",
+    "payload": {
+      "partId": "",
+      "mimeType": "text/plain",
+      "filename": "",
+      "headers": [
+        {
+          "name": "X-Gm-Message-State",
+          "value": "AOAM5332fSkI6XaNiptqqQilEvqzVOBrL3BtneOlAmlccLGUo4EJ1wsq jw0ylLLNfruv93W11fMpHWqY2Yd79vez46Aciu4Se+JXXho="
+        },
+        {
+          "name": "Openpgp",
+          "value": "id=0C9C2E6A4D273C6F"
+        },
+        {
+          "name": "From",
+          "value": "Dmitry at FlowCrypt <dmitry@flowcrypt.com>"
+        },
+        {
+          "name": "MIME-Version",
+          "value": "1.0"
+        },
+        {
+          "name": "Date",
+          "value": "Wed, 12 May 2021 19:59:35 -0700"
+        },
+        {
+          "name": "Subject",
+          "value": "Test 1"
+        },
+        {
+          "name": "To",
+          "value": "e2e.enterprise.test@flowcrypt.com"
+        },
+        {
+          "name": "Content-Type",
+          "value": "text/plain; charset=\"UTF-8\""
+        }
+      ],
+      "body": {
+        "size": 20,
+        "data": "VGVzdCBlbWFpbA=="
+      }
+    },
+    "sizeEstimate": 6885,
+    "historyId": "1361279",
+    "internalDate": "1620874775000"
+  },
+  "attachments": {},
+  "raw": {
+    "id": "17963aa512ecfe35",
+    "threadId": "17963aa512ecfe35",
+    "labelIds": [
+      "CATEGORY_PERSONAL",
+      "INBOX"
+    ],
+    "snippet": "Test email",
+    "sizeEstimate": 6885,
+    "raw": "TUlNRS1WZXJzaW9uOiAxLjAKRGF0ZTogRnJpLCA1IEp1biAyMDIwIDE5OjM0OjQxICswMDAwCk1lc3NhZ2UtSUQ6IDxDQUtidUxUcnJtSlNhY2hXZTlFUTMzb2RTK0hxdjZfWUZIRVg4VHZmYXUraUxmRVk9WndAbWFpbC5nbWFpbC5jb20+ClN1YmplY3Q6IFRlc3QgMQpGcm9tOiBEbWl0cnkgYXQgRmxvd2NyeXB0IDxkbWl0cnlAZmxvd2NyeXB0LmNvbT4KVG86IGUyZS5lbnRlcnByaXNlLnRlc3RAZmxvd2NyeXB0LmNvbQpDb250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJzZXQ9IlVURi04IgoKVGVzdCBlbWFpbAo=",
+    "historyId": "1361279",
+    "internalDate": "1620874775000"
+  }
+}

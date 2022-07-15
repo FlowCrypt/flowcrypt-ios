@@ -46,7 +46,10 @@ class PubLookup: PubLookupType {
             }
             tg.addTask {
                 do {
-                    return LookupResult(keys: try await self.attesterApi.lookup(email: recipient.email), source: .attester)
+                    return LookupResult(
+                        keys: try await self.attesterApi.lookup(email: recipient.email),
+                        source: .attester
+                    )
                 } catch {
                     return LookupResult(keys: [], source: .attester, error: error)
                 }
@@ -56,15 +59,17 @@ class PubLookup: PubLookupType {
             }
             return results
         }
+
         guard let wkdResult = results.first(where: { $0.source == .wkd }) else {
             throw AppErr.unexpected("expecting to find wkdResult")
         }
         guard let attesterResult = results.first(where: { $0.source == .attester }) else {
             throw AppErr.unexpected("expecting to find attesterResult")
         }
+
         if !wkdResult.keys.isEmpty {
             // WKD keys are preferred. The trust level is higher because the recipient
-            //  controls the distribution of the keys themselves on their own domain
+            // controls the distribution of the keys themselves on their own domain
             return try RecipientWithSortedPubKeys(recipient, keyDetails: wkdResult.keys)
         }
         // If no keys are found from WKD and attester returns error, then throw error

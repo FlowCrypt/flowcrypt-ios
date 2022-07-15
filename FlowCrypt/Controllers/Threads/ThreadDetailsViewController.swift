@@ -212,7 +212,10 @@ extension ThreadDetailsViewController {
         }
 
         if attachment.isEncrypted {
-            let decryptedAttachment = try await messageService.decrypt(attachment: attachment, userEmail: appContext.user.email)
+            let decryptedAttachment = try await messageService.decrypt(
+                attachment: attachment,
+                userEmail: appContext.user.email
+            )
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
             input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
@@ -320,6 +323,7 @@ extension ThreadDetailsViewController {
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager,
                     progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
+
                 if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
                     retryVerifyingSignatureWithRemotelyFetchedKeys(

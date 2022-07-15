@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS",
       "state" : {
-        "revision" : "21b8c78b6a10613cbaad3ca14052254a32af1c85",
-        "version" : "6.2.1"
+        "revision" : "9450e779619fc184d360c9f7ce61023587f7e1f4",
+        "version" : "6.2.2"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa",
       "state" : {
-        "revision" : "7f123e48ec12926bb5080e449df360127ee0352d",
-        "version" : "10.26.0"
+        "revision" : "fd279e0a94b46c5bd65b17e36817a4365c7a5482",
+        "version" : "10.28.2"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core",
       "state" : {
-        "revision" : "d97eed3ae7dff2f2e2ffbda83fa8f3b8c445c6ba",
-        "version" : "11.17.0"
+        "revision" : "55a48c287b5e3a8ca129c257ec7e3b92bcb2a05f",
+        "version" : "12.3.0"
       }
     },
     {

@@ -7,7 +7,8 @@ import {
 
 import { CommonData } from '../../../data';
 import { MockApi } from "../../../../api-mocks/mock";
-import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
 
@@ -22,22 +23,19 @@ describe('INBOX: ', () => {
     const bccLabel = CommonData.recipientsListEmail.bcc;
 
     const mockApi = new MockApi();
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: ['CC and BCC test'],
+    });
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [MockUserList.flowcryptCompatibility.email]: MockUserList.flowcryptCompatibility.pub!,
+        [MockUserList.robot.email]: MockUserList.robot.pub!,
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!
       }
     };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
-    }
-    mockApi.googleConfig = {
-      accounts: {
-        'e2e.enterprise.test@flowcrypt.com': {
-          messages: ['CC and BCC test'],
-        }
-      }
-    }
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

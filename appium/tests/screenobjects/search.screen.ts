@@ -1,5 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
+import TouchHelper from 'tests/helpers/TouchHelper';
 
 const SELECTORS = {
   BACK_BUTTON: '~aid-back-button',
@@ -30,8 +31,11 @@ class SearchScreen extends BaseScreen {
     await browser.pause(1000);
     await ElementHelper.waitAndPasteString(await this.searchField, `subject: '${subject}'`);
 
-    const selector = `~${subject}`;
-    await ElementHelper.waitAndClick(await $(selector), 500);
+    const subjectEl = await $(`~${subject}`);
+    if (!await subjectEl.isDisplayed()) {
+      await TouchHelper.scrollDownToElement(subjectEl);
+    }
+    await ElementHelper.waitAndClick(subjectEl, 500);
   }
 
   searchAndClickEmailForOutlook = async (subject: string) => {

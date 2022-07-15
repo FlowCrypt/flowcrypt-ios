@@ -1,0 +1,152 @@
+{
+  "acctEmail": "e2e.enterprise.test@flowcrypt.com",
+  "full": {
+    "id": "17d58920dc9e9ace",
+    "threadId": "17d58920dc9e9ace",
+    "labelIds": [
+      "SENT",
+      "INBOX"
+    ],
+    "snippet": "Signed only message with detached signature",
+    "payload": {
+      "partId": "",
+      "mimeType": "multipart/signed",
+      "filename": "",
+      "headers": [
+        {
+          "name": "Date",
+          "value": "Thu, 25 Nov 2021 22:28:25 +0300"
+        },
+        {
+          "name": "MIME-Version",
+          "value": "1.0"
+        },
+        {
+          "name": "User-Agent",
+          "value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0) Gecko/20100101 Thunderbird/91.3.2"
+        },
+        {
+          "name": "Content-Language",
+          "value": "en-US"
+        },
+        {
+          "name": "To",
+          "value": "e2e.enterprise.test@flowcrypt.com"
+        },
+        {
+          "name": "From",
+          "value": "e2e.enterprise.test@flowcrypt.com"
+        },
+        {
+          "name": "Subject",
+          "value": "Signed only message with detached signature"
+        },
+        {
+          "name": "Content-Type",
+          "value": "multipart/signed; micalg=pgp-sha256; protocol=\"application/pgp-signature\"; boundary=\"------------YUHqkfd0oDu2i0AfUUbZsuYv\""
+        }
+      ],
+      "body": {
+        "size": 0
+      },
+      "parts": [
+        {
+          "partId": "0",
+          "mimeType": "multipart/mixed",
+          "filename": "",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/mixed; boundary=\"------------VLJ59AfOO0aydRa6YwiUvTVp\"; protected-headers=\"v1\""
+            },
+            {
+              "name": "From",
+              "value": "e2e enterprise test at FlowCrypt <e2e.enterprise.test@flowcrypt.com>"
+            },
+            {
+              "name": "To",
+              "value": "e2e.enterprise.test@flowcrypt.com"
+            },
+            {
+              "name": "Message-ID",
+              "value": "<3c5db5ec-668c-7f7e-d648-434447d79608@flowcrypt.com>"
+            },
+            {
+              "name": "Subject",
+              "value": "Signed only message with detached signature"
+            }
+          ],
+          "body": {
+            "size": 0
+          },
+          "parts": [
+            {
+              "partId": "0.0",
+              "mimeType": "text/plain",
+              "filename": "",
+              "headers": [
+                {
+                  "name": "Content-Type",
+                  "value": "text/plain; charset=UTF-8; format=flowed"
+                },
+                {
+                  "name": "Content-Transfer-Encoding",
+                  "value": "base64"
+                }
+              ],
+              "body": {
+                "size": 47,
+                "data": "U2lnbmVkIG9ubHkgbWVzc2FnZSB3aXRoIGRldGFjaGVkIHNpZ25hdHVyZQ0KDQo="
+              }
+            }
+          ]
+        },
+        {
+          "partId": "1",
+          "mimeType": "application/pgp-signature",
+          "filename": "OpenPGP_signature",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/pgp-signature; name=\"OpenPGP_signature.asc\""
+            },
+            {
+              "name": "Content-Description",
+              "value": "OpenPGP digital signature"
+            },
+            {
+              "name": "Content-Disposition",
+              "value": "attachment; filename=\"OpenPGP_signature\""
+            }
+          ],
+          "body": {
+            "attachmentId": "ANGjdJ80cAgwT4OceJyvG9_ayA-Aewo2oDGAXVnDGAbjzyHEb2x6y3btvTWrUWtjNr8Y5F5sKtjsoM_mngcmaZxi7HklHUQRI-NBwg_rPMNAQjmvuWJ_iNAPs0kiDCn7W6wxK-1EkXZHVKC9lH1ymQGfI5dpKC5MBUrLGohW7yQq-kt3AdkOXLgnNT869s4g2DaL8UaZRI1ijsqL2SvB0p6gHUv-6ekEL6th-zrwqOmwQJtV6fCOWWauJjeG3YB3HsxrjoH7lx1ySYimb1jjCkbyXZWd4zvtNX0Mm4uf3XhU-h7gjDsMAv41g-2EVW7DfKv0ehr0-QkmLJVmuZQ-xl7yIECDTEVUPdLnRCM-9lB5NZHeODnCJA8mWnf1-L0",
+            "size": 243
+          }
+        }
+      ]
+    },
+    "sizeEstimate": 2153,
+    "historyId": "49535",
+    "internalDate": "1637868505000"
+  },
+  "attachments": {
+    "ANGjdJ80cAgwT4OceJyvG9_ayA-Aewo2oDGAXVnDGAbjzyHEb2x6y3btvTWrUWtjNr8Y5F5sKtjsoM_mngcmaZxi7HklHUQRI-NBwg_rPMNAQjmvuWJ_iNAPs0kiDCn7W6wxK-1EkXZHVKC9lH1ymQGfI5dpKC5MBUrLGohW7yQq-kt3AdkOXLgnNT869s4g2DaL8UaZRI1ijsqL2SvB0p6gHUv-6ekEL6th-zrwqOmwQJtV6fCOWWauJjeG3YB3HsxrjoH7lx1ySYimb1jjCkbyXZWd4zvtNX0Mm4uf3XhU-h7gjDsMAv41g-2EVW7DfKv0ehr0-QkmLJVmuZQ-xl7yIECDTEVUPdLnRCM-9lB5NZHeODnCJA8mWnf1-L0": {
+      "data": "LS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0NCg0Kd25zRUFCWUlBQ01XSVFRNEVBMGg4WE1tNUVlR25hZWxUWUsrRlNIU0RnVUNZWi9qMlFVREFBQUFBQUFLQ1JDbFRZSytGU0hTRGhnaQ0KQVFDOFRqa1poYTJ5Nk80eTQ5bDFYL1pNaUMyR2RtYkM2bG5jRjhsQWhiYTZuUUVBaXdQMU5XSjRIbW93eU1TUXZ3dW5XNlBPSkgwZw0KYlNxWnpCRk93NjNmdlFvPQ0KPWxmNWENCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ0K",
+      "size": 243
+    }
+  },
+  "raw": {
+    "id": "17d58920dc9e9ace",
+    "threadId": "17d58920dc9e9ace",
+    "labelIds": [
+      "SENT",
+      "INBOX"
+    ],
+    "snippet": "Signed only message with detached signature",
+    "sizeEstimate": 2153,
+    "raw": "UmV0dXJuLVBhdGg6IDxlMmUuZW50ZXJwcmlzZS50ZXN0QGZsb3djcnlwdC5jb20-DQpSZWNlaXZlZDogZnJvbSBbMTkyLjE2OC4wLjEwXSAocHBwOTEtMTIyLTE5MC0xMDQucHBwb2UuYXZhbmdhcmRkc2wucnUuIFs5MS4xMjIuMTkwLjEwNF0pDQogICAgICAgIGJ5IHNtdHAuZ21haWwuY29tIHdpdGggRVNNVFBTQSBpZCB5MThzbTMzMDkyOWxmYi4yMjMuMjAyMS4xMS4yNS4xMS4yOC4yNg0KICAgICAgICBmb3IgPGUyZS5lbnRlcnByaXNlLnRlc3RAZmxvd2NyeXB0LmNvbT4NCiAgICAgICAgKHZlcnNpb249VExTMV8zIGNpcGhlcj1UTFNfQUVTXzEyOF9HQ01fU0hBMjU2IGJpdHM9MTI4LzEyOCk7DQogICAgICAgIFRodSwgMjUgTm92IDIwMjEgMTE6Mjg6MjYgLTA4MDAgKFBTVCkNCk1lc3NhZ2UtSUQ6IDwzYzVkYjVlYy02NjhjLTdmN2UtZDY0OC00MzQ0NDdkNzk2MDhAZmxvd2NyeXB0LmNvbT4NCkRhdGU6IFRodSwgMjUgTm92IDIwMjEgMjI6Mjg6MjUgKzAzMDANCk1JTUUtVmVyc2lvbjogMS4wDQpVc2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoTWFjaW50b3NoOyBJbnRlbCBNYWMgT1MgWCAxMC4xNTsgcnY6OTEuMCkNCiBHZWNrby8yMDEwMDEwMSBUaHVuZGVyYmlyZC85MS4zLjINCkNvbnRlbnQtTGFuZ3VhZ2U6IGVuLVVTDQpUbzogZTJlLmVudGVycHJpc2UudGVzdEBmbG93Y3J5cHQuY29tDQpGcm9tOiBlMmUgZW50ZXJwcmlzZSB0ZXN0IGF0IEZsb3dDcnlwdCA8ZTJlLmVudGVycHJpc2UudGVzdEBmbG93Y3J5cHQuY29tPg0KU3ViamVjdDogU2lnbmVkIG9ubHkgbWVzc2FnZSB3aXRoIGRldGFjaGVkIHNpZ25hdHVyZQ0KQ29udGVudC1UeXBlOiBtdWx0aXBhcnQvc2lnbmVkOyBtaWNhbGc9cGdwLXNoYTI1NjsNCiBwcm90b2NvbD0iYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZSI7DQogYm91bmRhcnk9Ii0tLS0tLS0tLS0tLVlVSHFrZmQwb0R1MmkwQWZVVWJac3VZdiINCg0KVGhpcyBpcyBhbiBPcGVuUEdQL01JTUUgc2lnbmVkIG1lc3NhZ2UgKFJGQyA0ODgwIGFuZCAzMTU2KQ0KLS0tLS0tLS0tLS0tLS1ZVUhxa2ZkMG9EdTJpMEFmVVViWnN1WXYNCkNvbnRlbnQtVHlwZTogbXVsdGlwYXJ0L21peGVkOyBib3VuZGFyeT0iLS0tLS0tLS0tLS0tVkxKNTlBZk9PMGF5ZFJhNll3aVV2VFZwIjsNCiBwcm90ZWN0ZWQtaGVhZGVycz0idjEiDQpGcm9tOiBlMmUgZW50ZXJwcmlzZSB0ZXN0IGF0IEZsb3dDcnlwdCA8ZTJlLmVudGVycHJpc2UudGVzdEBmbG93Y3J5cHQuY29tPg0KVG86IGUyZS5lbnRlcnByaXNlLnRlc3RAZmxvd2NyeXB0LmNvbQ0KTWVzc2FnZS1JRDogPDNjNWRiNWVjLTY2OGMtN2Y3ZS1kNjQ4LTQzNDQ0N2Q3OTYwOEBmbG93Y3J5cHQuY29tPg0KU3ViamVjdDogU2lnbmVkIG9ubHkgbWVzc2FnZSB3aXRoIGRldGFjaGVkIHNpZ25hdHVyZQ0KDQotLS0tLS0tLS0tLS0tLVZMSjU5QWZPTzBheWRSYTZZd2lVdlRWcA0KQ29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0PVVURi04OyBmb3JtYXQ9Zmxvd2VkDQpDb250ZW50LVRyYW5zZmVyLUVuY29kaW5nOiBiYXNlNjQNCg0KVTJsbmJtVmtJRzl1YkhrZ2JXVnpjMkZuWlNCM2FYUm9JR1JsZEdGamFHVmtJSE5wWjI1aGRIVnlaUTBLRFFvPQ0KDQotLS0tLS0tLS0tLS0tLVZMSjU5QWZPTzBheWRSYTZZd2lVdlRWcC0tDQoNCi0tLS0tLS0tLS0tLS0tWVVIcWtmZDBvRHUyaTBBZlVVYlpzdVl2DQpDb250ZW50LVR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmU7IG5hbWU9Ik9wZW5QR1Bfc2lnbmF0dXJlLmFzYyINCkNvbnRlbnQtRGVzY3JpcHRpb246IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUNCkNvbnRlbnQtRGlzcG9zaXRpb246IGF0dGFjaG1lbnQ7IGZpbGVuYW1lPSJPcGVuUEdQX3NpZ25hdHVyZSINCg0KLS0tLS1CRUdJTiBQR1AgU0lHTkFUVVJFLS0tLS0NCg0Kd25zRUFCWUlBQ01XSVFRNEVBMGg4WE1tNUVlR25hZWxUWUsrRlNIU0RnVUNZWi9qMlFVREFBQUFBQUFLQ1JDbFRZSytGU0hTRGhnaQ0KQVFDOFRqa1poYTJ5Nk80eTQ5bDFYL1pNaUMyR2RtYkM2bG5jRjhsQWhiYTZuUUVBaXdQMU5XSjRIbW93eU1TUXZ3dW5XNlBPSkgwZw0KYlNxWnpCRk93NjNmdlFvPQ0KPWxmNWENCi0tLS0tRU5EIFBHUCBTSUdOQVRVUkUtLS0tLQ0KDQotLS0tLS0tLS0tLS0tLVlVSHFrZmQwb0R1MmkwQWZVVWJac3VZdi0tDQo=",
+    "historyId": "49535",
+    "internalDate": "1637868505000"
+  }
+}
