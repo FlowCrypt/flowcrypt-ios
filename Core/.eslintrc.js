@@ -51,7 +51,10 @@ module.exports = {
     {
       'files': ['./source/**/*.ts'],
       'rules': {
-        'header/header': ['error', 'block', ' ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com ']
+        'header/header': [
+          'error', 'block',
+          ' ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com '
+        ]
       }
     }
   ]

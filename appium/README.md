@@ -9,7 +9,7 @@
 5. restart terminal
 6. `nvm install 16` - installs NodeJS 16 and sets it as default
 7. `cd ~/git/flowcrypt-ios/appium && npm install`
-8. use Visual Studio Code IDE for editting appium tests - be sure to open it using `File` -> `Open Workspace from File` -> `Core/flowcrypt-mobile-core.code-workspace` (don't simply open the project as a folder, because advanced IDE functionality will be missing)
+8. use Visual Studio Code IDE for editing appium tests - be sure to open it using `File` -> `Open Workspace from File` -> `flowcrypt-ios.code-workspace` (don't simply open the project as a folder, because advanced IDE functionality will be missing)
 
 ## Building app for testing
 #### Option 1

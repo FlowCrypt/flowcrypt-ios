@@ -1,21 +1,31 @@
 {
   "folders": [
     {
+      "path": "appium"
+    },
+    {
+      "path": "Core"
+    },
+    {
+      "name": "ios",
       "path": "."
     }
   ],
   "settings": {
+    "typescript.tsdk": "./node_modules/typescript/lib",
     "editor.formatOnSave": true,
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "errorLens.enabledDiagnosticLevels": [
+      "error"
+    ],
+    "typescript.surveys.enabled": false
   },
   "extensions": {
     "recommendations": [
       "dbaeumer.vscode-eslint",
-      "stylelint.vscode-stylelint",
-      "ms-vscode.vscode-typescript-tslint-plugin",
-      "philhindle.errorlens"
+      "usernamehw.errorlens"
     ]
   }
 }

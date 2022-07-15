@@ -10,9 +10,10 @@ module.exports = {
   ],
   extends: [
     'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
   ],
-  "rules": {
+  rules: {
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-floating-promises": ['error'],
@@ -23,6 +24,10 @@ module.exports = {
     "@typescript-eslint/no-namespace": "off",
     "no-control-regex": "off",
     "no-empty-pattern": "off",
-    "no-prototype-builtins": "off"
-  }
+    "no-prototype-builtins": "off",
+  },
+  env: {
+    // change as necessary
+    node: true,
+  },
 };
