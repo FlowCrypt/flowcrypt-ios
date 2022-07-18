@@ -29,7 +29,7 @@ describe('UPDATE: ', () => {
     const senderName = CommonData.sender.name;
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
-    const liveKeys = [ekmKeySamples.e2e, ekmKeySamples.flowcryptCompability, ekmKeySamples.flowcryptCompabilityOther];
+    const liveKeys = [ekmKeySamples.e2e, ekmKeySamples.flowcryptCompabilityOther, ekmKeySamples.flowcryptCompability];
     const firstEmailSubject = CommonData.simpleEmail.subject;
 
     //terminate current app version
