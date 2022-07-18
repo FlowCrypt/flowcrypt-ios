@@ -12,7 +12,7 @@ import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/at
 import { CommonData } from "../../../data";
 import DataHelper from "../../../helpers/DataHelper";
 import PublicKeyHelper from "../../../helpers/PublicKeyHelper";
-import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 
 describe('SETUP: ', () => {
@@ -21,28 +21,22 @@ describe('SETUP: ', () => {
 
     let firstFetchedDate, secondFetchedDate, thirdFetchedDate, fourthFetchedDate;
 
-    const mockApi = new MockApi();
-
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
-    };
-    mockApi.attesterConfig = {
-      servedPubkeys: {
-        'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
-      }
-    };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
-    }
     const userEmail = CommonData.updateRecipientPublicKey.email;
     const userName = CommonData.updateRecipientPublicKey.name;
     const oldSignatureDate = CommonData.updateRecipientPublicKey.oldSignatureDate;
     const oldFingerprintsValue = CommonData.updateRecipientPublicKey.oldFingerprints;
     const newSignatureDate = CommonData.updateRecipientPublicKey.newSignatureDate;
     const newFingerprintsValue = CommonData.updateRecipientPublicKey.newFingerprints;
+
+    const mockApi = new MockApi();
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
+      }
+    };
 
     await mockApi.withMockedApis(async () => {
       //stage 1

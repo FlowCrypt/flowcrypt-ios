@@ -2,6 +2,7 @@
 
 import { Dict } from '../core/common';
 import { GoogleMockAccountEmail, GoogleMockMessage } from '../apis/google/google-messages';
+import { MockUser, MockUserAlias } from 'api-mocks/mock-data';
 
 export type Logger = (line: string) => void;
 
@@ -39,7 +40,9 @@ export type GoogleConfig = {
 };
 
 export type GoogleMockAccount = {
-  messages: GoogleMockMessage[]
+  aliases?: MockUserAlias[]
+  contacts?: MockUser[]
+  messages?: GoogleMockMessage[]
 }
 
 export type WkdConfig = {};

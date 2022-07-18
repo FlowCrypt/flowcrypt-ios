@@ -13,9 +13,10 @@ describe('SETUP: ', () => {
 
   it('will not update a revoked private key with valid one and delete local key if it\'s removed from EKM and not revoked one', async () => {
 
-    const mockApi = new MockApi();
     const processArgs = CommonData.mockProcessArgs;
     const successMessage = CommonData.refreshingKeysFromEkm.updatedSuccessfully;
+
+    const mockApi = new MockApi();
 
     mockApi.fesConfig = {
       clientConfiguration: {
@@ -25,7 +26,7 @@ describe('SETUP: ', () => {
     };
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.key0Revoked.prv]
-    }
+    };
 
     await mockApi.withMockedApis(async () => {
       // stage 1 - setup

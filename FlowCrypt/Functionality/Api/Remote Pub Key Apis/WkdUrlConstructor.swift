@@ -34,7 +34,9 @@ class WkdUrlConstructor: WkdUrlConstructorType {
             return nil
         }
         let user = String(parts[0])
-        let domain = String(parts[1]).lowercased()
+        let domain = Bundle.shouldUseMockAttesterApi
+            ? GeneralConstants.Mock.backendUrl.replacingOccurrences(of: "https://", with: "")
+            : String(parts[1]).lowercased()
         let hu = String(decoding: user.lowercased().data().SHA1.zBase32EncodedBytes(), as: Unicode.UTF8.self)
         let userPart = "hu/\(hu)?l=\(user)"
         let base = method == .direct

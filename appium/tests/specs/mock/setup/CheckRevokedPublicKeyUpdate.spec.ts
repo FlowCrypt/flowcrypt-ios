@@ -1,6 +1,6 @@
 import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import { MockApi } from 'api-mocks/mock';
-import { CommonData } from 'tests/data';
+import { MockApiConfig } from 'api-mocks/mock-config';
 import {
   SplashScreen
 } from '../../../screenobjects/all-screens';
@@ -16,20 +16,15 @@ describe('SETUP: ', () => {
     const contactEmail = 'available.on@attester.test';
     const contactName = 'Test1';
 
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer
-      }
-    };
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = {
+      returnKeys: [ekmKeySamples.e2e.prv]
+    }
     mockApi.attesterConfig = {
       servedPubkeys: {
         [contactEmail]: ekmKeySamples.key0Revoked.pub!
       }
     };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
-    }
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

@@ -9,8 +9,10 @@ export const CommonData = {
     name: 'e2e'
   },
   alias: {
-    email: "demo@flowcrypt.com",
-    subject: 'Check send email as alias'
+    name: 'FlowCrypt Compatibility',
+    email: 'flowcrypt.compatibility@gmail.com',
+    subject: 'Check send email as alias',
+    message: 'Test message'
   },
   outlookAccount: {
     email: 'e2e.consumer.tests@outlook.com',
@@ -60,15 +62,6 @@ export const CommonData = {
     email: 'dmitry@flowcrypt.com',
     name: 'Dmitry at FlowCrypt'
   },
-  secondContact: {
-    contactName: 'Demo',
-    email: 'demo@flowcrypt.com',
-    name: 'Demo User',
-  },
-  recipient: {
-    email: 'robot@flowcrypt.com',
-    name: 'FlowCrypt Robot',
-  },
   bundleId: {
     id: 'com.flowcrypt.as.ios.debug',
   },
@@ -77,10 +70,14 @@ export const CommonData = {
     message: 'test test',
   },
   encryptedEmailWithAttachment: {
-    subject: 'email with attachment',
-    message: 'this email contains attachment',
-    attachmentName: 'image.png',
-    encryptedAttachmentName: 'image.png.pgp'
+    sender: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
+    recipientName: 'Dima FlowCrypt',
+    cc: 'Demo User',
+    subject: 'Message with cc and multiple recipients and text attachment',
+    message: 'This email has cc and multiple recipients and text attachment',
+    attachmentName: 'simple.txt',
+    encryptedAttachmentName: 'simple.txt.pgp'
   },
   emailWithMultipleRecipientsWithCC: {
     sender: 'ioan@flowcrypt.com',
@@ -114,8 +111,8 @@ export const CommonData = {
   updateRecipientPublicKey: {
     email: 'updating.key@example.test',
     name: 'Updating key',
-    oldSignatureDate: '12 Jan 2022, 07:16:58 PM',//in UTC
-    newSignatureDate: '12 Jan 2022, 07:27:20 PM',//in UTC
+    oldSignatureDate: '12 Jan 2022, 07:16:58 PM', // in UTC
+    newSignatureDate: '12 Jan 2022, 07:27:20 PM', // in UTC
     oldFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0',
     newFingerprints: '7E181662A26EC6748D6FDB1CC7C990C1A2EA78DD, 5C23518345A6595E81EBFEFCA71D94A76202B1D0, 40E4EE0325E38F717737889AC54F277266650211'
   },
@@ -134,7 +131,7 @@ export const CommonData = {
     bcc: 'e2e.enterprise.test@flowcrypt.com'
   },
   encryptedMDCHashMismatchEmail: {
-    senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
     subject: 'encrypted - MDC hash mismatch - modification detected - should fail',
     message: 'bad_mdc: Security threat - opening this message is dangerous because it was modified in transit.',
   },
@@ -153,7 +150,7 @@ export const CommonData = {
   notIntegrityProtected: {
     subject: 'not integrity protected - should show a warning and not decrypt automatically',
     message: 'Message is missing integrity checks (MDC). The sender should update their outdated software and resend.',
-    senderEmail: 'flowcrypt.compatibility@gmail.com',
+    senderName: 'FlowCrypt Compatibility',
   },
   keyMismatch: {
     subject: 'key mismatch unexpectedly produces a modal',
@@ -181,14 +178,6 @@ export const CommonData = {
     sender: 'flowcrypt.compatibility@gmail.com',
     replyToEmail: 'reply@domain.com',
     subject: 'Honor reply-to address - plain'
-  },
-  recipientWithExpiredPublicKey: {
-    email: 'expired@flowcrypt.com',
-    name: 'expired key'
-  },
-  recipientWithRevokedPublicKey: {
-    email: 'revoked@flowcrypt.com',
-    name: 'revoekd@flowcrypt.com'
   },
   errors: {
     noPublicKey: 'Error\n' +
@@ -234,14 +223,6 @@ export const CommonData = {
   validMockUser: {
     email: 'valid@domain.test',
     name: 'Tom James Holub'
-  },
-  expiredMockUser: {
-    email: 'expired@domain.test',
-    name: 'expired.on.attester@domain.com'
-  },
-  revokedMockUser: {
-    email: 'revoked@domain.test',
-    name: 'revoekd@flowcrypt.com'
   },
   refreshingKeysFromEkm: {
     wrongPassPhrase: 'Error\nIncorrect pass phrase. Please try again.',
