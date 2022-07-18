@@ -222,7 +222,7 @@ export class Mime {
     for (const attachment of attachments) {
       rootNode.appendChild(Mime.createAttachmentNode(attachment)); // tslint:disable-line:no-unsafe-any
     }
-    return rootNode.build(); // tslint:disable-line:no-unsafe-any
+    return rootNode.build(); // eslint-disable-line @typescript-eslint/no-unsafe-return
   }
 
   public static encodeSmime = async (body: Uint8Array, headers: RichHeaders, type: 'enveloped-data' | 'signed-data'): Promise<string> => {
@@ -239,7 +239,7 @@ export class Mime {
       contentDescription = 'S/MIME Signed Message';
     }
     rootNode.addHeader('Content-Description', contentDescription); // tslint:disable-line:no-unsafe-any
-    return rootNode.build(); // tslint:disable-line:no-unsafe-any
+    return rootNode.build(); // eslint-disable-line @typescript-eslint/no-unsafe-return
   }
 
   public static subjectWithoutPrefixes = (subject: string): string => {
@@ -387,7 +387,7 @@ export class Mime {
 
   private static getNodeContentAsUtfStr = (node: MimeParserNode): string => {
     if (node.charset && Iso88592.labels.includes(node.charset)) {
-      return Iso88592.decode(node.rawContent!); // tslint:disable-line:no-unsafe-any
+      return Iso88592.decode(node.rawContent!); // eslint-disable-line @typescript-eslint/no-unsafe-return
     }
     let resultBuf: Buf;
     if (node.charset === 'utf-8' && node.contentTransferEncoding.value === 'base64') {

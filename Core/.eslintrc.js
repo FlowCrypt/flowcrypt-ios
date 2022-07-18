@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -76,6 +77,7 @@ module.exports = {
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/no-misused-promises': ['error'],
     '@typescript-eslint/no-misused-new': 'error',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-parameter-properties': 'off',
@@ -85,6 +87,7 @@ module.exports = {
         'hoist': 'all'
       }
     ],
+    '@typescript-eslint/no-unsafe-return': 'error',
     '@typescript-eslint/no-unused-expressions': 'error',
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-use-before-define': 'off',

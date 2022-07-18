@@ -76,6 +76,7 @@ export type VerifyRes = {
 };
 export type PgpMsgTypeResult = { armored: boolean, type: MsgBlockType } | undefined;
 export type DecryptResult = DecryptSuccess | DecryptError;
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export type DiagnoseMsgPubkeysResult = { found_match: boolean, receivers: number, };
 export enum DecryptErrTypes {
   keyMismatch = 'key_mismatch',
@@ -90,7 +91,7 @@ export enum DecryptErrTypes {
 
 export class FormatError extends Error {
   public data: string;
-  constructor(message: string, data: string) {
+  public constructor(message: string, data: string) {
     super(message);
     this.data = data;
   }
@@ -155,7 +156,7 @@ export class PgpMsg {
     msgOrVerResults: OpenpgpMsgOrCleartext | VerificationResult[],
     pubs: Key[]
   ): Promise<VerifyRes> => {
-    const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
+    const sig: VerifyRes = { match: null }; // eslint-disable-line no-null/no-null
     try {
       // While this looks like bad method API design, it's here to ensure execution order when:
       // 1. reading data
@@ -172,6 +173,7 @@ export class PgpMsg {
         // .. which is not really an issue - an attacker that can append signatures
         // could have also just slightly changed the message, causing the same experience
         // .. so for now #wontfix unless a reasonable usecase surfaces
+        // eslint-disable-next-line no-null/no-null
         sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
         if (!sig.signer) {
           // todo - currently only the first signer will be reported.
@@ -180,7 +182,7 @@ export class PgpMsg {
         }
       }
     } catch (verifyErr) {
-      sig.match = null; // tslint:disable-line:no-null-keyword
+      sig.match = null; // eslint-disable-line no-null/no-null
       if (verifyErr instanceof Error && verifyErr.message === 'Can only verify message with one literal data packet.') {
         sig.error = 'FlowCrypt is not equipped to verify this message (err 101)';
       } else {
@@ -325,6 +327,7 @@ export class PgpMsg {
     for (const k of await Promise.all(privateKis.map(ki => PgpKey.read(ki.public)))) {
       localKeyIds.push(...k.getKeyIDs());
     }
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const diagnosis = { found_match: false, receivers: msgKeyIds.length };
     for (const msgKeyId of msgKeyIds) {
       for (const localKeyId of localKeyIds) {
@@ -387,7 +390,7 @@ export class PgpMsg {
   };
 
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {
-    return o // tslint:disable-line:no-unsafe-any
+    return o // eslint-disable-line @typescript-eslint/no-unsafe-return
       && typeof o === 'object'
       && typeof (o as FcAttLinkData).name !== 'undefined'
       && typeof (o as FcAttLinkData).size !== 'undefined'

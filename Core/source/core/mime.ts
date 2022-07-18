@@ -14,9 +14,11 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { iso2022jpToUtf } from '../platform/util';
 
-const MimeParser = requireMimeParser();  // tslint:disable-line:variable-name
-const MimeBuilder = requireMimeBuilder();  // tslint:disable-line:variable-name
-const Iso88592 = requireIso88592();  // tslint:disable-line:variable-name
+/* eslint-disable @typescript-eslint/naming-convention */
+const MimeParser = requireMimeParser();
+const MimeBuilder = requireMimeBuilder();
+const Iso88592 = requireIso88592();
+/* eslint-enable @typescript-eslint/naming-convention */
 
 type AddressHeader = { address: string; name: string; };
 type MimeContentHeader = string | AddressHeader[];
@@ -36,6 +38,7 @@ export type MimeContent = {
 
 export type MimeEncodeType = 'pgpMimeEncrypted' | 'pgpMimeSigned' | undefined;
 export type RichHeaders = Dict<string | string[]>;
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export type SendableMsgBody = { [key: string]: string | undefined; 'text/plain'?: string; 'text/html'?: string; };
 export type MimeProccesedMsg = {
   rawSignedContent: string | undefined,
@@ -126,6 +129,7 @@ export class Mime {
   public static replyHeaders = (parsedMimeMsg: MimeContent) => {
     const msgId = String(parsedMimeMsg.headers['message-id'] || '');
     const refs = String(parsedMimeMsg.headers['in-reply-to'] || '');
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     return { 'in-reply-to': msgId, 'references': refs + ' ' + msgId };
   };
 
@@ -181,9 +185,11 @@ export class Mime {
                 mimeContent.text = (mimeContent.text ? `${mimeContent.text}\n\n` : '')
                   + Mime.getNodeContentAsUtfStr(node);
               } else if (Mime.getNodeType(node) === 'text/rfc822-headers') {
+                /* eslint-disable no-underscore-dangle */
                 if (node._parentNode && node._parentNode.headers.subject) {
                   mimeContent.subject = node._parentNode.headers.subject[0].value;
                 }
+                /* eslint-enable no-underscore-dangle */
               } else {
                 mimeContent.atts.push(Mime.getNodeAsAtt(node));
               }
@@ -235,7 +241,7 @@ export class Mime {
     for (const att of atts) {
       rootNode.appendChild(Mime.createAttNode(att)); // tslint:disable-line:no-unsafe-any
     }
-    return rootNode.build(); // tslint:disable-line:no-unsafe-any
+    return rootNode.build(); // eslint-disable-line @typescript-eslint/no-unsafe-return
   };
 
   public static subjectWithoutPrefixes = (subject: string): string => {
@@ -308,6 +314,7 @@ export class Mime {
 
   private static retrieveRawSignedContent = (nodes: MimeParserNode[]): string | undefined => {
     for (const node of nodes) {
+      /* eslint-disable no-underscore-dangle */
       if (!node._childNodes || !node._childNodes.length) {
         // signed nodes tend contain two children: content node, signature node.
         // If no node, then this is not pgp/mime signed content
@@ -326,6 +333,7 @@ export class Mime {
         return rawSignedContent;
       }
       return Mime.retrieveRawSignedContent(node._childNodes);
+      /* eslint-enable no-underscore-dangle */
     }
     return undefined;
   };
@@ -402,7 +410,7 @@ export class Mime {
   private static getNodeContentAsUtfStr = (node: MimeParserNode): string => {
     // tslint:disable-next-line:no-unsafe-any
     if (node.charset && Iso88592.labels.includes(node.charset)) {
-      return Iso88592.decode(node.rawContent!); // tslint:disable-line:no-unsafe-any
+      return Iso88592.decode(node.rawContent!); // eslint-disable-line @typescript-eslint/no-unsafe-return
     }
     let resultBuf: Buf;
     if (node.charset === 'utf-8' && node.contentTransferEncoding.value === 'base64') {
@@ -419,7 +427,7 @@ export class Mime {
     return resultBuf.toUtfStr();
   };
 
-  // tslint:disable-next-line:variable-name
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static newContentNode = (MimeBuilder: any, type: string, content: string): MimeParserNode => {
     const node: MimeParserNode = new MimeBuilder(type).setContent(content); // tslint:disable-line:no-unsafe-any
     if (type === 'text/plain') {
