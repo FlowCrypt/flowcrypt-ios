@@ -13,7 +13,9 @@ struct EnterpriseServerApiHelper {
         /// -1001 - request timed out, -1003 - сannot resolve host, -1004 - can't connect to hosts
         /// -1005 - network connection lost, -1006 - dns lookup failed, -1007 - too many redirects
         /// -1008 - resource unavailable
-        static let getToleratedNSErrorCodes = [-1001, -1003, -1004, -1005, -1006, -1007, -1008]
+        /// -1200 - SSL Error
+        /// 400 - 599: Http error
+        static let getToleratedNSErrorCodes = [-1001, -1003, -1004, -1005, -1006, -1007, -1008, -1200] + Array(400..<600)
         static let getActiveFesTimeout: TimeInterval = 4
         static let apiName = "EnterpriseServerApi"
     }
