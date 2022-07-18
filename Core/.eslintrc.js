@@ -17,8 +17,8 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/base'
-    // 'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/base',
+    'plugin:@typescript-eslint/recommended'
   ],
   plugins: [
     'no-only-tests',
