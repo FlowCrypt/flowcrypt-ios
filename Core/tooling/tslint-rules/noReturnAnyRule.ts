@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-import * as ts from "typescript";
+import ts from "typescript";
 import * as tslint from "tslint";
 import * as tsutils from "tsutils";
 
@@ -45,7 +45,7 @@ export class Rule extends tslint.Rules.TypedRule {
 
 class Walker extends tslint.AbstractWalker<void> {
 
-  constructor(sourceFile: ts.SourceFile, ruleName: string, private readonly checker: ts.TypeChecker) {
+  public constructor(sourceFile: ts.SourceFile, ruleName: string, private readonly checker: ts.TypeChecker) {
     super(sourceFile, ruleName, undefined);
   }
 

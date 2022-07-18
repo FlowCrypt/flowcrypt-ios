@@ -1,4 +1,4 @@
-import * as ts from "typescript";
+import ts from "typescript";
 import * as tslint from "tslint";
 
 const DO_NOT_SHORT_MULTILINE_OBJ_LITERALS = `If object literal fits on one line comfortably, please keep it on one line.

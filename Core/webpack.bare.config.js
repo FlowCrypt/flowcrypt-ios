@@ -1,4 +1,3 @@
-
 module.exports = {
   target: 'web',
   mode: 'none',

@@ -1,4 +1,4 @@
-import * as ts from "typescript";
+import ts from "typescript";
 import * as tslint from "tslint";
 
 const DO_NOT_USE_EMPTY_LINES_IN_FUNC = `Do not leave empty lines in a function body.

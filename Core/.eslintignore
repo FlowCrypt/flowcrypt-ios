@@ -1,2 +1,5 @@
+.eslintrc.js
+webpack.bare.config.js
 build/
 source/core/types
+tooling/
