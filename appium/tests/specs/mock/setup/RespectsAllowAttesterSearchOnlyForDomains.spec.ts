@@ -17,8 +17,9 @@ describe('SETUP: ', () => {
     const mockApi = new MockApi();
     const enabledEmail = 'attester@enabled.test';
     const disabledEmail = 'attester@disabled.test';
-    const enabledUserName = 'Tom James Holub';
+    const enabledUserName = CommonData.validMockUser.name;
     const processArgs = CommonData.mockProcessArgs;
+
     mockApi.fesConfig = {
       clientConfiguration: {
         flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
@@ -33,7 +34,7 @@ describe('SETUP: ', () => {
       }
     };
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
+      returnKeys: [ekmKeySamples.e2e.prv]
     }
 
     await mockApi.withMockedApis(async () => {
@@ -60,6 +61,7 @@ describe('SETUP: ', () => {
         }
       };
       await AppiumHelper.restartApp(processArgs);
+      await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.setAddRecipient(disabledEmail);
       await NewMessageScreen.setAddRecipient(enabledEmail);

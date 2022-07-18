@@ -141,7 +141,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
     public private(set) var menuNode = ASButtonNode()
     public private(set) var expandNode = ASImageNode()
 
-    private lazy var recipientsListNode: ASDisplayNode = MessageRecipientsNode(
+    private lazy var recipientsListNode = MessageRecipientsNode(
         input: .init(
             recipients: input.recipients,
             ccRecipients: input.ccRecipients,

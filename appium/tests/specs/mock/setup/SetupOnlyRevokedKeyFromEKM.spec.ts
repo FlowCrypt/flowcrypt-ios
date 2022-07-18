@@ -3,12 +3,13 @@ import {
   SplashScreen,
   SetupKeyScreen,
 } from '../../../screenobjects/all-screens';
-import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
 import { CommonData } from "../../../data";
+import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
 
 
 describe('SETUP: ', () => {
@@ -16,32 +17,24 @@ describe('SETUP: ', () => {
   it('test that returns only revoked key from EKM during setup', async () => {
 
     const mockApi = new MockApi();
-    const recipientEmail = CommonData.recipient.email;
-    const recipientName = CommonData.recipient.name;
+
+    const recipient = MockUserList.robot;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
 
     // When private key is revoked key, there are no public keys to pick. So missing sender public key error occurs.
-
-
     const noPrivateKeyError = 'Error\n' +
       'Could not compose message\n\n' +
       'Your account keys are not usable for encryption.';
 
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = {
+      returnKeys: [ekmKeySamples.e2eRevokedKey.prv]
     };
     mockApi.attesterConfig = {
       servedPubkeys: {
-        'robot@flowcrypt.com': attesterPublicKeySamples.valid
+        [MockUserList.robot.email]: MockUserList.robot.pub!
       }
-    };
-
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eRevokedKey.prv]
     };
 
     await mockApi.withMockedApis(async () => {
@@ -50,9 +43,9 @@ describe('SETUP: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
 
-      await NewMessageScreen.composeEmail(recipientEmail, emailSubject, emailText);
+      await NewMessageScreen.composeEmail(recipient.email, emailSubject, emailText);
       await NewMessageScreen.checkFilledComposeEmailInfo({
-        recipients: [recipientName],
+        recipients: [recipient.name],
         subject: emailSubject,
         message: emailText
       });

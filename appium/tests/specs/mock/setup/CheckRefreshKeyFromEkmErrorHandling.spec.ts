@@ -7,30 +7,23 @@ import {
 import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
 import { CommonData } from "../../../data";
 import AppiumHelper from "../../../helpers/AppiumHelper";
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('SETUP: ', () => {
 
   it('EKM server error handled gracefully', async () => {
-
     const mockApi = new MockApi();
     const processArgs = CommonData.mockProcessArgs;
 
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
-    };
-    mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.key0.prv]
-    }
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
+    mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
 
     await mockApi.withMockedApis(async () => {
       // stage 1 - setup
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0, ekmKeySamples.e2e, ekmKeySamples.key1]);
 
       // stage 2 - EKM down
       mockApi.ekmConfig = {
@@ -41,7 +34,7 @@ describe('SETUP: ', () => {
       }
       await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();
-      await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
+      await KeysScreen.checkKeysScreen([ekmKeySamples.key0, ekmKeySamples.e2e, ekmKeySamples.key1]);
     });
   });
 });

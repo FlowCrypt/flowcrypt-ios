@@ -8,6 +8,11 @@
     "test.live": "./node_modules/.bin/wdio ./config/wdio.live.conf.js --suite all --jasmineOpts.grep",
     "test.mock.all": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all",
     "test.mock": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite all --jasmineOpts.grep",
+    "test.mock.inbox": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite inbox",
+    "test.mock.compose": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite compose",
+    "test.mock.settings": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite settings",
+    "test.mock.setup": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite setup",
+    "test.mock.login": "./node_modules/.bin/wdio ./config/wdio.mock.conf.js --suite login",
     "test": "npm run-script build.app && npm run-script only.test.all",
     "lint": "npx eslint --ext .ts api-mocks tests",
     "lint:fix": "npx eslint --ext .ts api-mocks tests --fix"

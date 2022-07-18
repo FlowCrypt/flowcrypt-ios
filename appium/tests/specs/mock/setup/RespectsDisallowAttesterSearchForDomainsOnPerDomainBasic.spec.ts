@@ -28,7 +28,7 @@ describe('SETUP: ', () => {
       }
     };
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2eValidKey.prv]
+      returnKeys: [ekmKeySamples.e2e.prv]
     }
 
     await mockApi.withMockedApis(async () => {
@@ -43,7 +43,7 @@ describe('SETUP: ', () => {
 
       // Checking added recipients color
       await NewMessageScreen.checkAddedRecipientColor('attester@disabled.test', 0, 'gray');
-      await NewMessageScreen.checkAddedRecipientColor('Tom James Holub', 1, 'green');
+      await NewMessageScreen.checkAddedRecipientColor(CommonData.validMockUser.name, 1, 'green');
     });
   });
 });

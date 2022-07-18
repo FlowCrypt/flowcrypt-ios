@@ -136,16 +136,13 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.RECIPIENT_SPINNER);
   }
 
-  getRecipientsList = async (type: string) => {
-    return $(`~aid-recipients-list-${type}`);
-  }
-
   getRecipientsTextField = async (type: string) => {
     return $(`~aid-recipients-text-field-${type}`);
   }
 
   setAddRecipient = async (recipient?: string, type = 'to') => {
     if (recipient) {
+      await browser.pause(500);
       const textFieldEl = await this.getRecipientsTextField(type);
       await ElementHelper.waitElementVisible(textFieldEl);
       await textFieldEl.setValue(recipient);
@@ -209,19 +206,25 @@ class NewMessageScreen extends BaseScreen {
     const element = await this.filledSubject(emailInfo.subject);
     await element.waitForDisplayed();
 
-    await this.checkRecipientsList(emailInfo.recipients);
+    if (await this.recipientListLabel.isDisplayed()) {
+      const allRecipients = [...emailInfo.recipients, ...emailInfo.cc ?? [], ...emailInfo.bcc ?? []];
+      await this.checkRecipientLabel(allRecipients);
+    } else {
+      await this.checkRecipientsList(emailInfo.recipients);
 
-    if (emailInfo.cc) {
-      await this.checkRecipientsList(emailInfo.cc, 'cc');
+      if (emailInfo.cc) {
+        await this.checkRecipientsList(emailInfo.cc, 'cc');
+      }
+
+      if (emailInfo.bcc) {
+        await this.checkRecipientsList(emailInfo.bcc, 'bcc');
+      }
+
+      if (emailInfo.attachmentName !== undefined) {
+        await this.checkAddedAttachment(emailInfo.attachmentName);
+      }
     }
 
-    if (emailInfo.bcc) {
-      await this.checkRecipientsList(emailInfo.bcc, 'bcc');
-    }
-
-    if (emailInfo.attachmentName !== undefined) {
-      await this.checkAddedAttachment(emailInfo.attachmentName);
-    }
   };
 
   checkRecipientsTextFieldIsInvisible = async (type = 'to') => {
@@ -259,7 +262,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   getActiveElementId = async () => {
-    await browser.pause(100);
+    await browser.pause(500);
     const activeElement = (await driver.getActiveElement()) as unknown as { ELEMENT: string };
     return activeElement.ELEMENT;
   }
@@ -298,6 +301,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   deleteAddedRecipientWithDoubleBackspace = async () => {
+    await this.showRecipientInputIfNeeded();
     await driver.sendKeys(['\b']); // backspace
     await driver.sendKeys(['\b']); // backspace
   }
@@ -364,6 +368,7 @@ class NewMessageScreen extends BaseScreen {
   }
 
   clickToggleRecipientsButton = async () => {
+    await browser.pause(500);
     await ElementHelper.waitAndClick(await this.toggleRecipientsButton);
   }
 

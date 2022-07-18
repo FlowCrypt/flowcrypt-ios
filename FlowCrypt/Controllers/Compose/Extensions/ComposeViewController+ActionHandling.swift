@@ -126,6 +126,7 @@ extension ComposeViewController {
 
         contextToSend.recipients[index].state = state
         contextToSend.recipients[index].keyState = keyState
+
         if let displayName = displayName, displayName.isNotEmpty {
             contextToSend.recipients[index].name = displayName
         }

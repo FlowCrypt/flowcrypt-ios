@@ -77,8 +77,8 @@ class TouchHelper {
   static scrollDownToElement = async (element: WebdriverIO.Element) => {
     const { width, height } = await driver.getWindowSize();
     const anchor = width / 2;
-    const startPoint = height * 0.75;
-    const endPoint = height * 0.15;
+    const startPoint = height * 0.65;
+    const endPoint = height * 0.1;
 
     // this wait can be later replaced by waiting for loader to go away before scrolling
     await browser.pause(1000); // make sure contents are loaded first, so we don't scroll too early
