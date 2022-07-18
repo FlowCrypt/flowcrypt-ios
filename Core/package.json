@@ -20,7 +20,7 @@
     "babel-loader": "8.2.5",
     "babel-preset-env": "1.7.0",
     "chai": "4.3.6",
-    "eslint": "8.19.0",
+    "eslint": "8.20.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-no-only-tests": "2.6.0",
     "node-cleanup": "2.1.2",
