@@ -72,7 +72,7 @@ export class GmailMsg {
     if (ccHeader) {
       this.payload.headers!.push({ name: 'Cc', value: ccHeader.text });
     }
-    if (toHeader) {
+    if (bccHeader) {
       this.payload.headers!.push({ name: 'Bcc', value: bccHeader.text });
     }
     if (fromHeader) {
