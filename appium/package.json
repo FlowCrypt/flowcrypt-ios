@@ -34,8 +34,6 @@
     "@wdio/spec-reporter": "^7.16.14",
     "appium": "1.22.3",
     "dotenv": "^16.0.0",
-    "eslint": "^8.19.0",
-    "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-wdio": "^7.4.2",
     "mailparser": "3.5.0",

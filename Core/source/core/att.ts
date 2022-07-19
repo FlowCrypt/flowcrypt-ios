@@ -18,7 +18,7 @@ export class Att {
   // eslint-disable-next-line max-len
   public static readonly attachmentsPattern = /^(((cryptup|flowcrypt)-backup-[a-z0-9]+\.(key|asc))|(.+\.pgp)|(.+\.gpg)|(.+\.asc)|(noname)|(message)|(PGPMIME version identification)|())$/gm;
 
-  public length: number = NaN;
+  public length = NaN;
   public type: string;
   public name: string;
   public url: string | undefined;
@@ -31,11 +31,7 @@ export class Att {
   private bytes: Uint8Array | undefined;
   private treatAsValue: Att$treatAs | undefined;
 
-  public static keyinfoAsPubkeyAtt = (ki: { public: string, longid: string }) => {
-    return new Att({ data: Buf.fromUtfStr(ki.public), type: 'application/pgp-keys', name: `0x${ki.longid}.asc` });
-  };
-
-  constructor({ data, type, name, length, url, inline, id, msgId, treatAs, cid, contentDescription }: AttMeta) {
+  public constructor({ data, type, name, length, url, inline, id, msgId, treatAs, cid, contentDescription }: AttMeta) {
     if (typeof data === 'undefined' && typeof url === 'undefined' && typeof id === 'undefined') {
       throw new Error('Att: one of data|url|id has to be set');
     }
@@ -58,6 +54,10 @@ export class Att {
     this.cid = cid || undefined;
     this.contentDescription = contentDescription || undefined;
   }
+
+  public static keyinfoAsPubkeyAtt = (ki: { public: string, longid: string }) => {
+    return new Att({ data: Buf.fromUtfStr(ki.public), type: 'application/pgp-keys', name: `0x${ki.longid}.asc` });
+  };
 
   public hasData = () => {
     return this.bytes instanceof Uint8Array;

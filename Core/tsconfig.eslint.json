@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "include": [
     "./**/*.ts",
+    "eslint-local-rules.js",
     ".eslintrc.js",
-    "webpack.bare.config.js"
   ],
 }

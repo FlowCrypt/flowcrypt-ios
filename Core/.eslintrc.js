@@ -5,6 +5,7 @@ module.exports = {
     project: 'tsconfig.eslint.json',
     tsconfigRootDir: __dirname,
   },
+  root: true,
   env: {
     browser: true,
     node: true,
@@ -28,7 +29,8 @@ module.exports = {
     'eslint-plugin-prefer-arrow',
     'eslint-plugin-import',
     'eslint-plugin-no-null',
-    '@typescript-eslint'
+    '@typescript-eslint',
+    'eslint-plugin-local-rules'
   ],
   rules: {
     '@typescript-eslint/adjacent-overload-signatures': 'error',
@@ -190,7 +192,8 @@ module.exports = {
       }
     ],
     'use-isnan': 'error',
-    'valid-typeof': 'off'
+    'valid-typeof': 'off',
+    'local-rules/standard-loops': 'error'
   },
   overrides: [
     {
