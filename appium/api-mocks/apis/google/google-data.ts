@@ -30,10 +30,10 @@ export class GmailMsg {
   public snippet?: string;
   public raw?: string;
 
-  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, mimeMsg: ParsedMail }) {
+  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, mimeMsg: ParsedMail, threadId?: string | null }) {
     this.id = msg.id;
     this.historyId = msg.id;
-    this.threadId = msg.id;
+    this.threadId = msg.threadId ?? msg.id;
     this.labelIds = msg.labelIds;
     this.raw = msg.raw;
     this.sizeEstimate = Buffer.byteLength(msg.raw, "utf-8");
@@ -47,6 +47,7 @@ export class GmailMsg {
     const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
     const messageIdHeader = msg.mimeMsg.headers.get('message-id')! as string;
     const mimeVersionHeader = msg.mimeMsg.headers.get('mime-version')! as string;
+    const replyToHeader = msg.mimeMsg.headers.get('reply-to')! as AddressObject;
     let body;
 
     if (msg.mimeMsg.text) {
@@ -83,6 +84,9 @@ export class GmailMsg {
     }
     if (dateHeader) {
       this.payload.headers!.push({ name: 'Date', value: dateHeader.toString() });
+    }
+    if (replyToHeader) {
+      this.payload.headers!.push({ name: 'Reply-To', value: replyToHeader.text });
     }
   }
 
@@ -184,7 +188,7 @@ export class GoogleData {
             if (!raw) { continue }
 
             const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
-            const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, mimeMsg: mimeMsg });
+            const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, mimeMsg: mimeMsg, threadId: json.full.threadId });
             if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
               acctData.drafts.push(msg);
             } else {
