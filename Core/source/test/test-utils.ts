@@ -22,7 +22,7 @@ export const httpGet = async (url: string): Promise<Buf> => {
   return await new Promise((resolve, reject) => {
     const req = https.request(url, r => {
       const buffers: Buffer[] = [];
-      // tslint:disable-next-line:no-unsafe-any
+
       r.on('data', buffer => buffers.push(buffer));
       r.on('end', () => {
         const buf = Buf.fromUint8(Buffer.concat(buffers));
@@ -58,7 +58,7 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     expect(dataStr).to.contain('-----BEGIN PGP MESSAGE-----');
     expect(dataStr).to.contain('-----END PGP MESSAGE-----');
   } else if (type === 'msgBlocks') {
-    // tslint:disable-next-line:no-unsafe-any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     const blocks = data.toString().split('\n').map(block => JSON.parse(block));
     expect(details).to.be.instanceOf(Array);
     const expectedBlocks = details as any[];
@@ -66,25 +66,26 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     // todo plainHtml - should be renambed - legacy compat reasons
     expect(blocks[0]).to.have.property('type').which.equals('plainHtml');
     const renderedContentBlocksBlock = blocks.shift();
-    // tslint:disable-next-line:no-unsafe-any
+
     const [head, body, foot] = renderedContentBlocksBlock.content.split(/<\/?body>/g);
     expect(head).to.contain('<!DOCTYPE html><html>');
     expect(head).to.contain('<style>');
     expect(head).to.contain('<meta name="viewport" content="width=device-width" />');
     expect(foot).to.contain('</html>');
-    // tslint:disable-next-line:no-unsafe-any
+
     if (body.includes('<!-- next MsgBlock -->\n')) {
-      // tslint:disable-next-line:no-unsafe-any
+
       const renderedContentBlocks = body.split('<!-- next MsgBlock -->\n');
       // last one should be empty due to the splitting above
-      // tslint:disable-next-line:no-unsafe-any
+
       const lastEmpty = renderedContentBlocks.pop();
       expect(lastEmpty).to.equal('');
-      // tslint:disable-next-line:no-unsafe-any
+
       for (const renderedContentBlock of renderedContentBlocks) {
         // (.*) doesn't work for some whitespaces, so use ([\s\S]+)
         const m = (renderedContentBlock as string).match(
           /<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/);
+        // eslint-disable-next-line no-null/no-null
         if (m === null) {
           blocks.unshift({
             error: "TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT",
@@ -484,6 +485,7 @@ const TEST_KEYS: { [name: string]: TestKey } = {
     passphrase: 'some long pp',
     longid: '063635B3E33EB14C',
   },
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   'gpg-dummy': { // first key is a dummy primary key, with an actual subkey. Achieved with gnupg --export-secret-subkeys
     pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
       '\n' +
@@ -656,6 +658,7 @@ const TEST_KEYS: { [name: string]: TestKey } = {
     passphrase: '',
     longid: ''
   },
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   'flowcrypt.compatibility': {
     pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\r\n' +
       'Version: FlowCrypt iOS 0.2 Gmail Encryption\r\n' +

@@ -9,7 +9,6 @@ declare const global: any;
 
 const endpoints = new Endpoints();
 
-// tslint:disable-next-line no-unsafe-any
 global.handleRequestFromHost = (
   endpointName: string, callbackId: string, request: string,
   data: Uint8Array, cb: (key: string, response: EndpointRes) => void): void => {

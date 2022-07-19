@@ -36,6 +36,7 @@ module.exports = {
     '@typescript-eslint/adjacent-overload-signatures': 'error',
     '@typescript-eslint/array-type': 'off',
     '@typescript-eslint/await-thenable': 'off',
+    "@typescript-eslint/ban-ts-comment": "off",
     '@typescript-eslint/ban-types': [
       'error',
       {
@@ -157,7 +158,7 @@ module.exports = {
     'no-undef-init': 'error',
     'no-underscore-dangle': 'error',
     'no-unsafe-finally': 'error',
-    'no-unused-expressions': 'error',
+    'no-unused-expressions': 0,
     'no-unused-labels': 'error',
     'no-unused-vars': 0,
     'no-use-before-define': 'off',

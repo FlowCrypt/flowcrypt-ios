@@ -1,7 +1,5 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-// tslint:disable:no-null-keyword
-
 import { Contact, Key, KeyUtil } from '../../core/crypto/key';
 
 const DATA: Contact[] = [];
@@ -50,7 +48,6 @@ export class ContactStore {
       update.pubkey = await KeyUtil.asPublicKey(update.pubkey);
     }
     for (const k of Object.keys(update)) {
-      // @ts-ignore
       updated[k] = update[k];
     }
     if (update.pubkey) {

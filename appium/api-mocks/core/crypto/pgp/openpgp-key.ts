@@ -124,7 +124,7 @@ export class OpenPGPKey {
     }
     if (signingPrv) {
       const openPgpPrv = OpenPGPKey.extractExternalLibraryObjFromKey(signingPrv);
-      if (typeof openPgpPrv.isPrivate !== 'undefined' && openPgpPrv.isPrivate()) { // tslint:disable-line:no-unbound-method - only testing if exists
+      if (typeof openPgpPrv.isPrivate !== 'undefined' && openPgpPrv.isPrivate()) {
         options.privateKeys = [openPgpPrv];
       }
     }
@@ -159,7 +159,6 @@ export class OpenPGPKey {
     try {
       exp = await keyWithoutWeakPackets.getExpirationTime('encrypt');
     } catch (e) {
-      // tslint:disable-next-line: no-null-keyword
       exp = null;
     }
     const expired = () => {
@@ -200,7 +199,6 @@ export class OpenPGPKey {
     }
     const algoInfo = keyWithoutWeakPackets.primaryKey.getAlgorithmInfo();
     const key = keyToUpdate || {} as Key; // if no key to update, use empty object, will get props assigned below
-    // tslint:disable-next-line:no-unnecessary-initializer
     const { encryptionKey = undefined, encryptionKeyIgnoringExpiration = undefined, signingKey = undefined, signingKeyIgnoringExpiration = undefined }
       = isPrimaryKeyStrong ? await OpenPGPKey.getSigningAndEncryptionKeys(keyWithoutWeakPackets, exp, expired) : {};
     const missingPrivateKeyForSigning = signingKeyIgnoringExpiration?.keyPacket ? OpenPGPKey.arePrivateParamsMissing(signingKeyIgnoringExpiration.keyPacket) : false;
@@ -218,7 +216,6 @@ export class OpenPGPKey {
       // valid emails extracted from uids
       emails,
       // full uids that have valid emails in them
-      // tslint:disable-next-line: no-unsafe-any
       identities: keyWithoutWeakPackets.users.map(u => u.userId).filter(u => !!u && u.userid && Str.parseEmail(u.userid).email).map(u => u!.userid).filter(Boolean) as string[],
       lastModified,
       expiration: exp instanceof Date ? exp.getTime() : undefined,
@@ -576,14 +573,14 @@ export class OpenPGPKey {
     }
     if (exp === null || typeof exp === 'number') {
       // If key does not expire (exp == Infinity) the encryption key should be available.
-      return null; // tslint:disable-line:no-null-keyword
+      return null;
     }
     const oneSecondBeforeExpiration = exp && expired() ? new Date(exp.getTime() - 1000) : undefined;
     if (typeof oneSecondBeforeExpiration === 'undefined') {
-      return null; // tslint:disable-line:no-null-keyword
+      return null;
     }
     const secondTry = await Catch.undefinedOnException(getter(undefined, oneSecondBeforeExpiration));
-    return secondTry ? secondTry : null; // tslint:disable-line:no-null-keyword
+    return secondTry ? secondTry : null;
   }
 
   private static getSigningAndEncryptionKeys = async (key: OpenPGP.key.Key, exp: number | Date | null, expired: () => boolean) => {

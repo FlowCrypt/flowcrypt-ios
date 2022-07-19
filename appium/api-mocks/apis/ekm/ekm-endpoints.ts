@@ -1,20 +1,8 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-// import { HttpErr } from '../lib/api';
-// import { isPut, isGet } from '../lib/mock-util';
-// import { oauth } from '../lib/oauth';
-// import { Dict } from '../../core/common';
-// import { expect } from 'chai';
-// import { KeyUtil } from '../../core/crypto/key';
-// import { testConstants } from '../../tests/tooling/consts';
 import { HandlersDefinition, HttpErr } from '../../lib/api';
 import { EkmConfig, MockConfig } from '../../lib/configuration-types';
 import { throwIfNotGetMethod } from "../../lib/mock-util";
-
-// tslint:disable:max-line-length
-/* eslint-disable max-len */
-// tslint:disable:no-unused-expression
-/* eslint-disable no-unused-expressions */
 
 export class EkmHttpErr extends HttpErr {
   public formatted = (): unknown => {

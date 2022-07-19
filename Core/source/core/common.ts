@@ -117,7 +117,7 @@ export class Str {
 
   public static htmlAttrDecode = (encoded: string): any => {
     try {
-      return JSON.parse(Str.base64urlUtfDecode(encoded)); // tslint:disable-line:no-unsafe-any
+      return JSON.parse(Str.base64urlUtfDecode(encoded));
     } catch (e) {
       return undefined;
     }
@@ -161,7 +161,6 @@ export class Str {
       return str;
     }
     return decodeURIComponent(
-      // tslint:disable-next-line:no-unsafe-any
       Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));

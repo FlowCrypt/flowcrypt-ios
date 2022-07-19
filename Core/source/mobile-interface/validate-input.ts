@@ -29,6 +29,7 @@ export namespace NodeRequest {
     signingPrv: PrvKeyInfo | undefined
   }
 
+  /* eslint-disable @typescript-eslint/naming-convention */
   export type generateKey = {
     passphrase: string,
     variant: 'rsa2048' | 'rsa4096' | 'curve25519',
@@ -53,14 +54,13 @@ export namespace NodeRequest {
   export type decryptKey = { armored: string, passphrases: string[] };
   export type encryptKey = { armored: string, passphrase: string };
 }
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export class ValidateInput {
 
   public static generateKey = (v: any): NodeRequest.generateKey => {
-    // tslint:disable:no-unsafe-any
     if (isObj(v) && hasProp(v, 'userIds', 'Userid[]') && v.userIds.length
       && hasProp(v, 'passphrase', 'string') && ['rsa2048', 'rsa4096', 'curve25519'].includes(v.variant)) {
-      // tslint:enable-next-line:no-unsafe-any
       return v as NodeRequest.generateKey;
     }
     throw new Error('Wrong request structure for NodeRequest.generateKey');
@@ -83,10 +83,8 @@ export class ValidateInput {
     if (!hasProp(v, 'atts', 'Attachment[]?')) {
       throw new Error('Wrong atts structure for NodeRequest.composeEmail, need: {name, type, base64}');
     }
-    // tslint:disable:no-unsafe-any
     if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?')
       && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
-      // tslint:enable:no-unsafe-any
       return v as NodeRequest.ComposeEmailEncrypted;
     }
     if (!v.pubKeys && v.format === 'plain') {
@@ -166,7 +164,7 @@ export class ValidateInput {
 }
 
 const isObj = (v: any): v is Obj => {
-  // tslint:disable-next-line:no-unsafe-any
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return v && typeof v === 'object';
 };
 
@@ -186,18 +184,16 @@ const hasProp = (
     return typeof value === 'boolean' || typeof value === 'undefined';
   }
   if (type === 'string?') {
-    if (value === null) {
+    if (value === null) { // eslint-disable-line no-null/no-null
       v[name] = undefined;
       return true;
     }
     return typeof value === 'string' || typeof value === 'undefined';
   }
   if (type === 'Attachment[]?') {
-    // tslint:disable:no-unsafe-any
     return typeof value === 'undefined' ||
       (Array.isArray(value) && value.filter((x: any) => hasProp(x, 'name', 'string')
         && hasProp(x, 'type', 'string') && hasProp(x, 'base64', 'string')).length === value.length);
-    // tslint:enable:no-unsafe-any
   }
   if (type === 'string[]') {
     return Array.isArray(value) && value.filter((x: any) => typeof x === 'string').length === value.length;
@@ -207,26 +203,20 @@ const hasProp = (
       && value.filter((x: any) => typeof x === 'string').length === value.length;
   }
   if (type === 'PrvKeyInfo?') {
-    if (value === null) {
+    if (value === null) { // eslint-disable-line no-null/no-null
       v[name] = undefined;
       return true;
     }
-    // tslint:disable:no-unsafe-any
     return typeof value === 'undefined' || hasProp(value, 'private', 'string')
       && hasProp(value, 'longid', 'string') && hasProp(value, 'passphrase', 'string?');
-    // tslint:enable:no-unsafe-any
   }
   if (type === 'PrvKeyInfo[]') {
-    // tslint:disable:no-unsafe-any
     return Array.isArray(value) && value.filter((ki: any) => hasProp(ki, 'private', 'string')
       && hasProp(ki, 'longid', 'string') && hasProp(ki, 'passphrase', 'string?')).length === value.length;
-    // tslint:enable:no-unsafe-any
   }
   if (type === 'Userid[]') {
-    // tslint:disable:no-unsafe-any
     return Array.isArray(value) && value.filter((ui: any) => hasProp(ui, 'name', 'string')
       && hasProp(ui, 'email', 'string')).length === value.length;
-    // tslint:enable:no-unsafe-any
   }
   if (type === 'object') {
     return isObj(value);
