@@ -30,7 +30,7 @@ export class GmailMsg {
   public snippet?: string;
   public raw?: string;
 
-  constructor(msg: { id: string, labelIds: GmailMsg$labelId[], raw: string, mimeMsg: ParsedMail }) {
+  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, mimeMsg: ParsedMail }) {
     this.id = msg.id;
     this.historyId = msg.id;
     this.threadId = msg.id;
@@ -40,6 +40,8 @@ export class GmailMsg {
 
     const contentTypeHeader = msg.mimeMsg.headers.get('content-type')! as StructuredHeader;
     const toHeader = msg.mimeMsg.headers.get('to')! as AddressObject;
+    const ccHeader = msg.mimeMsg.headers.get('cc')! as AddressObject;
+    const bccHeader = msg.mimeMsg.headers.get('bcc')! as AddressObject;
     const fromHeader = msg.mimeMsg.headers.get('from')! as AddressObject;
     const subjectHeader = msg.mimeMsg.headers.get('subject')! as string;
     const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
@@ -65,10 +67,16 @@ export class GmailMsg {
       body
     };
     if (toHeader) {
-      this.payload.headers!.push({ name: 'To', value: toHeader.value.map(a => a.address).join(',') });
+      this.payload.headers!.push({ name: 'To', value: toHeader.text });
+    }
+    if (ccHeader) {
+      this.payload.headers!.push({ name: 'Cc', value: ccHeader.text });
+    }
+    if (toHeader) {
+      this.payload.headers!.push({ name: 'Bcc', value: bccHeader.text });
     }
     if (fromHeader) {
-      this.payload.headers!.push({ name: 'From', value: fromHeader.value[0].address! });
+      this.payload.headers!.push({ name: 'From', value: fromHeader.text });
     }
     if (subjectHeader) {
       this.payload.headers!.push({ name: 'Subject', value: subjectHeader });
@@ -176,7 +184,7 @@ export class GoogleData {
             if (!raw) { continue }
 
             const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
-            const msg = new GmailMsg({ id: json.raw.id, labelIds: ['INBOX'], raw: raw, mimeMsg: mimeMsg });
+            const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, mimeMsg: mimeMsg });
             if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
               acctData.drafts.push(msg);
             } else {
