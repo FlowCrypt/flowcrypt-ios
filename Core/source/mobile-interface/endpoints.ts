@@ -25,6 +25,7 @@ export class Endpoints {
   [endpoint: string]: ((uncheckedReq: any, data: Buffers) => Promise<EndpointRes>) | undefined;
 
   public version = async (): Promise<EndpointRes> => {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     return fmtRes({ app_version: VERSION });
   };
 
@@ -54,6 +55,7 @@ export class Endpoints {
       const atts = (req.atts || []).map(({ name, type, base64 }) =>
         new Att({ name, type, data: Buf.fromBase64Str(base64) }));
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode(
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         { 'text/plain': req.text, 'text/html': req.html }, mimeHeaders, atts)));
     } else if (req.format === 'encrypt-inline') {
       const encryptedAtts: Att[] = [];
@@ -78,6 +80,7 @@ export class Endpoints {
         data: Buf.fromUtfStr(req.text),
         armor: true
       }) as string;
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode({ 'text/plain': encrypted }, mimeHeaders, encryptedAtts)));
     } else {
       throw new Error(`Unknown format: ${req.format}`);

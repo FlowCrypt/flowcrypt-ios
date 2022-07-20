@@ -8,7 +8,7 @@ export class Debug {
   public static readDatabase = async (): Promise<any[]> => {
     const old = Debug.DATA;
     Debug.DATA = [];
-    return old;
+    return old; // eslint-disable-line @typescript-eslint/no-unsafe-return
   }
 
   public static addMessage = async (message: any): Promise<void> => {

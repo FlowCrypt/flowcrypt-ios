@@ -1,4 +1,4 @@
-
+/* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
   target: 'web',
   mode: 'none',

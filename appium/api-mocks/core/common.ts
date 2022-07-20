@@ -113,7 +113,7 @@ export class Str {
 
   public static htmlAttrDecode = (encoded: string): any => {
     try {
-      return JSON.parse(Str.base64urlUtfDecode(encoded)); // tslint:disable-line:no-unsafe-any
+      return JSON.parse(Str.base64urlUtfDecode(encoded));
     } catch (e) {
       return undefined;
     }
@@ -159,7 +159,7 @@ export class Str {
     if (typeof str === 'undefined') {
       return str;
     }
-    // tslint:disable-next-line:no-unsafe-any
+
     return decodeURIComponent(Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
       return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
@@ -168,12 +168,11 @@ export class Str {
 }
 
 export class DateUtility {
-  // tslint:disable-next-line:no-null-keyword
   public static asNumber = (date: number | null | undefined): number | null => {
     if (typeof date === 'number') {
       return date;
     } else if (!date) {
-      return null; // tslint:disable-line:no-null-keyword
+      return null;
     } else {
       return new Date(date).getTime();
     }
@@ -226,89 +225,6 @@ export class Value {
   };
 
   public static noop = (): void => undefined;
-
-}
-
-export class Url {
-
-  private static URL_PARAM_DICT: Dict<boolean | null> = { '___cu_true___': true, '___cu_false___': false, '___cu_null___': null }; // tslint:disable-line:no-null-keyword
-
-  /**
-   * will convert result to desired format: camelCase or snake_case, based on what was supplied in expectedKeys
-   * todo - the camelCase or snake_case functionality can now be removed
-   */
-  public static parse = (expectedKeys: string[], parseThisUrl?: string) => {
-    const url = (parseThisUrl || window.location.search.replace('?', ''));
-    const valuePairs = url.split('?').pop()!.split('&'); // str.split('?') string[].length will always be >= 1
-    const rawParams: Dict<string> = {};
-    const rawParamNameDict: Dict<string> = {};
-    for (const valuePair of valuePairs) {
-      const pair = valuePair.split('=');
-      rawParams[pair[0]] = pair[1];
-      Url.fillPossibleUrlParamNameVariations(pair[0], rawParamNameDict);
-    }
-    const processedParams: UrlParams = {};
-    for (const expectedKey of expectedKeys) {
-      processedParams[expectedKey] = Url.findAndProcessUrlParam(expectedKey, rawParamNameDict, rawParams);
-    }
-    return processedParams;
-  }
-
-  public static create = (link: string, params: UrlParams) => {
-    for (const key of Object.keys(params)) {
-      const value = params[key];
-      if (typeof value !== 'undefined') {
-        const transformed = Value.obj.keyByValue(Url.URL_PARAM_DICT, value);
-        link += (link.includes('?') ? '&' : '?') + encodeURIComponent(key) + '=' + encodeURIComponent(String(typeof transformed !== 'undefined' ? transformed : value));
-      }
-    }
-    return link;
-  }
-
-  public static removeParamsFromUrl = (url: string, paramsToDelete: string[]) => {
-    const urlParts = url.split('?');
-    if (!urlParts[1]) { // Nothing to remove
-      return url;
-    }
-    let queryParams = urlParts[1];
-    queryParams = queryParams[queryParams.length - 1] === '#' ? queryParams.slice(0, -1) : queryParams;
-    const params = new URLSearchParams(queryParams);
-    for (const p of paramsToDelete) {
-      params.delete(p);
-    }
-    return `${urlParts[0]}?${params.toString()}`;
-  }
-
-  private static snakeCaseToCamelCase = (s: string) => {
-    return s.replace(/_[a-z]/g, boundary => boundary[1].toUpperCase());
-  }
-
-  private static camelCaseToSnakeCase = (s: string) => {
-    return s.replace(/[a-z][A-Z]/g, boundary => `${boundary[0]}_${boundary[1].toLowerCase()}`);
-  }
-
-  private static findAndProcessUrlParam = (expectedParamName: string, rawParamNameDict: Dict<string>, rawParms: Dict<string>): UrlParam => {
-    if (typeof rawParamNameDict[expectedParamName] === 'undefined') {
-      return undefined; // param name not found in param name dict
-    }
-    const rawValue = rawParms[rawParamNameDict[expectedParamName]];
-    if (typeof rawValue === 'undefined') {
-      return undefined; // original param name not found in raw params
-    }
-    if (typeof Url.URL_PARAM_DICT[rawValue] !== 'undefined') {
-      return Url.URL_PARAM_DICT[rawValue]; // raw value was converted using a value dict to get proper: true, false, undefined, null
-    }
-    return decodeURIComponent(rawValue);
-  }
-
-  private static fillPossibleUrlParamNameVariations = (urlParamName: string, rawParamNameDict: Dict<string>) => {
-    rawParamNameDict[urlParamName] = urlParamName;
-    rawParamNameDict[Url.snakeCaseToCamelCase(urlParamName)] = urlParamName;
-    rawParamNameDict[Url.camelCaseToSnakeCase(urlParamName)] = urlParamName;
-    const shortened = urlParamName.replace('account', 'acct').replace('message', 'msg');
-    rawParamNameDict[Url.snakeCaseToCamelCase(shortened)] = urlParamName;
-    rawParamNameDict[Url.camelCaseToSnakeCase(shortened)] = urlParamName;
-  }
 
 }
 

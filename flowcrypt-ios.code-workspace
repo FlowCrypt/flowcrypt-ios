@@ -1,21 +1,44 @@
 {
   "folders": [
     {
+      "path": "appium"
+    },
+    {
+      "name": "core",
+      "path": "Core"
+    },
+    {
+      "name": "ios",
       "path": "."
     }
   ],
   "settings": {
+    "typescript.tsdk": "./node_modules/typescript/lib",
     "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
-    "editor.detectIndentation": false
+    "editor.detectIndentation": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true,
+    },
+    "errorLens.enabledDiagnosticLevels": [
+      "error"
+    ],
+    "eslint.validate": [
+      "javascript",
+      "typescript",
+    ],
+    "typescript.surveys.enabled": false,
+    "typescript.preferences.quoteStyle": "single",
+    "editor.rulers": [
+      160
+    ]
   },
   "extensions": {
     "recommendations": [
       "dbaeumer.vscode-eslint",
-      "stylelint.vscode-stylelint",
-      "ms-vscode.vscode-typescript-tslint-plugin",
-      "philhindle.errorlens"
+      "usernamehw.errorlens"
     ]
   }
 }

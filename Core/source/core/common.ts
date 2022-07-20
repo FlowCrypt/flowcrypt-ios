@@ -13,10 +13,10 @@ export class Str {
 
   public static extractErrorMessage = (e: any): string | undefined => {
     if (typeof e !== 'object') return undefined;
-    // tslint:disable:no-unsafe-any
+    /* eslint-disable @typescript-eslint/no-unsafe-return */
     if (typeof e.message === 'undefined') return undefined;
     if (typeof e.message === 'string') return e.message;
-    // tslint:enable:no-unsafe-any
+    /* eslint-enable @typescript-eslint/no-unsafe-return */
     return JSON.stringify(e);
   };
 
@@ -92,7 +92,7 @@ export class Str {
       'October', 'November', 'December'][monthIndex];
   };
 
-  public static sloppyRandom = (length: number = 5) => {
+  public static sloppyRandom = (length = 5) => {
     let id = '';
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     for (let i = 0; i < length; i++) {
@@ -117,7 +117,7 @@ export class Str {
 
   public static htmlAttrDecode = (encoded: string): any => {
     try {
-      return JSON.parse(Str.base64urlUtfDecode(encoded)); // tslint:disable-line:no-unsafe-any
+      return JSON.parse(Str.base64urlUtfDecode(encoded));
     } catch (e) {
       return undefined;
     }
@@ -127,16 +127,16 @@ export class Str {
     return string.trim().split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
   };
 
-  public static pluralize = (count: number, noun: string, suffix: string = 's'): string => {
+  public static pluralize = (count: number, noun: string, suffix = 's'): string => {
     return `${count} ${noun}${count > 1 ? suffix : ''}`;
   };
 
-  public static toUtcTimestamp = (datetimeStr: string, asStr: boolean = false) => {
+  public static toUtcTimestamp = (datetimeStr: string, asStr = false) => {
     return asStr ? String(Date.parse(datetimeStr)) : Date.parse(datetimeStr);
   };
 
   public static datetimeToDate = (date: string) => {
-    return date.substr(0, 10).replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;');
+    return date.substring(0, 10).replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;');
   };
 
   public static fromDate = (date: Date) => {
@@ -161,7 +161,6 @@ export class Str {
       return str;
     }
     return decodeURIComponent(
-      // tslint:disable-next-line:no-unsafe-any
       Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
       }).join(''));
@@ -221,11 +220,11 @@ export class Value {
 }
 
 export class Url {
-
+  /* eslint-disable @typescript-eslint/naming-convention */
   private static URL_PARAM_DICT: Dict<boolean | null> = {
-    // tslint:disable-next-line:no-null-keyword
     '___cu_true___': true, '___cu_false___': false, '___cu_null___': null
   };
+  /* eslint-enable @typescript-eslint/naming-convention */
 
   /**
    * will convert result to desired format: camelCase or snake_case, based on what was supplied in expectedKeys

@@ -76,6 +76,7 @@ export type VerifyRes = {
 };
 export type PgpMsgTypeResult = { armored: boolean, type: MsgBlockType } | undefined;
 export type DecryptResult = DecryptSuccess | DecryptError;
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export type DiagnoseMsgPubkeysResult = { found_match: boolean, receivers: number, };
 export enum DecryptErrTypes {
   keyMismatch = 'key_mismatch',
@@ -90,7 +91,7 @@ export enum DecryptErrTypes {
 
 export class FormatError extends Error {
   public data: string;
-  constructor(message: string, data: string) {
+  public constructor(message: string, data: string) {
     super(message);
     this.data = data;
   }
@@ -155,7 +156,7 @@ export class PgpMsg {
     msgOrVerResults: OpenpgpMsgOrCleartext | VerificationResult[],
     pubs: Key[]
   ): Promise<VerifyRes> => {
-    const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
+    const sig: VerifyRes = { match: null };
     try {
       // While this looks like bad method API design, it's here to ensure execution order when:
       // 1. reading data
@@ -180,7 +181,7 @@ export class PgpMsg {
         }
       }
     } catch (verifyErr) {
-      sig.match = null; // tslint:disable-line:no-null-keyword
+      sig.match = null;
       if (verifyErr instanceof Error && verifyErr.message === 'Can only verify message with one literal data packet.') {
         sig.error = 'FlowCrypt is not equipped to verify this message (err 101)';
       } else {
@@ -325,6 +326,7 @@ export class PgpMsg {
     for (const k of await Promise.all(privateKis.map(ki => PgpKey.read(ki.public)))) {
       localKeyIds.push(...k.getKeyIDs());
     }
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const diagnosis = { found_match: false, receivers: msgKeyIds.length };
     for (const msgKeyId of msgKeyIds) {
       for (const localKeyId of localKeyIds) {
@@ -359,8 +361,12 @@ export class PgpMsg {
     return decryptedContent;
   };
 
+  public static stripFcTeplyToken = (decryptedContent: string) => {
+    return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
+  };
+
   public static stripPublicKeys = (decryptedContent: string, foundPublicKeys: string[]) => {
-    let { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent); // tslint:disable-line:prefer-const
+    let { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent);
     for (const block of blocks) {
       if (block.type === 'publicKey') {
         const armored = block.content.toString();
@@ -371,23 +377,8 @@ export class PgpMsg {
     return normalized;
   };
 
-  // public static extractFcReplyToken =  (decryptedContent: string) => {
-  //   // todo - used exclusively on the web - move to a web package
-  //   const fcTokenElement = $(`<div>${decryptedContent}</div>`).find('.cryptup_reply');
-  //   if (fcTokenElement.length) {
-  //     const fcData = fcTokenElement.attr('cryptup-data');
-  //     if (fcData) {
-  //       return Str.htmlAttrDecode(fcData);
-  //     }
-  //   }
-  // }
-
-  public static stripFcTeplyToken = (decryptedContent: string) => {
-    return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
-  };
-
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {
-    return o // tslint:disable-line:no-unsafe-any
+    return o // eslint-disable-line @typescript-eslint/no-unsafe-return
       && typeof o === 'object'
       && typeof (o as FcAttLinkData).name !== 'undefined'
       && typeof (o as FcAttLinkData).size !== 'undefined'

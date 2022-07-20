@@ -198,7 +198,7 @@ export const getMockGoogleEndpoints = (
         }
         throw new HttpErr(`MOCK draft not found for ${acct} (draftId: ${id})`, Status.NOT_FOUND);
       } else if (isPut(req)) {
-        const raw = (parsedReq.body as any)?.message?.raw as string; // tslint:disable-line: no-unsafe-any
+        const raw = (parsedReq.body as any)?.message?.raw as string;
         if (!raw) {
           throw new Error('mock Draft PUT without raw data');
         }
@@ -221,7 +221,7 @@ export const getMockGoogleEndpoints = (
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
 
       if (isPost(req)) {
-        const raw = (parsedReq.body as any)?.raw as string; // tslint:disable-line: no-unsafe-any
+        const raw = (parsedReq.body as any)?.raw as string;
         const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
         data.addMessage(raw, mimeMsg);

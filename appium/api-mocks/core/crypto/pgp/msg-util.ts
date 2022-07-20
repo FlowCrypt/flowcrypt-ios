@@ -149,7 +149,7 @@ export class MsgUtil {
   }
 
   public static verify = async (msg: OpenpgpMsgOrCleartext, pubs: OpenPGP.key.Key[], contact?: Contact): Promise<VerifyRes> => {
-    const verifyRes: VerifyRes = { contact, match: null }; // tslint:disable-line:no-null-keyword
+    const verifyRes: VerifyRes = { contact, match: null };
     try {
       // this is here to ensure execution order when 1) verify, 2) read data, 3) processing signatures
       // Else it will hang trying to read a stream: https://github.com/openpgpjs/openpgpjs/issues/916#issuecomment-510620625
@@ -175,7 +175,7 @@ export class MsgUtil {
         }
       }
     } catch (verifyErr) {
-      verifyRes.match = null; // tslint:disable-line:no-null-keyword
+      verifyRes.match = null;
       if (verifyErr instanceof Error && verifyErr.message === 'Can only verify message with one literal data packet.') {
         verifyRes.error = 'FlowCrypt is not equipped to verify this message';
         verifyRes.isErrFatal = true; // don't try to re-fetch the message from API

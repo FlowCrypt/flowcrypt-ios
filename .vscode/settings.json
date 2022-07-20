@@ -1,0 +1,6 @@
+{
+  "files.exclude": {
+    "appium": true,
+    "Core": true
+  },
+}

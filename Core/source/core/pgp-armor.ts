@@ -16,7 +16,7 @@ type CryptoArmorHeaderDefinitions = {
 type CryptoArmorHeaderDefinition = { begin: string, middle?: string, end: string | RegExp, replace: boolean };
 
 export class PgpArmor {
-
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   public static ARMOR_HEADER_DICT: CryptoArmorHeaderDefinitions = {
     // general passwordMsg begin: /^[^\n]+: (Open Message|Nachricht öffnen)/
     null: { begin: '-----BEGIN', end: '-----END', replace: false },

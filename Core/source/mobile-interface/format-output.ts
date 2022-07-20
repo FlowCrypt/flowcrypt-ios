@@ -171,6 +171,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
   return { contentBlock, text: msgContentAsText.trim() };
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
   return {
     json: JSON.stringify(response),
@@ -182,11 +183,12 @@ export const fmtErr = (e: any): EndpointRes => {
   return fmtRes({
     error: {
       message: String(e),
-      stack: e && typeof e === 'object' ? e.stack || '' : '' // tslint:disable-line:no-unsafe-any
+      stack: e && typeof e === 'object' ? e.stack || '' : ''
     }
   });
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const printReplayTestDefinition = (endpoint: string, request: {}, data: Buf) => {
   console.log(`
 ava.test.only('replaying', async t => {

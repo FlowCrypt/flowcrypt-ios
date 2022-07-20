@@ -1,4 +1,3 @@
-import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';

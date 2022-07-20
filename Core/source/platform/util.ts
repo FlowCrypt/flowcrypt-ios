@@ -7,6 +7,7 @@ import { randomBytes } from 'crypto';
 import { ConvertStringOptions } from 'encoding-japanese';
 import { Key, KeyID, Subkey, UserID } from 'openpgp';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 declare const dereq_encoding_japanese: {
   convert: (data: Uint8Array, options: ConvertStringOptions) => string;
 };
@@ -57,7 +58,6 @@ export const strToHex = (str: string): string => {
   return r.join('');
 };
 
-/* tslint:disable:no-null-keyword */
 const maxDate = (dates: (Date | null)[]): Date | null => {
   let res: Date | null = null;
   for (const date of dates) {
@@ -67,7 +67,6 @@ const maxDate = (dates: (Date | null)[]): Date | null => {
   }
   return res;
 };
-/* tslint:enable:no-null-keyword */
 
 const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
   const bindingCreated = maxDate(subkey.bindingSignatures.map(b => b.created));
@@ -76,7 +75,6 @@ const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
 };
 
 // Attempt to backport from openpgp.js v4
-/* tslint:disable:no-null-keyword */
 export const getKeyExpirationTimeForCapabilities = async (
   key: Key,
   capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
@@ -115,4 +113,3 @@ export const getKeyExpirationTimeForCapabilities = async (
   }
   return expiry;
 };
-/* tslint:enable:no-null-keyword */

@@ -20,6 +20,7 @@ import { Str } from './common';
 
 const readToEnd = requireStreamReadToEnd();
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export type Contact = {
   email: string;
   name: string | null;
@@ -37,6 +38,7 @@ export type Contact = {
   pubkey_last_check: number | null;
   expiresOn: number | null;
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export interface PrvKeyInfo {
   private: string;
@@ -285,7 +287,8 @@ export class PgpKey {
   };
 
   public static usable = async (armored: string) => { // is pubkey usable for encrytion?
-    if (!PgpKey.fingerprint(armored)) {
+    const fingerprint = await PgpKey.fingerprint(armored);
+    if (!fingerprint) {
       return false;
     }
     const pubkey = await readKey({ armoredKey: armored });
