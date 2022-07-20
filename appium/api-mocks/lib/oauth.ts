@@ -150,7 +150,7 @@ export class MockJwt {
     if (!email) {
       throw new Error(`Missing email in MockJwt ${jwt}`);
     }
-    return email;
+    return email; // eslint-disable-line @typescript-eslint/no-unsafe-return
   }
 
 }

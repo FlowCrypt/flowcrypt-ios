@@ -13,7 +13,6 @@ import { MockApi } from 'api-mocks/mock';
 import AppiumHelper from 'tests/helpers/AppiumHelper';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
-import { ekmKeySamples } from 'api-mocks/apis/ekm/ekm-endpoints';
 
 describe('COMPOSE EMAIL: ', () => {
 

@@ -362,6 +362,10 @@ export class PgpMsg {
     return decryptedContent;
   };
 
+  public static stripFcTeplyToken = (decryptedContent: string) => {
+    return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
+  };
+
   public static stripPublicKeys = (decryptedContent: string, foundPublicKeys: string[]) => {
     let { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent);
     for (const block of blocks) {
@@ -372,21 +376,6 @@ export class PgpMsg {
       }
     }
     return normalized;
-  };
-
-  // public static extractFcReplyToken =  (decryptedContent: string) => {
-  //   // todo - used exclusively on the web - move to a web package
-  //   const fcTokenElement = $(`<div>${decryptedContent}</div>`).find('.cryptup_reply');
-  //   if (fcTokenElement.length) {
-  //     const fcData = fcTokenElement.attr('cryptup-data');
-  //     if (fcData) {
-  //       return Str.htmlAttrDecode(fcData);
-  //     }
-  //   }
-  // }
-
-  public static stripFcTeplyToken = (decryptedContent: string) => {
-    return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
   };
 
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {

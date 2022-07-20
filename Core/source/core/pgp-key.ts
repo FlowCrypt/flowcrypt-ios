@@ -24,17 +24,17 @@ export type Contact = {
   email: string;
   name: string | null;
   pubkey: string | null;
-  has_pgp: 0 | 1;
+  has_pgp: 0 | 1; // eslint-disable-line @typescript-eslint/naming-convention
   searchable: string[];
   client: string | null;
   fingerprint: string | null;
   longid: string | null;
   longids: string[];
   keywords: string | null;
-  pending_lookup: number;
-  last_use: number | null;
-  pubkey_last_sig: number | null;
-  pubkey_last_check: number | null;
+  pending_lookup: number; // eslint-disable-line @typescript-eslint/naming-convention
+  last_use: number | null; // eslint-disable-line @typescript-eslint/naming-convention
+  pubkey_last_sig: number | null; // eslint-disable-line @typescript-eslint/naming-convention
+  pubkey_last_check: number | null; // eslint-disable-line @typescript-eslint/naming-convention
   expiresOn: number | null;
 };
 
@@ -285,7 +285,8 @@ export class PgpKey {
   };
 
   public static usable = async (armored: string) => { // is pubkey usable for encrytion?
-    if (!PgpKey.fingerprint(armored)) {
+    const fingerprint = await PgpKey.fingerprint(armored);
+    if (!fingerprint) {
       return false;
     }
     const pubkey = await readKey({ armoredKey: armored });

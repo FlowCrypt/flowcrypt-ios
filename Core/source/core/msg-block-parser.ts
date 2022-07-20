@@ -17,6 +17,7 @@ type SanitizedBlocks = { blocks: MsgBlock[], subject: string | undefined, isRich
 
 export class MsgBlockParser {
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ARMOR_HEADER_MAX_LENGTH = 50;
 
   public static detectBlocks = (origText: string) => {
@@ -104,7 +105,7 @@ export class MsgBlockParser {
                 result.found.push(MsgBlock.fromContent('plainText', potentialTextBeforeBlockBegun));
               }
             }
-            let endIndex: number = -1;
+            let endIndex = -1;
             let foundBlockEndHeaderLength = 0;
             if (typeof blockHeaderDef.end === 'string') {
               endIndex = origText.indexOf(blockHeaderDef.end, begin + blockHeaderDef.begin.length);

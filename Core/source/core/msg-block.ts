@@ -16,19 +16,7 @@ export type MsgBlockType = ReplaceableMsgBlockType | 'plainText' | 'decryptedTex
 
 export class MsgBlock {
 
-  public static fromContent = (type: MsgBlockType, content: string | Buf, missingEnd = false): MsgBlock => {
-    return new MsgBlock(type, content, !missingEnd);
-  };
-
-  public static fromKeyDetails = (type: MsgBlockType, content: string, keyDetails: KeyDetails): MsgBlock => {
-    return new MsgBlock(type, content, true, undefined, keyDetails);
-  };
-
-  public static fromAtt = (type: MsgBlockType, content: string, attMeta: AttMeta): MsgBlock => {
-    return new MsgBlock(type, content, true, undefined, undefined, attMeta);
-  };
-
-  constructor(
+  public constructor(
     public type: MsgBlockType,
     public content: string | Buf,
     public complete: boolean,
@@ -41,6 +29,19 @@ export class MsgBlock {
     public decryptErr?: DecryptError, // only in decryptErr block, always
     public verifyRes?: VerifyRes,
   ) {
+    // todo
   }
+
+  public static fromContent = (type: MsgBlockType, content: string | Buf, missingEnd = false): MsgBlock => {
+    return new MsgBlock(type, content, !missingEnd);
+  };
+
+  public static fromKeyDetails = (type: MsgBlockType, content: string, keyDetails: KeyDetails): MsgBlock => {
+    return new MsgBlock(type, content, true, undefined, keyDetails);
+  };
+
+  public static fromAtt = (type: MsgBlockType, content: string, attMeta: AttMeta): MsgBlock => {
+    return new MsgBlock(type, content, true, undefined, undefined, attMeta);
+  };
 
 }
