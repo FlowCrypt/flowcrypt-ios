@@ -21,7 +21,7 @@
   "license": "proprietary",
   "devDependencies": {
     "@types/mailparser": "^3.4.0",
-    "@types/node": "^17.0.18",
+    "@types/node": "^18.0.6",
     "@types/request": "^2.48.8",
     "@wdio/allure-reporter": "^7.16.14",
     "@wdio/appium-service": "^7.16.14",
