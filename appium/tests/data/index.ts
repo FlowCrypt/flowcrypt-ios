@@ -72,7 +72,7 @@ export const CommonData = {
   encryptedEmailWithAttachment: {
     sender: 'flowcrypt.compatibility@gmail.com',
     senderName: 'FlowCrypt Compatibility',
-    recipientName: 'Dima FlowCrypt',
+    recipientEmail: 'robot@flowcrypt.com',
     cc: 'Demo User',
     subject: 'Message with cc and multiple recipients and text attachment',
     message: 'This email has cc and multiple recipients and text attachment',
@@ -131,7 +131,7 @@ export const CommonData = {
     bcc: 'e2e.enterprise.test@flowcrypt.com'
   },
   encryptedMDCHashMismatchEmail: {
-    senderName: 'FlowCrypt Compatibility',
+    senderEmail: 'flowcrypt.compatibility@gmail.com',
     subject: 'encrypted - MDC hash mismatch - modification detected - should fail',
     message: 'bad_mdc: Security threat - opening this message is dangerous because it was modified in transit.',
   },
@@ -150,7 +150,7 @@ export const CommonData = {
   notIntegrityProtected: {
     subject: 'not integrity protected - should show a warning and not decrypt automatically',
     message: 'Message is missing integrity checks (MDC). The sender should update their outdated software and resend.',
-    senderName: 'FlowCrypt Compatibility',
+    senderEmail: 'flowcrypt.compatibility@gmail.com',
   },
   keyMismatch: {
     subject: 'key mismatch unexpectedly produces a modal',
