@@ -23,6 +23,7 @@ import { Endpoints } from './mobile-interface/endpoints';
 import { decryptKey, PrivateKey, readKey } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './core/pgp';
 import { PgpKey } from './core/pgp-key';
+import { MsgBlock } from './core/msg-block';
 
 const text = 'some\n汉\ntxt';
 const htmlContent = text.replace(/\n/g, '<br />');
@@ -1007,7 +1008,6 @@ ava.default('verify encrypted+signed message by providing it only a wrong public
     expect(decryptJson.subject).equals('mime email encrypted inline text signed');
     const parsedDecryptData = JSON.parse(decryptData.toString());
     expect(!!parsedDecryptData.verifyRes).equals(true);
-    // eslint-disable-next-line no-null/no-null
     expect(parsedDecryptData.verifyRes.match).equals(null);
     t.pass();
   });
@@ -1052,7 +1052,6 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
-  // eslint-disable-next-line no-null/no-null
   expect(parsedDecryptData.verifyRes.match).equals(null);
   t.pass();
 });
@@ -1092,9 +1091,8 @@ ava.default('decryptErr for not integrity protected message', async t => {
       [await getCompatAsset('mime-email-not-integrity-protected')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('not integrity protected - should show a warning and not decrypt automatically');
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  const blocks = decryptData.toString().split('\n').map(block => JSON.parse(block));
-  expect(blocks[1].decryptErr.error.type).equals('no_mdc');
+  const blocks = decryptData.toString().split('\n').map(block => JSON.parse(block) as MsgBlock);
+  expect(blocks[1]?.decryptErr?.error.type).equals('no_mdc');
   t.pass();
 });
 

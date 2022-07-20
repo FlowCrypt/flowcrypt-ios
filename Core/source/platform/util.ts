@@ -41,7 +41,7 @@ export const iso2022jpToUtf = (content: Buf) => {
  *       licensed under LGPL. See original license file: https://github.com/openpgpjs/openpgpjs/blob/main/LICENSE
  */
 export const strToHex = (str: string): string => {
-  if (str === null) { // eslint-disable-line no-null/no-null
+  if (str === null) {
     return "";
   }
   const r = [];
@@ -58,7 +58,6 @@ export const strToHex = (str: string): string => {
   return r.join('');
 };
 
-/* eslint-disable no-null/no-null */
 const maxDate = (dates: (Date | null)[]): Date | null => {
   let res: Date | null = null;
   for (const date of dates) {
@@ -68,7 +67,6 @@ const maxDate = (dates: (Date | null)[]): Date | null => {
   }
   return res;
 };
-/* eslint-enable no-null/no-null */
 
 const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
   const bindingCreated = maxDate(subkey.bindingSignatures.map(b => b.created));
@@ -77,7 +75,6 @@ const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
 };
 
 // Attempt to backport from openpgp.js v4
-/* eslint-disable no-null/no-null */
 export const getKeyExpirationTimeForCapabilities = async (
   key: Key,
   capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
@@ -116,4 +113,3 @@ export const getKeyExpirationTimeForCapabilities = async (
   }
   return expiry;
 };
-/* eslint-enable no-null/no-null */

@@ -222,7 +222,6 @@ export class Value {
 export class Url {
   /* eslint-disable @typescript-eslint/naming-convention */
   private static URL_PARAM_DICT: Dict<boolean | null> = {
-    // eslint-disable-next-line no-null/no-null
     '___cu_true___': true, '___cu_false___': false, '___cu_null___': null
   };
   /* eslint-enable @typescript-eslint/naming-convention */

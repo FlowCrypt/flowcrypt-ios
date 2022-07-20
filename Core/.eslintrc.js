@@ -28,7 +28,6 @@ module.exports = {
     'eslint-plugin-jsdoc',
     'eslint-plugin-prefer-arrow',
     'eslint-plugin-import',
-    'eslint-plugin-no-null',
     '@typescript-eslint',
     'eslint-plugin-local-rules'
   ],
@@ -148,7 +147,6 @@ module.exports = {
     'no-fallthrough': 'off',
     'no-invalid-this': 'off',
     'no-new-wrappers': 'error',
-    'no-null/no-null': 'error',
     'no-only-tests/no-only-tests': ['error', { block: ['ava.default'] }],
     'no-prototype-builtins': 0,
     'no-shadow': 'off',

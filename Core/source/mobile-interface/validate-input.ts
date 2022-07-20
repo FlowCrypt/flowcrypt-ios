@@ -184,7 +184,7 @@ const hasProp = (
     return typeof value === 'boolean' || typeof value === 'undefined';
   }
   if (type === 'string?') {
-    if (value === null) { // eslint-disable-line no-null/no-null
+    if (value === null) {
       v[name] = undefined;
       return true;
     }
@@ -203,7 +203,7 @@ const hasProp = (
       && value.filter((x: any) => typeof x === 'string').length === value.length;
   }
   if (type === 'PrvKeyInfo?') {
-    if (value === null) { // eslint-disable-line no-null/no-null
+    if (value === null) {
       v[name] = undefined;
       return true;
     }

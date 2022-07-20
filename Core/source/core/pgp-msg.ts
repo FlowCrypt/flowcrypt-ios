@@ -156,7 +156,7 @@ export class PgpMsg {
     msgOrVerResults: OpenpgpMsgOrCleartext | VerificationResult[],
     pubs: Key[]
   ): Promise<VerifyRes> => {
-    const sig: VerifyRes = { match: null }; // eslint-disable-line no-null/no-null
+    const sig: VerifyRes = { match: null };
     try {
       // While this looks like bad method API design, it's here to ensure execution order when:
       // 1. reading data
@@ -173,7 +173,6 @@ export class PgpMsg {
         // .. which is not really an issue - an attacker that can append signatures
         // could have also just slightly changed the message, causing the same experience
         // .. so for now #wontfix unless a reasonable usecase surfaces
-        // eslint-disable-next-line no-null/no-null
         sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
         if (!sig.signer) {
           // todo - currently only the first signer will be reported.
@@ -182,7 +181,7 @@ export class PgpMsg {
         }
       }
     } catch (verifyErr) {
-      sig.match = null; // eslint-disable-line no-null/no-null
+      sig.match = null;
       if (verifyErr instanceof Error && verifyErr.message === 'Can only verify message with one literal data packet.') {
         sig.error = 'FlowCrypt is not equipped to verify this message (err 101)';
       } else {

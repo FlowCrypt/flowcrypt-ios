@@ -8,6 +8,7 @@ import * as fs from 'fs';
 import { config, expect } from 'chai';
 import { Buf } from '../core/buf';
 import { EndpointRes } from '../mobile-interface/format-output';
+import { MsgBlock } from 'source/core/msg-block';
 config.truncateThreshold = 0;
 
 export type AvaContext = ava.ExecutionContext<any>;
@@ -58,8 +59,7 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     expect(dataStr).to.contain('-----BEGIN PGP MESSAGE-----');
     expect(dataStr).to.contain('-----END PGP MESSAGE-----');
   } else if (type === 'msgBlocks') {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    const blocks = data.toString().split('\n').map(block => JSON.parse(block));
+    const blocks: any[] = data.toString().split('\n').map(block => JSON.parse(block) as MsgBlock);
     expect(details).to.be.instanceOf(Array);
     const expectedBlocks = details as any[];
     expect(blocks).to.have.property('length').which.is.greaterThan(0);
@@ -85,7 +85,6 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
         // (.*) doesn't work for some whitespaces, so use ([\s\S]+)
         const m = (renderedContentBlock as string).match(
           /<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/);
-        // eslint-disable-next-line no-null/no-null
         if (m === null) {
           blocks.unshift({
             error: "TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT",

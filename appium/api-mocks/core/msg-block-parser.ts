@@ -7,7 +7,6 @@ import { MsgBlock, ReplaceableMsgBlockType } from './msg-block';
 import { Catch } from '../platform/catch';
 import { PgpArmor } from './crypto/pgp/pgp-armor';
 import { Str } from './common';
-import { FcAttachmentLinkData } from './attachment';
 import { KeyUtil } from './crypto/key';
 
 export class MsgBlockParser {
@@ -35,54 +34,8 @@ export class MsgBlockParser {
     }
   }
 
-  public static extractFcAttachments = (decryptedContent: string, blocks: MsgBlock[]) => {
-    // these tags were created by FlowCrypt exclusively, so the structure is rigid (not arbitrary html)
-    // `<a href="${attachment.url}" class="cryptup_file" cryptup-data="${fcData}">${linkText}</a>\n`
-    // thus we use RegEx so that it works on both browser and node
-    if (decryptedContent.includes('class="cryptup_file"')) {
-      decryptedContent = decryptedContent.replace(/<a\s+href="([^"]+)"\s+class="cryptup_file"\s+cryptup-data="([^"]+)"\s*>[^<]+<\/a>\n?/gm, (_, url, fcData) => {
-        const a = Str.htmlAttrDecode(String(fcData));
-        if (MsgBlockParser.isFcAttachmentLinkData(a)) {
-          blocks.push(MsgBlock.fromAttachment('encryptedAttachmentLink', '', { type: a.type, name: a.name, length: a.size, url: String(url) }));
-        }
-        return '';
-      });
-    }
-    return decryptedContent;
-  }
-
-  public static stripPublicKeys = (decryptedContent: string, foundPublicKeys: string[]) => {
-    // eslint-disable-next-line prefer-const
-    let { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent);
-    for (const block of blocks) {
-      if (block.type === 'publicKey') {
-        const armored = block.content.toString();
-        foundPublicKeys.push(armored);
-        normalized = normalized.replace(armored, '');
-      }
-    }
-    return normalized;
-  }
-
-  // public static extractFcReplyToken = (decryptedContent: string): undefined | any => {
-  //   // todo - used exclusively on the web - move to a web package
-  //   const fcTokenElement = $(`<div>${decryptedContent}</div>`).find('.cryptup_reply');
-  //   if (fcTokenElement.length) {
-  //     const fcData = fcTokenElement.attr('cryptup-data');
-  //     if (fcData) {
-  //       return Str.htmlAttrDecode(fcData);
-  //     }
-  //   }
-  // }
-
   public static stripFcTeplyToken = (decryptedContent: string) => {
     return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
-  }
-
-  private static isFcAttachmentLinkData = (o: any): o is FcAttachmentLinkData => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return o && typeof o === 'object' && typeof (o as FcAttachmentLinkData).name !== 'undefined'
-      && typeof (o as FcAttachmentLinkData).size !== 'undefined' && typeof (o as FcAttachmentLinkData).type !== 'undefined';
   }
 
   private static detectBlockNext = (origText: string, startAt: number) => {

@@ -20,23 +20,25 @@ import { Str } from './common';
 
 const readToEnd = requireStreamReadToEnd();
 
+/* eslint-disable @typescript-eslint/naming-convention */
 export type Contact = {
   email: string;
   name: string | null;
   pubkey: string | null;
-  has_pgp: 0 | 1; // eslint-disable-line @typescript-eslint/naming-convention
+  has_pgp: 0 | 1;
   searchable: string[];
   client: string | null;
   fingerprint: string | null;
   longid: string | null;
   longids: string[];
   keywords: string | null;
-  pending_lookup: number; // eslint-disable-line @typescript-eslint/naming-convention
-  last_use: number | null; // eslint-disable-line @typescript-eslint/naming-convention
-  pubkey_last_sig: number | null; // eslint-disable-line @typescript-eslint/naming-convention
-  pubkey_last_check: number | null; // eslint-disable-line @typescript-eslint/naming-convention
+  pending_lookup: number;
+  last_use: number | null;
+  pubkey_last_sig: number | null;
+  pubkey_last_check: number | null;
   expiresOn: number | null;
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export interface PrvKeyInfo {
   private: string;

@@ -399,7 +399,7 @@ export class Mime {
 
   private static getNodeContentAsUtfStr = (node: MimeParserNode): string => {
     if (node.charset && Iso88592.labels.includes(node.charset)) {
-      return Iso88592.decode(node.rawContent!); // eslint-disable-line @typescript-eslint/no-unsafe-return
+      return Iso88592.decode(node.rawContent!) as string;
     }
     let resultBuf: Buf;
     if (node.charset === 'utf-8' && node.contentTransferEncoding.value === 'base64') {
