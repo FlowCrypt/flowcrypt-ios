@@ -77,7 +77,7 @@ module.exports = {
     '@typescript-eslint/naming-convention': 'error',
     '@typescript-eslint/no-empty-function': 'error',
     '@typescript-eslint/no-empty-interface': 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/no-floating-promises': 'error',
     '@typescript-eslint/no-misused-promises': ['error'],
     '@typescript-eslint/no-misused-new': 'error',
@@ -90,6 +90,7 @@ module.exports = {
       }
     ],
     '@typescript-eslint/no-unsafe-return': 'error',
+    '@typescript-eslint/no-unsafe-argument': 'warn',
     '@typescript-eslint/no-unused-expressions': 'error',
     '@typescript-eslint/no-unused-vars': 'error',
     '@typescript-eslint/no-use-before-define': 'off',
