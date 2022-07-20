@@ -6,6 +6,7 @@ import { lousyRandom } from '../../lib/mock-util';
 import { GoogleConfig } from 'api-mocks/lib/configuration-types';
 import { GoogleMockAccountEmail } from './google-messages';
 import { MockUser, MockUserAlias } from 'api-mocks/mock-data';
+import Parse from '../../util/parse';
 
 type GmailMsg$header = { name: string, value: string };
 type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
@@ -29,21 +30,24 @@ export class GmailMsg {
   public snippet?: string;
   public raw?: string;
 
-  constructor(msg: { id: string, labelId: GmailMsg$labelId, raw: string, mimeMsg: ParsedMail }) {
+  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, mimeMsg: ParsedMail, threadId?: string | null }) {
     this.id = msg.id;
     this.historyId = msg.id;
-    this.threadId = msg.id;
-    this.labelIds = [msg.labelId];
+    this.threadId = msg.threadId ?? msg.id;
+    this.labelIds = msg.labelIds;
     this.raw = msg.raw;
     this.sizeEstimate = Buffer.byteLength(msg.raw, "utf-8");
 
     const contentTypeHeader = msg.mimeMsg.headers.get('content-type')! as StructuredHeader;
     const toHeader = msg.mimeMsg.headers.get('to')! as AddressObject;
+    const ccHeader = msg.mimeMsg.headers.get('cc')! as AddressObject;
+    const bccHeader = msg.mimeMsg.headers.get('bcc')! as AddressObject;
     const fromHeader = msg.mimeMsg.headers.get('from')! as AddressObject;
     const subjectHeader = msg.mimeMsg.headers.get('subject')! as string;
     const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
     const messageIdHeader = msg.mimeMsg.headers.get('message-id')! as string;
     const mimeVersionHeader = msg.mimeMsg.headers.get('mime-version')! as string;
+    const replyToHeader = msg.mimeMsg.headers.get('reply-to')! as AddressObject;
     let body;
 
     if (msg.mimeMsg.text) {
@@ -64,16 +68,25 @@ export class GmailMsg {
       body
     };
     if (toHeader) {
-      this.payload.headers!.push({ name: 'To', value: toHeader.value.map(a => a.address).join(',') });
+      this.payload.headers!.push({ name: 'To', value: toHeader.text });
+    }
+    if (ccHeader) {
+      this.payload.headers!.push({ name: 'Cc', value: ccHeader.text });
+    }
+    if (bccHeader) {
+      this.payload.headers!.push({ name: 'Bcc', value: bccHeader.text });
     }
     if (fromHeader) {
-      this.payload.headers!.push({ name: 'From', value: fromHeader.value[0].address! });
+      this.payload.headers!.push({ name: 'From', value: fromHeader.text });
     }
     if (subjectHeader) {
       this.payload.headers!.push({ name: 'Subject', value: subjectHeader });
     }
     if (dateHeader) {
       this.payload.headers!.push({ name: 'Date', value: dateHeader.toString() });
+    }
+    if (replyToHeader) {
+      this.payload.headers!.push({ name: 'Reply-To', value: replyToHeader.text });
     }
   }
 
@@ -170,11 +183,16 @@ export class GoogleData {
 
           if (isValidMsg) {
             Object.assign(acctData.attachments, json.attachments);
-            json.full.raw = json.raw.raw;
+            const raw = json.raw.raw;
+
+            if (!raw) { continue }
+
+            const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
+            const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, mimeMsg: mimeMsg, threadId: json.full.threadId });
             if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
-              acctData.drafts.push(json.full);
+              acctData.drafts.push(msg);
             } else {
-              acctData.messages.push(json.full);
+              acctData.messages.push(msg);
             }
           }
         }
@@ -298,7 +316,7 @@ export class GoogleData {
     const decodedRaw = Buffer.from(raw, 'base64').toString().replace(/sinikael-\?=/g, 'sinikael-=');
     const rawBase64 = Buffer.from(decodedRaw).toString('base64');
 
-    const msg = new GmailMsg({ labelId: 'SENT', id, raw: rawBase64, mimeMsg });
+    const msg = new GmailMsg({ labelIds: ['SENT'], id, raw: rawBase64, mimeMsg });
     DATA[this.acct].messages.unshift(msg);
   };
 
@@ -307,7 +325,7 @@ export class GoogleData {
   }
 
   public addDraft = (id: string, raw: string, mimeMsg: ParsedMail) => {
-    const draft = new GmailMsg({ labelId: 'DRAFT', id, raw, mimeMsg });
+    const draft = new GmailMsg({ labelIds: ['DRAFT'], id, raw, mimeMsg });
     const index = DATA[this.acct].drafts.findIndex(d => d.id === draft.id);
     if (index === -1) {
       DATA[this.acct].drafts.push(draft);
