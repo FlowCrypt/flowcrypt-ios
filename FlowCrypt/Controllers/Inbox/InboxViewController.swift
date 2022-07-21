@@ -497,7 +497,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 var rowNumber = indexPath.row
                 if self.shouldShowEmptyView {
                     if indexPath.row == 0 {
-                        return EmptyFolerCellNode(path: self.viewModel.path, emptyFolder: {
+                        return EmptyFolderCellNode(path: self.viewModel.path, emptyFolder: {
                             self.showConfirmAlert(
                                 message: "folder_empty_confirm".localized,
                                 onConfirm: { [weak self] _ in

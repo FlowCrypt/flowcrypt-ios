@@ -79,10 +79,11 @@ export const getMockGoogleEndpoints = (
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
-    '/gmail/v1/users/me/messages': async ({ query: { q } }, req) => { // search messages
+    '/gmail/v1/users/me/messages': async (parsedReq, req) => { // search messages
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
-      if (isGet(req) && q) {
-        const msgs = (await GoogleData.withInitializedData(acct, googleConfig)).searchMessages(q);
+      if (isGet(req)) {
+        const labelIds = [parsedReq.query.labelIds].filter(i => i);
+        const msgs = (await GoogleData.withInitializedData(acct, googleConfig)).getMessages(labelIds, parsedReq.query.q);
         return { messages: msgs.map(({ id, threadId }) => ({ id, threadId })), resultSizeEstimate: msgs.length };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
@@ -225,6 +226,18 @@ export const getMockGoogleEndpoints = (
         const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
         data.addMessage(raw, mimeMsg);
+        return {}
+      }
+
+      throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
+    },
+    '/gmail/v1/users/me/messages/batchDelete': async (parsedReq, req) => {
+      const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
+
+      if (isPost(req)) {
+        const ids = (parsedReq.body as any)?.ids as string[];
+        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        data.deleteMessages(ids);
         return {}
       }
 

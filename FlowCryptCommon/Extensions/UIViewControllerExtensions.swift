@@ -129,6 +129,7 @@ public extension UIViewController {
             title: cancelActionTitle,
             style: .default,
             handler: onCancel)
+        confirm.accessibilityIdentifier = "aid-confirm-button"
         alert.addAction(confirm)
         alert.addAction(cancel)
         present(alert, animated: true, completion: nil)
