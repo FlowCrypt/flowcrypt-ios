@@ -4,6 +4,7 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   OK_BUTTON: '~Ok',
+  CONFIRM_BUTTON: `~aid-confirm-button`,
   CURRENT_MODAL: '-ios predicate string:type == "XCUIElementTypeAlert"'
 };
 
@@ -16,6 +17,10 @@ export default class BaseScreen {
 
   static get okButton() {
     return $(SELECTORS.OK_BUTTON);
+  }
+
+  static get confirmButton() {
+    return $(SELECTORS.CONFIRM_BUTTON);
   }
 
   static get currentModal() {
@@ -41,6 +46,10 @@ export default class BaseScreen {
 
   static clickOkButtonOnError = async () => {
     await ElementHelper.waitAndClick(await this.okButton)
+  }
+
+  static clickConfirmButton = async () => {
+    await ElementHelper.waitAndClick(await this.confirmButton)
   }
 
 }
