@@ -1,5 +1,5 @@
 //
-//  EmptyFolerCellNode.swift
+//  EmptyFolderCellNode.swift
 //  FlowCryptUI
 //
 //  Created by Ioan Moldovan on 6/27/22
@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 
 /// Node for `empty trash view` and `empty spam view`
-public final class EmptyFolerCellNode: CellNode {
+public final class EmptyFolderCellNode: CellNode {
 
     private let path: String
     private let emptyFolder: (() -> Void)?

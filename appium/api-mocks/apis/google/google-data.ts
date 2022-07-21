@@ -7,6 +7,7 @@ import { GoogleConfig } from 'api-mocks/lib/configuration-types';
 import { GoogleMockAccountEmail } from './google-messages';
 import { MockUser, MockUserAlias } from 'api-mocks/mock-data';
 import Parse from '../../util/parse';
+import { TextDecoder } from 'util';
 
 type GmailMsg$header = { name: string, value: string };
 type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
@@ -287,26 +288,18 @@ export class GoogleData {
     }
   }
 
-  public searchMessages = (q: string) => {
-    const subject = (q.match(/subject: "([^"]+)"/) || [])[1];
+  public getMessages = (labelIds: string[] = [], query?: string) => {
+    const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
+    return DATA[this.acct].messages.filter(m => {
+      if (subject && !GoogleData.msgSubject(m).toLowerCase().includes(subject)) {
+        return false;
+      }
+      if (labelIds && !m.labelIds?.some(l => labelIds.includes(l))) {
+        return false;
+      }
 
-    if (subject) {
-      // if any subject query found, all else is ignored
-      // messages just filtered by subject
-      return this.searchMessagesBySubject(subject);
-    }
-    const excludePeople = (q.match(this.exludePplSearchQuery) || []).map(e => e.replace(/^(-from|-to):/, '').replace(/"/g, ''));
-    q = q.replace(this.exludePplSearchQuery, ' ');
-    const includePeople = (q.match(this.includePplSearchQuery) || []).map(e => e.replace(/^(from|to):/, '').replace(/"/g, ''));
-    if (includePeople.length || excludePeople.length) {
-      // if any to,from query found, all such queries are collected
-      // no distinction made between to and from, just searches headers
-      // to: and from: are joined with OR
-      // -to: and -from: are joined with AND
-      // rest of query ignored
-      return this.searchMessagesByPeople(includePeople, excludePeople);
-    }
-    return [];
+      return true;
+    });
   };
 
   public addMessage = (raw: string, mimeMsg: ParsedMail) => {
@@ -322,6 +315,10 @@ export class GoogleData {
 
   public deleteThread = (threadId: string) => {
     DATA[this.acct].messages = DATA[this.acct].messages.filter(m => m.threadId != threadId);
+  }
+
+  public deleteMessages = (ids: string[]) => {
+    DATA[this.acct].messages = DATA[this.acct].messages.filter(m => !ids.includes(m.id));
   }
 
   public addDraft = (id: string, raw: string, mimeMsg: ParsedMail) => {
@@ -370,43 +367,6 @@ export class GoogleData {
   // returns ordinary messages and drafts
   private getMessagesAndDrafts = () => {
     return DATA[this.acct].messages.concat(DATA[this.acct].drafts);
-  };
-
-  private searchMessagesBySubject = (subject: string) => {
-    subject = subject.trim().toLowerCase();
-    const messages = DATA[this.acct].messages.filter(m => GoogleData.msgSubject(m).toLowerCase().includes(subject));
-    return messages;
-  };
-
-  private searchMessagesByPeople = (includePeople: string[], excludePeople: string[]) => {
-    includePeople = includePeople.map(person => person.trim().toLowerCase());
-    excludePeople = excludePeople.map(person => person.trim().toLowerCase());
-    return DATA[this.acct].messages.filter(m => {
-      const msgPeople = GoogleData.msgPeople(m).toLowerCase();
-      let shouldInclude = false;
-      let shouldExclude = false;
-      if (includePeople.length) { // filter who to include
-        for (const includePerson of includePeople) {
-          if (msgPeople.includes(includePerson)) {
-            shouldInclude = true;
-            break;
-          }
-        }
-      } else { // do not filter who to include - include any
-        shouldInclude = true;
-      }
-      if (excludePeople.length) { // filter who to exclude
-        for (const excludePerson of excludePeople) {
-          if (msgPeople.includes(excludePerson)) {
-            shouldExclude = true;
-            break;
-          }
-        }
-      } else { // don't exclude anyone
-        shouldExclude = false;
-      }
-      return shouldInclude && !shouldExclude;
-    });
   };
 
 }
