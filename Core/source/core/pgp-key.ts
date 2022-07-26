@@ -2,13 +2,6 @@
 
 'use strict';
 
-import {
-  AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID,
-  PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey,
-  SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID
-} from 'openpgp';
-import { readToEnd } from '@openpgp/web-stream-tools';
-
 import { Buf } from './buf';
 import { Catch } from '../platform/catch';
 import { MsgBlockParser } from './msg-block-parser';
@@ -16,8 +9,16 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, strToHex } from '../platform/util';
+import {
+  AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID,
+  PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey,
+  SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID
+} from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
+import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 import { Str } from './common';
+
+const readToEnd = requireStreamReadToEnd();
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type Contact = {
@@ -433,7 +434,7 @@ export class PgpKey {
     } else {
       return {
         key,
-        revocationCertificate: await readToEnd(certificate)
+        revocationCertificate: await readToEnd(certificate as MaybeStream<string>)
       };
     }
   };

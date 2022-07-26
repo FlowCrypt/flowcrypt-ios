@@ -11,10 +11,13 @@ import { FcAttLinkData } from './att';
 import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
-// eslint-disable-next-line max-len
-import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
+import {
+  CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums,
+  Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult
+} from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
-import { MaybeStream, readToEnd } from '@openpgp/web-stream-tools';
+import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
+const readToEnd = requireStreamReadToEnd();
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -220,7 +223,7 @@ export class PgpMsg {
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
       const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
-      const text = await readToEnd(prepared.message.getText()!);
+      const text = prepared.message.getText() ?? '';
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
     if (!keys.prvMatching.length && !msgPwd) {
