@@ -239,12 +239,16 @@ final class FlowCryptCoreTests: XCTestCase {
             isEmail: true,
             verificationPubKeys: []
         )
+
         guard let verifyResult = decrypted.blocks.first?.verifyRes else {
             XCTFail("verify result expected")
             return
         }
+
         XCTAssertNil(verifyResult.match)
-        XCTAssertEqual(verifyResult.signer, "063635B3E33EB14C")
+        // openpgp returns nil when 'verificationPubKeys' is empty
+        // XCTAssertEqual(verifyResult.signer, "063635B3E33EB14C")
+        XCTAssertEqual(verifyResult.signer, nil)
     }
 
     func testEndToEnd() async throws {

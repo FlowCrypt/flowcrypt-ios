@@ -2,6 +2,7 @@
 
 'use strict';
 
+import { Buffer } from 'buffer';
 import { Buf } from '../core/buf';
 import { randomBytes } from 'crypto';
 import { ConvertStringOptions } from 'encoding-japanese';

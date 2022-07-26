@@ -3,19 +3,11 @@ import { Str } from '../core/common';
 
 type Attributes = { [attr: string]: string };
 type Tag = { tagName: string; attribs: Attributes; text?: string; };
-type Transformer = (tagName: string, attribs: Attributes) => Tag;
+
+import sanitize from 'sanitize-html';
 
 export type SanitizeImgHandling = 'IMG-DEL' | 'IMG-KEEP' | 'IMG-TO-LINK';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-declare const dereq_sanitize_html: (dirty: string, opts?: {
-  allowedTags?: string[],
-  selfClosing?: string[],
-  exclusiveFilter?: (frame: { tag: string, attribs: Attributes, text: string, tagPosition: number }) => boolean,
-  transformTags?: { [tagName: string]: string | Transformer };
-  allowedAttributes?: { [tag: string]: string[] },
-  allowedSchemes?: string[],
-}) => string;
 
 /**
  * This file needs to be in platform/ folder because its implementation is platform-dependant
@@ -55,7 +47,7 @@ export class Xss {
   public static htmlSanitizeKeepBasicTags = (dirtyHtml: string): string => {
     const imgContentReplaceable = `IMG_ICON_${Str.sloppyRandom()}`;
     let remoteContentReplacedWithLink = false;
-    let cleanHtml = dereq_sanitize_html(dirtyHtml, {
+    let cleanHtml = sanitize(dirtyHtml, {
       allowedTags: Xss.ALLOWED_BASIC_TAGS,
       allowedAttributes: Xss.ALLOWED_ATTRS,
       allowedSchemes: Xss.ALLOWED_SCHEMES,
@@ -98,14 +90,14 @@ export class Xss {
       cleanHtml = '<font size="-1" color="#31a217" face="monospace">' +
         `[remote content blocked for your privacy]</font><br /><br />${cleanHtml}`;
       // clean it one more time in case something bad slipped in
-      cleanHtml = dereq_sanitize_html(cleanHtml, {
+      cleanHtml = sanitize(cleanHtml, {
         allowedTags: Xss.ALLOWED_BASIC_TAGS, allowedAttributes: Xss.ALLOWED_ATTRS,
         allowedSchemes: Xss.ALLOWED_SCHEMES
       });
     }
     cleanHtml = cleanHtml.replace(new RegExp(imgContentReplaceable, 'g'),
       `<font color="#D14836" face="monospace">[img]</font>`);
-    return cleanHtml;
+    return cleanHtml as string;
   };
 
   public static htmlSanitizeAndStripAllTags = (dirtyHtml: string, outputNl: string): string => {
@@ -127,7 +119,7 @@ export class Xss {
       .split(blockEnd).filter(v => !!v).join('\n');
     text = text.replace(/\n{2,}/g, '\n\n');
     // not all tags were removed above. Remove all remaining tags
-    text = dereq_sanitize_html(text, {
+    text = sanitize(text, {
       allowedTags: ['img', 'span'],
       allowedAttributes: { img: ['src'] },
       allowedSchemes: Xss.ALLOWED_SCHEMES,
@@ -138,7 +130,7 @@ export class Xss {
       }
     });
     // clean it one more time to replace leftover spans with their text
-    text = dereq_sanitize_html(text, { allowedTags: [] });
+    text = sanitize(text, { allowedTags: [] });
     text = text.trim();
     if (outputNl !== '\n') {
       text = text.replace(/\n/g, outputNl);
