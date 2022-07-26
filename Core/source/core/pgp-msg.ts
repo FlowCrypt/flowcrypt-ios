@@ -14,8 +14,7 @@ import { Store } from '../platform/store';
 // eslint-disable-next-line max-len
 import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
-import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
-const readToEnd = requireStreamReadToEnd();
+import { MaybeStream, readToEnd } from '@openpgp/web-stream-tools';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -263,7 +262,7 @@ export class PgpMsg {
       // verify first to prevent stream hang
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined;
       // read content second to prevent stream hang
-      const content = new Buf(await readToEnd(decrypted.getLiteralData()! as MaybeStream<Uint8Array>));
+      const content = new Buf(await readToEnd(decrypted.getLiteralData() as MaybeStream<Uint8Array>));
       // evaluate verify results third to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined;
       if (!prepared.isCleartext && (prepared.message as Message<Data>).packets
@@ -447,7 +446,7 @@ export class PgpMsg {
       } else if (PgpMsg.isKeyDecryptedFor(ki.parsed!, matchingKeyids)
         || await PgpMsg.decryptKeyFor(ki.parsed!, ki.passphrase!, matchingKeyids) === true) {
         Store.decryptedKeyCacheSet(ki.parsed!);
-        ki.decrypted = ki.parsed! as PrivateKey;
+        ki.decrypted = ki.parsed as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
       } else {
         keys.prvForDecryptWithoutPassphrases.push(ki);
