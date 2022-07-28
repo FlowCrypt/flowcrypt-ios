@@ -26,14 +26,6 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
 // copy raw to flowcrypt-bundle
 fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-bare-bundle.js`);
 
-const sanitizeHtmlDist = `${bundleWipDir}/sanitize-html.js`;
-
-// copy wip to html-sanitize-bundle
-fs.writeFileSync(
-  `${bundleDir}/bare-html-sanitize-bundle.js`,
-  fs.readFileSync(sanitizeHtmlDist).toString()
-);
-
 // copy zxcvbn, only used for bare (iOS) because zxcvbn-ios is not well maintained:
 // https://github.com/dropbox/zxcvbn-ios/issues
 // todo - could add `\nconst zxcvbn = window.zxcvbn;` at the end, then could call it directly from endpoint.ts
@@ -80,8 +72,8 @@ const replace = (libSrc, regex, replacement) => {
   return libSrc.replace(regex, replacement);
 }
 
-let openpgpLib = fs.readFileSync('./node_modules/openpgp/dist/node/openpgp.js').toString();
-const openpgpLibNodeDev = openpgpLib; // dev node runs without any host, no modifications needed
+// let openpgpLib = fs.readFileSync('./node_modules/openpgp/dist/openpgp.js').toString();
+// const openpgpLibNodeDev = openpgpLib; // dev node runs without any host, no modifications needed
 
 /*
 openpgpLib = replace( // rsa decrypt on host
@@ -100,7 +92,7 @@ openpgpLib = replace( // rsa verify on host
 );
 */
 
-let openpgpLibBare = openpgpLib; // further modify bare code below
+// let openpgpLibBare = openpgpLib; // further modify bare code below
 
 /*
 openpgpLibBare = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
@@ -115,28 +107,23 @@ openpgpLibBare = replace( // bare - aes decrypt on host
 );
 */
 
-const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
+// const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
 
-fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
-  ${fs.readFileSync('source/lib/web-streams-polyfill.js').toString()}
-  const ReadableStream = self.ReadableStream;
-  const WritableStream = self.WritableStream;
-  const TransformStream = self.TransformStream;
-  /* asn1 begin */
-  ${asn1LibBare}
-  /* asn1 end */
-  ${openpgpLibBare}
-  const openpgp = window.openpgp;
-`);
+// fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
+//   /* asn1 begin */
+//   ${asn1LibBare}
+//   /* asn1 end */
 
-fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
-  (function(){
-    console.debug = console.log;
-    ${openpgpLibNodeDev}
-    const openpgp = module.exports;
-    module.exports = {};
-    global['openpgp'] = openpgp;
-  })();
-`);
+// `);
+
+// fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
+//   (function(){
+//     console.debug = console.log;
+//     ${openpgpLibNodeDev}
+//     const openpgp = module.exports;
+//     module.exports = {};
+//     global['openpgp'] = openpgp;
+//   })();
+// `);
 
 fs.copyFileSync(`${bundleWipDir}/bare-encoding-japanese.js`, `${bundleDir}/bare-encoding-japanese.js`);

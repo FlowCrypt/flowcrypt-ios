@@ -650,6 +650,7 @@ ava.default('decryptKey gpg-dummy', async t => {
   const reDecryptedKey = await readKey({ armoredKey: json3.decryptedKey });
   expect(isFullyEncrypted(reDecryptedKey)).to.be.false;
   expect(isFullyDecrypted(reDecryptedKey)).to.be.true;
+  /* eslint-enable @typescript-eslint/no-unused-expressions */
   t.pass();
 });
 
@@ -1065,6 +1066,7 @@ ava.default('verify plain-text signed message that you edited after signing. Thi
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   expect(parsedDecryptData.verifyRes.match).is.null;
   t.pass();
 });

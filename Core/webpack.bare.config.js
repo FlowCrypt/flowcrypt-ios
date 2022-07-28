@@ -1,3 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const webpack = require('webpack');
+
 /* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
   target: 'web',
@@ -6,7 +9,6 @@ module.exports = {
     'entrypoint-bare': './build/ts/entrypoint-bare.js',
     'bare-asn1': './node_modules/asn1.js/lib/asn1.js',
     'bare-encoding-japanese': './node_modules/encoding-japanese/encoding.js',
-    'sanitize-html': './node_modules/sanitize-html/index.js',
     'web-stream-tools': './node_modules/@openpgp/web-stream-tools/lib/streams.js'
   },
   output: {
@@ -18,15 +20,19 @@ module.exports = {
     publicPath: '',
     globalObject: 'this',
   },
+  plugins: [
+    new webpack.ProvidePlugin({
+      dereq_sanitize_html: 'sanitize-html',
+    }),
+  ],
   externals: {
-    openpgp: 'openpgp',
     '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools'
   },
   resolve: {
     fallback: {
       "stream": false,
-      // "buffer": false,
-      "crypto": false
+      "buffer": false,
+      "crypto": false,
     }
   }
 };
