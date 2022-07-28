@@ -139,9 +139,6 @@ export class GoogleData {
    */
   private static exportedMsgsPath = './api-mocks/apis/google/exported-messages/';
 
-  private exludePplSearchQuery = /(?:-from|-to):"?([a-zA-Z0-9@.\-_]+)"?/g;
-  private includePplSearchQuery = /(?:from|to):"?([a-zA-Z0-9@.\-_]+)"?/g;
-
   public static withInitializedData = async (acct: GoogleMockAccountEmail, config?: GoogleConfig): Promise<GoogleData> => {
     if (typeof DATA[acct] === 'undefined') {
       const contacts = config?.accounts[acct]?.contacts ?? [];
@@ -168,39 +165,11 @@ export class GoogleData {
           ]
       };
 
-      if (config?.accounts[acct]?.messages) {
-        const dir = GoogleData.exportedMsgsPath;
-        const filenames: string[] = await new Promise((res, rej) => readdir(dir, (e, f) => e ? rej(e) : res(f)));
-        const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
-        const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
-        const files = await Promise.all(filePromises) as Uint8Array[];
-        const msgSubjects = config?.accounts[acct]?.messages?.map(m => m.toString());
-
-        for (const file of files) {
-          const utfStr = new TextDecoder().decode(file);
-          const json = JSON.parse(utfStr) as ExportedMsg;
-          const subject = GoogleData.msgSubject(json.full).replace('Re: ', '');
-          const isValidMsg = msgSubjects ? msgSubjects.includes(subject) : json.acctEmail === acct;
-
-          if (isValidMsg) {
-            Object.assign(acctData.attachments, json.attachments);
-            const raw = json.raw.raw;
-
-            if (!raw) { continue }
-
-            const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
-            const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, mimeMsg: mimeMsg, threadId: json.full.threadId });
-            if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
-              acctData.drafts.push(msg);
-            } else {
-              acctData.messages.push(msg);
-            }
-          }
-        }
-      }
-
       DATA[acct] = acctData;
     }
+
+    await this.parseAcctMessages(acct, config);
+
     return new GoogleData(acct);
   };
 
@@ -231,9 +200,37 @@ export class GoogleData {
     return (subjectHeader && subjectHeader.value) || '';
   };
 
-  private static msgPeople = (m: GmailMsg): string => {
-    return String(m.payload && m.payload.headers && m.payload.headers.filter(h => h.name === 'To' || h.name === 'From').map(h => h.value!).filter(h => !!h).join(','));
-  };
+  private static parseAcctMessages = async (acct: GoogleMockAccountEmail, config?: GoogleConfig) => {
+    if (config?.accounts[acct]?.messages) {
+      const dir = GoogleData.exportedMsgsPath;
+      const filenames: string[] = await new Promise((res, rej) => readdir(dir, (e, f) => e ? rej(e) : res(f)));
+      const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
+      const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
+      const files = await Promise.all(filePromises) as Uint8Array[];
+      const msgSubjects = config?.accounts[acct]?.messages?.map(m => m.toString());
+      const existingMessages = DATA[acct].messages.map(m => m.id);
+      for (const file of files) {
+        const utfStr = new TextDecoder().decode(file);
+        const json = JSON.parse(utfStr) as ExportedMsg;
+        const subject = GoogleData.msgSubject(json.full).replace('Re: ', '');
+        const isValidMsg = msgSubjects ? msgSubjects.includes(subject) : json.acctEmail === acct;
+
+        if (isValidMsg) {
+          const raw = json.raw.raw;
+
+          if (!raw || existingMessages.includes(json.raw.id)) { continue }
+
+          const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
+          const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, mimeMsg: mimeMsg, threadId: json.full.threadId });
+          if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
+            DATA[acct].drafts.push(msg);
+          } else {
+            DATA[acct].messages.push(msg);
+          }
+        }
+      }
+    }
+  }
 
   constructor(private acct: string) {
     if (!DATA[acct]) {
