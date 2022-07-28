@@ -33,7 +33,7 @@ struct MessageThread: Equatable {
         labels.contains(.inbox)
     }
 
-    var isArchived: Bool {
+    var shouldShowMoveToInboxButton: Bool {
         guard let firstMessageLabels = messages.first?.labels else {
             return false
         }

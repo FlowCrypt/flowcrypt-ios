@@ -78,7 +78,7 @@ extension MessageActionsHandler where Self: UIViewController {
             self?.handleMarkUnreadTap()
         }
 
-        let items: [NavigationBarItemsView.Input]
+        var items: [NavigationBarItemsView.Input]
 
         switch currentFolderPath.lowercased() {
         case trashFolderPath?.lowercased():
@@ -92,15 +92,15 @@ extension MessageActionsHandler where Self: UIViewController {
             items = [helpButton, trashButton]
         default:
             // in any other folders
+            items = [helpButton, trashButton, unreadButton]
             if thread.isInbox {
                 logger.logInfo("inbox - helpButton, archiveButton, trashButton, unreadButton")
-                items = [helpButton, archiveButton, trashButton, unreadButton]
-            } else if thread.isArchived {
+                items.insert(archiveButton, at: 1)
+            } else if thread.shouldShowMoveToInboxButton {
                 logger.logInfo("archive - helpButton, moveToInboxButton, trashButton, unreadButton")
-                items = [helpButton, moveToInboxButton, trashButton, unreadButton]
+                items.insert(moveToInboxButton, at: 1)
             } else {
                 logger.logInfo("sent - helpButton, trashButton, unreadButton")
-                items = [helpButton, trashButton, unreadButton]
             }
         }
 
