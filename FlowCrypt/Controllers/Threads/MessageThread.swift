@@ -37,7 +37,7 @@ struct MessageThread: Equatable {
         guard let firstMessageLabels = messages.first?.labels else {
             return false
         }
-        // Thread is treaded as archived when first message label doesn't contain inbox & sent label
+        // Thread is treaded as archived when labels don't contain `inbox` and first message label doesn't contain sent label
         // https://github.com/FlowCrypt/flowcrypt-ios/pull/1769#discussion_r931874353
         return !isInbox && !firstMessageLabels.contains(.sent)
     }
