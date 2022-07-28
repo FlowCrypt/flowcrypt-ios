@@ -13,7 +13,8 @@ describe('INBOX: ', () => {
   it('check "archive thread" too aggressive', async () => {
     const mockApi = new MockApi();
 
-    const testMessage = 'Test "archive thread" too agreesive';
+    const testMessage = 'Test "archive thread" too aggressive';
+    const addedMessageSubject = 'Test "archive thread" too aggressive new message';
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
@@ -30,9 +31,15 @@ describe('INBOX: ', () => {
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
 
+      await browser.pause(1000);
+      mockApi.addGoogleMessage('e2e.enterprise.test@flowcrypt.com', addedMessageSubject);
+      await MailFolderScreen.refreshMailList();
+      await browser.pause(10000000);
+
       await MailFolderScreen.clickOnEmailBySubject(testMessage);
       await EmailScreen.clickArchiveButton();
 
+      mockApi.addGoogleMessage('e2e.enterprise.test@flowcrypt.com', addedMessageSubject);
       // Archived thread doesn't appear
       await MailFolderScreen.checkEmailIsNotDisplayed(testMessage);
 
