@@ -38,7 +38,8 @@ struct MessageThread: Equatable {
             return false
         }
         // Thread is treaded as archived when first message label doesn't contain inbox & sent label
-        return !firstMessageLabels.contains(.inbox) && !firstMessageLabels.contains(.sent)
+        // https://github.com/FlowCrypt/flowcrypt-ios/pull/1769#discussion_r931874353
+        return !isInbox && !firstMessageLabels.contains(.sent)
     }
 
     var isRead: Bool {
