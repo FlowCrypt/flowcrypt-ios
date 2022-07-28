@@ -11,7 +11,7 @@ import { getMockWkdEndpoints } from './apis/wkd/wkd-endpoints';
 import { getMockFesEndpoints } from './apis/fes/fes-endpoints';
 import { AttesterConfig, EkmConfig, FesConfig, GoogleConfig, GoogleMockAccount, Logger, MockConfig, WkdConfig } from './lib/configuration-types';
 import { readFileSync } from 'fs';
-import { GoogleMockAccountEmail } from './apis/google/google-messages';
+import { GoogleMockAccountEmail, GoogleMockMessage } from './apis/google/google-messages';
 
 /**
  * const mockApi = new MockApi();
@@ -63,14 +63,16 @@ export class MockApi {
 
   public addGoogleAccount(email: GoogleMockAccountEmail, account: GoogleMockAccount = {}) {
     if (!this._googleConfig) {
-      this._googleConfig = {
-        accounts: {
-          [email]: account
-        }
-      }
-    } else {
-      this._googleConfig.accounts[email] = account;
+      this._googleConfig = { accounts: {} }
     }
+
+    this._googleConfig.accounts[email] = account;
+  }
+
+  public addGoogleMessage(email: GoogleMockAccountEmail, message: GoogleMockMessage) {
+    const account = this._googleConfig?.accounts[email] || {};
+    account.messages = [...account.messages || [], ...[message]];
+    this.addGoogleAccount(email, account);
   }
 
   public withMockedApis = async (testRunner: () => Promise<void>) => {
