@@ -34,7 +34,11 @@ struct MessageThread: Equatable {
     }
 
     var isArchived: Bool {
-        !labels.contains(.inbox) && !labels.contains(.sent)
+        guard let firstMessageLabels = messages.first?.labels else {
+            return false
+        }
+        // Thread is treaded as archived when first message label doesn't contain inbox & sent label
+        return !firstMessageLabels.contains(.inbox) && !firstMessageLabels.contains(.sent)
     }
 
     var isRead: Bool {
