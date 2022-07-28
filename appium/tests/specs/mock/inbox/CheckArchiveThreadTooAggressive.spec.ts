@@ -30,11 +30,16 @@ describe('INBOX: ', () => {
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
 
-      await browser.pause(1000000);
-      await MailFolderScreen.clickOnEmailBySubject('Signed and encrypted message');
+      await MailFolderScreen.clickOnEmailBySubject(testMessage);
       await EmailScreen.clickArchiveButton();
 
+      // Archived thread doesn't appear
+      await MailFolderScreen.checkEmailIsNotDisplayed(testMessage);
 
+      // Add `receive message logic`
+      await MailFolderScreen.refreshMailList();
+      // When new message is arrived thread should be displayed      
+      await MailFolderScreen.clickOnEmailBySubject(testMessage);
     });
   });
 });
