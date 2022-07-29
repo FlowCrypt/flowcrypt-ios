@@ -32,13 +32,13 @@ describe('INBOX: ', () => {
       await MailFolderScreen.checkInboxScreen();
 
       await MailFolderScreen.clickOnEmailBySubject(testMessage);
-      await EmailScreen.clickArchiveButton();
-
-      // Archived thread doesn't appear
-      await MailFolderScreen.checkEmailIsNotDisplayed(testMessage);
-
       // Add message to archived thread (which simulates new incoming message from same sender)
       mockApi.addGoogleMessage('e2e.enterprise.test@flowcrypt.com', addedMessageSubject);
+      await EmailScreen.clickArchiveButton();
+
+      // Archived thread doesn't appear(before refreshing list)
+      await MailFolderScreen.checkEmailIsNotDisplayed(testMessage);
+
       await MailFolderScreen.refreshMailList();
       // When new message is arrived thread should be displayed      
       await MailFolderScreen.clickOnEmailBySubject(testMessage);
