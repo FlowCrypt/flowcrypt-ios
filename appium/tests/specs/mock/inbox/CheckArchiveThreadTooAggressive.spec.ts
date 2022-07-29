@@ -18,7 +18,7 @@ describe('INBOX: ', () => {
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      messages: [testMessage],
+      messages: [testMessage, 'test thread rendering'],
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
