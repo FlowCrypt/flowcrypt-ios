@@ -285,6 +285,15 @@ export class GoogleData {
     }
   }
 
+  public updateBatchMessageLabels = (addLabels: string[], removeLabels: string[], messageIds: string[]) => {
+    for (const messageId of messageIds) {
+      const index = DATA[this.acct].messages.findIndex((message) => message.id == messageId);
+      if (index > -1) {
+        DATA[this.acct].messages[index].updateLabels(addLabels, removeLabels);
+      }
+    }
+  }
+
   public getMessages = (labelIds: string[] = [], query?: string) => {
     const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
     return DATA[this.acct].messages.filter(m => {

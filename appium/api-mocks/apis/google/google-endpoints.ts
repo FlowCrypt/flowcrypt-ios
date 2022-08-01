@@ -10,6 +10,11 @@ import { GoogleMockAccountEmail } from './google-messages';
 
 type DraftSaveModel = { message: { raw: string, threadId: string } };
 type LabelsModifyModel = { addLabelIds: string[], removeLabelIds: string[] }
+interface BatchModifyInterface {
+  ids: string[];
+  addLabelIds: string[];
+  removeLabelIds: string[];
+}
 
 export const getMockGoogleEndpoints = (
   mockConfig: MockConfig,
@@ -238,6 +243,18 @@ export const getMockGoogleEndpoints = (
         const ids = (parsedReq.body as any)?.ids as string[];
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
         data.deleteMessages(ids);
+        return {}
+      }
+
+      throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
+    },
+    '/gmail/v1/users/me/messages/batchModify': async (parsedReq, req) => {
+      const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
+
+      if (isPost(req)) {
+        const requestBody = parsedReq.body as BatchModifyInterface;
+        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        data.updateBatchMessageLabels(requestBody.addLabelIds, requestBody.removeLabelIds, requestBody.ids);
         return {}
       }
 
