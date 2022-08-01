@@ -83,6 +83,37 @@ extension GmailService: MessageOperationsProvider {
         )
     }
 
+    func archiveBatchMessages(messages: [Message]) async throws {
+        try await batchUpdate(
+            messages: messages,
+            labelsToRemove: [.inbox]
+        )
+    }
+
+    private func batchUpdate(
+        messages: [Message],
+        labelsToAdd: [MessageLabel] = [],
+        labelsToRemove: [MessageLabel] = []
+    ) async throws {
+        let request = GTLRGmail_BatchModifyMessagesRequest()
+        request.ids = messages.compactMap { $0.identifier.stringId }
+        request.addLabelIds = labelsToAdd.map(\.value)
+        request.removeLabelIds = labelsToRemove.map(\.value)
+        let query = GTLRGmailQuery_UsersMessagesBatchModify.query(
+            withObject: request,
+            userId: .me
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            self.gmailService.executeQuery(query) { _, _, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+                return continuation.resume(returning: ())
+            }
+        }
+    }
+
     private func update(
         message: Message,
         labelsToAdd: [MessageLabel] = [],

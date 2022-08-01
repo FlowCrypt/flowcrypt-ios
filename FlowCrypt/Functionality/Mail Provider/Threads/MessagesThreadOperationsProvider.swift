@@ -71,7 +71,9 @@ extension GmailService: MessagesThreadOperationsProvider {
     }
 
     func archive(thread: MessageThread, in folder: String) async throws {
-        try await update(thread: thread, labelsToRemove: [.inbox, .sent])
+        // manually updated each message rather than using update(thread:...) method
+        // https://github.com/FlowCrypt/flowcrypt-ios/pull/1769#discussion_r932964129
+        try await self.archiveBatchMessages(messages: thread.messages)
     }
 
     private func update(

@@ -12,7 +12,7 @@ describe('INBOX: ', () => {
 
   it('user is able to archive and move to inbox email', async () => {
     const mockApi = new MockApi();
-    const testMessageSubject = 'Signed and encrypted message';
+    const testMessageSubject = 'Message with cc and multiple recipients and text attachment';
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
