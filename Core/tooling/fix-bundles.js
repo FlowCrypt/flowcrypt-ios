@@ -72,58 +72,57 @@ const replace = (libSrc, regex, replacement) => {
   return libSrc.replace(regex, replacement);
 }
 
-// let openpgpLib = fs.readFileSync('./node_modules/openpgp/dist/openpgp.js').toString();
-// const openpgpLibNodeDev = openpgpLib; // dev node runs without any host, no modifications needed
+let openpgpLib = fs.readFileSync('./node_modules/openpgp/dist/node/openpgp.js').toString();
+const openpgpLibNodeDev = openpgpLib; // dev node runs without any host, no modifications needed
 
-/*
 openpgpLib = replace( // rsa decrypt on host
+  // todo: use randomPayload value on iOS side
   openpgpLib,
-  /[a-z0-9A-Z_]+\.default\.rsa\.decrypt\(c, n, e, d, p, q, u\)/,
+  /publicKey\.rsa\.decrypt\(c, n, e, d, p, q, u, randomPayload\)/,
   `await hostRsaDecryption(dereq_asn1, _bn2, data_params[0], n, e, d, p, q)`
 );
 openpgpLib = replace( // rsa verify on host
   openpgpLib,
-  /const EM = await _public_key2\.default\.rsa\.verify\(m, n, e\);/, `
+  /return publicKey\.rsa\.verify\(hashAlgo, data, s, n, e, hashed\)/, `
   // returns empty str if not supported: js fallback below
-  const computed = await coreHost.modPow(m.toString(10), e.toString(10), n.toString(10));
-  const EM = computed
+  const computed = await coreHost.modPow(s.toString(10), e.toString(10), n.toString(10));
+  return computed
     ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength())
-    : await _public_key2.default.rsa.verify(m, n, e);`
+    : await publicKey.rsa.verify(hashAlgo, data, s, n, e, hashed);`
 );
-*/
 
-// let openpgpLibBare = openpgpLib; // further modify bare code below
+let openpgpLibBare = openpgpLib; // further modify bare code below
 
-/*
 openpgpLibBare = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
   openpgpLibBare,
-  /const data = _util2\.default\.concatUint8Array\(\[s2k\.salt, passphrase\]\);/,
-  `return Uint8Array.from(coreHost.produceHashedIteratedS2k(s2k.algorithm, prefix, s2k.salt, passphrase, count));`
+  /const data = util\.concatUint8Array\(\[this\.salt, passphrase\]\);/,
+  // todo: prefix isn't available in js code
+  `return Uint8Array.from(coreHost.produceHashedIteratedS2k(this.algorithm, prefix, this.salt, passphrase, count));`
 );
 openpgpLibBare = replace( // bare - aes decrypt on host
   openpgpLibBare,
-  /return _cfb\.AES_CFB\.decrypt\(ct, key, iv\);/,
+  /return AES_CFB\.decrypt\(ct, key, iv\);/,
   `return Uint8Array.from(coreHost.decryptAesCfbNoPadding(ct, key, iv));`
 );
-*/
 
-// const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
+const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
 
-// fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
-//   /* asn1 begin */
-//   ${asn1LibBare}
-//   /* asn1 end */
+fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
+  /* asn1 begin */
+  ${asn1LibBare}
+  /* asn1 end */
+  ${openpgpLibBare}
+  const openpgp = window.openpgp;
+`);
 
-// `);
-
-// fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
-//   (function(){
-//     console.debug = console.log;
-//     ${openpgpLibNodeDev}
-//     const openpgp = module.exports;
-//     module.exports = {};
-//     global['openpgp'] = openpgp;
-//   })();
-// `);
+fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
+  (function(){
+    console.debug = console.log;
+    ${openpgpLibNodeDev}
+    const openpgp = module.exports;
+    module.exports = {};
+    global['openpgp'] = openpgp;
+  })();
+`);
 
 fs.copyFileSync(`${bundleWipDir}/bare-encoding-japanese.js`, `${bundleDir}/bare-encoding-japanese.js`);

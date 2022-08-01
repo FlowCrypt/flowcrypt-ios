@@ -9,14 +9,6 @@ const path = {
   finalIos: 'build/final/flowcrypt-ios-prod.js',
 };
 
-// node
-const fixNodeImports = (src) => src
-  .replace(/require\(['"]bn\.js['"]\)/g, 'dereq_bn')
-  .replace(/require\(['"]minimalistic-assert['"]\)/g, 'dereq_minimalistic_assert')
-  .replace(/require\(['"]inherits['"]\)/g, 'dereq_inherits')
-  .replace(/require\(['"]asn1\.js['"]\)/g, 'dereq_asn1')
-  .replace(/require\(['"]encoding-japanese\.js['"]\)/g, 'dereq_encoding_japanese');
-
 // bare
 const bareDepsSrc = fs.readFileSync(path.bareDepsBundle).toString();
 const bareEntrypointSrc = fs
@@ -24,7 +16,6 @@ const bareEntrypointSrc = fs
   .replace("'[BUILD_REPLACEABLE_VERSION]'", 'APP_VERSION');
 
 // final (node, bare, dev)
-
 const finalBareSrc = `
 let global = {};
 let _log = (x) => coreHost.log(String(x));

@@ -16,8 +16,7 @@ import {
   Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
-import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
-const readToEnd = requireStreamReadToEnd();
+import { readToEnd, MaybeStream } from '@openpgp/web-stream-tools';
 
 export namespace PgpMsgMethod {
   export namespace Arg {

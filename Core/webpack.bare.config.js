@@ -23,9 +23,11 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       dereq_sanitize_html: 'sanitize-html',
+      openpgp: 'openpgp',
     }),
   ],
   externals: {
+    // openpgp: 'openpgp',
     '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools'
   },
   resolve: {

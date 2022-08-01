@@ -36,9 +36,12 @@ export const requireStreamReadToEnd = (): ReadToEndFn => {
   // this will work for running tests in node with build/ts/test.js as entrypoint
   // a different solution will have to be done for running in iOS
   (global as any).window = (global as any).window || {}; // web-stream-tools needs this
+  // const tools = require('@openpgp/web-stream-tools');
+  // const { readToEnd } = require('../../bundles/raw/web-stream-tools');
+  // @ts-ignore
+  return global['web-stream-tools'].readToEnd as ReadToEndFn;
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { readToEnd } = require('../../bundles/raw/web-stream-tools');
-  return readToEnd as ReadToEndFn;
+  // return readToEnd as ReadToEndFn;
 };
 
 export const requireMimeParser = (): any => {
