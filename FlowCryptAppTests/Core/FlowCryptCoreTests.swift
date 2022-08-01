@@ -246,9 +246,7 @@ final class FlowCryptCoreTests: XCTestCase {
         }
 
         XCTAssertNil(verifyResult.match)
-        // openpgp returns nil when 'verificationPubKeys' is empty
-        // XCTAssertEqual(verifyResult.signer, "063635B3E33EB14C")
-        XCTAssertEqual(verifyResult.signer, nil)
+        XCTAssertEqual(verifyResult.signer, "063635B3E33EB14C")
     }
 
     func testEndToEnd() async throws {
