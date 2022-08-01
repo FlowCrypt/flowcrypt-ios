@@ -252,11 +252,14 @@ extension MessageService {
     ) async -> ProcessedMessage.MessageSignature {
         guard let signature = signature else { return .unsigned }
 
-        if let error = signature.error { return .error(error) }
+        if let error = signature.error {
+            if let signer = signature.signer, signature.match == nil {
+                return .missingPubkey(signer)
+            }
+            return .error(error)
+        }
 
-        guard let signer = signature.signer else { return .unsigned }
-
-        guard signature.match != nil else { return .missingPubkey(signer) }
+        guard signature.signer != nil else { return .unsigned }
 
         guard signature.match == true else { return .bad }
 

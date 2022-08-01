@@ -41203,7 +41203,6 @@ const mnemonic_1 = __webpack_require__(85);
 const util_1 = __webpack_require__(5);
 const openpgp_1 = __webpack_require__(82);
 const pgp_1 = __webpack_require__(86);
-// import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 const common_1 = __webpack_require__(11);
 const web_stream_tools_1 = __webpack_require__(88);
 class PgpKey {
@@ -44967,7 +44966,6 @@ const pgp_armor_1 = __webpack_require__(81);
 const store_1 = __webpack_require__(84);
 const openpgp_1 = __webpack_require__(82);
 const pgp_1 = __webpack_require__(86);
-// import { MaybeStream } from '../platform/require';
 const web_stream_tools_1 = __webpack_require__(88);
 var DecryptErrTypes;
 (function (DecryptErrTypes) {
@@ -45061,12 +45059,12 @@ PgpMsg.verify = async (msgOrVerResults, pubs) => {
             // .. which is not really an issue - an attacker that can append signatures
             // could have also just slightly changed the message, causing the same experience
             // .. so for now #wontfix unless a reasonable usecase surfaces
-            sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
             if (!sig.signer) {
                 // todo - currently only the first signer will be reported.
                 // Should we be showing all signers? How common is that?
                 sig.signer = await pgp_key_1.PgpKey.longid(verifyRes.keyID.bytes);
             }
+            sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
         }
     }
     catch (verifyErr) {
