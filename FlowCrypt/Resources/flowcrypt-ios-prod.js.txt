@@ -45073,7 +45073,7 @@ PgpMsg.verify = async (msgOrVerResults, pubs) => {
             sig.error = 'FlowCrypt is not equipped to verify this message (err 101)';
         }
         else {
-            sig.error = `FlowCrypt had trouble verifying this message (${String(verifyErr)})`;
+            sig.error = verifyErr.message;
             catch_1.Catch.reportErr(verifyErr);
         }
     }

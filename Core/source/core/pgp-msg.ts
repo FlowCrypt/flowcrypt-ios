@@ -186,7 +186,7 @@ export class PgpMsg {
       if (verifyErr instanceof Error && verifyErr.message === 'Can only verify message with one literal data packet.') {
         sig.error = 'FlowCrypt is not equipped to verify this message (err 101)';
       } else {
-        sig.error = `FlowCrypt had trouble verifying this message (${String(verifyErr)})`;
+        sig.error = verifyErr.message;
         Catch.reportErr(verifyErr);
       }
     }

@@ -254,7 +254,9 @@ extension MessageService {
 
         if let error = signature.error {
             if let signer = signature.signer, signature.match == nil {
-                return .missingPubkey(signer)
+                if error.starts(with: "Could not find signing key with key ID") {
+                    return .missingPubkey(signer)
+                }
             }
             return .error(error)
         }

@@ -143,7 +143,7 @@ export const CommonData = {
   },
   wrongChecksumEmail: {
     subject: 'wrong checksum',
-    message: 'format: Error: Ascii armor integrity check on message failed: \'FdCC\' should be \'FddK\'',
+    message: 'format: Error: Ascii armor integrity check failed',
     senderEmail: 'flowcrypt.compatibility@gmail.com',
     senderName: 'FlowCrypt Compatibility'
   },
