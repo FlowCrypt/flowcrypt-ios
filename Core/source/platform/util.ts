@@ -25,7 +25,9 @@ export const base64decode = (b64tr: string): string => {
 };
 
 export const setGlobals = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).btoa = base64encode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).atob = base64decode;
 };
 
@@ -97,7 +99,7 @@ export const getKeyExpirationTimeForCapabilities = async (
     // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
     const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
       ? getSubkeyExpirationTime(encryptionKey)
-      : (await encryptionKey.getExpirationTime(userId))!;
+      : (await encryptionKey.getExpirationTime(userId)) ?? 0;
     if (encryptionKeyExpiry < expiry) expiry = encryptionKeyExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
@@ -108,7 +110,7 @@ export const getKeyExpirationTimeForCapabilities = async (
     // could be the same as above, so checking for property instead of using "instanceof"
     const signatureKeyExpiry = 'bindingSignatures' in signatureKey
       ? await getSubkeyExpirationTime(signatureKey)
-      : (await signatureKey.getExpirationTime(userId))!;
+      : (await signatureKey.getExpirationTime(userId)) ?? 0;
     if (signatureKeyExpiry < expiry) expiry = signatureKeyExpiry;
   }
   return expiry;

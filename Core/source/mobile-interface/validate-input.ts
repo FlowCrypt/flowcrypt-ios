@@ -4,6 +4,7 @@
 
 import { readKey } from "openpgp";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Obj = { [k: string]: any };
 
 export namespace NodeRequest {
@@ -58,22 +59,22 @@ export namespace NodeRequest {
 
 export class ValidateInput {
 
-  public static generateKey = (v: any): NodeRequest.generateKey => {
+  public static generateKey = (v: unknown): NodeRequest.generateKey => {
     if (isObj(v) && hasProp(v, 'userIds', 'Userid[]') && v.userIds.length
-      && hasProp(v, 'passphrase', 'string') && ['rsa2048', 'rsa4096', 'curve25519'].includes(v.variant)) {
+      && hasProp(v, 'passphrase', 'string') && ['rsa2048', 'rsa4096', 'curve25519'].includes(v.variant as string)) {
       return v as NodeRequest.generateKey;
     }
     throw new Error('Wrong request structure for NodeRequest.generateKey');
   };
 
-  public static encryptMsg = (v: any): NodeRequest.encryptMsg => {
+  public static encryptMsg = (v: unknown): NodeRequest.encryptMsg => {
     if (isObj(v) && hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'msgPwd', 'string?')) {
       return v as NodeRequest.encryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.encryptMsg');
   };
 
-  public static composeEmail = (v: any): NodeRequest.composeEmail => {
+  public static composeEmail = (v: unknown): NodeRequest.composeEmail => {
     if (!(isObj(v) && hasProp(v, 'text', 'string') && hasProp(v, 'html', 'string?')
       && hasProp(v, 'from', 'string') && hasProp(v, 'subject', 'string')
       && hasProp(v, 'to', 'string[]') && hasProp(v, 'cc', 'string[]') && hasProp(v, 'bcc', 'string[]'))) {
@@ -94,7 +95,7 @@ export class ValidateInput {
       'Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encrypt-inline OR format:plain allowed');
   };
 
-  public static parseDecryptMsg = (v: any): NodeRequest.parseDecryptMsg => {
+  public static parseDecryptMsg = (v: unknown): NodeRequest.parseDecryptMsg => {
     if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?')
       && hasProp(v, 'isEmail', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')) {
       return v as NodeRequest.parseDecryptMsg;
@@ -102,28 +103,28 @@ export class ValidateInput {
     throw new Error('Wrong request structure for NodeRequest.parseDecryptMsg');
   };
 
-  public static encryptFile = (v: any): NodeRequest.encryptFile => {
+  public static encryptFile = (v: unknown): NodeRequest.encryptFile => {
     if (isObj(v) && hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'name', 'string')) {
       return v as NodeRequest.encryptFile;
     }
     throw new Error('Wrong request structure for NodeRequest.encryptFile');
   };
 
-  public static decryptFile = (v: any): NodeRequest.decryptFile => {
+  public static decryptFile = (v: unknown): NodeRequest.decryptFile => {
     if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?')) {
       return v as NodeRequest.decryptFile;
     }
     throw new Error('Wrong request structure for NodeRequest.decryptFile');
   };
 
-  public static parseDateStr = (v: any): NodeRequest.parseDateStr => {
+  public static parseDateStr = (v: unknown): NodeRequest.parseDateStr => {
     if (isObj(v) && hasProp(v, 'dateStr', 'string')) {
       return v as NodeRequest.parseDateStr;
     }
     throw new Error('Wrong request structure for NodeRequest.dateStrParse');
   };
 
-  public static zxcvbnStrengthBar = (v: any): NodeRequest.zxcvbnStrengthBar => {
+  public static zxcvbnStrengthBar = (v: unknown): NodeRequest.zxcvbnStrengthBar => {
     if (isObj(v) && hasProp(v, 'guesses', 'number') && hasProp(v, 'purpose', 'string') && v.purpose === 'passphrase') {
       return v as NodeRequest.zxcvbnStrengthBar;
     }
@@ -133,28 +134,28 @@ export class ValidateInput {
     throw new Error('Wrong request structure for NodeRequest.zxcvbnStrengthBar');
   };
 
-  public static gmailBackupSearch = (v: any): NodeRequest.gmailBackupSearch => {
+  public static gmailBackupSearch = (v: unknown): NodeRequest.gmailBackupSearch => {
     if (isObj(v) && hasProp(v, 'acctEmail', 'string')) {
       return v as NodeRequest.gmailBackupSearch;
     }
     throw new Error('Wrong request structure for NodeRequest.gmailBackupSearchQuery');
   };
 
-  public static isEmailValid = (v: any): NodeRequest.isEmailValid => {
+  public static isEmailValid = (v: unknown): NodeRequest.isEmailValid => {
     if (isObj(v) && hasProp(v, 'email', 'string')) {
       return v as NodeRequest.isEmailValid;
     }
     throw new Error('Wrong request structure for NodeRequest.isEmailValid');
   };
 
-  public static decryptKey = (v: any): NodeRequest.decryptKey => {
+  public static decryptKey = (v: unknown): NodeRequest.decryptKey => {
     if (isObj(v) && hasProp(v, 'armored', 'string') && hasProp(v, 'passphrases', 'string[]')) {
       return v as NodeRequest.decryptKey;
     }
     throw new Error('Wrong request structure for NodeRequest.decryptKey');
   };
 
-  public static encryptKey = (v: any): NodeRequest.encryptKey => {
+  public static encryptKey = (v: unknown): NodeRequest.encryptKey => {
     if (isObj(v) && hasProp(v, 'armored', 'string') && hasProp(v, 'passphrase', 'string')) {
       return v as NodeRequest.encryptKey;
     }
@@ -163,9 +164,8 @@ export class ValidateInput {
 
 }
 
-const isObj = (v: any): v is Obj => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return v && typeof v === 'object';
+const isObj = (v: unknown): v is Obj => {
+  return !!v && typeof v === 'object';
 };
 
 const hasProp = (
@@ -190,6 +190,7 @@ const hasProp = (
     }
     return typeof value === 'string' || typeof value === 'undefined';
   }
+  /* eslint-disable */
   if (type === 'Attachment[]?') {
     return typeof value === 'undefined' ||
       (Array.isArray(value) && value.filter((x: any) => hasProp(x, 'name', 'string')
@@ -218,6 +219,7 @@ const hasProp = (
     return Array.isArray(value) && value.filter((ui: any) => hasProp(ui, 'name', 'string')
       && hasProp(ui, 'email', 'string')).length === value.length;
   }
+  /* eslint-enable */
   if (type === 'object') {
     return isObj(value);
   }
