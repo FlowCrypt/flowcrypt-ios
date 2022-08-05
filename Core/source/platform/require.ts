@@ -30,7 +30,8 @@ export interface NodeStream<T extends Uint8Array | string> extends BaseStream<T>
 
 export type MaybeStream<T extends Uint8Array | string> = T | WebStream<T> | NodeStream<T>;
 
-type ReadToEndFn = <T extends Uint8Array | string>(input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
+export type ReadToEndFn = <T extends Uint8Array | string>(
+  input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
 
 /* eslint-disable */
 export const requireStreamReadToEnd = (): ReadToEndFn => {
@@ -41,19 +42,19 @@ export const requireStreamReadToEnd = (): ReadToEndFn => {
   return readToEnd as ReadToEndFn;
 };
 
-export const requireMimeParser = (): any => {
+export const requireMimeParser = () => {
   // @ts-ignore;
   return global['emailjs-mime-parser'];
 };
 
-export const requireMimeBuilder = (): any => {
+export const requireMimeBuilder = () => {
   // global['emailjs-mime-builder'] ?
   // dereq_emailjs_mime_builder ?
   // @ts-ignore
   return global['emailjs-mime-builder'];
 };
 
-export const requireIso88592 = (): any => {
+export const requireIso88592 = () => {
   // @ts-ignore
   return global.iso88592;
 };

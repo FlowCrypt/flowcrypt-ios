@@ -23,12 +23,14 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       dereq_sanitize_html: 'sanitize-html',
-      openpgp: 'openpgp',
+      // openpgp: 'openpgp',
+      // readToEnd: ['@openpgp/web-stream-tools', 'readToEnd']
     }),
   ],
   externals: {
+    // '@openpgp/web-stream-tools': 'web-stream-tools',
     // openpgp: 'openpgp',
-    '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools'
+    '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools',
   },
   resolve: {
     fallback: {

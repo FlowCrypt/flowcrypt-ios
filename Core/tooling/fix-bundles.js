@@ -24,6 +24,7 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
 }
 
 // copy raw to flowcrypt-bundle
+// module.exports = require("../../bundles/raw/web-stream-tools");
 fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-bare-bundle.js`);
 
 // copy zxcvbn, only used for bare (iOS) because zxcvbn-ios is not well maintained:
@@ -105,12 +106,16 @@ openpgpLibBare = replace( // bare - aes decrypt on host
   `return Uint8Array.from(coreHost.decryptAesCfbNoPadding(ct, key, iv));`
 );
 
+const webStreamLibBare = ''; // fs.readFileSync(`${bundleWipDir}/web-stream-tools.js`).toString();
 const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
 
 fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
   /* asn1 begin */
   ${asn1LibBare}
   /* asn1 end */
+  /* web-stream-tool begin */
+  ${webStreamLibBare}
+  /* web-stream-tools end */
   ${openpgpLibBare}
   const openpgp = window.openpgp;
 `);

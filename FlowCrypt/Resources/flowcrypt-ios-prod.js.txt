@@ -20633,7 +20633,7 @@ var time_estimates;time_estimates={estimate_attack_times:function(e){var t,n,s,o
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 116:
+/***/ 117:
 /***/ ((module) => {
 
 /*!
@@ -26748,7 +26748,7 @@ exports.base64decode = base64decode;
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(116);
+/******/ 	var __webpack_exports__ = __webpack_require__(117);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()
@@ -26761,34 +26761,32 @@ exports.base64decode = base64decode;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getSigningPrv = exports.Endpoints = void 0;
 const format_output_1 = __webpack_require__(2);
-const pgp_msg_1 = __webpack_require__(94);
-const pgp_key_1 = __webpack_require__(83);
+const pgp_msg_1 = __webpack_require__(95);
+const pgp_key_1 = __webpack_require__(84);
 const mime_1 = __webpack_require__(10);
-const att_1 = __webpack_require__(13);
+const att_1 = __webpack_require__(14);
 const buf_1 = __webpack_require__(4);
 const msg_block_1 = __webpack_require__(3);
-const msg_block_parser_1 = __webpack_require__(15);
-const pgp_password_1 = __webpack_require__(95);
-const store_1 = __webpack_require__(84);
+const msg_block_parser_1 = __webpack_require__(16);
+const pgp_password_1 = __webpack_require__(96);
+const store_1 = __webpack_require__(85);
 const common_1 = __webpack_require__(11);
-const const_1 = __webpack_require__(87);
-const validate_input_1 = __webpack_require__(96);
-const xss_1 = __webpack_require__(16);
-const const_2 = __webpack_require__(87);
-const openpgp_1 = __webpack_require__(82);
+const const_1 = __webpack_require__(88);
+const validate_input_1 = __webpack_require__(97);
+const xss_1 = __webpack_require__(17);
+const const_2 = __webpack_require__(88);
+const openpgp_1 = __webpack_require__(83);
 class Endpoints {
     constructor() {
         this.version = async () => {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             return (0, format_output_1.fmtRes)({ app_version: const_1.VERSION });
         };
         this.generateKey = async (uncheckedReq) => {
-            store_1.Store.keyCacheWipe(); // generateKey may be used when changing major settings, wipe cache to prevent dated results
+            store_1.Store.keyCacheWipe();
             const { passphrase, userIds, variant } = validate_input_1.ValidateInput.generateKey(uncheckedReq);
             if (passphrase.length < 12) {
                 throw new Error('Pass phrase length seems way too low! ' +
@@ -26809,9 +26807,7 @@ class Endpoints {
             }
             if (req.format === 'plain') {
                 const atts = (req.atts || []).map(({ name, type, base64 }) => new att_1.Att({ name, type, data: buf_1.Buf.fromBase64Str(base64) }));
-                return (0, format_output_1.fmtRes)({}, buf_1.Buf.fromUtfStr(await mime_1.Mime.encode(
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                { 'text/plain': req.text, 'text/html': req.html }, mimeHeaders, atts)));
+                return (0, format_output_1.fmtRes)({}, buf_1.Buf.fromUtfStr(await mime_1.Mime.encode({ 'text/plain': req.text, 'text/html': req.html }, mimeHeaders, atts)));
             }
             else if (req.format === 'encrypt-inline') {
                 const encryptedAtts = [];
@@ -26835,7 +26831,6 @@ class Endpoints {
                     data: buf_1.Buf.fromUtfStr(req.text),
                     armor: true
                 });
-                // eslint-disable-next-line @typescript-eslint/naming-convention
                 return (0, format_output_1.fmtRes)({}, buf_1.Buf.fromUtfStr(await mime_1.Mime.encode({ 'text/plain': encrypted }, mimeHeaders, encryptedAtts)));
             }
             else {
@@ -26854,7 +26849,7 @@ class Endpoints {
         };
         this.parseDecryptMsg = async (uncheckedReq, data) => {
             const { keys: kisWithPp, msgPwd, isEmail, verificationPubkeys } = validate_input_1.ValidateInput.parseDecryptMsg(uncheckedReq);
-            const rawBlocks = []; // contains parsed, unprocessed / possibly encrypted data
+            const rawBlocks = [];
             let rawSigned;
             let subject;
             if (isEmail) {
@@ -26866,7 +26861,7 @@ class Endpoints {
             else {
                 rawBlocks.push(msg_block_1.MsgBlock.fromContent('encryptedMsg', new buf_1.Buf(buf_1.Buf.concat(data))));
             }
-            const sequentialProcessedBlocks = []; // contains decrypted or otherwise formatted data
+            const sequentialProcessedBlocks = [];
             for (const rawBlock of rawBlocks) {
                 if ((rawBlock.type === 'signedMsg' || rawBlock.type === 'signedHtml') && rawBlock.signature) {
                     const verify = await pgp_msg_1.PgpMsg.verifyDetached({
@@ -26882,7 +26877,7 @@ class Endpoints {
                             complete: true
                         });
                     }
-                    else { // text
+                    else {
                         sequentialProcessedBlocks.push({
                             type: 'verifiedMsg',
                             content: common_1.Str.asEscapedHtml(rawBlock.content.toString()),
@@ -26905,12 +26900,6 @@ class Endpoints {
                             subject = formatted.subject || subject;
                         }
                         else {
-                            // treating as text, converting to html - what about plain signed html? This could produce html tags
-                            // although hopefully, that would, typically, result in the
-                            // `(rawBlock.type === 'signedMsg' || rawBlock.type === 'signedHtml')` block above
-                            // the only time I can imagine it screwing up down here is if it was a signed-only message
-                            // that was actually fully armored (text not visible) with a mime msg inside
-                            // ... -> in which case the user would I think see full mime content?
                             sequentialProcessedBlocks.push({
                                 type: 'verifiedMsg',
                                 content: common_1.Str.asEscapedHtml(decryptRes.content.toUtfStr()),
@@ -26924,7 +26913,7 @@ class Endpoints {
                         sequentialProcessedBlocks.push({
                             type: 'decryptErr',
                             content: decryptRes.error.type === pgp_msg_1.DecryptErrTypes.noMdc
-                                ? decryptRes.content.toUtfStr() : rawBlock.content.toString(),
+                                ? decryptRes.content?.toUtfStr() ?? '' : rawBlock.content.toString(),
                             decryptErr: decryptRes,
                             complete: true
                         });
@@ -26933,7 +26922,6 @@ class Endpoints {
                 else if (rawBlock.type === 'encryptedAtt'
                     && rawBlock.attMeta
                     && /^(0x)?[A-Fa-f0-9]{16,40}\.asc\.pgp$/.test(rawBlock.attMeta.name || '')) {
-                    // encrypted pubkey attached
                     const decryptRes = await pgp_msg_1.PgpMsg.decrypt({
                         kisWithPp,
                         msgPwd,
@@ -26944,38 +26932,33 @@ class Endpoints {
                         sequentialProcessedBlocks.push({ type: 'publicKey', content: decryptRes.content.toString(), complete: true });
                     }
                     else {
-                        sequentialProcessedBlocks.push(rawBlock); // will show as encryptedAtt
+                        sequentialProcessedBlocks.push(rawBlock);
                     }
                 }
                 else {
                     sequentialProcessedBlocks.push(rawBlock);
                 }
             }
-            // At this point we have sequentialProcessedBlocks filled
             const msgContentBlocks = [];
             const blocks = [];
             let replyType = 'plain';
-            for (const block of sequentialProcessedBlocks) { // fix/adjust/format blocks before returning it over JSON
-                if (block.content instanceof buf_1.Buf) { // cannot JSON-serialize Buf
+            for (const block of sequentialProcessedBlocks) {
+                if (block.content instanceof buf_1.Buf) {
                     block.content = (0, format_output_1.isContentBlock)(block.type)
                         ? block.content.toUtfStr()
                         : block.content.toRawBytesStr();
                 }
                 else if (block.attMeta && block.attMeta.data instanceof Uint8Array) {
-                    // converting to base64-encoded string instead of uint8 for JSON serilization
-                    // value actually replaced to a string, but type remains Uint8Array type set to satisfy TS
-                    // no longer used below, only gets passed to be serialized as JSON - later consumed by iOS or Android app
                     block.attMeta.data = buf_1.Buf.fromUint8(block.attMeta.data).toBase64Str();
                 }
                 if (block.decryptErr?.content instanceof buf_1.Buf) {
-                    // cannot pass a Buf using a json, converting to String before it gets serialized
                     block.decryptErr.content = block.decryptErr.content.toUtfStr();
                 }
                 if (block.type === 'decryptedHtml' || block.type === 'decryptedText' || block.type === 'decryptedAtt') {
                     replyType = 'encrypted';
                 }
                 if (block.type === 'publicKey') {
-                    if (!block.keyDetails) { // this could eventually be moved into detectBlocks, which would make it async
+                    if (!block.keyDetails) {
                         const { keys } = await pgp_key_1.PgpKey.normalize(block.content);
                         if (keys.length) {
                             for (const pub of keys) {
@@ -27016,7 +26999,6 @@ class Endpoints {
             }
             const { contentBlock, text } = (0, format_output_1.fmtContentBlock)(msgContentBlocks);
             blocks.unshift(contentBlock);
-            // data represent one JSON-stringified block per line. This is so that it can be read as a stream later
             return (0, format_output_1.fmtRes)({ text, replyType, subject }, buf_1.Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
         };
         this.decryptFile = async (uncheckedReq, data, verificationPubkeys) => {
@@ -27041,7 +27023,6 @@ class Endpoints {
             const r = validate_input_1.ValidateInput.zxcvbnStrengthBar(uncheckedReq);
             if (r.purpose === 'passphrase') {
                 if (typeof r.guesses === 'number') {
-                    // the host has a port of zxcvbn and already knows amount of guesses per password
                     return (0, format_output_1.fmtRes)(pgp_password_1.PgpPwd.estimateStrength(r.guesses));
                 }
                 else if (typeof r.value === 'string') {
@@ -27071,7 +27052,6 @@ class Endpoints {
                 return (0, format_output_1.fmtRes)({ format: 'unknown', keyDetails });
             }
             if (pgpType.armored) {
-                // armored
                 const { blocks } = msg_block_parser_1.MsgBlockParser.detectBlocks(allData.toString());
                 for (const block of blocks) {
                     const { keys } = await pgp_key_1.PgpKey.parse(block.content.toString());
@@ -27079,7 +27059,6 @@ class Endpoints {
                 }
                 return (0, format_output_1.fmtRes)({ format: 'armored', keyDetails });
             }
-            // binary
             const openPgpKeys = await (0, openpgp_1.readKeys)({ binaryKeys: allData });
             for (const openPgpKey of openPgpKeys) {
                 keyDetails.push(await pgp_key_1.PgpKey.details(openPgpKey));
@@ -27091,11 +27070,9 @@ class Endpoints {
             return (0, format_output_1.fmtRes)({ valid: common_1.Str.isEmailValid(email) });
         };
         this.decryptKey = async (uncheckedReq) => {
-            // decryptKey may be used when changing major settings, wipe cache to prevent dated results
             store_1.Store.keyCacheWipe();
             const { armored, passphrases } = validate_input_1.ValidateInput.decryptKey(uncheckedReq);
             if (passphrases.length !== 1) {
-                // todo - refactor endpoint decryptKey api to accept a single pp
                 throw new Error(`decryptKey: Can only accept exactly 1 pass phrase for decrypt, received: ${passphrases.length}`);
             }
             const key = await (0, validate_input_1.readArmoredKeyOrThrow)(armored);
@@ -27105,11 +27082,10 @@ class Endpoints {
             return (0, format_output_1.fmtRes)({ decryptedKey: undefined });
         };
         this.encryptKey = async (uncheckedReq) => {
-            // encryptKey may be used when changing major settings, wipe cache to prevent dated results
             store_1.Store.keyCacheWipe();
             const { armored, passphrase } = validate_input_1.ValidateInput.encryptKey(uncheckedReq);
             const privateKey = await (0, validate_input_1.readArmoredKeyOrThrow)(armored);
-            if (!passphrase || passphrase.length < 12) { // last resort check, this should never happen
+            if (!passphrase || passphrase.length < 12) {
                 throw new Error('Pass phrase length seems way too low! ' +
                     'Pass phrase strength should be properly checked before encrypting a key.');
             }
@@ -27143,7 +27119,6 @@ exports.getSigningPrv = getSigningPrv;
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.printReplayTestDefinition = exports.fmtErr = exports.fmtRes = exports.fmtContentBlock = exports.stripHtmlRootTags = exports.isContentBlock = void 0;
@@ -27151,7 +27126,7 @@ const msg_block_1 = __webpack_require__(3);
 const buf_1 = __webpack_require__(4);
 const mime_1 = __webpack_require__(10);
 const common_1 = __webpack_require__(11);
-const xss_1 = __webpack_require__(16);
+const xss_1 = __webpack_require__(17);
 const isContentBlock = (t) => {
     return t === 'plainText' || t === 'decryptedText' || t === 'plainHtml'
         || t === 'decryptedHtml' || t === 'signedMsg' || t === 'verifiedMsg';
@@ -27185,33 +27160,24 @@ const fmtMsgContentBlockAsHtml = (dirtyContent, frameColor) => {
     else if (frameColor === 'plain') {
         frameCss = `border: none;`;
     }
-    else { // gray
+    else {
         frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #989898;border-right: none;`;
     }
     return `<div class="MsgBlock ${frameColor}" style="${generalCss}${frameCss}">` +
         `${xss_1.Xss.htmlSanitizeKeepBasicTags(dirtyContent)}</div><!-- next MsgBlock -->\n`;
 };
 const stripHtmlRootTags = (html) => {
-    html = html.replace(/<\/?html[^>]*>/g, ''); // remove opening and closing html tags
-    html = html.replace(/<head[^>]*>.*<\/head>/g, ''); // remove the whole head section
-    html = html.replace(/<\/?body[^>]*>/g, ''); // remove opening and closing body tags
+    html = html.replace(/<\/?html[^>]*>/g, '');
+    html = html.replace(/<head[^>]*>.*<\/head>/g, '');
+    html = html.replace(/<\/?body[^>]*>/g, '');
     return html.trim();
 };
 exports.stripHtmlRootTags = stripHtmlRootTags;
-/**
- * replace content of imgs: <img src="cid:16c7a8c3c6a8d4ab1e01">
- */
 const fillInlineHtmlImgs = (htmlContent, inlineImgsByCid) => {
     return htmlContent.replace(/src="cid:([^"]+)"/g, (originalSrcAttr, cid) => {
         const img = inlineImgsByCid[cid];
         if (img) {
-            // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
-            // actually contains base64 encoded data, not Uint8Array as the type claims
-            const alteredSrcAttr = `src="data:${img.attMeta.type};base64,${img.attMeta.data}"`;
-            // delete to find out if any imgs were unused
-            // later we can add the unused ones at the bottom
-            // (though as implemented will cause issues if the same cid is reused
-            // in several places in html - which is theoretically valid - only first will get replaced)
+            const alteredSrcAttr = `src="data:${img.attMeta?.type};base64,${img.attMeta?.data}"`;
             delete inlineImgsByCid[cid];
             return alteredSrcAttr;
         }
@@ -27227,7 +27193,7 @@ const fmtContentBlock = (allContentBlocks) => {
     const imgsAtTheBottom = [];
     const inlineImgsByCid = {};
     for (const plainImgBlock of allContentBlocks.filter(b => mime_1.Mime.isPlainImgAtt(b))) {
-        if (plainImgBlock.attMeta.cid) {
+        if (plainImgBlock.attMeta?.cid) {
             inlineImgsByCid[plainImgBlock.attMeta.cid.replace(/>$/, '').replace(/^</, '')] = plainImgBlock;
         }
         else {
@@ -27257,7 +27223,6 @@ const fmtContentBlock = (allContentBlocks) => {
             msgContentAsText += block.content.toString() + '\n';
         }
         else if (block.type === 'decryptedHtml') {
-            // todo - add support for inline imgs? when included using cid
             msgContentAsHtml += fmtMsgContentBlockAsHtml((0, exports.stripHtmlRootTags)(block.content.toString()), 'green');
             msgContentAsText += xss_1.Xss.htmlUnescape(xss_1.Xss.htmlSanitizeAndStripAllTags(block.content.toString(), '\n') + '\n');
         }
@@ -27288,12 +27253,9 @@ const fmtContentBlock = (allContentBlocks) => {
         }
     }
     for (const inlineImg of imgsAtTheBottom.concat(Object.values(inlineImgsByCid))) {
-        // render any images we did not insert into content, at the bottom
-        const alt = `${inlineImg.attMeta.name || '(unnamed image)'} - ${inlineImg.attMeta.length / 1024}kb`;
-        // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
-        // actually contains base64 encoded data, not Uint8Array as the type claims
-        const inlineImgTag = `<img src="data:${inlineImg.attMeta.type};` +
-            `base64,${inlineImg.attMeta.data}" alt="${xss_1.Xss.escape(alt)} " />`;
+        const alt = `${inlineImg.attMeta?.name || '(unnamed image)'} - ${inlineImg.attMeta?.length ?? 0 / 1024}kb`;
+        const inlineImgTag = `<img src="data:${inlineImg.attMeta?.type};` +
+            `base64,${inlineImg.attMeta?.data}" alt="${xss_1.Xss.escape(alt)} " />`;
         msgContentAsHtml += fmtMsgContentBlockAsHtml(inlineImgTag, 'plain');
         msgContentAsText += `[image: ${alt}]\n`;
     }
@@ -27315,7 +27277,6 @@ const fmtContentBlock = (allContentBlocks) => {
     return { contentBlock, text: msgContentAsText.trim() };
 };
 exports.fmtContentBlock = fmtContentBlock;
-// eslint-disable-next-line @typescript-eslint/ban-types
 const fmtRes = (response, data) => {
     return {
         json: JSON.stringify(response),
@@ -27332,7 +27293,6 @@ const fmtErr = (e) => {
     });
 };
 exports.fmtErr = fmtErr;
-// eslint-disable-next-line @typescript-eslint/ban-types
 const printReplayTestDefinition = (endpoint, request, data) => {
     console.log(`
 ava.test.only('replaying', async t => {
@@ -27355,18 +27315,11 @@ exports.printReplayTestDefinition = printReplayTestDefinition;
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MsgBlock = void 0;
 class MsgBlock {
-    constructor(type, content, complete, signature, 
-    // only in publicKey when returned to Android
-    // (could eventually be made mandatory, done straight in detectBlocks?)
-    keyDetails, 
-    // only in plainAtt, encryptedAtt, decryptedAtt, encryptedAttLink (not sure if always)
-    attMeta, decryptErr, // only in decryptErr block, always
-    verifyRes) {
+    constructor(type, content, complete, signature, keyDetails, attMeta, decryptErr, verifyRes) {
         this.type = type;
         this.content = content;
         this.complete = complete;
@@ -27375,7 +27328,6 @@ class MsgBlock {
         this.attMeta = attMeta;
         this.decryptErr = decryptErr;
         this.verifyRes = verifyRes;
-        // todo
     }
 }
 exports.MsgBlock = MsgBlock;
@@ -27395,7 +27347,6 @@ MsgBlock.fromAtt = (type, content, attMeta) => {
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Buf = void 0;
@@ -27414,7 +27365,6 @@ class Buf extends Uint8Array {
             for (let i = 0; i < length; i++) {
                 if (this[i] < 128) {
                     if (bytesLeftInChar) {
-                        // utf-8 continuation byte missing, assuming the last character was an 8-bit ASCII character
                         utf8string += String.fromCharCode(this[i - 1]);
                     }
                     bytesLeftInChar = 0;
@@ -27422,27 +27372,27 @@ class Buf extends Uint8Array {
                     utf8string += String.fromCharCode(this[i]);
                 }
                 else {
-                    if (!bytesLeftInChar) { // beginning of new multi-byte character
-                        if (this[i] >= 128 && this[i] < 192) { // 10xx xxxx
-                            utf8string += String.fromCharCode(this[i]); // extended 8-bit ASCII compatibility, european ASCII characters
+                    if (!bytesLeftInChar) {
+                        if (this[i] >= 128 && this[i] < 192) {
+                            utf8string += String.fromCharCode(this[i]);
                         }
-                        else if (this[i] >= 192 && this[i] < 224) { // 110x xxxx
+                        else if (this[i] >= 192 && this[i] < 224) {
                             bytesLeftInChar = 1;
                             binaryChar = this[i].toString(2).substring(3);
                         }
-                        else if (this[i] >= 224 && this[i] < 240) { // 1110 xxxx
+                        else if (this[i] >= 224 && this[i] < 240) {
                             bytesLeftInChar = 2;
                             binaryChar = this[i].toString(2).substring(4);
                         }
-                        else if (this[i] >= 240 && this[i] < 248) { // 1111 0xxx
+                        else if (this[i] >= 240 && this[i] < 248) {
                             bytesLeftInChar = 3;
                             binaryChar = this[i].toString(2).substring(5);
                         }
-                        else if (this[i] >= 248 && this[i] < 252) { // 1111 10xx
+                        else if (this[i] >= 248 && this[i] < 252) {
                             bytesLeftInChar = 4;
                             binaryChar = this[i].toString(2).substring(6);
                         }
-                        else if (this[i] >= 252 && this[i] < 254) { // 1111 110x
+                        else if (this[i] >= 252 && this[i] < 254) {
                             bytesLeftInChar = 5;
                             binaryChar = this[i].toString(2).substring(7);
                         }
@@ -27456,7 +27406,7 @@ class Buf extends Uint8Array {
                             }
                         }
                     }
-                    else { // continuation of a multi-byte character
+                    else {
                         binaryChar += this[i].toString(2).substring(2);
                         bytesLeftInChar--;
                     }
@@ -27518,40 +27468,36 @@ Buf.fromRawBytesStr = (rawStr) => {
     return buf;
 };
 Buf.fromUtfStr = (utfStr) => {
-    // eslint-disable-next-line max-len
-    // adapted from https://github.com/feross/buffer/blob/master/index.js see https://github.com/feross/buffer/blob/master/LICENSE
-    // (MIT as of Jan 2018)
     let codePoint;
     const length = utfStr.length;
     let leadSurrogate;
     const bytes = [];
     for (let i = 0; i < length; ++i) {
         codePoint = utfStr.charCodeAt(i);
-        if (codePoint > 0xD7FF && codePoint < 0xE000) { // is surrogate component
-            if (!leadSurrogate) { // last char was a lead
-                if (codePoint > 0xDBFF) { // no lead yet
-                    bytes.push(0xEF, 0xBF, 0xBD); // unexpected trail
+        if (codePoint > 0xD7FF && codePoint < 0xE000) {
+            if (!leadSurrogate) {
+                if (codePoint > 0xDBFF) {
+                    bytes.push(0xEF, 0xBF, 0xBD);
                     continue;
                 }
                 else if (i + 1 === length) {
                     bytes.push(0xEF, 0xBF, 0xBD);
                     continue;
                 }
-                leadSurrogate = codePoint; // valid lead
+                leadSurrogate = codePoint;
                 continue;
             }
-            if (codePoint < 0xDC00) { // 2 leads in a row
+            if (codePoint < 0xDC00) {
                 bytes.push(0xEF, 0xBF, 0xBD);
                 leadSurrogate = codePoint;
                 continue;
             }
-            codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000; // valid surrogate pair
+            codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000;
         }
         else if (leadSurrogate) {
             bytes.push(0xEF, 0xBF, 0xBD);
         }
         leadSurrogate = undefined;
-        // encode utf8
         if (codePoint < 0x80) {
             bytes.push(codePoint);
         }
@@ -27583,7 +27529,6 @@ Buf.fromBase64UrlStr = (b64UrlStr) => {
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getKeyExpirationTimeForCapabilities = exports.strToHex = exports.iso2022jpToUtf = exports.setGlobals = exports.base64decode = exports.base64encode = exports.secureRandomBytes = void 0;
@@ -27610,13 +27555,6 @@ const iso2022jpToUtf = (content) => {
     return dereq_encoding_japanese.convert(content, { to: 'UTF8', from: 'JIS', type: 'string' });
 };
 exports.iso2022jpToUtf = iso2022jpToUtf;
-/**
- * Create hex string from a binary.
- * @param {String} str A string to convert.
- * @returns {String} String containing the hexadecimal values.
- * @note This method, brought from OpenPGP.js project is, unlike the rest of the codebase,
- *       licensed under LGPL. See original license file: https://github.com/openpgpjs/openpgpjs/blob/main/LICENSE
- */
 const strToHex = (str) => {
     if (str === null) {
         return "";
@@ -27649,7 +27587,6 @@ const getSubkeyExpirationTime = (subkey) => {
     const binding = subkey.bindingSignatures.filter(b => b.created === bindingCreated)[0];
     return binding.getExpirationTime();
 };
-// Attempt to backport from openpgp.js v4
 const getKeyExpirationTimeForCapabilities = async (key, capabilities, keyId, userId) => {
     const primaryUser = await key.getPrimaryUser(undefined, userId, undefined);
     if (!primaryUser)
@@ -27666,10 +27603,9 @@ const getKeyExpirationTimeForCapabilities = async (key, capabilities, keyId, use
             || (await key.getEncryptionKey(keyId, null, userId).catch(() => { return undefined; }));
         if (!encryptionKey)
             return null;
-        // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
         const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
             ? getSubkeyExpirationTime(encryptionKey)
-            : (await encryptionKey.getExpirationTime(userId));
+            : (await encryptionKey.getExpirationTime(userId)) ?? 0;
         if (encryptionKeyExpiry < expiry)
             expiry = encryptionKeyExpiry;
     }
@@ -27678,10 +27614,9 @@ const getKeyExpirationTimeForCapabilities = async (key, capabilities, keyId, use
             || (await key.getSigningKey(keyId, null, userId).catch(() => { return undefined; }));
         if (!signatureKey)
             return null;
-        // could be the same as above, so checking for property instead of using "instanceof"
         const signatureKeyExpiry = 'bindingSignatures' in signatureKey
             ? await getSubkeyExpirationTime(signatureKey)
-            : (await signatureKey.getExpirationTime(userId));
+            : (await signatureKey.getExpirationTime(userId)) ?? 0;
         if (signatureKeyExpiry < expiry)
             expiry = signatureKeyExpiry;
     }
@@ -30062,21 +29997,19 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Mime = void 0;
 const common_1 = __webpack_require__(11);
 const require_1 = __webpack_require__(12);
-const att_1 = __webpack_require__(13);
+const att_1 = __webpack_require__(14);
 const buf_1 = __webpack_require__(4);
-const catch_1 = __webpack_require__(14);
+const catch_1 = __webpack_require__(15);
 const msg_block_1 = __webpack_require__(3);
-const msg_block_parser_1 = __webpack_require__(15);
-const pgp_armor_1 = __webpack_require__(81);
+const msg_block_parser_1 = __webpack_require__(16);
+const pgp_armor_1 = __webpack_require__(82);
 const util_1 = __webpack_require__(5);
-/* eslint-disable @typescript-eslint/naming-convention */
 const MimeParser = (0, require_1.requireMimeParser)();
 const MimeBuilder = (0, require_1.requireMimeBuilder)();
 const Iso88592 = (0, require_1.requireIso88592)();
@@ -30088,18 +30021,14 @@ Mime.processDecoded = (decoded) => {
     const blocks = [];
     if (decoded.text) {
         const blocksFromTextPart = msg_block_parser_1.MsgBlockParser.detectBlocks(common_1.Str.normalize(decoded.text)).blocks;
-        // if there are some encryption-related blocks found in the text section,
-        // which we can use, and not look at the html section
         if (blocksFromTextPart.find(b => b.type === 'encryptedMsg' || b.type === 'signedMsg'
             || b.type === 'publicKey' || b.type === 'privateKey')) {
-            // because the html most likely containt the same thing,
-            // just harder to parse pgp sections cause it's html
             blocks.push(...blocksFromTextPart);
         }
-        else if (decoded.html) { // if no pgp blocks found in text part and there is html part, prefer html
+        else if (decoded.html) {
             blocks.push(msg_block_1.MsgBlock.fromContent('plainHtml', decoded.html));
         }
-        else { // else if no html and just a plain text message, use that
+        else {
             blocks.push(...blocksFromTextPart);
         }
     }
@@ -30147,7 +30076,7 @@ Mime.processDecoded = (decoded) => {
             }
         }
         if (!blocks.find(block => block.type === 'plainText' || block.type === 'plainHtml'
-            || block.type === 'signedMsg' || block.type === 'signedHtml')) { // signed an empty message
+            || block.type === 'signedMsg' || block.type === 'signedHtml')) {
             blocks.push(new msg_block_1.MsgBlock("signedMsg", "", true, decoded.signature));
         }
     }
@@ -30167,7 +30096,6 @@ Mime.isPlainImgAtt = (b) => {
 Mime.replyHeaders = (parsedMimeMsg) => {
     const msgId = String(parsedMimeMsg.headers['message-id'] || '');
     const refs = String(parsedMimeMsg.headers['in-reply-to'] || '');
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     return { 'in-reply-to': msgId, 'references': refs + ' ' + msgId };
 };
 Mime.resemblesMsg = (msg) => {
@@ -30209,8 +30137,6 @@ Mime.decode = async (mimeMsg) => {
                             mimeContent.signature = node.rawContent;
                         }
                         else if (Mime.getNodeType(node) === 'text/html' && !Mime.getNodeFilename(node)) {
-                            // html content may be broken up into smaller pieces by attachments in between
-                            // AppleMail does this with inline attachments
                             mimeContent.html = (mimeContent.html || '') + Mime.getNodeContentAsUtfStr(node);
                         }
                         else if (Mime.getNodeType(node) === 'text/plain'
@@ -30219,11 +30145,9 @@ Mime.decode = async (mimeMsg) => {
                                 + Mime.getNodeContentAsUtfStr(node);
                         }
                         else if (Mime.getNodeType(node) === 'text/rfc822-headers') {
-                            /* eslint-disable no-underscore-dangle */
                             if (node._parentNode && node._parentNode.headers.subject) {
                                 mimeContent.subject = node._parentNode.headers.subject[0].value;
                             }
-                            /* eslint-enable no-underscore-dangle */
                         }
                         else {
                             mimeContent.atts.push(Mime.getNodeAsAtt(node));
@@ -30242,7 +30166,6 @@ Mime.decode = async (mimeMsg) => {
             parser.end();
         }
         catch (e) {
-            // todo - on Android we may want to fail when this happens, evaluate effect on browser extension
             catch_1.Catch.reportErr(e);
             resolve(mimeContent);
         }
@@ -30264,8 +30187,7 @@ Mime.encode = async (body, headers, atts = [], type) => {
         else {
             contentNode = new MimeBuilder('multipart/alternative');
             for (const type of Object.keys(body)) {
-                // already present, that's why part of for loop
-                contentNode.appendChild(Mime.newContentNode(MimeBuilder, type, body[type]));
+                contentNode.appendChild(Mime.newContentNode(MimeBuilder, type, body[type] ?? ''));
             }
         }
         rootNode.appendChild(contentNode);
@@ -30273,7 +30195,7 @@ Mime.encode = async (body, headers, atts = [], type) => {
     for (const att of atts) {
         rootNode.appendChild(Mime.createAttNode(att));
     }
-    return rootNode.build(); // eslint-disable-line @typescript-eslint/no-unsafe-return
+    return rootNode.build();
 };
 Mime.subjectWithoutPrefixes = (subject) => {
     return subject.replace(/^((Re|Fwd): ?)+/g, '').trim();
@@ -30286,7 +30208,7 @@ Mime.encodePgpMimeSigned = async (body, headers, atts = [], sign) => {
     }
     const bodyNodes = new MimeBuilder('multipart/alternative');
     for (const type of Object.keys(body)) {
-        bodyNodes.appendChild(Mime.newContentNode(MimeBuilder, type, body[type]));
+        bodyNodes.appendChild(Mime.newContentNode(MimeBuilder, type, body[type] ?? ''));
     }
     const signedContentNode = new MimeBuilder('multipart/mixed');
     signedContentNode.appendChild(bodyNodes);
@@ -30298,7 +30220,6 @@ Mime.encodePgpMimeSigned = async (body, headers, atts = [], sign) => {
         type: 'application/pgp-signature', name: 'signature.asc'
     });
     const sigAttPlaceholderNode = Mime.createAttNode(sigAttPlaceholder);
-    // https://tools.ietf.org/html/rfc3156#section-5 - signed content first, signature after
     rootNode.appendChild(signedContentNode);
     rootNode.appendChild(sigAttPlaceholderNode);
     const mimeStrWithPlaceholderSig = rootNode.build();
@@ -30338,26 +30259,20 @@ Mime.headerGetAddress = (parsedMimeMsg, headersNames) => {
 };
 Mime.retrieveRawSignedContent = (nodes) => {
     for (const node of nodes) {
-        /* eslint-disable no-underscore-dangle */
         if (!node._childNodes || !node._childNodes.length) {
-            // signed nodes tend contain two children: content node, signature node.
-            // If no node, then this is not pgp/mime signed content
             continue;
         }
         const isSigned = node._isMultipart === 'signed';
         const isMixedWithSig = node._isMultipart === 'mixed' && node._childNodes.length === 2
             && Mime.getNodeType(node._childNodes[1]) === 'application/pgp-signature';
         if (isSigned || isMixedWithSig) {
-            // PGP/MIME signed content uses <CR><LF> as in // use CR-LF https://tools.ietf.org/html/rfc3156#section-5
-            // however emailjs parser will replace it to <LF>, so we fix it here
             let rawSignedContent = node._childNodes[0].raw.replace(/\r?\n/g, '\r\n');
-            if (/--$/.test(rawSignedContent)) { // end of boundary without a mandatory newline
-                rawSignedContent += '\r\n'; // emailjs wrongly leaves out the last newline, fix it here
+            if (/--$/.test(rawSignedContent)) {
+                rawSignedContent += '\r\n';
             }
             return rawSignedContent;
         }
         return Mime.retrieveRawSignedContent(node._childNodes);
-        /* eslint-enable no-underscore-dangle */
     }
     return undefined;
 };
@@ -30416,24 +30331,24 @@ Mime.getNodeAsAtt = (node) => {
         name: Mime.getNodeFilename(node),
         type: Mime.getNodeType(node),
         data: node.contentTransferEncoding.value === 'quoted-printable'
-            ? Mime.fromEqualSignNotationAsBuf(node.rawContent)
+            ? Mime.fromEqualSignNotationAsBuf(node.rawContent ?? '')
             : node.content,
         cid: Mime.getNodeContentId(node),
     });
 };
 Mime.getNodeContentAsUtfStr = (node) => {
     if (node.charset && Iso88592.labels.includes(node.charset)) {
-        return Iso88592.decode(node.rawContent);
+        return Iso88592.decode(node.rawContent ?? '');
     }
     let resultBuf;
     if (node.charset === 'utf-8' && node.contentTransferEncoding.value === 'base64') {
         resultBuf = buf_1.Buf.fromUint8(node.content);
     }
     else if (node.charset === 'utf-8' && node.contentTransferEncoding.value === 'quoted-printable') {
-        resultBuf = Mime.fromEqualSignNotationAsBuf(node.rawContent);
+        resultBuf = Mime.fromEqualSignNotationAsBuf(node.rawContent ?? '');
     }
     else {
-        resultBuf = buf_1.Buf.fromRawBytesStr(node.rawContent);
+        resultBuf = buf_1.Buf.fromRawBytesStr(node.rawContent ?? '');
     }
     if (node.charset?.toUpperCase() === 'ISO-2022-JP'
         || (node.charset === 'utf-8' && Mime.getNodeType(node, 'initial')?.includes('ISO-2022-JP'))) {
@@ -30441,11 +30356,9 @@ Mime.getNodeContentAsUtfStr = (node) => {
     }
     return resultBuf.toUtfStr();
 };
-// eslint-disable-next-line @typescript-eslint/naming-convention
 Mime.newContentNode = (MimeBuilder, type, content) => {
     const node = new MimeBuilder(type).setContent(content);
     if (type === 'text/plain') {
-        // gmail likes this
         node.addHeader('Content-Transfer-Encoding', 'quoted-printable');
     }
     return node;
@@ -30457,7 +30370,6 @@ Mime.newContentNode = (MimeBuilder, type, content) => {
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Url = exports.Value = exports.Str = void 0;
@@ -30468,12 +30380,10 @@ exports.Str = Str;
 Str.extractErrorMessage = (e) => {
     if (typeof e !== 'object')
         return undefined;
-    /* eslint-disable @typescript-eslint/no-unsafe-return */
     if (typeof e.message === 'undefined')
         return undefined;
     if (typeof e.message === 'string')
         return e.message;
-    /* eslint-enable @typescript-eslint/no-unsafe-return */
     return JSON.stringify(e);
 };
 Str.parseEmail = (full, flag = 'VALIDATE') => {
@@ -30494,7 +30404,6 @@ Str.parseEmail = (full, flag = 'VALIDATE') => {
     return { email, name, full };
 };
 Str.rmSpecialCharsKeepUtf = (str, mode) => {
-    // not a whitelist because we still want utf chars
     str = str.replace(/[@&#`();:'",<>\{\}\[\]\\\/\n\t\r]/gi, '');
     if (mode === 'ALLOW-SOME') {
         return str;
@@ -30530,7 +30439,6 @@ Str.isEmailValid = (email) => {
     if (email.indexOf(' ') !== -1) {
         return false;
     }
-    // eslint-disable-next-line max-len
     return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(email);
 };
 Str.monthName = (monthIndex) => {
@@ -30584,8 +30492,6 @@ Str.fromDate = (date) => {
     return date.toISOString().replace(/T/, ' ').replace(/:[^:]+$/, '');
 };
 Str.base64urlUtfEncode = (str) => {
-    // eslint-disable-next-line max-len
-    // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     if (typeof str === 'undefined') {
         return str;
     }
@@ -30594,14 +30500,12 @@ Str.base64urlUtfEncode = (str) => {
         .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 };
 Str.base64urlUtfDecode = (str) => {
-    // eslint-disable-next-line max-len
-    // https://stackoverflow.com/questions/30106476/using-javascripts-atob-to-decode-base64-doesnt-properly-decode-utf-8-strings
     if (typeof str === 'undefined') {
         return str;
     }
-    return decodeURIComponent(Array.prototype.map.call((0, util_1.base64decode)(str.replace(/-/g, '+').replace(/_/g, '/')), (c) => {
+    return decodeURIComponent(String(Array.prototype.map.call((0, util_1.base64decode)(str.replace(/-/g, '+').replace(/_/g, '/')), (c) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+    }).join('')));
 };
 class Value {
 }
@@ -30652,18 +30556,15 @@ Value.noop = () => undefined;
 class Url {
 }
 exports.Url = Url;
-/* eslint-disable @typescript-eslint/naming-convention */
 Url.URL_PARAM_DICT = {
     '___cu_true___': true, '___cu_false___': false, '___cu_null___': null
 };
-/* eslint-enable @typescript-eslint/naming-convention */
-/**
- * will convert result to desired format: camelCase or snake_case, based on what was supplied in expectedKeys
- * todo - the camelCase or snake_case functionality can now be removed
- */
 Url.parse = (expectedKeys, parseThisUrl) => {
     const url = (parseThisUrl || window.location.search.replace('?', ''));
-    const valuePairs = url.split('?').pop().split('&'); // str.split('?') string[].length will always be >= 1
+    const valuePairs = url.split('?').pop()?.split('&');
+    if (!valuePairs) {
+        return null;
+    }
     const rawParams = {};
     const rawParamNameDict = {};
     for (const valuePair of valuePairs) {
@@ -30692,7 +30593,7 @@ Url.create = (link, params) => {
 };
 Url.removeParamsFromUrl = (url, paramsToDelete) => {
     const urlParts = url.split('?');
-    if (!urlParts[1]) { // Nothing to remove
+    if (!urlParts[1]) {
         return url;
     }
     let queryParams = urlParts[1];
@@ -30711,14 +30612,13 @@ Url.camelCaseToSnakeCase = (s) => {
 };
 Url.findAndProcessUrlParam = (expectedParamName, rawParamNameDict, rawParms) => {
     if (typeof rawParamNameDict[expectedParamName] === 'undefined') {
-        return undefined; // param name not found in param name dict
+        return undefined;
     }
     const rawValue = rawParms[rawParamNameDict[expectedParamName]];
     if (typeof rawValue === 'undefined') {
-        return undefined; // original param name not found in raw params
+        return undefined;
     }
     if (typeof Url.URL_PARAM_DICT[rawValue] !== 'undefined') {
-        // raw value was converted using a value dict to get proper: true, false, undefined, null
         return Url.URL_PARAM_DICT[rawValue];
     }
     return decodeURIComponent(rawValue);
@@ -30738,36 +30638,24 @@ Url.fillPossibleUrlParamNameVariations = (urlParamName, rawParamNameDict) => {
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.requireIso88592 = exports.requireMimeBuilder = exports.requireMimeParser = exports.requireStreamReadToEnd = void 0;
 const requireStreamReadToEnd = () => {
-    // this will work for running tests in node with build/ts/test.js as entrypoint
-    // a different solution will have to be done for running in iOS
-    __webpack_require__.g.window = __webpack_require__.g.window || {}; // web-stream-tools needs this
-    // const tools = require('@openpgp/web-stream-tools');
-    // const { readToEnd } = require('../../bundles/raw/web-stream-tools');
-    // @ts-ignore
-    return __webpack_require__.g['web-stream-tools'].readToEnd;
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    // return readToEnd as ReadToEndFn;
+    __webpack_require__.g.window = __webpack_require__.g.window || {};
+    const { readToEnd } = __webpack_require__(13);
+    return readToEnd;
 };
 exports.requireStreamReadToEnd = requireStreamReadToEnd;
 const requireMimeParser = () => {
-    // @ts-ignore;
-    return __webpack_require__.g['emailjs-mime-parser']; // eslint-disable-line @typescript-eslint/no-unsafe-return
+    return __webpack_require__.g['emailjs-mime-parser'];
 };
 exports.requireMimeParser = requireMimeParser;
 const requireMimeBuilder = () => {
-    // global['emailjs-mime-builder'] ?
-    // dereq_emailjs_mime_builder ?
-    // @ts-ignore
-    return __webpack_require__.g['emailjs-mime-builder']; // eslint-disable-line @typescript-eslint/no-unsafe-return
+    return __webpack_require__.g['emailjs-mime-builder'];
 };
 exports.requireMimeBuilder = requireMimeBuilder;
 const requireIso88592 = () => {
-    // @ts-ignore
     return __webpack_require__.g.iso88592;
 };
 exports.requireIso88592 = requireIso88592;
@@ -30775,10 +30663,16 @@ exports.requireIso88592 = requireIso88592;
 
 /***/ }),
 /* 13 */
+/***/ ((module) => {
+
+"use strict";
+// module.exports = require("../../bundles/raw/web-stream-tools");
+
+/***/ }),
+/* 14 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Att = void 0;
@@ -30805,21 +30699,20 @@ class Att {
             throw new Error('Att has no data set');
         };
         this.treatAs = () => {
-            if (this.treatAsValue) { // pre-set
+            if (this.treatAsValue) {
                 return this.treatAsValue;
             }
             else if (['PGPexch.htm.pgp', 'PGPMIME version identification', 'Version.txt',
                 'PGPMIME Versions Identification'].includes(this.name)) {
-                return 'hidden'; // PGPexch.htm.pgp is html alternative of textual body content produced by PGP Desktop and GPG4o
+                return 'hidden';
             }
             else if (this.name === 'signature.asc' || this.type === 'application/pgp-signature') {
                 return 'signature';
             }
-            else if (!this.name && !this.type.startsWith('image/')) { // this.name may be '' or undefined - catch either
+            else if (!this.name && !this.type.startsWith('image/')) {
                 return this.length < 100 ? 'hidden' : 'encryptedMsg';
             }
             else if (this.name === 'msg.asc' && this.length < 100 && this.type === 'application/pgp-encrypted') {
-                // mail.ch does this - although it looks like encrypted msg, it will just contain PGP version eg "Version: 1"
                 return 'hidden';
             }
             else if (['message', 'msg.asc', 'message.asc', 'encrypted.asc', 'encrypted.eml.pgp',
@@ -30827,18 +30720,16 @@ class Att {
                 return 'encryptedMsg';
             }
             else if (this.name.match(/(\.pgp$)|(\.gpg$)|(\.[a-zA-Z0-9]{3,4}\.asc$)/g)) {
-                // ends with one of .gpg, .pgp, .???.asc, .????.asc
                 return 'encryptedFile';
             }
             else if (this.name.match(/(cryptup|flowcrypt)-backup-[a-z0-9]+\.(key|asc)$/g)) {
                 return 'privateKey';
             }
-            else if (this.name.match(/^(0|0x)?[A-F0-9]{8}([A-F0-9]{8})?.*\.asc$/g)) { // name starts with a key id
+            else if (this.name.match(/^(0|0x)?[A-F0-9]{8}([A-F0-9]{8})?.*\.asc$/g)) {
                 return 'publicKey';
             }
             else if (this.name.toLowerCase().includes('public')
                 && this.name.match(/[A-F0-9]{8}.*\.asc$/g)) {
-                // name contains the word "public", any key id and ends with .asc
                 return 'publicKey';
             }
             else if (this.name.match(/\.asc$/) && this.hasData()
@@ -30877,7 +30768,6 @@ class Att {
     }
 }
 exports.Att = Att;
-// eslint-disable-next-line max-len
 Att.attachmentsPattern = /^(((cryptup|flowcrypt)-backup-[a-z0-9]+\.(key|asc))|(.+\.pgp)|(.+\.gpg)|(.+\.asc)|(noname)|(message)|(PGPMIME version identification)|())$/gm;
 Att.keyinfoAsPubkeyAtt = (ki) => {
     return new Att({ data: buf_1.Buf.fromUtfStr(ki.public), type: 'application/pgp-keys', name: `0x${ki.longid}.asc` });
@@ -30885,11 +30775,10 @@ Att.keyinfoAsPubkeyAtt = (ki) => {
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Catch = void 0;
@@ -30897,43 +30786,41 @@ class Catch {
 }
 exports.Catch = Catch;
 Catch.reportErr = (e) => {
-    console.error(e); // core errors that were not re-thrown are not so interesting as of 2018
+    console.error(e);
 };
 Catch.report = (name, details) => {
-    console.error(name, details); // core reports are not so interesting as of 2018
+    console.error(name, details);
 };
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.MsgBlockParser = void 0;
 const msg_block_1 = __webpack_require__(3);
-const xss_1 = __webpack_require__(16);
+const xss_1 = __webpack_require__(17);
 const buf_1 = __webpack_require__(4);
-const catch_1 = __webpack_require__(14);
+const catch_1 = __webpack_require__(15);
 const mime_1 = __webpack_require__(10);
-const pgp_armor_1 = __webpack_require__(81);
-const pgp_key_1 = __webpack_require__(83);
-const pgp_msg_1 = __webpack_require__(94);
+const pgp_armor_1 = __webpack_require__(82);
+const pgp_key_1 = __webpack_require__(84);
+const pgp_msg_1 = __webpack_require__(95);
 const common_1 = __webpack_require__(11);
 class MsgBlockParser {
 }
 exports.MsgBlockParser = MsgBlockParser;
 _a = MsgBlockParser;
-// eslint-disable-next-line @typescript-eslint/naming-convention
 MsgBlockParser.ARMOR_HEADER_MAX_LENGTH = 50;
 MsgBlockParser.detectBlocks = (origText) => {
     const blocks = [];
     const normalized = common_1.Str.normalize(origText);
     let startAt = 0;
-    while (true) { // eslint-disable-line no-constant-condition
+    while (true) {
         const r = MsgBlockParser.detectBlockNext(normalized, startAt);
         if (r.found) {
             blocks.push(...r.found);
@@ -30945,7 +30832,7 @@ MsgBlockParser.detectBlocks = (origText) => {
             if (r.continueAt <= startAt) {
                 catch_1.Catch.report(`PgpArmordetect_blocks likely infinite loop: r.continue_at(${r.continueAt})` +
                     ` <= start_at(${startAt})`);
-                return { blocks, normalized }; // prevent infinite loop
+                return { blocks, normalized };
             }
             startAt = r.continueAt;
         }
@@ -30962,7 +30849,7 @@ MsgBlockParser.fmtDecryptedAsSanitizedHtmlBlocks = async (decryptedContent, sign
         utf = pgp_msg_1.PgpMsg.stripPublicKeys(utf, armoredPubKeys);
         const block = msg_block_1.MsgBlock.fromContent('decryptedHtml', common_1.Str.asEscapedHtml(utf));
         block.verifyRes = signature;
-        blocks.push(block); // escaped text as html
+        blocks.push(block);
         await MsgBlockParser.pushArmoredPubkeysToBlocks(armoredPubKeys, blocks);
         return { blocks, subject: undefined, isRichText };
     }
@@ -30970,18 +30857,18 @@ MsgBlockParser.fmtDecryptedAsSanitizedHtmlBlocks = async (decryptedContent, sign
     if (typeof decoded.html !== 'undefined') {
         const block = msg_block_1.MsgBlock.fromContent('decryptedHtml', xss_1.Xss.htmlSanitizeKeepBasicTags(decoded.html));
         block.verifyRes = signature;
-        blocks.push(block); // sanitized html
+        blocks.push(block);
         isRichText = true;
     }
     else if (typeof decoded.text !== 'undefined') {
         const block = msg_block_1.MsgBlock.fromContent('decryptedHtml', common_1.Str.asEscapedHtml(decoded.text));
         block.verifyRes = signature;
-        blocks.push(block); // escaped text as html
+        blocks.push(block);
     }
     else {
         const block = msg_block_1.MsgBlock.fromContent('decryptedHtml', common_1.Str.asEscapedHtml(buf_1.Buf.with(decryptedContent).toUtfStr()));
         block.verifyRes = signature;
-        blocks.push(); // escaped mime text as html
+        blocks.push();
     }
     for (const att of decoded.atts) {
         if (att.treatAs() === 'publicKey') {
@@ -30998,7 +30885,7 @@ MsgBlockParser.fmtDecryptedAsSanitizedHtmlBlocks = async (decryptedContent, sign
 MsgBlockParser.detectBlockNext = (origText, startAt) => {
     const result = { found: [] };
     const begin = origText.indexOf(pgp_armor_1.PgpArmor.headers('null').begin, startAt);
-    if (begin !== -1) { // found
+    if (begin !== -1) {
         const potentialBeginHeader = origText.substr(begin, MsgBlockParser.ARMOR_HEADER_MAX_LENGTH);
         for (const xType of Object.keys(pgp_armor_1.PgpArmor.ARMOR_HEADER_DICT)) {
             const type = xType;
@@ -31007,7 +30894,6 @@ MsgBlockParser.detectBlockNext = (origText, startAt) => {
                 const indexOfConfirmedBegin = potentialBeginHeader.indexOf(blockHeaderDef.begin);
                 if (indexOfConfirmedBegin === 0
                     || (type === 'encryptedMsgLink' && indexOfConfirmedBegin >= 0 && indexOfConfirmedBegin < 15)) {
-                    // identified beginning of a specific block
                     if (begin > startAt) {
                         const potentialTextBeforeBlockBegun = origText.substring(startAt, begin).trim();
                         if (potentialTextBeforeBlockBegun) {
@@ -31020,7 +30906,7 @@ MsgBlockParser.detectBlockNext = (origText, startAt) => {
                         endIndex = origText.indexOf(blockHeaderDef.end, begin + blockHeaderDef.begin.length);
                         foundBlockEndHeaderLength = blockHeaderDef.end.length;
                     }
-                    else { // regexp
+                    else {
                         const origTextAfterBeginIndex = origText.substring(begin);
                         const matchEnd = origTextAfterBeginIndex.match(blockHeaderDef.end);
                         if (matchEnd) {
@@ -31028,7 +30914,7 @@ MsgBlockParser.detectBlockNext = (origText, startAt) => {
                             foundBlockEndHeaderLength = matchEnd[0].length;
                         }
                     }
-                    if (endIndex !== -1) { // identified end of the same block
+                    if (endIndex !== -1) {
                         if (type !== 'encryptedMsgLink') {
                             result.found.push(msg_block_1.MsgBlock.fromContent(type, origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim()));
                         }
@@ -31044,7 +30930,7 @@ MsgBlockParser.detectBlockNext = (origText, startAt) => {
                         }
                         result.continueAt = endIndex + foundBlockEndHeaderLength;
                     }
-                    else { // corresponding end not found
+                    else {
                         result.found.push(msg_block_1.MsgBlock.fromContent(type, origText.substr(begin), true));
                     }
                     break;
@@ -31052,7 +30938,7 @@ MsgBlockParser.detectBlockNext = (origText, startAt) => {
             }
         }
     }
-    if (origText && !result.found.length) { // didn't find any blocks, but input is non-empty
+    if (origText && !result.found.length) {
         const potentialText = origText.substr(startAt).trim();
         if (potentialText) {
             result.found.push(msg_block_1.MsgBlock.fromContent('plainText', potentialText));
@@ -31071,33 +30957,23 @@ MsgBlockParser.pushArmoredPubkeysToBlocks = async (armoredPubkeys, blocks) => {
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* provided dependency */ var dereq_sanitize_html = __webpack_require__(17);
+/* provided dependency */ var dereq_sanitize_html = __webpack_require__(18);
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Xss = void 0;
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 const common_1 = __webpack_require__(11);
-/**
- * This file needs to be in platform/ folder because its implementation is platform-dependant
- *  - on browser, it uses DOMPurify
- *  - in Node (targetting mobile-core environment) it uses sanitize-html
- * It would be preferable to use DOMPurify on all platforms,
- * but on Node it has a JSDOM dependency which is itself 20MB of code, not acceptable on mobile.
- */
 class Xss {
 }
 exports.Xss = Xss;
-// eslint-disable-next-line @typescript-eslint/naming-convention
 Xss.ALLOWED_BASIC_TAGS = [
     'p', 'div', 'br', 'u', 'i', 'em', 'b', 'ol', 'ul', 'pre', 'li', 'table',
     'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
     'address', 'blockquote', 'dl', 'fieldset', 'a', 'font', 'strong', 'strike', 'code'
 ];
-// eslint-disable-next-line @typescript-eslint/naming-convention
 Xss.ALLOWED_ATTRS = {
     a: ['href', 'name', 'target'],
     img: ['src', 'width', 'height', 'alt'],
@@ -31109,12 +30985,7 @@ Xss.ALLOWED_ATTRS = {
     td: ['width', 'height'],
     hr: ['color', 'height'],
 };
-// eslint-disable-next-line @typescript-eslint/naming-convention
 Xss.ALLOWED_SCHEMES = ['data', 'http', 'https', 'mailto'];
-/**
- * used whenever untrusted remote content (eg html email) is rendered, but we still want to preserve html
- * imgToLink is ignored on Node. Remote links are replaced with <a>, and local imgs are preserved
- */
 Xss.htmlSanitizeKeepBasicTags = (dirtyHtml) => {
     const imgContentReplaceable = `IMG_ICON_${common_1.Str.sloppyRandom()}`;
     let remoteContentReplacedWithLink = false;
@@ -31139,10 +31010,7 @@ Xss.htmlSanitizeKeepBasicTags = (dirtyHtml) => {
                     return { tagName: 'img', attribs: { alt: attribs.alt, title: attribs.title }, text: '[img]' };
                 }
             },
-            // eslint-disable-next-line @typescript-eslint/naming-convention
             '*': (tagName, attribs) => {
-                // let the browser decide how big should elements be, based on their content, except for img
-                // attribs.height|width === 1 are left in only so that they can be removed in exclusiveFilter below
                 if (attribs.width && attribs.width !== '1' && tagName !== 'img') {
                     delete attribs.width;
                 }
@@ -31154,7 +31022,7 @@ Xss.htmlSanitizeKeepBasicTags = (dirtyHtml) => {
         },
         exclusiveFilter: ({ tag, attribs }) => {
             if (attribs.width === '1' || (attribs.height === '1' && tag !== 'hr')) {
-                return true; // remove tiny elements (often contain hidden content, tracking pixels, etc)
+                return true;
             }
             return false;
         }
@@ -31162,7 +31030,6 @@ Xss.htmlSanitizeKeepBasicTags = (dirtyHtml) => {
     if (remoteContentReplacedWithLink) {
         cleanHtml = '<font size="-1" color="#31a217" face="monospace">' +
             `[remote content blocked for your privacy]</font><br /><br />${cleanHtml}`;
-        // clean it one more time in case something bad slipped in
         cleanHtml = dereq_sanitize_html(cleanHtml, {
             allowedTags: Xss.ALLOWED_BASIC_TAGS, allowedAttributes: Xss.ALLOWED_ATTRS,
             allowedSchemes: Xss.ALLOWED_SCHEMES
@@ -31187,7 +31054,6 @@ Xss.htmlSanitizeAndStripAllTags = (dirtyHtml, outputNl) => {
     let text = html.split(br).join('\n').split(blockStart).filter(v => !!v).join('\n')
         .split(blockEnd).filter(v => !!v).join('\n');
     text = text.replace(/\n{2,}/g, '\n\n');
-    // not all tags were removed above. Remove all remaining tags
     text = dereq_sanitize_html(text, {
         allowedTags: ['img', 'span'],
         allowedAttributes: { img: ['src'] },
@@ -31198,7 +31064,6 @@ Xss.htmlSanitizeAndStripAllTags = (dirtyHtml, outputNl) => {
             },
         }
     });
-    // clean it one more time to replace leftover spans with their text
     text = dereq_sanitize_html(text, { allowedTags: [] });
     text = text.trim();
     if (outputNl !== '\n') {
@@ -31212,14 +31077,12 @@ Xss.escape = (str) => {
 };
 Xss.escapeTextAsRenderableHtml = (text) => {
     return Xss.escape(text)
-        .replace(/\n/g, '<br>\n') // leave newline so that following replaces work
+        .replace(/\n/g, '<br>\n')
         .replace(/^ +/gm, spaces => spaces.replace(/ /g, '&nbsp;'))
         .replace(/^\t+/gm, tabs => tabs.replace(/\t/g, '&#9;'))
-        .replace(/\n/g, ''); // strip newlines, already have <br>
+        .replace(/\n/g, '');
 };
 Xss.htmlUnescape = (str) => {
-    // the &nbsp; at the end is replaced with an actual NBSP character,
-    // not a space character. IDE won't show you the difference. Do not change.
     return str.replace(/&#x2F;/g, '/').replace(/&quot;/g, '"')
         .replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
         .replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ');
@@ -31227,15 +31090,15 @@ Xss.htmlUnescape = (str) => {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-const htmlparser = __webpack_require__(18);
-const escapeStringRegexp = __webpack_require__(43);
-const { isPlainObject } = __webpack_require__(44);
-const deepmerge = __webpack_require__(45);
-const parseSrcset = __webpack_require__(46);
-const { parse: postcssParse } = __webpack_require__(47);
+const htmlparser = __webpack_require__(19);
+const escapeStringRegexp = __webpack_require__(44);
+const { isPlainObject } = __webpack_require__(45);
+const deepmerge = __webpack_require__(46);
+const parseSrcset = __webpack_require__(47);
+const { parse: postcssParse } = __webpack_require__(48);
 // Tags that can conceivably represent stand-alone media.
 const mediaTags = [
   'img', 'audio', 'video', 'picture', 'svg',
@@ -32065,7 +31928,7 @@ sanitizeHtml.simpleTransform = function(newTagName, newAttribs, merge) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -32097,9 +31960,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.RssHandler = exports.DefaultHandler = exports.DomUtils = exports.ElementType = exports.Tokenizer = exports.createDomStream = exports.parseDOM = exports.parseDocument = exports.DomHandler = exports.Parser = void 0;
-var Parser_1 = __webpack_require__(19);
+var Parser_1 = __webpack_require__(20);
 Object.defineProperty(exports, "Parser", ({ enumerable: true, get: function () { return Parser_1.Parser; } }));
-var domhandler_1 = __webpack_require__(26);
+var domhandler_1 = __webpack_require__(27);
 Object.defineProperty(exports, "DomHandler", ({ enumerable: true, get: function () { return domhandler_1.DomHandler; } }));
 Object.defineProperty(exports, "DefaultHandler", ({ enumerable: true, get: function () { return domhandler_1.DomHandler; } }));
 // Helper methods
@@ -32141,22 +32004,22 @@ function createDomStream(cb, options, elementCb) {
     return new Parser_1.Parser(handler, options);
 }
 exports.createDomStream = createDomStream;
-var Tokenizer_1 = __webpack_require__(20);
+var Tokenizer_1 = __webpack_require__(21);
 Object.defineProperty(exports, "Tokenizer", ({ enumerable: true, get: function () { return __importDefault(Tokenizer_1).default; } }));
-var ElementType = __importStar(__webpack_require__(27));
+var ElementType = __importStar(__webpack_require__(28));
 exports.ElementType = ElementType;
 /*
  * All of the following exports exist for backwards-compatibility.
  * They should probably be removed eventually.
  */
-__exportStar(__webpack_require__(29), exports);
-exports.DomUtils = __importStar(__webpack_require__(30));
-var FeedHandler_1 = __webpack_require__(29);
+__exportStar(__webpack_require__(30), exports);
+exports.DomUtils = __importStar(__webpack_require__(31));
+var FeedHandler_1 = __webpack_require__(30);
 Object.defineProperty(exports, "RssHandler", ({ enumerable: true, get: function () { return FeedHandler_1.FeedHandler; } }));
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -32166,7 +32029,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Parser = void 0;
-var Tokenizer_1 = __importDefault(__webpack_require__(20));
+var Tokenizer_1 = __importDefault(__webpack_require__(21));
 var formTags = new Set([
     "input",
     "option",
@@ -32544,7 +32407,7 @@ exports.Parser = Parser;
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -32553,10 +32416,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var decode_codepoint_1 = __importDefault(__webpack_require__(21));
-var entities_json_1 = __importDefault(__webpack_require__(23));
-var legacy_json_1 = __importDefault(__webpack_require__(24));
-var xml_json_1 = __importDefault(__webpack_require__(25));
+var decode_codepoint_1 = __importDefault(__webpack_require__(22));
+var entities_json_1 = __importDefault(__webpack_require__(24));
+var legacy_json_1 = __importDefault(__webpack_require__(25));
+var xml_json_1 = __importDefault(__webpack_require__(26));
 function whitespace(c) {
     return c === " " || c === "\n" || c === "\t" || c === "\f" || c === "\r";
 }
@@ -33460,7 +33323,7 @@ exports["default"] = Tokenizer;
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -33469,7 +33332,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var decode_json_1 = __importDefault(__webpack_require__(22));
+var decode_json_1 = __importDefault(__webpack_require__(23));
 // Adapted from https://github.com/mathiasbynens/he/blob/master/src/he.js#L94-L119
 var fromCodePoint = 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -33497,35 +33360,35 @@ exports["default"] = decodeCodePoint;
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = JSON.parse('{"0":65533,"128":8364,"130":8218,"131":402,"132":8222,"133":8230,"134":8224,"135":8225,"136":710,"137":8240,"138":352,"139":8249,"140":338,"142":381,"145":8216,"146":8217,"147":8220,"148":8221,"149":8226,"150":8211,"151":8212,"152":732,"153":8482,"154":353,"155":8250,"156":339,"158":382,"159":376}');
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = JSON.parse('{"Aacute":"Á","aacute":"á","Abreve":"Ă","abreve":"ă","ac":"∾","acd":"∿","acE":"∾̳","Acirc":"Â","acirc":"â","acute":"´","Acy":"А","acy":"а","AElig":"Æ","aelig":"æ","af":"⁡","Afr":"𝔄","afr":"𝔞","Agrave":"À","agrave":"à","alefsym":"ℵ","aleph":"ℵ","Alpha":"Α","alpha":"α","Amacr":"Ā","amacr":"ā","amalg":"⨿","amp":"&","AMP":"&","andand":"⩕","And":"⩓","and":"∧","andd":"⩜","andslope":"⩘","andv":"⩚","ang":"∠","ange":"⦤","angle":"∠","angmsdaa":"⦨","angmsdab":"⦩","angmsdac":"⦪","angmsdad":"⦫","angmsdae":"⦬","angmsdaf":"⦭","angmsdag":"⦮","angmsdah":"⦯","angmsd":"∡","angrt":"∟","angrtvb":"⊾","angrtvbd":"⦝","angsph":"∢","angst":"Å","angzarr":"⍼","Aogon":"Ą","aogon":"ą","Aopf":"𝔸","aopf":"𝕒","apacir":"⩯","ap":"≈","apE":"⩰","ape":"≊","apid":"≋","apos":"\'","ApplyFunction":"⁡","approx":"≈","approxeq":"≊","Aring":"Å","aring":"å","Ascr":"𝒜","ascr":"𝒶","Assign":"≔","ast":"*","asymp":"≈","asympeq":"≍","Atilde":"Ã","atilde":"ã","Auml":"Ä","auml":"ä","awconint":"∳","awint":"⨑","backcong":"≌","backepsilon":"϶","backprime":"‵","backsim":"∽","backsimeq":"⋍","Backslash":"∖","Barv":"⫧","barvee":"⊽","barwed":"⌅","Barwed":"⌆","barwedge":"⌅","bbrk":"⎵","bbrktbrk":"⎶","bcong":"≌","Bcy":"Б","bcy":"б","bdquo":"„","becaus":"∵","because":"∵","Because":"∵","bemptyv":"⦰","bepsi":"϶","bernou":"ℬ","Bernoullis":"ℬ","Beta":"Β","beta":"β","beth":"ℶ","between":"≬","Bfr":"𝔅","bfr":"𝔟","bigcap":"⋂","bigcirc":"◯","bigcup":"⋃","bigodot":"⨀","bigoplus":"⨁","bigotimes":"⨂","bigsqcup":"⨆","bigstar":"★","bigtriangledown":"▽","bigtriangleup":"△","biguplus":"⨄","bigvee":"⋁","bigwedge":"⋀","bkarow":"⤍","blacklozenge":"⧫","blacksquare":"▪","blacktriangle":"▴","blacktriangledown":"▾","blacktriangleleft":"◂","blacktriangleright":"▸","blank":"␣","blk12":"▒","blk14":"░","blk34":"▓","block":"█","bne":"=⃥","bnequiv":"≡⃥","bNot":"⫭","bnot":"⌐","Bopf":"𝔹","bopf":"𝕓","bot":"⊥","bottom":"⊥","bowtie":"⋈","boxbox":"⧉","boxdl":"┐","boxdL":"╕","boxDl":"╖","boxDL":"╗","boxdr":"┌","boxdR":"╒","boxDr":"╓","boxDR":"╔","boxh":"─","boxH":"═","boxhd":"┬","boxHd":"╤","boxhD":"╥","boxHD":"╦","boxhu":"┴","boxHu":"╧","boxhU":"╨","boxHU":"╩","boxminus":"⊟","boxplus":"⊞","boxtimes":"⊠","boxul":"┘","boxuL":"╛","boxUl":"╜","boxUL":"╝","boxur":"└","boxuR":"╘","boxUr":"╙","boxUR":"╚","boxv":"│","boxV":"║","boxvh":"┼","boxvH":"╪","boxVh":"╫","boxVH":"╬","boxvl":"┤","boxvL":"╡","boxVl":"╢","boxVL":"╣","boxvr":"├","boxvR":"╞","boxVr":"╟","boxVR":"╠","bprime":"‵","breve":"˘","Breve":"˘","brvbar":"¦","bscr":"𝒷","Bscr":"ℬ","bsemi":"⁏","bsim":"∽","bsime":"⋍","bsolb":"⧅","bsol":"\\\\","bsolhsub":"⟈","bull":"•","bullet":"•","bump":"≎","bumpE":"⪮","bumpe":"≏","Bumpeq":"≎","bumpeq":"≏","Cacute":"Ć","cacute":"ć","capand":"⩄","capbrcup":"⩉","capcap":"⩋","cap":"∩","Cap":"⋒","capcup":"⩇","capdot":"⩀","CapitalDifferentialD":"ⅅ","caps":"∩︀","caret":"⁁","caron":"ˇ","Cayleys":"ℭ","ccaps":"⩍","Ccaron":"Č","ccaron":"č","Ccedil":"Ç","ccedil":"ç","Ccirc":"Ĉ","ccirc":"ĉ","Cconint":"∰","ccups":"⩌","ccupssm":"⩐","Cdot":"Ċ","cdot":"ċ","cedil":"¸","Cedilla":"¸","cemptyv":"⦲","cent":"¢","centerdot":"·","CenterDot":"·","cfr":"𝔠","Cfr":"ℭ","CHcy":"Ч","chcy":"ч","check":"✓","checkmark":"✓","Chi":"Χ","chi":"χ","circ":"ˆ","circeq":"≗","circlearrowleft":"↺","circlearrowright":"↻","circledast":"⊛","circledcirc":"⊚","circleddash":"⊝","CircleDot":"⊙","circledR":"®","circledS":"Ⓢ","CircleMinus":"⊖","CirclePlus":"⊕","CircleTimes":"⊗","cir":"○","cirE":"⧃","cire":"≗","cirfnint":"⨐","cirmid":"⫯","cirscir":"⧂","ClockwiseContourIntegral":"∲","CloseCurlyDoubleQuote":"”","CloseCurlyQuote":"’","clubs":"♣","clubsuit":"♣","colon":":","Colon":"∷","Colone":"⩴","colone":"≔","coloneq":"≔","comma":",","commat":"@","comp":"∁","compfn":"∘","complement":"∁","complexes":"ℂ","cong":"≅","congdot":"⩭","Congruent":"≡","conint":"∮","Conint":"∯","ContourIntegral":"∮","copf":"𝕔","Copf":"ℂ","coprod":"∐","Coproduct":"∐","copy":"©","COPY":"©","copysr":"℗","CounterClockwiseContourIntegral":"∳","crarr":"↵","cross":"✗","Cross":"⨯","Cscr":"𝒞","cscr":"𝒸","csub":"⫏","csube":"⫑","csup":"⫐","csupe":"⫒","ctdot":"⋯","cudarrl":"⤸","cudarrr":"⤵","cuepr":"⋞","cuesc":"⋟","cularr":"↶","cularrp":"⤽","cupbrcap":"⩈","cupcap":"⩆","CupCap":"≍","cup":"∪","Cup":"⋓","cupcup":"⩊","cupdot":"⊍","cupor":"⩅","cups":"∪︀","curarr":"↷","curarrm":"⤼","curlyeqprec":"⋞","curlyeqsucc":"⋟","curlyvee":"⋎","curlywedge":"⋏","curren":"¤","curvearrowleft":"↶","curvearrowright":"↷","cuvee":"⋎","cuwed":"⋏","cwconint":"∲","cwint":"∱","cylcty":"⌭","dagger":"†","Dagger":"‡","daleth":"ℸ","darr":"↓","Darr":"↡","dArr":"⇓","dash":"‐","Dashv":"⫤","dashv":"⊣","dbkarow":"⤏","dblac":"˝","Dcaron":"Ď","dcaron":"ď","Dcy":"Д","dcy":"д","ddagger":"‡","ddarr":"⇊","DD":"ⅅ","dd":"ⅆ","DDotrahd":"⤑","ddotseq":"⩷","deg":"°","Del":"∇","Delta":"Δ","delta":"δ","demptyv":"⦱","dfisht":"⥿","Dfr":"𝔇","dfr":"𝔡","dHar":"⥥","dharl":"⇃","dharr":"⇂","DiacriticalAcute":"´","DiacriticalDot":"˙","DiacriticalDoubleAcute":"˝","DiacriticalGrave":"`","DiacriticalTilde":"˜","diam":"⋄","diamond":"⋄","Diamond":"⋄","diamondsuit":"♦","diams":"♦","die":"¨","DifferentialD":"ⅆ","digamma":"ϝ","disin":"⋲","div":"÷","divide":"÷","divideontimes":"⋇","divonx":"⋇","DJcy":"Ђ","djcy":"ђ","dlcorn":"⌞","dlcrop":"⌍","dollar":"$","Dopf":"𝔻","dopf":"𝕕","Dot":"¨","dot":"˙","DotDot":"⃜","doteq":"≐","doteqdot":"≑","DotEqual":"≐","dotminus":"∸","dotplus":"∔","dotsquare":"⊡","doublebarwedge":"⌆","DoubleContourIntegral":"∯","DoubleDot":"¨","DoubleDownArrow":"⇓","DoubleLeftArrow":"⇐","DoubleLeftRightArrow":"⇔","DoubleLeftTee":"⫤","DoubleLongLeftArrow":"⟸","DoubleLongLeftRightArrow":"⟺","DoubleLongRightArrow":"⟹","DoubleRightArrow":"⇒","DoubleRightTee":"⊨","DoubleUpArrow":"⇑","DoubleUpDownArrow":"⇕","DoubleVerticalBar":"∥","DownArrowBar":"⤓","downarrow":"↓","DownArrow":"↓","Downarrow":"⇓","DownArrowUpArrow":"⇵","DownBreve":"̑","downdownarrows":"⇊","downharpoonleft":"⇃","downharpoonright":"⇂","DownLeftRightVector":"⥐","DownLeftTeeVector":"⥞","DownLeftVectorBar":"⥖","DownLeftVector":"↽","DownRightTeeVector":"⥟","DownRightVectorBar":"⥗","DownRightVector":"⇁","DownTeeArrow":"↧","DownTee":"⊤","drbkarow":"⤐","drcorn":"⌟","drcrop":"⌌","Dscr":"𝒟","dscr":"𝒹","DScy":"Ѕ","dscy":"ѕ","dsol":"⧶","Dstrok":"Đ","dstrok":"đ","dtdot":"⋱","dtri":"▿","dtrif":"▾","duarr":"⇵","duhar":"⥯","dwangle":"⦦","DZcy":"Џ","dzcy":"џ","dzigrarr":"⟿","Eacute":"É","eacute":"é","easter":"⩮","Ecaron":"Ě","ecaron":"ě","Ecirc":"Ê","ecirc":"ê","ecir":"≖","ecolon":"≕","Ecy":"Э","ecy":"э","eDDot":"⩷","Edot":"Ė","edot":"ė","eDot":"≑","ee":"ⅇ","efDot":"≒","Efr":"𝔈","efr":"𝔢","eg":"⪚","Egrave":"È","egrave":"è","egs":"⪖","egsdot":"⪘","el":"⪙","Element":"∈","elinters":"⏧","ell":"ℓ","els":"⪕","elsdot":"⪗","Emacr":"Ē","emacr":"ē","empty":"∅","emptyset":"∅","EmptySmallSquare":"◻","emptyv":"∅","EmptyVerySmallSquare":"▫","emsp13":" ","emsp14":" ","emsp":" ","ENG":"Ŋ","eng":"ŋ","ensp":" ","Eogon":"Ę","eogon":"ę","Eopf":"𝔼","eopf":"𝕖","epar":"⋕","eparsl":"⧣","eplus":"⩱","epsi":"ε","Epsilon":"Ε","epsilon":"ε","epsiv":"ϵ","eqcirc":"≖","eqcolon":"≕","eqsim":"≂","eqslantgtr":"⪖","eqslantless":"⪕","Equal":"⩵","equals":"=","EqualTilde":"≂","equest":"≟","Equilibrium":"⇌","equiv":"≡","equivDD":"⩸","eqvparsl":"⧥","erarr":"⥱","erDot":"≓","escr":"ℯ","Escr":"ℰ","esdot":"≐","Esim":"⩳","esim":"≂","Eta":"Η","eta":"η","ETH":"Ð","eth":"ð","Euml":"Ë","euml":"ë","euro":"€","excl":"!","exist":"∃","Exists":"∃","expectation":"ℰ","exponentiale":"ⅇ","ExponentialE":"ⅇ","fallingdotseq":"≒","Fcy":"Ф","fcy":"ф","female":"♀","ffilig":"ﬃ","fflig":"ﬀ","ffllig":"ﬄ","Ffr":"𝔉","ffr":"𝔣","filig":"ﬁ","FilledSmallSquare":"◼","FilledVerySmallSquare":"▪","fjlig":"fj","flat":"♭","fllig":"ﬂ","fltns":"▱","fnof":"ƒ","Fopf":"𝔽","fopf":"𝕗","forall":"∀","ForAll":"∀","fork":"⋔","forkv":"⫙","Fouriertrf":"ℱ","fpartint":"⨍","frac12":"½","frac13":"⅓","frac14":"¼","frac15":"⅕","frac16":"⅙","frac18":"⅛","frac23":"⅔","frac25":"⅖","frac34":"¾","frac35":"⅗","frac38":"⅜","frac45":"⅘","frac56":"⅚","frac58":"⅝","frac78":"⅞","frasl":"⁄","frown":"⌢","fscr":"𝒻","Fscr":"ℱ","gacute":"ǵ","Gamma":"Γ","gamma":"γ","Gammad":"Ϝ","gammad":"ϝ","gap":"⪆","Gbreve":"Ğ","gbreve":"ğ","Gcedil":"Ģ","Gcirc":"Ĝ","gcirc":"ĝ","Gcy":"Г","gcy":"г","Gdot":"Ġ","gdot":"ġ","ge":"≥","gE":"≧","gEl":"⪌","gel":"⋛","geq":"≥","geqq":"≧","geqslant":"⩾","gescc":"⪩","ges":"⩾","gesdot":"⪀","gesdoto":"⪂","gesdotol":"⪄","gesl":"⋛︀","gesles":"⪔","Gfr":"𝔊","gfr":"𝔤","gg":"≫","Gg":"⋙","ggg":"⋙","gimel":"ℷ","GJcy":"Ѓ","gjcy":"ѓ","gla":"⪥","gl":"≷","glE":"⪒","glj":"⪤","gnap":"⪊","gnapprox":"⪊","gne":"⪈","gnE":"≩","gneq":"⪈","gneqq":"≩","gnsim":"⋧","Gopf":"𝔾","gopf":"𝕘","grave":"`","GreaterEqual":"≥","GreaterEqualLess":"⋛","GreaterFullEqual":"≧","GreaterGreater":"⪢","GreaterLess":"≷","GreaterSlantEqual":"⩾","GreaterTilde":"≳","Gscr":"𝒢","gscr":"ℊ","gsim":"≳","gsime":"⪎","gsiml":"⪐","gtcc":"⪧","gtcir":"⩺","gt":">","GT":">","Gt":"≫","gtdot":"⋗","gtlPar":"⦕","gtquest":"⩼","gtrapprox":"⪆","gtrarr":"⥸","gtrdot":"⋗","gtreqless":"⋛","gtreqqless":"⪌","gtrless":"≷","gtrsim":"≳","gvertneqq":"≩︀","gvnE":"≩︀","Hacek":"ˇ","hairsp":" ","half":"½","hamilt":"ℋ","HARDcy":"Ъ","hardcy":"ъ","harrcir":"⥈","harr":"↔","hArr":"⇔","harrw":"↭","Hat":"^","hbar":"ℏ","Hcirc":"Ĥ","hcirc":"ĥ","hearts":"♥","heartsuit":"♥","hellip":"…","hercon":"⊹","hfr":"𝔥","Hfr":"ℌ","HilbertSpace":"ℋ","hksearow":"⤥","hkswarow":"⤦","hoarr":"⇿","homtht":"∻","hookleftarrow":"↩","hookrightarrow":"↪","hopf":"𝕙","Hopf":"ℍ","horbar":"―","HorizontalLine":"─","hscr":"𝒽","Hscr":"ℋ","hslash":"ℏ","Hstrok":"Ħ","hstrok":"ħ","HumpDownHump":"≎","HumpEqual":"≏","hybull":"⁃","hyphen":"‐","Iacute":"Í","iacute":"í","ic":"⁣","Icirc":"Î","icirc":"î","Icy":"И","icy":"и","Idot":"İ","IEcy":"Е","iecy":"е","iexcl":"¡","iff":"⇔","ifr":"𝔦","Ifr":"ℑ","Igrave":"Ì","igrave":"ì","ii":"ⅈ","iiiint":"⨌","iiint":"∭","iinfin":"⧜","iiota":"℩","IJlig":"Ĳ","ijlig":"ĳ","Imacr":"Ī","imacr":"ī","image":"ℑ","ImaginaryI":"ⅈ","imagline":"ℐ","imagpart":"ℑ","imath":"ı","Im":"ℑ","imof":"⊷","imped":"Ƶ","Implies":"⇒","incare":"℅","in":"∈","infin":"∞","infintie":"⧝","inodot":"ı","intcal":"⊺","int":"∫","Int":"∬","integers":"ℤ","Integral":"∫","intercal":"⊺","Intersection":"⋂","intlarhk":"⨗","intprod":"⨼","InvisibleComma":"⁣","InvisibleTimes":"⁢","IOcy":"Ё","iocy":"ё","Iogon":"Į","iogon":"į","Iopf":"𝕀","iopf":"𝕚","Iota":"Ι","iota":"ι","iprod":"⨼","iquest":"¿","iscr":"𝒾","Iscr":"ℐ","isin":"∈","isindot":"⋵","isinE":"⋹","isins":"⋴","isinsv":"⋳","isinv":"∈","it":"⁢","Itilde":"Ĩ","itilde":"ĩ","Iukcy":"І","iukcy":"і","Iuml":"Ï","iuml":"ï","Jcirc":"Ĵ","jcirc":"ĵ","Jcy":"Й","jcy":"й","Jfr":"𝔍","jfr":"𝔧","jmath":"ȷ","Jopf":"𝕁","jopf":"𝕛","Jscr":"𝒥","jscr":"𝒿","Jsercy":"Ј","jsercy":"ј","Jukcy":"Є","jukcy":"є","Kappa":"Κ","kappa":"κ","kappav":"ϰ","Kcedil":"Ķ","kcedil":"ķ","Kcy":"К","kcy":"к","Kfr":"𝔎","kfr":"𝔨","kgreen":"ĸ","KHcy":"Х","khcy":"х","KJcy":"Ќ","kjcy":"ќ","Kopf":"𝕂","kopf":"𝕜","Kscr":"𝒦","kscr":"𝓀","lAarr":"⇚","Lacute":"Ĺ","lacute":"ĺ","laemptyv":"⦴","lagran":"ℒ","Lambda":"Λ","lambda":"λ","lang":"⟨","Lang":"⟪","langd":"⦑","langle":"⟨","lap":"⪅","Laplacetrf":"ℒ","laquo":"«","larrb":"⇤","larrbfs":"⤟","larr":"←","Larr":"↞","lArr":"⇐","larrfs":"⤝","larrhk":"↩","larrlp":"↫","larrpl":"⤹","larrsim":"⥳","larrtl":"↢","latail":"⤙","lAtail":"⤛","lat":"⪫","late":"⪭","lates":"⪭︀","lbarr":"⤌","lBarr":"⤎","lbbrk":"❲","lbrace":"{","lbrack":"[","lbrke":"⦋","lbrksld":"⦏","lbrkslu":"⦍","Lcaron":"Ľ","lcaron":"ľ","Lcedil":"Ļ","lcedil":"ļ","lceil":"⌈","lcub":"{","Lcy":"Л","lcy":"л","ldca":"⤶","ldquo":"“","ldquor":"„","ldrdhar":"⥧","ldrushar":"⥋","ldsh":"↲","le":"≤","lE":"≦","LeftAngleBracket":"⟨","LeftArrowBar":"⇤","leftarrow":"←","LeftArrow":"←","Leftarrow":"⇐","LeftArrowRightArrow":"⇆","leftarrowtail":"↢","LeftCeiling":"⌈","LeftDoubleBracket":"⟦","LeftDownTeeVector":"⥡","LeftDownVectorBar":"⥙","LeftDownVector":"⇃","LeftFloor":"⌊","leftharpoondown":"↽","leftharpoonup":"↼","leftleftarrows":"⇇","leftrightarrow":"↔","LeftRightArrow":"↔","Leftrightarrow":"⇔","leftrightarrows":"⇆","leftrightharpoons":"⇋","leftrightsquigarrow":"↭","LeftRightVector":"⥎","LeftTeeArrow":"↤","LeftTee":"⊣","LeftTeeVector":"⥚","leftthreetimes":"⋋","LeftTriangleBar":"⧏","LeftTriangle":"⊲","LeftTriangleEqual":"⊴","LeftUpDownVector":"⥑","LeftUpTeeVector":"⥠","LeftUpVectorBar":"⥘","LeftUpVector":"↿","LeftVectorBar":"⥒","LeftVector":"↼","lEg":"⪋","leg":"⋚","leq":"≤","leqq":"≦","leqslant":"⩽","lescc":"⪨","les":"⩽","lesdot":"⩿","lesdoto":"⪁","lesdotor":"⪃","lesg":"⋚︀","lesges":"⪓","lessapprox":"⪅","lessdot":"⋖","lesseqgtr":"⋚","lesseqqgtr":"⪋","LessEqualGreater":"⋚","LessFullEqual":"≦","LessGreater":"≶","lessgtr":"≶","LessLess":"⪡","lesssim":"≲","LessSlantEqual":"⩽","LessTilde":"≲","lfisht":"⥼","lfloor":"⌊","Lfr":"𝔏","lfr":"𝔩","lg":"≶","lgE":"⪑","lHar":"⥢","lhard":"↽","lharu":"↼","lharul":"⥪","lhblk":"▄","LJcy":"Љ","ljcy":"љ","llarr":"⇇","ll":"≪","Ll":"⋘","llcorner":"⌞","Lleftarrow":"⇚","llhard":"⥫","lltri":"◺","Lmidot":"Ŀ","lmidot":"ŀ","lmoustache":"⎰","lmoust":"⎰","lnap":"⪉","lnapprox":"⪉","lne":"⪇","lnE":"≨","lneq":"⪇","lneqq":"≨","lnsim":"⋦","loang":"⟬","loarr":"⇽","lobrk":"⟦","longleftarrow":"⟵","LongLeftArrow":"⟵","Longleftarrow":"⟸","longleftrightarrow":"⟷","LongLeftRightArrow":"⟷","Longleftrightarrow":"⟺","longmapsto":"⟼","longrightarrow":"⟶","LongRightArrow":"⟶","Longrightarrow":"⟹","looparrowleft":"↫","looparrowright":"↬","lopar":"⦅","Lopf":"𝕃","lopf":"𝕝","loplus":"⨭","lotimes":"⨴","lowast":"∗","lowbar":"_","LowerLeftArrow":"↙","LowerRightArrow":"↘","loz":"◊","lozenge":"◊","lozf":"⧫","lpar":"(","lparlt":"⦓","lrarr":"⇆","lrcorner":"⌟","lrhar":"⇋","lrhard":"⥭","lrm":"‎","lrtri":"⊿","lsaquo":"‹","lscr":"𝓁","Lscr":"ℒ","lsh":"↰","Lsh":"↰","lsim":"≲","lsime":"⪍","lsimg":"⪏","lsqb":"[","lsquo":"‘","lsquor":"‚","Lstrok":"Ł","lstrok":"ł","ltcc":"⪦","ltcir":"⩹","lt":"<","LT":"<","Lt":"≪","ltdot":"⋖","lthree":"⋋","ltimes":"⋉","ltlarr":"⥶","ltquest":"⩻","ltri":"◃","ltrie":"⊴","ltrif":"◂","ltrPar":"⦖","lurdshar":"⥊","luruhar":"⥦","lvertneqq":"≨︀","lvnE":"≨︀","macr":"¯","male":"♂","malt":"✠","maltese":"✠","Map":"⤅","map":"↦","mapsto":"↦","mapstodown":"↧","mapstoleft":"↤","mapstoup":"↥","marker":"▮","mcomma":"⨩","Mcy":"М","mcy":"м","mdash":"—","mDDot":"∺","measuredangle":"∡","MediumSpace":" ","Mellintrf":"ℳ","Mfr":"𝔐","mfr":"𝔪","mho":"℧","micro":"µ","midast":"*","midcir":"⫰","mid":"∣","middot":"·","minusb":"⊟","minus":"−","minusd":"∸","minusdu":"⨪","MinusPlus":"∓","mlcp":"⫛","mldr":"…","mnplus":"∓","models":"⊧","Mopf":"𝕄","mopf":"𝕞","mp":"∓","mscr":"𝓂","Mscr":"ℳ","mstpos":"∾","Mu":"Μ","mu":"μ","multimap":"⊸","mumap":"⊸","nabla":"∇","Nacute":"Ń","nacute":"ń","nang":"∠⃒","nap":"≉","napE":"⩰̸","napid":"≋̸","napos":"ŉ","napprox":"≉","natural":"♮","naturals":"ℕ","natur":"♮","nbsp":" ","nbump":"≎̸","nbumpe":"≏̸","ncap":"⩃","Ncaron":"Ň","ncaron":"ň","Ncedil":"Ņ","ncedil":"ņ","ncong":"≇","ncongdot":"⩭̸","ncup":"⩂","Ncy":"Н","ncy":"н","ndash":"–","nearhk":"⤤","nearr":"↗","neArr":"⇗","nearrow":"↗","ne":"≠","nedot":"≐̸","NegativeMediumSpace":"​","NegativeThickSpace":"​","NegativeThinSpace":"​","NegativeVeryThinSpace":"​","nequiv":"≢","nesear":"⤨","nesim":"≂̸","NestedGreaterGreater":"≫","NestedLessLess":"≪","NewLine":"\\n","nexist":"∄","nexists":"∄","Nfr":"𝔑","nfr":"𝔫","ngE":"≧̸","nge":"≱","ngeq":"≱","ngeqq":"≧̸","ngeqslant":"⩾̸","nges":"⩾̸","nGg":"⋙̸","ngsim":"≵","nGt":"≫⃒","ngt":"≯","ngtr":"≯","nGtv":"≫̸","nharr":"↮","nhArr":"⇎","nhpar":"⫲","ni":"∋","nis":"⋼","nisd":"⋺","niv":"∋","NJcy":"Њ","njcy":"њ","nlarr":"↚","nlArr":"⇍","nldr":"‥","nlE":"≦̸","nle":"≰","nleftarrow":"↚","nLeftarrow":"⇍","nleftrightarrow":"↮","nLeftrightarrow":"⇎","nleq":"≰","nleqq":"≦̸","nleqslant":"⩽̸","nles":"⩽̸","nless":"≮","nLl":"⋘̸","nlsim":"≴","nLt":"≪⃒","nlt":"≮","nltri":"⋪","nltrie":"⋬","nLtv":"≪̸","nmid":"∤","NoBreak":"⁠","NonBreakingSpace":" ","nopf":"𝕟","Nopf":"ℕ","Not":"⫬","not":"¬","NotCongruent":"≢","NotCupCap":"≭","NotDoubleVerticalBar":"∦","NotElement":"∉","NotEqual":"≠","NotEqualTilde":"≂̸","NotExists":"∄","NotGreater":"≯","NotGreaterEqual":"≱","NotGreaterFullEqual":"≧̸","NotGreaterGreater":"≫̸","NotGreaterLess":"≹","NotGreaterSlantEqual":"⩾̸","NotGreaterTilde":"≵","NotHumpDownHump":"≎̸","NotHumpEqual":"≏̸","notin":"∉","notindot":"⋵̸","notinE":"⋹̸","notinva":"∉","notinvb":"⋷","notinvc":"⋶","NotLeftTriangleBar":"⧏̸","NotLeftTriangle":"⋪","NotLeftTriangleEqual":"⋬","NotLess":"≮","NotLessEqual":"≰","NotLessGreater":"≸","NotLessLess":"≪̸","NotLessSlantEqual":"⩽̸","NotLessTilde":"≴","NotNestedGreaterGreater":"⪢̸","NotNestedLessLess":"⪡̸","notni":"∌","notniva":"∌","notnivb":"⋾","notnivc":"⋽","NotPrecedes":"⊀","NotPrecedesEqual":"⪯̸","NotPrecedesSlantEqual":"⋠","NotReverseElement":"∌","NotRightTriangleBar":"⧐̸","NotRightTriangle":"⋫","NotRightTriangleEqual":"⋭","NotSquareSubset":"⊏̸","NotSquareSubsetEqual":"⋢","NotSquareSuperset":"⊐̸","NotSquareSupersetEqual":"⋣","NotSubset":"⊂⃒","NotSubsetEqual":"⊈","NotSucceeds":"⊁","NotSucceedsEqual":"⪰̸","NotSucceedsSlantEqual":"⋡","NotSucceedsTilde":"≿̸","NotSuperset":"⊃⃒","NotSupersetEqual":"⊉","NotTilde":"≁","NotTildeEqual":"≄","NotTildeFullEqual":"≇","NotTildeTilde":"≉","NotVerticalBar":"∤","nparallel":"∦","npar":"∦","nparsl":"⫽⃥","npart":"∂̸","npolint":"⨔","npr":"⊀","nprcue":"⋠","nprec":"⊀","npreceq":"⪯̸","npre":"⪯̸","nrarrc":"⤳̸","nrarr":"↛","nrArr":"⇏","nrarrw":"↝̸","nrightarrow":"↛","nRightarrow":"⇏","nrtri":"⋫","nrtrie":"⋭","nsc":"⊁","nsccue":"⋡","nsce":"⪰̸","Nscr":"𝒩","nscr":"𝓃","nshortmid":"∤","nshortparallel":"∦","nsim":"≁","nsime":"≄","nsimeq":"≄","nsmid":"∤","nspar":"∦","nsqsube":"⋢","nsqsupe":"⋣","nsub":"⊄","nsubE":"⫅̸","nsube":"⊈","nsubset":"⊂⃒","nsubseteq":"⊈","nsubseteqq":"⫅̸","nsucc":"⊁","nsucceq":"⪰̸","nsup":"⊅","nsupE":"⫆̸","nsupe":"⊉","nsupset":"⊃⃒","nsupseteq":"⊉","nsupseteqq":"⫆̸","ntgl":"≹","Ntilde":"Ñ","ntilde":"ñ","ntlg":"≸","ntriangleleft":"⋪","ntrianglelefteq":"⋬","ntriangleright":"⋫","ntrianglerighteq":"⋭","Nu":"Ν","nu":"ν","num":"#","numero":"№","numsp":" ","nvap":"≍⃒","nvdash":"⊬","nvDash":"⊭","nVdash":"⊮","nVDash":"⊯","nvge":"≥⃒","nvgt":">⃒","nvHarr":"⤄","nvinfin":"⧞","nvlArr":"⤂","nvle":"≤⃒","nvlt":"<⃒","nvltrie":"⊴⃒","nvrArr":"⤃","nvrtrie":"⊵⃒","nvsim":"∼⃒","nwarhk":"⤣","nwarr":"↖","nwArr":"⇖","nwarrow":"↖","nwnear":"⤧","Oacute":"Ó","oacute":"ó","oast":"⊛","Ocirc":"Ô","ocirc":"ô","ocir":"⊚","Ocy":"О","ocy":"о","odash":"⊝","Odblac":"Ő","odblac":"ő","odiv":"⨸","odot":"⊙","odsold":"⦼","OElig":"Œ","oelig":"œ","ofcir":"⦿","Ofr":"𝔒","ofr":"𝔬","ogon":"˛","Ograve":"Ò","ograve":"ò","ogt":"⧁","ohbar":"⦵","ohm":"Ω","oint":"∮","olarr":"↺","olcir":"⦾","olcross":"⦻","oline":"‾","olt":"⧀","Omacr":"Ō","omacr":"ō","Omega":"Ω","omega":"ω","Omicron":"Ο","omicron":"ο","omid":"⦶","ominus":"⊖","Oopf":"𝕆","oopf":"𝕠","opar":"⦷","OpenCurlyDoubleQuote":"“","OpenCurlyQuote":"‘","operp":"⦹","oplus":"⊕","orarr":"↻","Or":"⩔","or":"∨","ord":"⩝","order":"ℴ","orderof":"ℴ","ordf":"ª","ordm":"º","origof":"⊶","oror":"⩖","orslope":"⩗","orv":"⩛","oS":"Ⓢ","Oscr":"𝒪","oscr":"ℴ","Oslash":"Ø","oslash":"ø","osol":"⊘","Otilde":"Õ","otilde":"õ","otimesas":"⨶","Otimes":"⨷","otimes":"⊗","Ouml":"Ö","ouml":"ö","ovbar":"⌽","OverBar":"‾","OverBrace":"⏞","OverBracket":"⎴","OverParenthesis":"⏜","para":"¶","parallel":"∥","par":"∥","parsim":"⫳","parsl":"⫽","part":"∂","PartialD":"∂","Pcy":"П","pcy":"п","percnt":"%","period":".","permil":"‰","perp":"⊥","pertenk":"‱","Pfr":"𝔓","pfr":"𝔭","Phi":"Φ","phi":"φ","phiv":"ϕ","phmmat":"ℳ","phone":"☎","Pi":"Π","pi":"π","pitchfork":"⋔","piv":"ϖ","planck":"ℏ","planckh":"ℎ","plankv":"ℏ","plusacir":"⨣","plusb":"⊞","pluscir":"⨢","plus":"+","plusdo":"∔","plusdu":"⨥","pluse":"⩲","PlusMinus":"±","plusmn":"±","plussim":"⨦","plustwo":"⨧","pm":"±","Poincareplane":"ℌ","pointint":"⨕","popf":"𝕡","Popf":"ℙ","pound":"£","prap":"⪷","Pr":"⪻","pr":"≺","prcue":"≼","precapprox":"⪷","prec":"≺","preccurlyeq":"≼","Precedes":"≺","PrecedesEqual":"⪯","PrecedesSlantEqual":"≼","PrecedesTilde":"≾","preceq":"⪯","precnapprox":"⪹","precneqq":"⪵","precnsim":"⋨","pre":"⪯","prE":"⪳","precsim":"≾","prime":"′","Prime":"″","primes":"ℙ","prnap":"⪹","prnE":"⪵","prnsim":"⋨","prod":"∏","Product":"∏","profalar":"⌮","profline":"⌒","profsurf":"⌓","prop":"∝","Proportional":"∝","Proportion":"∷","propto":"∝","prsim":"≾","prurel":"⊰","Pscr":"𝒫","pscr":"𝓅","Psi":"Ψ","psi":"ψ","puncsp":" ","Qfr":"𝔔","qfr":"𝔮","qint":"⨌","qopf":"𝕢","Qopf":"ℚ","qprime":"⁗","Qscr":"𝒬","qscr":"𝓆","quaternions":"ℍ","quatint":"⨖","quest":"?","questeq":"≟","quot":"\\"","QUOT":"\\"","rAarr":"⇛","race":"∽̱","Racute":"Ŕ","racute":"ŕ","radic":"√","raemptyv":"⦳","rang":"⟩","Rang":"⟫","rangd":"⦒","range":"⦥","rangle":"⟩","raquo":"»","rarrap":"⥵","rarrb":"⇥","rarrbfs":"⤠","rarrc":"⤳","rarr":"→","Rarr":"↠","rArr":"⇒","rarrfs":"⤞","rarrhk":"↪","rarrlp":"↬","rarrpl":"⥅","rarrsim":"⥴","Rarrtl":"⤖","rarrtl":"↣","rarrw":"↝","ratail":"⤚","rAtail":"⤜","ratio":"∶","rationals":"ℚ","rbarr":"⤍","rBarr":"⤏","RBarr":"⤐","rbbrk":"❳","rbrace":"}","rbrack":"]","rbrke":"⦌","rbrksld":"⦎","rbrkslu":"⦐","Rcaron":"Ř","rcaron":"ř","Rcedil":"Ŗ","rcedil":"ŗ","rceil":"⌉","rcub":"}","Rcy":"Р","rcy":"р","rdca":"⤷","rdldhar":"⥩","rdquo":"”","rdquor":"”","rdsh":"↳","real":"ℜ","realine":"ℛ","realpart":"ℜ","reals":"ℝ","Re":"ℜ","rect":"▭","reg":"®","REG":"®","ReverseElement":"∋","ReverseEquilibrium":"⇋","ReverseUpEquilibrium":"⥯","rfisht":"⥽","rfloor":"⌋","rfr":"𝔯","Rfr":"ℜ","rHar":"⥤","rhard":"⇁","rharu":"⇀","rharul":"⥬","Rho":"Ρ","rho":"ρ","rhov":"ϱ","RightAngleBracket":"⟩","RightArrowBar":"⇥","rightarrow":"→","RightArrow":"→","Rightarrow":"⇒","RightArrowLeftArrow":"⇄","rightarrowtail":"↣","RightCeiling":"⌉","RightDoubleBracket":"⟧","RightDownTeeVector":"⥝","RightDownVectorBar":"⥕","RightDownVector":"⇂","RightFloor":"⌋","rightharpoondown":"⇁","rightharpoonup":"⇀","rightleftarrows":"⇄","rightleftharpoons":"⇌","rightrightarrows":"⇉","rightsquigarrow":"↝","RightTeeArrow":"↦","RightTee":"⊢","RightTeeVector":"⥛","rightthreetimes":"⋌","RightTriangleBar":"⧐","RightTriangle":"⊳","RightTriangleEqual":"⊵","RightUpDownVector":"⥏","RightUpTeeVector":"⥜","RightUpVectorBar":"⥔","RightUpVector":"↾","RightVectorBar":"⥓","RightVector":"⇀","ring":"˚","risingdotseq":"≓","rlarr":"⇄","rlhar":"⇌","rlm":"‏","rmoustache":"⎱","rmoust":"⎱","rnmid":"⫮","roang":"⟭","roarr":"⇾","robrk":"⟧","ropar":"⦆","ropf":"𝕣","Ropf":"ℝ","roplus":"⨮","rotimes":"⨵","RoundImplies":"⥰","rpar":")","rpargt":"⦔","rppolint":"⨒","rrarr":"⇉","Rrightarrow":"⇛","rsaquo":"›","rscr":"𝓇","Rscr":"ℛ","rsh":"↱","Rsh":"↱","rsqb":"]","rsquo":"’","rsquor":"’","rthree":"⋌","rtimes":"⋊","rtri":"▹","rtrie":"⊵","rtrif":"▸","rtriltri":"⧎","RuleDelayed":"⧴","ruluhar":"⥨","rx":"℞","Sacute":"Ś","sacute":"ś","sbquo":"‚","scap":"⪸","Scaron":"Š","scaron":"š","Sc":"⪼","sc":"≻","sccue":"≽","sce":"⪰","scE":"⪴","Scedil":"Ş","scedil":"ş","Scirc":"Ŝ","scirc":"ŝ","scnap":"⪺","scnE":"⪶","scnsim":"⋩","scpolint":"⨓","scsim":"≿","Scy":"С","scy":"с","sdotb":"⊡","sdot":"⋅","sdote":"⩦","searhk":"⤥","searr":"↘","seArr":"⇘","searrow":"↘","sect":"§","semi":";","seswar":"⤩","setminus":"∖","setmn":"∖","sext":"✶","Sfr":"𝔖","sfr":"𝔰","sfrown":"⌢","sharp":"♯","SHCHcy":"Щ","shchcy":"щ","SHcy":"Ш","shcy":"ш","ShortDownArrow":"↓","ShortLeftArrow":"←","shortmid":"∣","shortparallel":"∥","ShortRightArrow":"→","ShortUpArrow":"↑","shy":"­","Sigma":"Σ","sigma":"σ","sigmaf":"ς","sigmav":"ς","sim":"∼","simdot":"⩪","sime":"≃","simeq":"≃","simg":"⪞","simgE":"⪠","siml":"⪝","simlE":"⪟","simne":"≆","simplus":"⨤","simrarr":"⥲","slarr":"←","SmallCircle":"∘","smallsetminus":"∖","smashp":"⨳","smeparsl":"⧤","smid":"∣","smile":"⌣","smt":"⪪","smte":"⪬","smtes":"⪬︀","SOFTcy":"Ь","softcy":"ь","solbar":"⌿","solb":"⧄","sol":"/","Sopf":"𝕊","sopf":"𝕤","spades":"♠","spadesuit":"♠","spar":"∥","sqcap":"⊓","sqcaps":"⊓︀","sqcup":"⊔","sqcups":"⊔︀","Sqrt":"√","sqsub":"⊏","sqsube":"⊑","sqsubset":"⊏","sqsubseteq":"⊑","sqsup":"⊐","sqsupe":"⊒","sqsupset":"⊐","sqsupseteq":"⊒","square":"□","Square":"□","SquareIntersection":"⊓","SquareSubset":"⊏","SquareSubsetEqual":"⊑","SquareSuperset":"⊐","SquareSupersetEqual":"⊒","SquareUnion":"⊔","squarf":"▪","squ":"□","squf":"▪","srarr":"→","Sscr":"𝒮","sscr":"𝓈","ssetmn":"∖","ssmile":"⌣","sstarf":"⋆","Star":"⋆","star":"☆","starf":"★","straightepsilon":"ϵ","straightphi":"ϕ","strns":"¯","sub":"⊂","Sub":"⋐","subdot":"⪽","subE":"⫅","sube":"⊆","subedot":"⫃","submult":"⫁","subnE":"⫋","subne":"⊊","subplus":"⪿","subrarr":"⥹","subset":"⊂","Subset":"⋐","subseteq":"⊆","subseteqq":"⫅","SubsetEqual":"⊆","subsetneq":"⊊","subsetneqq":"⫋","subsim":"⫇","subsub":"⫕","subsup":"⫓","succapprox":"⪸","succ":"≻","succcurlyeq":"≽","Succeeds":"≻","SucceedsEqual":"⪰","SucceedsSlantEqual":"≽","SucceedsTilde":"≿","succeq":"⪰","succnapprox":"⪺","succneqq":"⪶","succnsim":"⋩","succsim":"≿","SuchThat":"∋","sum":"∑","Sum":"∑","sung":"♪","sup1":"¹","sup2":"²","sup3":"³","sup":"⊃","Sup":"⋑","supdot":"⪾","supdsub":"⫘","supE":"⫆","supe":"⊇","supedot":"⫄","Superset":"⊃","SupersetEqual":"⊇","suphsol":"⟉","suphsub":"⫗","suplarr":"⥻","supmult":"⫂","supnE":"⫌","supne":"⊋","supplus":"⫀","supset":"⊃","Supset":"⋑","supseteq":"⊇","supseteqq":"⫆","supsetneq":"⊋","supsetneqq":"⫌","supsim":"⫈","supsub":"⫔","supsup":"⫖","swarhk":"⤦","swarr":"↙","swArr":"⇙","swarrow":"↙","swnwar":"⤪","szlig":"ß","Tab":"\\t","target":"⌖","Tau":"Τ","tau":"τ","tbrk":"⎴","Tcaron":"Ť","tcaron":"ť","Tcedil":"Ţ","tcedil":"ţ","Tcy":"Т","tcy":"т","tdot":"⃛","telrec":"⌕","Tfr":"𝔗","tfr":"𝔱","there4":"∴","therefore":"∴","Therefore":"∴","Theta":"Θ","theta":"θ","thetasym":"ϑ","thetav":"ϑ","thickapprox":"≈","thicksim":"∼","ThickSpace":"  ","ThinSpace":" ","thinsp":" ","thkap":"≈","thksim":"∼","THORN":"Þ","thorn":"þ","tilde":"˜","Tilde":"∼","TildeEqual":"≃","TildeFullEqual":"≅","TildeTilde":"≈","timesbar":"⨱","timesb":"⊠","times":"×","timesd":"⨰","tint":"∭","toea":"⤨","topbot":"⌶","topcir":"⫱","top":"⊤","Topf":"𝕋","topf":"𝕥","topfork":"⫚","tosa":"⤩","tprime":"‴","trade":"™","TRADE":"™","triangle":"▵","triangledown":"▿","triangleleft":"◃","trianglelefteq":"⊴","triangleq":"≜","triangleright":"▹","trianglerighteq":"⊵","tridot":"◬","trie":"≜","triminus":"⨺","TripleDot":"⃛","triplus":"⨹","trisb":"⧍","tritime":"⨻","trpezium":"⏢","Tscr":"𝒯","tscr":"𝓉","TScy":"Ц","tscy":"ц","TSHcy":"Ћ","tshcy":"ћ","Tstrok":"Ŧ","tstrok":"ŧ","twixt":"≬","twoheadleftarrow":"↞","twoheadrightarrow":"↠","Uacute":"Ú","uacute":"ú","uarr":"↑","Uarr":"↟","uArr":"⇑","Uarrocir":"⥉","Ubrcy":"Ў","ubrcy":"ў","Ubreve":"Ŭ","ubreve":"ŭ","Ucirc":"Û","ucirc":"û","Ucy":"У","ucy":"у","udarr":"⇅","Udblac":"Ű","udblac":"ű","udhar":"⥮","ufisht":"⥾","Ufr":"𝔘","ufr":"𝔲","Ugrave":"Ù","ugrave":"ù","uHar":"⥣","uharl":"↿","uharr":"↾","uhblk":"▀","ulcorn":"⌜","ulcorner":"⌜","ulcrop":"⌏","ultri":"◸","Umacr":"Ū","umacr":"ū","uml":"¨","UnderBar":"_","UnderBrace":"⏟","UnderBracket":"⎵","UnderParenthesis":"⏝","Union":"⋃","UnionPlus":"⊎","Uogon":"Ų","uogon":"ų","Uopf":"𝕌","uopf":"𝕦","UpArrowBar":"⤒","uparrow":"↑","UpArrow":"↑","Uparrow":"⇑","UpArrowDownArrow":"⇅","updownarrow":"↕","UpDownArrow":"↕","Updownarrow":"⇕","UpEquilibrium":"⥮","upharpoonleft":"↿","upharpoonright":"↾","uplus":"⊎","UpperLeftArrow":"↖","UpperRightArrow":"↗","upsi":"υ","Upsi":"ϒ","upsih":"ϒ","Upsilon":"Υ","upsilon":"υ","UpTeeArrow":"↥","UpTee":"⊥","upuparrows":"⇈","urcorn":"⌝","urcorner":"⌝","urcrop":"⌎","Uring":"Ů","uring":"ů","urtri":"◹","Uscr":"𝒰","uscr":"𝓊","utdot":"⋰","Utilde":"Ũ","utilde":"ũ","utri":"▵","utrif":"▴","uuarr":"⇈","Uuml":"Ü","uuml":"ü","uwangle":"⦧","vangrt":"⦜","varepsilon":"ϵ","varkappa":"ϰ","varnothing":"∅","varphi":"ϕ","varpi":"ϖ","varpropto":"∝","varr":"↕","vArr":"⇕","varrho":"ϱ","varsigma":"ς","varsubsetneq":"⊊︀","varsubsetneqq":"⫋︀","varsupsetneq":"⊋︀","varsupsetneqq":"⫌︀","vartheta":"ϑ","vartriangleleft":"⊲","vartriangleright":"⊳","vBar":"⫨","Vbar":"⫫","vBarv":"⫩","Vcy":"В","vcy":"в","vdash":"⊢","vDash":"⊨","Vdash":"⊩","VDash":"⊫","Vdashl":"⫦","veebar":"⊻","vee":"∨","Vee":"⋁","veeeq":"≚","vellip":"⋮","verbar":"|","Verbar":"‖","vert":"|","Vert":"‖","VerticalBar":"∣","VerticalLine":"|","VerticalSeparator":"❘","VerticalTilde":"≀","VeryThinSpace":" ","Vfr":"𝔙","vfr":"𝔳","vltri":"⊲","vnsub":"⊂⃒","vnsup":"⊃⃒","Vopf":"𝕍","vopf":"𝕧","vprop":"∝","vrtri":"⊳","Vscr":"𝒱","vscr":"𝓋","vsubnE":"⫋︀","vsubne":"⊊︀","vsupnE":"⫌︀","vsupne":"⊋︀","Vvdash":"⊪","vzigzag":"⦚","Wcirc":"Ŵ","wcirc":"ŵ","wedbar":"⩟","wedge":"∧","Wedge":"⋀","wedgeq":"≙","weierp":"℘","Wfr":"𝔚","wfr":"𝔴","Wopf":"𝕎","wopf":"𝕨","wp":"℘","wr":"≀","wreath":"≀","Wscr":"𝒲","wscr":"𝓌","xcap":"⋂","xcirc":"◯","xcup":"⋃","xdtri":"▽","Xfr":"𝔛","xfr":"𝔵","xharr":"⟷","xhArr":"⟺","Xi":"Ξ","xi":"ξ","xlarr":"⟵","xlArr":"⟸","xmap":"⟼","xnis":"⋻","xodot":"⨀","Xopf":"𝕏","xopf":"𝕩","xoplus":"⨁","xotime":"⨂","xrarr":"⟶","xrArr":"⟹","Xscr":"𝒳","xscr":"𝓍","xsqcup":"⨆","xuplus":"⨄","xutri":"△","xvee":"⋁","xwedge":"⋀","Yacute":"Ý","yacute":"ý","YAcy":"Я","yacy":"я","Ycirc":"Ŷ","ycirc":"ŷ","Ycy":"Ы","ycy":"ы","yen":"¥","Yfr":"𝔜","yfr":"𝔶","YIcy":"Ї","yicy":"ї","Yopf":"𝕐","yopf":"𝕪","Yscr":"𝒴","yscr":"𝓎","YUcy":"Ю","yucy":"ю","yuml":"ÿ","Yuml":"Ÿ","Zacute":"Ź","zacute":"ź","Zcaron":"Ž","zcaron":"ž","Zcy":"З","zcy":"з","Zdot":"Ż","zdot":"ż","zeetrf":"ℨ","ZeroWidthSpace":"​","Zeta":"Ζ","zeta":"ζ","zfr":"𝔷","Zfr":"ℨ","ZHcy":"Ж","zhcy":"ж","zigrarr":"⇝","zopf":"𝕫","Zopf":"ℤ","Zscr":"𝒵","zscr":"𝓏","zwj":"‍","zwnj":"‌"}');
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = JSON.parse('{"Aacute":"Á","aacute":"á","Acirc":"Â","acirc":"â","acute":"´","AElig":"Æ","aelig":"æ","Agrave":"À","agrave":"à","amp":"&","AMP":"&","Aring":"Å","aring":"å","Atilde":"Ã","atilde":"ã","Auml":"Ä","auml":"ä","brvbar":"¦","Ccedil":"Ç","ccedil":"ç","cedil":"¸","cent":"¢","copy":"©","COPY":"©","curren":"¤","deg":"°","divide":"÷","Eacute":"É","eacute":"é","Ecirc":"Ê","ecirc":"ê","Egrave":"È","egrave":"è","ETH":"Ð","eth":"ð","Euml":"Ë","euml":"ë","frac12":"½","frac14":"¼","frac34":"¾","gt":">","GT":">","Iacute":"Í","iacute":"í","Icirc":"Î","icirc":"î","iexcl":"¡","Igrave":"Ì","igrave":"ì","iquest":"¿","Iuml":"Ï","iuml":"ï","laquo":"«","lt":"<","LT":"<","macr":"¯","micro":"µ","middot":"·","nbsp":" ","not":"¬","Ntilde":"Ñ","ntilde":"ñ","Oacute":"Ó","oacute":"ó","Ocirc":"Ô","ocirc":"ô","Ograve":"Ò","ograve":"ò","ordf":"ª","ordm":"º","Oslash":"Ø","oslash":"ø","Otilde":"Õ","otilde":"õ","Ouml":"Ö","ouml":"ö","para":"¶","plusmn":"±","pound":"£","quot":"\\"","QUOT":"\\"","raquo":"»","reg":"®","REG":"®","sect":"§","shy":"­","sup1":"¹","sup2":"²","sup3":"³","szlig":"ß","THORN":"Þ","thorn":"þ","times":"×","Uacute":"Ú","uacute":"ú","Ucirc":"Û","ucirc":"û","Ugrave":"Ù","ugrave":"ù","uml":"¨","Uuml":"Ü","uuml":"ü","Yacute":"Ý","yacute":"ý","yen":"¥","yuml":"ÿ"}');
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ ((module) => {
 
 "use strict";
 module.exports = JSON.parse('{"amp":"&","apos":"\'","gt":">","lt":"<","quot":"\\""}');
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -33546,9 +33409,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.DomHandler = void 0;
-var domelementtype_1 = __webpack_require__(27);
-var node_1 = __webpack_require__(28);
-__exportStar(__webpack_require__(28), exports);
+var domelementtype_1 = __webpack_require__(28);
+var node_1 = __webpack_require__(29);
+__exportStar(__webpack_require__(29), exports);
 var reWhitespace = /\s+/g;
 // Default options
 var defaultOpts = {
@@ -33708,7 +33571,7 @@ exports["default"] = DomHandler;
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -33770,7 +33633,7 @@ exports.Doctype = ElementType.Doctype;
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -33803,7 +33666,7 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.cloneNode = exports.hasChildren = exports.isDocument = exports.isDirective = exports.isComment = exports.isText = exports.isCDATA = exports.isTag = exports.Element = exports.Document = exports.NodeWithChildren = exports.ProcessingInstruction = exports.Comment = exports.Text = exports.DataNode = exports.Node = void 0;
-var domelementtype_1 = __webpack_require__(27);
+var domelementtype_1 = __webpack_require__(28);
 var nodeTypes = new Map([
     [domelementtype_1.ElementType.Tag, 1],
     [domelementtype_1.ElementType.Script, 1],
@@ -34221,7 +34084,7 @@ function cloneChildren(childs) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -34265,9 +34128,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.parseFeed = exports.FeedHandler = void 0;
-var domhandler_1 = __importDefault(__webpack_require__(26));
-var DomUtils = __importStar(__webpack_require__(30));
-var Parser_1 = __webpack_require__(19);
+var domhandler_1 = __importDefault(__webpack_require__(27));
+var DomUtils = __importStar(__webpack_require__(31));
+var Parser_1 = __webpack_require__(20);
 var FeedItemMediaMedium;
 (function (FeedItemMediaMedium) {
     FeedItemMediaMedium[FeedItemMediaMedium["image"] = 0] = "image";
@@ -34463,7 +34326,7 @@ exports.parseFeed = parseFeed;
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -34480,15 +34343,15 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.hasChildren = exports.isDocument = exports.isComment = exports.isText = exports.isCDATA = exports.isTag = void 0;
-__exportStar(__webpack_require__(31), exports);
-__exportStar(__webpack_require__(37), exports);
+__exportStar(__webpack_require__(32), exports);
 __exportStar(__webpack_require__(38), exports);
 __exportStar(__webpack_require__(39), exports);
 __exportStar(__webpack_require__(40), exports);
 __exportStar(__webpack_require__(41), exports);
 __exportStar(__webpack_require__(42), exports);
+__exportStar(__webpack_require__(43), exports);
 /** @deprecated Use these methods from `domhandler` directly. */
-var domhandler_1 = __webpack_require__(26);
+var domhandler_1 = __webpack_require__(27);
 Object.defineProperty(exports, "isTag", ({ enumerable: true, get: function () { return domhandler_1.isTag; } }));
 Object.defineProperty(exports, "isCDATA", ({ enumerable: true, get: function () { return domhandler_1.isCDATA; } }));
 Object.defineProperty(exports, "isText", ({ enumerable: true, get: function () { return domhandler_1.isText; } }));
@@ -34498,7 +34361,7 @@ Object.defineProperty(exports, "hasChildren", ({ enumerable: true, get: function
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -34508,9 +34371,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.innerText = exports.textContent = exports.getText = exports.getInnerHTML = exports.getOuterHTML = void 0;
-var domhandler_1 = __webpack_require__(26);
-var dom_serializer_1 = __importDefault(__webpack_require__(32));
-var domelementtype_1 = __webpack_require__(27);
+var domhandler_1 = __webpack_require__(27);
+var dom_serializer_1 = __importDefault(__webpack_require__(33));
+var domelementtype_1 = __webpack_require__(28);
 /**
  * @param node Node to get the outer HTML of.
  * @param options Options for serialization.
@@ -34591,7 +34454,7 @@ exports.innerText = innerText;
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -34630,15 +34493,15 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 /*
  * Module dependencies
  */
-var ElementType = __importStar(__webpack_require__(27));
-var entities_1 = __webpack_require__(33);
+var ElementType = __importStar(__webpack_require__(28));
+var entities_1 = __webpack_require__(34);
 /**
  * Mixed-case SVG and MathML tags & attributes
  * recognized by the HTML parser.
  *
  * @see https://html.spec.whatwg.org/multipage/parsing.html#parsing-main-inforeign
  */
-var foreignNames_1 = __webpack_require__(36);
+var foreignNames_1 = __webpack_require__(37);
 var unencodedElements = new Set([
     "style",
     "script",
@@ -34809,15 +34672,15 @@ function renderComment(elem) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.decodeXMLStrict = exports.decodeHTML5Strict = exports.decodeHTML4Strict = exports.decodeHTML5 = exports.decodeHTML4 = exports.decodeHTMLStrict = exports.decodeHTML = exports.decodeXML = exports.encodeHTML5 = exports.encodeHTML4 = exports.escapeUTF8 = exports.escape = exports.encodeNonAsciiHTML = exports.encodeHTML = exports.encodeXML = exports.encode = exports.decodeStrict = exports.decode = void 0;
-var decode_1 = __webpack_require__(34);
-var encode_1 = __webpack_require__(35);
+var decode_1 = __webpack_require__(35);
+var encode_1 = __webpack_require__(36);
 /**
  * Decodes a string with entities.
  *
@@ -34851,7 +34714,7 @@ function encode(data, level) {
     return (!level || level <= 0 ? encode_1.encodeXML : encode_1.encodeHTML)(data);
 }
 exports.encode = encode;
-var encode_2 = __webpack_require__(35);
+var encode_2 = __webpack_require__(36);
 Object.defineProperty(exports, "encodeXML", ({ enumerable: true, get: function () { return encode_2.encodeXML; } }));
 Object.defineProperty(exports, "encodeHTML", ({ enumerable: true, get: function () { return encode_2.encodeHTML; } }));
 Object.defineProperty(exports, "encodeNonAsciiHTML", ({ enumerable: true, get: function () { return encode_2.encodeNonAsciiHTML; } }));
@@ -34860,7 +34723,7 @@ Object.defineProperty(exports, "escapeUTF8", ({ enumerable: true, get: function 
 // Legacy aliases (deprecated)
 Object.defineProperty(exports, "encodeHTML4", ({ enumerable: true, get: function () { return encode_2.encodeHTML; } }));
 Object.defineProperty(exports, "encodeHTML5", ({ enumerable: true, get: function () { return encode_2.encodeHTML; } }));
-var decode_2 = __webpack_require__(34);
+var decode_2 = __webpack_require__(35);
 Object.defineProperty(exports, "decodeXML", ({ enumerable: true, get: function () { return decode_2.decodeXML; } }));
 Object.defineProperty(exports, "decodeHTML", ({ enumerable: true, get: function () { return decode_2.decodeHTML; } }));
 Object.defineProperty(exports, "decodeHTMLStrict", ({ enumerable: true, get: function () { return decode_2.decodeHTMLStrict; } }));
@@ -34873,7 +34736,7 @@ Object.defineProperty(exports, "decodeXMLStrict", ({ enumerable: true, get: func
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -34883,10 +34746,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.decodeHTML = exports.decodeHTMLStrict = exports.decodeXML = void 0;
-var entities_json_1 = __importDefault(__webpack_require__(23));
-var legacy_json_1 = __importDefault(__webpack_require__(24));
-var xml_json_1 = __importDefault(__webpack_require__(25));
-var decode_codepoint_1 = __importDefault(__webpack_require__(21));
+var entities_json_1 = __importDefault(__webpack_require__(24));
+var legacy_json_1 = __importDefault(__webpack_require__(25));
+var xml_json_1 = __importDefault(__webpack_require__(26));
+var decode_codepoint_1 = __importDefault(__webpack_require__(22));
 var strictEntityRe = /&(?:[a-zA-Z0-9]+|#[xX][\da-fA-F]+|#\d+);/g;
 exports.decodeXML = getStrictDecoder(xml_json_1.default);
 exports.decodeHTMLStrict = getStrictDecoder(entities_json_1.default);
@@ -34933,7 +34796,7 @@ function getReplacer(map) {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -34943,7 +34806,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.escapeUTF8 = exports.escape = exports.encodeNonAsciiHTML = exports.encodeHTML = exports.encodeXML = void 0;
-var xml_json_1 = __importDefault(__webpack_require__(25));
+var xml_json_1 = __importDefault(__webpack_require__(26));
 var inverseXML = getInverseObj(xml_json_1.default);
 var xmlReplacer = getInverseReplacer(inverseXML);
 /**
@@ -34954,7 +34817,7 @@ var xmlReplacer = getInverseReplacer(inverseXML);
  * numeric hexadecimal reference (eg. `&#xfc;`) will be used.
  */
 exports.encodeXML = getASCIIEncoder(inverseXML);
-var entities_json_1 = __importDefault(__webpack_require__(23));
+var entities_json_1 = __importDefault(__webpack_require__(24));
 var inverseHTML = getInverseObj(entities_json_1.default);
 var htmlReplacer = getInverseReplacer(inverseHTML);
 /**
@@ -35076,7 +34939,7 @@ function getASCIIEncoder(obj) {
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -35186,14 +35049,14 @@ exports.attributeNames = new Map([
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.prevElementSibling = exports.nextElementSibling = exports.getName = exports.hasAttrib = exports.getAttributeValue = exports.getSiblings = exports.getParent = exports.getChildren = void 0;
-var domhandler_1 = __webpack_require__(26);
+var domhandler_1 = __webpack_require__(27);
 var emptyArray = [];
 /**
  * Get a node's children.
@@ -35310,7 +35173,7 @@ exports.prevElementSibling = prevElementSibling;
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -35446,14 +35309,14 @@ exports.prepend = prepend;
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.findAll = exports.existsOne = exports.findOne = exports.findOneChild = exports.find = exports.filter = void 0;
-var domhandler_1 = __webpack_require__(26);
+var domhandler_1 = __webpack_require__(27);
 /**
  * Search a node and its children for nodes passing a test function.
  *
@@ -35579,15 +35442,15 @@ exports.findAll = findAll;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getElementsByTagType = exports.getElementsByTagName = exports.getElementById = exports.getElements = exports.testElement = void 0;
-var domhandler_1 = __webpack_require__(26);
-var querying_1 = __webpack_require__(39);
+var domhandler_1 = __webpack_require__(27);
+var querying_1 = __webpack_require__(40);
 var Checks = {
     tag_name: function (name) {
         if (typeof name === "function") {
@@ -35710,14 +35573,14 @@ exports.getElementsByTagType = getElementsByTagType;
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.uniqueSort = exports.compareDocumentPosition = exports.removeSubsets = void 0;
-var domhandler_1 = __webpack_require__(26);
+var domhandler_1 = __webpack_require__(27);
 /**
  * Given an array of nodes, remove any member that is contained by another.
  *
@@ -35842,15 +35705,15 @@ exports.uniqueSort = uniqueSort;
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getFeed = void 0;
-var stringify_1 = __webpack_require__(31);
-var legacy_1 = __webpack_require__(40);
+var stringify_1 = __webpack_require__(32);
+var legacy_1 = __webpack_require__(41);
 /**
  * Get the feed object from the root of a DOM tree.
  *
@@ -36039,7 +35902,7 @@ function isValidFeed(value) {
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ ((module) => {
 
 "use strict";
@@ -36059,7 +35922,7 @@ module.exports = string => {
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -36104,7 +35967,7 @@ exports.isPlainObject = isPlainObject;
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ ((module) => {
 
 "use strict";
@@ -36244,7 +36107,7 @@ module.exports = deepmerge_1;
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -36575,30 +36438,30 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let CssSyntaxError = __webpack_require__(48)
-let Declaration = __webpack_require__(51)
-let LazyResult = __webpack_require__(56)
-let Container = __webpack_require__(65)
-let Processor = __webpack_require__(78)
-let stringify = __webpack_require__(55)
-let fromJSON = __webpack_require__(80)
-let Document = __webpack_require__(67)
-let Warning = __webpack_require__(70)
-let Comment = __webpack_require__(66)
-let AtRule = __webpack_require__(74)
-let Result = __webpack_require__(69)
-let Input = __webpack_require__(61)
-let parse = __webpack_require__(71)
-let list = __webpack_require__(77)
-let Rule = __webpack_require__(76)
-let Root = __webpack_require__(75)
-let Node = __webpack_require__(52)
+let CssSyntaxError = __webpack_require__(49)
+let Declaration = __webpack_require__(52)
+let LazyResult = __webpack_require__(57)
+let Container = __webpack_require__(66)
+let Processor = __webpack_require__(79)
+let stringify = __webpack_require__(56)
+let fromJSON = __webpack_require__(81)
+let Document = __webpack_require__(68)
+let Warning = __webpack_require__(71)
+let Comment = __webpack_require__(67)
+let AtRule = __webpack_require__(75)
+let Result = __webpack_require__(70)
+let Input = __webpack_require__(62)
+let parse = __webpack_require__(72)
+let list = __webpack_require__(78)
+let Rule = __webpack_require__(77)
+let Root = __webpack_require__(76)
+let Node = __webpack_require__(53)
 
 function postcss(...plugins) {
   if (plugins.length === 1 && Array.isArray(plugins[0])) {
@@ -36683,15 +36546,15 @@ postcss.default = postcss
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let pico = __webpack_require__(49)
+let pico = __webpack_require__(50)
 
-let terminalHighlight = __webpack_require__(50)
+let terminalHighlight = __webpack_require__(51)
 
 class CssSyntaxError extends Error {
   constructor(message, line, column, source, file, plugin) {
@@ -36790,7 +36653,7 @@ CssSyntaxError.default = CssSyntaxError
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ ((module) => {
 
 var x=String;
@@ -36800,19 +36663,19 @@ module.exports.createColors = create;
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (() => {
 
 /* (ignored) */
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Node = __webpack_require__(52)
+let Node = __webpack_require__(53)
 
 class Declaration extends Node {
   constructor(defaults) {
@@ -36837,16 +36700,16 @@ Declaration.default = Declaration
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let { isClean, my } = __webpack_require__(53)
-let CssSyntaxError = __webpack_require__(48)
-let Stringifier = __webpack_require__(54)
-let stringify = __webpack_require__(55)
+let { isClean, my } = __webpack_require__(54)
+let CssSyntaxError = __webpack_require__(49)
+let Stringifier = __webpack_require__(55)
+let stringify = __webpack_require__(56)
 
 function cloneNode(obj, parent) {
   let cloned = new obj.constructor()
@@ -37223,7 +37086,7 @@ Node.default = Node
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ ((module) => {
 
 "use strict";
@@ -37235,7 +37098,7 @@ module.exports.my = Symbol('my')
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ ((module) => {
 
 "use strict";
@@ -37595,13 +37458,13 @@ Stringifier.default = Stringifier
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Stringifier = __webpack_require__(54)
+let Stringifier = __webpack_require__(55)
 
 function stringify(node, builder) {
   let str = new Stringifier(builder)
@@ -37613,21 +37476,21 @@ stringify.default = stringify
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let { isClean, my } = __webpack_require__(53)
-let MapGenerator = __webpack_require__(57)
-let stringify = __webpack_require__(55)
-let Container = __webpack_require__(65)
-let Document = __webpack_require__(67)
-let warnOnce = __webpack_require__(68)
-let Result = __webpack_require__(69)
-let parse = __webpack_require__(71)
-let Root = __webpack_require__(75)
+let { isClean, my } = __webpack_require__(54)
+let MapGenerator = __webpack_require__(58)
+let stringify = __webpack_require__(56)
+let Container = __webpack_require__(66)
+let Document = __webpack_require__(68)
+let warnOnce = __webpack_require__(69)
+let Result = __webpack_require__(70)
+let parse = __webpack_require__(72)
+let Root = __webpack_require__(76)
 
 const TYPE_TO_CLASS_NAME = {
   document: 'Document',
@@ -38170,17 +38033,17 @@ Document.registerLazyResult(LazyResult)
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let { SourceMapConsumer, SourceMapGenerator } = __webpack_require__(58)
-let { dirname, resolve, relative, sep } = __webpack_require__(59)
-let { pathToFileURL } = __webpack_require__(60)
+let { SourceMapConsumer, SourceMapGenerator } = __webpack_require__(59)
+let { dirname, resolve, relative, sep } = __webpack_require__(60)
+let { pathToFileURL } = __webpack_require__(61)
 
-let Input = __webpack_require__(61)
+let Input = __webpack_require__(62)
 
 let sourceMapAvailable = Boolean(SourceMapConsumer && SourceMapGenerator)
 let pathAvailable = Boolean(dirname && resolve && relative && sep)
@@ -38508,12 +38371,6 @@ module.exports = MapGenerator
 
 
 /***/ }),
-/* 58 */
-/***/ (() => {
-
-/* (ignored) */
-
-/***/ }),
 /* 59 */
 /***/ (() => {
 
@@ -38527,19 +38384,25 @@ module.exports = MapGenerator
 
 /***/ }),
 /* 61 */
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+/* 62 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let { SourceMapConsumer, SourceMapGenerator } = __webpack_require__(58)
-let { fileURLToPath, pathToFileURL } = __webpack_require__(60)
-let { resolve, isAbsolute } = __webpack_require__(59)
-let { nanoid } = __webpack_require__(62)
+let { SourceMapConsumer, SourceMapGenerator } = __webpack_require__(59)
+let { fileURLToPath, pathToFileURL } = __webpack_require__(61)
+let { resolve, isAbsolute } = __webpack_require__(60)
+let { nanoid } = __webpack_require__(63)
 
-let terminalHighlight = __webpack_require__(50)
-let CssSyntaxError = __webpack_require__(48)
-let PreviousMap = __webpack_require__(63)
+let terminalHighlight = __webpack_require__(51)
+let CssSyntaxError = __webpack_require__(49)
+let PreviousMap = __webpack_require__(64)
 
 let fromOffsetCache = Symbol('fromOffsetCache')
 
@@ -38781,7 +38644,7 @@ if (terminalHighlight && terminalHighlight.registerInput) {
 
 
 /***/ }),
-/* 62 */
+/* 63 */
 /***/ ((module) => {
 
 let urlAlphabet =
@@ -38808,15 +38671,15 @@ module.exports = { nanoid, customAlphabet }
 
 
 /***/ }),
-/* 63 */
+/* 64 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let { SourceMapConsumer, SourceMapGenerator } = __webpack_require__(58)
-let { existsSync, readFileSync } = __webpack_require__(64)
-let { dirname, join } = __webpack_require__(59)
+let { SourceMapConsumer, SourceMapGenerator } = __webpack_require__(59)
+let { existsSync, readFileSync } = __webpack_require__(65)
+let { dirname, join } = __webpack_require__(60)
 
 function fromBase64(str) {
   if (Buffer) {
@@ -38957,22 +38820,22 @@ PreviousMap.default = PreviousMap
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (() => {
 
 /* (ignored) */
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let { isClean, my } = __webpack_require__(53)
-let Declaration = __webpack_require__(51)
-let Comment = __webpack_require__(66)
-let Node = __webpack_require__(52)
+let { isClean, my } = __webpack_require__(54)
+let Declaration = __webpack_require__(52)
+let Comment = __webpack_require__(67)
+let Node = __webpack_require__(53)
 
 let parse, Rule, AtRule
 
@@ -39403,13 +39266,13 @@ Container.rebuild = node => {
 
 
 /***/ }),
-/* 66 */
+/* 67 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Node = __webpack_require__(52)
+let Node = __webpack_require__(53)
 
 class Comment extends Node {
   constructor(defaults) {
@@ -39423,13 +39286,13 @@ Comment.default = Comment
 
 
 /***/ }),
-/* 67 */
+/* 68 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Container = __webpack_require__(65)
+let Container = __webpack_require__(66)
 
 let LazyResult, Processor
 
@@ -39463,7 +39326,7 @@ Document.default = Document
 
 
 /***/ }),
-/* 68 */
+/* 69 */
 /***/ ((module) => {
 
 "use strict";
@@ -39483,13 +39346,13 @@ module.exports = function warnOnce(message) {
 
 
 /***/ }),
-/* 69 */
+/* 70 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Warning = __webpack_require__(70)
+let Warning = __webpack_require__(71)
 
 class Result {
   constructor(processor, root, opts) {
@@ -39532,7 +39395,7 @@ Result.default = Result
 
 
 /***/ }),
-/* 70 */
+/* 71 */
 /***/ ((module) => {
 
 "use strict";
@@ -39576,15 +39439,15 @@ Warning.default = Warning
 
 
 /***/ }),
-/* 71 */
+/* 72 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Container = __webpack_require__(65)
-let Parser = __webpack_require__(72)
-let Input = __webpack_require__(61)
+let Container = __webpack_require__(66)
+let Parser = __webpack_require__(73)
+let Input = __webpack_require__(62)
 
 function parse(css, opts) {
   let input = new Input(css, opts)
@@ -39625,18 +39488,18 @@ Container.registerParse(parse)
 
 
 /***/ }),
-/* 72 */
+/* 73 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Declaration = __webpack_require__(51)
-let tokenizer = __webpack_require__(73)
-let Comment = __webpack_require__(66)
-let AtRule = __webpack_require__(74)
-let Root = __webpack_require__(75)
-let Rule = __webpack_require__(76)
+let Declaration = __webpack_require__(52)
+let tokenizer = __webpack_require__(74)
+let Comment = __webpack_require__(67)
+let AtRule = __webpack_require__(75)
+let Root = __webpack_require__(76)
+let Rule = __webpack_require__(77)
 
 const SAFE_COMMENT_NEIGHBOR = {
   empty: true,
@@ -40235,7 +40098,7 @@ module.exports = Parser
 
 
 /***/ }),
-/* 73 */
+/* 74 */
 /***/ ((module) => {
 
 "use strict";
@@ -40508,13 +40371,13 @@ module.exports = function tokenizer(input, options = {}) {
 
 
 /***/ }),
-/* 74 */
+/* 75 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Container = __webpack_require__(65)
+let Container = __webpack_require__(66)
 
 class AtRule extends Container {
   constructor(defaults) {
@@ -40540,13 +40403,13 @@ Container.registerAtRule(AtRule)
 
 
 /***/ }),
-/* 75 */
+/* 76 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Container = __webpack_require__(65)
+let Container = __webpack_require__(66)
 
 let LazyResult, Processor
 
@@ -40606,14 +40469,14 @@ Root.default = Root
 
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Container = __webpack_require__(65)
-let list = __webpack_require__(77)
+let Container = __webpack_require__(66)
+let list = __webpack_require__(78)
 
 class Rule extends Container {
   constructor(defaults) {
@@ -40640,7 +40503,7 @@ Container.registerRule(Rule)
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ ((module) => {
 
 "use strict";
@@ -40703,16 +40566,16 @@ list.default = list
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let NoWorkResult = __webpack_require__(79)
-let LazyResult = __webpack_require__(56)
-let Document = __webpack_require__(67)
-let Root = __webpack_require__(75)
+let NoWorkResult = __webpack_require__(80)
+let LazyResult = __webpack_require__(57)
+let Document = __webpack_require__(68)
+let Root = __webpack_require__(76)
 
 class Processor {
   constructor(plugins = []) {
@@ -40777,17 +40640,17 @@ Document.registerProcessor(Processor)
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let MapGenerator = __webpack_require__(57)
-let stringify = __webpack_require__(55)
-let warnOnce = __webpack_require__(68)
-let parse = __webpack_require__(71)
-const Result = __webpack_require__(69)
+let MapGenerator = __webpack_require__(58)
+let stringify = __webpack_require__(56)
+let warnOnce = __webpack_require__(69)
+let parse = __webpack_require__(72)
+const Result = __webpack_require__(70)
 
 class NoWorkResult {
   constructor(processor, css, opts) {
@@ -40919,19 +40782,19 @@ NoWorkResult.default = NoWorkResult
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-let Declaration = __webpack_require__(51)
-let PreviousMap = __webpack_require__(63)
-let Comment = __webpack_require__(66)
-let AtRule = __webpack_require__(74)
-let Input = __webpack_require__(61)
-let Root = __webpack_require__(75)
-let Rule = __webpack_require__(76)
+let Declaration = __webpack_require__(52)
+let PreviousMap = __webpack_require__(64)
+let Comment = __webpack_require__(67)
+let AtRule = __webpack_require__(75)
+let Input = __webpack_require__(62)
+let Root = __webpack_require__(76)
+let Rule = __webpack_require__(77)
 
 function fromJSON(json, inputs) {
   if (Array.isArray(json)) return json.map(n => fromJSON(n))
@@ -40980,25 +40843,22 @@ fromJSON.default = fromJSON
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PgpArmor = void 0;
 const buf_1 = __webpack_require__(4);
 const common_1 = __webpack_require__(11);
-const openpgp_1 = __webpack_require__(82);
+const openpgp_1 = __webpack_require__(83);
 class PgpArmor {
 }
 exports.PgpArmor = PgpArmor;
 _a = PgpArmor;
-// eslint-disable-next-line @typescript-eslint/naming-convention
 PgpArmor.ARMOR_HEADER_DICT = {
-    // general passwordMsg begin: /^[^\n]+: (Open Message|Nachricht öffnen)/
     null: { begin: '-----BEGIN', end: '-----END', replace: false },
     publicKey: {
         begin: '-----BEGIN PGP PUBLIC KEY BLOCK-----', end: '-----END PGP PUBLIC KEY BLOCK-----', replace: true
@@ -41024,7 +40884,6 @@ PgpArmor.ARMOR_HEADER_DICT = {
 PgpArmor.clip = (text) => {
     if (text?.includes(PgpArmor.ARMOR_HEADER_DICT.null.begin) &&
         text.includes(String(PgpArmor.ARMOR_HEADER_DICT.null.end))) {
-        // eslint-disable-next-line max-len
         const match = text.match(/(-----BEGIN PGP (MESSAGE|SIGNED MESSAGE|SIGNATURE|PUBLIC KEY BLOCK)-----[^]+-----END PGP (MESSAGE|SIGNATURE|PUBLIC KEY BLOCK)-----)/gm);
         return (match && match.length) ? match[0] : undefined;
     }
@@ -41047,28 +40906,25 @@ PgpArmor.normalize = (armored, type) => {
         const nl4 = armored.match(/\n\n\n\n/g);
         const nl6 = armored.match(/\n\n\n\n\n\n/g);
         if (nl3 && nl6 && nl3.length > 1 && nl6.length === 1) {
-            armored = armored.replace(/\n\n\n/g, '\n'); // newlines tripled: fix
+            armored = armored.replace(/\n\n\n/g, '\n');
         }
         else if (nl2 && nl4 && nl2.length > 1 && nl4.length === 1) {
-            // newlines doubled. GPA on windows does this, and sometimes message
-            // can get extracted this way from html
             armored = armored.replace(/\n\n/g, '\n');
         }
     }
     const lines = armored.split('\n');
     const h = PgpArmor.headers(type === 'key' ? 'null' : type);
-    // check for and fix missing a mandatory empty line
     if (lines.length > 5 && lines[0].includes(h.begin)
         && lines[lines.length - 1].includes(String(h.end)) && !lines.includes('')) {
         for (let i = 1; i < 5; i++) {
             if (lines[i].match(/^[a-zA-Z0-9\-_. ]+: .+$/)) {
-                continue; // skip comment lines, looking for first data line
+                continue;
             }
-            if (lines[i].match(/^[a-zA-Z0-9\/+]{32,77}$/)) { // insert empty line before first data line
+            if (lines[i].match(/^[a-zA-Z0-9\/+]{32,77}$/)) {
                 armored = `${lines.slice(0, i).join('\n')}\n\n${lines.slice(i).join('\n')}`;
                 break;
             }
-            break; // don't do anything if format not as expected
+            break;
         }
     }
     return armored;
@@ -41077,7 +40933,6 @@ PgpArmor.cryptoMsgPrepareForDecrypt = async (encrypted) => {
     if (!encrypted.length) {
         throw new Error('Encrypted message could not be parsed because no data was provided');
     }
-    // ignore errors - this may not be utf string, just testing
     const utfChunk = new buf_1.Buf(encrypted.slice(0, 100)).toUtfStr('ignore');
     const isArmoredEncrypted = utfChunk.includes(PgpArmor.headers('encryptedMsg').begin);
     const isArmoredSignedOnly = utfChunk.includes(PgpArmor.headers('signedMsg').begin);
@@ -41108,7 +40963,7 @@ PgpArmor.cryptoMsgPrepareForDecrypt = async (encrypted) => {
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -41185,26 +41040,48 @@ PERFORMANCE OF THIS SOFTWARE.
 
 
 /***/ }),
-/* 83 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/* 84 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PgpKey = void 0;
 const buf_1 = __webpack_require__(4);
-const catch_1 = __webpack_require__(14);
-const msg_block_parser_1 = __webpack_require__(15);
-const pgp_armor_1 = __webpack_require__(81);
-const store_1 = __webpack_require__(84);
-const mnemonic_1 = __webpack_require__(85);
+const catch_1 = __webpack_require__(15);
+const msg_block_parser_1 = __webpack_require__(16);
+const pgp_armor_1 = __webpack_require__(82);
+const store_1 = __webpack_require__(85);
+const mnemonic_1 = __webpack_require__(86);
 const util_1 = __webpack_require__(5);
-const openpgp_1 = __webpack_require__(82);
-const pgp_1 = __webpack_require__(86);
+const openpgp_1 = __webpack_require__(83);
+const pgp_1 = __webpack_require__(87);
 const common_1 = __webpack_require__(11);
-const web_stream_tools_1 = __webpack_require__(88);
+const require_1 = __webpack_require__(12);
 class PgpKey {
 }
 exports.PgpKey = PgpKey;
@@ -41217,9 +41094,6 @@ PgpKey.create = async (userIds, variant, passphrase) => {
     });
     return { public: k.publicKey, private: k.privateKey, revCert: k.revocationCertificate };
 };
-/**
- * used only for keys that we ourselves parsed / formatted before, eg from local storage, because no err handling
- */
 PgpKey.read = async (armoredKey) => {
     const fromCache = store_1.Store.armoredKeyCacheGet(armoredKey);
     if (fromCache) {
@@ -41231,10 +41105,6 @@ PgpKey.read = async (armoredKey) => {
     }
     return key;
 };
-/**
- * Read many keys, could be armored or binary, in single armor or separately,
- * useful for importing keychains of various formats
- */
 PgpKey.readMany = async (fileData) => {
     const allKeys = [];
     const allErrs = [];
@@ -41267,7 +41137,7 @@ PgpKey.isPacketPrivate = (packet) => {
 PgpKey.validateAllDecryptedPackets = async (key) => {
     for (const prvPacket of key.toPacketList().filter(PgpKey.isPacketPrivate)) {
         if (prvPacket.isDecrypted()) {
-            await prvPacket.validate(); // gnu-dummy never raises an exception, invalid keys raise exceptions
+            await prvPacket.validate();
         }
     }
 };
@@ -41291,7 +41161,7 @@ PgpKey.decrypt = async (prv, passphrase, optionalKeyid, optionalBehaviorFlag) =>
             }
         }
         try {
-            await prvPacket.decrypt(passphrase); // throws on password mismatch
+            await prvPacket.decrypt(passphrase);
             await prvPacket.validate();
         }
         catch (e) {
@@ -41335,7 +41205,7 @@ PgpKey.normalize = async (armored) => {
         for (const k of keys) {
             for (const u of k.users) {
                 await PgpKey.validateAllDecryptedPackets(k);
-                u.otherCertifications = []; // prevent key bloat
+                u.otherCertifications = [];
             }
         }
         return { normalized: keys.map(k => k.armor()).join('\n'), keys };
@@ -41413,7 +41283,7 @@ PgpKey.usable = async (armored) => {
         return false;
     }
     if (await pubkey.getEncryptionKey()) {
-        return true; // good key - cannot be expired
+        return true;
     }
     return await PgpKey.usableButExpired(pubkey);
 };
@@ -41428,28 +41298,25 @@ PgpKey.expired = async (key) => {
     if (exp instanceof Date) {
         return Date.now() > exp.getTime();
     }
-    throw new Error(`Got unexpected value for expiration: ${exp}`); // exp must be either null, Infinity or a Date
+    throw new Error(`Got unexpected value for expiration: ${exp}`);
 };
 PgpKey.usableButExpired = async (key) => {
     if (!key) {
         return false;
     }
     if (await key.getEncryptionKey()) {
-        return false; // good key - cannot be expired
+        return false;
     }
     const oneSecondBeforeExpiration = await PgpKey.dateBeforeExpiration(key);
     if (typeof oneSecondBeforeExpiration === 'undefined') {
-        return false; // key does not expire
+        return false;
     }
-    // try to see if the key was usable just before expiration
     return Boolean(await key.getEncryptionKey(undefined, oneSecondBeforeExpiration));
 };
 PgpKey.dateBeforeExpiration = async (key) => {
     const openPgpKey = typeof key === 'string' ? await PgpKey.read(key) : key;
-    // const expires = await openPgpKey.getExpirationTime();
-    // meanhile use or backported fuinction
     const expires = await (0, util_1.getKeyExpirationTimeForCapabilities)(openPgpKey, 'encrypt');
-    if (expires instanceof Date && expires.getTime() < Date.now()) { // expired
+    if (expires instanceof Date && expires.getTime() < Date.now()) {
         return new Date(expires.getTime() - 1000);
     }
     return undefined;
@@ -41468,7 +41335,6 @@ PgpKey.details = async (k) => {
         algorithmId: openpgp_1.enums.publicKey[algoInfo.algorithm]
     };
     const created = k.keyPacket.created.getTime() / 1000;
-    // meanwhile use our backported function
     const exp = await (0, util_1.getKeyExpirationTimeForCapabilities)(k, 'encrypt');
     const expiration = exp === Infinity || !exp ? undefined : exp.getTime() / 1000;
     const lastModified = await PgpKey.lastSig(k) / 1000;
@@ -41479,7 +41345,7 @@ PgpKey.details = async (k) => {
             const longid = await PgpKey.longid(fingerprint);
             if (longid) {
                 const shortid = longid.substr(-8);
-                ids.push({ fingerprint, longid, shortid, keywords: (0, mnemonic_1.mnemonic)(longid) });
+                ids.push({ fingerprint, longid, shortid, keywords: (0, mnemonic_1.mnemonic)(longid) ?? '' });
             }
         }
     }
@@ -41497,13 +41363,7 @@ PgpKey.details = async (k) => {
         revoked: k.revocationSignatures.length > 0
     };
 };
-/**
- * Get latest self-signature date, in utc millis.
- * This is used to figure out how recently was key updated, and if one key is newer than other.
- */
 PgpKey.lastSig = async (key) => {
-    // "await key.getExpirationTime()" no longer works, need some alternate solution
-    // discussion is in progress: https://github.com/openpgpjs/openpgpjs/discussions/1491
     const allSignatures = [];
     for (const user of key.users) {
         const data = { userID: user.userID, userAttribute: user.userAttribute, key };
@@ -41545,20 +41405,22 @@ PgpKey.revoke = async (key) => {
         return { key, revocationCertificate: certificate };
     }
     else {
+        const runtime = globalThis.process?.release?.name || 'not node';
+        const readToEnd = runtime === 'not node' ?
+            (await Promise.resolve().then(() => __importStar(__webpack_require__(89)))).readToEnd : (0, require_1.requireStreamReadToEnd)();
         return {
             key,
-            revocationCertificate: await (0, web_stream_tools_1.readToEnd)(certificate)
+            revocationCertificate: await readToEnd(certificate)
         };
     }
 };
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.Store = void 0;
@@ -41597,11 +41459,10 @@ Store.keyCacheRenewExpiry = () => {
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.mnemonic = void 0;
@@ -43669,34 +43530,29 @@ const mnemonic = (hex) => {
     if (!hex) {
         return undefined;
     }
-    // 0100111000011111011110011001101010100100111111110010001001111001
     const binary = hex.split('').map(h => leadingZeroes(parseInt(h, 16).toString(2), 4)).join('');
-    // ["01001110000", "11111011110", "01100110101", "01001001111", "11110010001", "001111001"]
     const binaryChunks = stringChunks(binary, 11);
-    const integers = binaryChunks.map(b => parseInt(b, 2)); // [624, 2014, 821, 591, 1937, 121]
-    return integers.map(i => words[i].toUpperCase()).join(' '); // "EVOKE WINK GRIT ENEMY VENDOR AUGUST"
+    const integers = binaryChunks?.map(b => parseInt(b, 2)) ?? [];
+    return integers.map(i => words[i].toUpperCase()).join(' ');
 };
 exports.mnemonic = mnemonic;
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isPacketDecrypted = exports.isFullyEncrypted = exports.isFullyDecrypted = void 0;
-const pgp_key_1 = __webpack_require__(83);
-const const_1 = __webpack_require__(87);
-const openpgp_1 = __webpack_require__(82);
+const pgp_key_1 = __webpack_require__(84);
+const const_1 = __webpack_require__(88);
+const openpgp_1 = __webpack_require__(83);
 openpgp_1.config.versionString = `FlowCrypt ${const_1.VERSION} Gmail Encryption`;
 openpgp_1.config.commentString = 'Seamlessly send and receive encrypted email';
-// we manually check for missing MDC and show loud warning to user (no auto-decrypt)
 openpgp_1.config.allowUnauthenticatedMessages = true;
 openpgp_1.config.allowUnauthenticatedStream = true;
-// config.require_uid_self_cert = false;
 const getPrvPackets = (k) => {
     if (!k.isPrivate()) {
         throw new Error("Cannot check encryption status of secret keys in a Public Key");
@@ -43736,11 +43592,10 @@ exports.isPacketDecrypted = isPacketDecrypted;
 
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.gmailBackupSearchQuery = exports.GMAIL_RECOVERY_EMAIL_SUBJECTS = exports.BACKEND_API_HOST = exports.GOOGLE_CONTACTS_API_HOST = exports.GOOGLE_OAUTH_SCREEN_HOST = exports.GOOGLE_API_HOST = exports.VERSION = void 0;
@@ -43749,16 +43604,6 @@ exports.GOOGLE_API_HOST = '[BUILD_REPLACEABLE_GOOGLE_API_HOST]';
 exports.GOOGLE_OAUTH_SCREEN_HOST = '[BUILD_REPLACEABLE_GOOGLE_OAUTH_SCREEN_HOST]';
 exports.GOOGLE_CONTACTS_API_HOST = '[BUILD_REPLACEABLE_GOOGLE_CONTACTS_API_HOST]';
 exports.BACKEND_API_HOST = '[BUILD_REPLACEABLE_BACKEND_API_HOST]';
-/**
- * Only put constants below if:
- *   - they are useful across web/extension/Nodejs environments, AND
- *   - the only other reasonable place to put them would be OUTSIDE of the /core folder
- *   - example: A Google query below would normally go in Google class,
- *     but that's outside of /core and we also need it on Android
- *
- * For any constants that are not expected to be reused that widely,
- * just put them as private or public static props in relevant class.
- */
 exports.GMAIL_RECOVERY_EMAIL_SUBJECTS = [
     'Your FlowCrypt Backup',
     'Your CryptUp Backup',
@@ -43777,7 +43622,7 @@ exports.gmailBackupSearchQuery = gmailBackupSearchQuery;
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -43813,10 +43658,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "transformRaw": () => (/* binding */ transformRaw),
 /* harmony export */   "webToNode": () => (/* reexport safe */ _node_conversions__WEBPACK_IMPORTED_MODULE_1__.webToNode)
 /* harmony export */ });
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(89);
-/* harmony import */ var _node_conversions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(92);
-/* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(93);
-/* harmony import */ var _writer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(90);
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(90);
+/* harmony import */ var _node_conversions__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(93);
+/* harmony import */ var _reader__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(94);
+/* harmony import */ var _writer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(91);
 
 
 
@@ -43832,8 +43677,8 @@ async function loadStreamsPonyfill() {
   }
 
   const [ponyfill, adapter] = await Promise.all([
-    __webpack_require__.e(/* import() */ 4).then(__webpack_require__.bind(__webpack_require__, 117)),
-    __webpack_require__.e(/* import() */ 5).then(__webpack_require__.bind(__webpack_require__, 118))
+    __webpack_require__.e(/* import() */ 4).then(__webpack_require__.bind(__webpack_require__, 118)),
+    __webpack_require__.e(/* import() */ 5).then(__webpack_require__.bind(__webpack_require__, 119))
   ]);
 
   ({ ReadableStream, WritableStream, TransformStream } = ponyfill);
@@ -43919,7 +43764,7 @@ function concat(list) {
  */
 function concatStream(list) {
   list = list.map(toStream);
-  const transform = transformWithCancel(async function(reason) {
+  const transform = transformWithCancel(async function (reason) {
     await Promise.all(transforms.map(stream => cancel(stream, reason)));
   });
   let prev = Promise.resolve();
@@ -43996,7 +43841,7 @@ async function pipe(input, target, {
         preventAbort,
         preventCancel
       });
-    } catch(e) {}
+    } catch (e) { }
     return;
   }
   input = toArrayStream(input);
@@ -44054,9 +43899,9 @@ function transformWithCancel(cancel) {
         }
       },
       cancel
-    }, {highWaterMark: 0}),
+    }, { highWaterMark: 0 }),
     writable: new WritableStream({
-      write: async function(chunk) {
+      write: async function (chunk) {
         outputController.enqueue(chunk);
         if (!pulled) {
           await new Promise(resolve => {
@@ -44106,7 +43951,7 @@ function transform(input, process = () => undefined, finish = () => undefined) {
         try {
           const result = await process(value);
           if (result !== undefined) controller.enqueue(result);
-        } catch(e) {
+        } catch (e) {
           controller.error(e);
         }
       },
@@ -44114,7 +43959,7 @@ function transform(input, process = () => undefined, finish = () => undefined) {
         try {
           const result = await finish();
           if (result !== undefined) controller.enqueue(result);
-        } catch(e) {
+        } catch (e) {
           controller.error(e);
         }
       }
@@ -44146,7 +43991,7 @@ function transformPair(input, fn) {
 
     const pipeDonePromise = pipe(input, incoming.writable);
 
-    const outgoing = transformWithCancel(async function(reason) {
+    const outgoing = transformWithCancel(async function (reason) {
       incomingTransformController.error(reason);
       await pipeDonePromise;
       await new Promise(setTimeout);
@@ -44244,14 +44089,14 @@ function passiveClone(input) {
               await writer.ready;
               const { done, value } = await reader.read();
               if (done) {
-                try { controller.close(); } catch(e) {}
+                try { controller.close(); } catch (e) { }
                 await writer.close();
                 return;
               }
-              try { controller.enqueue(value); } catch(e) {}
+              try { controller.enqueue(value); } catch (e) { }
               await writer.write(value);
             }
-          } catch(e) {
+          } catch (e) {
             controller.error(e);
             await writer.abort(e);
           }
@@ -44289,7 +44134,7 @@ function overwrite(input, clone) {
  * @param {ReadableStream|Uint8array|String} input
  * @returns {ReadableStream|Uint8array|String} clone
  */
-function slice(input, begin=0, end=Infinity) {
+function slice(input, begin = 0, end = Infinity) {
   if ((0,_util__WEBPACK_IMPORTED_MODULE_0__.isArrayStream)(input)) {
     throw new Error('Not implemented');
   }
@@ -44348,7 +44193,7 @@ function slice(input, begin=0, end=Infinity) {
  * @returns {Promise<Uint8array|String|Any>} the return value of join()
  * @async
  */
-async function readToEnd(input, join=concat) {
+async function readToEnd(input, join = concat) {
   if ((0,_util__WEBPACK_IMPORTED_MODULE_0__.isArrayStream)(input)) {
     return input.readToEnd(join);
   }
@@ -44402,7 +44247,7 @@ function fromAsync(fn) {
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -44414,15 +44259,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "isStream": () => (/* binding */ isStream),
 /* harmony export */   "isUint8Array": () => (/* binding */ isUint8Array)
 /* harmony export */ });
-/* harmony import */ var _streams__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(88);
-/* harmony import */ var _writer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(90);
+/* harmony import */ var _streams__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(89);
+/* harmony import */ var _writer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(91);
 
 
 
 const isNode = typeof globalThis.process === 'object' &&
   typeof globalThis.process.versions === 'object';
 
-const NodeReadableStream = isNode && (__webpack_require__(91).Readable);
+const NodeReadableStream = isNode && (__webpack_require__(92).Readable);
 
 /**
  * Check whether data is a Stream, and if so of which type
@@ -44488,7 +44333,7 @@ function concatUint8Array(arrays) {
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -44613,13 +44458,13 @@ Writer.prototype.releaseLock = function() {};
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (() => {
 
 /* (ignored) */
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -44628,13 +44473,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "nodeToWeb": () => (/* binding */ nodeToWeb),
 /* harmony export */   "webToNode": () => (/* binding */ webToNode)
 /* harmony export */ });
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(89);
-/* harmony import */ var _streams__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(88);
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(90);
+/* harmony import */ var _streams__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(89);
 
 
 
 const NodeBuffer = _util__WEBPACK_IMPORTED_MODULE_0__.isNode && (__webpack_require__(6).Buffer);
-const NodeReadableStream = _util__WEBPACK_IMPORTED_MODULE_0__.isNode && (__webpack_require__(91).Readable);
+const NodeReadableStream = _util__WEBPACK_IMPORTED_MODULE_0__.isNode && (__webpack_require__(92).Readable);
 
 /**
  * Web / node stream conversion functions
@@ -44730,7 +44575,7 @@ if (NodeReadableStream) {
 
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -44739,8 +44584,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "Reader": () => (/* binding */ Reader),
 /* harmony export */   "externalBuffer": () => (/* binding */ externalBuffer)
 /* harmony export */ });
-/* harmony import */ var _streams__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(88);
-/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(89);
+/* harmony import */ var _streams__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(89);
+/* harmony import */ var _util__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(90);
 
 
 
@@ -44947,26 +44792,48 @@ Reader.prototype.readToEnd = async function(join=_streams__WEBPACK_IMPORTED_MODU
 
 
 /***/ }),
-/* 94 */
-/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
+/* 95 */
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var _a;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PgpMsg = exports.FormatError = exports.DecryptErrTypes = void 0;
-const pgp_key_1 = __webpack_require__(83);
+const pgp_key_1 = __webpack_require__(84);
 const msg_block_1 = __webpack_require__(3);
 const common_1 = __webpack_require__(11);
 const buf_1 = __webpack_require__(4);
-const catch_1 = __webpack_require__(14);
-const msg_block_parser_1 = __webpack_require__(15);
-const pgp_armor_1 = __webpack_require__(81);
-const store_1 = __webpack_require__(84);
-const openpgp_1 = __webpack_require__(82);
-const pgp_1 = __webpack_require__(86);
-const web_stream_tools_1 = __webpack_require__(88);
+const catch_1 = __webpack_require__(15);
+const msg_block_parser_1 = __webpack_require__(16);
+const pgp_armor_1 = __webpack_require__(82);
+const store_1 = __webpack_require__(85);
+const openpgp_1 = __webpack_require__(83);
+const pgp_1 = __webpack_require__(87);
+const require_1 = __webpack_require__(12);
 var DecryptErrTypes;
 (function (DecryptErrTypes) {
     DecryptErrTypes["keyMismatch"] = "key_mismatch";
@@ -44994,20 +44861,15 @@ PgpMsg.type = async ({ data }) => {
         return undefined;
     }
     const firstByte = data[0];
-    // attempt to understand this as a binary PGP packet: https://tools.ietf.org/html/rfc4880#section-4.2
-    if ((firstByte & 0b10000000) === 0b10000000) { // 1XXX XXXX - potential pgp packet tag
-        let tagNumber = 0; // zero is a forbidden tag number
-        if ((firstByte & 0b11000000) === 0b11000000) { // 11XX XXXX - potential new pgp packet tag
-            tagNumber = firstByte & 0b00111111; // 11TTTTTT where T is tag number bit
+    if ((firstByte & 0b10000000) === 0b10000000) {
+        let tagNumber = 0;
+        if ((firstByte & 0b11000000) === 0b11000000) {
+            tagNumber = firstByte & 0b00111111;
         }
-        else { // 10XX XXXX - potential old pgp packet tag
-            // 10TTTTLL where T is tag number bit. Division by 4 in place of two bit shifts. I hate bit shifts.
+        else {
             tagNumber = (firstByte & 0b00111100) / 4;
         }
         if (Object.values(openpgp_1.enums.packet).includes(tagNumber)) {
-            // Indeed a valid OpenPGP packet tag number
-            // This does not 100% mean it's OpenPGP message
-            // But it's a good indication that it may
             const t = openpgp_1.enums.packet;
             const msgTpes = [
                 t.symEncryptedIntegrityProtectedData,
@@ -45019,7 +44881,6 @@ PgpMsg.type = async ({ data }) => {
             return { armored: false, type: msgTpes.includes(tagNumber) ? 'encryptedMsg' : 'publicKey' };
         }
     }
-    // only interested in first 50 bytes
     const { blocks } = msg_block_parser_1.MsgBlockParser.detectBlocks(new buf_1.Buf(data.slice(0, 50)).toUtfStr().trim());
     if (blocks.length === 1 && blocks[0].complete === false
         && ['encryptedMsg', 'privateKey', 'publicKey', 'signedMsg'].includes(blocks[0].type)) {
@@ -45027,10 +44888,6 @@ PgpMsg.type = async ({ data }) => {
     }
     return undefined;
 };
-/**
- * Returns signed data if detached=false, armored
- * Returns signature if detached=true, armored
- */
 PgpMsg.sign = async (signingPrv, data, detached = false) => {
     const message = await (0, openpgp_1.createCleartextMessage)({ text: data });
     const signRes = await (0, openpgp_1.sign)({
@@ -45044,24 +44901,9 @@ PgpMsg.sign = async (signingPrv, data, detached = false) => {
 PgpMsg.verify = async (msgOrVerResults, pubs) => {
     const sig = { match: null };
     try {
-        // While this looks like bad method API design, it's here to ensure execution order when:
-        // 1. reading data
-        // 2. verifying
-        // 3. processing signatures
-        // Else it will hang trying to read a stream:
-        // https://github.com/openpgpjs/openpgpjs/issues/916#issuecomment-510620625
         const verifyResults = Array.isArray(msgOrVerResults) ? msgOrVerResults : await msgOrVerResults.verify(pubs);
         for (const verifyRes of verifyResults) {
-            // todo - a valid signature is a valid signature, and should be surfaced.
-            // Currently, if any of the signatures are not valid, it's showing all as invalid
-            // .. as it is now this could allow an attacker to append bogus signatures
-            // to validly signed messages, making otherwise correct messages seem incorrect
-            // .. which is not really an issue - an attacker that can append signatures
-            // could have also just slightly changed the message, causing the same experience
-            // .. so for now #wontfix unless a reasonable usecase surfaces
             if (!sig.signer) {
-                // todo - currently only the first signer will be reported.
-                // Should we be showing all signers? How common is that?
                 sig.signer = await pgp_key_1.PgpKey.longid(verifyRes.keyID.bytes);
             }
             sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
@@ -45108,7 +44950,10 @@ PgpMsg.decrypt = async ({ kisWithPp, encryptedData, msgPwd, verificationPubkeys 
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
         const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
-        const text = prepared.message.getText() ?? '';
+        const runtime = globalThis.process?.release?.name || 'not node';
+        const readToEnd = runtime === 'not node' ?
+            (await Promise.resolve().then(() => __importStar(__webpack_require__(89)))).readToEnd : (0, require_1.requireStreamReadToEnd)();
+        const text = await readToEnd(prepared.message.getText() ?? '');
         return { success: true, content: buf_1.Buf.fromUtfStr(text), isEncrypted, signature };
     }
     if (!keys.prvMatching.length && !msgPwd) {
@@ -45144,14 +44989,13 @@ PgpMsg.decrypt = async ({ kisWithPp, encryptedData, msgPwd, verificationPubkeys 
         const passwords = msgPwd ? [msgPwd] : undefined;
         const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted);
         const decrypted = await prepared.message.decrypt(privateKeys, passwords);
-        // we can only figure out who signed the msg once it's decrypted
         await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
         await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
-        // verify first to prevent stream hang
         const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined;
-        // read content second to prevent stream hang
-        const content = new buf_1.Buf(await (0, web_stream_tools_1.readToEnd)(decrypted.getLiteralData()));
-        // evaluate verify results third to prevent stream hang
+        const runtime = globalThis.process?.release?.name || 'not node';
+        const readToEnd = runtime === 'not node' ?
+            (await Promise.resolve().then(() => __importStar(__webpack_require__(89)))).readToEnd : (0, require_1.requireStreamReadToEnd)();
+        const content = new buf_1.Buf(await readToEnd(decrypted.getLiteralData()));
         const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined;
         if (!prepared.isCleartext && prepared.message.packets
             .filterByTag(openpgp_1.enums.packet.symmetricallyEncryptedData).length) {
@@ -45183,8 +45027,6 @@ PgpMsg.encrypt = async ({ pubkeys, signingPrv, pwd, data, filename, armor, date 
         const publicKeys = await (0, openpgp_1.readKeys)({ armoredKeys: armoredPubkey });
         encryptionKeys.push(...publicKeys);
     }
-    // Have to keep this "if" here because it doesn't compile if we use
-    // format: armor ? 'armored' : 'binary'
     if (armor) {
         return await (0, openpgp_1.encrypt)({
             format: 'armored',
@@ -45213,7 +45055,6 @@ PgpMsg.diagnosePubkeys = async ({ privateKis, message }) => {
     for (const k of await Promise.all(privateKis.map(ki => pgp_key_1.PgpKey.read(ki.public)))) {
         localKeyIds.push(...k.getKeyIDs());
     }
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     const diagnosis = { found_match: false, receivers: msgKeyIds.length };
     for (const msgKeyId of msgKeyIds) {
         for (const localKeyId of localKeyIds) {
@@ -45226,9 +45067,6 @@ PgpMsg.diagnosePubkeys = async ({ privateKis, message }) => {
     return diagnosis;
 };
 PgpMsg.extractFcAtts = (decryptedContent, blocks) => {
-    // these tags were created by FlowCrypt exclusively, so the structure is fairly rigid
-    // `<a href="${att.url}" class="cryptup_file" cryptup-data="${fcData}">${linkText}</a>\n`
-    // thus we use RegEx so that it works on both browser and node
     if (decryptedContent.includes('class="cryptup_file"')) {
         decryptedContent = decryptedContent.replace(/<a\s+href="([^"]+)"\s+class="cryptup_file"\s+cryptup-data="([^"]+)"\s*>[^<]+<\/a>\n?/gm, (_, url, fcData) => {
             const a = common_1.Str.htmlAttrDecode(String(fcData));
@@ -45260,7 +45098,7 @@ PgpMsg.stripPublicKeys = (decryptedContent, foundPublicKeys) => {
     return normalized;
 };
 PgpMsg.isFcAttLinkData = (o) => {
-    return o // eslint-disable-line @typescript-eslint/no-unsafe-return
+    return o
         && typeof o === 'object'
         && typeof o.name !== 'undefined'
         && typeof o.size !== 'undefined'
@@ -45296,13 +45134,7 @@ PgpMsg.getSortedKeys = async (kiWithPp, msg, verificationPubkeys) => {
     await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
     if (keys.encryptedFor.length) {
         for (const ki of kiWithPp) {
-            ki.parsed = await pgp_key_1.PgpKey.read(ki.private); // todo
-            // this is inefficient because we are doing unnecessary parsing of all keys here
-            // better would be to compare to already stored KeyInfo, however KeyInfo currently
-            // only holds primary longid, not longids of subkeys, while messages are typically
-            // encrypted for subkeys, thus we have to parse the key to get the info
-            // we are filtering here to avoid a significant performance issue of having
-            // to attempt decrypting with all keys simultaneously
+            ki.parsed = await pgp_key_1.PgpKey.read(ki.private);
             for (const longid of await Promise.all(ki.parsed.getKeyIDs().map(({ bytes }) => pgp_key_1.PgpKey.longid(bytes)))) {
                 if (keys.encryptedFor.includes(longid)) {
                     keys.prvMatching.push(ki);
@@ -45312,10 +45144,13 @@ PgpMsg.getSortedKeys = async (kiWithPp, msg, verificationPubkeys) => {
         }
         keys.prvForDecrypt = keys.prvMatching;
     }
-    else { // prvs not needed for signed msgs
+    else {
         keys.prvForDecrypt = [];
     }
     for (const ki of keys.prvForDecrypt) {
+        if (!ki.parsed || !ki.passphrase) {
+            continue;
+        }
         const matchingKeyids = PgpMsg.matchingKeyids(ki.parsed, encryptedForKeyids);
         const cachedKey = store_1.Store.decryptedKeyCacheGet(ki.longid);
         if (cachedKey && PgpMsg.isKeyDecryptedFor(cachedKey, matchingKeyids)) {
@@ -45339,27 +45174,26 @@ PgpMsg.matchingKeyids = (key, encryptedFor) => {
     return key.getKeyIDs().filter(kid => msgKeyidBytesArr.includes(kid.bytes));
 };
 PgpMsg.decryptKeyFor = async (prv, passphrase, matchingKeyIds) => {
-    if (!matchingKeyIds.length) { // we don't know which keyids match, decrypt all key packets
+    if (!matchingKeyIds.length) {
         return await pgp_key_1.PgpKey.decrypt(prv, passphrase, undefined, 'OK-IF-ALREADY-DECRYPTED');
     }
-    for (const matchingKeyId of matchingKeyIds) { // we know which keyids match, decrypt only matching key packets
+    for (const matchingKeyId of matchingKeyIds) {
         if (!await pgp_key_1.PgpKey.decrypt(prv, passphrase, matchingKeyId, 'OK-IF-ALREADY-DECRYPTED')) {
-            return false; // failed to decrypt a particular needed key packet
+            return false;
         }
     }
     return true;
 };
 PgpMsg.isKeyDecryptedFor = (prv, msgKeyIds) => {
     if ((0, pgp_1.isFullyDecrypted)(prv)) {
-        return true; // primary k + all subkeys decrypted, therefore it must be decrypted for any/every particular keyid
+        return true;
     }
     if ((0, pgp_1.isFullyEncrypted)(prv)) {
-        return false; // not decrypted at all
+        return false;
     }
     if (!msgKeyIds.length) {
-        return false; // we don't know which keyId to decrypt - must decrypt all (but key is only partially decrypted)
+        return false;
     }
-    // test if all needed key packets are decrypted
     return msgKeyIds.filter(kid => (0, pgp_1.isPacketDecrypted)(prv, kid)).length === msgKeyIds.length;
 };
 PgpMsg.cryptoMsgDecryptCategorizeErr = (decryptErr, msgPwd) => {
@@ -45393,23 +45227,17 @@ PgpMsg.cryptoMsgDecryptCategorizeErr = (decryptErr, msgPwd) => {
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PgpPwd = void 0;
 class PgpPwd {
 }
 exports.PgpPwd = PgpPwd;
-// (10k pc)*(2 core p/pc)*(4k guess p/core)
-// https://www.abuse.ch/?p=3294://threatpost.com/how-much-does-botnet-cost-022813/77573/
-// https://www.abuse.ch/?p=3294
-// eslint-disable-next-line @typescript-eslint/naming-convention
 PgpPwd.CRACK_GUESSES_PER_SECOND = 10000 * 2 * 4000;
-// eslint-disable-next-line @typescript-eslint/naming-convention
 PgpPwd.CRACK_TIME_WORDS_PWD = [
     { match: 'millenni', word: 'perfect', bar: 100, color: 'green', pass: true },
     { match: 'centu', word: 'perfect', bar: 95, color: 'green', pass: true },
@@ -45421,7 +45249,6 @@ PgpPwd.CRACK_TIME_WORDS_PWD = [
     { match: 'minute', word: 'poor', bar: 15, color: 'red', pass: false },
     { match: '', word: 'weak', bar: 10, color: 'red', pass: false },
 ];
-// eslint-disable-next-line @typescript-eslint/naming-convention
 PgpPwd.CRACK_TIME_WORDS_PASS_PHRASE = [
     { match: 'millenni', word: 'perfect', bar: 100, color: 'green', pass: true },
     { match: 'centu', word: 'great', bar: 80, color: 'green', pass: true },
@@ -45435,7 +45262,7 @@ PgpPwd.estimateStrength = (zxcvbnResultGuesses, type = 'passphrase') => {
     const timeToCrack = zxcvbnResultGuesses / PgpPwd.CRACK_GUESSES_PER_SECOND;
     for (const word of type === 'pwd' ? PgpPwd.CRACK_TIME_WORDS_PWD : PgpPwd.CRACK_TIME_WORDS_PASS_PHRASE) {
         const readableTime = PgpPwd.readableCrackTime(timeToCrack);
-        if (readableTime.includes(word.match)) { // looks for a word match from readable_crack_time, defaults on "weak"
+        if (readableTime.includes(word.match)) {
             return { word, seconds: Math.round(timeToCrack), time: readableTime };
         }
     }
@@ -45452,8 +45279,6 @@ PgpPwd.weakWords = () => {
     ];
 };
 PgpPwd.readableCrackTime = (totalSeconds) => {
-    // eslint-disable-next-line max-len
-    // See http://stackoverflow.com/questions/8211744/convert-time-interval-given-in-seconds-into-more-human-readable-form
     const numberWordEnding = (n) => (n > 1) ? 's' : '';
     totalSeconds = Math.round(totalSeconds);
     const millennia = Math.round(totalSeconds / (86400 * 30 * 12 * 100 * 1000));
@@ -45497,16 +45322,14 @@ PgpPwd.readableCrackTime = (totalSeconds) => {
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 "use strict";
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.readArmoredKeyOrThrow = exports.ValidateInput = void 0;
-const openpgp_1 = __webpack_require__(82);
-/* eslint-enable @typescript-eslint/naming-convention */
+const openpgp_1 = __webpack_require__(83);
 class ValidateInput {
 }
 exports.ValidateInput = ValidateInput;
@@ -45601,8 +45424,7 @@ ValidateInput.encryptKey = (v) => {
     throw new Error('Wrong request structure for NodeRequest.encryptKey');
 };
 const isObj = (v) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-    return v && typeof v === 'object';
+    return !!v && typeof v === 'object';
 };
 const hasProp = (v, name, type) => {
     if (!isObj(v)) {
@@ -45905,7 +45727,6 @@ var __webpack_exports__ = {};
 (() => {
 "use strict";
 var exports = __webpack_exports__;
-/* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const endpoints_1 = __webpack_require__(1);
