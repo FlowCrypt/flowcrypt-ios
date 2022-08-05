@@ -22,14 +22,14 @@ import { encryptKey, Key, PrivateKey, readKeys } from 'openpgp';
 
 export class Endpoints {
 
-  [endpoint: string]: ((uncheckedReq: any, data: Buffers) => Promise<EndpointRes>) | undefined;
+  [endpoint: string]: ((uncheckedReq: unknown, data: Buffers) => Promise<EndpointRes>) | undefined;
 
   public version = async (): Promise<EndpointRes> => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     return fmtRes({ app_version: VERSION });
   };
 
-  public generateKey = async (uncheckedReq: any): Promise<EndpointRes> => {
+  public generateKey = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     Store.keyCacheWipe(); // generateKey may be used when changing major settings, wipe cache to prevent dated results
     const { passphrase, userIds, variant } = ValidateInput.generateKey(uncheckedReq);
     if (passphrase.length < 12) {
@@ -41,7 +41,7 @@ export class Endpoints {
     return fmtRes({ key: await PgpKey.details(await PgpKey.read(k.private)) });
   };
 
-  public composeEmail = async (uncheckedReq: any): Promise<EndpointRes> => {
+  public composeEmail = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     const req = ValidateInput.composeEmail(uncheckedReq);
     const mimeHeaders: RichHeaders = { to: req.to, from: req.from, subject: req.subject, cc: req.cc, bcc: req.bcc };
     if (req.replyToMimeMsg) {
@@ -87,21 +87,21 @@ export class Endpoints {
     }
   };
 
-  public encryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
+  public encryptMsg = async (uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptMsg(uncheckedReq);
     const encrypted = await PgpMsg.encrypt(
       { pubkeys: req.pubKeys, pwd: req.msgPwd, data: Buf.concat(data), armor: true }) as string;
     return fmtRes({}, Buf.fromUtfStr(encrypted));
   };
 
-  public encryptFile = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
+  public encryptFile = async (uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {
     const req = ValidateInput.encryptFile(uncheckedReq);
     const encrypted = await PgpMsg.encrypt(
       { pubkeys: req.pubKeys, data: Buf.concat(data), filename: req.name, armor: false }) as Uint8Array;
     return fmtRes({}, encrypted);
   };
 
-  public parseDecryptMsg = async (uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
+  public parseDecryptMsg = async (uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd, isEmail, verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data
     let rawSigned: string | undefined;
@@ -169,7 +169,7 @@ export class Endpoints {
           sequentialProcessedBlocks.push({
             type: 'decryptErr',
             content: decryptRes.error.type === DecryptErrTypes.noMdc
-              ? decryptRes.content!.toUtfStr() : rawBlock.content.toString(),
+              ? decryptRes.content?.toUtfStr() ?? '' : rawBlock.content.toString(),
             decryptErr: decryptRes,
             complete: true
           });
@@ -206,11 +206,11 @@ export class Endpoints {
         // converting to base64-encoded string instead of uint8 for JSON serilization
         // value actually replaced to a string, but type remains Uint8Array type set to satisfy TS
         // no longer used below, only gets passed to be serialized as JSON - later consumed by iOS or Android app
-        block.attMeta.data = Buf.fromUint8(block.attMeta.data).toBase64Str() as any as Uint8Array;
+        block.attMeta.data = Buf.fromUint8(block.attMeta.data).toBase64Str() as unknown as Uint8Array;
       }
       if (block.decryptErr?.content instanceof Buf) {
         // cannot pass a Buf using a json, converting to String before it gets serialized
-        block.decryptErr.content = block.decryptErr.content.toUtfStr() as any as Buf;
+        block.decryptErr.content = block.decryptErr.content.toUtfStr() as unknown as Buf;
       }
       if (block.type === 'decryptedHtml' || block.type === 'decryptedText' || block.type === 'decryptedAtt') {
         replyType = 'encrypted';
@@ -256,7 +256,7 @@ export class Endpoints {
     return fmtRes({ text, replyType, subject }, Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
   };
 
-  public decryptFile = async (uncheckedReq: any, data: Buffers, verificationPubkeys?: string[]):
+  public decryptFile = async (uncheckedReq: unknown, data: Buffers, verificationPubkeys?: string[]):
     Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
     const decryptRes = await PgpMsg.decrypt({
@@ -272,12 +272,12 @@ export class Endpoints {
     return fmtRes({ decryptSuccess: { name: decryptRes.filename || '' } }, decryptRes.content);
   };
 
-  public parseDateStr = async (uncheckedReq: any): Promise<EndpointRes> => {
+  public parseDateStr = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     const { dateStr } = ValidateInput.parseDateStr(uncheckedReq);
     return fmtRes({ timestamp: String(Date.parse(dateStr) || -1) });
   };
 
-  public zxcvbnStrengthBar = async (uncheckedReq: any): Promise<EndpointRes> => {
+  public zxcvbnStrengthBar = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     const r = ValidateInput.zxcvbnStrengthBar(uncheckedReq);
     if (r.purpose === 'passphrase') {
       if (typeof r.guesses === 'number') {
@@ -299,12 +299,12 @@ export class Endpoints {
     }
   };
 
-  public gmailBackupSearch = async (uncheckedReq: any): Promise<EndpointRes> => {
+  public gmailBackupSearch = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     const { acctEmail } = ValidateInput.gmailBackupSearch(uncheckedReq);
     return fmtRes({ query: gmailBackupSearchQuery(acctEmail) });
   };
 
-  public parseKeys = async (_uncheckedReq: any, data: Buffers): Promise<EndpointRes> => {
+  public parseKeys = async (_uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {
     const keyDetails: KeyDetails[] = [];
     const allData = Buf.concat(data);
     const pgpType = await PgpMsg.type({ data: allData });
@@ -328,12 +328,12 @@ export class Endpoints {
     return fmtRes({ format: 'binary', keyDetails });
   };
 
-  public isEmailValid = async (uncheckedReq: any): Promise<EndpointRes> => {
+  public isEmailValid = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     const { email } = ValidateInput.isEmailValid(uncheckedReq);
     return fmtRes({ valid: Str.isEmailValid(email) });
   };
 
-  public decryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
+  public decryptKey = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     // decryptKey may be used when changing major settings, wipe cache to prevent dated results
     Store.keyCacheWipe();
     const { armored, passphrases } = ValidateInput.decryptKey(uncheckedReq);
@@ -348,7 +348,7 @@ export class Endpoints {
     return fmtRes({ decryptedKey: undefined });
   };
 
-  public encryptKey = async (uncheckedReq: any): Promise<EndpointRes> => {
+  public encryptKey = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     // encryptKey may be used when changing major settings, wipe cache to prevent dated results
     Store.keyCacheWipe();
     const { armored, passphrase } = ValidateInput.encryptKey(uncheckedReq);

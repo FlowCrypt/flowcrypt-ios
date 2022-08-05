@@ -226,8 +226,8 @@ export class PgpKey {
       }
       return { normalized: keys.map(k => k.armor()).join('\n'), keys };
     } catch (error) {
-      Catch.reportErr(error);
-      return { normalized: '', keys: [], error: Str.extractErrorMessage(error) };
+      Catch.reportErr(error as Error);
+      return { normalized: '', keys: [], error: Str.extractErrorMessage(error as Error) };
     }
   };
 
@@ -368,7 +368,7 @@ export class PgpKey {
         const longid = await PgpKey.longid(fingerprint);
         if (longid) {
           const shortid = longid.substr(-8);
-          ids.push({ fingerprint, longid, shortid, keywords: mnemonic(longid)! });
+          ids.push({ fingerprint, longid, shortid, keywords: mnemonic(longid) ?? '' });
         }
       }
     }

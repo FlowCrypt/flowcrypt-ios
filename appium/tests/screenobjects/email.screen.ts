@@ -175,14 +175,14 @@ class EmailScreen extends BaseScreen {
     }
   }
 
-  clickExpandButtonByIndex = async (index: any) => {
+  clickExpandButtonByIndex = async (index: number) => {
     const element = await $(`~aid-expand-image-${index}`);
     if (await element.isDisplayed()) {
       await ElementHelper.waitAndClick(element);
     }
   }
 
-  checkDate = async (date: string, index: any) => {
+  checkDate = async (date: string, index: number) => {
     const element = await $(`~aid-date-${index}`);
     await ElementHelper.waitElementVisible(element);
     const convertedDate = moment(await element.getValue()).utcOffset(0).format('MMM DD');

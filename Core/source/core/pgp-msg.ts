@@ -186,7 +186,7 @@ export class PgpMsg {
         sig.error = 'FlowCrypt is not equipped to verify this message (err 101)';
       } else {
         sig.error = `FlowCrypt had trouble verifying this message (${String(verifyErr)})`;
-        Catch.reportErr(verifyErr);
+        Catch.reportErr(verifyErr as Error);
       }
     }
     return sig;
@@ -221,7 +221,7 @@ export class PgpMsg {
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
       const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
-      const text = await readToEnd(prepared.message.getText()!);
+      const text = await readToEnd(prepared.message.getText() ?? '');
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
     if (!keys.prvMatching.length && !msgPwd) {
@@ -255,6 +255,7 @@ export class PgpMsg {
         };
       }
       const passwords = msgPwd ? [msgPwd] : undefined;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!);
       const decrypted = await (prepared.message as Message<Data>).decrypt(privateKeys, passwords);
       // we can only figure out who signed the msg once it's decrypted
@@ -263,7 +264,7 @@ export class PgpMsg {
       // verify first to prevent stream hang
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined;
       // read content second to prevent stream hang
-      const content = new Buf(await readToEnd(decrypted.getLiteralData()! as MaybeStream<Uint8Array>));
+      const content = new Buf(await readToEnd(decrypted.getLiteralData() as MaybeStream<Uint8Array>));
       // evaluate verify results third to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined;
       if (!prepared.isCleartext && (prepared.message as Message<Data>).packets
@@ -280,7 +281,7 @@ export class PgpMsg {
       return { success: true, content, isEncrypted, filename: decrypted.getFilename() || undefined, signature };
     } catch (e) {
       return {
-        success: false, error: PgpMsg.cryptoMsgDecryptCategorizeErr(e, msgPwd),
+        success: false, error: PgpMsg.cryptoMsgDecryptCategorizeErr(e as Error, msgPwd),
         message: prepared.message, longids, isEncrypted
       };
     }
@@ -377,6 +378,7 @@ export class PgpMsg {
     return normalized;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {
     return o // eslint-disable-line @typescript-eslint/no-unsafe-return
       && typeof o === 'object'
@@ -428,6 +430,7 @@ export class PgpMsg {
         // we are filtering here to avoid a significant performance issue of having
         // to attempt decrypting with all keys simultaneously
         for (const longid of await Promise.all(ki.parsed.getKeyIDs().map(({ bytes }) => PgpKey.longid(bytes)))) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           if (keys.encryptedFor.includes(longid!)) {
             keys.prvMatching.push(ki);
             break;
@@ -439,15 +442,18 @@ export class PgpMsg {
       keys.prvForDecrypt = [];
     }
     for (const ki of keys.prvForDecrypt) {
-      const matchingKeyids = PgpMsg.matchingKeyids(ki.parsed!, encryptedForKeyids);
+      if (!ki.parsed || !ki.passphrase) {
+        continue;
+      }
+      const matchingKeyids = PgpMsg.matchingKeyids(ki.parsed, encryptedForKeyids);
       const cachedKey = Store.decryptedKeyCacheGet(ki.longid);
       if (cachedKey && PgpMsg.isKeyDecryptedFor(cachedKey, matchingKeyids)) {
         ki.decrypted = cachedKey as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
-      } else if (PgpMsg.isKeyDecryptedFor(ki.parsed!, matchingKeyids)
-        || await PgpMsg.decryptKeyFor(ki.parsed!, ki.passphrase!, matchingKeyids) === true) {
-        Store.decryptedKeyCacheSet(ki.parsed!);
-        ki.decrypted = ki.parsed! as PrivateKey;
+      } else if (PgpMsg.isKeyDecryptedFor(ki.parsed, matchingKeyids)
+        || await PgpMsg.decryptKeyFor(ki.parsed, ki.passphrase, matchingKeyids) === true) {
+        Store.decryptedKeyCacheSet(ki.parsed);
+        ki.decrypted = ki.parsed as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
       } else {
         keys.prvForDecryptWithoutPassphrases.push(ki);
@@ -487,7 +493,7 @@ export class PgpMsg {
     return msgKeyIds.filter(kid => isPacketDecrypted(prv, kid)).length === msgKeyIds.length;
   };
 
-  private static cryptoMsgDecryptCategorizeErr = (decryptErr: any, msgPwd?: string): DecryptError$error => {
+  private static cryptoMsgDecryptCategorizeErr = (decryptErr: Error, msgPwd?: string): DecryptError$error => {
     const e = String(decryptErr).replace('Error: ', '').replace('Error decrypting message: ', '');
     const keyMismatchErrStrings = ['Cannot read property \'isDecrypted\' of null', 'privateKeyPacket is null',
       'TypeprivateKeyPacket is null', 'Session key decryption failed.', 'Invalid session key for decryption.'];

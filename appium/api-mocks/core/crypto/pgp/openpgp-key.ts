@@ -32,7 +32,7 @@ export class OpenPGPKey {
     if (result.err) {
       throw new Error('Cannot parse OpenPGP key: ' + result.err + ' for: ' + text);
     }
-    const keys = [];
+    const keys: Key[] = [];
     for (const key of result.keys) {
       keys.push(await OpenPGPKey.convertExternalLibraryObjToKey(key));
     }
@@ -176,9 +176,9 @@ export class OpenPGPKey {
     const emails = keyWithoutWeakPackets.users
       .map(user => user.userId)
       .filter(userId => userId !== null)
-      .map((userId: OpenPGP.packet.Userid) => {
+      .map((userId) => {
         try {
-          return opgp.util.parseUserId(userId.userid).email || '';
+          return opgp.util.parseUserId(userId!.userid).email || '';
         } catch (e) {
           // ignore bad user IDs
         }
@@ -227,14 +227,14 @@ export class OpenPGPKey {
       algo: {
         algorithm: algoInfo.algorithm,
         bits: algoInfo.bits,
-        curve: (algoInfo as any).curve as string | undefined,
+        curve: (algoInfo as unknown as { curve: string }).curve,
         algorithmId: opgp.enums.publicKey[algoInfo.algorithm]
       },
       revoked: keyWithoutWeakPackets.revocationSignatures.length > 0
     } as Key);
-    (key as any)[internal] = keyWithoutWeakPackets;
-    (key as any).rawKey = opgpKey;
-    (key as any).rawArmored = opgpKey.armor();
+    key[internal] = keyWithoutWeakPackets;
+    key['rawKey'] = opgpKey;
+    key['rawArmored'] = opgpKey.armor();
     return key;
   }
 
@@ -435,7 +435,7 @@ export class OpenPGPKey {
   private static getLatestValidSignature = async (signatures: OpenPGP.packet.Signature[],
     primaryKey: OpenPGP.packet.PublicKey | OpenPGP.packet.SecretKey,
     signatureType: OpenPGP.enums.signature,
-    dataToVerify: any,
+    dataToVerify: unknown,
     date = new Date()):
     Promise<OpenPGP.packet.Signature | undefined> => {
     let signature: OpenPGP.packet.Signature | undefined;

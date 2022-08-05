@@ -11,7 +11,7 @@ export type PromiseCancellation = { cancel: boolean };
 
 export class Str {
 
-  public static extractErrorMessage = (e: any): string | undefined => {
+  public static extractErrorMessage = (e: Error): string | undefined => {
     if (typeof e !== 'object') return undefined;
     /* eslint-disable @typescript-eslint/no-unsafe-return */
     if (typeof e.message === 'undefined') return undefined;
@@ -46,7 +46,7 @@ export class Str {
     return str.replace(/[.~!$%^*=?]/gi, '');
   };
 
-  public static prettyPrint = (obj: any) => {
+  public static prettyPrint = (obj: unknown) => {
     return (typeof obj === 'object')
       ? JSON.stringify(obj, undefined, 2).replace(/ /g, '&nbsp;').replace(/\n/g, '<br />')
       : String(obj);
@@ -111,11 +111,11 @@ export class Str {
       .replace(/\//g, '&#x2F;').replace(/\n/g, '<br />');
   };
 
-  public static htmlAttrEncode = (values: Dict<any>): string => {
+  public static htmlAttrEncode = (values: Dict<unknown>): string => {
     return Str.base64urlUtfEncode(JSON.stringify(values));
   };
 
-  public static htmlAttrDecode = (encoded: string): any => {
+  public static htmlAttrDecode = (encoded: string): unknown => {
     try {
       return JSON.parse(Str.base64urlUtfDecode(encoded));
     } catch (e) {
@@ -161,9 +161,9 @@ export class Str {
       return str;
     }
     return decodeURIComponent(
-      Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
+      String(Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
+      }).join('')));
   };
 
 }
@@ -191,7 +191,7 @@ export class Value {
       return result;
     },
     contains: <T>(arr: T[] | string, value: T): boolean => {
-      return Boolean(arr && typeof arr.indexOf === 'function' && (arr as any[]).indexOf(value) !== -1);
+      return Boolean(arr && typeof arr.indexOf === 'function' && (arr as T[]).indexOf(value) !== -1);
     },
     sum: (arr: number[]) => arr.reduce((a, b) => a + b, 0),
     average: (arr: number[]) => Value.arr.sum(arr) / arr.length,
@@ -232,7 +232,10 @@ export class Url {
    */
   public static parse = (expectedKeys: string[], parseThisUrl?: string) => {
     const url = (parseThisUrl || window.location.search.replace('?', ''));
-    const valuePairs = url.split('?').pop()!.split('&'); // str.split('?') string[].length will always be >= 1
+    const valuePairs = url.split('?').pop()?.split('&'); // str.split('?') string[].length will always be >= 1
+    if (!valuePairs) {
+      return null;
+    }
     const rawParams: Dict<string> = {};
     const rawParamNameDict: Dict<string> = {};
     for (const valuePair of valuePairs) {

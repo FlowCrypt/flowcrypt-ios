@@ -1,7 +1,7 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
 'use strict';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export class Debug {
   private static DATA: any[] = [];
 

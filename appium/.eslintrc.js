@@ -19,7 +19,7 @@ module.exports = {
     "@typescript-eslint/no-floating-promises": ['error'],
     "@typescript-eslint/no-misused-promises": ['error'],
     "@typescript-eslint/ban-types": "off",
-    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unsafe-return": "error",
     "@typescript-eslint/triple-slash-reference": "off",
     "@typescript-eslint/no-empty-interface": "off",

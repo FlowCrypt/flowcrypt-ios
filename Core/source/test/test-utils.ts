@@ -11,8 +11,9 @@ import { EndpointRes } from '../mobile-interface/format-output';
 import { MsgBlock } from 'source/core/msg-block';
 config.truncateThreshold = 0;
 
-export type AvaContext = ava.ExecutionContext<any>;
-type JsonDict = { [k: string]: any };
+export type AvaContext = ava.ExecutionContext<unknown>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type JsonDict = { [k: string]: any };
 type TestKey = { pubKey: string, private: string, decrypted: string, passphrase: string, longid: string };
 
 export const parseResponse = (response: EndpointRes) => {
@@ -24,7 +25,7 @@ export const httpGet = async (url: string): Promise<Buf> => {
     const req = https.request(url, r => {
       const buffers: Buffer[] = [];
 
-      r.on('data', buffer => buffers.push(buffer));
+      r.on('data', buffer => buffers.push(buffer as Buffer));
       r.on('end', () => {
         const buf = Buf.fromUint8(Buffer.concat(buffers));
         const status = r.statusCode || -1;
@@ -50,7 +51,7 @@ export const expectNoData = (data: Uint8Array) => {
 };
 
 export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' | 'binary',
-  details?: any[] | Buffer) => {
+  details?: unknown[] | Buffer) => {
   expect(_data).to.be.instanceof(Uint8Array);
   const data = Buffer.from(_data);
   expect(data).to.have.property('length').that.does.not.equal(0);
@@ -59,8 +60,10 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     expect(dataStr).to.contain('-----BEGIN PGP MESSAGE-----');
     expect(dataStr).to.contain('-----END PGP MESSAGE-----');
   } else if (type === 'msgBlocks') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const blocks: any[] = data.toString().split('\n').map(block => JSON.parse(block) as MsgBlock);
     expect(details).to.be.instanceOf(Array);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const expectedBlocks = details as any[];
     expect(blocks).to.have.property('length').which.is.greaterThan(0);
     // todo plainHtml - should be renambed - legacy compat reasons
