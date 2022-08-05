@@ -320,6 +320,7 @@ export class Mime {
     return undefined;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static createAttachmentNode = (attachment: Attachment): any => { // todo: MimeBuilder types
     const type = `${attachment.type}; name="${attachment.name}"`;
     const id = attachment.cid || Attachment.attachmentId();
@@ -403,6 +404,7 @@ export class Mime {
     return resultBuf.toUtfStr();
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static newContentNode = (MimeBuilder: any, type: string, content: string): MimeParserNode => {
     const node: MimeParserNode = new MimeBuilder(type).setContent(content);
     if (type === 'text/plain') {

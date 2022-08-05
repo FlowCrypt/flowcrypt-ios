@@ -204,7 +204,7 @@ export const getMockGoogleEndpoints = (
         }
         throw new HttpErr(`MOCK draft not found for ${acct} (draftId: ${id})`, Status.NOT_FOUND);
       } else if (isPut(req)) {
-        const raw = (parsedReq.body as any)?.message?.raw as string;
+        const raw = (parsedReq.body as { message?: { raw?: string } })?.message?.raw;
         if (!raw) {
           throw new Error('mock Draft PUT without raw data');
         }
@@ -227,7 +227,7 @@ export const getMockGoogleEndpoints = (
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
 
       if (isPost(req)) {
-        const raw = (parsedReq.body as any)?.raw as string;
+        const raw = (parsedReq.body as { raw: string })?.raw;
         const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
         data.addMessage(raw, mimeMsg);
@@ -240,7 +240,7 @@ export const getMockGoogleEndpoints = (
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
 
       if (isPost(req)) {
-        const ids = (parsedReq.body as any)?.ids as string[];
+        const ids = (parsedReq.body as { ids: string[] })?.ids;
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
         data.deleteMessages(ids);
         return {}

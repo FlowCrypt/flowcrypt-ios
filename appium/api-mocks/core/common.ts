@@ -47,7 +47,7 @@ export class Str {
     return str.replace(/[.~!$%^*=?]/gi, '');
   }
 
-  public static prettyPrint = (obj: any) => {
+  public static prettyPrint = (obj: unknown) => {
     return (typeof obj === 'object') ? JSON.stringify(obj, undefined, 2).replace(/ /g, '&nbsp;').replace(/\n/g, '<br />') : String(obj);
   }
 
@@ -107,11 +107,11 @@ export class Str {
       .replace(/\n/g, ''); // strip newlines, already have <br>
   }
 
-  public static htmlAttrEncode = (values: Dict<any>): string => {
+  public static htmlAttrEncode = (values: Dict<unknown>): string => {
     return Str.base64urlUtfEncode(JSON.stringify(values));
   }
 
-  public static htmlAttrDecode = (encoded: string): any => {
+  public static htmlAttrDecode = (encoded: string): unknown => {
     try {
       return JSON.parse(Str.base64urlUtfDecode(encoded));
     } catch (e) {
@@ -201,7 +201,7 @@ export class Value {
       }
       return result;
     },
-    contains: <T>(arr: T[] | string, value: T): boolean => Boolean(arr && typeof arr.indexOf === 'function' && (arr as any[]).indexOf(value) !== -1),
+    contains: <T>(arr: T[] | string, value: T): boolean => Boolean(arr && typeof arr.indexOf === 'function' && (arr as unknown[]).indexOf(value) !== -1),
     sum: (arr: number[]) => arr.reduce((a, b) => a + b, 0),
     average: (arr: number[]) => Value.arr.sum(arr) / arr.length,
     zeroes: (length: number): number[] => new Array(length).map(() => 0)
