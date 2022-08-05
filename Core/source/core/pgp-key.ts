@@ -16,7 +16,7 @@ import {
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { Str } from './common';
-import { MaybeStream, requireStreamReadToEnd, ReadToEndFn } from '../platform/require';
+import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type Contact = {
@@ -430,9 +430,7 @@ export class PgpKey {
     } else if (typeof certificate === 'string') {
       return { key, revocationCertificate: certificate };
     } else {
-      const runtime = globalThis.process?.release?.name || 'not node';
-      const readToEnd: ReadToEndFn = runtime === 'not node' ?
-        (await import('@openpgp/web-stream-tools')).readToEnd as ReadToEndFn : requireStreamReadToEnd();
+      const readToEnd = await requireStreamReadToEnd();
       return {
         key,
         revocationCertificate: await readToEnd(certificate as MaybeStream<string>)

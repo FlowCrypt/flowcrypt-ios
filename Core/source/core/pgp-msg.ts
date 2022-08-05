@@ -16,8 +16,7 @@ import {
   Message, PrivateKey, readKeys, readMessage, sign, VerificationResult
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
-// import { MaybeStream, readToEnd } from '@openpgp/web-stream-tools';
-import { requireStreamReadToEnd, ReadToEndFn, MaybeStream } from '../platform/require';
+import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -223,9 +222,7 @@ export class PgpMsg {
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
       const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
-      const runtime = globalThis.process?.release?.name || 'not node';
-      const readToEnd: ReadToEndFn = runtime === 'not node' ?
-        (await import('@openpgp/web-stream-tools')).readToEnd as ReadToEndFn : requireStreamReadToEnd();
+      const readToEnd = await requireStreamReadToEnd();
       const text = await readToEnd(prepared.message.getText() ?? '');
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
@@ -269,9 +266,7 @@ export class PgpMsg {
       // verify first to prevent stream hang
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined;
       // read content second to prevent stream hang
-      const runtime = globalThis.process?.release?.name || 'not node';
-      const readToEnd: ReadToEndFn = runtime === 'not node' ?
-        (await import('@openpgp/web-stream-tools')).readToEnd as ReadToEndFn : requireStreamReadToEnd();
+      const readToEnd = await requireStreamReadToEnd();
       const content = new Buf(await readToEnd(decrypted.getLiteralData() as MaybeStream<Uint8Array>));
       // evaluate verify results third to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined;

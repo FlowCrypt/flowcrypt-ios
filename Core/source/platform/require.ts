@@ -34,12 +34,14 @@ export type ReadToEndFn = <T extends Uint8Array | string>(
   input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
 
 /* eslint-disable */
-export const requireStreamReadToEnd = (): ReadToEndFn => {
+export const requireStreamReadToEnd = async (): Promise<ReadToEndFn> => {
   // this will work for running tests in node with build/ts/test.js as entrypoint
   // a different solution will have to be done for running in iOS
   (global as any).window = (global as any).window || {}; // web-stream-tools needs this
-  const { readToEnd } = require('../../bundles/raw/web-stream-tools');
-  return readToEnd as ReadToEndFn;
+  const runtime = globalThis.process?.release?.name || 'not node';
+  return runtime === 'not node'
+    ? (await import('@openpgp/web-stream-tools')).readToEnd as ReadToEndFn
+    : require('../../bundles/raw/web-stream-tools').readToEnd;
 };
 
 export const requireMimeParser = () => {
