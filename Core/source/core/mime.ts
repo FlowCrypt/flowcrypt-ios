@@ -164,10 +164,10 @@ export class Mime {
       try {
         parser.onend = () => {
           try {
-            for (const name of Object.keys(parser.node.headers)) {
+            for (const name of Object.keys(parser.node.headers as object)) {
               mimeContent.headers[name] = parser.node.headers[name][0].value;
             }
-            mimeContent.rawSignedContent = Mime.retrieveRawSignedContent([parser.node]);
+            mimeContent.rawSignedContent = Mime.retrieveRawSignedContent([parser.node as MimeParserNode]);
             for (const node of Object.values(leafNodes)) {
               if (Mime.getNodeType(node) === 'application/pgp-signature') {
                 mimeContent.signature = node.rawContent;
@@ -201,7 +201,7 @@ export class Mime {
         parser.end();
       } catch (e) {
         // todo - on Android we may want to fail when this happens, evaluate effect on browser extension
-        Catch.reportErr(e);
+        Catch.reportErr(e as Error);
         resolve(mimeContent);
       }
     });
@@ -225,7 +225,7 @@ export class Mime {
         contentNode = new MimeBuilder('multipart/alternative');
         for (const type of Object.keys(body)) {
           // already present, that's why part of for loop
-          contentNode.appendChild(Mime.newContentNode(MimeBuilder, type, body[type]!));
+          contentNode.appendChild(Mime.newContentNode(MimeBuilder, type, body[type] ?? ''));
         }
       }
       rootNode.appendChild(contentNode);
@@ -250,7 +250,7 @@ export class Mime {
     }
     const bodyNodes = new MimeBuilder('multipart/alternative');
     for (const type of Object.keys(body)) {
-      bodyNodes.appendChild(Mime.newContentNode(MimeBuilder, type, body[type]!));
+      bodyNodes.appendChild(Mime.newContentNode(MimeBuilder, type, body[type] ?? ''));
     }
     const signedContentNode = new MimeBuilder('multipart/mixed');
     signedContentNode.appendChild(bodyNodes);
@@ -329,7 +329,7 @@ export class Mime {
     return undefined;
   };
 
-  private static createAttNode = (att: Att): any => { // todo: MimeBuilder types
+  private static createAttNode = (att: Att): unknown => { // todo: MimeBuilder types
     const type = `${att.type}; name="${att.name}"`;
     const id = `f_${Str.sloppyRandom(30)}@flowcrypt`;
     const header: Dict<string> = {};
@@ -391,7 +391,7 @@ export class Mime {
       name: Mime.getNodeFilename(node),
       type: Mime.getNodeType(node),
       data: node.contentTransferEncoding.value === 'quoted-printable'
-        ? Mime.fromEqualSignNotationAsBuf(node.rawContent!)
+        ? Mime.fromEqualSignNotationAsBuf(node.rawContent ?? '')
         : node.content,
       cid: Mime.getNodeContentId(node),
     });
@@ -399,15 +399,15 @@ export class Mime {
 
   private static getNodeContentAsUtfStr = (node: MimeParserNode): string => {
     if (node.charset && Iso88592.labels.includes(node.charset)) {
-      return Iso88592.decode(node.rawContent!) as string;
+      return Iso88592.decode(node.rawContent ?? '') as string;
     }
     let resultBuf: Buf;
     if (node.charset === 'utf-8' && node.contentTransferEncoding.value === 'base64') {
       resultBuf = Buf.fromUint8(node.content);
     } else if (node.charset === 'utf-8' && node.contentTransferEncoding.value === 'quoted-printable') {
-      resultBuf = Mime.fromEqualSignNotationAsBuf(node.rawContent!);
+      resultBuf = Mime.fromEqualSignNotationAsBuf(node.rawContent ?? '');
     } else {
-      resultBuf = Buf.fromRawBytesStr(node.rawContent!);
+      resultBuf = Buf.fromRawBytesStr(node.rawContent ?? '');
     }
     if (node.charset?.toUpperCase() === 'ISO-2022-JP'
       || (node.charset === 'utf-8' && Mime.getNodeType(node, 'initial')?.includes('ISO-2022-JP'))) {
@@ -416,7 +416,7 @@ export class Mime {
     return resultBuf.toUtfStr();
   };
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+  // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any
   private static newContentNode = (MimeBuilder: any, type: string, content: string): MimeParserNode => {
     const node: MimeParserNode = new MimeBuilder(type).setContent(content);
     if (type === 'text/plain') {

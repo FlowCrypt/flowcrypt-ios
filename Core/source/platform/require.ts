@@ -11,7 +11,7 @@ export interface WebStream<T extends Uint8Array | string> extends BaseStream<T> 
   pipeThrough: () => void;
   pipeTo: () => void;
   tee: () => void;
-  cancel(reason?: any): Promise<void>;
+  cancel(reason?: unknown): Promise<void>;
 }
 
 // copied+simplified version of ReadableStream from @types/node/index.d.ts
@@ -32,31 +32,30 @@ export type MaybeStream<T extends Uint8Array | string> = T | WebStream<T> | Node
 
 type ReadToEndFn = <T extends Uint8Array | string>(input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
 
+/* eslint-disable */
 export const requireStreamReadToEnd = (): ReadToEndFn => {
   // this will work for running tests in node with build/ts/test.js as entrypoint
   // a different solution will have to be done for running in iOS
   (global as any).window = (global as any).window || {}; // web-stream-tools needs this
-  // const tools = require('@openpgp/web-stream-tools');
-  // const { readToEnd } = require('../../bundles/raw/web-stream-tools');
-  // @ts-ignore
-  return global['web-stream-tools'].readToEnd as ReadToEndFn;
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  // return readToEnd as ReadToEndFn;
+  const { readToEnd } = require('../../bundles/raw/web-stream-tools');
+  return readToEnd as ReadToEndFn;
 };
 
 export const requireMimeParser = (): any => {
   // @ts-ignore;
-  return global['emailjs-mime-parser']; // eslint-disable-line @typescript-eslint/no-unsafe-return
+  return global['emailjs-mime-parser'];
 };
 
 export const requireMimeBuilder = (): any => {
   // global['emailjs-mime-builder'] ?
   // dereq_emailjs_mime_builder ?
   // @ts-ignore
-  return global['emailjs-mime-builder']; // eslint-disable-line @typescript-eslint/no-unsafe-return
+  return global['emailjs-mime-builder'];
 };
 
 export const requireIso88592 = (): any => {
   // @ts-ignore
   return global.iso88592;
 };
+
+/* eslint-enable */
