@@ -8,7 +8,6 @@ module.exports = {
   entry: {
     'entrypoint-bare': './build/ts/entrypoint-bare.js',
     'bare-asn1': './node_modules/asn1.js/lib/asn1.js',
-    'bare-encoding-japanese': './node_modules/encoding-japanese/encoding.js',
     'web-stream-tools': './node_modules/@openpgp/web-stream-tools/lib/streams.js'
   },
   output: {
@@ -23,13 +22,11 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       dereq_sanitize_html: 'sanitize-html',
-      // openpgp: 'openpgp',
-      // readToEnd: ['@openpgp/web-stream-tools', 'readToEnd']
+      dereq_encoding_japanese: 'encoding-japanese',
+      openpgp: 'openpgp'
     }),
   ],
   externals: {
-    // '@openpgp/web-stream-tools': 'web-stream-tools',
-    // openpgp: 'openpgp',
     '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools',
   },
   resolve: {

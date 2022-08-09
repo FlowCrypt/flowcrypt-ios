@@ -24,8 +24,6 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
 }
 
 // copy raw to flowcrypt-bundle
-// module.exports = require("../../bundles/raw/web-stream-tools");
-fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-bare-bundle.js`);
 
 // copy zxcvbn, only used for bare (iOS) because zxcvbn-ios is not well maintained:
 // https://github.com/dropbox/zxcvbn-ios/issues
@@ -73,17 +71,17 @@ const replace = (libSrc, regex, replacement) => {
   return libSrc.replace(regex, replacement);
 }
 
-let openpgpLib = fs.readFileSync('./node_modules/openpgp/dist/node/openpgp.js').toString();
-const openpgpLibNodeDev = openpgpLib; // dev node runs without any host, no modifications needed
+// update openpgp code to use some native functionality
+let entrypointBareSrc = fs.readFileSync(`${bundleRawDir}/entrypoint-bare.js`).toString();
 
-openpgpLib = replace( // rsa decrypt on host
+entrypointBareSrc = replace( // rsa decrypt on host
   // todo: use randomPayload value on iOS side
-  openpgpLib,
+  entrypointBareSrc,
   /publicKey\.rsa\.decrypt\(c, n, e, d, p, q, u, randomPayload\)/,
   `await hostRsaDecryption(dereq_asn1, _bn2, data_params[0], n, e, d, p, q)`
 );
-openpgpLib = replace( // rsa verify on host
-  openpgpLib,
+entrypointBareSrc = replace( // rsa verify on host
+  entrypointBareSrc,
   /return publicKey\.rsa\.verify\(hashAlgo, data, s, n, e, hashed\)/, `
   // returns empty str if not supported: js fallback below
   const computed = await coreHost.modPow(s.toString(10), e.toString(10), n.toString(10));
@@ -91,43 +89,15 @@ openpgpLib = replace( // rsa verify on host
     ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength())
     : await publicKey.rsa.verify(hashAlgo, data, s, n, e, hashed);`
 );
-
-let openpgpLibBare = openpgpLib; // further modify bare code below
-
-openpgpLibBare = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
-  openpgpLibBare,
-  /const data = util\.concatUint8Array\(\[this\.salt, passphrase\]\);/,
-  // todo: prefix isn't available in js code
-  `return Uint8Array.from(coreHost.produceHashedIteratedS2k(this.algorithm, prefix, this.salt, passphrase, count));`
+entrypointBareSrc = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
+  entrypointBareSrc,
+  /toHash = new Uint8Array\(prefixlen \+ count\);/,
+  `const algo = enums.read(enums.hash, this.algorithm); return Uint8Array.from(coreHost.produceHashedIteratedS2k(algo, new Uint8Array(), this.salt, passphrase, count));`
 );
-openpgpLibBare = replace( // bare - aes decrypt on host
-  openpgpLibBare,
+entrypointBareSrc = replace( // bare - aes decrypt on host
+  entrypointBareSrc,
   /return AES_CFB\.decrypt\(ct, key, iv\);/,
   `return Uint8Array.from(coreHost.decryptAesCfbNoPadding(ct, key, iv));`
 );
 
-const webStreamLibBare = ''; // fs.readFileSync(`${bundleWipDir}/web-stream-tools.js`).toString();
-const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
-
-fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
-  /* asn1 begin */
-  ${asn1LibBare}
-  /* asn1 end */
-  /* web-stream-tool begin */
-  ${webStreamLibBare}
-  /* web-stream-tools end */
-  ${openpgpLibBare}
-  const openpgp = window.openpgp;
-`);
-
-fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
-  (function(){
-    console.debug = console.log;
-    ${openpgpLibNodeDev}
-    const openpgp = module.exports;
-    module.exports = {};
-    global['openpgp'] = openpgp;
-  })();
-`);
-
-fs.copyFileSync(`${bundleWipDir}/bare-encoding-japanese.js`, `${bundleDir}/bare-encoding-japanese.js`);
+fs.writeFileSync(`${bundleDir}/entrypoint-bare-bundle.js`, entrypointBareSrc);
