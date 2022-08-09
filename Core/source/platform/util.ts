@@ -110,7 +110,7 @@ export const getKeyExpirationTimeForCapabilities = async (
     if (!signatureKey) return null;
     // could be the same as above, so checking for property instead of using "instanceof"
     const signatureKeyExpiry = 'bindingSignatures' in signatureKey
-      ? await getSubkeyExpirationTime(signatureKey)
+      ? getSubkeyExpirationTime(signatureKey)
       : (await signatureKey.getExpirationTime(userId)) ?? 0;
     if (signatureKeyExpiry < expiry) expiry = signatureKeyExpiry;
   }

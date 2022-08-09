@@ -30,8 +30,8 @@ export interface NodeStream<T extends Uint8Array | string> extends BaseStream<T>
 
 export type MaybeStream<T extends Uint8Array | string> = T | WebStream<T> | NodeStream<T>;
 
-export type ReadToEndFn = <T extends Uint8Array | string>(
-  input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
+type ReadToEndFn = <T extends Uint8Array | string>
+  (input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
 
 /* eslint-disable */
 export const requireStreamReadToEnd = async (): Promise<ReadToEndFn> => {

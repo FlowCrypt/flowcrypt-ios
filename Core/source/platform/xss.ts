@@ -105,7 +105,7 @@ export class Xss {
     }
     cleanHtml = cleanHtml.replace(new RegExp(imgContentReplaceable, 'g'),
       `<font color="#D14836" face="monospace">[img]</font>`);
-    return cleanHtml as string;
+    return cleanHtml;
   };
 
   public static htmlSanitizeAndStripAllTags = (dirtyHtml: string, outputNl: string): string => {

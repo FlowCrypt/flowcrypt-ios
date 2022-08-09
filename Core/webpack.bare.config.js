@@ -33,7 +33,7 @@ module.exports = {
     fallback: {
       "stream": false,
       "buffer": false,
-      "crypto": false,
+      "crypto": false
     }
   }
 };

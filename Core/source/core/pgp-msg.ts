@@ -12,8 +12,8 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import {
-  CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID,
-  Message, PrivateKey, readKeys, readMessage, sign, VerificationResult
+  CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key,
+  KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';

@@ -45,7 +45,7 @@ const hostRsaDecryption = async (ASN1, BN, c_encrypted, n, e, d, p, q) => {
     exponent2: dq, //        INTEGER,  -- d mod (q-1)
     coefficient: u, //       INTEGER,  -- (inverse of q) mod p
   }, 'der').toString("base64");
-  const encryptedBase64 = Buffer.from(openpgp.util.Uint8Array_to_str(c_encrypted.toUint8Array()), 'base64');
+  const encryptedBase64 = btoa(openpgp.util.Uint8Array_to_str(c_encrypted.toUint8Array()));
   const decryptedBase64 = await coreHost.decryptRsaNoPadding(derRsaPrvBase64, encryptedBase64);
   if (!decryptedBase64) { // possibly msg-key mismatch
     throw new Error("Session key decryption failed (host)");

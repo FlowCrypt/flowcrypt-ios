@@ -15,8 +15,8 @@ import {
   SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
-import { Str } from './common';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
+import { Str } from './common';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export type Contact = {
