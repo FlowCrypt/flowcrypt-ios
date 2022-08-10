@@ -1,5 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require('webpack');
+const path = require('path');
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 /* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
@@ -23,13 +25,15 @@ module.exports = {
     new webpack.ProvidePlugin({
       dereq_sanitize_html: 'sanitize-html',
       dereq_encoding_japanese: 'encoding-japanese',
-      openpgp: 'openpgp'
     }),
   ],
   externals: {
     '../../bundles/raw/web-stream-tools': '../../bundles/raw/web-stream-tools',
   },
   resolve: {
+    alias: {
+      openpgp: path.resolve(__dirname, './node_modules/openpgp/dist/openpgp.mjs')
+    },
     fallback: {
       "stream": false,
       "buffer": false,

@@ -23,8 +23,6 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
   }
 }
 
-// copy raw to flowcrypt-bundle
-
 // copy zxcvbn, only used for bare (iOS) because zxcvbn-ios is not well maintained:
 // https://github.com/dropbox/zxcvbn-ios/issues
 // todo - could add `\nconst zxcvbn = window.zxcvbn;` at the end, then could call it directly from endpoint.ts
@@ -74,21 +72,22 @@ const replace = (libSrc, regex, replacement) => {
 // update openpgp code to use some native functionality
 let entrypointBareSrc = fs.readFileSync(`${bundleRawDir}/entrypoint-bare.js`).toString();
 
-entrypointBareSrc = replace( // rsa decrypt on host
-  // todo: use randomPayload value on iOS side
-  entrypointBareSrc,
-  /publicKey\.rsa\.decrypt\(c, n, e, d, p, q, u, randomPayload\)/,
-  `await hostRsaDecryption(dereq_asn1, _bn2, data_params[0], n, e, d, p, q)`
-);
-entrypointBareSrc = replace( // rsa verify on host
-  entrypointBareSrc,
-  /return publicKey\.rsa\.verify\(hashAlgo, data, s, n, e, hashed\)/, `
-  // returns empty str if not supported: js fallback below
-  const computed = await coreHost.modPow(s.toString(10), e.toString(10), n.toString(10));
-  return computed
-    ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength())
-    : await publicKey.rsa.verify(hashAlgo, data, s, n, e, hashed);`
-);
+// entrypointBareSrc = replace( // rsa decrypt on host
+//   // todo: use randomPayload value on iOS side
+//   entrypointBareSrc,
+//   /publicKey\.rsa\.decrypt\(c, n, e, d, p, q, u, randomPayload\)/,
+//   `await hostRsaDecryption(global.dereq_asn1, bn, c, n, e, d, p, q)`
+// );
+/* disabled because it works faster without this change */
+// entrypointBareSrc = replace( // rsa verify on host
+//   entrypointBareSrc,
+//   /return publicKey\.rsa\.verify\(hashAlgo, data, s, n, e, hashed\)/, `
+//   // returns empty str if not supported: js fallback below
+//   const computed = await coreHost.modPow(s.toString(10), e.toString(10), n.toString(10));
+//   return computed
+//     ? new bn.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength())
+//     : await publicKey.rsa.verify(hashAlgo, data, s, n, e, hashed);`
+// );
 entrypointBareSrc = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
   entrypointBareSrc,
   /toHash = new Uint8Array\(prefixlen \+ count\);/,
@@ -100,4 +99,18 @@ entrypointBareSrc = replace( // bare - aes decrypt on host
   `return Uint8Array.from(coreHost.decryptAesCfbNoPadding(ct, key, iv));`
 );
 
-fs.writeFileSync(`${bundleDir}/entrypoint-bare-bundle.js`, entrypointBareSrc);
+let asn1BareSrc = fs.readFileSync(`${bundleRawDir}/bare-asn1.js`).toString();
+asn1BareSrc = replace(
+  asn1BareSrc,
+  /const asn1 =/gi, 'global.dereq_asn1 ='
+);
+asn1BareSrc = replace(
+  asn1BareSrc,
+  /asn1\./gi, 'global.dereq_asn1.'
+);
+
+fs.writeFileSync(`${bundleDir}/entrypoint-bare-bundle.js`, `
+  ${asn1BareSrc};
+  ${entrypointBareSrc};
+`);
+// fs.writeFileSync(`${bundleDir}/bare-asn1.js`, asn1BareSrc);
