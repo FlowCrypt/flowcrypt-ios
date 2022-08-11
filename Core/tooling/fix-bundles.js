@@ -113,4 +113,3 @@ fs.writeFileSync(`${bundleDir}/entrypoint-bare-bundle.js`, `
   ${asn1BareSrc};
   ${entrypointBareSrc};
 `);
-// fs.writeFileSync(`${bundleDir}/bare-asn1.js`, asn1BareSrc);
