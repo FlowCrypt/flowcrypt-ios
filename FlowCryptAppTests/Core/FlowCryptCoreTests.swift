@@ -239,10 +239,12 @@ final class FlowCryptCoreTests: XCTestCase {
             isEmail: true,
             verificationPubKeys: []
         )
+
         guard let verifyResult = decrypted.blocks.first?.verifyRes else {
             XCTFail("verify result expected")
             return
         }
+
         XCTAssertNil(verifyResult.match)
         XCTAssertEqual(verifyResult.signer, "063635B3E33EB14C")
     }
@@ -328,9 +330,9 @@ final class FlowCryptCoreTests: XCTestCase {
         )
 
         // Then
-        XCTAssertTrue(decrypted.decryptSuccess!.data == fileData)
-        XCTAssertTrue(decrypted.decryptSuccess!.data.toStr() == fileData.toStr())
-        XCTAssertTrue(decrypted.decryptSuccess!.name == initialFileName)
+        XCTAssertTrue(decrypted.decryptSuccess?.data == fileData)
+        XCTAssertTrue(decrypted.decryptSuccess?.data.toStr() == fileData.toStr())
+        XCTAssertTrue(decrypted.decryptSuccess?.name == initialFileName)
     }
 
     func testDecryptNotEncryptedFile() async throws {
@@ -473,8 +475,8 @@ final class FlowCryptCoreTests: XCTestCase {
         )
 
         // Then
-        XCTAssertEqual(decrypted.decryptSuccess!.name, initialFileName)
-        XCTAssertEqual(decrypted.decryptSuccess!.data.count, fileData.count)
+        XCTAssertEqual(decrypted.decryptSuccess?.name, initialFileName)
+        XCTAssertEqual(decrypted.decryptSuccess?.data.count, fileData.count)
     }
 
     func testException() async throws {

@@ -45,7 +45,7 @@ export class Endpoints {
     const req = ValidateInput.composeEmail(uncheckedReq);
     const mimeHeaders: RichHeaders = { to: req.to, from: req.from, subject: req.subject, cc: req.cc, bcc: req.bcc };
     if (req.replyToMimeMsg) {
-      const previousMsg = await Mime.decode(Buf.fromUtfStr((req.replyToMimeMsg.substr(0, 10000)
+      const previousMsg = await Mime.decode(Buf.fromUtfStr((req.replyToMimeMsg.substring(0, 10000)
         .split('\n\n')[0] || '') + `\n\nno content`));
       const replyHeaders = Mime.replyHeaders(previousMsg);
       mimeHeaders['in-reply-to'] = replyHeaders['in-reply-to'];

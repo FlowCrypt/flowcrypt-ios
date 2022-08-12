@@ -66,9 +66,8 @@ describe('INBOX: ', () => {
 
       // signed only message that was tempered during transit
       await MailFolderScreen.clickOnEmailBySubject('Signed only message that was tempered during transit');
-
       await EmailScreen.checkEncryptionBadge('not encrypted');
-      await EmailScreen.checkSignatureBadge('bad signature');
+      await EmailScreen.checkSignatureBadge('cannot verify signature: signed digest did not match');
       await EmailScreen.clickBackButton();
 
       // partially signed only message

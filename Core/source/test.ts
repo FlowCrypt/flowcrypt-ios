@@ -625,8 +625,8 @@ ava.default('encryptKey', async t => {
     privateKey: (encryptedKey as PrivateKey),
     passphrase
   })).is.not.null;
-  /* eslint-enable @typescript-eslint/no-unused-expressions */
   expectNoData(data);
+  /* eslint-enable @typescript-eslint/no-unused-expressions */
   t.pass();
 });
 

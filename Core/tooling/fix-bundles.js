@@ -23,23 +23,14 @@ for (const filename of fs.readdirSync(bundleRawDir)) {
   }
 }
 
-// copy raw to flowcrypt-bundle
-fs.copyFileSync(`${bundleRawDir}/entrypoint-bare.js`, `${bundleDir}/entrypoint-bare-bundle.js`);
-
-const sanitizeHtmlDist = `${bundleWipDir}/sanitize-html.js`;
-
-// copy wip to html-sanitize-bundle
-fs.writeFileSync(
-  `${bundleDir}/bare-html-sanitize-bundle.js`,
-  fs.readFileSync(sanitizeHtmlDist).toString()
-);
-
-// copy zxcvbn, only used for bare (iOS) because zxcvbn-ios is not well maintained: https://github.com/dropbox/zxcvbn-ios/issues
+// copy zxcvbn, only used for bare (iOS) because zxcvbn-ios is not well maintained:
+// https://github.com/dropbox/zxcvbn-ios/issues
 // todo - could add `\nconst zxcvbn = window.zxcvbn;` at the end, then could call it directly from endpoint.ts
 fs.copyFileSync('./node_modules/zxcvbn/dist/zxcvbn.js', `${bundleDir}/bare-zxcvbn-bundle.js`);
 
+// this would work when using modules directly from Node - we don't do that yet
 // // concat emailjs bundle/wip to become emailjs-bundle
-// fs.writeFileSync(`${bundleDir}/emailjs-bundle.js`, [ // this would work when using modules directly from Node - we don't do that yet
+// fs.writeFileSync(`${bundleDir}/emailjs-bundle.js`, [
 //   `${bundleWipDir}/emailjs-mime-parser.js`,
 //   `${bundleWipDir}/emailjs-mime-builder.js`,
 // ].map(path => fs.readFileSync(path).toString()).join('\n'));
@@ -57,11 +48,19 @@ const emailjsRawDep = [
 ].map(path => fs.readFileSync(path).toString()).join('\n');
 const emailjsNodeDep = emailjsRawDep // these replacements fix imports and exports of modules for use in nodejs-mobile
   .replace(/require\(['"]buffer['"]\)\.Buffer/g, 'Buffer')
-  .replace(/require\(['"](punycode|emailjs-[a-z\-]+)['"]\)/g, found => found.replace('require(', 'global[').replace(')', ']'))
+  .replace(/require\(['"](punycode|emailjs-[a-z\-]+)['"]\)/g, found =>
+    found.replace('require(', 'global[').replace(')', ']')
+  )
   .replace(/typeof define === 'function' && define\.amd/g, 'false')
   .replace(/typeof exports ===? 'object'/g, 'false');
-fs.writeFileSync(`${bundleDir}/bare-emailjs-bundle.js`, `\n(function(){\n// begin emailjs\n${emailjsRawDep}\n// end emailjs\n})();\n`);
-fs.writeFileSync(`${bundleDir}/node-emailjs-bundle.js`, `\n(function(){\n// begin emailjs\n${emailjsNodeDep}\n// end emailjs\n})();\n`);
+fs.writeFileSync(
+  `${bundleDir}/bare-emailjs-bundle.js`,
+  `\n(function(){\n// begin emailjs\n${emailjsRawDep}\n// end emailjs\n})();\n`
+);
+fs.writeFileSync(
+  `${bundleDir}/node-emailjs-bundle.js`,
+  `\n(function(){\n// begin emailjs\n${emailjsNodeDep}\n// end emailjs\n})();\n`
+);
 
 const replace = (libSrc, regex, replacement) => {
   if (!regex.test(libSrc)) {
@@ -70,65 +69,47 @@ const replace = (libSrc, regex, replacement) => {
   return libSrc.replace(regex, replacement);
 }
 
-let openpgpLib = fs.readFileSync('./node_modules/openpgp/dist/node/openpgp.js').toString();
-const openpgpLibNodeDev = openpgpLib; // dev node runs without any host, no modifications needed
+// update openpgp code to use some native functionality
+let entrypointBareSrc = fs.readFileSync(`${bundleRawDir}/entrypoint-bare.js`).toString();
 
-/*
-openpgpLib = replace( // rsa decrypt on host
-  openpgpLib,
-  /[a-z0-9A-Z_]+\.default\.rsa\.decrypt\(c, n, e, d, p, q, u\)/,
-  `await hostRsaDecryption(dereq_asn1, _bn2, data_params[0], n, e, d, p, q)`
+// entrypointBareSrc = replace( // rsa decrypt on host
+//   // todo: use randomPayload value on iOS side
+//   entrypointBareSrc,
+//   /publicKey\.rsa\.decrypt\(c, n, e, d, p, q, u, randomPayload\)/,
+//   `await hostRsaDecryption(global.dereq_asn1, bn, c, n, e, d, p, q)`
+// );
+/* disabled because it works faster without this change */
+// entrypointBareSrc = replace( // rsa verify on host
+//   entrypointBareSrc,
+//   /return publicKey\.rsa\.verify\(hashAlgo, data, s, n, e, hashed\)/, `
+//   // returns empty str if not supported: js fallback below
+//   const computed = await coreHost.modPow(s.toString(10), e.toString(10), n.toString(10));
+//   return computed
+//     ? new bn.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength())
+//     : await publicKey.rsa.verify(hashAlgo, data, s, n, e, hashed);`
+// );
+entrypointBareSrc = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
+  entrypointBareSrc,
+  /toHash = new Uint8Array\(prefixlen \+ count\);/,
+  `const algo = enums.read(enums.hash, this.algorithm); return Uint8Array.from(coreHost.produceHashedIteratedS2k(algo, new Uint8Array(), this.salt, passphrase, count));`
 );
-
-openpgpLib = replace( // rsa verify on host
-  openpgpLib,
-  /const EM = await _public_key2\.default\.rsa\.verify\(m, n, e\);/, `
-  // returns empty str if not supported: js fallback below
-  const computed = await coreHost.modPow(m.toString(10), e.toString(10), n.toString(10));
-  const EM = computed
-    ? new _bn2.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength())
-    : await _public_key2.default.rsa.verify(m, n, e);`
-);
-*/
-
-let openpgpLibBare = openpgpLib; // further modify bare code below
-
-/*
-openpgpLibBare = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
-  openpgpLibBare,
-  /const data = _util2\.default\.concatUint8Array\(\[s2k\.salt, passphrase\]\);/,
-  `return Uint8Array.from(coreHost.produceHashedIteratedS2k(s2k.algorithm, prefix, s2k.salt, passphrase, count));`
-);
-
-openpgpLibBare = replace( // bare - aes decrypt on host
-  openpgpLibBare,
-  /return _cfb\.AES_CFB\.decrypt\(ct, key, iv\);/,
+entrypointBareSrc = replace( // bare - aes decrypt on host
+  entrypointBareSrc,
+  /return AES_CFB\.decrypt\(ct, key, iv\);/,
   `return Uint8Array.from(coreHost.decryptAesCfbNoPadding(ct, key, iv));`
 );
-*/
 
-const asn1LibBare = fs.readFileSync(`${bundleWipDir}/bare-asn1.js`).toString();
+let asn1BareSrc = fs.readFileSync(`${bundleRawDir}/bare-asn1.js`).toString();
+asn1BareSrc = replace(
+  asn1BareSrc,
+  /const asn1 =/gi, 'global.dereq_asn1 ='
+);
+asn1BareSrc = replace(
+  asn1BareSrc,
+  /asn1\./gi, 'global.dereq_asn1.'
+);
 
-fs.writeFileSync(`${bundleDir}/bare-openpgp-bundle.js`, `
-  ${fs.readFileSync('source/lib/web-streams-polyfill.js').toString()}
-  const ReadableStream = self.ReadableStream;
-  const WritableStream = self.WritableStream;
-  const TransformStream = self.TransformStream;
-  /* asn1 begin */
-  ${asn1LibBare}
-  /* asn1 end */
-  ${openpgpLibBare}
-  const openpgp = window.openpgp;
+fs.writeFileSync(`${bundleDir}/entrypoint-bare-bundle.js`, `
+  ${asn1BareSrc};
+  ${entrypointBareSrc};
 `);
-
-fs.writeFileSync(`${bundleDir}/node-dev-openpgp-bundle.js`, `
-  (function(){
-    console.debug = console.log;
-    ${openpgpLibNodeDev}
-    const openpgp = module.exports;
-    module.exports = {};
-    global['openpgp'] = openpgp;
-  })();
-`);
-
-fs.copyFileSync(`${bundleWipDir}/bare-encoding-japanese.js`, `${bundleDir}/bare-encoding-japanese.js`);

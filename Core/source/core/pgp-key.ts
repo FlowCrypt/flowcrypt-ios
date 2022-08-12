@@ -18,8 +18,6 @@ import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 import { Str } from './common';
 
-const readToEnd = requireStreamReadToEnd();
-
 /* eslint-disable @typescript-eslint/naming-convention */
 export type Contact = {
   email: string;
@@ -432,6 +430,7 @@ export class PgpKey {
     } else if (typeof certificate === 'string') {
       return { key, revocationCertificate: certificate };
     } else {
+      const readToEnd = await requireStreamReadToEnd();
       return {
         key,
         revocationCertificate: await readToEnd(certificate as MaybeStream<string>)

@@ -11,11 +11,12 @@ import { FcAttLinkData } from './att';
 import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
-// eslint-disable-next-line max-len
-import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
+import {
+  CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key,
+  KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult
+} from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
-const readToEnd = requireStreamReadToEnd();
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -173,19 +174,19 @@ export class PgpMsg {
         // .. which is not really an issue - an attacker that can append signatures
         // could have also just slightly changed the message, causing the same experience
         // .. so for now #wontfix unless a reasonable usecase surfaces
-        sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
         if (!sig.signer) {
           // todo - currently only the first signer will be reported.
           // Should we be showing all signers? How common is that?
           sig.signer = await PgpKey.longid(verifyRes.keyID.bytes);
         }
+        sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
       }
     } catch (verifyErr) {
       sig.match = null;
       if (verifyErr instanceof Error && verifyErr.message === 'Can only verify message with one literal data packet.') {
         sig.error = 'FlowCrypt is not equipped to verify this message (err 101)';
       } else {
-        sig.error = `FlowCrypt had trouble verifying this message (${String(verifyErr)})`;
+        sig.error = verifyErr.message;
         Catch.reportErr(verifyErr as Error);
       }
     }
@@ -221,6 +222,7 @@ export class PgpMsg {
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
       const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
+      const readToEnd = await requireStreamReadToEnd();
       const text = await readToEnd(prepared.message.getText() ?? '');
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
@@ -264,6 +266,7 @@ export class PgpMsg {
       // verify first to prevent stream hang
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined;
       // read content second to prevent stream hang
+      const readToEnd = await requireStreamReadToEnd();
       const content = new Buf(await readToEnd(decrypted.getLiteralData() as MaybeStream<Uint8Array>));
       // evaluate verify results third to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined;
