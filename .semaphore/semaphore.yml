@@ -10,7 +10,7 @@ auto_cancel:
   running:
     when: branch != 'master'
 blocks:
-  - name: Build
+  - name: Build + Swift Unit Test
     dependencies: []
     run:
       when: 'change_in(''/'', {exclude: [''/Core/package.json'', ''/Core/package-lock.json'']})'
@@ -26,15 +26,16 @@ blocks:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
       jobs:
-        - name: Build Xcode Project
+        - name: Build Xcode Project + Swift Unit Test
           commands:
             - xcversion select 13.4.1
             - bundle exec fastlane build
+            - bundle exec fastlane test
       epilogue:
         always:
           commands:
-            - cd appium && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-  - name: TypeScript + Swift tests
+            - cd /var/tmp/derived_data/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
+  - name: TypeScript tests
     dependencies: []
     run:
       when: 'change_in(''/'', {exclude: [''/appium/package.json'', ''/appium/package-lock.json'']})'
@@ -61,12 +62,9 @@ blocks:
             - npm run eslint
             - cd ../appium
             - npm run lint
-        - name: Swift tests
-          commands:
-            - bundle exec fastlane test
   - name: UI Tests
     dependencies:
-      - Build
+      - Build + Swift Unit Test
     task:
       env_vars:
         - name: LANG
@@ -102,7 +100,7 @@ blocks:
         - name: Run Mock other tests + Run Live tests
           commands:
             - npm run-script test.mock.login
-            - sleep 3 # sleep for sometime to let previous instance shutdown completely
+            - sleep 3
             - npm run-script test.mock.settings
             - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             - unzip flowcrypt-ios-*.zip
