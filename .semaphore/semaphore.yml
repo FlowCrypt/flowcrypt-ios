@@ -64,7 +64,7 @@ blocks:
             - npm run lint
   - name: UI Tests
     dependencies:
-      - Build
+      - Build + Swift Unit Test
     task:
       env_vars:
         - name: LANG
@@ -100,7 +100,7 @@ blocks:
         - name: Run Mock other tests + Run Live tests
           commands:
             - npm run-script test.mock.login
-            - sleep 3 # sleep for sometime to let previous instance shutdown completely
+            - sleep 3
             - npm run-script test.mock.settings
             - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             - unzip flowcrypt-ios-*.zip
