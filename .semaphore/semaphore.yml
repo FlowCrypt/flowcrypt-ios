@@ -10,7 +10,7 @@ auto_cancel:
   running:
     when: branch != 'master'
 blocks:
-  - name: Build
+  - name: Build + Swift Unit Test
     dependencies: []
     run:
       when: 'change_in(''/'', {exclude: [''/Core/package.json'', ''/Core/package-lock.json'']})'
@@ -30,11 +30,12 @@ blocks:
           commands:
             - xcversion select 13.4.1
             - bundle exec fastlane build
+            - bundle exec fastlane test
       epilogue:
         always:
           commands:
-            - cd appium && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-  - name: TypeScript + Swift tests
+            - cd /var/tmp/derived_data/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
+  - name: TypeScript tests
     dependencies: []
     run:
       when: 'change_in(''/'', {exclude: [''/appium/package.json'', ''/appium/package-lock.json'']})'
@@ -61,9 +62,6 @@ blocks:
             - npm run eslint
             - cd ../appium
             - npm run lint
-        - name: Swift tests
-          commands:
-            - bundle exec fastlane test
   - name: UI Tests
     dependencies:
       - Build
