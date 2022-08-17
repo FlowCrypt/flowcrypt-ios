@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
 // Type definitions for openpgpjs
 // Project: http://openpgpjs.org/
 // Definitions by: Guillaume Lacasa <https://blog.lacasa.fr>
 //                 Errietta Kostala <https://github.com/errietta>
 //                 FlowCrypt Limited <https://flowcrypt.com>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
-
-/* tslint:disable:only-arrow-functions variable-name max-line-length no-null-keyword ban-types */
 
 declare namespace OpenPGP {
 

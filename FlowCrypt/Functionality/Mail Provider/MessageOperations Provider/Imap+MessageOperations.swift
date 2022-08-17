@@ -85,6 +85,17 @@ extension Imap: MessageOperationsProvider {
         try await expungeMsgs(folder: folderPath)
     }
 
+    func emptyFolder(path: String) async throws {
+        try await batchDeleteMessages(identifiers: [], from: path)
+    }
+
+    func batchDeleteMessages(identifiers: [String], from folderPath: String?) async throws {
+        guard let folderPath = folderPath else {
+            throw ImapError.missingMessageInfo("folderPath")
+        }
+        try await expungeMsgs(folder: folderPath)
+    }
+
     private func pushUpdatedMsgFlags(with identifier: Int, folder: String, flags: MCOMessageFlag) async throws {
         try await executeVoid("pushUpdatedMsgFlags", { sess, respond in
             sess.storeFlagsOperation(

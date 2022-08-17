@@ -212,7 +212,10 @@ extension ThreadDetailsViewController {
         }
 
         if attachment.isEncrypted {
-            let decryptedAttachment = try await messageService.decrypt(attachment: attachment, userEmail: appContext.user.email)
+            let decryptedAttachment = try await messageService.decrypt(
+                attachment: attachment,
+                userEmail: appContext.user.email
+            )
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
             input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
@@ -317,8 +320,10 @@ extension ThreadDetailsViewController {
                     folder: thread.path,
                     onlyLocalKeys: true,
                     userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager,
                     progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
                 )
+
                 if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
                     retryVerifyingSignatureWithRemotelyFetchedKeys(
@@ -372,8 +377,11 @@ extension ThreadDetailsViewController {
                 // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
                 showToast("Message not found in folder: \(thread.path)")
             } else {
-                // todo - this should be a retry / cancel alert
-                showAlert(error: error, message: "message_failed_open".localized + "\n\n\(error)")
+                showRetryAlert(message: error.errorMessage, onRetry: { [weak self] _ in
+                    self?.fetchDecryptAndRenderMsg(at: indexPath)
+                }, onCancel: { [weak self] _ in
+                    self?.navigationController?.popViewController(animated: true)
+                })
             }
             navigationController?.popViewController(animated: true)
         }
@@ -440,7 +448,8 @@ extension ThreadDetailsViewController {
                         mime: rawMimeData,
                         sender: sender,
                         onlyLocalKeys: false,
-                        userEmail: appContext.user.email
+                        userEmail: appContext.user.email,
+                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                     )
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
@@ -464,6 +473,7 @@ extension ThreadDetailsViewController {
                     folder: thread.path,
                     onlyLocalKeys: false,
                     userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager,
                     progressHandler: { _ in }
                 )
                 handleReceived(message: processedMessage, at: indexPath)

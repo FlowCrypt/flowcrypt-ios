@@ -54,6 +54,10 @@ public extension String {
         prefix(1).uppercased() + self.lowercased().dropFirst()
     }
 
+    func lowercasingFirstLetter() -> String {
+        prefix(1).lowercased() + self.dropFirst()
+    }
+
     var mailFolderIcon: String {
         switch self {
         case "INBOX":

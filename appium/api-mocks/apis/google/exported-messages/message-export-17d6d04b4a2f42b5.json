@@ -1,0 +1,88 @@
+{
+  "acctEmail": "e2e.enterprise.test@flowcrypt.com",
+  "full": {
+    "id": "17d6d04b4a2f42b5",
+    "threadId": "17d6d04b4a2f42b5",
+    "labelIds": [
+      "SENT",
+      "INBOX"
+    ],
+    "snippet": "Additional content block for partial signature. -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA512 Partially signed only message -----BEGIN PGP SIGNATURE----- Version: FlowCrypt Email Encryption 8.2.0",
+    "payload": {
+      "partId": "",
+      "mimeType": "multipart/mixed",
+      "filename": "",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "multipart/mixed; boundary=\"----sinikael-?=_1-16382105347330.20105288288687007\""
+        },
+        {
+          "name": "Openpgp",
+          "value": "id=A54D82BE1521D20E"
+        },
+        {
+          "name": "From",
+          "value": "e2e.enterprise.test@flowcrypt.com"
+        },
+        {
+          "name": "To",
+          "value": "e2e.enterprise.test@flowcrypt.com"
+        },
+        {
+          "name": "Subject",
+          "value": "Partially signed only message"
+        },
+        {
+          "name": "Date",
+          "value": "Mon, 29 Nov 2021 10:28:55 -0800"
+        },
+        {
+          "name": "MIME-Version",
+          "value": "1.0"
+        }
+      ],
+      "body": {
+        "size": 0
+      },
+      "parts": [
+        {
+          "partId": "0",
+          "mimeType": "text/plain",
+          "filename": "",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "text/plain"
+            },
+            {
+              "name": "Content-Transfer-Encoding",
+              "value": "quoted-printable"
+            }
+          ],
+          "body": {
+            "size": 453,
+            "data": "CkFkZGl0aW9uYWwgY29udGVudCBibG9jayBmb3IgcGFydGlhbCBzaWduYXR1cmUuCgoKLS0tLS1CRUdJTiBQR1AgU0lHTkVEIE1FU1NBR0UtLS0tLQpIYXNoOiBTSEE1MTIKClBhcnRpYWxseSBzaWduZWQgb25seSBtZXNzYWdlCi0tLS0tQkVHSU4gUEdQIFNJR05BVFVSRS0tLS0tClZlcnNpb246IEZsb3dDcnlwdCBFbWFpbCBFbmNyeXB0aW9uIDguMi4wCkNvbW1lbnQ6IFNlYW1sZXNzbHkgc2VuZCBhbmQgcmVjZWl2ZSBlbmNyeXB0ZWQgZW1haWwKCnduVUVBUllLQUFZRkFtR2xHK1lBSVFrUXBVMkN2aFVoMGc0V0lRUTRFQTBoOFhNbTVFZUduYWVsVFlLKwpGU0hTRG1PV0FQOUQ5OVkxbE9sTnUwVDR1NWRsWDVCUkpCTm5Vb3pWZm5Pa2hDY0NFYUxjcndEK0piaTYKZnN0emErbEwxOGhTZDdkZnRNZjdQU2NNKzR3Um5EekwwRWI0MVEwPQo9SlplVgotLS0tLUVORCBQR1AgU0lHTkFUVVJFLS0tLS0K"
+          }
+        }
+      ]
+    },
+    "sizeEstimate": 1200,
+    "historyId": "175332",
+    "internalDate": "1638210535000"
+  },
+  "attachments": {},
+  "raw": {
+    "id": "17d6d04b4a2f42b5",
+    "threadId": "17d6d04b4a2f42b5",
+    "labelIds": [
+      "SENT",
+      "INBOX"
+    ],
+    "snippet": "Additional content block for partial signature. -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA512 Partially signed only message -----BEGIN PGP SIGNATURE----- Version: FlowCrypt Email Encryption 8.2.0",
+    "sizeEstimate": 1200,
+    "raw": "UmVjZWl2ZWQ6IGZyb20gNzE3Mjg0NzMwMjQ0CgluYW1lZCB1bmtub3duCglieSBnbWFpbGFwaS5nb29nbGUuY29tCgl3aXRoIEhUVFBSRVNUOwoJTW9uLCAyOSBOb3YgMjAyMSAxMDoyODo1NSAtMDgwMApDb250ZW50LVR5cGU6IG11bHRpcGFydC9taXhlZDsKIGJvdW5kYXJ5PSItLS0tc2luaWthZWwtPz1fMS0xNjM4MjEwNTM0NzMzMC4yMDEwNTI4ODI4ODY4NzAwNyIKT3BlbnBncDogaWQ9QTU0RDgyQkUxNTIxRDIwRQpGcm9tOiBlMmUgZW50ZXJwcmlzZSB0ZXN0IGF0IEZsb3dDcnlwdCA8ZTJlLmVudGVycHJpc2UudGVzdEBmbG93Y3J5cHQuY29tPgpUbzogZTJlIGVudGVycHJpc2UgdGVzdCBhdCBGbG93Q3J5cHQgPGUyZS5lbnRlcnByaXNlLnRlc3RAZmxvd2NyeXB0LmNvbT4KU3ViamVjdDogUGFydGlhbGx5IHNpZ25lZCBvbmx5IG1lc3NhZ2UKRGF0ZTogTW9uLCAyOSBOb3YgMjAyMSAxMDoyODo1NSAtMDgwMApNZXNzYWdlLUlkOiA8Q0FHS2tKVVpwaF9ZRGcxeDRaTzlhPVdIbWRtWnFBd3piVm1oVWs0PW5lLWtnUG5DdEJBQG1haWwuZ21haWwuY29tPgpNSU1FLVZlcnNpb246IDEuMAoKLS0tLS0tc2luaWthZWwtPz1fMS0xNjM4MjEwNTM0NzMzMC4yMDEwNTI4ODI4ODY4NzAwNwpDb250ZW50LVR5cGU6IHRleHQvcGxhaW4KQ29udGVudC1UcmFuc2Zlci1FbmNvZGluZzogcXVvdGVkLXByaW50YWJsZQoKCkFkZGl0aW9uYWwgY29udGVudCBibG9jayBmb3IgcGFydGlhbCBzaWduYXR1cmUuCgoKLS0tLS1CRUdJTiBQR1AgU0lHTkVEIE1FU1NBR0UtLS0tLQpIYXNoOiBTSEE1MTIKClBhcnRpYWxseSBzaWduZWQgb25seSBtZXNzYWdlCi0tLS0tQkVHSU4gUEdQIFNJR05BVFVSRS0tLS0tClZlcnNpb246IEZsb3dDcnlwdCBFbWFpbCBFbmNyeXB0aW9uIDguMi4wCkNvbW1lbnQ6IFNlYW1sZXNzbHkgc2VuZCBhbmQgcmVjZWl2ZSBlbmNyeXB0ZWQgZW1haWwKCnduVUVBUllLQUFZRkFtR2xHK1lBSVFrUXBVMkN2aFVoMGc0V0lRUTRFQTBoOFhNbTVFZUduYWVsVFlLKwpGU0hTRG1PV0FQOUQ5OVkxbE9sTnUwVDR1NWRsWDVCUkpCTm5Vb3pWZm5Pa2hDY0NFYUxjcndEK0piaTYKZnN0emErbEwxOGhTZDdkZnRNZjdQU2NNKzR3Um5EekwwRWI0MVEwPTNECj0zREpaZVYKLS0tLS1FTkQgUEdQIFNJR05BVFVSRS0tLS0tCgotLS0tLS1zaW5pa2FlbC0_PV8xLTE2MzgyMTA1MzQ3MzMwLjIwMTA1Mjg4Mjg4Njg3MDA3LS0K",
+    "historyId": "175332",
+    "internalDate": "1638210535000"
+  }
+}

@@ -14,7 +14,7 @@ extension GmailService: RemoteFoldersProviderType {
         static let allMailFolder = Folder(
             path: "",
             name: "folder_all_mail".localized,
-            image: UIImage(systemName: "tag")?.jpegData(compressionQuality: 1.0)
+            image: nil
         )
     }
 

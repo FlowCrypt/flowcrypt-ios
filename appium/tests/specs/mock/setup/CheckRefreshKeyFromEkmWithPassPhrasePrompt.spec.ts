@@ -9,6 +9,7 @@ import { CommonData } from "../../../data";
 import RefreshKeyScreen from "../../../screenobjects/refresh-key.screen";
 import BaseScreen from "../../../screenobjects/base.screen";
 import AppiumHelper from "../../../helpers/AppiumHelper";
+import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('SETUP: ', () => {
 
@@ -19,12 +20,8 @@ describe('SETUP: ', () => {
     const processArgs = CommonData.mockProcessArgs;
 
     const mockApi = new MockApi();
-    mockApi.fesConfig = {
-      clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE"],
-        key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
-    };
+
+    mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.key0.prv]
     }

@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "es2021",
     "module": "commonjs",
     "lib": [
-      "es2017",
+      "es2021",
       "dom"
     ],
     "forceConsistentCasingInFileNames": true,
@@ -11,6 +11,7 @@
     "noUnusedLocals": true,
     "alwaysStrict": true,
     "noImplicitAny": true,
+    "removeComments": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
     "strictPropertyInitialization": false,
@@ -26,9 +27,7 @@
     ]
   },
   "include": [
-    "./source/entrypoint-bare.ts",
-    "./source/test.ts",
-    "./source/gen-compat-assets.ts"
+    "./source/**/*.ts"
   ],
   "exclude": [
     "**/build/**",

@@ -16,6 +16,7 @@ class InboxViewController: ViewController {
     private let appContext: AppContextWithUser
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
+    private let messageOperationsProvider: MessageOperationsProvider
     private let refreshControl = UIRefreshControl()
     internal let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
@@ -28,6 +29,9 @@ class InboxViewController: ViewController {
     internal var state: InboxViewController.State = .idle
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
+    }
+    private var shouldShowEmptyView: Bool {
+        inboxInput.isNotEmpty && (viewModel.path == "SPAM" || viewModel.path == "TRASH")
     }
 
     var path: String { viewModel.path }
@@ -53,7 +57,9 @@ class InboxViewController: ViewController {
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
         self.inboxDataProvider = provider
 
-        self.draftsListProvider = try draftsListProvider ?? appContext.getRequiredMailProvider().draftsProvider
+        let mailProvider = try appContext.getRequiredMailProvider()
+        self.draftsListProvider = try draftsListProvider ?? mailProvider.draftsProvider
+        self.messageOperationsProvider = try mailProvider.messageOperationsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
         self.isSearch = isSearch
@@ -441,7 +447,9 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         switch state {
         case .empty, .idle, .searchStart, .searching, .searchEmpty, .error:
             return 1
-        case .fetching, .fetched, .refresh:
+        case .fetched, .refresh:
+            return shouldShowEmptyView ? inboxInput.count + 1 : inboxInput.count
+        case .fetching:
             return inboxInput.count
         }
     }
@@ -451,8 +459,15 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
+        var rowNumber = indexPath.row
+        if shouldShowEmptyView {
+            rowNumber -= 1
+        }
+        guard let message = inboxInput[safe: rowNumber] else {
+            return
+        }
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(message: inboxInput[indexPath.row], path: viewModel.path, appContext: appContext)
+        open(message: message, path: viewModel.path, appContext: appContext)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
@@ -479,7 +494,22 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 node.accessibilityIdentifier = "aid-inbox-idle-node"
                 return node
             case .fetched, .refresh:
-                guard let input = self.inboxInput[safe: indexPath.row] else {
+                var rowNumber = indexPath.row
+                if self.shouldShowEmptyView {
+                    if indexPath.row == 0 {
+                        return EmptyFolderCellNode(path: self.viewModel.path, emptyFolder: {
+                            self.showConfirmAlert(
+                                message: "folder_empty_confirm".localized,
+                                onConfirm: { [weak self] _ in
+                                    self?.emptyInboxFolder()
+                                }
+                            )
+
+                        })
+                    }
+                    rowNumber -= 1
+                }
+                guard let input = self.inboxInput[safe: rowNumber] else {
                     return TextCellNode.loading
                 }
                 return InboxCellNode(input: .init(input))
@@ -498,6 +528,21 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                         size: size
                     )
                 )
+            }
+        }
+    }
+
+    private func emptyInboxFolder() {
+        Task {
+            do {
+                self.showSpinner()
+                try await self.messageOperationsProvider.emptyFolder(path: viewModel.path)
+                self.state = .empty
+                self.inboxInput = []
+                await tableNode.reloadData()
+                self.hideSpinner()
+            } catch {
+                self.showAlert(message: error.errorMessage)
             }
         }
     }

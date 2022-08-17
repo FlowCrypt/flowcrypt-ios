@@ -43,9 +43,18 @@ class AppContext {
             encryptedStorage: encryptedStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorage
         )
+        var sessionType: SessionType?
+        if let user = try encryptedStorage.activeUser, let authType = user.authType {
+            switch authType {
+            case .oAuthGmail(let token):
+                sessionType = .google(user.email, name: user.name, token: token)
+            case .password:
+                sessionType = .session(user)
+            }
+        }
         return AppContext(
             encryptedStorage: encryptedStorage,
-            session: nil, // will be set later. But would be nice to already set here, if available
+            session: sessionType,
             userAccountService: try SessionService(
                 encryptedStorage: encryptedStorage,
                 googleService: GoogleUserService(

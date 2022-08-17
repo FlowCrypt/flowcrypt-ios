@@ -11,11 +11,12 @@ import { FcAttLinkData } from './att';
 import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
-// eslint-disable-next-line max-len
-import { CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key, KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult } from 'openpgp';
+import {
+  CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key,
+  KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult
+} from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
-const readToEnd = requireStreamReadToEnd();
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -76,6 +77,7 @@ export type VerifyRes = {
 };
 export type PgpMsgTypeResult = { armored: boolean, type: MsgBlockType } | undefined;
 export type DecryptResult = DecryptSuccess | DecryptError;
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export type DiagnoseMsgPubkeysResult = { found_match: boolean, receivers: number, };
 export enum DecryptErrTypes {
   keyMismatch = 'key_mismatch',
@@ -90,7 +92,7 @@ export enum DecryptErrTypes {
 
 export class FormatError extends Error {
   public data: string;
-  constructor(message: string, data: string) {
+  public constructor(message: string, data: string) {
     super(message);
     this.data = data;
   }
@@ -155,7 +157,7 @@ export class PgpMsg {
     msgOrVerResults: OpenpgpMsgOrCleartext | VerificationResult[],
     pubs: Key[]
   ): Promise<VerifyRes> => {
-    const sig: VerifyRes = { match: null }; // tslint:disable-line:no-null-keyword
+    const sig: VerifyRes = { match: null };
     try {
       // While this looks like bad method API design, it's here to ensure execution order when:
       // 1. reading data
@@ -172,20 +174,20 @@ export class PgpMsg {
         // .. which is not really an issue - an attacker that can append signatures
         // could have also just slightly changed the message, causing the same experience
         // .. so for now #wontfix unless a reasonable usecase surfaces
-        sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
         if (!sig.signer) {
           // todo - currently only the first signer will be reported.
           // Should we be showing all signers? How common is that?
           sig.signer = await PgpKey.longid(verifyRes.keyID.bytes);
         }
+        sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
       }
     } catch (verifyErr) {
-      sig.match = null; // tslint:disable-line:no-null-keyword
+      sig.match = null;
       if (verifyErr instanceof Error && verifyErr.message === 'Can only verify message with one literal data packet.') {
         sig.error = 'FlowCrypt is not equipped to verify this message (err 101)';
       } else {
-        sig.error = `FlowCrypt had trouble verifying this message (${String(verifyErr)})`;
-        Catch.reportErr(verifyErr);
+        sig.error = verifyErr.message;
+        Catch.reportErr(verifyErr as Error);
       }
     }
     return sig;
@@ -220,7 +222,8 @@ export class PgpMsg {
     const isEncrypted = !prepared.isCleartext;
     if (!isEncrypted) {
       const signature = await PgpMsg.verify(prepared.message, keys.forVerification);
-      const text = await readToEnd(prepared.message.getText()!);
+      const readToEnd = await requireStreamReadToEnd();
+      const text = await readToEnd(prepared.message.getText() ?? '');
       return { success: true, content: Buf.fromUtfStr(text), isEncrypted, signature };
     }
     if (!keys.prvMatching.length && !msgPwd) {
@@ -254,6 +257,7 @@ export class PgpMsg {
         };
       }
       const passwords = msgPwd ? [msgPwd] : undefined;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!);
       const decrypted = await (prepared.message as Message<Data>).decrypt(privateKeys, passwords);
       // we can only figure out who signed the msg once it's decrypted
@@ -262,7 +266,8 @@ export class PgpMsg {
       // verify first to prevent stream hang
       const verifyResults = keys.signedBy.length ? await decrypted.verify(keys.forVerification) : undefined;
       // read content second to prevent stream hang
-      const content = new Buf(await readToEnd(decrypted.getLiteralData()! as MaybeStream<Uint8Array>));
+      const readToEnd = await requireStreamReadToEnd();
+      const content = new Buf(await readToEnd(decrypted.getLiteralData() as MaybeStream<Uint8Array>));
       // evaluate verify results third to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined;
       if (!prepared.isCleartext && (prepared.message as Message<Data>).packets
@@ -279,7 +284,7 @@ export class PgpMsg {
       return { success: true, content, isEncrypted, filename: decrypted.getFilename() || undefined, signature };
     } catch (e) {
       return {
-        success: false, error: PgpMsg.cryptoMsgDecryptCategorizeErr(e, msgPwd),
+        success: false, error: PgpMsg.cryptoMsgDecryptCategorizeErr(e as Error, msgPwd),
         message: prepared.message, longids, isEncrypted
       };
     }
@@ -325,6 +330,7 @@ export class PgpMsg {
     for (const k of await Promise.all(privateKis.map(ki => PgpKey.read(ki.public)))) {
       localKeyIds.push(...k.getKeyIDs());
     }
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const diagnosis = { found_match: false, receivers: msgKeyIds.length };
     for (const msgKeyId of msgKeyIds) {
       for (const localKeyId of localKeyIds) {
@@ -359,8 +365,12 @@ export class PgpMsg {
     return decryptedContent;
   };
 
+  public static stripFcTeplyToken = (decryptedContent: string) => {
+    return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
+  };
+
   public static stripPublicKeys = (decryptedContent: string, foundPublicKeys: string[]) => {
-    let { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent); // tslint:disable-line:prefer-const
+    let { blocks, normalized } = MsgBlockParser.detectBlocks(decryptedContent);
     for (const block of blocks) {
       if (block.type === 'publicKey') {
         const armored = block.content.toString();
@@ -371,23 +381,9 @@ export class PgpMsg {
     return normalized;
   };
 
-  // public static extractFcReplyToken =  (decryptedContent: string) => {
-  //   // todo - used exclusively on the web - move to a web package
-  //   const fcTokenElement = $(`<div>${decryptedContent}</div>`).find('.cryptup_reply');
-  //   if (fcTokenElement.length) {
-  //     const fcData = fcTokenElement.attr('cryptup-data');
-  //     if (fcData) {
-  //       return Str.htmlAttrDecode(fcData);
-  //     }
-  //   }
-  // }
-
-  public static stripFcTeplyToken = (decryptedContent: string) => {
-    return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
-  };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {
-    return o // tslint:disable-line:no-unsafe-any
+    return o // eslint-disable-line @typescript-eslint/no-unsafe-return
       && typeof o === 'object'
       && typeof (o as FcAttLinkData).name !== 'undefined'
       && typeof (o as FcAttLinkData).size !== 'undefined'
@@ -437,6 +433,7 @@ export class PgpMsg {
         // we are filtering here to avoid a significant performance issue of having
         // to attempt decrypting with all keys simultaneously
         for (const longid of await Promise.all(ki.parsed.getKeyIDs().map(({ bytes }) => PgpKey.longid(bytes)))) {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           if (keys.encryptedFor.includes(longid!)) {
             keys.prvMatching.push(ki);
             break;
@@ -448,15 +445,18 @@ export class PgpMsg {
       keys.prvForDecrypt = [];
     }
     for (const ki of keys.prvForDecrypt) {
-      const matchingKeyids = PgpMsg.matchingKeyids(ki.parsed!, encryptedForKeyids);
+      if (!ki.parsed || !ki.passphrase) {
+        continue;
+      }
+      const matchingKeyids = PgpMsg.matchingKeyids(ki.parsed, encryptedForKeyids);
       const cachedKey = Store.decryptedKeyCacheGet(ki.longid);
       if (cachedKey && PgpMsg.isKeyDecryptedFor(cachedKey, matchingKeyids)) {
         ki.decrypted = cachedKey as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
-      } else if (PgpMsg.isKeyDecryptedFor(ki.parsed!, matchingKeyids)
-        || await PgpMsg.decryptKeyFor(ki.parsed!, ki.passphrase!, matchingKeyids) === true) {
-        Store.decryptedKeyCacheSet(ki.parsed!);
-        ki.decrypted = ki.parsed! as PrivateKey;
+      } else if (PgpMsg.isKeyDecryptedFor(ki.parsed, matchingKeyids)
+        || await PgpMsg.decryptKeyFor(ki.parsed, ki.passphrase, matchingKeyids) === true) {
+        Store.decryptedKeyCacheSet(ki.parsed);
+        ki.decrypted = ki.parsed as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
       } else {
         keys.prvForDecryptWithoutPassphrases.push(ki);
@@ -496,7 +496,7 @@ export class PgpMsg {
     return msgKeyIds.filter(kid => isPacketDecrypted(prv, kid)).length === msgKeyIds.length;
   };
 
-  private static cryptoMsgDecryptCategorizeErr = (decryptErr: any, msgPwd?: string): DecryptError$error => {
+  private static cryptoMsgDecryptCategorizeErr = (decryptErr: Error, msgPwd?: string): DecryptError$error => {
     const e = String(decryptErr).replace('Error: ', '').replace('Error decrypting message: ', '');
     const keyMismatchErrStrings = ['Cannot read property \'isDecrypted\' of null', 'privateKeyPacket is null',
       'TypeprivateKeyPacket is null', 'Session key decryption failed.', 'Invalid session key for decryption.'];

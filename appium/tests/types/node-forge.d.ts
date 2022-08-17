@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // Type definitions for node-forge 0.9.1
 // Project: https://github.com/digitalbazaar/forge
 // Definitions by: Seth Westphal    <https://github.com/westy92>
@@ -1097,3 +1098,4 @@ declare module "node-forge" {
     ): Bytes;
   }
 }
+/* eslint-enable */

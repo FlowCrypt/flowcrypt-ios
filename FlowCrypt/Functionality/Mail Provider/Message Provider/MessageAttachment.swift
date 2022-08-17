@@ -28,6 +28,12 @@ extension MessageAttachment {
     }
 
     init?(fileURL: URL) {
+        let shouldStopAccessing = fileURL.startAccessingSecurityScopedResource()
+        defer {
+            if shouldStopAccessing {
+                fileURL.stopAccessingSecurityScopedResource()
+            }
+        }
         guard let data = try? Data(contentsOf: fileURL) else {
             return nil
         }

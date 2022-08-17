@@ -10,6 +10,7 @@ const SELECTORS = {
   SEARCH_BTN: '~aid-search-btn',
   HELP_BTN: '~aid-help-btn',
   SEARCH_FIELD: '~aid-search-all-emails',
+  EMPTY_FOLDER_BTN: '~aid-empty-folder-button',
   // INBOX_ITEM: '~aid-inbox-item',
   // TODO: Couldn't use accessibility identifier because $$ selector returns only visible cells
   INBOX_ITEM: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
@@ -53,6 +54,10 @@ class MailFolderScreen extends BaseScreen {
     return $$(SELECTORS.INBOX_ITEM);
   }
 
+  get emptyFolderBtn() {
+    return $(SELECTORS.EMPTY_FOLDER_BTN);
+  }
+
   get idleNode() {
     return $(SELECTORS.IDLE_NODE);
   }
@@ -63,8 +68,8 @@ class MailFolderScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.helpBtn);
   }
 
-  checkEmailIsNotDisplayed = async (subject: string) => {
-    await (await $(`~${subject}`)).waitForDisplayed({ reverse: true });
+  checkEmailIsNotDisplayed = async (subject: string, reverse = true) => {
+    await (await $(`~${subject}`)).waitForDisplayed({ reverse });
   }
 
   checkSentScreen = async () => {
@@ -114,7 +119,7 @@ class MailFolderScreen extends BaseScreen {
   };
 
   scrollUpToFirstEmail = async () => {
-    const elem = this.inboxList[0];
+    const elem = await this.inboxList[0];
     if (elem) {
       await TouchHelper.scrollUpToElement(elem);
     }
@@ -124,6 +129,13 @@ class MailFolderScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.inboxHeader);
     await ElementHelper.waitElementVisible(await this.searchBtn);
     await ElementHelper.waitElementVisible(await this.helpBtn);
+  }
+
+  emptyFolder = async () => {
+    await ElementHelper.waitAndClick(await this.emptyFolderBtn);
+    await BaseScreen.clickConfirmButton();
+    // Give some time to delete messages
+    await browser.pause(3000);
   }
 
   clickSearchButton = async () => {

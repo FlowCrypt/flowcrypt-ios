@@ -4,6 +4,7 @@ import { HttpErr, Status, TemporaryRedirectHttpErr } from './api';
 
 import { Buf } from '../core/buf';
 import { Str } from '../core/common';
+import { GoogleMockAccountEmail } from 'api-mocks/apis/google/google-messages';
 
 const authURL = 'https://localhost:8001';
 
@@ -16,7 +17,7 @@ export class OauthMock {
   private authCodesByAcct: { [acct: string]: string } = {};
   private refreshTokenByAuthCode: { [authCode: string]: string } = {};
   private accessTokenByRefreshToken: { [refreshToken: string]: string } = {};
-  private acctByAccessToken: { [acct: string]: string } = {};
+  private acctByAccessToken: { [acct: string]: GoogleMockAccountEmail } = {};
   private acctByIdToken: { [acct: string]: string } = {};
   private issuedIdTokensByAcct: { [acct: string]: string[] } = {};
   private nonceByAcct: { [acct: string]: string } = {};
@@ -25,7 +26,7 @@ export class OauthMock {
     return this.htmlPage(text, text);
   }
 
-  public generateAuthTokensAndRedirectUrl = (acct: string, state: string, nonce: string) => {
+  public generateAuthTokensAndRedirectUrl = (acct: GoogleMockAccountEmail, state: string, nonce: string) => {
     const authCode = `mock-auth-code-${acct.replace(/[^a-z0-9]+/g, '')}`;
     const refreshToken = `mock-refresh-token-${acct.replace(/[^a-z0-9]+/g, '')}`;
     const accessToken = `mock-access-token-${acct.replace(/[^a-z0-9]+/g, '')}`;
@@ -45,7 +46,8 @@ export class OauthMock {
     const acct = this.acctByAccessToken[access_token];
     const id_token = this.generateIdToken(acct);
     const nonce = this.nonceByAcct[acct];
-    return { access_token, refresh_token, expires_in: this.expiresIn, id_token: id_token, nonce: nonce, token_type: 'Bearer', scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://mail.google.com/ openid" }; // guessed the token_type
+    const scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://mail.google.com/ openid https://www.googleapis.com/auth/contacts https://www.googleapis.com/auth/contacts.other.readonly';
+    return { access_token, refresh_token, expires_in: this.expiresIn, id_token: id_token, nonce: nonce, token_type: 'Bearer', scope: scope }; // guessed the token_type
   }
 
   public getAccessTokenResponse = (refreshToken: string) => {
@@ -144,7 +146,7 @@ export class MockJwt {
   }
 
   public static parseEmail = (jwt: string): string => {
-    const email = JSON.parse(Buf.fromBase64Str(jwt.split('.')[1]).toUtfStr()).email;
+    const email = JSON.parse(Buf.fromBase64Str(jwt.split('.')[1]).toUtfStr()).email as string;
     if (!email) {
       throw new Error(`Missing email in MockJwt ${jwt}`);
     }

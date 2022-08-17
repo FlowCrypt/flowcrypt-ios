@@ -7,6 +7,7 @@ type Transformer = (tagName: string, attribs: Attributes) => Tag;
 
 export type SanitizeImgHandling = 'IMG-DEL' | 'IMG-KEEP' | 'IMG-TO-LINK';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 declare const dereq_sanitize_html: (dirty: string, opts?: {
   allowedTags?: string[],
   selfClosing?: string[],
@@ -24,13 +25,14 @@ declare const dereq_sanitize_html: (dirty: string, opts?: {
  * but on Node it has a JSDOM dependency which is itself 20MB of code, not acceptable on mobile.
  */
 export class Xss {
-
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ALLOWED_BASIC_TAGS = [
     'p', 'div', 'br', 'u', 'i', 'em', 'b', 'ol', 'ul', 'pre', 'li', 'table',
     'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
     'address', 'blockquote', 'dl', 'fieldset', 'a', 'font', 'strong', 'strike', 'code'
   ];
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ALLOWED_ATTRS = {
     a: ['href', 'name', 'target'],
     img: ['src', 'width', 'height', 'alt'],
@@ -43,6 +45,7 @@ export class Xss {
     hr: ['color', 'height'],
   };
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ALLOWED_SCHEMES = ['data', 'http', 'https', 'mailto'];
 
   /**
@@ -71,6 +74,7 @@ export class Xss {
             return { tagName: 'img', attribs: { alt: attribs.alt, title: attribs.title }, text: '[img]' } as Tag;
           }
         },
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         '*': (tagName, attribs) => {
           // let the browser decide how big should elements be, based on their content, except for img
           // attribs.height|width === 1 are left in only so that they can be removed in exclusiveFilter below

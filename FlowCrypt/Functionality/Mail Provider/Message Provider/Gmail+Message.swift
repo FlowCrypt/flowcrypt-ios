@@ -41,11 +41,11 @@ extension GmailService: MessageProvider {
 
                 progressHandler?(.decrypt)
 
-                guard let data = GTLRDecodeWebSafeBase64(raw) else {
+                guard let decoded = GTLRDecodeWebSafeBase64(raw) else {
                     return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
                 }
 
-                return continuation.resume(returning: data)
+                return continuation.resume(returning: decoded)
             }
         }
     }

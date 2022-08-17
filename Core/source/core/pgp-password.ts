@@ -19,8 +19,10 @@ export class PgpPwd {
   // (10k pc)*(2 core p/pc)*(4k guess p/core)
   // https://www.abuse.ch/?p=3294://threatpost.com/how-much-does-botnet-cost-022813/77573/
   // https://www.abuse.ch/?p=3294
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static CRACK_GUESSES_PER_SECOND = 10000 * 2 * 4000;
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static CRACK_TIME_WORDS_PWD = [ // the requirements for a one-time password are less strict
     { match: 'millenni', word: 'perfect', bar: 100, color: 'green', pass: true },
     { match: 'centu', word: 'perfect', bar: 95, color: 'green', pass: true },
@@ -33,6 +35,7 @@ export class PgpPwd {
     { match: '', word: 'weak', bar: 10, color: 'red', pass: false },
   ];
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static CRACK_TIME_WORDS_PASS_PHRASE = [ // the requirements for a pass phrase are meant to be strict
     { match: 'millenni', word: 'perfect', bar: 100, color: 'green', pass: true },
     { match: 'centu', word: 'great', bar: 80, color: 'green', pass: true },

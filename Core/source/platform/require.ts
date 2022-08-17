@@ -11,7 +11,7 @@ export interface WebStream<T extends Uint8Array | string> extends BaseStream<T> 
   pipeThrough: () => void;
   pipeTo: () => void;
   tee: () => void;
-  cancel(reason?: any): Promise<void>;
+  cancel(reason?: unknown): Promise<void>;
 }
 
 // copied+simplified version of ReadableStream from @types/node/index.d.ts
@@ -30,30 +30,32 @@ export interface NodeStream<T extends Uint8Array | string> extends BaseStream<T>
 
 export type MaybeStream<T extends Uint8Array | string> = T | WebStream<T> | NodeStream<T>;
 
-type ReadToEndFn = <T extends Uint8Array | string>(input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
+type ReadToEndFn = <T extends Uint8Array | string>
+  (input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
 
-export const requireStreamReadToEnd = (): ReadToEndFn => {
-  // this will work for running tests in node with build/ts/test.js as entrypoint
-  // a different solution will have to be done for running in iOS
-  (global as any).window = (global as any).window || {}; // web-stream-tools needs this
-  // tslint:disable-next-line:no-unsafe-any
-  const { readToEnd } = require('../../bundles/raw/web-stream-tools');
-  return readToEnd as ReadToEndFn;
+/* eslint-disable */
+export const requireStreamReadToEnd = async (): Promise<ReadToEndFn> => {
+  const runtime = globalThis.process?.release?.name || 'not node';
+  return runtime === 'not node'
+    ? (await import('@openpgp/web-stream-tools')).readToEnd
+    : require('../../bundles/raw/web-stream-tools').readToEnd;
 };
 
-export const requireMimeParser = (): any => {
+export const requireMimeParser = () => {
   // @ts-ignore;
   return global['emailjs-mime-parser'];
 };
 
-export const requireMimeBuilder = (): any => {
+export const requireMimeBuilder = () => {
   // global['emailjs-mime-builder'] ?
   // dereq_emailjs_mime_builder ?
   // @ts-ignore
   return global['emailjs-mime-builder'];
 };
 
-export const requireIso88592 = (): any => {
+export const requireIso88592 = () => {
   // @ts-ignore
   return global.iso88592;
 };
+
+/* eslint-enable */

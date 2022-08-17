@@ -18,8 +18,7 @@ import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 import { Str } from './common';
 
-const readToEnd = requireStreamReadToEnd();
-
+/* eslint-disable @typescript-eslint/naming-convention */
 export type Contact = {
   email: string;
   name: string | null;
@@ -37,6 +36,7 @@ export type Contact = {
   pubkey_last_check: number | null;
   expiresOn: number | null;
 };
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export interface PrvKeyInfo {
   private: string;
@@ -224,8 +224,8 @@ export class PgpKey {
       }
       return { normalized: keys.map(k => k.armor()).join('\n'), keys };
     } catch (error) {
-      Catch.reportErr(error);
-      return { normalized: '', keys: [], error: Str.extractErrorMessage(error) };
+      Catch.reportErr(error as Error);
+      return { normalized: '', keys: [], error: Str.extractErrorMessage(error as Error) };
     }
   };
 
@@ -285,7 +285,8 @@ export class PgpKey {
   };
 
   public static usable = async (armored: string) => { // is pubkey usable for encrytion?
-    if (!PgpKey.fingerprint(armored)) {
+    const fingerprint = await PgpKey.fingerprint(armored);
+    if (!fingerprint) {
       return false;
     }
     const pubkey = await readKey({ armoredKey: armored });
@@ -365,7 +366,7 @@ export class PgpKey {
         const longid = await PgpKey.longid(fingerprint);
         if (longid) {
           const shortid = longid.substr(-8);
-          ids.push({ fingerprint, longid, shortid, keywords: mnemonic(longid)! });
+          ids.push({ fingerprint, longid, shortid, keywords: mnemonic(longid) ?? '' });
         }
       }
     }
@@ -429,6 +430,7 @@ export class PgpKey {
     } else if (typeof certificate === 'string') {
       return { key, revocationCertificate: certificate };
     } else {
+      const readToEnd = await requireStreamReadToEnd();
       return {
         key,
         revocationCertificate: await readToEnd(certificate as MaybeStream<string>)

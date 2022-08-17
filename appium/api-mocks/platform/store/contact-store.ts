@@ -1,7 +1,5 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-// tslint:disable:no-null-keyword
-
 import { Contact, Key, KeyUtil } from '../../core/crypto/key';
 
 const DATA: Contact[] = [];
@@ -50,7 +48,6 @@ export class ContactStore {
       update.pubkey = await KeyUtil.asPublicKey(update.pubkey);
     }
     for (const k of Object.keys(update)) {
-      // @ts-ignore
       updated[k] = update[k];
     }
     if (update.pubkey) {
@@ -62,6 +59,7 @@ export class ContactStore {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public static obj = async ({ email, name, pubkey, lastUse, lastCheck }: any): Promise<Contact> => {
     if (!pubkey) {
       return {
@@ -90,7 +88,7 @@ export class ContactStore {
     return contact;
   }
 
-  public static save = async (db: any, contact: Contact | Contact[]): Promise<void> => {
+  public static save = async (db: unknown, contact: Contact | Contact[]): Promise<void> => {
     if (Array.isArray(contact)) {
       DATA.push(...contact);
     } else {

@@ -11,12 +11,12 @@ export type PromiseCancellation = { cancel: boolean };
 
 export class Str {
 
-  public static extractErrorMessage = (e: any): string | undefined => {
+  public static extractErrorMessage = (e: Error): string | undefined => {
     if (typeof e !== 'object') return undefined;
-    // tslint:disable:no-unsafe-any
+    /* eslint-disable @typescript-eslint/no-unsafe-return */
     if (typeof e.message === 'undefined') return undefined;
     if (typeof e.message === 'string') return e.message;
-    // tslint:enable:no-unsafe-any
+    /* eslint-enable @typescript-eslint/no-unsafe-return */
     return JSON.stringify(e);
   };
 
@@ -46,7 +46,7 @@ export class Str {
     return str.replace(/[.~!$%^*=?]/gi, '');
   };
 
-  public static prettyPrint = (obj: any) => {
+  public static prettyPrint = (obj: unknown) => {
     return (typeof obj === 'object')
       ? JSON.stringify(obj, undefined, 2).replace(/ /g, '&nbsp;').replace(/\n/g, '<br />')
       : String(obj);
@@ -92,7 +92,7 @@ export class Str {
       'October', 'November', 'December'][monthIndex];
   };
 
-  public static sloppyRandom = (length: number = 5) => {
+  public static sloppyRandom = (length = 5) => {
     let id = '';
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
     for (let i = 0; i < length; i++) {
@@ -111,13 +111,13 @@ export class Str {
       .replace(/\//g, '&#x2F;').replace(/\n/g, '<br />');
   };
 
-  public static htmlAttrEncode = (values: Dict<any>): string => {
+  public static htmlAttrEncode = (values: Dict<unknown>): string => {
     return Str.base64urlUtfEncode(JSON.stringify(values));
   };
 
-  public static htmlAttrDecode = (encoded: string): any => {
+  public static htmlAttrDecode = (encoded: string): unknown => {
     try {
-      return JSON.parse(Str.base64urlUtfDecode(encoded)); // tslint:disable-line:no-unsafe-any
+      return JSON.parse(Str.base64urlUtfDecode(encoded));
     } catch (e) {
       return undefined;
     }
@@ -127,16 +127,16 @@ export class Str {
     return string.trim().split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
   };
 
-  public static pluralize = (count: number, noun: string, suffix: string = 's'): string => {
+  public static pluralize = (count: number, noun: string, suffix = 's'): string => {
     return `${count} ${noun}${count > 1 ? suffix : ''}`;
   };
 
-  public static toUtcTimestamp = (datetimeStr: string, asStr: boolean = false) => {
+  public static toUtcTimestamp = (datetimeStr: string, asStr = false) => {
     return asStr ? String(Date.parse(datetimeStr)) : Date.parse(datetimeStr);
   };
 
   public static datetimeToDate = (date: string) => {
-    return date.substr(0, 10).replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;');
+    return date.substring(0, 10).replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;');
   };
 
   public static fromDate = (date: Date) => {
@@ -161,10 +161,9 @@ export class Str {
       return str;
     }
     return decodeURIComponent(
-      // tslint:disable-next-line:no-unsafe-any
-      Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
+      String(Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
+      }).join('')));
   };
 
 }
@@ -192,7 +191,7 @@ export class Value {
       return result;
     },
     contains: <T>(arr: T[] | string, value: T): boolean => {
-      return Boolean(arr && typeof arr.indexOf === 'function' && (arr as any[]).indexOf(value) !== -1);
+      return Boolean(arr && typeof arr.indexOf === 'function' && (arr as T[]).indexOf(value) !== -1);
     },
     sum: (arr: number[]) => arr.reduce((a, b) => a + b, 0),
     average: (arr: number[]) => Value.arr.sum(arr) / arr.length,
@@ -221,11 +220,11 @@ export class Value {
 }
 
 export class Url {
-
+  /* eslint-disable @typescript-eslint/naming-convention */
   private static URL_PARAM_DICT: Dict<boolean | null> = {
-    // tslint:disable-next-line:no-null-keyword
     '___cu_true___': true, '___cu_false___': false, '___cu_null___': null
   };
+  /* eslint-enable @typescript-eslint/naming-convention */
 
   /**
    * will convert result to desired format: camelCase or snake_case, based on what was supplied in expectedKeys
@@ -233,7 +232,10 @@ export class Url {
    */
   public static parse = (expectedKeys: string[], parseThisUrl?: string) => {
     const url = (parseThisUrl || window.location.search.replace('?', ''));
-    const valuePairs = url.split('?').pop()!.split('&'); // str.split('?') string[].length will always be >= 1
+    const valuePairs = url.split('?').pop()?.split('&'); // str.split('?') string[].length will always be >= 1
+    if (!valuePairs) {
+      return null;
+    }
     const rawParams: Dict<string> = {};
     const rawParamNameDict: Dict<string> = {};
     for (const valuePair of valuePairs) {

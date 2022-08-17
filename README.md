@@ -11,7 +11,7 @@ You will need to have Xcode - latest version - installed.
 ```sh
 # clone repo
 git clone https://github.com/FlowCrypt/flowcrypt-ios.git && cd flowcrypt-ios
-# this is to setup husky
+# this is to setup husky and eslint
 npm install
 # set up environment
 sudo xcode-select --install

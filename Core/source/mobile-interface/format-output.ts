@@ -67,7 +67,7 @@ const fillInlineHtmlImgs = (htmlContent: string, inlineImgsByCid: { [cid: string
     if (img) {
       // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
       // actually contains base64 encoded data, not Uint8Array as the type claims
-      const alteredSrcAttr = `src="data:${img.attMeta!.type};base64,${img.attMeta!.data}"`;
+      const alteredSrcAttr = `src="data:${img.attMeta?.type};base64,${img.attMeta?.data}"`;
       // delete to find out if any imgs were unused
       // later we can add the unused ones at the bottom
       // (though as implemented will cause issues if the same cid is reused
@@ -87,8 +87,8 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
   const imgsAtTheBottom: MsgBlock[] = [];
   const inlineImgsByCid: { [cid: string]: MsgBlock } = {};
   for (const plainImgBlock of allContentBlocks.filter(b => Mime.isPlainImgAtt(b))) {
-    if (plainImgBlock.attMeta!.cid) {
-      inlineImgsByCid[plainImgBlock.attMeta!.cid.replace(/>$/, '').replace(/^</, '')] = plainImgBlock;
+    if (plainImgBlock.attMeta?.cid) {
+      inlineImgsByCid[plainImgBlock.attMeta.cid.replace(/>$/, '').replace(/^</, '')] = plainImgBlock;
     } else {
       imgsAtTheBottom.push(plainImgBlock);
     }
@@ -144,11 +144,11 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
 
   for (const inlineImg of imgsAtTheBottom.concat(Object.values(inlineImgsByCid))) {
     // render any images we did not insert into content, at the bottom
-    const alt = `${inlineImg.attMeta!.name || '(unnamed image)'} - ${inlineImg.attMeta!.length! / 1024}kb`;
+    const alt = `${inlineImg.attMeta?.name || '(unnamed image)'} - ${inlineImg.attMeta?.length ?? 0 / 1024}kb`;
     // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
     // actually contains base64 encoded data, not Uint8Array as the type claims
-    const inlineImgTag = `<img src="data:${inlineImg.attMeta!.type};` +
-      `base64,${inlineImg.attMeta!.data}" alt="${Xss.escape(alt)} " />`;
+    const inlineImgTag = `<img src="data:${inlineImg.attMeta?.type};` +
+      `base64,${inlineImg.attMeta?.data}" alt="${Xss.escape(alt)} " />`;
     msgContentAsHtml += fmtMsgContentBlockAsHtml(inlineImgTag, 'plain');
     msgContentAsText += `[image: ${alt}]\n`;
   }
@@ -171,6 +171,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
   return { contentBlock, text: msgContentAsText.trim() };
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
   return {
     json: JSON.stringify(response),
@@ -178,15 +179,16 @@ export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
   };
 };
 
-export const fmtErr = (e: any): EndpointRes => {
+export const fmtErr = (e: Error): EndpointRes => {
   return fmtRes({
     error: {
       message: String(e),
-      stack: e && typeof e === 'object' ? e.stack || '' : '' // tslint:disable-line:no-unsafe-any
+      stack: e && typeof e === 'object' ? e.stack || '' : ''
     }
   });
 };
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const printReplayTestDefinition = (endpoint: string, request: {}, data: Buf) => {
   console.log(`
 ava.test.only('replaying', async t => {

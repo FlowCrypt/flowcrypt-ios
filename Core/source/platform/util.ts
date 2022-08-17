@@ -2,11 +2,13 @@
 
 'use strict';
 
+import { Buffer } from 'buffer';
 import { Buf } from '../core/buf';
 import { randomBytes } from 'crypto';
 import { ConvertStringOptions } from 'encoding-japanese';
 import { Key, KeyID, Subkey, UserID } from 'openpgp';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 declare const dereq_encoding_japanese: {
   convert: (data: Uint8Array, options: ConvertStringOptions) => string;
 };
@@ -24,7 +26,9 @@ export const base64decode = (b64tr: string): string => {
 };
 
 export const setGlobals = () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).btoa = base64encode;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (global as any).atob = base64decode;
 };
 
@@ -57,7 +61,6 @@ export const strToHex = (str: string): string => {
   return r.join('');
 };
 
-/* tslint:disable:no-null-keyword */
 const maxDate = (dates: (Date | null)[]): Date | null => {
   let res: Date | null = null;
   for (const date of dates) {
@@ -67,7 +70,6 @@ const maxDate = (dates: (Date | null)[]): Date | null => {
   }
   return res;
 };
-/* tslint:enable:no-null-keyword */
 
 const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
   const bindingCreated = maxDate(subkey.bindingSignatures.map(b => b.created));
@@ -76,7 +78,6 @@ const getSubkeyExpirationTime = (subkey: Subkey): number | Date => {
 };
 
 // Attempt to backport from openpgp.js v4
-/* tslint:disable:no-null-keyword */
 export const getKeyExpirationTimeForCapabilities = async (
   key: Key,
   capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
@@ -99,7 +100,7 @@ export const getKeyExpirationTimeForCapabilities = async (
     // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
     const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
       ? getSubkeyExpirationTime(encryptionKey)
-      : (await encryptionKey.getExpirationTime(userId))!;
+      : (await encryptionKey.getExpirationTime(userId)) ?? 0;
     if (encryptionKeyExpiry < expiry) expiry = encryptionKeyExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
@@ -109,10 +110,9 @@ export const getKeyExpirationTimeForCapabilities = async (
     if (!signatureKey) return null;
     // could be the same as above, so checking for property instead of using "instanceof"
     const signatureKeyExpiry = 'bindingSignatures' in signatureKey
-      ? await getSubkeyExpirationTime(signatureKey)
-      : (await signatureKey.getExpirationTime(userId))!;
+      ? getSubkeyExpirationTime(signatureKey)
+      : (await signatureKey.getExpirationTime(userId)) ?? 0;
     if (signatureKeyExpiry < expiry) expiry = signatureKeyExpiry;
   }
   return expiry;
 };
-/* tslint:enable:no-null-keyword */

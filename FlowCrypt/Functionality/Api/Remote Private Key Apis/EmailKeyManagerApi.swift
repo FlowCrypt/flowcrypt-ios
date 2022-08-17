@@ -68,7 +68,11 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             headers: headers
         )
         let response = try await ApiCall.call(request)
-        let decryptedPrivateKeysResponse = try JSONDecoder().decode(DecryptedPrivateKeysResponse.self, from: response.data)
+
+        let decryptedPrivateKeysResponse = try JSONDecoder().decode(
+            DecryptedPrivateKeysResponse.self,
+            from: response.data
+        )
 
         let validKeys = try await validate(decryptedPrivateKeysResponse: decryptedPrivateKeysResponse)
         return validKeys
@@ -79,8 +83,7 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
         for privateKey in decryptedPrivateKeysResponse.privateKeys {
             let parsedPrivateKey = try await core.parseKeys(armoredOrBinary: privateKey.decryptedPrivateKey.data())
             // todo - check that parsedPrivateKeys don't contain public keys
-            let isKeyDecrypted = parsedPrivateKey.keyDetails
-                .compactMap { $0.isFullyDecrypted }
+            let isKeyDecrypted = parsedPrivateKey.keyDetails.compactMap(\.isFullyDecrypted)
             if isKeyDecrypted.contains(false) {
                 throw EmailKeyManagerApiError.keysAreNotDecrypted
             }

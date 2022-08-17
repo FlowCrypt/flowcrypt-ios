@@ -79,9 +79,9 @@ public extension UIViewController {
     func showRetryAlert(
         title: String? = "error".localized,
         message: String,
-        cancelActionTitle: String,
+        cancelActionTitle: String = "cancel".localized,
         onRetry: ((UIAlertAction) -> Void)?,
-        onCancel: ((UIAlertAction) -> Void)?
+        onCancel: ((UIAlertAction) -> Void)? = nil
     ) {
         self.view.hideAllToasts()
         hideSpinner()
@@ -100,6 +100,37 @@ public extension UIViewController {
             style: .default,
             handler: onCancel)
         alert.addAction(retry)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
+    }
+
+    @MainActor
+    func showConfirmAlert(
+        title: String? = "warning".localized,
+        message: String,
+        confirmActionTitle: String = "confirm".localized,
+        cancelActionTitle: String = "cancel".localized,
+        onConfirm: ((UIAlertAction) -> Void)?,
+        onCancel: ((UIAlertAction) -> Void)? = nil
+    ) {
+        self.view.hideAllToasts()
+        hideSpinner()
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        let confirm = UIAlertAction(
+            title: confirmActionTitle,
+            style: .cancel,
+            handler: onConfirm
+        )
+        let cancel = UIAlertAction(
+            title: cancelActionTitle,
+            style: .default,
+            handler: onCancel)
+        confirm.accessibilityIdentifier = "aid-confirm-button"
+        alert.addAction(confirm)
         alert.addAction(cancel)
         present(alert, animated: true, completion: nil)
     }

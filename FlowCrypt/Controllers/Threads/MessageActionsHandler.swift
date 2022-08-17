@@ -78,7 +78,7 @@ extension MessageActionsHandler where Self: UIViewController {
             self?.handleMarkUnreadTap()
         }
 
-        let items: [NavigationBarItemsView.Input]
+        var items: [NavigationBarItemsView.Input]
 
         switch currentFolderPath.lowercased() {
         case trashFolderPath?.lowercased():
@@ -92,15 +92,15 @@ extension MessageActionsHandler where Self: UIViewController {
             items = [helpButton, trashButton]
         default:
             // in any other folders
+            items = [helpButton, trashButton, unreadButton]
             if thread.isInbox {
                 logger.logInfo("inbox - helpButton, archiveButton, trashButton, unreadButton")
-                items = [helpButton, archiveButton, trashButton, unreadButton]
-            } else if thread.isArchived {
+                items.insert(archiveButton, at: 1)
+            } else if thread.shouldShowMoveToInboxButton {
                 logger.logInfo("archive - helpButton, moveToInboxButton, trashButton, unreadButton")
-                items = [helpButton, moveToInboxButton, trashButton, unreadButton]
+                items.insert(moveToInboxButton, at: 1)
             } else {
                 logger.logInfo("sent - helpButton, trashButton, unreadButton")
-                items = [helpButton, trashButton, unreadButton]
             }
         }
 
@@ -118,24 +118,29 @@ extension MessageActionsHandler where Self: UIViewController {
     func handleTrashTap() {
         Task {
             do {
-                let trashPath = try await trashFolderProvider.trashFolderPath
-                guard let trashPath = trashPath else {
+                guard let trashPath = try await trashFolderProvider.trashFolderPath else {
                     return
                 }
-                if self.currentFolderPath.caseInsensitiveCompare(trashPath) == .orderedSame {
-                    self.awaitUserConfirmation { [weak self] in
-                        self?.permanentlyDelete()
-                    }
-                } else {
-                    self.moveToTrash(with: trashPath)
-                }
+
+                deleteMessage(trashPath: trashPath)
             } catch {
-                showToast(error.localizedDescription)
+                showToast(error.errorMessage)
             }
         }
     }
 
-    func awaitUserConfirmation(_ completion: @escaping () -> Void) {
+    private func deleteMessage(trashPath: String) {
+        guard currentFolderPath.caseInsensitiveCompare(trashPath) != .orderedSame else {
+            awaitUserDeleteConfirmation { [weak self] in
+                self?.permanentlyDelete()
+            }
+            return
+        }
+
+        moveToTrash(with: trashPath)
+    }
+
+    private func awaitUserDeleteConfirmation(_ completion: @escaping () -> Void) {
         let alert = UIAlertController(
             title: "message_permanently_delete_title".localized,
             message: "message_permanently_delete".localized,
@@ -145,7 +150,7 @@ extension MessageActionsHandler where Self: UIViewController {
             UIAlertAction(title: "cancel".localized, style: .default)
         )
         alert.addAction(
-            UIAlertAction(title: "ok".localized, style: .default) { _ in
+            UIAlertAction(title: "delete".localized, style: .destructive) { _ in
                 completion()
             }
         )

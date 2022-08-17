@@ -2,23 +2,20 @@
 
 'use strict';
 
-/* tslint:disable */
+/* eslint-disable */
 // @ts-ignore - this way we can test the Xss class directly as well
 global.dereq_sanitize_html = require("sanitize-html");
 // @ts-ignore - this way we can test ISO-2201-JP encoding
 global.dereq_encoding_japanese = require("encoding-japanese");
 (global as any)["emailjs-mime-builder"] = require('../../source/lib/emailjs/emailjs-mime-builder');
 (global as any)["emailjs-mime-parser"] = require('../../source/lib/emailjs/emailjs-mime-parser');
-(global as any)["iso88592"] = require('../../source/lib/iso-8859-2');
-/* tslint:enable */
-
-/* tslint:disable:no-unused-expression */
-/* tslint:disable:no-unsafe-any */
+(global as any).iso88592 = require('../../source/lib/iso-8859-2');
+/* eslint-enable */
 
 import * as ava from 'ava';
 
 // eslint-disable-next-line max-len
-import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, parseResponse } from './test/test-utils';
+import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, JsonDict, parseResponse } from './test/test-utils';
 
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
@@ -26,6 +23,7 @@ import { Endpoints } from './mobile-interface/endpoints';
 import { decryptKey, PrivateKey, readKey } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './core/pgp';
 import { PgpKey } from './core/pgp-key';
+import { MsgBlock } from './core/msg-block';
 
 const text = 'some\n汉\ntxt';
 const htmlContent = text.replace(/\n/g, '<br />');
@@ -49,8 +47,10 @@ ava.default('generateKey', async t => {
   expect(json.key.private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
   expect(json.key.public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
   const key = await readKey({ armoredKey: json.key.private });
+  /* eslint-disable @typescript-eslint/no-unused-expressions */
   expect(isFullyEncrypted(key)).to.be.true;
   expect(isFullyDecrypted(key)).to.be.false;
+  /* eslint-enable @typescript-eslint/no-unused-expressions */
   expect(json.key.algo).to.deep.equal({ algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 });
   expectNoData(data);
   t.pass();
@@ -62,7 +62,7 @@ for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && n
     const { pubKeys, keys } = getKeypairs(keypairName);
     const { data: encryptedMsg, json: encryptJson } =
       parseResponse(await endpoints.encryptMsg({ pubKeys }, [Buffer.from(content, 'utf8')]));
-    expectEmptyJson(encryptJson);
+    expectEmptyJson(encryptJson as JsonDict);
     expectData(encryptedMsg, 'armoredMsg');
     const { data: blocks, json: decryptJson } =
       parseResponse(await endpoints.parseDecryptMsg({ keys }, [encryptedMsg]));
@@ -78,7 +78,7 @@ ava.default(`encryptMsg -> parseDecryptMsg (with password)`, async t => {
   const msgPwd = '123';
   const { data: encryptedMsg, json: encryptJson } = parseResponse(
     await endpoints.encryptMsg({ pubKeys: [], msgPwd }, [Buffer.from(content, 'utf8')]));
-  expectEmptyJson(encryptJson);
+  expectEmptyJson(encryptJson as JsonDict);
   expectData(encryptedMsg, 'armoredMsg');
   const { data: blocks, json: decryptJson } = parseResponse(
     await endpoints.parseDecryptMsg({ keys: [], msgPwd }, [encryptedMsg]));
@@ -97,7 +97,7 @@ ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
     cc: ['some@cc.com'], bcc: [], from: 'some@from.com', subject: 'a subj'
   };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
-  expectEmptyJson(composeEmailJson);
+  expectEmptyJson(composeEmailJson as JsonDict);
   const plainMimeStr = plainMimeMsg.toString();
   expect(plainMimeStr).contains('To: some@to.com');
   expect(plainMimeStr).contains('From: some@from.com');
@@ -134,7 +134,7 @@ orig message
     cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original', replyToMimeMsg
   };
   const { data: mimeMsgReply, json } = parseResponse(await endpoints.composeEmail(req));
-  expectEmptyJson(json);
+  expectEmptyJson(json as JsonDict);
   const mimeMsgReplyStr = mimeMsgReply.toString();
   expect(mimeMsgReplyStr).contains('In-Reply-To: <originalmsg@from.com>');
   expect(mimeMsgReplyStr).contains('References: <originalmsg@from.com>');
@@ -149,7 +149,7 @@ ava.default('composeEmail format:plain with attachment', async t => {
     atts: [{ name: 'sometext.txt', type: 'text/plain', base64: Buffer.from('hello, world!!!').toString('base64') }]
   };
   const { data: plainMimeMsg, json: composeEmailJson } = parseResponse(await endpoints.composeEmail(req));
-  expectEmptyJson(composeEmailJson);
+  expectEmptyJson(composeEmailJson as JsonDict);
   const plainMimeStr = plainMimeMsg.toString();
   expect(plainMimeStr).contains('To: some@to.com');
   expect(plainMimeStr).contains('From: some@from.com');
@@ -337,7 +337,7 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
     to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj'
   };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
-  expectEmptyJson(encryptJson);
+  expectEmptyJson(encryptJson as JsonDict);
   const encryptedMimeStr = encryptedMimeMsg.toString();
   expect(encryptedMimeStr).contains('To: encrypted@to.com');
   expect(encryptedMimeStr).contains('MIME-Version: 1.0');
@@ -363,7 +363,7 @@ ava.default('composeEmail format:encrypt-inline with attachment', async t => {
     }]
   };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
-  expectEmptyJson(encryptJson);
+  expectEmptyJson(encryptJson as JsonDict);
   const encryptedMimeStr = encryptedMimeMsg.toString();
   expect(encryptedMimeStr).contains('To: encrypted@to.com');
   expect(encryptedMimeStr).contains('MIME-Version: 1.0');
@@ -380,7 +380,7 @@ for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && n
     const content = Buffer.from([10, 20, 40, 80, 160, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]);
     const { data: encryptedFile, json: encryptJson } =
       parseResponse(await endpoints.encryptFile({ pubKeys, name }, [content]));
-    expectEmptyJson(encryptJson);
+    expectEmptyJson(encryptJson as JsonDict);
     expectData(encryptedFile);
     const { data: decryptedContent, json: decryptJson } =
       parseResponse(await endpoints.decryptFile({ keys }, [encryptedFile]));
@@ -605,8 +605,10 @@ ava.default('decryptKey', async t => {
   const { data, json } =
     parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
   const decryptedKey = await readKey({ armoredKey: json.decryptedKey });
+  /* eslint-disable @typescript-eslint/no-unused-expressions */
   expect(isFullyDecrypted(decryptedKey)).to.be.true;
   expect(isFullyEncrypted(decryptedKey)).to.be.false;
+  /* eslint-enable @typescript-eslint/no-unused-expressions */
   expectNoData(data);
   t.pass();
 });
@@ -616,6 +618,7 @@ ava.default('encryptKey', async t => {
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey, passphrase }));
   const encryptedKey = await readKey({ armoredKey: json.encryptedKey });
+  /* eslint-disable @typescript-eslint/no-unused-expressions */
   expect(isFullyEncrypted(encryptedKey)).to.be.true;
   expect(isFullyDecrypted(encryptedKey)).to.be.false;
   expect(await decryptKey({
@@ -623,12 +626,14 @@ ava.default('encryptKey', async t => {
     passphrase
   })).is.not.null;
   expectNoData(data);
+  /* eslint-enable @typescript-eslint/no-unused-expressions */
   t.pass();
 });
 
 ava.default('decryptKey gpg-dummy', async t => {
   const { keys: [key] } = getKeypairs('gpg-dummy');
   const encryptedKey = await readKey({ armoredKey: key.private });
+  /* eslint-disable @typescript-eslint/no-unused-expressions */
   expect(isFullyEncrypted(encryptedKey)).to.be.true;
   expect(isFullyDecrypted(encryptedKey)).to.be.false;
   const { json } = parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
@@ -645,6 +650,7 @@ ava.default('decryptKey gpg-dummy', async t => {
   const reDecryptedKey = await readKey({ armoredKey: json3.decryptedKey });
   expect(isFullyEncrypted(reDecryptedKey)).to.be.false;
   expect(isFullyDecrypted(reDecryptedKey)).to.be.true;
+  /* eslint-enable @typescript-eslint/no-unused-expressions */
   t.pass();
 });
 
@@ -1002,7 +1008,6 @@ ava.default('verify encrypted+signed message by providing it only a wrong public
     expect(decryptJson.subject).equals('mime email encrypted inline text signed');
     const parsedDecryptData = JSON.parse(decryptData.toString());
     expect(!!parsedDecryptData.verifyRes).equals(true);
-    /* tslint:disable-next-line:no-null-keyword */
     expect(parsedDecryptData.verifyRes.match).equals(null);
     t.pass();
   });
@@ -1047,7 +1052,6 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
-  /* tslint:disable-next-line:no-null-keyword */
   expect(parsedDecryptData.verifyRes.match).equals(null);
   t.pass();
 });
@@ -1062,6 +1066,7 @@ ava.default('verify plain-text signed message that you edited after signing. Thi
   expect(decryptJson.subject).equals('mime email plain signed');
   const parsedDecryptData = JSON.parse(decryptData.toString());
   expect(!!parsedDecryptData.verifyRes).equals(true);
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   expect(parsedDecryptData.verifyRes.match).is.null;
   t.pass();
 });
@@ -1086,8 +1091,8 @@ ava.default('decryptErr for not integrity protected message', async t => {
       [await getCompatAsset('mime-email-not-integrity-protected')]));
   expect(decryptJson.replyType).equals('plain');
   expect(decryptJson.subject).equals('not integrity protected - should show a warning and not decrypt automatically');
-  const blocks = decryptData.toString().split('\n').map(block => JSON.parse(block));
-  expect(blocks[1].decryptErr.error.type).equals('no_mdc');
+  const blocks = decryptData.toString().split('\n').map(block => JSON.parse(block) as MsgBlock);
+  expect(blocks[1]?.decryptErr?.error.type).equals('no_mdc');
   t.pass();
 });
 

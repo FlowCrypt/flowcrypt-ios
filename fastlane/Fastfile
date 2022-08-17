@@ -15,20 +15,22 @@ platform :ios do
 
   desc "Build for UI tests"
   lane :build do
-    xcbuild(
-       workspace: "FlowCrypt.xcworkspace",
-       scheme: "Debug FlowCrypt",
-       configuration: "Debug",
-       xcargs: "-sdk iphonesimulator SYMROOT='/var/tmp/'"
+    scan(
+      workspace: "FlowCrypt.xcworkspace",
+      scheme: "Debug FlowCrypt",
+      skip_build: false,
+      derived_data_path: "/var/tmp/derived_data",
+      build_for_testing: true
     )
-    sh("rm -rf ~/git/flowcrypt-ios/appium/FlowCrypt.app")
-    sh("mv /var/tmp/Debug-iphonesimulator/FlowCrypt.app ~/git/flowcrypt-ios/appium/")
   end
 
   desc "Run Swift tests"
   lane :test do
     scan(
-      scheme: "FlowCryptAppTests"
+      workspace: "FlowCrypt.xcworkspace",
+      scheme: "FlowCryptAppTests",
+      test_without_building: true,
+      derived_data_path: "/var/tmp/derived_data"
     )
   end
 

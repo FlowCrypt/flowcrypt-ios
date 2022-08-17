@@ -46,11 +46,72 @@ extension GmailService: MessageOperationsProvider {
         }
     }
 
+    func emptyFolder(path: String) async throws {
+        let messageIdentifiers = try await fetchAllMessageIdentifers(for: path)
+        try await batchDeleteMessages(identifiers: messageIdentifiers, from: path)
+    }
+
+    private func fetchAllMessageIdentifers(for path: String, token: String? = nil, result: [String] = []) async throws -> [String] {
+        let context = FetchMessageContext(folderPath: path, count: 500, pagination: .byNextPage(token: token))
+        let list = try await fetchMessagesList(using: context)
+        var newResult = (list.messages?.compactMap(\.identifier) ?? []) + result
+        if let nextPageToken = list.nextPageToken {
+            newResult = try await fetchAllMessageIdentifers(for: path, token: nextPageToken, result: newResult)
+        }
+        return newResult
+    }
+
+    func batchDeleteMessages(identifiers: [String], from folderPath: String?) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            let request = GTLRGmail_BatchDeleteMessagesRequest()
+            request.ids = identifiers
+            let query = GTLRGmailQuery_UsersMessagesBatchDelete.query(withObject: request, userId: .me)
+
+            self.gmailService.executeQuery(query) { _, _, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+                return continuation.resume(returning: ())
+            }
+        }
+    }
+
     func archiveMessage(message: Message, folderPath: String) async throws {
         try await update(
             message: message,
             labelsToRemove: [.inbox]
         )
+    }
+
+    func archiveBatchMessages(messages: [Message]) async throws {
+        try await batchUpdate(
+            messages: messages,
+            labelsToRemove: [.inbox]
+        )
+    }
+
+    private func batchUpdate(
+        messages: [Message],
+        labelsToAdd: [MessageLabel] = [],
+        labelsToRemove: [MessageLabel] = []
+    ) async throws {
+        let request = GTLRGmail_BatchModifyMessagesRequest()
+        request.ids = messages.compactMap { $0.identifier.stringId }
+        request.addLabelIds = labelsToAdd.map(\.value)
+        request.removeLabelIds = labelsToRemove.map(\.value)
+        let query = GTLRGmailQuery_UsersMessagesBatchModify.query(
+            withObject: request,
+            userId: .me
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            self.gmailService.executeQuery(query) { _, _, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+                return continuation.resume(returning: ())
+            }
+        }
     }
 
     private func update(
