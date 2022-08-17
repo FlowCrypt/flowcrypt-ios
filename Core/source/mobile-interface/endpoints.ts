@@ -18,7 +18,7 @@ import { VERSION } from '../core/const';
 import { ValidateInput, readArmoredKeyOrThrow, NodeRequest } from './validate-input';
 import { Xss } from '../platform/xss';
 import { gmailBackupSearchQuery } from '../core/const';
-import { encryptKey, Key, PrivateKey, readKeys } from 'openpgp';
+import { encryptKey, Key, PrivateKey, readKey, readKeys } from 'openpgp';
 
 export class Endpoints {
 
@@ -257,7 +257,7 @@ export class Endpoints {
   };
 
   public decryptFile = async (uncheckedReq: unknown, data: Buffers, verificationPubkeys?: string[]):
-    Promise<EndpointRes> => {
+  Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
     const decryptRes = await PgpMsg.decrypt({
       kisWithPp,
@@ -360,6 +360,13 @@ export class Endpoints {
     }
     const encryptedKey = await encryptKey({ privateKey, passphrase });
     return fmtRes({ encryptedKey: encryptedKey.armor() });
+  };
+
+  public verifyKey = async (uncheckedReq: unknown): Promise<EndpointRes> => {
+    const { armored } = ValidateInput.verifyKey(uncheckedReq);
+    const key = await readKey({ armoredKey: armored });
+    await key.verifyPrimaryKey(); // throws on error
+    return fmtRes({});
   };
 
   public keyCacheWipe = async (): Promise<EndpointRes> => {
