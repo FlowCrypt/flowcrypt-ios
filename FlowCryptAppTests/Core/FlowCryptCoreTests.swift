@@ -21,6 +21,23 @@ final class FlowCryptCoreTests: XCTestCase {
         wait(for: [expectation], timeout: 20)
     }
 
+    private func testPerformance(maxDuration: Double, repeats: Int = 5, testBlock: (() async throws -> Void)) async {
+        var durations: [Double] = []
+
+        for _ in 1...repeats {
+            let timer = TestTimer()
+            timer.start()
+            do {
+                try await testBlock()
+            } catch {}
+            timer.stop()
+            durations.append(timer.durationMs)
+        }
+
+        let average = durations.reduce(0, +) / Double(durations.count)
+        XCTAssertLessThan(average, maxDuration)
+    }
+
     // the tests below
 
     func testVersions() async throws {
@@ -389,44 +406,48 @@ final class FlowCryptCoreTests: XCTestCase {
     }
 
     func testRsaPerformance() async throws {
-        let timer = TestTimer()
-
         // Test decrypt key
-        timer.start()
-        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.private, passphrase: TestData.k3rsa4096.passphrase!)
-        timer.stop()
-        XCTAssertLessThan(timer.durationMs, 1000)
+        await testPerformance(maxDuration: 200) {
+            _ = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.private, passphrase: TestData.k3rsa4096.passphrase!)
+        }
 
         // Test encrypt key
-        timer.start()
-        let _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: TestData.k3rsa4096.passphrase!)
-        timer.stop()
-        XCTAssertLessThan(timer.durationMs, 1000)
+        let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.private, passphrase: TestData.k3rsa4096.passphrase!)
+        await testPerformance(maxDuration: 800) {
+            _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: TestData.k3rsa4096.passphrase!)
+        }
+
+        // Test verify key
+        await testPerformance(maxDuration: 50) {
+            _ = try await core.verifyKey(armoredPrv: TestData.k3rsa4096.private)
+        }
 
         // Test encrypt message
-        timer.start()
+        await testPerformance(maxDuration: 50) {
+            _ = try await core.encrypt(
+                data: "Test email message".data(),
+                pubKeys: [TestData.k3rsa4096.public],
+                password: nil
+            )
+        }
+
+        // Test decrypt message
         let encrypted = try await core.encrypt(
             data: "Test email message".data(),
             pubKeys: [TestData.k3rsa4096.public],
             password: nil
         )
-        timer.stop()
-        XCTAssertLessThan(timer.durationMs, 1000)
-
-        // Test decrypt msg
-        timer.start()
-        let _ = try await core.parseDecryptMsg(
-            encrypted: encrypted,
-            keys: [TestData.k3rsa4096],
-            msgPwd: nil,
-            isEmail: true,
-            verificationPubKeys: [TestData.k3rsa4096.public]
-        )
-        timer.stop()
-        XCTAssertLessThan(timer.durationMs, 1000)
+        await testPerformance(maxDuration: 50) {
+            _ = try await core.parseDecryptMsg(
+                encrypted: encrypted,
+                keys: [TestData.k3rsa4096],
+                msgPwd: nil,
+                isEmail: true,
+                verificationPubKeys: [TestData.k3rsa4096.public]
+            )
+        }
 
         // Test sign message
-        timer.start()
         let msg = SendableMsg(
             text: "this is the message",
             html: nil,
@@ -441,10 +462,9 @@ final class FlowCryptCoreTests: XCTestCase {
             signingPrv: TestData.k3rsa4096,
             password: nil
         )
-
-        let _ = try await core.composeEmail(msg: msg, fmt: .encryptInline)
-        timer.stop()
-        XCTAssertLessThan(timer.durationMs, 1000)
+        await testPerformance(maxDuration: 1000) {
+            _ = try await core.composeEmail(msg: msg, fmt: .encryptInline)
+        }
     }
 
     func testDecryptEncryptedFile() async throws {

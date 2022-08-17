@@ -72,7 +72,16 @@ module.exports = {
       }
     ],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/indent': 'off',
+    '@typescript-eslint/indent': ['error', 2,
+      {
+        SwitchCase: 1,
+        ignoredNodes: [
+          "TSUnionType",
+          "TSTypeAliasDeclaration *",
+          "TSTypeAnnotation"
+        ]
+      }
+    ],
     '@typescript-eslint/member-ordering': 'error',
     '@typescript-eslint/naming-convention': 'error',
     '@typescript-eslint/no-empty-function': 'error',
@@ -112,7 +121,7 @@ module.exports = {
     '@typescript-eslint/typedef': 'off',
     '@typescript-eslint/unbound-method': 'error',
     '@typescript-eslint/unified-signatures': 'error',
-    'indent': ['error', 2, { SwitchCase: 1 }],
+    'indent': 'off',
     'max-len': ['error', { code: 120 }],
     'arrow-parens': [
       'off',

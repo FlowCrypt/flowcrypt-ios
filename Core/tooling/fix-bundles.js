@@ -72,22 +72,6 @@ const replace = (libSrc, regex, replacement) => {
 // update openpgp code to use some native functionality
 let entrypointBareSrc = fs.readFileSync(`${bundleRawDir}/entrypoint-bare.js`).toString();
 
-// entrypointBareSrc = replace( // rsa decrypt on host
-//   // todo: use randomPayload value on iOS side
-//   entrypointBareSrc,
-//   /publicKey\.rsa\.decrypt\(c, n, e, d, p, q, u, randomPayload\)/,
-//   `await hostRsaDecryption(global.dereq_asn1, bn, c, n, e, d, p, q)`
-// );
-/* disabled because it works faster without this change */
-// entrypointBareSrc = replace( // rsa verify on host
-//   entrypointBareSrc,
-//   /return publicKey\.rsa\.verify\(hashAlgo, data, s, n, e, hashed\)/, `
-//   // returns empty str if not supported: js fallback below
-//   const computed = await coreHost.modPow(s.toString(10), e.toString(10), n.toString(10));
-//   return computed
-//     ? new bn.default(computed, 10).toArrayLike(Uint8Array, 'be', n.byteLength())
-//     : await publicKey.rsa.verify(hashAlgo, data, s, n, e, hashed);`
-// );
 entrypointBareSrc = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
   entrypointBareSrc,
   /toHash = new Uint8Array\(prefixlen \+ count\);/,

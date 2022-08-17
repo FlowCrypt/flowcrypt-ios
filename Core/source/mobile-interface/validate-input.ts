@@ -54,6 +54,7 @@ export namespace NodeRequest {
   export type isEmailValid = { email: string };
   export type decryptKey = { armored: string, passphrases: string[] };
   export type encryptKey = { armored: string, passphrase: string };
+  export type verifyKey = { armored: string };
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
@@ -160,6 +161,13 @@ export class ValidateInput {
       return v as NodeRequest.encryptKey;
     }
     throw new Error('Wrong request structure for NodeRequest.encryptKey');
+  };
+
+  public static verifyKey = (v: unknown): NodeRequest.verifyKey => {
+    if (isObj(v) && hasProp(v, 'armored', 'string')) {
+      return v as NodeRequest.verifyKey;
+    }
+    throw new Error('Wrong request structure for NodeRequest.verifyKey');
   };
 
 }
