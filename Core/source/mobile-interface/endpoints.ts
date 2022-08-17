@@ -257,7 +257,7 @@ export class Endpoints {
   };
 
   public decryptFile = async (uncheckedReq: unknown, data: Buffers, verificationPubkeys?: string[]):
-  Promise<EndpointRes> => {
+    Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
     const decryptRes = await PgpMsg.decrypt({
       kisWithPp,
