@@ -413,7 +413,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // Test encrypt key
         let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.private, passphrase: TestData.k3rsa4096.passphrase!)
-        await testPerformance(maxDuration: 400) {
+        await testPerformance(maxDuration: 800) {
             _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: TestData.k3rsa4096.passphrase!)
         }
 
