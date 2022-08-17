@@ -76,8 +76,9 @@ module.exports = {
       {
         SwitchCase: 1,
         ignoredNodes: [
-          "PropertyDefinition[decorators]",
-          "TSUnionType"
+          "TSUnionType",
+          "TSTypeAliasDeclaration *",
+          "TSTypeAnnotation"
         ]
       }
     ],
