@@ -28,7 +28,7 @@
   },
   "scripts": {
     "build": "./tooling/build.sh",
-    "predeploy": "npm run-script build",
+    "postbuild": "npm run deploy",
     "deploy": "cp build/final/flowcrypt-ios-prod.js ../FlowCrypt/Resources/flowcrypt-ios-prod.js.txt",
     "pretest": "npm run-script build",
     "test": "npx ava build/ts/test.js --verbose",

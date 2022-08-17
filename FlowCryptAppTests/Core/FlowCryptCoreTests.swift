@@ -35,7 +35,6 @@ final class FlowCryptCoreTests: XCTestCase {
         }
 
         let average = durations.reduce(0, +) / Double(durations.count)
-        print(average)
         XCTAssertLessThan(average, maxDuration)
     }
 
