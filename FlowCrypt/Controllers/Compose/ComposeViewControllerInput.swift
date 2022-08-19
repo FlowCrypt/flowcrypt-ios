@@ -80,19 +80,8 @@ extension ComposeMessageInput {
         type != .idle
     }
 
-    var isIdle: Bool {
-        !isQuote
-    }
-
     var isReply: Bool {
         guard case .reply = type else {
-            return false
-        }
-        return true
-    }
-
-    var isForward: Bool {
-        guard case .forward = type else {
             return false
         }
         return true

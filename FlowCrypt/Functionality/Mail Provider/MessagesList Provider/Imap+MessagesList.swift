@@ -63,7 +63,8 @@ extension Message {
             subject: imapMessage.header.subject,
             size: Int(imapMessage.size),
             labels: labels,
-            attachmentIds: []
+            attachmentIds: [],
+            body: MessageBody(text: "", html: nil) // TODO: implement body parsing
         )
     }
 }

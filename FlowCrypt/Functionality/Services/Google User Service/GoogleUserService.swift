@@ -94,13 +94,16 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     init(
         currentUserEmail: String?,
-        appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil
+        appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil,
+        shouldRunWarmupQuery: Bool = false
     ) {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
         super.init()
 
-        self.runWarmupQuery()
+        if shouldRunWarmupQuery {
+            self.runWarmupQuery()
+        }
     }
 
     private enum Constants {

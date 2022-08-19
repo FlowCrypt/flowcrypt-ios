@@ -9,7 +9,7 @@
 import Foundation
 
 protocol MessageProvider {
-    func fetchMsg(message: Message,
+    func fetchMsg(id: Identifier,
                   folder: String,
-                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data
+                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> Message
 }

@@ -275,7 +275,7 @@ extension ThreadDetailsViewController {
             ccRecipients: ccRecipients,
             sender: input.rawMessage.sender,
             subject: [quoteType.subjectPrefix, subject].joined(),
-            mime: processedMessage.rawMimeData,
+            mime: Data(), // TODO: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
             threadId: threadId,
@@ -368,8 +368,8 @@ extension ThreadDetailsViewController {
         hideSpinner()
 
         switch error as? MessageServiceError {
-        case let .missingPassPhrase(rawMimeData):
-            handleWrongPassPhrase(for: rawMimeData, at: indexPath)
+        case let .missingPassPhrase(message):
+            handleWrongPassPhrase(for: message, at: indexPath)
         default:
             // TODO: - Ticket - Improve error handling for ThreadDetailsViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -413,7 +413,7 @@ extension ThreadDetailsViewController {
         present(alertController, animated: true)
     }
 
-    private func handleWrongPassPhrase(_ passPhrase: String? = nil, for rawMimeData: Data, at indexPath: IndexPath) {
+    private func handleWrongPassPhrase(_ passPhrase: String? = nil, for message: Message, at indexPath: IndexPath) {
         let title = passPhrase == nil
             ? "setup_enter_pass_phrase".localized
             : "setup_wrong_pass_phrase_retry".localized
@@ -424,14 +424,14 @@ extension ThreadDetailsViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
+                self?.handlePassPhraseEntry(message: message, with: passPhrase, at: indexPath)
             }
         )
 
         present(alert, animated: true, completion: nil)
     }
 
-    private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
+    private func handlePassPhraseEntry(message: Message, with passPhrase: String, at indexPath: IndexPath) {
         presentedViewController?.dismiss(animated: true)
 
         handleFetchProgress(state: .decrypt)
@@ -445,7 +445,7 @@ extension ThreadDetailsViewController {
                 if matched {
                     let sender = input[indexPath.section-1].rawMessage.sender
                     let processedMessage = try await messageService.decryptAndProcessMessage(
-                        mime: rawMimeData,
+                        message,
                         sender: sender,
                         onlyLocalKeys: false,
                         userEmail: appContext.user.email,
@@ -453,7 +453,7 @@ extension ThreadDetailsViewController {
                     )
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
-                    handleWrongPassPhrase(passPhrase, for: rawMimeData, at: indexPath)
+                    handleWrongPassPhrase(passPhrase, for: message, at: indexPath)
                 }
             } catch {
                 handleError(error, at: indexPath)

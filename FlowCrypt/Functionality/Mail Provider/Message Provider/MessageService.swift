@@ -17,7 +17,7 @@ enum MessageFetchState {
 
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
-    case missingPassPhrase(_ rawMimeData: Data)
+    case missingPassPhrase(_ message: Message)
     case emptyKeys
     case emptyKeysForEKM
     case attachmentNotFound
@@ -94,13 +94,13 @@ final class MessageService {
         isUsingKeyManager: Bool,
         progressHandler: ((MessageFetchState) -> Void)?
     ) async throws -> ProcessedMessage {
-        let rawMimeData = try await messageProvider.fetchMsg(
-            message: input,
+        let message = try await messageProvider.fetchMsg(
+            id: input.identifier,
             folder: folder,
             progressHandler: progressHandler
         )
         return try await decryptAndProcessMessage(
-            mime: rawMimeData,
+            message,
             sender: input.sender,
             onlyLocalKeys: onlyLocalKeys,
             userEmail: userEmail,
@@ -109,7 +109,7 @@ final class MessageService {
     }
 
     func decryptAndProcessMessage(
-        mime rawMimeData: Data,
+        _ message: Message,
         sender: Recipient?,
         onlyLocalKeys: Bool,
         userEmail: String,
@@ -124,18 +124,18 @@ final class MessageService {
         }
         let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
         let decrypted = try await core.parseDecryptMsg(
-            encrypted: rawMimeData,
+            encrypted: message.body.text.data(),
             keys: keys,
             msgPwd: nil,
-            isEmail: true,
+            isEmail: false,
             verificationPubKeys: verificationPubKeys
         )
         guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-            throw MessageServiceError.missingPassPhrase(rawMimeData)
+            throw MessageServiceError.missingPassPhrase(message)
         }
 
         return try await processMessage(
-            rawMimeData: rawMimeData,
+            message: message,
             with: decrypted
         )
     }
@@ -158,7 +158,7 @@ final class MessageService {
     }
 
     private func processMessage(
-        rawMimeData: Data,
+        message: Message,
         with decrypted: CoreRes.ParseDecryptMsg
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
@@ -197,7 +197,7 @@ final class MessageService {
         }
 
         return ProcessedMessage(
-            rawMimeData: rawMimeData,
+            message: message,
             text: text,
             messageType: messageType,
             attachments: attachments,

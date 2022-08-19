@@ -120,7 +120,8 @@ final class ComposeViewController: TableNodeViewController {
         )
         self.googleUserService = GoogleUserService(
             currentUserEmail: appContext.user.email,
-            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate,
+            shouldRunWarmupQuery: true
         )
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
             appContext: appContext,

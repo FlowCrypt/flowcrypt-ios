@@ -209,7 +209,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "bcc": msg.bcc,
             "from": msg.from,
             "subject": msg.subject,
-            "replyToMimeMsg": msg.replyToMimeMsg,
+            "replyToMimeMsg": "",  // TODO: msg.replyToMimeMsg,
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": msg.pubKeys,

@@ -11,18 +11,20 @@ import Foundation
 extension Imap: MessageProvider {
 
     func fetchMsg(
-        message: Message,
+        id: Identifier,
         folder: String,
         progressHandler: ((MessageFetchState) -> Void)?
-    ) async throws -> Data {
-        guard let identifier = message.identifier.intId else {
+    ) async throws -> Message {
+        guard let identifier = id.intId else {
             throw AppErr.unexpected("Missing message identifier")
         }
-        return try await execute("fetchMsg", { sess, respond in
-            sess.fetchMessageOperation(
-                withFolder: folder,
-                uid: UInt32(identifier)
-            ).start { error, data in respond(error, data) }
-        })
+        // TODO: Should return Message instead of Data
+        throw AppErr.unexpected("Should be implemented")
+//        return try await execute("fetchMsg", { sess, respond in
+//            sess.fetchMessageOperation(
+//                withFolder: folder,
+//                uid: UInt32(identifier)
+//            ).start { error, data in respond(error, data) }
+//        })
     }
 }

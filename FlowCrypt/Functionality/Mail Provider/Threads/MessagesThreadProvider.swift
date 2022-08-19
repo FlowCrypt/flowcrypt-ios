@@ -148,6 +148,7 @@ extension Message {
 
         let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
         let labels: [MessageLabel] = message.labelIds?.map(MessageLabel.init) ?? []
+        let body = MessageBody(text: message.body(type: .text) ?? "", html: message.body(type: .html))
 
         var sender: Recipient?
         var subject: String?
@@ -182,6 +183,7 @@ extension Message {
             size: message.sizeEstimate.flatMap(Int.init),
             labels: labels,
             attachmentIds: attachmentsIds,
+            body: body,
             threadId: message.threadId,
             draftIdentifier: draftIdentifier,
             raw: message.raw,

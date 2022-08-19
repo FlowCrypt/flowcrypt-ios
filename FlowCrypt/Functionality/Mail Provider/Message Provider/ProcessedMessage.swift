@@ -65,20 +65,9 @@ struct ProcessedMessage {
         }
     }
 
-    let rawMimeData: Data
+    let message: Message
     let text: String
     let messageType: MessageType
     var attachments: [MessageAttachment]
     var signature: MessageSignature?
-}
-
-extension ProcessedMessage {
-    // TODO: - Ticket - fix with empty state for ThreadDetailsViewController
-    static let empty = ProcessedMessage(
-        rawMimeData: Data(),
-        text: "loading_title".localized + "...",
-        messageType: .plain,
-        attachments: [],
-        signature: .unsigned
-    )
 }
