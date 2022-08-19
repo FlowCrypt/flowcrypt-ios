@@ -40,8 +40,6 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let thread: MessageThread
     private var input: [ThreadDetailsViewController.Input]
 
-    private var textFieldDelegate: UITextFieldDelegate?
-
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
         thread.path

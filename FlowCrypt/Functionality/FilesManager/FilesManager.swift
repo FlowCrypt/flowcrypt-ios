@@ -38,8 +38,6 @@ final class FilesManager {
     private let documentsDirectoryURL: URL = {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }()
-
-    private let queue = DispatchQueue.global(qos: .background)
 }
 
 extension FilesManager: FilesManagerType {

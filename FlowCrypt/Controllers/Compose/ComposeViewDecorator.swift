@@ -309,16 +309,6 @@ extension ComposeViewDecorator {
         )
     }
 
-    private static var errorStateContext: RecipientStateContext {
-        RecipientStateContext(
-            backgroundColor: .gray,
-            borderColor: .red,
-            textColor: .white,
-            image: #imageLiteral(resourceName: "cancel"),
-            accessibilityIdentifier: "gray"
-        )
-    }
-
     private static var errorStateContextWithRetry: RecipientStateContext {
         RecipientStateContext(
             backgroundColor: .red,

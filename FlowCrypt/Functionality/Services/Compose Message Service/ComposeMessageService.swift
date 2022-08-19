@@ -28,7 +28,6 @@ final class ComposeMessageService {
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
     private lazy var logger = Logger.nested(Self.self)
-    private lazy var alertsFactory = AlertsFactory()
 
     private struct ReplyInfo: Encodable {
         let sender: String

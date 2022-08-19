@@ -84,23 +84,7 @@ extension ComposeMessageContext {
         recipients[index].state = state
     }
 
-    mutating func updateRecipient(email: String, state: RecipientState, keyState: PubKeyState?) {
-        guard let index = recipients.firstIndex(where: { $0.email == email }) else {
-            return
-        }
-        recipients[index].state = state
-        recipients[index].keyState = keyState
-    }
-
     mutating func remove(recipient: String, type: RecipientType) {
         recipients.removeAll(where: { $0.email == recipient && $0.type == type })
-    }
-
-    mutating func update(recipient: String, state: RecipientState, keyState: PubKeyState?) {
-        guard let index = recipients.firstIndex(where: { $0.email == recipient }) else {
-            return
-        }
-        recipients[index].state = state
-        recipients[index].keyState = keyState
     }
 }

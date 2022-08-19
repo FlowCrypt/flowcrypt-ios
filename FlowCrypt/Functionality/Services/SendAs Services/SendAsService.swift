@@ -20,8 +20,7 @@ final class SendAsService: SendAsServiceType {
     init(
         encryptedStorage: EncryptedStorageType,
         localSendAsProvider: LocalSendAsProviderType? = nil,
-        remoteSendAsProvider: RemoteSendAsProviderType,
-        trashPathStorage: LocalStorageType = LocalStorage()
+        remoteSendAsProvider: RemoteSendAsProviderType
     ) {
         self.localSendAsProvider = localSendAsProvider ?? LocalSendAsProvider(encryptedStorage: encryptedStorage)
         self.remoteSendAsProvider = remoteSendAsProvider

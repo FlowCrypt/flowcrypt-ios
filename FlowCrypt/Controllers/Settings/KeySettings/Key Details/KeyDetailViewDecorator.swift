@@ -22,7 +22,6 @@ extension KeyDetailViewController.Part {
 
 struct KeyDetailViewDecorator {
     let titleInsets = UIEdgeInsets.deviceSpecificTextInsets(top: 16, bottom: 16)
-    let buttonInsets = UIEdgeInsets.buttonInsets
 
     func attributedTitle(for keyDetailPart: KeyDetailViewController.Part) -> NSAttributedString {
         let title: String

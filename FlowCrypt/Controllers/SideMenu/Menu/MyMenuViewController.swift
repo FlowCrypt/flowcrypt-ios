@@ -28,13 +28,6 @@ final class MyMenuViewController: ViewController {
         case folders
         case accountAdding
 
-        mutating func next() {
-            switch self {
-            case .accountAdding: self = .folders
-            case .folders: self = .accountAdding
-            }
-        }
-
         var arrowImage: UIImage? {
             switch self {
             case .folders: return #imageLiteral(resourceName: "arrow_down").tinted(.white)

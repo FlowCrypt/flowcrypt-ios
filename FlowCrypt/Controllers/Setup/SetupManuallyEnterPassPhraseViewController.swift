@@ -17,10 +17,6 @@ import FlowCryptUI
 final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController, PassPhraseSaveable {
     private enum Parts: Int, CaseIterable {
         case title, description, passPhrase, divider, saveLocally, saveInMemory, enterPhrase, chooseAnother
-
-        var indexPath: IndexPath {
-            IndexPath(row: rawValue, section: 0)
-        }
     }
 
     private let appContext: AppContext

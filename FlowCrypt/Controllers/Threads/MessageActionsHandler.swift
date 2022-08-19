@@ -16,7 +16,6 @@ protocol MessageActionsHandler: AnyObject {
     var trashFolderProvider: TrashFolderProviderType { get }
 
     func handleTrashTap()
-    func handleAttachmentTap()
     func handleInfoTap()
     func handleArchiveTap()
     func handleMoveToInboxTap()
@@ -109,10 +108,6 @@ extension MessageActionsHandler where Self: UIViewController {
 
     func handleInfoTap() {
         showToast("Email us at human@flowcrypt.com")
-    }
-
-    func handleAttachmentTap() {
-        showToast("Downloading attachments is not implemented yet")
     }
 
     func handleTrashTap() {

@@ -25,9 +25,3 @@ extension ComposeMessageRecipient: Equatable {
 enum RecipientType: String, CaseIterable, Hashable {
     case from, to, cc, bcc
 }
-
-extension RecipientType {
-    var inputPlaceholder: String {
-        "compose_recipient_\(rawValue)".localized
-    }
-}

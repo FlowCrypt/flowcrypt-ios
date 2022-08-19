@@ -9,11 +9,7 @@
 import Foundation
 import UIKit
 
-protocol EKMVcHelperType {
-    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController)
-}
-
-final class EKMVcHelper: EKMVcHelperType {
+final class EKMVcHelper {
 
     private let appContext: AppContextWithUser
     private let keyMethods: KeyMethodsType

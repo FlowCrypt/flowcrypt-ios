@@ -18,7 +18,7 @@ struct MessageAttachment: Equatable, FileType {
 extension MessageAttachment {
     init?(cameraSourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
         guard let image = cameraSourceMediaInfo[.originalImage] as? UIImage,
-              let data = image.jpegData(compressionQuality: 1) else {
+              let data = image.jpegData(compressionQuality: 0.9) else {
             return nil
         }
 

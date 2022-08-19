@@ -57,10 +57,6 @@ extension GTLRGmail_Message {
         payload?.parts?.filter { !$0.filename.isEmptyOrNil } ?? []
     }
 
-    func header(name: String) -> String? {
-        payload?.headers?.first(where: { $0.name == name })?.value
-    }
-
     func body(type: MessageBodyType) -> String? {
         if let text = textParts.first(where: { $0.mimeType == type.rawValue })?.body?.data {
             return text.base64Decoded

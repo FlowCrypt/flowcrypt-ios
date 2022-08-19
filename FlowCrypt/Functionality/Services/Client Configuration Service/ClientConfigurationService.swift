@@ -14,8 +14,6 @@ protocol ClientConfigurationServiceType {
 }
 
 final class ClientConfigurationService: ClientConfigurationServiceType {
-    private lazy var logger = Logger.nested(Self.self)
-
     private let server: EnterpriseServerApiType
     private let local: LocalClientConfigurationType
 

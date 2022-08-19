@@ -22,8 +22,6 @@ protocol PhotosManagerType {
 
 enum PhotosManagerError: Error {
     case noAccessToCamera
-    case cantFetchMovie
-    case cantFetchImage
 }
 
 final class PhotosManager {
