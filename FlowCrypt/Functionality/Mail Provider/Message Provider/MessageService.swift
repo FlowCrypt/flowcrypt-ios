@@ -115,6 +115,16 @@ final class MessageService {
         userEmail: String,
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
+        guard message.isPgp else {
+            return ProcessedMessage(
+                message: message,
+                text: message.body.text,
+                messageType: .plain,
+                attachments: [], // TODO:
+                signature: nil
+            )
+        }
+
         let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         guard keys.isNotEmpty else {
             if isUsingKeyManager {

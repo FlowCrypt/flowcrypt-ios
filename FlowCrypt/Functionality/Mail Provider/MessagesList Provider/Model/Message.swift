@@ -39,6 +39,10 @@ struct Message: Hashable {
         return true
     }
 
+    var isPgp: Bool {
+        body.text.trimmingCharacters(in: .whitespacesAndNewlines).starts(with: "-----BEGIN PGP ")
+    }
+
     init(
         identifier: Identifier,
         date: Date,
