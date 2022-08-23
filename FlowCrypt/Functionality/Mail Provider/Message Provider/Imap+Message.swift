@@ -9,7 +9,6 @@
 import Foundation
 
 extension Imap: MessageProvider {
-
     func fetchMsg(
         id: Identifier,
         folder: String,
@@ -26,5 +25,19 @@ extension Imap: MessageProvider {
 //                uid: UInt32(identifier)
 //            ).start { error, data in respond(error, data) }
 //        })
+    }
+
+    func fetchAttachment(
+        id: Identifier,
+        messageId: Identifier,
+        progressHandler: ((MessageFetchState) -> Void)?
+    ) async throws -> Data {
+        guard let identifier = id.stringId else {
+            throw AppErr.unexpected("Missing message attachment identifier")
+        }
+        guard let messageIdentifier = messageId.stringId else {
+            throw AppErr.unexpected("Missing message identifier")
+        }
+        throw AppErr.unexpected("Should be implemented")
     }
 }

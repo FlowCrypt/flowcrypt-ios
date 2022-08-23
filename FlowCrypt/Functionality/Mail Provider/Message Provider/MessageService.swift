@@ -151,10 +151,10 @@ final class MessageService {
     }
 
     func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
-        guard attachment.isEncrypted else { return attachment }
+        guard attachment.isEncrypted, let data = attachment.data else { return attachment }
 
         let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
-        let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys, msgPwd: nil)
+        let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
 
         if let decryptErr = decrypted.decryptErr {
             throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)
@@ -164,7 +164,14 @@ final class MessageService {
             throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
         }
 
-        return MessageAttachment(name: decryptSuccess.name, data: decryptSuccess.data, isEncrypted: false)
+        return MessageAttachment(id: attachment.id, name: decryptSuccess.name, data: decryptSuccess.data, estimatedSize: attachment.estimatedSize)
+    }
+
+    func getAttachment(id: Identifier, messageId: Identifier) async throws -> Data {
+        return try await messageProvider.fetchAttachment(
+            id: id,
+            messageId: messageId) { progress in
+        }
     }
 
     private func processMessage(
@@ -218,17 +225,18 @@ final class MessageService {
     private func getAttachments(
         blocks: [MsgBlock]
     ) async throws -> [MessageAttachment] {
-        let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
-        let attachments: [MessageAttachment] = attachmentBlocks.compactMap { block in
-            guard let meta = block.attMeta else { return nil }
-
-            return MessageAttachment(
-                name: meta.name,
-                data: meta.data,
-                isEncrypted: block.type == .encryptedAtt
-            )
-        }
-        return attachments
+        // TODO:
+        return []
+//        let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
+//        let attachments: [MessageAttachment] = attachmentBlocks.compactMap { block in
+//            guard let meta = block.attMeta else { return nil }
+//
+//            return MessageAttachment(
+//                name: meta.name,
+//                data: meta.data
+//            )
+//        }
+//        return attachments
     }
 
     private func hasMsgBlockThatNeedsPassPhrase(_ msg: CoreRes.ParseDecryptMsg) -> Bool {

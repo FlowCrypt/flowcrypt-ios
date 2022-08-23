@@ -80,13 +80,11 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "armored": armoredPrv
         ]
 
-        let verifyResult = try await call(
+        return try await call(
             "verifyKey",
             jsonDict: jsonDict,
             data: nil
-        )
-
-        return Data()
+        ).data
     }
     
     // MARK: Files

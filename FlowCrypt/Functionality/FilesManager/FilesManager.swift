@@ -28,7 +28,7 @@ protocol FilesManagerPresenter {
 protocol FilesManagerType {
     typealias Controller = FilesManagerPresenter & UIDocumentPickerDelegate
 
-    func save(file: FileType) throws -> URL
+    func save(file: MessageAttachment) throws -> URL
 
     @MainActor
     func selectFromFilesApp(from viewController: Controller) async
@@ -41,9 +41,9 @@ final class FilesManager {
 }
 
 extension FilesManager: FilesManagerType {
-    func save(file: FileType) throws -> URL {
+    func save(file: MessageAttachment) throws -> URL {
         let url = documentsDirectoryURL.appendingPathComponent(file.name)
-        try file.data.write(to: url)
+        try file.data?.write(to: url)
         return url
     }
 

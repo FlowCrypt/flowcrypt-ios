@@ -16,7 +16,7 @@ final class AttachmentViewController: UIViewController {
 
     private lazy var logger = Logger.nested(Self.self)
 
-    private let file: FileType
+    private let file: MessageAttachment
     private let shouldShowDownloadButton: Bool
 
     private let filesManager: FilesManagerType
@@ -78,7 +78,7 @@ final class AttachmentViewController: UIViewController {
     private var didLayoutSubviews = false
 
     init(
-        file: FileType,
+        file: MessageAttachment,
         shouldShowDownloadButton: Bool = true,
         filesManager: FilesManagerType = FilesManager()
     ) {
@@ -139,7 +139,7 @@ final class AttachmentViewController: UIViewController {
     private func showTextAttachment() {
         view.addSubview(textView)
         view.constrainToEdges(textView)
-        textView.text = file.data.toStr()
+        textView.text = file.data?.toStr()
         textView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: false)
     }
 
@@ -210,7 +210,8 @@ private extension AttachmentViewController {
 
     private func load() throws {
         let encoderTrace = Trace(id: "base64 encoding")
-        guard let url = URL(string: "data:\(file.name.mimeType);base64,\(file.data.base64EncodedString())") else {
+        guard let data = file.data,
+              let url = URL(string: "data:\(file.name.mimeType);base64,\(data.base64EncodedString())") else {
             throw AppErr.general("Could not produce a data URL to preview this file")
         }
         logger.logDebug("base64 encoding time is \(encoderTrace.finish())")

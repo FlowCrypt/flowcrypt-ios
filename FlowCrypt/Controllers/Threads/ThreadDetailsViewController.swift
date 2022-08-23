@@ -205,9 +205,11 @@ extension ThreadDetailsViewController {
         let section = input[indexPath.section-1]
         let attachmentIndex = indexPath.row - 2
 
-        guard let attachment = section.processedMessage?.attachments[attachmentIndex] else {
-            throw MessageServiceError.attachmentNotFound
-        }
+        var attachment = section.rawMessage.attachments[attachmentIndex]
+        attachment.data = try await messageService.getAttachment(
+            id: attachment.id!,
+            messageId: section.rawMessage.identifier
+        )
 
         if attachment.isEncrypted {
             let decryptedAttachment = try await messageService.decrypt(
@@ -216,7 +218,7 @@ extension ThreadDetailsViewController {
             )
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
-            input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
+            input[indexPath.section-1].rawMessage.attachments[attachmentIndex] = decryptedAttachment
             node.reloadRows(at: [indexPath], with: .automatic)
             return decryptedAttachment
         } else {
@@ -396,7 +398,7 @@ extension ThreadDetailsViewController {
         )
 
         let downloadAction = UIAlertAction(title: "download".localized, style: .default) { [weak self] _ in
-            guard let attachment = self?.input[indexPath.section-1].processedMessage?.attachments[indexPath.row-2] else {
+            guard let attachment = self?.input[indexPath.section-1].rawMessage.attachments[indexPath.row-2] else {
                 return
             }
             self?.show(attachment: attachment)
@@ -572,7 +574,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         guard section > 0, input[section-1].isExpanded else { return 1 }
 
-        let attachmentsCount = input[section-1].processedMessage?.attachments.count ?? 0
+        let attachmentsCount = input[section-1].processedMessage?.message.attachments.count ?? 0
         return Parts.allCases.count + attachmentsCount
     }
 
@@ -606,7 +608,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             let attachmentIndex = indexPath.row - 2
-            let attachment = processedMessage.attachments[attachmentIndex]
+            let attachment = processedMessage.message.attachments[attachmentIndex] // processedMessage.attachments[attachmentIndex]
             return AttachmentNode(
                 input: .init(
                     msgAttachment: attachment,

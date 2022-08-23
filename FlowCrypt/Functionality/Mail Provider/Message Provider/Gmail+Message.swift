@@ -46,6 +46,41 @@ extension GmailService: MessageProvider {
         query.format = format
         return query
     }
+
+    func fetchAttachment(id: Identifier, messageId: Identifier, progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data {
+        guard let identifier = id.stringId else {
+            throw GmailServiceError.missingMessageInfo("id")
+        }
+        guard let messageIdentifier = messageId.stringId else {
+            throw GmailServiceError.missingMessageInfo("id")
+        }
+
+        let query = GTLRGmailQuery_UsersMessagesAttachmentsGet.query(
+            withUserId: .me,
+            messageId: messageIdentifier,
+            identifier: identifier
+        )
+
+        return try await withCheckedThrowingContinuation { continuation in
+            self.gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+
+                guard let attachmentPart = data as? GTLRGmail_MessagePartBody,
+                      let attachmentBase64String = attachmentPart.data
+                else {
+                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("fetchAttachment data"))
+                }
+
+                guard let data = GTLRDecodeWebSafeBase64(attachmentBase64String) else {
+                    return continuation.resume(throwing: GmailServiceError.messageEncode)
+                }
+
+                return continuation.resume(returning: data)
+            }
+        }
+    }
 }
 
 extension GTLRGmail_Message {

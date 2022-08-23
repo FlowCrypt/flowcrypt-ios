@@ -149,6 +149,10 @@ extension Message {
         let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
         let labels: [MessageLabel] = message.labelIds?.map(MessageLabel.init) ?? []
         let body = MessageBody(text: message.body(type: .text) ?? "", html: message.body(type: .html))
+        let attachments: [MessageAttachment] = message.attachmentParts.compactMap {
+            guard let body = $0.body, let id = body.attachmentId, let name = $0.filename, let size = body.size?.intValue else { return nil }
+            return MessageAttachment(id: Identifier(stringId: id), name: name, data: nil, estimatedSize: size)
+        }
 
         var sender: Recipient?
         var subject: String?
@@ -184,6 +188,7 @@ extension Message {
             labels: labels,
             attachmentIds: attachmentsIds,
             body: body,
+            attachments: attachments,
             threadId: message.threadId,
             draftIdentifier: draftIdentifier,
             raw: message.raw,
