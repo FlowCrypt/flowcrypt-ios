@@ -201,15 +201,22 @@ extension ThreadDetailsViewController {
     }
 
     private func getAttachment(at indexPath: IndexPath) async throws -> MessageAttachment {
+        defer { node.reloadRows(at: [indexPath], with: .automatic) }
+
         let trace = Trace(id: "Attachment")
         let section = input[indexPath.section-1]
         let attachmentIndex = indexPath.row - 2
 
-        var attachment = section.rawMessage.attachments[attachmentIndex]
-        attachment.data = try await messageService.getAttachment(
-            id: attachment.id!,
-            messageId: section.rawMessage.identifier
-        )
+        guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
+            throw MessageServiceError.attachmentNotFound
+        }
+
+        if attachment.data == nil {
+            attachment.data = try await messageService.getAttachment(
+                id: attachment.id!,
+                messageId: section.rawMessage.identifier
+            )
+        }
 
         if attachment.isEncrypted {
             let decryptedAttachment = try await messageService.decrypt(
@@ -218,11 +225,11 @@ extension ThreadDetailsViewController {
             )
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
-            input[indexPath.section-1].rawMessage.attachments[attachmentIndex] = decryptedAttachment
-            node.reloadRows(at: [indexPath], with: .automatic)
+            input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
             return decryptedAttachment
         } else {
             logger.logInfo("Got not encrypted attachment - \(trace.finish())")
+            input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = attachment
             return attachment
         }
     }
@@ -320,8 +327,7 @@ extension ThreadDetailsViewController {
                     folder: thread.path,
                     onlyLocalKeys: true,
                     userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager,
-                    progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
 
                 if case .missingPubkey = processedMessage.signature {
@@ -398,7 +404,7 @@ extension ThreadDetailsViewController {
         )
 
         let downloadAction = UIAlertAction(title: "download".localized, style: .default) { [weak self] _ in
-            guard let attachment = self?.input[indexPath.section-1].rawMessage.attachments[indexPath.row-2] else {
+            guard let attachment = self?.input[indexPath.section-1].processedMessage?.attachments[indexPath.row-2] else {
                 return
             }
             self?.show(attachment: attachment)
@@ -473,8 +479,7 @@ extension ThreadDetailsViewController {
                     folder: thread.path,
                     onlyLocalKeys: false,
                     userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager,
-                    progressHandler: { _ in }
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {
@@ -608,7 +613,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             let attachmentIndex = indexPath.row - 2
-            let attachment = processedMessage.message.attachments[attachmentIndex] // processedMessage.attachments[attachmentIndex]
+            let attachment = processedMessage.attachments[attachmentIndex]
             return AttachmentNode(
                 input: .init(
                     msgAttachment: attachment,

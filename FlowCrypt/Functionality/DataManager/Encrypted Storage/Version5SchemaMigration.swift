@@ -215,10 +215,8 @@ extension SchemaMigration {
                 "RecipientObject",
                 "PubKeyObject"
             ]
-            for type in types {
-                if !migration.deleteData(forType: type) {
-                    logger.logWarning("fail to delete data for type \(type)")
-                }
+            for type in types where !migration.deleteData(forType: type) {
+                logger.logWarning("fail to delete data for type \(type)")
             }
         }
 

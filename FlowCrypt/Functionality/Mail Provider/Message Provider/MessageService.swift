@@ -91,13 +91,11 @@ final class MessageService {
         folder: String,
         onlyLocalKeys: Bool,
         userEmail: String,
-        isUsingKeyManager: Bool,
-        progressHandler: ((MessageFetchState) -> Void)?
+        isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
         let message = try await messageProvider.fetchMsg(
             id: input.identifier,
-            folder: folder,
-            progressHandler: progressHandler
+            folder: folder
         )
         return try await decryptAndProcessMessage(
             message,
@@ -120,7 +118,7 @@ final class MessageService {
                 message: message,
                 text: message.body.text,
                 messageType: .plain,
-                attachments: [], // TODO:
+                attachments: message.attachments,
                 signature: nil
             )
         }
@@ -164,7 +162,12 @@ final class MessageService {
             throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
         }
 
-        return MessageAttachment(id: attachment.id, name: decryptSuccess.name, data: decryptSuccess.data, estimatedSize: attachment.estimatedSize)
+        return MessageAttachment(
+            id: attachment.id,
+            name: decryptSuccess.name,
+            data: decryptSuccess.data,
+            estimatedSize: attachment.estimatedSize
+        )
     }
 
     func getAttachment(id: Identifier, messageId: Identifier) async throws -> Data {
@@ -180,7 +183,6 @@ final class MessageService {
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
-        let attachments = try await getAttachments(blocks: decrypted.blocks)
         let messageType: ProcessedMessage.MessageType
         let text: String
         let signature: ProcessedMessage.MessageSignature?
@@ -217,26 +219,9 @@ final class MessageService {
             message: message,
             text: text,
             messageType: messageType,
-            attachments: attachments,
+            attachments: message.attachments,
             signature: signature
         )
-    }
-
-    private func getAttachments(
-        blocks: [MsgBlock]
-    ) async throws -> [MessageAttachment] {
-        // TODO:
-        return []
-//        let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
-//        let attachments: [MessageAttachment] = attachmentBlocks.compactMap { block in
-//            guard let meta = block.attMeta else { return nil }
-//
-//            return MessageAttachment(
-//                name: meta.name,
-//                data: meta.data
-//            )
-//        }
-//        return attachments
     }
 
     private func hasMsgBlockThatNeedsPassPhrase(_ msg: CoreRes.ParseDecryptMsg) -> Bool {

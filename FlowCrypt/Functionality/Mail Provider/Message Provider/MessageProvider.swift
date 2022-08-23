@@ -9,9 +9,7 @@
 import Foundation
 
 protocol MessageProvider {
-    func fetchMsg(id: Identifier,
-                  folder: String,
-                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> Message
+    func fetchMsg(id: Identifier, folder: String) async throws -> Message
     func fetchAttachment(id: Identifier,
                          messageId: Identifier,
                          progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data

@@ -12,8 +12,7 @@ import GTMSessionFetcherCore
 extension GmailService: MessageProvider {
 
     func fetchMsg(id: Identifier,
-                  folder: String,
-                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> Message {
+                  folder: String) async throws -> Message {
         guard let identifier = id.stringId else {
             throw GmailServiceError.missingMessageInfo("id")
         }
@@ -28,8 +27,6 @@ extension GmailService: MessageProvider {
                 guard let gmailMessage = data as? GTLRGmail_Message else {
                     return continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
                 }
-
-                progressHandler?(.decrypt)
 
                 do {
                     let message = try Message(gmailMessage)
