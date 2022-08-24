@@ -129,6 +129,10 @@ struct Identifier: Equatable, Hashable {
         self.stringId = stringId
         self.intId = intId
     }
+
+    static var random: Identifier {
+        Identifier(stringId: UUID().uuidString, intId: nil)
+    }
 }
 struct MessageBody: Hashable {
     let text: String

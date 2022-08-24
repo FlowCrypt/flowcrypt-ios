@@ -17,7 +17,6 @@ extension Imap: MessageProvider {
 //        guard let identifier = id.intId else {
 //            throw AppErr.unexpected("Missing message identifier")
 //        }
-//        // TODO: Should return Message instead of Data
 //        return try await execute("fetchMsg", { sess, respond in
 //            sess.fetchMessageOperation(
 //                withFolder: folder,
@@ -29,7 +28,8 @@ extension Imap: MessageProvider {
     func fetchAttachment(
         id: Identifier,
         messageId: Identifier,
-        progressHandler: ((MessageFetchState) -> Void)?
+        estimatedSize: Float,
+        progressHandler: ((Float) -> Void)?
     ) async throws -> Data {
         throw AppErr.unexpected("Should be implemented")
 //        guard let identifier = id.stringId else {

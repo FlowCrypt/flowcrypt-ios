@@ -10,11 +10,10 @@ import Photos
 import UIKit
 
 struct MessageAttachment: Equatable, Hashable {
-    let id: Identifier?
+    let id: Identifier
     let name: String
     var data: Data?
     let estimatedSize: Int?
-//    let isEncrypted: Bool
 }
 
 extension MessageAttachment {
@@ -24,11 +23,10 @@ extension MessageAttachment {
             return nil
         }
 
-        self.id = nil
+        self.id = Identifier.random
         self.name = "\(UUID().uuidString).jpg"
         self.data = data
         self.estimatedSize = nil
-//        self.isEncrypted = false
     }
 
     init?(fileURL: URL) {
@@ -42,11 +40,10 @@ extension MessageAttachment {
             return nil
         }
 
-        self.id = nil
+        self.id = Identifier.random
         self.name = fileURL.lastPathComponent
         self.data = data
         self.estimatedSize = nil
-//        self.isEncrypted = false
     }
 
     var isEncrypted: Bool {

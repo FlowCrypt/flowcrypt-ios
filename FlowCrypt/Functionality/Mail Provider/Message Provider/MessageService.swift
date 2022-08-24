@@ -10,11 +10,6 @@ import Foundation
 import FlowCryptCommon
 import UIKit
 
-// MARK: - MessageFetchState
-enum MessageFetchState {
-    case fetch, download(Float), decrypt
-}
-
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
     case missingPassPhrase(_ message: Message)
@@ -86,28 +81,29 @@ final class MessageService {
         return matchingKeys.isNotEmpty
     }
 
-    func getAndProcessMessage(
-        with input: Message,
+    // MARK: - Message processing
+    func getAndProcess(
+        message: Message,
         folder: String,
         onlyLocalKeys: Bool,
         userEmail: String,
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
         let message = try await messageProvider.fetchMsg(
-            id: input.identifier,
+            id: message.identifier,
             folder: folder
         )
-        return try await decryptAndProcessMessage(
-            message,
-            sender: input.sender,
+        return try await decryptAndProcess(
+            message: message,
+            sender: message.sender,
             onlyLocalKeys: onlyLocalKeys,
             userEmail: userEmail,
             isUsingKeyManager: isUsingKeyManager
         )
     }
 
-    func decryptAndProcessMessage(
-        _ message: Message,
+    func decryptAndProcess(
+        message: Message,
         sender: Recipient?,
         onlyLocalKeys: Bool,
         userEmail: String,
@@ -142,42 +138,13 @@ final class MessageService {
             throw MessageServiceError.missingPassPhrase(message)
         }
 
-        return try await processMessage(
+        return try await process(
             message: message,
             with: decrypted
         )
     }
 
-    func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
-        guard attachment.isEncrypted, let data = attachment.data else { return attachment }
-
-        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
-        let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
-
-        if let decryptErr = decrypted.decryptErr {
-            throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)
-        }
-
-        guard let decryptSuccess = decrypted.decryptSuccess else {
-            throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
-        }
-
-        return MessageAttachment(
-            id: attachment.id,
-            name: decryptSuccess.name,
-            data: decryptSuccess.data,
-            estimatedSize: attachment.estimatedSize
-        )
-    }
-
-    func getAttachment(id: Identifier, messageId: Identifier) async throws -> Data {
-        return try await messageProvider.fetchAttachment(
-            id: id,
-            messageId: messageId) { progress in
-        }
-    }
-
-    private func processMessage(
+    private func process(
         message: Message,
         with decrypted: CoreRes.ParseDecryptMsg
     ) async throws -> ProcessedMessage {
@@ -231,6 +198,38 @@ final class MessageService {
         }
         logger.logInfo("missing pass phrase for one of longids \(decryptErr.longids)")
         return true
+    }
+
+    // MARK: - Attachments processing
+    func download(attachment: MessageAttachment, messageId: Identifier, progressHandler: ((Float) -> Void)?) async throws -> Data {
+        return try await messageProvider.fetchAttachment(
+            id: attachment.id,
+            messageId: messageId,
+            estimatedSize: Float(attachment.size),
+            progressHandler: progressHandler
+        )
+    }
+
+    func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
+        guard attachment.isEncrypted, let data = attachment.data else { return attachment }
+
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
+        let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
+
+        if let decryptErr = decrypted.decryptErr {
+            throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)
+        }
+
+        guard let decryptSuccess = decrypted.decryptSuccess else {
+            throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
+        }
+
+        return MessageAttachment(
+            id: attachment.id,
+            name: decryptSuccess.name,
+            data: decryptSuccess.data,
+            estimatedSize: attachment.estimatedSize
+        )
     }
 }
 

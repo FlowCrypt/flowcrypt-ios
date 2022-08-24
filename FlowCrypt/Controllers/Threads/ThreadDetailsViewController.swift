@@ -187,8 +187,6 @@ extension ThreadDetailsViewController {
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {
-        showSpinner()
-
         Task {
             do {
                 let attachment = try await getAttachment(at: indexPath)
@@ -212,13 +210,18 @@ extension ThreadDetailsViewController {
         }
 
         if attachment.data == nil {
-            attachment.data = try await messageService.getAttachment(
-                id: attachment.id!,
-                messageId: section.rawMessage.identifier
+            showSpinner()
+            attachment.data = try await messageService.download(
+                attachment: attachment,
+                messageId: section.rawMessage.identifier,
+                progressHandler: { [weak self] progress in
+                    self?.updateSpinner(label: "downloading_title".localized, progress: progress)
+                }
             )
         }
 
         if attachment.isEncrypted {
+            updateSpinner(label: "processing_title".localized)
             let decryptedAttachment = try await messageService.decrypt(
                 attachment: attachment,
                 userEmail: appContext.user.email
@@ -318,12 +321,13 @@ extension ThreadDetailsViewController {
         let message = input[indexPath.section-1].rawMessage
         logger.logInfo("Start loading message")
 
-        handleFetchProgress(state: .fetch)
+        // handleFetchProgress(state: .fetch)
+        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
 
         Task {
             do {
-                var processedMessage = try await messageService.getAndProcessMessage(
-                    with: message,
+                var processedMessage = try await messageService.getAndProcess(
+                    message: message,
                     folder: thread.path,
                     onlyLocalKeys: true,
                     userEmail: appContext.user.email,
@@ -440,7 +444,7 @@ extension ThreadDetailsViewController {
     private func handlePassPhraseEntry(message: Message, with passPhrase: String, at indexPath: IndexPath) {
         presentedViewController?.dismiss(animated: true)
 
-        handleFetchProgress(state: .decrypt)
+        updateSpinner(label: "processing_title".localized)
 
         Task {
             do {
@@ -450,8 +454,8 @@ extension ThreadDetailsViewController {
                 )
                 if matched {
                     let sender = input[indexPath.section-1].rawMessage.sender
-                    let processedMessage = try await messageService.decryptAndProcessMessage(
-                        message,
+                    let processedMessage = try await messageService.decryptAndProcess(
+                        message: message,
                         sender: sender,
                         onlyLocalKeys: false,
                         userEmail: appContext.user.email,
@@ -474,8 +478,8 @@ extension ThreadDetailsViewController {
     ) {
         Task {
             do {
-                let processedMessage = try await messageService.getAndProcessMessage(
-                    with: message,
+                let processedMessage = try await messageService.getAndProcess(
+                    message: message,
                     folder: thread.path,
                     onlyLocalKeys: false,
                     userEmail: appContext.user.email,
@@ -486,17 +490,6 @@ extension ThreadDetailsViewController {
                 let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
                 input[indexPath.section-1].processedMessage?.signature = .error(message)
             }
-        }
-    }
-
-    private func handleFetchProgress(state: MessageFetchState) {
-        switch state {
-        case .fetch:
-            showSpinner("loading_title".localized, isUserInteractionEnabled: true)
-        case .download(let progress):
-            updateSpinner(label: "downloading_title".localized, progress: progress)
-        case .decrypt:
-            updateSpinner(label: "processing_title".localized)
         }
     }
 }
