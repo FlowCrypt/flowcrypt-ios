@@ -112,10 +112,13 @@ extension GTLRGmail_Message {
     }
 
     func body(type: MessageBodyType) -> String? {
-        if let text = textParts.first(where: { $0.mimeType == type.rawValue })?.body?.data {
+        if let text = textParts.findMessageBody(type: type)?.body?.data {
             return text.base64Decoded
-        } else if let text = textParts.first(where: { $0.mimeType == "multipart/alternative" })?.parts?.first(where: { $0.mimeType == type.rawValue })?.body?.data {
+        } else if let multipartBody = textParts.findMessageBody(type: .multipart),
+                  let text = multipartBody.parts?.findMessageBody(type: type)?.body?.data {
             return text.base64Decoded
+        } else if let body = payload?.body?.data {
+            return body.base64Decoded
         } else {
             return nil
         }
@@ -123,5 +126,86 @@ extension GTLRGmail_Message {
 }
 
 enum MessageBodyType: String {
-    case text = "text/plain", html = "text/html"
+    case text = "text/plain", html = "text/html", multipart = "multipart/alternative"
+}
+
+extension Array where Iterator.Element == GTLRGmail_MessagePart {
+    func findMessageBody(type: MessageBodyType) -> GTLRGmail_MessagePart? {
+        first(where: { $0.mimeType == type.rawValue })
+    }
+}
+
+extension Message {
+    init(
+        _ message: GTLRGmail_Message,
+        draftIdentifier: String? = nil
+    ) throws {
+        guard let payload = message.payload else {
+            throw GmailServiceError.missingMessagePayload
+        }
+
+        guard let messageHeaders = payload.headers else {
+            throw GmailServiceError.missingMessageInfo("headers")
+        }
+
+        guard let internalDate = message.internalDate as? Double else {
+            throw GmailServiceError.missingMessageInfo("date")
+        }
+
+        guard let identifier = message.identifier else {
+            throw GmailServiceError.missingMessageInfo("id")
+        }
+
+        let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
+        let labels: [MessageLabel] = message.labelIds?.map(MessageLabel.init) ?? []
+        let body = MessageBody(text: message.body(type: .text) ?? "", html: message.body(type: .html))
+        let attachments: [MessageAttachment] = message.attachmentParts.compactMap {
+            guard let body = $0.body, let id = body.attachmentId, let name = $0.filename, let size = body.size?.intValue else { return nil }
+            return MessageAttachment(id: Identifier(stringId: id), name: name, data: nil, estimatedSize: size)
+        }
+
+        var sender: Recipient?
+        var subject: String?
+        var to: String?
+        var cc: String?
+        var bcc: String?
+        var replyTo: String?
+
+        for messageHeader in messageHeaders.compactMap({ $0 }) {
+            guard let name = messageHeader.name?.lowercased(),
+                  let value = messageHeader.value
+            else { continue }
+
+            switch name {
+            case .from: sender = Recipient(value)
+            case .subject: subject = value
+            case .to: to = value
+            case .cc: cc = value
+            case .bcc: bcc = value
+            case .replyTo: replyTo = value
+            default: break
+            }
+        }
+
+        self.init(
+            identifier: Identifier(stringId: identifier),
+            // Should be divided by 1000, because Date(timeIntervalSince1970:) expects seconds
+            // but GTLRGmail_Message.internalDate is in miliseconds
+            date: Date(timeIntervalSince1970: internalDate / 1000),
+            sender: sender,
+            subject: subject,
+            size: message.sizeEstimate.flatMap(Int.init),
+            labels: labels,
+            attachmentIds: attachmentsIds,
+            body: body,
+            attachments: attachments,
+            threadId: message.threadId,
+            draftIdentifier: draftIdentifier,
+            raw: message.raw,
+            to: to,
+            cc: cc,
+            bcc: bcc,
+            replyTo: replyTo
+        )
+    }
 }

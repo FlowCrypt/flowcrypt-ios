@@ -321,7 +321,6 @@ extension ThreadDetailsViewController {
         let message = input[indexPath.section-1].rawMessage
         logger.logInfo("Start loading message")
 
-        // handleFetchProgress(state: .fetch)
         showSpinner("loading_title".localized, isUserInteractionEnabled: true)
 
         Task {
