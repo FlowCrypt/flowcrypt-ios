@@ -16,10 +16,11 @@ struct ComposeMessageInput: Equatable {
         let ccRecipients: [Recipient]
         let sender: Recipient?
         let subject: String?
-        let mime: Data?
         let sentDate: Date
         let message: String
         let threadId: String?
+        let replyToMsgId: String?
+        let inReplyTo: String?
         let attachments: [MessageAttachment]
     }
 
@@ -49,8 +50,12 @@ struct ComposeMessageInput: Equatable {
         type.info?.subject
     }
 
-    var replyToMime: Data? {
-        type.info?.mime
+    var replyToMsgId: String? {
+        type.info?.replyToMsgId
+    }
+
+    var inReplyTo: String? {
+        type.info?.inReplyTo
     }
 
     var threadId: String? {

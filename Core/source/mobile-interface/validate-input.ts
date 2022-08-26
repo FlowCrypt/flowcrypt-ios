@@ -18,7 +18,8 @@ export namespace NodeRequest {
     bcc: string[],
     from: string,
     subject: string,
-    replyToMimeMsg: string,
+    replyToMsgId?: string,
+    inReplyTo?: string,
     atts?: Attachment[]
   }
 

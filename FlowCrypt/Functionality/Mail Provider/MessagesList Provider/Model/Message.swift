@@ -26,6 +26,7 @@ struct Message: Hashable {
     let draftIdentifier: String?
     let raw: String?
     let body: MessageBody
+    let inReplyTo: String?
     private(set) var labels: [MessageLabel]
 
     var isMessageRead: Bool {
@@ -60,7 +61,8 @@ struct Message: Hashable {
         to: String? = nil,
         cc: String? = nil,
         bcc: String? = nil,
-        replyTo: String? = nil
+        replyTo: String? = nil,
+        inReplyTo: String? = nil
     ) {
         self.identifier = identifier
         self.date = date
@@ -78,6 +80,7 @@ struct Message: Hashable {
         self.cc = Message.parseRecipients(cc)
         self.bcc = Message.parseRecipients(bcc)
         self.replyTo = Message.parseRecipients(replyTo)
+        self.inReplyTo = inReplyTo
     }
 }
 

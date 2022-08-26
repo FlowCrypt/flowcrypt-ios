@@ -279,16 +279,18 @@ extension ThreadDetailsViewController {
 
         let subject = input.rawMessage.subject ?? "(no subject)"
         let threadId = quoteType == .forward ? nil : input.rawMessage.threadId
+        let replyToMsgId = input.rawMessage.identifier.stringId
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
             ccRecipients: ccRecipients,
             sender: input.rawMessage.sender,
             subject: [quoteType.subjectPrefix, subject].joined(),
-            mime: Data(), // TODO: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
             threadId: threadId,
+            replyToMsgId: replyToMsgId,
+            inReplyTo: input.rawMessage.inReplyTo,
             attachments: attachments
         )
 

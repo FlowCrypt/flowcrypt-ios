@@ -44,13 +44,14 @@ export class Endpoints {
   public composeEmail = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     const req = ValidateInput.composeEmail(uncheckedReq);
     const mimeHeaders: RichHeaders = { to: req.to, from: req.from, subject: req.subject, cc: req.cc, bcc: req.bcc };
-    if (req.replyToMimeMsg) {
-      const previousMsg = await Mime.decode(Buf.fromUtfStr((req.replyToMimeMsg.substring(0, 10000)
-        .split('\n\n')[0] || '') + `\n\nno content`));
-      const replyHeaders = Mime.replyHeaders(previousMsg);
-      mimeHeaders['in-reply-to'] = replyHeaders['in-reply-to'];
-      mimeHeaders.references = replyHeaders.references;
+
+    if (req.replyToMsgId) {
+      mimeHeaders['in-reply-to'] = req.replyToMsgId;
+      mimeHeaders.references = [req.inReplyTo, req.replyToMsgId]
+        .filter(header => !!header)
+        .join(' ');
     }
+
     if (req.format === 'plain') {
       const atts = (req.atts || []).map(({ name, type, base64 }) =>
         new Att({ name, type, data: Buf.fromBase64Str(base64) }));
