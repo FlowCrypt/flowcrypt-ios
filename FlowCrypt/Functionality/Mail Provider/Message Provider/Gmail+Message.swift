@@ -171,7 +171,9 @@ extension Message {
 
         let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
         let labels: [MessageLabel] = message.labelIds?.map(MessageLabel.init) ?? []
-        let body = MessageBody(text: message.body(type: .text)?.toStr() ?? "", html: message.body(type: .html)?.toStr())
+        let bodyHtml = message.body(type: .html)?.toStr()
+        let bodyText = message.body(type: .text)?.toStr() ?? bodyHtml?.htmlToString() ?? ""
+        let body = MessageBody(text: bodyText, html: bodyHtml)
         let attachments: [MessageAttachment] = message.attachmentParts.compactMap {
             guard let body = $0.body, let id = body.attachmentId, let name = $0.filename
             else { return nil }
@@ -227,7 +229,16 @@ extension Message {
             to: to,
             cc: cc,
             bcc: bcc,
-            replyTo: replyTo
+            replyTo: replyTo,
+            inReplyTo: inReplyTo
         )
+    }
+}
+
+extension String {
+    func htmlToString() -> String? {
+        return try? NSAttributedString(data: self.data(using: .utf8)!,
+                                        options: [.documentType: NSAttributedString.DocumentType.html],
+                                        documentAttributes: nil).string
     }
 }

@@ -1,6 +1,6 @@
 /* ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com */
 
-import { ParsedMail } from 'mailparser';
+import { AddressObject, ParsedMail, StructuredHeader } from 'mailparser';
 import { readFile, readdir } from 'fs';
 import { lousyRandom } from '../../lib/mock-util';
 import { GoogleConfig } from 'api-mocks/lib/configuration-types';
@@ -26,7 +26,6 @@ export class GmailMsg {
   public sizeEstimate?: number;
   public threadId: string | null;
   public payload?: GmailMsg$payload;
-  public internalDate?: number | string;
   public labelIds?: GmailMsg$labelId[];
   public snippet?: string;
   public raw?: string;
@@ -39,57 +38,64 @@ export class GmailMsg {
     this.raw = msg.raw;
     this.sizeEstimate = Buffer.byteLength(msg.raw, "utf-8");
 
-    // const contentTypeHeader = msg.mimeMsg.headers.get('content-type')! as StructuredHeader;
-    // const toHeader = msg.mimeMsg.headers.get('to')! as AddressObject;
-    // const ccHeader = msg.mimeMsg.headers.get('cc')! as AddressObject;
-    // const bccHeader = msg.mimeMsg.headers.get('bcc')! as AddressObject;
-    // const fromHeader = msg.mimeMsg.headers.get('from')! as AddressObject;
-    // const subjectHeader = msg.mimeMsg.headers.get('subject')! as string;
-    const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
-    // const messageIdHeader = msg.mimeMsg.headers.get('message-id')! as string;
-    // const mimeVersionHeader = msg.mimeMsg.headers.get('mime-version')! as string;
-    // const replyToHeader = msg.mimeMsg.headers.get('reply-to')! as AddressObject;
-    // let body;
+    if (msg.payload) {
+      this.payload = msg.payload;
+    } else {
+      const contentTypeHeader = msg.mimeMsg.headers.get('content-type')! as StructuredHeader;
+      const toHeader = msg.mimeMsg.headers.get('to')! as AddressObject;
+      const ccHeader = msg.mimeMsg.headers.get('cc')! as AddressObject;
+      const bccHeader = msg.mimeMsg.headers.get('bcc')! as AddressObject;
+      const fromHeader = msg.mimeMsg.headers.get('from')! as AddressObject;
+      const subjectHeader = msg.mimeMsg.headers.get('subject')! as string;
+      const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
+      const messageIdHeader = msg.mimeMsg.headers.get('message-id')! as string;
+      const mimeVersionHeader = msg.mimeMsg.headers.get('mime-version')! as string;
+      const replyToHeader = msg.mimeMsg.headers.get('reply-to')! as AddressObject;
+      let body;
 
-    // if (msg.mimeMsg.text) {
-    //   const textBase64 = Buffer.from(msg.mimeMsg.text, 'utf-8').toString('base64');
-    //   body = { attachmentId: '', size: textBase64.length, data: textBase64 };
-    // } else if (typeof msg.mimeMsg.html === 'string') {
-    //   const htmlBase64 = Buffer.from(msg.mimeMsg.html, 'utf-8').toString('base64');
-    //   body = { attachmentId: '', size: htmlBase64.length, data: htmlBase64 };
-    // }
-    this.internalDate = dateHeader.getTime();
-    this.payload = msg.payload;
-    // this.payload = {
-    //   mimeType: contentTypeHeader.value,
-    //   headers: [
-    //     { name: "Content-Type", value: `${contentTypeHeader.value}; boundary="${contentTypeHeader.params.boundary}"` },
-    //     { name: "Message-Id", value: messageIdHeader },
-    //     { name: "Mime-Version", value: mimeVersionHeader }
-    //   ],
-    //   body
-    // };
-    // if (toHeader) {
-    //   this.payload.headers!.push({ name: 'To', value: toHeader.text });
-    // }
-    // if (ccHeader) {
-    //   this.payload.headers!.push({ name: 'Cc', value: ccHeader.text });
-    // }
-    // if (bccHeader) {
-    //   this.payload.headers!.push({ name: 'Bcc', value: bccHeader.text });
-    // }
-    // if (fromHeader) {
-    //   this.payload.headers!.push({ name: 'From', value: fromHeader.text });
-    // }
-    // if (subjectHeader) {
-    //   this.payload.headers!.push({ name: 'Subject', value: subjectHeader });
-    // }
-    // if (dateHeader) {
-    //   this.payload.headers!.push({ name: 'Date', value: dateHeader.toString() });
-    // }
-    // if (replyToHeader) {
-    //   this.payload.headers!.push({ name: 'Reply-To', value: replyToHeader.text });
-    // }
+      const attachmentId = `attachment_id_${lousyRandom()}`;
+      if (msg.mimeMsg.text) {
+        const textBase64 = Buffer.from(msg.mimeMsg.text, 'utf-8').toString('base64');
+        body = { attachmentId: attachmentId, size: textBase64.length, data: textBase64 };
+      } else if (typeof msg.mimeMsg.html === 'string') {
+        const htmlBase64 = Buffer.from(msg.mimeMsg.html, 'utf-8').toString('base64');
+        body = { attachmentId: attachmentId, size: htmlBase64.length, data: htmlBase64 };
+      }
+
+      const headers = [
+        { name: "Content-Type", value: `${contentTypeHeader.value}; boundary="${contentTypeHeader.params.boundary}"` },
+        { name: "Message-Id", value: messageIdHeader },
+        { name: "Mime-Version", value: mimeVersionHeader }
+      ]
+
+      if (toHeader) {
+        headers.push({ name: 'To', value: toHeader.text });
+      }
+      if (ccHeader) {
+        headers.push({ name: 'Cc', value: ccHeader.text });
+      }
+      if (bccHeader) {
+        headers.push({ name: 'Bcc', value: bccHeader.text });
+      }
+      if (fromHeader) {
+        headers.push({ name: 'From', value: fromHeader.text });
+      }
+      if (subjectHeader) {
+        headers.push({ name: 'Subject', value: subjectHeader });
+      }
+      if (dateHeader) {
+        headers.push({ name: 'Date', value: dateHeader.toString() });
+      }
+      if (replyToHeader) {
+        headers.push({ name: 'Reply-To', value: replyToHeader.text });
+      }
+
+      this.payload = {
+        mimeType: contentTypeHeader.value,
+        headers: headers,
+        body
+      };
+    }
   }
 
   public updateLabels = (addLabels: string[], removeLabels: string[]) => {
