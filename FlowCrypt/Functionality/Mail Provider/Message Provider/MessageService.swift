@@ -132,7 +132,8 @@ final class MessageService {
             keys: keys,
             msgPwd: nil,
             isEmail: false,
-            verificationPubKeys: verificationPubKeys
+            verificationPubKeys: verificationPubKeys,
+            signature: nil
         )
         guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
             throw MessageServiceError.missingPassPhrase(message)

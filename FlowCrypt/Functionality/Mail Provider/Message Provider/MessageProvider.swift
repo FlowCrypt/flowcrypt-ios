@@ -13,7 +13,13 @@ protocol MessageProvider {
     func fetchAttachment(
         id: Identifier,
         messageId: Identifier,
-        estimatedSize: Float,
+        estimatedSize: Float?,
         progressHandler: ((Float) -> Void)?
     ) async throws -> Data
+}
+
+extension MessageProvider {
+    func fetchAttachment(id: Identifier, messageId: Identifier) async throws -> Data {
+        return try await fetchAttachment(id: id, messageId: messageId, estimatedSize: nil, progressHandler: nil)
+    }
 }

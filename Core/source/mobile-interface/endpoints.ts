@@ -102,7 +102,8 @@ export class Endpoints {
   };
 
   public parseDecryptMsg = async (uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {
-    const { keys: kisWithPp, msgPwd, isEmail, verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
+    const { keys: kisWithPp, msgPwd, isEmail,
+      verificationPubkeys, signature } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data
     let rawSigned: string | undefined;
     let subject: string | undefined;
@@ -112,7 +113,9 @@ export class Endpoints {
       rawSigned = rawSignedContent;
       rawBlocks.push(...blocks);
     } else {
-      rawBlocks.push(MsgBlock.fromContent('encryptedMsg', new Buf(Buf.concat(data))));
+      const block = MsgBlock.fromContent('signedMsg', new Buf(Buf.concat(data)));
+      block.signature = signature;
+      rawBlocks.push(block);
     }
     const sequentialProcessedBlocks: MsgBlock[] = []; // contains decrypted or otherwise formatted data
     for (const rawBlock of rawBlocks) {

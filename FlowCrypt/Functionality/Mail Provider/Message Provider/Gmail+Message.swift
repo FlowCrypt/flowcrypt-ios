@@ -43,7 +43,7 @@ extension GmailService: MessageProvider {
     func fetchAttachment(
         id: Identifier,
         messageId: Identifier,
-        estimatedSize: Float,
+        estimatedSize: Float?,
         progressHandler: ((Float) -> Void)?
     ) async throws -> Data {
         guard let identifier = id.stringId else {
@@ -54,9 +54,11 @@ extension GmailService: MessageProvider {
         }
 
         let fetcher = createAttachmentFetcher(identifier: identifier, messageId: messageIdentifier)
-        fetcher.receivedProgressBlock = { _, received in
-            let progress = min(Float(received)/estimatedSize, 1)
-            progressHandler?(progress)
+        if let estimatedSize = estimatedSize {
+            fetcher.receivedProgressBlock = { _, received in
+                let progress = min(Float(received)/estimatedSize, 1)
+                progressHandler?(progress)
+            }
         }
 
         return try await withCheckedThrowingContinuation { continuation in
@@ -111,14 +113,14 @@ extension GTLRGmail_Message {
         payload?.parts?.filter { !$0.filename.isEmptyOrNil } ?? []
     }
 
-    func body(type: MessageBodyType) -> String? {
+    func body(type: MessageBodyType) -> Data? {
         if let text = textParts.findMessageBody(type: type)?.body?.data {
-            return text.base64Decoded
-        } else if let multipartBody = textParts.findMessageBody(type: .multipart),
+            return GTLRDecodeWebSafeBase64(text)
+        } else if let multipartBody = textParts.findMultipartBody(),
                   let text = multipartBody.parts?.findMessageBody(type: type)?.body?.data {
-            return text.base64Decoded
+            return GTLRDecodeWebSafeBase64(text)
         } else if let body = payload?.body?.data {
-            return body.base64Decoded
+            return GTLRDecodeWebSafeBase64(body)
         } else {
             return nil
         }
@@ -126,10 +128,21 @@ extension GTLRGmail_Message {
 }
 
 enum MessageBodyType: String {
-    case text = "text/plain", html = "text/html", multipart = "multipart/alternative"
+    case text = "text/plain",
+         html = "text/html",
+         multipartAlternative = "multipart/alternative",
+         multipartMixed = "multipart/mixed"
 }
 
 extension Array where Iterator.Element == GTLRGmail_MessagePart {
+    func findMultipartBody() -> GTLRGmail_MessagePart? {
+        let types = [MessageBodyType.multipartMixed, MessageBodyType.multipartAlternative].map(\.rawValue)
+        return first(where: {
+            guard let mimeType = $0.mimeType else { return false }
+            return types.contains(mimeType)
+        })
+    }
+
     func findMessageBody(type: MessageBodyType) -> GTLRGmail_MessagePart? {
         first(where: { $0.mimeType == type.rawValue })
     }
@@ -158,10 +171,17 @@ extension Message {
 
         let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
         let labels: [MessageLabel] = message.labelIds?.map(MessageLabel.init) ?? []
-        let body = MessageBody(text: message.body(type: .text) ?? "", html: message.body(type: .html))
+        let body = MessageBody(text: message.body(type: .text)?.toStr() ?? "", html: message.body(type: .html)?.toStr())
         let attachments: [MessageAttachment] = message.attachmentParts.compactMap {
-            guard let body = $0.body, let id = body.attachmentId, let name = $0.filename, let size = body.size?.intValue else { return nil }
-            return MessageAttachment(id: Identifier(stringId: id), name: name, data: nil, estimatedSize: size)
+            guard let body = $0.body, let id = body.attachmentId, let name = $0.filename
+            else { return nil }
+            return MessageAttachment(
+                id: Identifier(stringId: id),
+                name: name,
+                data: nil,
+                estimatedSize: body.size?.intValue,
+                mimeType: $0.mimeType
+            )
         }
 
         var sender: Recipient?

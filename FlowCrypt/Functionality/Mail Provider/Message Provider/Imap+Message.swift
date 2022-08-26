@@ -28,7 +28,7 @@ extension Imap: MessageProvider {
     func fetchAttachment(
         id: Identifier,
         messageId: Identifier,
-        estimatedSize: Float,
+        estimatedSize: Float?,
         progressHandler: ((Float) -> Void)?
     ) async throws -> Data {
         throw AppErr.unexpected("Should be implemented")

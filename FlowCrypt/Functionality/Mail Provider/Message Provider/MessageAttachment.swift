@@ -13,7 +13,8 @@ struct MessageAttachment: Equatable, Hashable {
     let id: Identifier
     let name: String
     var data: Data?
-    let estimatedSize: Int?
+    var estimatedSize: Int?
+    var mimeType: String?
 }
 
 extension MessageAttachment {
@@ -26,7 +27,6 @@ extension MessageAttachment {
         self.id = Identifier.random
         self.name = "\(UUID().uuidString).jpg"
         self.data = data
-        self.estimatedSize = nil
     }
 
     init?(fileURL: URL) {
@@ -43,7 +43,6 @@ extension MessageAttachment {
         self.id = Identifier.random
         self.name = fileURL.lastPathComponent
         self.data = data
-        self.estimatedSize = nil
     }
 
     var isEncrypted: Bool {
@@ -53,7 +52,7 @@ extension MessageAttachment {
     var formattedSize: String {
         ByteCountFormatter().string(fromByteCount: Int64(size))
     }
-    var type: String { name.mimeType }
+    var type: String { mimeType ?? name.mimeType }
 }
 
 extension MessageAttachment {
