@@ -161,7 +161,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         msgPwd: String?,
         isEmail: Bool,
         verificationPubKeys: [String],
-        signature: String?
+        signature: String? = nil
     ) async throws -> CoreRes.ParseDecryptMsg {
         struct ParseDecryptMsgRaw: Decodable {
             let replyType: ReplyType
