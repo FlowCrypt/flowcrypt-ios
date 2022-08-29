@@ -26,6 +26,7 @@ export class GmailMsg {
   public sizeEstimate?: number;
   public threadId: string | null;
   public payload?: GmailMsg$payload;
+  public internalDate?: number | string;
   public labelIds?: GmailMsg$labelId[];
   public snippet?: string;
   public raw?: string;
@@ -90,6 +91,7 @@ export class GmailMsg {
         headers.push({ name: 'Reply-To', value: replyToHeader.text });
       }
 
+      this.internalDate = dateHeader.getTime();
       this.payload = {
         mimeType: contentTypeHeader.value,
         headers: headers,
@@ -367,6 +369,7 @@ export class GoogleData {
   public getThreads = (labelIds: string[] = [], query?: string) => {
     const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
     const threads: GmailThread[] = [];
+
     for (const thread of this.getMessagesAndDrafts().
       filter(m => labelIds.length ? (m.labelIds || []).some(l => labelIds.includes(l)) : true).
       filter(m => subject ? GoogleData.msgSubject(m).toLowerCase().includes(subject) : true).
