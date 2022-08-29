@@ -114,24 +114,10 @@ ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
 });
 
 ava.default('composeEmail format:plain (reply)', async t => {
-  const replyToMimeMsg = `Content-Type: multipart/mixed;
- boundary="----sinikael-?=_1-15535259519270.930031460416217"
-To: some@to.com
-From: some@from.com
-Subject: Re: original
-Date: Mon, 25 Mar 2019 14:59:11 +0000
-Message-Id: <originalmsg@from.com>
-MIME-Version: 1.0
-
-------sinikael-?=_1-15535259519270.930031460416217
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-orig message
-------sinikael-?=_1-15535259519270.930031460416217--`;
   const req = {
     format: 'plain', text: 'replying', to: ['some@to.com'],
-    cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original', replyToMimeMsg
+    cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original',
+    replyToMsgId: 'originalmsg@from.com'
   };
   const { data: mimeMsgReply, json } = parseResponse(await endpoints.composeEmail(req));
   expectEmptyJson(json as JsonDict);

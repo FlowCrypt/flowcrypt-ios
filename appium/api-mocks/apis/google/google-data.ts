@@ -39,6 +39,9 @@ export class GmailMsg {
     this.raw = msg.raw;
     this.sizeEstimate = Buffer.byteLength(msg.raw, "utf-8");
 
+    const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
+    this.internalDate = dateHeader.getTime();
+
     if (msg.payload) {
       this.payload = msg.payload;
     } else {
@@ -48,7 +51,7 @@ export class GmailMsg {
       const bccHeader = msg.mimeMsg.headers.get('bcc')! as AddressObject;
       const fromHeader = msg.mimeMsg.headers.get('from')! as AddressObject;
       const subjectHeader = msg.mimeMsg.headers.get('subject')! as string;
-      const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
+
       const messageIdHeader = msg.mimeMsg.headers.get('message-id')! as string;
       const mimeVersionHeader = msg.mimeMsg.headers.get('mime-version')! as string;
       const replyToHeader = msg.mimeMsg.headers.get('reply-to')! as AddressObject;
@@ -91,7 +94,6 @@ export class GmailMsg {
         headers.push({ name: 'Reply-To', value: replyToHeader.text });
       }
 
-      this.internalDate = dateHeader.getTime();
       this.payload = {
         mimeType: contentTypeHeader.value,
         headers: headers,
