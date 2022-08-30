@@ -115,7 +115,7 @@ final class MessageService {
                 text: message.body.text,
                 messageType: .plain,
                 attachments: message.attachments,
-                signature: nil
+                signature: .unsigned
             )
         }
 
@@ -127,14 +127,27 @@ final class MessageService {
             throw MessageServiceError.emptyKeys
         }
         let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
+
+        let encrypted: String
+        if let signatureAttachment = message.signatureAttachment {
+            let signature = try await messageProvider.fetchAttachment(
+                id: signatureAttachment.id,
+                messageId: message.identifier
+            ).toStr()
+            encrypted = "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA256\n\n" + message.body.text + signature
+        } else {
+            encrypted = message.body.text
+        }
+
         let decrypted = try await core.parseDecryptMsg(
-            encrypted: message.body.text.data(),
+            encrypted: encrypted.data(),
             keys: keys,
             msgPwd: nil,
-            isEmail: false,
+            isMime: false,
             verificationPubKeys: verificationPubKeys,
             signature: nil
         )
+
         guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
             throw MessageServiceError.missingPassPhrase(message)
         }

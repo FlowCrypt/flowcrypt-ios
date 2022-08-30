@@ -18,7 +18,7 @@ describe('INBOX: ', () => {
     const decryptErrorBadgeText = CommonData.decryptErrorBadge.badgeText;
 
     // Const for MDC hash mismatch message
-    const encryptedMDCSender = CommonData.encryptedMDCHashMismatchEmail.senderEmail;
+    const encryptedMDCSender = CommonData.encryptedMDCHashMismatchEmail.senderName;
     const encryptedMDCSubject = CommonData.encryptedMDCHashMismatchEmail.subject;
     const encryptedMDCText = CommonData.encryptedMDCHashMismatchEmail.message;
 
@@ -33,7 +33,7 @@ describe('INBOX: ', () => {
     const wrongChecksumText = CommonData.wrongChecksumEmail.message;
 
     const notIntegrityProtectedSubject = CommonData.notIntegrityProtected.subject;
-    const notIntegrityProtectedEmail = CommonData.notIntegrityProtected.senderEmail;
+    const notIntegrityProtectedSender = CommonData.notIntegrityProtected.senderName;
     const notIntegrityProtectedText = CommonData.notIntegrityProtected.message;
 
     const keyMismatchSubject = CommonData.keyMismatch.subject;
@@ -96,7 +96,7 @@ describe('INBOX: ', () => {
 
       // Checking error for integrity protected message
       await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
-      await EmailScreen.checkOpenedEmail(notIntegrityProtectedEmail, notIntegrityProtectedSubject, notIntegrityProtectedText);
+      await EmailScreen.checkOpenedEmail(notIntegrityProtectedSender, notIntegrityProtectedSubject, notIntegrityProtectedText);
       await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
       await EmailScreen.clickBackButton();

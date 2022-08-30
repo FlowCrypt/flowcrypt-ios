@@ -222,7 +222,7 @@ final class FlowCryptCoreTests: XCTestCase {
             encrypted: r.mimeEncoded,
             keys: [signingKey],
             msgPwd: nil,
-            isEmail: true,
+            isMime: true,
             verificationPubKeys: [TestData.k0.public]
         )
         guard let verifyResult = decrypted.blocks.first?.verifyRes else {
@@ -259,7 +259,7 @@ final class FlowCryptCoreTests: XCTestCase {
             encrypted: r.mimeEncoded,
             keys: [signingKey],
             msgPwd: nil,
-            isEmail: true,
+            isMime: true,
             verificationPubKeys: []
         )
 
@@ -298,7 +298,7 @@ final class FlowCryptCoreTests: XCTestCase {
         )
         let mime = try await core.composeEmail(msg: msg, fmt: .encryptInline)
         let keys = [try Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")]
-        let decrypted = try await core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true, verificationPubKeys: [])
+        let decrypted = try await core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isMime: true, verificationPubKeys: [])
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, ReplyType.encrypted)
         XCTAssertEqual(decrypted.blocks.count, 1)
@@ -311,7 +311,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testDecryptErrMismatch() async throws {
         let key = TestData.k0
-        let r = try await core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false, verificationPubKeys: [])
+        let r = try await core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isMime: false, verificationPubKeys: [])
         let decrypted = r
         XCTAssertEqual(decrypted.text, "")
         XCTAssertEqual(decrypted.replyType, ReplyType.plain) // replies to errors should be plain
@@ -449,7 +449,7 @@ final class FlowCryptCoreTests: XCTestCase {
                 encrypted: encrypted,
                 keys: [TestData.k3rsa4096],
                 msgPwd: nil,
-                isEmail: true,
+                isMime: true,
                 verificationPubKeys: [TestData.k3rsa4096.public]
             )
         }

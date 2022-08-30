@@ -159,7 +159,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         encrypted: Data,
         keys: [Keypair],
         msgPwd: String?,
-        isEmail: Bool,
+        isMime: Bool,
         verificationPubKeys: [String],
         signature: String? = nil
     ) async throws -> CoreRes.ParseDecryptMsg {
@@ -169,7 +169,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         }
         let json: [String: Any?]? = [
             "keys": keys.map(\.prvKeyInfoJsonDictForCore),
-            "isEmail": isEmail,
+            "isMime": isMime,
             "msgPwd": msgPwd,
             "verificationPubkeys": verificationPubKeys,
             "signature": signature

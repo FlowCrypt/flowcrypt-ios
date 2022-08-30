@@ -103,19 +103,29 @@ export class Endpoints {
   };
 
   public parseDecryptMsg = async (uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {
-    const { keys: kisWithPp, msgPwd, isEmail,
-      verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
+    const { keys: kisWithPp, msgPwd, isMime,
+      verificationPubkeys, signature } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data
     let rawSigned: string | undefined;
     let subject: string | undefined;
-    if (isEmail) {
+    if (isMime) {
       const { blocks, rawSignedContent, headers } = await Mime.process(Buf.concat(data));
       subject = String(headers.subject);
       rawSigned = rawSignedContent;
       rawBlocks.push(...blocks);
     } else {
       const { blocks } = MsgBlockParser.detectBlocks(Buf.concat(data).toString());
-      rawBlocks.push(...blocks);
+      if (signature) {
+        for (const block of blocks) {
+          if (block.type === 'plainText' && !block.signature) {
+            block.type = 'signedMsg';
+            block.signature = signature;
+          }
+          rawBlocks.push(block);
+        }
+      } else {
+        rawBlocks.push(...blocks);
+      }
     }
     const sequentialProcessedBlocks: MsgBlock[] = []; // contains decrypted or otherwise formatted data
     for (const rawBlock of rawBlocks) {

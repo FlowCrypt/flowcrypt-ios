@@ -42,7 +42,7 @@ export namespace NodeRequest {
   export type encryptMsg = { pubKeys: string[], msgPwd?: string };
   export type encryptFile = { pubKeys: string[], name: string };
   export type parseDecryptMsg = {
-    keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean, verificationPubkeys?: string[], signature?: string
+    keys: PrvKeyInfo[], msgPwd?: string, isMime?: boolean, verificationPubkeys?: string[], signature?: string
   };
   export type decryptFile = { keys: PrvKeyInfo[], msgPwd?: string };
   export type parseDateStr = { dateStr: string };
@@ -99,7 +99,7 @@ export class ValidateInput {
 
   public static parseDecryptMsg = (v: unknown): NodeRequest.parseDecryptMsg => {
     if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?')
-      && hasProp(v, 'isEmail', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')
+      && hasProp(v, 'isMime', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')
       && hasProp(v, 'signature', 'string?')) {
       return v as NodeRequest.parseDecryptMsg;
     }
