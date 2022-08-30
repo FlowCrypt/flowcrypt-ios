@@ -46,7 +46,7 @@ extension MessageAttachment {
     }
 
     var isEncrypted: Bool {
-        name.hasSuffix(".pgp")
+        name.hasSuffix(".pgp") || name.hasSuffix(".asc")
     }
     var size: Int { data?.count ?? estimatedSize ?? 0 }
     var formattedSize: String {
@@ -58,20 +58,5 @@ extension MessageAttachment {
 extension MessageAttachment {
     func toSendableMsgAttachment() -> SendableMsg.Attachment {
         return SendableMsg.Attachment(name: name, type: type, base64: data?.base64EncodedString() ?? "")
-    }
-}
-
-struct MessageAttachmentMetadata: Hashable {
-    let id: Identifier
-    let name: String
-    let size: Float
-}
-
-extension MessageAttachmentMetadata {
-    var formattedSize: String {
-        ByteCountFormatter().string(fromByteCount: Int64(size))
-    }
-    var isEncrypted: Bool {
-        name.hasSuffix(".pgp")
     }
 }

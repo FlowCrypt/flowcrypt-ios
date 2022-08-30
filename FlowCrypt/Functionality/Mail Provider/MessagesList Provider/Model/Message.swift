@@ -42,7 +42,7 @@ struct Message: Hashable {
     }
 
     var isPgp: Bool {
-        body.text.trimmingCharacters(in: .whitespacesAndNewlines).starts(with: "-----BEGIN PGP ")
+        body.text.contains("-----BEGIN PGP ") && body.text.contains("-----END PGP ")
     }
 
     init(

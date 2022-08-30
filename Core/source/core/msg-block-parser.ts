@@ -24,7 +24,7 @@ export class MsgBlockParser {
     const blocks: MsgBlock[] = [];
     const normalized = Str.normalize(origText);
     let startAt = 0;
-    while (true) { // eslint-disable-line no-constant-condition
+    while (true) {
       const r = MsgBlockParser.detectBlockNext(normalized, startAt);
       if (r.found) {
         blocks.push(...r.found);
@@ -90,7 +90,7 @@ export class MsgBlockParser {
     const result: { found: MsgBlock[], continueAt?: number } = { found: [] as MsgBlock[] };
     const begin = origText.indexOf(PgpArmor.headers('null').begin, startAt);
     if (begin !== -1) { // found
-      const potentialBeginHeader = origText.substr(begin, MsgBlockParser.ARMOR_HEADER_MAX_LENGTH);
+      const potentialBeginHeader = origText.substring(begin, begin + MsgBlockParser.ARMOR_HEADER_MAX_LENGTH);
       for (const xType of Object.keys(PgpArmor.ARMOR_HEADER_DICT)) {
         const type = xType as ReplaceableMsgBlockType;
         const blockHeaderDef = PgpArmor.ARMOR_HEADER_DICT[type];
@@ -133,7 +133,7 @@ export class MsgBlockParser {
               }
               result.continueAt = endIndex + foundBlockEndHeaderLength;
             } else { // corresponding end not found
-              result.found.push(MsgBlock.fromContent(type, origText.substr(begin), true));
+              result.found.push(MsgBlock.fromContent(type, origText.substring(begin), true));
             }
             break;
           }
@@ -141,7 +141,7 @@ export class MsgBlockParser {
       }
     }
     if (origText && !result.found.length) { // didn't find any blocks, but input is non-empty
-      const potentialText = origText.substr(startAt).trim();
+      const potentialText = origText.substring(startAt).trim();
       if (potentialText) {
         result.found.push(MsgBlock.fromContent('plainText', potentialText));
       }

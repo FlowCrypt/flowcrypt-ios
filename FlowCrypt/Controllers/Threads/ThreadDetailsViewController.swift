@@ -218,6 +218,7 @@ extension ThreadDetailsViewController {
                     self?.updateSpinner(label: "downloading_title".localized, progress: progress)
                 }
             )
+            section.processedMessage?.attachments[attachmentIndex] = attachment
         }
 
         if attachment.isEncrypted {
