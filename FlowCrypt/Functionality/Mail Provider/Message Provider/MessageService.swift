@@ -110,13 +110,7 @@ final class MessageService {
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
         guard message.isPgp else {
-            return ProcessedMessage(
-                message: message,
-                text: message.body.text,
-                messageType: .plain,
-                attachments: message.attachments,
-                signature: .unsigned
-            )
+            return ProcessedMessage(message: message)
         }
 
         let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
@@ -128,51 +122,22 @@ final class MessageService {
         }
         let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
 
-        var signature: String?
-        if let signatureAttachment = message.signatureAttachment {
-            signature = try await messageProvider.fetchAttachment(
-                id: signatureAttachment.id,
-                messageId: message.identifier
-            ).toStr()
+        var message = message
+        if message.hasSignatureAttachment {
+            message.raw = try await messageProvider.fetchRawMsg(id: message.identifier)
         }
 
-        let encrypted: String
-        let isMime: Bool
-        if let raw = message.raw {
-            encrypted = raw
-            isMime = true
-        } else {
-            encrypted = message.body.text
-            isMime = false
-        }
-
+        let encrypted = message.raw ?? message.body.text
         let decrypted = try await core.parseDecryptMsg(
             encrypted: encrypted.data(),
             keys: keys,
             msgPwd: nil,
-            isMime: isMime,
-            verificationPubKeys: verificationPubKeys,
-            signature: signature
+            isMime: message.raw != nil,
+            verificationPubKeys: verificationPubKeys
         )
 
         guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
             throw MessageServiceError.missingPassPhrase(message)
-        }
-
-        let processedSignature = await evaluateSignatureVerificationResult(
-            signature: decrypted.blocks.first?.verifyRes
-        )
-
-        if case .error = processedSignature, message.signatureAttachment != nil, message.raw == nil {
-            var message = message
-            message.raw = try await messageProvider.fetchRawMsg(id: message.identifier)
-            return try await decryptAndProcess(
-                message: message,
-                sender: message.sender,
-                onlyLocalKeys: onlyLocalKeys,
-                userEmail: userEmail,
-                isUsingKeyManager: isUsingKeyManager
-            )
         }
 
         return try await process(
@@ -222,7 +187,7 @@ final class MessageService {
         return ProcessedMessage(
             message: message,
             text: text,
-            messageType: messageType,
+            type: messageType,
             attachments: message.attachments,
             signature: signature
         )

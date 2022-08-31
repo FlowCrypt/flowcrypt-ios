@@ -42,11 +42,11 @@ struct Message: Hashable {
     }
 
     var isPgp: Bool {
-        (body.text.contains("-----BEGIN PGP ") && body.text.contains("-----END PGP ")) || signatureAttachment != nil
+        (body.text.contains("-----BEGIN PGP ") && body.text.contains("-----END PGP ")) || hasSignatureAttachment
     }
 
-    var signatureAttachment: MessageAttachment? {
-        attachments.first(where: { $0.type == "application/pgp-signature" })
+    var hasSignatureAttachment: Bool {
+        attachments.first(where: { $0.type == "application/pgp-signature" }) != nil
     }
 
     init(

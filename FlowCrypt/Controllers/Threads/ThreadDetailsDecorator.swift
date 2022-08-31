@@ -49,7 +49,7 @@ extension ThreadMessageInfoCellNode.Input {
 extension ProcessedMessage {
     var attributedMessage: NSAttributedString {
         let textColor: UIColor
-        switch messageType {
+        switch type {
         case .encrypted:
             textColor = .main
         case .error:
@@ -78,7 +78,7 @@ private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> 
     let icon: String
     let text: String
     let color: UIColor
-    switch input.processedMessage?.messageType {
+    switch input.processedMessage?.type {
     case .error:
         icon = "lock.open"
         text = "message_decrypt_error".localized

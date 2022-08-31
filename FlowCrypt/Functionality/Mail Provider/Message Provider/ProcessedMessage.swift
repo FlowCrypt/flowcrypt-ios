@@ -67,7 +67,17 @@ struct ProcessedMessage {
 
     let message: Message
     let text: String
-    let messageType: MessageType
+    let type: MessageType
     var attachments: [MessageAttachment]
     var signature: MessageSignature?
+}
+
+extension ProcessedMessage {
+    init(message: Message) {
+        self.message = message
+        self.text = message.body.text
+        self.type = .plain
+        self.attachments = message.attachments
+        self.signature = .unsigned
+    }
 }
