@@ -13,7 +13,7 @@ extension Imap: MessageProvider {
         id: Identifier,
         folder: String
     ) async throws -> Message {
-        throw AppErr.unexpected("Should be implemented")
+        throw AppErr.unexpected("Not implemented")
 //        guard let identifier = id.intId else {
 //            throw AppErr.unexpected("Missing message identifier")
 //        }
@@ -23,6 +23,10 @@ extension Imap: MessageProvider {
 //                uid: UInt32(identifier)
 //            ).start { error, data in respond(error, data) }
 //        })
+    }
+
+    func fetchRawMsg(id: Identifier) async throws -> String {
+        throw AppErr.unexpected("Not implemented")
     }
 
     func fetchAttachment(

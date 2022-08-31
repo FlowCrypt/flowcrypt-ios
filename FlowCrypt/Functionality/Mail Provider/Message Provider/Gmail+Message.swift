@@ -40,6 +40,35 @@ extension GmailService: MessageProvider {
         }
     }
 
+    func fetchRawMsg(id: Identifier) async throws -> String {
+        guard let identifier = id.stringId else {
+            throw GmailServiceError.missingMessageInfo("id")
+        }
+
+        let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatRaw)
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+            self.gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+
+                guard let gmailMessage = data as? GTLRGmail_Message else {
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
+                }
+
+                guard let raw = gmailMessage.raw else {
+                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("raw"))
+                }
+
+                guard let decoded = GTLRDecodeWebSafeBase64(raw)?.toStr() else {
+                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
+                }
+
+                return continuation.resume(returning: decoded)
+            }
+        }
+    }
+
     func fetchAttachment(
         id: Identifier,
         messageId: Identifier,

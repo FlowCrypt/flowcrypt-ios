@@ -24,7 +24,7 @@ struct Message: Hashable {
     var attachments: [MessageAttachment]
     let threadId: String?
     let draftIdentifier: String?
-    let raw: String?
+    var raw: String?
     let body: MessageBody
     let inReplyTo: String?
     private(set) var labels: [MessageLabel]

@@ -49,7 +49,7 @@ final class MessageService {
     private let pubLookup: PubLookupType
 
     init(
-        core: Core = Core.shared,
+        core: Core = .shared,
         keyMethods: KeyMethodsType = KeyMethods(),
         localContactsProvider: LocalContactsProviderType,
         pubLookup: PubLookupType,
@@ -128,28 +128,51 @@ final class MessageService {
         }
         let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
 
-        let encrypted: String
+        var signature: String?
         if let signatureAttachment = message.signatureAttachment {
-            let signature = try await messageProvider.fetchAttachment(
+            signature = try await messageProvider.fetchAttachment(
                 id: signatureAttachment.id,
                 messageId: message.identifier
             ).toStr()
-            encrypted = "-----BEGIN PGP SIGNED MESSAGE-----\nHash: SHA256\n\n" + message.body.text + signature
+        }
+
+        let encrypted: String
+        let isMime: Bool
+        if let raw = message.raw {
+            encrypted = raw
+            isMime = true
         } else {
             encrypted = message.body.text
+            isMime = false
         }
 
         let decrypted = try await core.parseDecryptMsg(
             encrypted: encrypted.data(),
             keys: keys,
             msgPwd: nil,
-            isMime: false,
+            isMime: isMime,
             verificationPubKeys: verificationPubKeys,
-            signature: nil
+            signature: signature
         )
 
         guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
             throw MessageServiceError.missingPassPhrase(message)
+        }
+
+        let processedSignature = await evaluateSignatureVerificationResult(
+            signature: decrypted.blocks.first?.verifyRes
+        )
+
+        if case .error = processedSignature, message.signatureAttachment != nil, message.raw == nil {
+            var message = message
+            message.raw = try await messageProvider.fetchRawMsg(id: message.identifier)
+            return try await decryptAndProcess(
+                message: message,
+                sender: message.sender,
+                onlyLocalKeys: onlyLocalKeys,
+                userEmail: userEmail,
+                isUsingKeyManager: isUsingKeyManager
+            )
         }
 
         return try await process(
