@@ -206,6 +206,7 @@ class NewMessageScreen extends BaseScreen {
     const element = await this.filledSubject(emailInfo.subject);
     await element.waitForDisplayed();
 
+    await ElementHelper.waitElementInvisible(await this.recipientSpinner);
     if (await this.recipientListLabel.isDisplayed()) {
       const allRecipients = [...emailInfo.recipients, ...emailInfo.cc ?? [], ...emailInfo.bcc ?? []];
       await this.checkRecipientLabel(allRecipients);

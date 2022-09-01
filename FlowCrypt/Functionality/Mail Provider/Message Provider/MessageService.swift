@@ -10,6 +10,11 @@ import Foundation
 import FlowCryptCommon
 import UIKit
 
+// MARK: - MessageFetchState
+enum MessageFetchState {
+    case fetch, download(Float), decrypt
+}
+
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
     case missingPassPhrase(_ message: Message)
@@ -203,8 +208,12 @@ final class MessageService {
     }
 
     // MARK: - Attachments processing
-    func download(attachment: MessageAttachment, messageId: Identifier, progressHandler: ((Float) -> Void)?) async throws -> Data {
-        return try await messageProvider.fetchAttachment(
+    func download(
+        attachment: MessageAttachment,
+        messageId: Identifier,
+        progressHandler: ((Float) -> Void)?
+    ) async throws -> Data {
+        try await messageProvider.fetchAttachment(
             id: attachment.id,
             messageId: messageId,
             estimatedSize: Float(attachment.size),

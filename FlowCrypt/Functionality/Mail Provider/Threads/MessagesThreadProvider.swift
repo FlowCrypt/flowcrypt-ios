@@ -87,7 +87,7 @@ extension GmailService: MessagesThreadProvider {
                         return continuation.resume(returning: empty)
                     }
 
-                    let messages = threadMsg.compactMap { try? Message($0) }
+                    let messages = threadMsg.compactMap { try? Message(gmailMessage: $0) }
 
                     let result = MessageThread(
                         identifier: thread.identifier,

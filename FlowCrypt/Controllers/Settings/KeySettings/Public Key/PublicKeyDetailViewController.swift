@@ -43,7 +43,7 @@ extension PublicKeyDetailViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt _: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            InfoCellNode(input: InfoCellNode.Input(
+            InfoCellNode(input: .init(
                 attributedText: (self?.text ?? "").attributed(.regular(16)),
                 image: nil,
                 insets: .deviceSpecificTextInsets(top: 16, bottom: 16),

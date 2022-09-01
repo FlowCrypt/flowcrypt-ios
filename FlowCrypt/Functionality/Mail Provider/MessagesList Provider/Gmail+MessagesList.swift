@@ -142,7 +142,10 @@ extension GmailService {
                 }
 
                 do {
-                    return continuation.resume(returning: try Message(gmailMessage, draftIdentifier: draftIdentifier))
+                    return continuation.resume(returning: try Message(
+                        gmailMessage: gmailMessage,
+                        draftIdentifier: draftIdentifier)
+                    )
                 } catch {
                     return continuation.resume(throwing: error)
                 }

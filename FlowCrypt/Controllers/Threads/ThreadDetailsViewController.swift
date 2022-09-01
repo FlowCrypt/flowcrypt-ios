@@ -215,14 +215,14 @@ extension ThreadDetailsViewController {
                 attachment: attachment,
                 messageId: section.rawMessage.identifier,
                 progressHandler: { [weak self] progress in
-                    self?.updateSpinner(label: "downloading_title".localized, progress: progress)
+                    self?.handleFetchProgress(state: .download(progress))
                 }
             )
             section.processedMessage?.attachments[attachmentIndex] = attachment
         }
 
         if attachment.isEncrypted {
-            updateSpinner(label: "processing_title".localized)
+            handleFetchProgress(state: .decrypt)
             let decryptedAttachment = try await messageService.decrypt(
                 attachment: attachment,
                 userEmail: appContext.user.email
@@ -324,7 +324,7 @@ extension ThreadDetailsViewController {
         let message = input[indexPath.section-1].rawMessage
         logger.logInfo("Start loading message")
 
-        showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        handleFetchProgress(state: .fetch)
 
         Task {
             do {
@@ -446,7 +446,7 @@ extension ThreadDetailsViewController {
     private func handlePassPhraseEntry(message: Message, with passPhrase: String, at indexPath: IndexPath) {
         presentedViewController?.dismiss(animated: true)
 
-        updateSpinner(label: "processing_title".localized)
+        handleFetchProgress(state: .decrypt)
 
         Task {
             do {
@@ -494,6 +494,17 @@ extension ThreadDetailsViewController {
             }
         }
     }
+
+    private func handleFetchProgress(state: MessageFetchState) {
+            switch state {
+            case .fetch:
+                showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+            case .download(let progress):
+                updateSpinner(label: "downloading_title".localized, progress: progress)
+            case .decrypt:
+                updateSpinner(label: "processing_title".localized)
+            }
+        }
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {
