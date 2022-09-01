@@ -64,28 +64,6 @@ extension ComposeViewController {
         }
     }
 
-    internal func showNoAccessToPhotosAlert() {
-        let alert = UIAlertController(
-            title: "files_picking_no_library_access_error_title".localized,
-            message: "files_picking_no_library_access_error_message".localized,
-            preferredStyle: .alert
-        )
-        let okAction = UIAlertAction(
-            title: "ok".localized,
-            style: .cancel
-        ) { _ in }
-        let settingsAction = UIAlertAction(
-            title: "settings".localized,
-            style: .default
-        ) { _ in
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-        }
-        alert.addAction(okAction)
-        alert.addAction(settingsAction)
-
-        present(alert, animated: true, completion: nil)
-    }
-
     internal func showNoAccessToCameraAlert() {
         let alert = UIAlertController(
             title: "files_picking_no_camera_access_error_title".localized,

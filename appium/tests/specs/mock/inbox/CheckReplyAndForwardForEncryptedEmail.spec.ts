@@ -17,7 +17,7 @@ describe('INBOX: ', () => {
 
     const senderEmail = CommonData.encryptedEmailWithAttachment.sender;
     const senderName = CommonData.encryptedEmailWithAttachment.senderName;
-    const recipientEmail = CommonData.encryptedEmailWithAttachment.recipientEmail;
+    const recipientName = CommonData.encryptedEmailWithAttachment.recipientName;
     const ccName = CommonData.encryptedEmailWithAttachment.cc;
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
@@ -65,7 +65,7 @@ describe('INBOX: ', () => {
       await EmailScreen.clickReplyAllButton();
       await NewMessageScreen.checkRecipientsTextFieldIsInvisible();
       await NewMessageScreen.checkFilledComposeEmailInfo({
-        recipients: [recipientEmail, senderName],
+        recipients: [recipientName, senderName],
         subject: replySubject,
         message: quoteText,
         cc: [ccName]

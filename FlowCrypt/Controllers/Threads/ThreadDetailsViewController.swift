@@ -40,8 +40,6 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let thread: MessageThread
     private var input: [ThreadDetailsViewController.Input]
 
-    private var textFieldDelegate: UITextFieldDelegate?
-
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
         thread.path
@@ -189,8 +187,6 @@ extension ThreadDetailsViewController {
     }
 
     private func handleAttachmentTap(at indexPath: IndexPath) {
-        showSpinner()
-
         Task {
             do {
                 let attachment = try await getAttachment(at: indexPath)
@@ -203,15 +199,30 @@ extension ThreadDetailsViewController {
     }
 
     private func getAttachment(at indexPath: IndexPath) async throws -> MessageAttachment {
+        defer { node.reloadRows(at: [indexPath], with: .automatic) }
+
         let trace = Trace(id: "Attachment")
         let section = input[indexPath.section-1]
         let attachmentIndex = indexPath.row - 2
 
-        guard let attachment = section.processedMessage?.attachments[attachmentIndex] else {
+        guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
             throw MessageServiceError.attachmentNotFound
         }
 
+        if attachment.data == nil {
+            showSpinner()
+            attachment.data = try await messageService.download(
+                attachment: attachment,
+                messageId: section.rawMessage.identifier,
+                progressHandler: { [weak self] progress in
+                    self?.handleFetchProgress(state: .download(progress))
+                }
+            )
+            section.processedMessage?.attachments[attachmentIndex] = attachment
+        }
+
         if attachment.isEncrypted {
+            handleFetchProgress(state: .decrypt)
             let decryptedAttachment = try await messageService.decrypt(
                 attachment: attachment,
                 userEmail: appContext.user.email
@@ -219,10 +230,10 @@ extension ThreadDetailsViewController {
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
             input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
-            node.reloadRows(at: [indexPath], with: .automatic)
             return decryptedAttachment
         } else {
             logger.logInfo("Got not encrypted attachment - \(trace.finish())")
+            input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = attachment
             return attachment
         }
     }
@@ -269,16 +280,18 @@ extension ThreadDetailsViewController {
 
         let subject = input.rawMessage.subject ?? "(no subject)"
         let threadId = quoteType == .forward ? nil : input.rawMessage.threadId
+        let replyToMsgId = input.rawMessage.identifier.stringId
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
             ccRecipients: ccRecipients,
             sender: input.rawMessage.sender,
             subject: [quoteType.subjectPrefix, subject].joined(),
-            mime: processedMessage.rawMimeData,
             sentDate: input.rawMessage.date,
             message: processedMessage.text,
             threadId: threadId,
+            replyToMsgId: replyToMsgId,
+            inReplyTo: input.rawMessage.inReplyTo,
             attachments: attachments
         )
 
@@ -315,13 +328,12 @@ extension ThreadDetailsViewController {
 
         Task {
             do {
-                var processedMessage = try await messageService.getAndProcessMessage(
-                    with: message,
+                var processedMessage = try await messageService.getAndProcess(
+                    message: message,
                     folder: thread.path,
                     onlyLocalKeys: true,
                     userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager,
-                    progressHandler: { [weak self] in self?.handleFetchProgress(state: $0) }
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
 
                 if case .missingPubkey = processedMessage.signature {
@@ -368,8 +380,8 @@ extension ThreadDetailsViewController {
         hideSpinner()
 
         switch error as? MessageServiceError {
-        case let .missingPassPhrase(rawMimeData):
-            handleWrongPassPhrase(for: rawMimeData, at: indexPath)
+        case let .missingPassPhrase(message):
+            handleWrongPassPhrase(for: message, at: indexPath)
         default:
             // TODO: - Ticket - Improve error handling for ThreadDetailsViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -413,7 +425,7 @@ extension ThreadDetailsViewController {
         present(alertController, animated: true)
     }
 
-    private func handleWrongPassPhrase(_ passPhrase: String? = nil, for rawMimeData: Data, at indexPath: IndexPath) {
+    private func handleWrongPassPhrase(_ passPhrase: String? = nil, for message: Message, at indexPath: IndexPath) {
         let title = passPhrase == nil
             ? "setup_enter_pass_phrase".localized
             : "setup_wrong_pass_phrase_retry".localized
@@ -424,14 +436,14 @@ extension ThreadDetailsViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.handlePassPhraseEntry(rawMimeData: rawMimeData, with: passPhrase, at: indexPath)
+                self?.handlePassPhraseEntry(message: message, with: passPhrase, at: indexPath)
             }
         )
 
         present(alert, animated: true, completion: nil)
     }
 
-    private func handlePassPhraseEntry(rawMimeData: Data, with passPhrase: String, at indexPath: IndexPath) {
+    private func handlePassPhraseEntry(message: Message, with passPhrase: String, at indexPath: IndexPath) {
         presentedViewController?.dismiss(animated: true)
 
         handleFetchProgress(state: .decrypt)
@@ -444,8 +456,8 @@ extension ThreadDetailsViewController {
                 )
                 if matched {
                     let sender = input[indexPath.section-1].rawMessage.sender
-                    let processedMessage = try await messageService.decryptAndProcessMessage(
-                        mime: rawMimeData,
+                    let processedMessage = try await messageService.decryptAndProcess(
+                        message: message,
                         sender: sender,
                         onlyLocalKeys: false,
                         userEmail: appContext.user.email,
@@ -453,7 +465,7 @@ extension ThreadDetailsViewController {
                     )
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
-                    handleWrongPassPhrase(passPhrase, for: rawMimeData, at: indexPath)
+                    handleWrongPassPhrase(passPhrase, for: message, at: indexPath)
                 }
             } catch {
                 handleError(error, at: indexPath)
@@ -468,13 +480,12 @@ extension ThreadDetailsViewController {
     ) {
         Task {
             do {
-                let processedMessage = try await messageService.getAndProcessMessage(
-                    with: message,
+                let processedMessage = try await messageService.getAndProcess(
+                    message: message,
                     folder: thread.path,
                     onlyLocalKeys: false,
                     userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager,
-                    progressHandler: { _ in }
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {

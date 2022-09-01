@@ -18,7 +18,8 @@ export namespace NodeRequest {
     bcc: string[],
     from: string,
     subject: string,
-    replyToMimeMsg: string,
+    replyToMsgId?: string,
+    inReplyTo?: string,
     atts?: Attachment[]
   }
 
@@ -41,7 +42,7 @@ export namespace NodeRequest {
   export type encryptMsg = { pubKeys: string[], msgPwd?: string };
   export type encryptFile = { pubKeys: string[], name: string };
   export type parseDecryptMsg = {
-    keys: PrvKeyInfo[], msgPwd?: string, isEmail?: boolean, verificationPubkeys?: string[]
+    keys: PrvKeyInfo[], msgPwd?: string, isMime?: boolean, verificationPubkeys?: string[]
   };
   export type decryptFile = { keys: PrvKeyInfo[], msgPwd?: string };
   export type parseDateStr = { dateStr: string };
@@ -98,7 +99,7 @@ export class ValidateInput {
 
   public static parseDecryptMsg = (v: unknown): NodeRequest.parseDecryptMsg => {
     if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?')
-      && hasProp(v, 'isEmail', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')) {
+      && hasProp(v, 'isMime', 'boolean?') && hasProp(v, 'verificationPubkeys', 'string[]?')) {
       return v as NodeRequest.parseDecryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.parseDecryptMsg');

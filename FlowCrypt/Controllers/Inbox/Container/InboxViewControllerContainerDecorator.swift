@@ -32,8 +32,4 @@ struct InboxViewControllerContainerDecorator {
     func retryActionTitle() -> NSAttributedString {
         "retry_title".localized.attributed(color: .white)
     }
-
-    func continueActionTitle() -> NSAttributedString {
-        "continue".localized.attributed(color: .white)
-    }
 }

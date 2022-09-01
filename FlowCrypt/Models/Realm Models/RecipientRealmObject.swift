@@ -46,9 +46,3 @@ extension RecipientRealmObject {
         )
     }
 }
-
-extension RecipientRealmObject {
-    func contains(longid: String) -> Bool {
-        pubKeys.first(where: { $0.contains(longid: longid) }) != nil
-    }
-}

@@ -9,7 +9,18 @@
 import Foundation
 
 protocol MessageProvider {
-    func fetchMsg(message: Message,
-                  folder: String,
-                  progressHandler: ((MessageFetchState) -> Void)?) async throws -> Data
+    func fetchMsg(id: Identifier, folder: String) async throws -> Message
+    func fetchRawMsg(id: Identifier) async throws -> String
+    func fetchAttachment(
+        id: Identifier,
+        messageId: Identifier,
+        estimatedSize: Float?,
+        progressHandler: ((Float) -> Void)?
+    ) async throws -> Data
+}
+
+extension MessageProvider {
+    func fetchAttachment(id: Identifier, messageId: Identifier) async throws -> Data {
+        return try await fetchAttachment(id: id, messageId: messageId, estimatedSize: nil, progressHandler: nil)
+    }
 }

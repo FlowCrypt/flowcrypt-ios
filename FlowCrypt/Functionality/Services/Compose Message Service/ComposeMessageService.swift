@@ -28,7 +28,6 @@ final class ComposeMessageService {
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
     private lazy var logger = Logger.nested(Self.self)
-    private lazy var alertsFactory = AlertsFactory()
 
     private struct ReplyInfo: Encodable {
         let sender: String
@@ -144,8 +143,6 @@ final class ComposeMessageService {
             recipients: recipientsWithPubKeys,
             hasMessagePassword: contextToSend.hasMessagePassword
         )
-        let replyToMimeMsg = input.replyToMime
-            .flatMap { String(data: $0, encoding: .utf8) }
 
         if let password = contextToSend.messagePassword, password.isNotEmpty {
             if subject.lowercased().contains(password.lowercased()) {
@@ -168,7 +165,8 @@ final class ComposeMessageService {
             bcc: contextToSend.recipientEmails(type: .bcc),
             from: senderEmail,
             subject: subject,
-            replyToMimeMsg: replyToMimeMsg,
+            replyToMsgId: input.replyToMsgId,
+            inReplyTo: input.inReplyTo,
             atts: sendableAttachments,
             pubKeys: senderKeys.map(\.public) + validPubKeys,
             signingPrv: signingPrv,

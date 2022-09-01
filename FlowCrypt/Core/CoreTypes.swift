@@ -128,7 +128,8 @@ struct SendableMsg: Equatable {
     let bcc: [String]
     let from: String
     let subject: String
-    let replyToMimeMsg: String?
+    let replyToMsgId: String?
+    let inReplyTo: String?
     let atts: [Attachment]
     let pubKeys: [String]?
     let signingPrv: Keypair?
@@ -145,7 +146,8 @@ extension SendableMsg {
             bcc: self.bcc,
             from: self.from,
             subject: self.subject,
-            replyToMimeMsg: self.replyToMimeMsg,
+            replyToMsgId: self.replyToMsgId,
+            inReplyTo: self.inReplyTo,
             atts: atts,
             pubKeys: pubKeys,
             signingPrv: self.signingPrv,
@@ -191,21 +193,14 @@ struct DecryptErr: Decodable {
 
 struct MsgBlock: Decodable {
     static func blockParseErr(with content: String) -> MsgBlock {
-        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil, attMeta: nil, verifyRes: nil)
+        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil, verifyRes: nil)
     }
 
     let type: BlockType
     let content: String
     let decryptErr: DecryptErr? // always present in decryptErr BlockType
     let keyDetails: KeyDetails? // always present in publicKey BlockType
-    let attMeta: AttMeta? // always present in plainAtt, encryptedAtt, decryptedAtt, encryptedAttLink
     let verifyRes: VerifyRes?
-
-    struct AttMeta: Decodable {
-        let name: String
-        let data: Data
-        let length: Int
-    }
 
     struct VerifyRes: Decodable {
         let match: Bool?
@@ -227,11 +222,5 @@ struct MsgBlock: Decodable {
         case decryptErr
         case blockParseErr // block type for situations where block json could not be parsed out
         // case cryptupVerification; // not sure if Swift code will ever encounter this
-    }
-}
-
-extension MsgBlock {
-    var isAttachmentBlock: Bool {
-        type == .plainAtt || type == .encryptedAtt || type == .decryptedAtt
     }
 }

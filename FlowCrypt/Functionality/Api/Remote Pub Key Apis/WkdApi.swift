@@ -33,7 +33,7 @@ class WkdApi: WkdApiType {
 
     init(
         urlConstructor: WkdUrlConstructorType = WkdUrlConstructor(),
-        core: Core = Core.shared
+        core: Core = .shared
     ) {
         self.urlConstructor = urlConstructor
         self.core = core

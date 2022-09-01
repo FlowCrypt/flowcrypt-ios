@@ -44,13 +44,14 @@ export class Endpoints {
   public composeEmail = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     const req = ValidateInput.composeEmail(uncheckedReq);
     const mimeHeaders: RichHeaders = { to: req.to, from: req.from, subject: req.subject, cc: req.cc, bcc: req.bcc };
-    if (req.replyToMimeMsg) {
-      const previousMsg = await Mime.decode(Buf.fromUtfStr((req.replyToMimeMsg.substring(0, 10000)
-        .split('\n\n')[0] || '') + `\n\nno content`));
-      const replyHeaders = Mime.replyHeaders(previousMsg);
-      mimeHeaders['in-reply-to'] = replyHeaders['in-reply-to'];
-      mimeHeaders.references = replyHeaders.references;
+
+    if (req.replyToMsgId) {
+      mimeHeaders['in-reply-to'] = req.replyToMsgId;
+      mimeHeaders.references = [req.inReplyTo, req.replyToMsgId]
+        .filter(value => !!value)
+        .join(' ');
     }
+
     if (req.format === 'plain') {
       const atts = (req.atts || []).map(({ name, type, base64 }) =>
         new Att({ name, type, data: Buf.fromBase64Str(base64) }));
@@ -102,17 +103,18 @@ export class Endpoints {
   };
 
   public parseDecryptMsg = async (uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {
-    const { keys: kisWithPp, msgPwd, isEmail, verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
+    const { keys: kisWithPp, msgPwd, isMime, verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data
     let rawSigned: string | undefined;
     let subject: string | undefined;
-    if (isEmail) {
+    if (isMime) {
       const { blocks, rawSignedContent, headers } = await Mime.process(Buf.concat(data));
       subject = String(headers.subject);
       rawSigned = rawSignedContent;
       rawBlocks.push(...blocks);
     } else {
-      rawBlocks.push(MsgBlock.fromContent('encryptedMsg', new Buf(Buf.concat(data))));
+      const { blocks } = MsgBlockParser.detectBlocks(Buf.concat(data).toString());
+      rawBlocks.push(...blocks);
     }
     const sequentialProcessedBlocks: MsgBlock[] = []; // contains decrypted or otherwise formatted data
     for (const rawBlock of rawBlocks) {

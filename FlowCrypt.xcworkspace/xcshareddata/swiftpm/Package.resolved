@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/google-api-objectivec-client-for-rest",
       "state" : {
-        "revision" : "e6c87ff8f67e36375eefdcae79521e2942a8dd1f",
-        "version" : "2.0.0"
+        "revision" : "0078161fcc2900ca06213a192bdfa5ece8ee58f1",
+        "version" : "2.0.1"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS",
       "state" : {
-        "revision" : "9450e779619fc184d360c9f7ce61023587f7e1f4",
-        "version" : "6.2.2"
+        "revision" : "5ce850448e89500aca5b095af7247eb46dc0ca18",
+        "version" : "6.2.3"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa",
       "state" : {
-        "revision" : "a107f5660b0b6067700923af7f107b6af73c546b",
-        "version" : "10.28.5"
+        "revision" : "5629961d905387b40fb2e1e9d8594c87a2ab8811",
+        "version" : "10.28.6"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core",
       "state" : {
-        "revision" : "2b8def17bb8e0cddbcc754db6b6466b8487feebf",
-        "version" : "12.5.0"
+        "revision" : "6f6a0f415bd33cf2ced4467e36a47f7c84f0a1d7",
+        "version" : "12.5.1"
       }
     },
     {

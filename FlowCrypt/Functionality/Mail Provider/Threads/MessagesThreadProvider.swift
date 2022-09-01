@@ -87,7 +87,7 @@ extension GmailService: MessagesThreadProvider {
                         return continuation.resume(returning: empty)
                     }
 
-                    let messages = threadMsg.compactMap { try? Message($0, draftIdentifier: nil) }
+                    let messages = threadMsg.compactMap { try? Message(gmailMessage: $0) }
 
                     let result = MessageThread(
                         identifier: thread.identifier,
@@ -122,73 +122,5 @@ extension GmailService: MessagesThreadProvider {
         }
 
         return query
-    }
-}
-
-extension Message {
-    init(
-        _ message: GTLRGmail_Message,
-        draftIdentifier: String? = nil
-    ) throws {
-        guard let payload = message.payload else {
-            throw GmailServiceError.missingMessagePayload
-        }
-
-        guard let messageHeaders = payload.headers else {
-            throw GmailServiceError.missingMessageInfo("headers")
-        }
-
-        guard let internalDate = message.internalDate as? Double else {
-            throw GmailServiceError.missingMessageInfo("date")
-        }
-
-        guard let identifier = message.identifier else {
-            throw GmailServiceError.missingMessageInfo("id")
-        }
-
-        let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
-        let labels: [MessageLabel] = message.labelIds?.map(MessageLabel.init) ?? []
-
-        var sender: Recipient?
-        var subject: String?
-        var to: String?
-        var cc: String?
-        var bcc: String?
-        var replyTo: String?
-
-        for messageHeader in messageHeaders.compactMap({ $0 }) {
-            guard let name = messageHeader.name?.lowercased(),
-                  let value = messageHeader.value
-            else { continue }
-
-            switch name {
-            case .from: sender = Recipient(value)
-            case .subject: subject = value
-            case .to: to = value
-            case .cc: cc = value
-            case .bcc: bcc = value
-            case .replyTo: replyTo = value
-            default: break
-            }
-        }
-
-        self.init(
-            identifier: Identifier(stringId: identifier),
-            // Should be divided by 1000, because Date(timeIntervalSince1970:) expects seconds
-            // but GTLRGmail_Message.internalDate is in miliseconds
-            date: Date(timeIntervalSince1970: internalDate / 1000),
-            sender: sender,
-            subject: subject,
-            size: message.sizeEstimate.flatMap(Int.init),
-            labels: labels,
-            attachmentIds: attachmentsIds,
-            threadId: message.threadId,
-            draftIdentifier: draftIdentifier,
-            raw: message.raw,
-            to: to,
-            cc: cc,
-            bcc: bcc,
-            replyTo: replyTo
-        )
     }
 }

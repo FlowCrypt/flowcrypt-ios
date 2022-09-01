@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { KeyInfo, PgpKey, PrvKeyInfo } from './pgp-key';
+import { PgpKey, PrvKeyInfo } from './pgp-key';
 import { MsgBlock, MsgBlockType } from './msg-block';
 import { Str, Value } from './common';
 import { Buf } from './buf';
@@ -13,7 +13,7 @@ import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import {
   CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key,
-  KeyID, Message, PrivateKey, readKeys, readMessage, sign, VerificationResult
+  KeyID, Message, PrivateKey, readKeys, sign, VerificationResult
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
@@ -36,10 +36,8 @@ export namespace PgpMsgMethod {
       msgPwd?: string,
       verificationPubkeys?: string[]
     };
-    export type DiagnosePubkeys = { privateKis: KeyInfo[], message: Uint8Array };
     export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array, verificationPubkeys?: string[] };
   }
-  export type DiagnosePubkeys = (arg: Arg.DiagnosePubkeys) => Promise<DiagnoseMsgPubkeysResult>;
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
   export type Decrypt = (arg: Arg.Decrypt) => Promise<DecryptSuccess | DecryptError>;
   export type Type = (arg: Arg.Type) => Promise<PgpMsgTypeResult>;
@@ -321,26 +319,6 @@ export class PgpMsg {
         signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
       });
     }
-  };
-
-  public static diagnosePubkeys: PgpMsgMethod.DiagnosePubkeys = async ({ privateKis, message }) => {
-    const m = await readMessage({ armoredMessage: Buf.fromUint8(message).toUtfStr() });
-    const msgKeyIds = m.getEncryptionKeyIDs ? m.getEncryptionKeyIDs() : [];
-    const localKeyIds: KeyID[] = [];
-    for (const k of await Promise.all(privateKis.map(ki => PgpKey.read(ki.public)))) {
-      localKeyIds.push(...k.getKeyIDs());
-    }
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const diagnosis = { found_match: false, receivers: msgKeyIds.length };
-    for (const msgKeyId of msgKeyIds) {
-      for (const localKeyId of localKeyIds) {
-        if (msgKeyId.bytes === localKeyId.bytes) {
-          diagnosis.found_match = true;
-          return diagnosis;
-        }
-      }
-    }
-    return diagnosis;
   };
 
   public static extractFcAtts = (decryptedContent: string, blocks: MsgBlock[]) => {

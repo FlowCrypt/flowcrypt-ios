@@ -85,6 +85,7 @@
 		5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		510BB63527BE92CC00B1011F /* RecipientBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510BB63427BE92CC00B1011F /* RecipientBase.swift */; };
 		51114DB6280EB699006C252A /* gmp-interface.m in Sources */ = {isa = PBXBuildFile; fileRef = 51114DB5280EB699006C252A /* gmp-interface.m */; };
+		5113D22D28C0C43700A131E0 /* Gmail+MessageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5113D22C28C0C43700A131E0 /* Gmail+MessageExtension.swift */; };
 		511737682851F31700337B9F /* GoogleScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511737672851F31700337B9F /* GoogleScope.swift */; };
 		511D07E12769FBBA0050417B /* MessagePasswordCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */; };
 		511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */; };
@@ -131,7 +132,6 @@
 		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
 		5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
 		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
-		5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */; };
 		5A39F441239EF17F001F4607 /* LegalViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F440239EF17F001F4607 /* LegalViewDecorator.swift */; };
 		5A5C234B23A042520015E705 /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5C234A23A042520015E705 /* WebViewController.swift */; };
 		5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A948DC4239EF2F4006284D7 /* LegalViewController.swift */; };
@@ -554,6 +554,7 @@
 		51114DB5280EB699006C252A /* gmp-interface.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "gmp-interface.m"; sourceTree = "<group>"; };
 		51114DB7280EB6B9006C252A /* gmp-interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "gmp-interface.h"; sourceTree = "<group>"; };
 		51114DBA280EBB78006C252A /* gmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
+		5113D22C28C0C43700A131E0 /* Gmail+MessageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+MessageExtension.swift"; sourceTree = "<group>"; };
 		511737672851F31700337B9F /* GoogleScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleScope.swift; sourceTree = "<group>"; };
 		511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePasswordCellNode.swift; sourceTree = "<group>"; };
 		511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithPaddingNode.swift; sourceTree = "<group>"; };
@@ -596,7 +597,6 @@
 		5A39F433239EC61C001F4607 /* TitleCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleCellNode.swift; sourceTree = "<group>"; };
 		5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeySettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F438239ECDD0001F4607 /* ExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ExtensionTests.swift; path = FlowCryptAppTests/ExtensionTests.swift; sourceTree = SOURCE_ROOT; };
-		5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedViewController.swift; sourceTree = "<group>"; };
 		5A39F440239EF17F001F4607 /* LegalViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewDecorator.swift; sourceTree = "<group>"; };
 		5A5C234A23A042520015E705 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
 		5A948DC4239EF2F4006284D7 /* LegalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalViewController.swift; sourceTree = "<group>"; };
@@ -1248,7 +1248,6 @@
 		5A5C234923A0422C0015E705 /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				5A39F43E239EE7D2001F4607 /* SegmentedViewController.swift */,
 				5A5C234A23A042520015E705 /* WebViewController.swift */,
 				F191F620272511790053833E /* BlurViewController.swift */,
 			);
@@ -1653,6 +1652,7 @@
 			children = (
 				9F9361A42573CE260009912F /* MessageProvider.swift */,
 				9F93623E2573D16F0009912F /* Gmail+Message.swift */,
+				5113D22C28C0C43700A131E0 /* Gmail+MessageExtension.swift */,
 				9F9362182573D10E0009912F /* Imap+Message.swift */,
 				9FA9C83B264C2D75005A9670 /* MessageService.swift */,
 				5168FB0A274F94D300131072 /* MessageAttachment.swift */,
@@ -2911,6 +2911,7 @@
 				9FF0671025520D7100FCC9E6 /* MessageGateway.swift in Sources */,
 				9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */,
 				51B4AE51271444580001F33B /* PubKeyRealmObject.swift in Sources */,
+				5113D22D28C0C43700A131E0 /* Gmail+MessageExtension.swift in Sources */,
 				517C2E302779F90700FECF32 /* MultipartDataRequest.swift in Sources */,
 				9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */,
 				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
@@ -2934,7 +2935,6 @@
 				D20D3C6E2520AB3900D4AA9A /* BackupViewDecorator.swift in Sources */,
 				9F268891237DC55600428A94 /* SetupManuallyImportKeyViewController.swift in Sources */,
 				D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */,
-				5A39F43F239EE7D2001F4607 /* SegmentedViewController.swift in Sources */,
 				21489B7A267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift in Sources */,
 				5180CB9327357B67001FC7EF /* RawClientConfiguration.swift in Sources */,
 				511737682851F31700337B9F /* GoogleScope.swift in Sources */,

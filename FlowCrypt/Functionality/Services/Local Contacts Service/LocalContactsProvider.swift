@@ -12,7 +12,6 @@ import FlowCryptCommon
 
 enum ContactsError: Error {
     case keyMissing
-    case unexpected(String)
 }
 
 protocol PublicKeyProvider {
@@ -23,7 +22,6 @@ protocol PublicKeyProvider {
 protocol LocalContactsProviderType: PublicKeyProvider {
     func searchRecipient(with email: String) async throws -> RecipientWithSortedPubKeys?
     func searchRecipients(query: String) throws -> [Recipient]
-    func save(recipient: RecipientWithSortedPubKeys) throws
     func remove(recipient: RecipientWithSortedPubKeys) throws
     func updateKeys(for recipient: RecipientWithSortedPubKeys) throws
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys]
@@ -64,10 +62,6 @@ extension LocalContactsProvider: LocalContactsProviderType {
             }
         }
         return object.pubKeys.map(\.armored)
-    }
-
-    func save(recipient: RecipientWithSortedPubKeys) throws {
-        try save(RecipientRealmObject(recipient))
     }
 
     func remove(recipient: RecipientWithSortedPubKeys) throws {

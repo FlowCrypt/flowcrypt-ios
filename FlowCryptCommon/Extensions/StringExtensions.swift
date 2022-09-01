@@ -82,6 +82,14 @@ public extension String {
             return "tag"
         }
     }
+
+    func removingHtmlTags() -> String? {
+        return try? NSAttributedString(
+            data: self.data(using: .utf8)!,
+            options: [.documentType: NSAttributedString.DocumentType.html],
+            documentAttributes: nil
+        ).string
+    }
 }
 
 public extension NSAttributedString {

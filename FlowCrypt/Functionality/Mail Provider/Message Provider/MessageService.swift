@@ -17,7 +17,7 @@ enum MessageFetchState {
 
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
-    case missingPassPhrase(_ rawMimeData: Data)
+    case missingPassPhrase(_ message: Message)
     case emptyKeys
     case emptyKeysForEKM
     case attachmentNotFound
@@ -54,7 +54,7 @@ final class MessageService {
     private let pubLookup: PubLookupType
 
     init(
-        core: Core = Core.shared,
+        core: Core = .shared,
         keyMethods: KeyMethodsType = KeyMethods(),
         localContactsProvider: LocalContactsProviderType,
         pubLookup: PubLookupType,
@@ -86,30 +86,33 @@ final class MessageService {
         return matchingKeys.isNotEmpty
     }
 
-    func getAndProcessMessage(
-        with input: Message,
+    // MARK: - Message processing
+    func getAndProcess(
+        message: Message,
         folder: String,
         onlyLocalKeys: Bool,
         userEmail: String,
-        isUsingKeyManager: Bool,
-        progressHandler: ((MessageFetchState) -> Void)?
+        isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
-        let rawMimeData = try await messageProvider.fetchMsg(
-            message: input,
-            folder: folder,
-            progressHandler: progressHandler
+        let message = try await messageProvider.fetchMsg(
+            id: message.identifier,
+            folder: folder
         )
-        return try await decryptAndProcessMessage(
-            mime: rawMimeData,
-            sender: input.sender,
-            onlyLocalKeys: onlyLocalKeys,
-            userEmail: userEmail,
-            isUsingKeyManager: isUsingKeyManager
-        )
+        if message.isPgp {
+            return try await decryptAndProcess(
+                message: message,
+                sender: message.sender,
+                onlyLocalKeys: onlyLocalKeys,
+                userEmail: userEmail,
+                isUsingKeyManager: isUsingKeyManager
+            )
+        } else {
+            return ProcessedMessage(message: message)
+        }
     }
 
-    func decryptAndProcessMessage(
-        mime rawMimeData: Data,
+    func decryptAndProcess(
+        message: Message,
         sender: Recipient?,
         onlyLocalKeys: Bool,
         userEmail: String,
@@ -123,47 +126,38 @@ final class MessageService {
             throw MessageServiceError.emptyKeys
         }
         let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
-        let decrypted = try await core.parseDecryptMsg(
-            encrypted: rawMimeData,
-            keys: keys,
-            msgPwd: nil,
-            isEmail: true,
-            verificationPubKeys: verificationPubKeys
-        )
-        guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-            throw MessageServiceError.missingPassPhrase(rawMimeData)
+
+        var message = message
+        if message.hasSignatureAttachment {
+            // raw data is needed for verification of detached signature
+            message.raw = try await messageProvider.fetchRawMsg(id: message.identifier)
         }
 
-        return try await processMessage(
-            rawMimeData: rawMimeData,
+        let encrypted = message.raw ?? message.body.text
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: encrypted.data(),
+            keys: keys,
+            msgPwd: nil,
+            isMime: message.raw != nil,
+            verificationPubKeys: verificationPubKeys
+        )
+
+        guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
+            throw MessageServiceError.missingPassPhrase(message)
+        }
+
+        return try await process(
+            message: message,
             with: decrypted
         )
     }
 
-    func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
-        guard attachment.isEncrypted else { return attachment }
-
-        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
-        let decrypted = try await core.decryptFile(encrypted: attachment.data, keys: keys, msgPwd: nil)
-
-        if let decryptErr = decrypted.decryptErr {
-            throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)
-        }
-
-        guard let decryptSuccess = decrypted.decryptSuccess else {
-            throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
-        }
-
-        return MessageAttachment(name: decryptSuccess.name, data: decryptSuccess.data, isEncrypted: false)
-    }
-
-    private func processMessage(
-        rawMimeData: Data,
+    private func process(
+        message: Message,
         with decrypted: CoreRes.ParseDecryptMsg
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
-        let attachments = try await getAttachments(blocks: decrypted.blocks)
         let messageType: ProcessedMessage.MessageType
         let text: String
         let signature: ProcessedMessage.MessageSignature?
@@ -197,28 +191,12 @@ final class MessageService {
         }
 
         return ProcessedMessage(
-            rawMimeData: rawMimeData,
+            message: message,
             text: text,
-            messageType: messageType,
-            attachments: attachments,
+            type: messageType,
+            attachments: message.attachments,
             signature: signature
         )
-    }
-
-    private func getAttachments(
-        blocks: [MsgBlock]
-    ) async throws -> [MessageAttachment] {
-        let attachmentBlocks = blocks.filter(\.isAttachmentBlock)
-        let attachments: [MessageAttachment] = attachmentBlocks.compactMap { block in
-            guard let meta = block.attMeta else { return nil }
-
-            return MessageAttachment(
-                name: meta.name,
-                data: meta.data,
-                isEncrypted: block.type == .encryptedAtt
-            )
-        }
-        return attachments
     }
 
     private func hasMsgBlockThatNeedsPassPhrase(_ msg: CoreRes.ParseDecryptMsg) -> Bool {
@@ -228,6 +206,43 @@ final class MessageService {
         }
         logger.logInfo("missing pass phrase for one of longids \(decryptErr.longids)")
         return true
+    }
+
+    // MARK: - Attachments processing
+    func download(
+        attachment: MessageAttachment,
+        messageId: Identifier,
+        progressHandler: ((Float) -> Void)?
+    ) async throws -> Data {
+        try await messageProvider.fetchAttachment(
+            id: attachment.id,
+            messageId: messageId,
+            estimatedSize: Float(attachment.size),
+            progressHandler: progressHandler
+        )
+    }
+
+    func decrypt(attachment: MessageAttachment, userEmail: String) async throws -> MessageAttachment {
+        guard attachment.isEncrypted, let data = attachment.data else { return attachment }
+
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
+        let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
+
+        if let decryptErr = decrypted.decryptErr {
+            throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)
+        }
+
+        guard let decryptSuccess = decrypted.decryptSuccess else {
+            throw AppErr.unexpected("decryptFile: expected one of decryptErr, decryptSuccess to be present")
+        }
+
+        return MessageAttachment(
+            id: attachment.id,
+            name: decryptSuccess.name,
+            estimatedSize: attachment.estimatedSize,
+            mimeType: attachment.mimeType,
+            data: decryptSuccess.data
+        )
     }
 }
 

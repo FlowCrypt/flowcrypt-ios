@@ -16,11 +16,12 @@ describe('SETUP: ', () => {
   it('check decrypt message when there are no keys available', async () => {
 
     const mockApi = new MockApi();
+    const subject = 'Signed and encrypted message';
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      messages: ['CC and BCC test']
+      messages: [subject]
     })
 
     const processArgs = CommonData.mockProcessArgs;
@@ -37,7 +38,7 @@ describe('SETUP: ', () => {
         returnKeys: []
       }
       await AppiumHelper.restartApp(processArgs);
-      await MailFolderScreen.clickOnEmailBySubject(CommonData.recipientsListEmail.subject);
+      await MailFolderScreen.clickOnEmailBySubject(subject);
       await BaseScreen.checkModalMessage(CommonData.errors.decryptMessageWithNoKeys);
     });
   });

@@ -127,7 +127,8 @@ final class FlowCryptCoreTests: XCTestCase {
             bcc: [],
             from: "sender@hello.com",
             subject: "subj",
-            replyToMimeMsg: nil,
+            replyToMsgId: nil,
+            inReplyTo: nil,
             atts: [],
             pubKeys: nil,
             signingPrv: nil,
@@ -150,7 +151,8 @@ final class FlowCryptCoreTests: XCTestCase {
             bcc: [],
             from: "sender@hello.com",
             subject: "subj",
-            replyToMimeMsg: nil,
+            replyToMsgId: nil,
+            inReplyTo: nil,
             atts: [],
             pubKeys: [TestData.k0.public, TestData.k1.public],
             signingPrv: nil,
@@ -178,7 +180,9 @@ final class FlowCryptCoreTests: XCTestCase {
             html: "this is the message",
             to: ["email@hello.com"], cc: [], bcc: [],
             from: "sender@hello.com",
-            subject: "subj", replyToMimeMsg: nil,
+            subject: "subj",
+            replyToMsgId: nil,
+            inReplyTo: nil,
             atts: [attachment],
             pubKeys: [TestData.k0.public, TestData.k1.public],
             signingPrv: nil,
@@ -202,7 +206,8 @@ final class FlowCryptCoreTests: XCTestCase {
             to: ["email@hello.com"], cc: [], bcc: [],
             from: "sender@hello.com",
             subject: "Signed email",
-            replyToMimeMsg: nil,
+            replyToMsgId: nil,
+            inReplyTo: nil,
             atts: [],
             pubKeys: [TestData.k0.public],
             signingPrv: signingKey,
@@ -217,7 +222,7 @@ final class FlowCryptCoreTests: XCTestCase {
             encrypted: r.mimeEncoded,
             keys: [signingKey],
             msgPwd: nil,
-            isEmail: true,
+            isMime: true,
             verificationPubKeys: [TestData.k0.public]
         )
         guard let verifyResult = decrypted.blocks.first?.verifyRes else {
@@ -238,7 +243,8 @@ final class FlowCryptCoreTests: XCTestCase {
             to: ["email@hello.com"], cc: [], bcc: [],
             from: "sender@hello.com",
             subject: "Signed email",
-            replyToMimeMsg: nil,
+            replyToMsgId: nil,
+            inReplyTo: nil,
             atts: [],
             pubKeys: [TestData.k0.public],
             signingPrv: signingKey,
@@ -253,7 +259,7 @@ final class FlowCryptCoreTests: XCTestCase {
             encrypted: r.mimeEncoded,
             keys: [signingKey],
             msgPwd: nil,
-            isEmail: true,
+            isMime: true,
             verificationPubKeys: []
         )
 
@@ -283,7 +289,8 @@ final class FlowCryptCoreTests: XCTestCase {
             bcc: [],
             from: email,
             subject: "e2e subj",
-            replyToMimeMsg: nil,
+            replyToMsgId: nil,
+            inReplyTo: nil,
             atts: [],
             pubKeys: [generateKeyRes.key.public],
             signingPrv: nil,
@@ -291,7 +298,7 @@ final class FlowCryptCoreTests: XCTestCase {
         )
         let mime = try await core.composeEmail(msg: msg, fmt: .encryptInline)
         let keys = [try Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")]
-        let decrypted = try await core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isEmail: true, verificationPubKeys: [])
+        let decrypted = try await core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isMime: true, verificationPubKeys: [])
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, ReplyType.encrypted)
         XCTAssertEqual(decrypted.blocks.count, 1)
@@ -304,7 +311,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testDecryptErrMismatch() async throws {
         let key = TestData.k0
-        let r = try await core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isEmail: false, verificationPubKeys: [])
+        let r = try await core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isMime: false, verificationPubKeys: [])
         let decrypted = r
         XCTAssertEqual(decrypted.text, "")
         XCTAssertEqual(decrypted.replyType, ReplyType.plain) // replies to errors should be plain
@@ -419,7 +426,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // Test verify key
         await testPerformance(maxDuration: 50) {
-            _ = try await core.verifyKey(armoredPrv: TestData.k3rsa4096.private)
+            try await core.verifyKey(armoredPrv: TestData.k3rsa4096.private)
         }
 
         // Test encrypt message
@@ -442,7 +449,7 @@ final class FlowCryptCoreTests: XCTestCase {
                 encrypted: encrypted,
                 keys: [TestData.k3rsa4096],
                 msgPwd: nil,
-                isEmail: true,
+                isMime: true,
                 verificationPubKeys: [TestData.k3rsa4096.public]
             )
         }
@@ -456,7 +463,8 @@ final class FlowCryptCoreTests: XCTestCase {
             bcc: [],
             from: "sender@sender.test",
             subject: "Signed email",
-            replyToMimeMsg: nil,
+            replyToMsgId: nil,
+            inReplyTo: nil,
             atts: [],
             pubKeys: [TestData.k3rsa4096.public],
             signingPrv: TestData.k3rsa4096,

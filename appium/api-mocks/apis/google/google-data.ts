@@ -31,7 +31,7 @@ export class GmailMsg {
   public snippet?: string;
   public raw?: string;
 
-  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, mimeMsg: ParsedMail, threadId?: string | null }) {
+  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, payload?: GmailMsg$payload, mimeMsg: ParsedMail, threadId?: string | null }) {
     this.id = msg.id;
     this.historyId = msg.id;
     this.threadId = msg.threadId ?? msg.id;
@@ -39,55 +39,66 @@ export class GmailMsg {
     this.raw = msg.raw;
     this.sizeEstimate = Buffer.byteLength(msg.raw, "utf-8");
 
-    const contentTypeHeader = msg.mimeMsg.headers.get('content-type')! as StructuredHeader;
-    const toHeader = msg.mimeMsg.headers.get('to')! as AddressObject;
-    const ccHeader = msg.mimeMsg.headers.get('cc')! as AddressObject;
-    const bccHeader = msg.mimeMsg.headers.get('bcc')! as AddressObject;
-    const fromHeader = msg.mimeMsg.headers.get('from')! as AddressObject;
-    const subjectHeader = msg.mimeMsg.headers.get('subject')! as string;
     const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
-    const messageIdHeader = msg.mimeMsg.headers.get('message-id')! as string;
-    const mimeVersionHeader = msg.mimeMsg.headers.get('mime-version')! as string;
-    const replyToHeader = msg.mimeMsg.headers.get('reply-to')! as AddressObject;
-    let body;
-
-    if (msg.mimeMsg.text) {
-      const textBase64 = Buffer.from(msg.mimeMsg.text, 'utf-8').toString('base64');
-      body = { attachmentId: '', size: textBase64.length, data: textBase64 };
-    } else if (typeof msg.mimeMsg.html === 'string') {
-      const htmlBase64 = Buffer.from(msg.mimeMsg.html, 'utf-8').toString('base64');
-      body = { attachmentId: '', size: htmlBase64.length, data: htmlBase64 };
-    }
     this.internalDate = dateHeader.getTime();
-    this.payload = {
-      mimeType: contentTypeHeader.value,
-      headers: [
+
+    if (msg.payload) {
+      this.payload = msg.payload;
+    } else {
+      const contentTypeHeader = msg.mimeMsg.headers.get('content-type')! as StructuredHeader;
+      const toHeader = msg.mimeMsg.headers.get('to')! as AddressObject;
+      const ccHeader = msg.mimeMsg.headers.get('cc')! as AddressObject;
+      const bccHeader = msg.mimeMsg.headers.get('bcc')! as AddressObject;
+      const fromHeader = msg.mimeMsg.headers.get('from')! as AddressObject;
+      const subjectHeader = msg.mimeMsg.headers.get('subject')! as string;
+
+      const messageIdHeader = msg.mimeMsg.headers.get('message-id')! as string;
+      const mimeVersionHeader = msg.mimeMsg.headers.get('mime-version')! as string;
+      const replyToHeader = msg.mimeMsg.headers.get('reply-to')! as AddressObject;
+      let body;
+
+      const attachmentId = `attachment_id_${lousyRandom()}`;
+      if (msg.mimeMsg.text) {
+        const textBase64 = Buffer.from(msg.mimeMsg.text, 'utf-8').toString('base64');
+        body = { attachmentId: attachmentId, size: textBase64.length, data: textBase64 };
+      } else if (typeof msg.mimeMsg.html === 'string') {
+        const htmlBase64 = Buffer.from(msg.mimeMsg.html, 'utf-8').toString('base64');
+        body = { attachmentId: attachmentId, size: htmlBase64.length, data: htmlBase64 };
+      }
+
+      const headers = [
         { name: "Content-Type", value: `${contentTypeHeader.value}; boundary="${contentTypeHeader.params.boundary}"` },
         { name: "Message-Id", value: messageIdHeader },
         { name: "Mime-Version", value: mimeVersionHeader }
-      ],
-      body
-    };
-    if (toHeader) {
-      this.payload.headers!.push({ name: 'To', value: toHeader.text });
-    }
-    if (ccHeader) {
-      this.payload.headers!.push({ name: 'Cc', value: ccHeader.text });
-    }
-    if (bccHeader) {
-      this.payload.headers!.push({ name: 'Bcc', value: bccHeader.text });
-    }
-    if (fromHeader) {
-      this.payload.headers!.push({ name: 'From', value: fromHeader.text });
-    }
-    if (subjectHeader) {
-      this.payload.headers!.push({ name: 'Subject', value: subjectHeader });
-    }
-    if (dateHeader) {
-      this.payload.headers!.push({ name: 'Date', value: dateHeader.toString() });
-    }
-    if (replyToHeader) {
-      this.payload.headers!.push({ name: 'Reply-To', value: replyToHeader.text });
+      ]
+
+      if (toHeader) {
+        headers.push({ name: 'To', value: toHeader.text });
+      }
+      if (ccHeader) {
+        headers.push({ name: 'Cc', value: ccHeader.text });
+      }
+      if (bccHeader) {
+        headers.push({ name: 'Bcc', value: bccHeader.text });
+      }
+      if (fromHeader) {
+        headers.push({ name: 'From', value: fromHeader.text });
+      }
+      if (subjectHeader) {
+        headers.push({ name: 'Subject', value: subjectHeader });
+      }
+      if (dateHeader) {
+        headers.push({ name: 'Date', value: dateHeader.toString() });
+      }
+      if (replyToHeader) {
+        headers.push({ name: 'Reply-To', value: replyToHeader.text });
+      }
+
+      this.payload = {
+        mimeType: contentTypeHeader.value,
+        headers: headers,
+        body
+      };
     }
   }
 
@@ -186,12 +197,11 @@ export class GoogleData {
     } else {
       msgCopy.raw = undefined;
     }
-    if (format === 'metadata' || format === 'raw') {
-      if (msgCopy.payload) {
-        msgCopy.payload.body = undefined;
-        msgCopy.payload.parts = undefined;
-      }
+    if (msgCopy.payload && (['metadata', 'raw'].includes(format))) {
+      msgCopy.payload.body = undefined;
+      msgCopy.payload.parts = undefined;
     }
+
     return msgCopy;
   };
 
@@ -212,6 +222,7 @@ export class GoogleData {
       for (const file of files) {
         const utfStr = new TextDecoder().decode(file);
         const json = JSON.parse(utfStr) as ExportedMsg;
+
         const subject = GoogleData.msgSubject(json.full).replace('Re: ', '');
         const isValidMsg = msgSubjects ? msgSubjects.includes(subject) : json.acctEmail === acct;
 
@@ -221,11 +232,15 @@ export class GoogleData {
           if (!raw || existingMessages.includes(json.raw.id)) { continue }
 
           const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
-          const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, mimeMsg: mimeMsg, threadId: json.full.threadId });
+          const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, payload: json.full.payload, mimeMsg: mimeMsg, threadId: json.full.threadId });
           if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
             DATA[acct].drafts.push(msg);
           } else {
             DATA[acct].messages.push(msg);
+          }
+
+          if (json.attachments) {
+            DATA[acct].attachments = { ...DATA[acct].attachments, ...json.attachments };
           }
         }
       }
@@ -352,6 +367,7 @@ export class GoogleData {
   public getThreads = (labelIds: string[] = [], query?: string) => {
     const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
     const threads: GmailThread[] = [];
+
     for (const thread of this.getMessagesAndDrafts().
       filter(m => labelIds.length ? (m.labelIds || []).some(l => labelIds.includes(l)) : true).
       filter(m => subject ? GoogleData.msgSubject(m).toLowerCase().includes(subject) : true).

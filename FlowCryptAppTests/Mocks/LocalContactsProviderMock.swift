@@ -15,8 +15,6 @@ final class LocalContactsProviderMock: LocalContactsProviderType {
 
     func searchRecipients(query: String) throws -> [Recipient] { [] }
 
-    func save(recipient: RecipientWithSortedPubKeys) throws {}
-
     func remove(recipient: RecipientWithSortedPubKeys) throws {}
 
     func updateKeys(for recipient: RecipientWithSortedPubKeys) throws {}

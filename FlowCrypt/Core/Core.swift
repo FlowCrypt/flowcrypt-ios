@@ -75,18 +75,16 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
     }
 
-    func verifyKey(armoredPrv: String) async throws -> Data {
+    func verifyKey(armoredPrv: String) async throws {
         let jsonDict: [String: Any?] = [
             "armored": armoredPrv
         ]
 
-        let verifyResult = try await call(
+        _ = try await call(
             "verifyKey",
             jsonDict: jsonDict,
             data: nil
         )
-
-        return Data()
     }
     
     // MARK: Files
@@ -161,7 +159,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         encrypted: Data,
         keys: [Keypair],
         msgPwd: String?,
-        isEmail: Bool,
+        isMime: Bool,
         verificationPubKeys: [String]
     ) async throws -> CoreRes.ParseDecryptMsg {
         struct ParseDecryptMsgRaw: Decodable {
@@ -170,7 +168,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         }
         let json: [String: Any?]? = [
             "keys": keys.map(\.prvKeyInfoJsonDictForCore),
-            "isEmail": isEmail,
+            "isMime": isMime,
             "msgPwd": msgPwd,
             "verificationPubkeys": verificationPubKeys
         ]
@@ -209,7 +207,8 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "bcc": msg.bcc,
             "from": msg.from,
             "subject": msg.subject,
-            "replyToMimeMsg": msg.replyToMimeMsg,
+            "replyToMsgId": msg.replyToMsgId,
+            "inReplyTo": msg.inReplyTo,
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
             "pubKeys": msg.pubKeys,

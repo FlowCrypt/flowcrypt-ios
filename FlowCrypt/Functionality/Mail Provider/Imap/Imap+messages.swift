@@ -30,7 +30,7 @@ extension Imap {
         set: MCOIndexSet
     ) async throws -> [MCOIMAPMessage] {
         return try await execute("fetchMessagesByUIDOperation", { sess, respond in
-            sess.fetchMessagesByUIDOperation(
+            sess.fetchMessagesOperation(
                 withFolder: folder,
                 requestKind: kind,
                 uids: set

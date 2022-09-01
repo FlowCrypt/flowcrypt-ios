@@ -51,19 +51,16 @@ final class ComposeViewController: TableNodeViewController {
     internal var shouldShowEmailRecipientsLabel = false
     internal let appContext: AppContextWithUser
     internal let composeMessageService: ComposeMessageService
-    internal let notificationCenter: NotificationCenter
     internal var decorator: ComposeViewDecorator
     internal let localContactsProvider: LocalContactsProviderType
     internal let pubLookup: PubLookupType
     internal let googleUserService: GoogleUserServiceType
     internal let filesManager: FilesManagerType
     internal let photosManager: PhotosManagerType
-    internal let keyMethods: KeyMethodsType
     internal let router: GlobalRouterType
     internal let clientConfiguration: ClientConfiguration
     internal let sendAsService: SendAsServiceType
 
-    internal let email: String
     internal var isMessagePasswordSupported: Bool {
         return clientConfiguration.isUsingFes
     }
@@ -100,7 +97,6 @@ final class ComposeViewController: TableNodeViewController {
 
     init(
         appContext: AppContextWithUser,
-        notificationCenter: NotificationCenter = .default,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         composeMessageService: ComposeMessageService? = nil,
@@ -109,8 +105,6 @@ final class ComposeViewController: TableNodeViewController {
         keyMethods: KeyMethodsType = KeyMethods()
     ) async throws {
         self.appContext = appContext
-        self.email = appContext.user.email
-        self.notificationCenter = notificationCenter
         self.input = input
         self.decorator = decorator
         let clientConfiguration = try await appContext.clientConfigurationService.configuration
@@ -120,7 +114,8 @@ final class ComposeViewController: TableNodeViewController {
         )
         self.googleUserService = GoogleUserService(
             currentUserEmail: appContext.user.email,
-            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
+            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate,
+            shouldRunWarmupQuery: true
         )
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
             appContext: appContext,
@@ -128,7 +123,6 @@ final class ComposeViewController: TableNodeViewController {
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
-        self.keyMethods = keyMethods
         self.pubLookup = PubLookup(
             clientConfiguration: clientConfiguration,
             localContactsProvider: self.localContactsProvider

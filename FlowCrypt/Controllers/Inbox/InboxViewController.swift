@@ -41,6 +41,7 @@ class InboxViewController: ViewController {
     internal var searchedExpression = ""
     var shouldBeginFetch = true
 
+    private var isVisible = false
     private var didLayoutSubviews = false
 
     init(
@@ -84,6 +85,12 @@ class InboxViewController: ViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
+        isVisible = true
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        isVisible = false
     }
 
     override func viewDidLayoutSubviews() {
@@ -251,7 +258,10 @@ extension InboxViewController {
     }
 
     private func loadMore(_ batchContext: ASBatchContext?) {
-        guard state.canLoadMore else { return }
+        guard state.canLoadMore, isVisible else {
+            batchContext?.completeBatchFetching(true)
+            return
+        }
 
         Task {
             do {
@@ -291,14 +301,12 @@ extension InboxViewController {
                 context?.completeBatchFetching(true)
                 return
             }
-
             loadMore(context)
         case let .fetched(.byNextPage(token)):
             guard token != nil else {
                 context?.completeBatchFetching(true)
                 return
             }
-
             loadMore(context)
         case .empty:
             fetchAndRenderEmails(context)

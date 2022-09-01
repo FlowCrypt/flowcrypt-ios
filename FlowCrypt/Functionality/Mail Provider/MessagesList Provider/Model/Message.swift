@@ -21,9 +21,12 @@ struct Message: Hashable {
     let subject: String?
     let size: Int?
     let attachmentIds: [String]
+    var attachments: [MessageAttachment]
     let threadId: String?
     let draftIdentifier: String?
-    let raw: String?
+    var raw: String?
+    let body: MessageBody
+    let inReplyTo: String?
     private(set) var labels: [MessageLabel]
 
     var isMessageRead: Bool {
@@ -38,6 +41,14 @@ struct Message: Hashable {
         return true
     }
 
+    var isPgp: Bool {
+        (body.text.contains("-----BEGIN PGP ") && body.text.contains("-----END PGP ")) || hasSignatureAttachment
+    }
+
+    var hasSignatureAttachment: Bool {
+        attachments.first(where: { $0.type == "application/pgp-signature" }) != nil
+    }
+
     init(
         identifier: Identifier,
         date: Date,
@@ -46,13 +57,16 @@ struct Message: Hashable {
         size: Int?,
         labels: [MessageLabel],
         attachmentIds: [String],
+        body: MessageBody,
+        attachments: [MessageAttachment] = [],
         threadId: String? = nil,
         draftIdentifier: String? = nil,
         raw: String? = nil,
         to: String? = nil,
         cc: String? = nil,
         bcc: String? = nil,
-        replyTo: String? = nil
+        replyTo: String? = nil,
+        inReplyTo: String? = nil
     ) {
         self.identifier = identifier
         self.date = date
@@ -61,6 +75,8 @@ struct Message: Hashable {
         self.size = size
         self.labels = labels
         self.attachmentIds = attachmentIds
+        self.attachments = attachments
+        self.body = body
         self.threadId = threadId
         self.draftIdentifier = draftIdentifier
         self.raw = raw
@@ -68,6 +84,7 @@ struct Message: Hashable {
         self.cc = Message.parseRecipients(cc)
         self.bcc = Message.parseRecipients(bcc)
         self.replyTo = Message.parseRecipients(replyTo)
+        self.inReplyTo = inReplyTo
     }
 }
 
@@ -119,4 +136,12 @@ struct Identifier: Equatable, Hashable {
         self.stringId = stringId
         self.intId = intId
     }
+
+    static var random: Identifier {
+        Identifier(stringId: UUID().uuidString, intId: nil)
+    }
+}
+struct MessageBody: Hashable {
+    let text: String
+    let html: String?
 }

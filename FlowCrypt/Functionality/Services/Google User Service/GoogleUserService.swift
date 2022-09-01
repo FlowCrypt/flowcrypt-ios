@@ -45,11 +45,6 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
     }
 }
 
-struct GoogleUser: Codable {
-    let name: String
-    let picture: URL?
-}
-
 struct IdToken: Codable {
     let exp: Int
 }
@@ -94,18 +89,20 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     init(
         currentUserEmail: String?,
-        appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil
+        appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil,
+        shouldRunWarmupQuery: Bool = false
     ) {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
         super.init()
 
-        self.runWarmupQuery()
+        if shouldRunWarmupQuery {
+            self.runWarmupQuery()
+        }
     }
 
     private enum Constants {
         static let index = "GTMAppAuthAuthorizerIndex"
-        static let userInfoUrl = "https://www.googleapis.com/oauth2/v3/userinfo"
     }
 
     internal lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
@@ -116,10 +113,6 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     private var idToken: String? {
         tokenResponse?.idToken
-    }
-
-    var accessToken: String? {
-        tokenResponse?.accessToken
     }
 
     var authorization: GTMAppAuthFetcherAuthorization? {
