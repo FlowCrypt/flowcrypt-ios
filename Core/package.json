@@ -5,7 +5,7 @@
   "dependencies": {
     "@openpgp/web-stream-tools": "^0.0.11",
     "encoding-japanese": "^2.0.0",
-    "openpgp": "5.4.0",
+    "openpgp": "5.5.0",
     "sanitize-html": "2.7.1",
     "zxcvbn": "4.4.2"
   },
