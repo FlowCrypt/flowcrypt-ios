@@ -98,13 +98,17 @@ final class MessageService {
             id: message.identifier,
             folder: folder
         )
-        return try await decryptAndProcess(
-            message: message,
-            sender: message.sender,
-            onlyLocalKeys: onlyLocalKeys,
-            userEmail: userEmail,
-            isUsingKeyManager: isUsingKeyManager
-        )
+        if message.isPgp {
+            return try await decryptAndProcess(
+                message: message,
+                sender: message.sender,
+                onlyLocalKeys: onlyLocalKeys,
+                userEmail: userEmail,
+                isUsingKeyManager: isUsingKeyManager
+            )
+        } else {
+            return ProcessedMessage(message: message)
+        }
     }
 
     func decryptAndProcess(
@@ -114,10 +118,6 @@ final class MessageService {
         userEmail: String,
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
-        guard message.isPgp else {
-            return ProcessedMessage(message: message)
-        }
-
         let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         guard keys.isNotEmpty else {
             if isUsingKeyManager {

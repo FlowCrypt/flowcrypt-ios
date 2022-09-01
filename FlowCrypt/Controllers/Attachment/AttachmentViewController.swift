@@ -139,7 +139,7 @@ final class AttachmentViewController: UIViewController {
     private func showTextAttachment() {
         view.addSubview(textView)
         view.constrainToEdges(textView)
-        textView.text = file.data?.toStr()
+        textView.text = file.data?.toStr() ?? "(error: failed to load this message. please report this issue)"
         textView.scrollRectToVisible(CGRect(x: 0, y: 0, width: 1, height: 1), animated: false)
     }
 

@@ -75,16 +75,16 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
     }
 
-    func verifyKey(armoredPrv: String) async throws -> Data {
+    func verifyKey(armoredPrv: String) async throws {
         let jsonDict: [String: Any?] = [
             "armored": armoredPrv
         ]
 
-        return try await call(
+        _ = try await call(
             "verifyKey",
             jsonDict: jsonDict,
             data: nil
-        ).data
+        )
     }
     
     // MARK: Files

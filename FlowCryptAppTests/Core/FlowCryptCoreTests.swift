@@ -426,7 +426,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
         // Test verify key
         await testPerformance(maxDuration: 50) {
-            _ = try await core.verifyKey(armoredPrv: TestData.k3rsa4096.private)
+            try await core.verifyKey(armoredPrv: TestData.k3rsa4096.private)
         }
 
         // Test encrypt message
