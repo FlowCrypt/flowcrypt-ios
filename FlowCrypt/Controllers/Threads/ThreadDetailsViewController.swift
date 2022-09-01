@@ -496,15 +496,15 @@ extension ThreadDetailsViewController {
     }
 
     private func handleFetchProgress(state: MessageFetchState) {
-            switch state {
-            case .fetch:
-                showSpinner("loading_title".localized, isUserInteractionEnabled: true)
-            case .download(let progress):
-                updateSpinner(label: "downloading_title".localized, progress: progress)
-            case .decrypt:
-                updateSpinner(label: "processing_title".localized)
-            }
+        switch state {
+        case .fetch:
+            showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+        case .download(let progress):
+            updateSpinner(label: "downloading_title".localized, progress: progress)
+        case .decrypt:
+            updateSpinner(label: "processing_title".localized)
         }
+    }
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {
@@ -585,7 +585,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         guard section > 0, input[section-1].isExpanded else { return 1 }
 
-        let attachmentsCount = input[section-1].processedMessage?.message.attachments.count ?? 0
+        let attachmentsCount = input[section-1].processedMessage?.attachments.count ?? 0
         return Parts.allCases.count + attachmentsCount
     }
 

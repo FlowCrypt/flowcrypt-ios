@@ -129,6 +129,7 @@ final class MessageService {
 
         var message = message
         if message.hasSignatureAttachment {
+            // raw data is needed for verification of detached signature
             message.raw = try await messageProvider.fetchRawMsg(id: message.identifier)
         }
 
