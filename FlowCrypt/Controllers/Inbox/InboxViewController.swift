@@ -258,7 +258,10 @@ extension InboxViewController {
     }
 
     private func loadMore(_ batchContext: ASBatchContext?) {
-        guard state.canLoadMore, isVisible else { return }
+        guard state.canLoadMore, isVisible else {
+            batchContext?.completeBatchFetching(true)
+            return
+        }
 
         Task {
             do {
