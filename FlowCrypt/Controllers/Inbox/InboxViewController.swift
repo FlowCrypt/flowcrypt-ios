@@ -41,7 +41,7 @@ class InboxViewController: ViewController {
     internal var searchedExpression = ""
     var shouldBeginFetch = true
 
-    private var isVisible = false // TODO: detect dynamically
+    private var isVisible = false
     private var didLayoutSubviews = false
 
     init(

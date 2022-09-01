@@ -197,13 +197,9 @@ export class GoogleData {
     } else {
       msgCopy.raw = undefined;
     }
-    if (msgCopy.payload) {
-      if (format === 'metadata' || format === 'raw') {
-        msgCopy.payload.body = undefined;
-        msgCopy.payload.parts = undefined;
-      } else {
-        msgCopy.payload.parts = msgCopy.payload.parts?.filter(p => p.mimeType !== 'application/pgp-keys');
-      }
+    if (msgCopy.payload && (['metadata', 'raw'].includes(format))) {
+      msgCopy.payload.body = undefined;
+      msgCopy.payload.parts = undefined;
     }
 
     return msgCopy;

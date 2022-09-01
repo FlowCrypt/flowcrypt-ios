@@ -10,7 +10,7 @@ import UIKit
 
 @MainActor
 protocol AttachmentManagerType {
-    func download(_ file: MessageAttachment) async
+    func download(_ file: FileType) async
 }
 
 final class AttachmentManager: NSObject {
@@ -53,7 +53,7 @@ final class AttachmentManager: NSObject {
 
 extension AttachmentManager: AttachmentManagerType {
 
-    func download(_ file: MessageAttachment) async {
+    func download(_ file: FileType) async {
         do {
             let url = try filesManager.save(file: file)
             openDocumentsController(from: url)

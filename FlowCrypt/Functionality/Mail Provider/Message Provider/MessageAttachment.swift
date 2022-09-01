@@ -9,24 +9,24 @@
 import Photos
 import UIKit
 
-struct MessageAttachment: Equatable, Hashable {
+struct MessageAttachment: Equatable, Hashable, FileType {
     let id: Identifier
     let name: String
+    let estimatedSize: Int?
+    let mimeType: String?
+
     var data: Data?
-    var estimatedSize: Int?
-    var mimeType: String?
 }
 
 extension MessageAttachment {
     init?(cameraSourceMediaInfo: [UIImagePickerController.InfoKey: Any]) {
         guard let image = cameraSourceMediaInfo[.originalImage] as? UIImage,
-              let data = image.jpegData(compressionQuality: 0.95) else {
+              let data = image.jpegData(compressionQuality: 0.95)
+        else {
             return nil
         }
 
-        self.id = Identifier.random
-        self.name = "\(UUID().uuidString).jpg"
-        self.data = data
+        self.init(name: "\(UUID().uuidString).jpg", data: data)
     }
 
     init?(fileURL: URL) {
@@ -40,19 +40,16 @@ extension MessageAttachment {
             return nil
         }
 
-        self.id = Identifier.random
-        self.name = fileURL.lastPathComponent
-        self.data = data
+        self.init(name: fileURL.lastPathComponent, data: data)
     }
 
-    var isEncrypted: Bool {
-        name.hasSuffix(".pgp") || name.hasSuffix(".asc")
+    init(name: String, data: Data) {
+        self.id = Identifier.random
+        self.name = name
+        self.data = data
+        self.estimatedSize = data.count
+        self.mimeType = name.mimeType
     }
-    var size: Int { data?.count ?? estimatedSize ?? 0 }
-    var formattedSize: String {
-        ByteCountFormatter().string(fromByteCount: Int64(size))
-    }
-    var type: String { mimeType ?? name.mimeType }
 }
 
 extension MessageAttachment {

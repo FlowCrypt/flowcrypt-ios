@@ -209,9 +209,9 @@ extension Message {
             return MessageAttachment(
                 id: Identifier(stringId: id),
                 name: name,
-                data: nil,
                 estimatedSize: body.size?.intValue,
-                mimeType: $0.mimeType
+                mimeType: $0.mimeType,
+                data: nil
             )
         }
 

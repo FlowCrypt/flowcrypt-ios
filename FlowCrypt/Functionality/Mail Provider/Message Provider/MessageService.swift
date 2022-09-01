@@ -229,8 +229,9 @@ final class MessageService {
         return MessageAttachment(
             id: attachment.id,
             name: decryptSuccess.name,
-            data: decryptSuccess.data,
-            estimatedSize: attachment.estimatedSize
+            estimatedSize: attachment.estimatedSize,
+            mimeType: attachment.mimeType,
+            data: decryptSuccess.data
         )
     }
 }

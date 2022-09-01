@@ -10,15 +10,21 @@ import UIKit
 
 protocol FileType {
     var name: String { get }
-    var data: Data { get }
+    var estimatedSize: Int? { get }
+    var mimeType: String? { get }
+
+    var data: Data? { get set }
 }
 
 extension FileType {
-    var size: Int { data.count }
+    var size: Int { data?.count ?? estimatedSize ?? 0 }
     var formattedSize: String {
         ByteCountFormatter().string(fromByteCount: Int64(size))
     }
-    var type: String { name.mimeType }
+    var type: String { mimeType ?? name.mimeType }
+    var isEncrypted: Bool {
+        name.hasSuffix(".pgp") || name.hasSuffix(".asc")
+    }
 }
 
 protocol FilesManagerPresenter {
@@ -28,7 +34,7 @@ protocol FilesManagerPresenter {
 protocol FilesManagerType {
     typealias Controller = FilesManagerPresenter & UIDocumentPickerDelegate
 
-    func save(file: MessageAttachment) throws -> URL
+    func save(file: FileType) throws -> URL
 
     @MainActor
     func selectFromFilesApp(from viewController: Controller) async
@@ -41,7 +47,7 @@ final class FilesManager {
 }
 
 extension FilesManager: FilesManagerType {
-    func save(file: MessageAttachment) throws -> URL {
+    func save(file: FileType) throws -> URL {
         let url = documentsDirectoryURL.appendingPathComponent(file.name)
         try file.data?.write(to: url)
         return url

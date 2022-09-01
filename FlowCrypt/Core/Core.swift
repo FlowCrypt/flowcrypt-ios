@@ -160,8 +160,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         keys: [Keypair],
         msgPwd: String?,
         isMime: Bool,
-        verificationPubKeys: [String],
-        signature: String? = nil
+        verificationPubKeys: [String]
     ) async throws -> CoreRes.ParseDecryptMsg {
         struct ParseDecryptMsgRaw: Decodable {
             let replyType: ReplyType
@@ -171,8 +170,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "keys": keys.map(\.prvKeyInfoJsonDictForCore),
             "isMime": isMime,
             "msgPwd": msgPwd,
-            "verificationPubkeys": verificationPubKeys,
-            "signature": signature
+            "verificationPubkeys": verificationPubKeys
         ]
 
         let parsed = try await call(
