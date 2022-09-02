@@ -10,8 +10,8 @@ import Toast
 import UIKit
 import MBProgressHUD
 
+// MARK: - Toast
 public typealias ShowToastCompletion = (Bool) -> Void
-
 public extension UIViewController {
     /// Showing toast on root controller
     ///
@@ -20,13 +20,15 @@ public extension UIViewController {
     ///   - title: Title for the toast
     ///   - duration: Toast presented duration. Default is 3.0
     ///   - position: Bottom by default. Can be top, center, bottom.
-    ///   - completion: Notify when toast dissapeared
+    ///   - shouldHideKeyboard: True by default. Hide keyboard when toast is presented
+    ///   - completion: Notify when toast dissappeared
     @MainActor
     func showToast(
         _ message: String,
         title: String? = nil,
         duration: TimeInterval = 3.0,
         position: ToastPosition = .bottom,
+        shouldHideKeyboard: Bool = true,
         completion: ShowToastCompletion? = nil
     ) {
         guard let view = UIApplication.shared.keyWindow?.rootViewController?.view else {
@@ -34,7 +36,10 @@ public extension UIViewController {
             return
         }
         view.hideAllToasts()
-        view.endEditing(true)
+
+        if shouldHideKeyboard {
+            view.endEditing(true)
+        }
 
         view.makeToast(
             message,
@@ -48,10 +53,11 @@ public extension UIViewController {
     }
 }
 
+// MARK: - Alerts
 public extension UIViewController {
     @MainActor
     func showAlert(title: String? = "error".localized, message: String, onOk: (() -> Void)? = nil) {
-        self.view.hideAllToasts()
+        view.hideAllToasts()
         hideSpinner()
         let alert = UIAlertController(
             title: title,
@@ -63,76 +69,78 @@ public extension UIViewController {
             style: .destructive
         ) { _ in onOk?() }
         alert.addAction(ok)
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
 
     @MainActor
     func showAsyncAlert(title: String? = "error".localized, message: String) async throws {
-        return try await withCheckedThrowingContinuation { (continuation) in
-            showAlert(title: title, message: message, onOk: {
+        try await withCheckedThrowingContinuation { continuation in
+            showAlert(title: title, message: message) {
                 return continuation.resume()
-            })
+            }
         }
+    }
+
+    @MainActor
+    func showAlertWithAction(
+        title: String?,
+        message: String,
+        cancelButtonTitle: String = "cancel".localized,
+        actionButtonTitle: String,
+        actionAccessibilityIdentifier: String? = nil,
+        onAction: ((UIAlertAction) -> Void)?,
+        onCancel: ((UIAlertAction) -> Void)? = nil
+    ) {
+        view.hideAllToasts()
+        hideSpinner()
+        let alert = UIAlertController(
+            title: title,
+            message: message,
+            preferredStyle: .alert
+        )
+        let action = UIAlertAction(
+            title: actionButtonTitle,
+            style: .default,
+            handler: onAction
+        )
+        action.accessibilityIdentifier = actionAccessibilityIdentifier
+        let cancel = UIAlertAction(
+            title: cancelButtonTitle,
+            style: .cancel,
+            handler: onCancel
+        )
+        alert.addAction(action)
+        alert.addAction(cancel)
+        present(alert, animated: true, completion: nil)
     }
 
     @MainActor
     func showRetryAlert(
         title: String? = "error".localized,
         message: String,
-        cancelActionTitle: String = "cancel".localized,
+        cancelButtonTitle: String = "cancel".localized,
         onRetry: ((UIAlertAction) -> Void)?,
         onCancel: ((UIAlertAction) -> Void)? = nil
     ) {
-        self.view.hideAllToasts()
-        hideSpinner()
-        let alert = UIAlertController(
+        showAlertWithAction(
             title: title,
             message: message,
-            preferredStyle: .alert
+            cancelButtonTitle: cancelButtonTitle,
+            actionButtonTitle: "retry_title".localized,
+            onAction: onRetry,
+            onCancel: onCancel
         )
-        let retry = UIAlertAction(
-            title: "retry_title".localized,
-            style: .cancel,
-            handler: onRetry
-        )
-        let cancel = UIAlertAction(
-            title: cancelActionTitle,
-            style: .default,
-            handler: onCancel)
-        alert.addAction(retry)
-        alert.addAction(cancel)
-        present(alert, animated: true, completion: nil)
     }
 
     @MainActor
-    func showConfirmAlert(
-        title: String? = "warning".localized,
-        message: String,
-        confirmActionTitle: String = "confirm".localized,
-        cancelActionTitle: String = "cancel".localized,
-        onConfirm: ((UIAlertAction) -> Void)?,
-        onCancel: ((UIAlertAction) -> Void)? = nil
-    ) {
-        self.view.hideAllToasts()
-        hideSpinner()
-        let alert = UIAlertController(
-            title: title,
+    func showConfirmAlert(message: String, onConfirm: ((UIAlertAction) -> Void)?) {
+        showAlertWithAction(
+            title: "warning".localized,
             message: message,
-            preferredStyle: .alert
+            actionButtonTitle: "confirm".localized,
+            actionAccessibilityIdentifier: "aid-confirm-button",
+            onAction: onConfirm
         )
-        let confirm = UIAlertAction(
-            title: confirmActionTitle,
-            style: .cancel,
-            handler: onConfirm
-        )
-        let cancel = UIAlertAction(
-            title: cancelActionTitle,
-            style: .default,
-            handler: onCancel)
-        confirm.accessibilityIdentifier = "aid-confirm-button"
-        alert.addAction(confirm)
-        alert.addAction(cancel)
-        present(alert, animated: true, completion: nil)
     }
 
     func keyboardHeight(from notification: Notification) -> CGFloat {
@@ -140,6 +148,7 @@ public extension UIViewController {
     }
 }
 
+// MARK: - Navigation
 public extension UINavigationController {
     func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
         pushViewController(viewController, animated: animated)
@@ -174,13 +183,13 @@ public extension UIViewController {
 
     @MainActor
     func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
-        guard self.view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
+        guard view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
             // hud is already shown
             return
         }
-        self.view.isUserInteractionEnabled = isUserInteractionEnabled
+        view.isUserInteractionEnabled = isUserInteractionEnabled
 
-        let spinner = MBProgressHUD.showAdded(to: self.view, animated: true)
+        let spinner = MBProgressHUD.showAdded(to: view, animated: true)
         spinner.label.text = message
         spinner.isUserInteractionEnabled = isUserInteractionEnabled
         spinner.accessibilityIdentifier = "loadingSpinner"
@@ -192,26 +201,28 @@ public extension UIViewController {
         progress: Float? = nil,
         systemImageName: String? = nil
     ) {
-        if let progress = progress {
-            if progress >= 1, let imageName = systemImageName {
-                self.updateSpinner(
-                    label: "compose_sent".localized,
-                    systemImageName: imageName)
-            } else {
-                self.showProgressHUD(progress: progress, label: label)
-            }
-        } else {
+        guard let progress = progress else {
             showIndeterminateHUD(with: label)
+            return
+        }
+
+        if progress >= 1, let imageName = systemImageName {
+            updateSpinner(
+                label: "compose_sent".localized,
+                systemImageName: imageName
+            )
+        } else {
+            showProgressHUD(progress: progress, label: label)
         }
     }
 
     @MainActor
     func hideSpinner() {
-        let subviews = self.view.subviews.compactMap { $0 as? MBProgressHUD }
+        let subviews = view.subviews.compactMap { $0 as? MBProgressHUD }
         for subview in subviews {
             subview.hide(animated: true)
         }
-        self.view.isUserInteractionEnabled = true
+        view.isUserInteractionEnabled = true
     }
 
     @MainActor
@@ -234,7 +245,7 @@ public extension UIViewController {
 
     @MainActor
     func showIndeterminateHUD(with title: String) {
-        self.currentProgressHUD.mode = .indeterminate
-        self.currentProgressHUD.label.text = title
+        currentProgressHUD.mode = .indeterminate
+        currentProgressHUD.label.text = title
     }
 }

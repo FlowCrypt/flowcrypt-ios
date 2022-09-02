@@ -35,8 +35,7 @@ public final class EmptyFolderCellNode: CellNode {
         return buttonNode
     }()
 
-    public init(path: String,
-                emptyFolder: (() -> Void)?) {
+    public init(path: String, emptyFolder: (() -> Void)?) {
         self.path = path
         self.emptyFolder = emptyFolder
         super.init()

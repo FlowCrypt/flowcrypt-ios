@@ -81,7 +81,7 @@ extension ComposeViewController {
                 self.presentSendAsActionSheet()
             }
         )
-        fromCellNode.fromEmail = selectedFromEmail
+        fromCellNode.fromEmail = contextToSend.sender
     }
 
     private func presentSendAsActionSheet() {
@@ -118,7 +118,7 @@ extension ComposeViewController {
             return
         }
         fromCell.fromEmail = email
-        self.selectedFromEmail = email
+        contextToSend.sender = email
     }
 
     internal func messagePasswordNode() -> ASCellNode {

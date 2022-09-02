@@ -11,14 +11,15 @@ import GoogleAPIClientForREST_Gmail
 extension GmailService: DraftGateway {
     func saveDraft(input: MessageGatewayInput, draft: GTLRGmail_Draft?) async throws -> GTLRGmail_Draft {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_Draft, Error>) in
-
             guard let raw = GTLREncodeBase64(input.mime) else {
                 return continuation.resume(throwing: GmailServiceError.messageEncode)
             }
+
             let draftQuery = createQueryForDraftAction(
                 raw: raw,
                 threadId: input.threadId,
-                draft: draft)
+                draft: draft
+            )
 
             gmailService.executeQuery(draftQuery) { _, object, error in
                 if let error = error {
@@ -43,8 +44,8 @@ extension GmailService: DraftGateway {
 
     private func createQueryForDraftAction(raw: String, threadId: String?, draft: GTLRGmail_Draft?) -> GTLRGmailQuery {
         guard
-            let createdDraft = draft,
-            let draftIdentifier = createdDraft.identifier
+            let existingDraft = draft,
+            let draftIdentifier = existingDraft.identifier
         else {
             // draft is not created yet. creating draft
             let newDraft = GTLRGmail_Draft()
@@ -56,19 +57,21 @@ extension GmailService: DraftGateway {
             return GTLRGmailQuery_UsersDraftsCreate.query(
                 withObject: newDraft,
                 userId: "me",
-                uploadParameters: nil)
+                uploadParameters: nil
+            )
         }
 
         // updating existing draft with new data
         let gtlMessage = GTLRGmail_Message()
         gtlMessage.raw = raw
         gtlMessage.threadId = threadId
-        createdDraft.message = gtlMessage
+        existingDraft.message = gtlMessage
 
         return GTLRGmailQuery_UsersDraftsUpdate.query(
-            withObject: createdDraft,
+            withObject: existingDraft,
             userId: "me",
             identifier: draftIdentifier,
-            uploadParameters: nil)
+            uploadParameters: nil
+        )
     }
 }

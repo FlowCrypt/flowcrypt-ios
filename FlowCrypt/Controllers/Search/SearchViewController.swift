@@ -86,14 +86,13 @@ extension SearchViewController: UISearchControllerDelegate, UISearchBarDelegate 
 // MARK: - UISearchResultsUpdating
 extension SearchViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard searchController.isActive else {
+        guard searchController.isActive,
+              let searchText = searchText(for: searchController.searchBar)
+        else {
             searchTask?.cancel()
             return
         }
-        guard let searchText = searchText(for: searchController.searchBar) else {
-            searchTask?.cancel()
-            return
-        }
+
         guard searchedExpression != searchText else {
             return
         }

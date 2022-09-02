@@ -53,11 +53,11 @@ extension ComposeViewController {
         guard input.isQuote else { return }
 
         for recipient in input.quoteRecipients {
-            evaluateMessage(recipient: recipient, type: .to)
+            add(recipient: recipient, type: .to)
         }
 
         for recipient in input.quoteCCRecipients {
-            evaluateMessage(recipient: recipient, type: .cc)
+            add(recipient: recipient, type: .cc)
         }
 
         if input.quoteCCRecipients.isNotEmpty {

@@ -128,6 +128,7 @@
 		51E1675D270F36A400D27C52 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675C270F36A400D27C52 /* Realm */; };
 		51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675E270F36A400D27C52 /* RealmSwift */; };
 		51EBC5702746A06600178DE8 /* TextWithIconNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */; };
+		51FC336128C236770098313D /* ComposeViewController+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FC336028C236770098313D /* ComposeViewController+Contacts.swift */; };
 		5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */; };
 		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
 		5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
@@ -333,7 +334,7 @@
 		D2531F2F23FEEF52007E5198 /* FlowCryptCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D2531F3423FEEF5F007E5198 /* StyleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3923438D3700A7371A /* StyleExtensions.swift */; };
 		D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* CommonExtensions.swift */; };
-		D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */; };
+		D2531F3D24000E37007E5198 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIViewExtensions.swift */; };
 		D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */; };
 		D2531F462402C62D007E5198 /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F452402C62D007E5198 /* CollectionExtensions.swift */; };
 		D2531F472402C9DE007E5198 /* IntExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A37A1CF523C6254F001CF774 /* IntExtensions.swift */; };
@@ -530,7 +531,7 @@
 		32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableExtensions.swift; sourceTree = "<group>"; };
 		32DCA4B11D4531B3B04D01D1 /* AppErr.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppErr.swift; sourceTree = "<group>"; };
 		32DCA55C094E9745AA1FD210 /* Imap+msg.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Imap+msg.swift"; sourceTree = "<group>"; };
-		32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIVIewExtensions.swift; sourceTree = "<group>"; };
+		32DCA63656CB3323C26BC084 /* UIViewExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
 		32DCA7E0AFE19FACB0F233ED /* URLSessionExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSessionExtensions.swift; sourceTree = "<group>"; };
 		32DCA9701B2D5052225A0414 /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeViewController.swift; sourceTree = "<group>"; };
@@ -591,6 +592,7 @@
 		51E1673C270DAFF900D27C52 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		51E4F0B427348E310017DABB /* ErrorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorExtensions.swift; sourceTree = "<group>"; };
 		51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextWithIconNode.swift; sourceTree = "<group>"; };
+		51FC336028C236770098313D /* ComposeViewController+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Contacts.swift"; sourceTree = "<group>"; };
 		55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.enterprise.xcconfig"; sourceTree = "<group>"; };
 		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewDecorator.swift; sourceTree = "<group>"; };
@@ -938,6 +940,7 @@
 				049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */,
 				049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */,
 				049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */,
+				51FC336028C236770098313D /* ComposeViewController+Contacts.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2068,7 +2071,7 @@
 				9F31AB9D232BF2A600CF87EA /* UIColorExtensions.swift */,
 				9FD505262785C2CD00FAA82F /* UIDeviceExtensions.swift */,
 				9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */,
-				32DCA63656CB3323C26BC084 /* UIVIewExtensions.swift */,
+				32DCA63656CB3323C26BC084 /* UIViewExtensions.swift */,
 				9F8277952373732000E19C07 /* UIImageExtensions.swift */,
 				9FD5052A278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift */,
 				32DCA7E0AFE19FACB0F233ED /* URLSessionExtensions.swift */,
@@ -2916,6 +2919,7 @@
 				9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */,
 				D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */,
 				9FA405C7265AEBA50084D133 /* SetupGenerateKeyViewController.swift in Sources */,
+				51FC336128C236770098313D /* ComposeViewController+Contacts.swift in Sources */,
 				9F6EE1552597399D0059BA51 /* BackupProvider.swift in Sources */,
 				9FEED1D2230DAD1E00700F8E /* InboxViewModel.swift in Sources */,
 				32DCAF9DA9EC47798DF8BB73 /* SignInViewController.swift in Sources */,
@@ -3064,7 +3068,7 @@
 				D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */,
 				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
 				750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */,
-				D2531F3D24000E37007E5198 /* UIVIewExtensions.swift in Sources */,
+				D2531F3D24000E37007E5198 /* UIViewExtensions.swift in Sources */,
 				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,
 				D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */,
 				759739BE2833E986004867CD /* Task+Retry.swift in Sources */,

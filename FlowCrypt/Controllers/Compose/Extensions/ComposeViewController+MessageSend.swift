@@ -29,7 +29,6 @@ extension ComposeViewController {
         try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
 
         let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
-            senderEmail: selectedFromEmail,
             input: self.input,
             contextToSend: self.contextToSend
         )
@@ -75,9 +74,7 @@ extension ComposeViewController {
     }
 
     internal func handle(error: Error) {
-        UIApplication.shared.isIdleTimerDisabled = false
-        hideSpinner()
-        navigationItem.rightBarButtonItem?.isEnabled = true
+        reEnableSendButton()
 
         if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
             requestMissingPassPhraseWithModal(for: keyPair)
@@ -106,10 +103,14 @@ extension ComposeViewController {
     }
 
     private func handleSuccessfullySentMessage() {
+        reEnableSendButton()
+        showToast(input.successfullySentToast)
+        navigationController?.popViewController(animated: true)
+    }
+
+    private func reEnableSendButton() {
         UIApplication.shared.isIdleTimerDisabled = false
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
-        showToast(input.successfullySentToast)
-        navigationController?.popViewController(animated: true)
     }
 }

@@ -9,7 +9,7 @@
 // MARK: - Drafts
 extension ComposeViewController {
     @objc internal func startDraftTimer() {
-        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] _ in
+        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.saveDraftIfNeeded()
         }
         saveDraftTimer?.fire()
@@ -22,27 +22,31 @@ extension ComposeViewController {
     }
 
     private func shouldSaveDraft() -> Bool {
-        // https://github.com/FlowCrypt/flowcrypt-ios/issues/975
         return false
-//        let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
-//        guard let oldDraft = composedLatestDraft else {
+//        let newDraft = ComposedDraft(
+//            input: input,
+//            contextToSend: contextToSend
+//        )
+//
+//        if let existingDraft = composedLatestDraft {
+//            let draftHasChanges = newDraft != existingDraft
+//            self.composedLatestDraft = newDraft
+//            return draftHasChanges
+//        } else { // save initial draft
 //            composedLatestDraft = newDraft
-//            return true
+//            return false
 //        }
-//        let result = newDraft != oldDraft
-//        composedLatestDraft = newDraft
-//        return result
     }
 
     internal func saveDraftIfNeeded() {
         guard shouldSaveDraft() else { return }
+        
         Task {
             do {
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
-                    senderEmail: selectedFromEmail,
                     input: input,
                     contextToSend: contextToSend,
-                    includeAttachments: false
+                    isDraft: true
                 )
                 try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
             } catch {

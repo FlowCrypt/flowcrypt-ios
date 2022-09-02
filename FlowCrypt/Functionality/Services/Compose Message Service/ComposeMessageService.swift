@@ -72,7 +72,7 @@ final class ComposeMessageService {
 
     func handlePassPhraseEntry(_ passPhrase: String, for signingKey: Keypair) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
-        //  let's find all keys that match and save the pass phrase for all
+        // let's find all keys that match and save the pass phrase for all
         let allKeys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
         guard allKeys.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
@@ -91,14 +91,14 @@ final class ComposeMessageService {
 
     // MARK: - Validation
     func validateAndProduceSendableMsg(
-        senderEmail: String,
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        includeAttachments: Bool = true
+        isDraft: Bool = false
     ) async throws -> SendableMsg {
-        onStateChanged?(.validatingMessage)
+        if !isDraft { onStateChanged?(.validatingMessage) }
 
         let recipients = contextToSend.recipients
+
         guard recipients.isNotEmpty else {
             throw MessageValidationError.emptyRecipient
         }
@@ -127,14 +127,14 @@ final class ComposeMessageService {
         let senderKeys = try await keyMethods.chooseSenderKeys(
             for: .encryption,
             keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
-            senderEmail: senderEmail
+            senderEmail: contextToSend.sender
         )
 
         guard senderKeys.isNotEmpty else {
             throw MessageValidationError.noUsableAccountKeys
         }
 
-        let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
+        let sendableAttachments: [SendableMsg.Attachment] = !isDraft
             ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
             : []
 
@@ -155,7 +155,7 @@ final class ComposeMessageService {
             }
         }
 
-        let signingPrv = try await prepareSigningKey(senderEmail: senderEmail)
+        let signingPrv = try await prepareSigningKey(senderEmail: contextToSend.sender)
 
         return SendableMsg(
             text: text,
@@ -163,7 +163,7 @@ final class ComposeMessageService {
             to: contextToSend.recipientEmails(type: .to),
             cc: contextToSend.recipientEmails(type: .cc),
             bcc: contextToSend.recipientEmails(type: .bcc),
-            from: senderEmail,
+            from: contextToSend.sender,
             subject: subject,
             replyToMsgId: input.replyToMsgId,
             inReplyTo: input.inReplyTo,
@@ -190,8 +190,10 @@ final class ComposeMessageService {
         return recipientsWithKeys
     }
 
-    private func validate(recipients: [RecipientWithSortedPubKeys],
-                          hasMessagePassword: Bool) throws -> [String] {
+    private func validate(
+        recipients: [RecipientWithSortedPubKeys],
+        hasMessagePassword: Bool
+    ) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.first(where: { $0.keyState == keyState }) != nil
         }
@@ -221,7 +223,11 @@ final class ComposeMessageService {
                 msg: message,
                 fmt: .encryptInline
             )
-            draft = try await draftGateway?.saveDraft(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId), draft: draft)
+            draft = try await draftGateway?.saveDraft(
+                input: MessageGatewayInput(
+                    mime: r.mimeEncoded,
+                    threadId: threadId
+                ), draft: draft)
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }
@@ -232,7 +238,7 @@ final class ComposeMessageService {
         do {
             onStateChanged?(.startComposing)
 
-            let hasPassword = (message.password ?? "").isNotEmpty
+            let hasPassword = !message.password.isEmptyOrNil
             let composedEmail: CoreRes.ComposeEmail
 
             if hasPassword {
@@ -376,7 +382,6 @@ extension ComposeMessageService {
         return "<div style=\"display: none\" class=\"cryptup_reply\" cryptup-data=\"\(replyInfoJsonString)\"></div>"
     }
 
-    // TODO: - Anton - compose_password_link
     private func createMessageBodyWithPasswordLink(sender: String, url: String) -> SendableMsgBody {
         let text = "compose_password_link".localizeWithArguments(sender, url)
         let aStyle = "padding: 2px 6px; background: #2199e8; color: #fff; display: inline-block; text-decoration: none;"

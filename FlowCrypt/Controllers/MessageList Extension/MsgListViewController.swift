@@ -32,7 +32,6 @@ extension MsgListViewController where Self: UIViewController {
         }
     }
 
-    // TODO: uncomment in "sent message from draft" feature
     private func open(draft: Message, appContext: AppContextWithUser) {
         Task {
             do {

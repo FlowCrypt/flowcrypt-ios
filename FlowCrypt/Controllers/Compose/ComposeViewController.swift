@@ -21,7 +21,6 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     internal struct ComposedDraft: Equatable {
-        let email: String
         let input: ComposeMessageInput
         let contextToSend: ComposeMessageContext
     }
@@ -58,9 +57,8 @@ final class ComposeViewController: TableNodeViewController {
     internal let filesManager: FilesManagerType
     internal let photosManager: PhotosManagerType
     internal let router: GlobalRouterType
-    internal let clientConfiguration: ClientConfiguration
-    internal let sendAsService: SendAsServiceType
 
+    private let clientConfiguration: ClientConfiguration
     internal var isMessagePasswordSupported: Bool {
         return clientConfiguration.isUsingFes
     }
@@ -69,7 +67,7 @@ final class ComposeViewController: TableNodeViewController {
     internal var cancellable = Set<AnyCancellable>()
 
     internal var input: ComposeMessageInput
-    internal var contextToSend = ComposeMessageContext()
+    internal var contextToSend: ComposeMessageContext
 
     internal var state: State = .main
     internal var shouldEvaluateRecipientInput = true
@@ -79,8 +77,8 @@ final class ComposeViewController: TableNodeViewController {
 
     internal lazy var alertsFactory = AlertsFactory()
     internal var messagePasswordAlertController: UIAlertController?
-    internal var didLayoutSubviews = false
-    internal var topContentInset: CGFloat {
+    private var didLayoutSubviews = false
+    private var topContentInset: CGFloat {
         navigationController?.navigationBar.frame.maxY ?? 0
     }
 
@@ -93,7 +91,6 @@ final class ComposeViewController: TableNodeViewController {
     var composeSubjectNode: ASCellNode!
     var fromCellNode: RecipientFromCellNode!
     var sendAsList: [SendAsModel] = []
-    var selectedFromEmail = ""
 
     init(
         appContext: AppContextWithUser,
@@ -128,13 +125,17 @@ final class ComposeViewController: TableNodeViewController {
             localContactsProvider: self.localContactsProvider
         )
         self.router = appContext.globalRouter
-        self.contextToSend.subject = input.subject
-        self.contextToSend.attachments = input.attachments
         self.clientConfiguration = clientConfiguration
-        self.sendAsService = try appContext.getSendAsService()
-        self.sendAsList = try await sendAsService.fetchList(isForceReload: false, for: appContext.user)
-        self.sendAsList = self.sendAsList.filter { $0.verificationStatus == .accepted || $0.isDefault }
-        self.selectedFromEmail = appContext.user.email
+
+        self.sendAsList = try await appContext.getSendAsService()
+            .fetchList(isForceReload: false, for: appContext.user)
+            .filter { $0.verificationStatus == .accepted || $0.isDefault }
+
+        self.contextToSend = ComposeMessageContext(
+            sender: appContext.user.email,
+            subject: input.subject,
+            attachments: input.attachments
+        )
         super.init(node: TableNode())
     }
 
@@ -192,28 +193,33 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     func update(with message: Message) {
-        self.contextToSend.subject = message.subject
-        self.contextToSend.message = message.raw
+        if let sender = message.sender?.email {
+            contextToSend.sender = sender
+        }
+
+        contextToSend.subject = message.subject
+        contextToSend.message = message.raw
+
         for recipient in message.to {
-            evaluateMessage(recipient: recipient, type: .to)
+            add(recipient: recipient, type: .to)
         }
         for recipient in message.cc {
-            evaluateMessage(recipient: recipient, type: .cc)
+            add(recipient: recipient, type: .cc)
         }
         for recipient in message.bcc {
-            evaluateMessage(recipient: recipient, type: .bcc)
+            add(recipient: recipient, type: .bcc)
         }
     }
 
-    func evaluateMessage(recipient: Recipient, type: RecipientType) {
-        let recipient = ComposeMessageRecipient(
+    func add(recipient: Recipient, type: RecipientType) {
+        let composeRecipient = ComposeMessageRecipient(
             email: recipient.email,
             name: recipient.name,
             type: type,
             state: decorator.recipientIdleState
         )
-        contextToSend.add(recipient: recipient)
-        evaluate(recipient: recipient)
+        contextToSend.add(recipient: composeRecipient)
+        evaluate(recipient: composeRecipient)
     }
 
     private func observeComposeUpdates() {

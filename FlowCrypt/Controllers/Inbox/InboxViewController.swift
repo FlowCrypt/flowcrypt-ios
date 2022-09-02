@@ -25,7 +25,7 @@ class InboxViewController: ViewController {
 
     private let inboxDataProvider: InboxDataProvider
     private let viewModel: InboxViewModel
-    internal var inboxInput: [InboxRenderable] = []
+    private var inboxInput: [InboxRenderable] = []
     internal var state: InboxViewController.State = .idle
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
@@ -34,12 +34,12 @@ class InboxViewController: ViewController {
         inboxInput.isNotEmpty && (viewModel.path == "SPAM" || viewModel.path == "TRASH")
     }
 
-    var path: String { viewModel.path }
+    internal var path: String { viewModel.path }
 
     // Search related varaibles
-    internal var isSearch = false
+    private var isSearch = false
+    private var shouldBeginFetch = true
     internal var searchedExpression = ""
-    var shouldBeginFetch = true
 
     private var isVisible = false
     private var didLayoutSubviews = false
@@ -505,15 +505,16 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 var rowNumber = indexPath.row
                 if self.shouldShowEmptyView {
                     if indexPath.row == 0 {
-                        return EmptyFolderCellNode(path: self.viewModel.path, emptyFolder: {
-                            self.showConfirmAlert(
-                                message: "folder_empty_confirm".localized,
-                                onConfirm: { [weak self] _ in
-                                    self?.emptyInboxFolder()
-                                }
-                            )
-
-                        })
+                        return EmptyFolderCellNode(
+                            path: self.viewModel.path,
+                            emptyFolder: {
+                                self.showConfirmAlert(
+                                    message: "folder_empty_confirm".localized,
+                                    onConfirm: { [weak self] _ in
+                                        self?.emptyInboxFolder()
+                                    }
+                                )
+                            })
                     }
                     rowNumber -= 1
                 }
@@ -529,7 +530,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 return InboxCellNode(input: .init(input))
             case let .error(message):
                 return TextCellNode(
-                    input: TextCellNode.Input(
+                    input: .init(
                         backgroundColor: .backgroundColor,
                         title: message,
                         withSpinner: false,

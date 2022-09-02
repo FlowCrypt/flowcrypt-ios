@@ -162,7 +162,7 @@
 "folder_SENT" = "Sent";
 "folder_IMPORTANT" = "Important";
 "folder_TRASH" = "Trash";
-"folder_DRAFT" = "Draft";
+"folder_DRAFT" = "Drafts";
 "folder_SPAM" = "Spam";
 "folder_STARRED" = "Starred";
 "folder_UNREAD" = "Unread";

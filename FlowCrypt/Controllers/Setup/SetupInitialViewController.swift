@@ -177,7 +177,7 @@ extension SetupInitialViewController {
     func showRetryAlert(for errorMessage: String) {
         showRetryAlert(
             message: errorMessage,
-            cancelActionTitle: "log_out".localized,
+            cancelButtonTitle: "log_out".localized,
             onRetry: { [weak self] _ in
                 self?.state = .fetchingKeysFromEKM
             },

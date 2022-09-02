@@ -52,19 +52,19 @@ extension ComposeViewController {
         }
     }
 
-    internal func selectPhoto() {
+    private func selectPhoto() {
         Task {
             await photosManager.selectPhoto(from: self)
         }
     }
 
-    internal func selectFromFilesApp() {
+    private func selectFromFilesApp() {
         Task {
             await filesManager.selectFromFilesApp(from: self)
         }
     }
 
-    internal func showNoAccessToCameraAlert() {
+    private func showNoAccessToCameraAlert() {
         let alert = UIAlertController(
             title: "files_picking_no_camera_access_error_title".localized,
             message: "files_picking_no_camera_access_error_message".localized,
@@ -82,49 +82,6 @@ extension ComposeViewController {
         }
         alert.addAction(okAction)
         alert.addAction(settingsAction)
-
-        present(alert, animated: true, completion: nil)
-    }
-
-    internal func askForContactsPermission() {
-        shouldEvaluateRecipientInput = false
-
-        Task {
-            do {
-                try await router.askForContactsPermission(for: .gmailLogin(self), appContext: appContext)
-                shouldEvaluateRecipientInput = true
-                reload(sections: [.contacts])
-            } catch {
-                shouldEvaluateRecipientInput = true
-                handleContactsPermissionError(error)
-            }
-        }
-    }
-
-    internal func handleContactsPermissionError(_ error: Error) {
-        guard let gmailUserError = error as? GoogleUserServiceError,
-           case .userNotAllowedAllNeededScopes(let missingScopes, _) = gmailUserError
-        else { return }
-
-        let scopes = missingScopes.map(\.title).joined(separator: ", ")
-
-        let alert = UIAlertController(
-            title: "error".localized,
-            message: "compose_missing_contacts_scopes".localizeWithArguments(scopes),
-            preferredStyle: .alert
-        )
-        let laterAction = UIAlertAction(
-            title: "later".localized,
-            style: .cancel
-        )
-        let allowAction = UIAlertAction(
-            title: "allow".localized,
-            style: .default
-        ) { [weak self] _ in
-            self?.askForContactsPermission()
-        }
-        alert.addAction(laterAction)
-        alert.addAction(allowAction)
 
         present(alert, animated: true, completion: nil)
     }

@@ -14,15 +14,11 @@ struct InboxViewModel {
 
     init(folderName: String, path: String) {
         self.folderName = folderName
-        if folderName.isEmpty {
-            self.path = "Inbox"
-        } else {
-            self.path = path
-        }
+        self.path = folderName.isEmpty ? "Inbox" : path
     }
 
     var isDrafts: Bool {
-        return folderName == "Draft"
+        return folderName == "Drafts"
     }
 }
 

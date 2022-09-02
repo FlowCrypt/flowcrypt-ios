@@ -9,13 +9,14 @@
 import Foundation
 
 struct ComposeMessageContext: Equatable {
+    var sender: String
     var message: String?
     var recipients: [ComposeMessageRecipient]
     var subject: String?
     var attachments: [MessageAttachment]
     var messagePassword: String? {
         get {
-            (_messagePassword ?? "").isNotEmpty ? _messagePassword : nil
+            _messagePassword.isEmptyOrNil ? nil : _messagePassword
         }
         set { _messagePassword = newValue }
     }
@@ -24,12 +25,15 @@ struct ComposeMessageContext: Equatable {
 }
 
 extension ComposeMessageContext {
-    init(message: String? = nil,
-         recipients: [ComposeMessageRecipient] = [],
-         subject: String? = nil,
-         attachments: [MessageAttachment] = [],
-         messagePassword: String? = nil
+    init(
+        sender: String,
+        message: String? = nil,
+        recipients: [ComposeMessageRecipient] = [],
+        subject: String? = nil,
+        attachments: [MessageAttachment] = [],
+        messagePassword: String? = nil
     ) {
+        self.sender = sender
         self.message = message
         self.recipients = recipients
         self.subject = subject

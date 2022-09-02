@@ -34,7 +34,7 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
         reload(sections: [.attachments])
     }
 
-    internal func appendAttachmentIfAllowed(_ attachment: MessageAttachment) {
+    private func appendAttachmentIfAllowed(_ attachment: MessageAttachment) {
         let totalSize = contextToSend.attachments.map(\.size).reduce(0, +) + attachment.size
         if totalSize > GeneralConstants.Global.attachmentSizeLimit {
             showToast("files_picking_size_error_message".localized)
@@ -53,7 +53,7 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
         }
     }
 
-    internal func handleResults(_ results: [PHPickerResult]) {
+    private func handleResults(_ results: [PHPickerResult]) {
         guard let itemProvider = results.first?.itemProvider else { return }
 
         enum MediaType: String {
@@ -79,7 +79,7 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
         )
     }
 
-    internal func handleRepresentation(url: URL?, error: Error?, isVideo: Bool) {
+    private func handleRepresentation(url: URL?, error: Error?, isVideo: Bool) {
         guard
             let url = url,
             let composeMessageAttachment = MessageAttachment(fileURL: url)
