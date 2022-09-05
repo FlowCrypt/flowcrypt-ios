@@ -17,14 +17,14 @@ extension GmailService: MessagesThreadProvider {
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext {
         let threadsList = try await getThreadsList(using: context)
         let requests = threadsList.threads?
-            .compactMap { (thread) -> (String, String?)? in
+            .compactMap { thread -> (String, String?)? in
                 guard let id = thread.identifier else {
                     return nil
                 }
                 return (id, thread.snippet)
             }
         ?? []
-        return try await withThrowingTaskGroup(of: MessageThread.self) { (taskGroup) in
+        return try await withThrowingTaskGroup(of: MessageThread.self) { taskGroup in
             var messageThreadsById: [String: MessageThread] = [:]
             for request in requests {
                 taskGroup.addTask {
@@ -68,7 +68,7 @@ extension GmailService: MessagesThreadProvider {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
                 self.gmailService.executeQuery(
                     GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
-                ) { (_, data, error) in
+                ) { _, data, error in
                     if let error = error {
                         return continuation.resume(throwing: GmailServiceError.providerError(error))
                     }

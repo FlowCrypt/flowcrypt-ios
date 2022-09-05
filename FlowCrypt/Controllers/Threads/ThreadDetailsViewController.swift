@@ -118,7 +118,7 @@ extension ThreadDetailsViewController {
 
         input[indexPath.section - 1].isExpanded.toggle()
 
-        if input[indexPath.section-1].isExpanded {
+        if input[indexPath.section - 1].isExpanded {
             UIView.animate(
                 withDuration: 0.3,
                 animations: {
@@ -127,7 +127,7 @@ extension ThreadDetailsViewController {
                 completion: { [weak self] _ in
                     guard let self = self else { return }
 
-                    if let processedMessage = self.input[indexPath.section-1].processedMessage {
+                    if let processedMessage = self.input[indexPath.section - 1].processedMessage {
                         self.handleReceived(message: processedMessage, at: indexPath)
                     } else {
                         self.fetchDecryptAndRenderMsg(at: indexPath)
@@ -179,9 +179,10 @@ extension ThreadDetailsViewController {
     private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
         let action = UIAlertAction(
             title: type.actionLabel,
-            style: .default) { [weak self] _ in
-                self?.composeNewMessage(at: indexPath, quoteType: type)
-            }
+            style: .default
+        ) { [weak self] _ in
+            self?.composeNewMessage(at: indexPath, quoteType: type)
+        }
         action.accessibilityIdentifier = type.accessibilityIdentifier
         return action
     }
@@ -202,7 +203,7 @@ extension ThreadDetailsViewController {
         defer { node.reloadRows(at: [indexPath], with: .automatic) }
 
         let trace = Trace(id: "Attachment")
-        let section = input[indexPath.section-1]
+        let section = input[indexPath.section - 1]
         let attachmentIndex = indexPath.row - 2
 
         guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
@@ -229,11 +230,11 @@ extension ThreadDetailsViewController {
             )
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
-            input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
+            input[indexPath.section - 1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
             return decryptedAttachment
         } else {
             logger.logInfo("Got not encrypted attachment - \(trace.finish())")
-            input[indexPath.section-1].processedMessage?.attachments[attachmentIndex] = attachment
+            input[indexPath.section - 1].processedMessage?.attachments[attachmentIndex] = attachment
             return attachment
         }
     }
@@ -244,7 +245,7 @@ extension ThreadDetailsViewController {
     }
 
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
-        guard let input = input[safe: indexPath.section-1],
+        guard let input = input[safe: indexPath.section - 1],
               let processedMessage = input.processedMessage
         else { return }
 
@@ -321,7 +322,7 @@ extension ThreadDetailsViewController {
 
 extension ThreadDetailsViewController {
     private func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
-        let message = input[indexPath.section-1].rawMessage
+        let message = input[indexPath.section - 1].rawMessage
         logger.logInfo("Start loading message")
 
         handleFetchProgress(state: .fetch)
@@ -410,7 +411,7 @@ extension ThreadDetailsViewController {
         )
 
         let downloadAction = UIAlertAction(title: "download".localized, style: .default) { [weak self] _ in
-            guard let attachment = self?.input[indexPath.section-1].processedMessage?.attachments[indexPath.row-2] else {
+            guard let attachment = self?.input[indexPath.section - 1].processedMessage?.attachments[indexPath.row - 2] else {
                 return
             }
             self?.show(attachment: attachment)
@@ -455,7 +456,7 @@ extension ThreadDetailsViewController {
                     userEmail: appContext.user.email
                 )
                 if matched {
-                    let sender = input[indexPath.section-1].rawMessage.sender
+                    let sender = input[indexPath.section - 1].rawMessage.sender
                     let processedMessage = try await messageService.decryptAndProcess(
                         message: message,
                         sender: sender,
@@ -490,7 +491,7 @@ extension ThreadDetailsViewController {
                 handleReceived(message: processedMessage, at: indexPath)
             } catch {
                 let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
-                input[indexPath.section-1].processedMessage?.signature = .error(message)
+                input[indexPath.section - 1].processedMessage?.signature = .error(message)
             }
         }
     }
@@ -583,9 +584,9 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        guard section > 0, input[section-1].isExpanded else { return 1 }
+        guard section > 0, input[section - 1].isExpanded else { return 1 }
 
-        let attachmentsCount = input[section-1].processedMessage?.attachments.count ?? 0
+        let attachmentsCount = input[section - 1].processedMessage?.attachments.count ?? 0
         return Parts.allCases.count + attachmentsCount
     }
 

@@ -54,7 +54,7 @@ public final class MessagePasswordCellNode: CellNode {
         buttonNode.addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         buttonNode.style.flexShrink = 1.0
 
         let spacer = ASLayoutSpec()

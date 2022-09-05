@@ -99,7 +99,7 @@ final class EncryptedStorage: EncryptedStorageType {
             return Realm.Configuration(inMemoryIdentifier: UUID().uuidString)
         }
 
-        let path = try EncryptedStorage.path
+        let path = try Self.path
         let latestSchemaVersion = currentSchema.version.dbSchemaVersion
 
         return Realm.Configuration(

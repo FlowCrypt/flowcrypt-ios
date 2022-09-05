@@ -2,7 +2,7 @@
 //  KeySettingsItemDecorator.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 12/13/19.
+//  Created by Anton Kharchevskyi on 12/13/19
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 

@@ -77,8 +77,8 @@ extension PubKey {
         self.lastSig = object.lastSig
         self.lastChecked = object.lastChecked
         self.expiresOn = object.expiresOn
-        self.longids = object.longids.map { $0 }
-        self.fingerprints = object.fingerprints.map { $0 }
+        self.longids = Array(object.longids)
+        self.fingerprints = Array(object.fingerprints)
         self.created = object.created
 
         self.algo = nil

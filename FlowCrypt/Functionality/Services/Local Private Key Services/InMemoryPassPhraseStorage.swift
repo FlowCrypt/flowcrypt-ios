@@ -18,7 +18,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
 
     init(
         passPhraseProvider: InMemoryPassPhraseProviderType = InMemoryPassPhraseProvider.shared,
-        timeoutInSeconds: Int = 4*60*60 // 4 hours
+        timeoutInSeconds: Int = 4 * 60 * 60 // 4 hours
     ) {
         self.passPhraseProvider = passPhraseProvider
         self.timeoutInSeconds = timeoutInSeconds
@@ -76,7 +76,7 @@ protocol InMemoryPassPhraseProviderType {
 
 /// - Warning: - should be shared instance
 final class InMemoryPassPhraseProvider: InMemoryPassPhraseProviderType {
-    static let shared: InMemoryPassPhraseProvider = InMemoryPassPhraseProvider()
+    static let shared = InMemoryPassPhraseProvider()
 
     private(set) var passPhrases: Set<PassPhrase> = []
 

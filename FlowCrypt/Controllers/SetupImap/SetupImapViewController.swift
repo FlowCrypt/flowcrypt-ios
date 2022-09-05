@@ -162,17 +162,19 @@ extension SetupImapViewController {
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
-                guard let self = self else { return }
-                self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
-            }
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self else { return }
+            self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
+        }
 
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil,
-            queue: .main) { [weak self] _ in
-                self?.adjustForKeyboard(height: 0)
-            }
+            queue: .main
+        ) { [weak self] _ in
+            self?.adjustForKeyboard(height: 0)
+        }
     }
 
     private func adjustForKeyboard(height: CGFloat) {

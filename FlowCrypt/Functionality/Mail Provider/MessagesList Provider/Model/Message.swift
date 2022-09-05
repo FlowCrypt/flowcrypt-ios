@@ -46,7 +46,7 @@ struct Message: Hashable {
     }
 
     var hasSignatureAttachment: Bool {
-        attachments.first(where: { $0.type == "application/pgp-signature" }) != nil
+        attachments.contains(where: { $0.type == "application/pgp-signature" })
     }
 
     init(
@@ -80,10 +80,10 @@ struct Message: Hashable {
         self.threadId = threadId
         self.draftIdentifier = draftIdentifier
         self.raw = raw
-        self.to = Message.parseRecipients(to)
-        self.cc = Message.parseRecipients(cc)
-        self.bcc = Message.parseRecipients(bcc)
-        self.replyTo = Message.parseRecipients(replyTo)
+        self.to = Self.parseRecipients(to)
+        self.cc = Self.parseRecipients(cc)
+        self.bcc = Self.parseRecipients(bcc)
+        self.replyTo = Self.parseRecipients(replyTo)
         self.inReplyTo = inReplyTo
     }
 }

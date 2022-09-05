@@ -18,7 +18,7 @@ extension Imap {
     }
 
     func connectSmtp(session: SMTPSession) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             MCOSMTPSession(session: session)
                 .startLogging()
                 .loginOperation()?
@@ -33,7 +33,7 @@ extension Imap {
     }
 
     func connectImap(session: IMAPSession) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             MCOIMAPSession(session: session)
                 .startLogging()
                 .connectOperation()?

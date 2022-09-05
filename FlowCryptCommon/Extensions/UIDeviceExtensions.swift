@@ -8,12 +8,12 @@
 
 import UIKit
 
-extension UIDevice {
-    public static var isIpad: Bool {
+public extension UIDevice {
+    static var isIpad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
     }
 
-    public static var isIphone: Bool {
+    static var isIphone: Bool {
         UIDevice.current.userInterfaceIdiom == .phone
     }
 }

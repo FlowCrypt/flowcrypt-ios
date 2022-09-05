@@ -97,7 +97,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
     ) throws {
         try appContext.encryptedStorage.putKeypairs(
             keyDetails: [encryptedPrv.key],
-            passPhrase: storageMethod == .persistent ? passPhrase: nil,
+            passPhrase: storageMethod == .persistent ? passPhrase : nil,
             source: .generated,
             for: appContext.user.email
         )

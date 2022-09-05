@@ -49,7 +49,7 @@ public final class LabelCellNode: CellNode {
         textNode.accessibilityIdentifier = input.accessibilityIdentifier
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: input.insets,
             child: ASStackLayoutSpec(

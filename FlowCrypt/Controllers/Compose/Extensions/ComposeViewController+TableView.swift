@@ -77,7 +77,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             case let (.searchEmails(recipients), .searchResults):
                 guard indexPath.row > 0 else { return DividerCellNode() }
                 guard recipients.isNotEmpty else { return self.noSearchResultsNode() }
-                guard let recipient = recipients[safe: indexPath.row-1] else { return ASCellNode() }
+                guard let recipient = recipients[safe: indexPath.row - 1] else { return ASCellNode() }
 
                 if let name = recipient.name {
                     let input = self.decorator.styledRecipientInfo(
@@ -103,7 +103,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
             switch section {
             case .searchResults:
-                let recipient = recipients[safe: indexPath.row-1]
+                let recipient = recipients[safe: indexPath.row - 1]
                 handleEndEditingAction(with: recipient?.email, name: recipient?.name, for: recipientType)
             case .contacts:
                 askForContactsPermission()

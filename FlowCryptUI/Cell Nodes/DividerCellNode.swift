@@ -24,7 +24,7 @@ public final class DividerCellNode: CellNode {
         backgroundColor = .clear
     }
 
-    public override func layoutSpecThatFits(_ range: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ range: ASSizeRange) -> ASLayoutSpec {
         let expectedWidth = range.max.width - inset.width
         line.style.preferredSize.width = expectedWidth > 0 ? expectedWidth : range.max.width
         return ASInsetLayoutSpec(insets: inset, child: line)

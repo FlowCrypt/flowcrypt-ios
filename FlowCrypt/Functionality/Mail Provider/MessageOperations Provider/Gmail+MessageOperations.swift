@@ -104,7 +104,7 @@ extension GmailService: MessageOperationsProvider {
             userId: .me
         )
 
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))

@@ -57,7 +57,7 @@ public final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    public var isSecureTextEntry: Bool = false {
+    public var isSecureTextEntry = false {
         didSet {
             DispatchQueue.main.async {
                 self.textField.isSecureTextEntry = self.isSecureTextEntry
@@ -159,12 +159,12 @@ public final class TextFieldNode: ASDisplayNode {
         }
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(insets: .zero, child: node)
     }
 
     @discardableResult
-    public override func becomeFirstResponder() -> Bool {
+    override public func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
             super.becomeFirstResponder()
             _ = self.textField.becomeFirstResponder()
@@ -173,8 +173,8 @@ public final class TextFieldNode: ASDisplayNode {
     }
 }
 
-extension TextFieldNode {
-    public func reset() {
+public extension TextFieldNode {
+    func reset() {
         (node.view as? TextField)?.text = nil
     }
 }

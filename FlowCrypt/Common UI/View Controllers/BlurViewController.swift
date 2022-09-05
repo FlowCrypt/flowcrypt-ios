@@ -16,6 +16,7 @@ final class BlurViewController: UIViewController {
         self.blurView = UIVisualEffectView(effect: blurEffect)
         super.init(nibName: nil, bundle: nil)
     }
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

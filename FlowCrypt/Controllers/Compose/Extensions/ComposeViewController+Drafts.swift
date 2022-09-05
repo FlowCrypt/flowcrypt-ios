@@ -22,25 +22,26 @@ extension ComposeViewController {
     }
 
     private func shouldSaveDraft() -> Bool {
-        return false
-//        let newDraft = ComposedDraft(
-//            input: input,
-//            contextToSend: contextToSend
-//        )
-//
-//        if let existingDraft = composedLatestDraft {
-//            let draftHasChanges = newDraft != existingDraft
-//            self.composedLatestDraft = newDraft
-//            return draftHasChanges
-//        } else { // save initial draft
-//            composedLatestDraft = newDraft
-//            return false
-//        }
+        let newDraft = ComposedDraft(
+            input: input,
+            contextToSend: contextToSend
+        )
+
+        if let existingDraft = composedLatestDraft {
+            let draftHasChanges = newDraft != existingDraft
+            self.composedLatestDraft = newDraft
+            return draftHasChanges
+        } else { // save initial draft
+            composedLatestDraft = newDraft
+            return false
+        }
     }
 
     internal func saveDraftIfNeeded() {
         guard shouldSaveDraft() else { return }
-        
+
+        print("saving draft")
+
         Task {
             do {
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
@@ -50,6 +51,8 @@ extension ComposeViewController {
                 )
                 try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
             } catch {
+                print("got error")
+                print(error)
                 if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
                     requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
                 }

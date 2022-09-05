@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-final public class CheckBoxNode: ASDisplayNode {
+public final class CheckBoxNode: ASDisplayNode {
     public struct Input {
         let color: UIColor
         let strokeWidth: CGFloat

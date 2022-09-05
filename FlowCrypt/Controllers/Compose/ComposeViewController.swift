@@ -33,7 +33,7 @@ final class ComposeViewController: TableNodeViewController {
         case recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
         static var recipientsSections: [Section] {
-            RecipientType.allCases.map { Section.recipients($0) }
+            RecipientType.allCases.map { Self.recipients($0) }
         }
     }
 

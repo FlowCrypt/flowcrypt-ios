@@ -30,7 +30,7 @@ public final class ButtonWithPaddingNode: ASDisplayNode {
         self.cornerRadius = cornerRadius
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
             child: buttonNode

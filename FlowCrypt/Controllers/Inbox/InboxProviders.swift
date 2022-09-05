@@ -13,10 +13,8 @@ struct InboxContext {
     let pagination: MessagesListPagination
 }
 
-class InboxDataProvider {
-    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
-        fatalError("Should be implemented")
-    }
+protocol InboxDataProvider {
+    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext
 }
 
 // used when displaying conversations (threads) in inbox (Gmail API default)
@@ -27,7 +25,7 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
 
         let inboxData = result.threads.map {
@@ -54,7 +52,7 @@ class InboxMessageListProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
 
         let inboxData = result.messages.map(InboxRenderable.init)

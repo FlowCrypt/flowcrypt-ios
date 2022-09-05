@@ -15,6 +15,7 @@ class SearchViewController: InboxViewController {
     private let searchController = UISearchController(searchResultsController: nil)
 
     override func viewDidLoad() {
+        super.viewDidLoad()
         self.setupSearchUI()
         self.setupSearch()
     }

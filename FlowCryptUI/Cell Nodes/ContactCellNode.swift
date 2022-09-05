@@ -54,7 +54,7 @@ public final class ContactCellNode: CellNode {
         action?()
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let children: [ASLayoutElement]
         if input.name == nil {
             emailNode.style.flexGrow = 1

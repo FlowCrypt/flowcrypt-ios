@@ -60,7 +60,7 @@ extension MsgListViewController where Self: UIViewController {
                 let viewController = try await ThreadDetailsViewController(
                     appContext: appContext,
                     thread: thread
-                ) { [weak self] (action, message) in
+                ) { [weak self] action, message in
                     self?.handleMessageOperation(message: message, action: action)
                 }
                 navigationController?.pushViewController(viewController, animated: true)

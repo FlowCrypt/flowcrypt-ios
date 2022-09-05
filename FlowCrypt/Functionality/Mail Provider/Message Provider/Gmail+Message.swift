@@ -85,7 +85,7 @@ extension GmailService: MessageProvider {
         let fetcher = createAttachmentFetcher(identifier: identifier, messageId: messageIdentifier)
         if let estimatedSize = estimatedSize {
             fetcher.receivedProgressBlock = { _, received in
-                let progress = min(Float(received)/estimatedSize, 1)
+                let progress = min(Float(received) / estimatedSize, 1)
                 progressHandler?(progress)
             }
         }

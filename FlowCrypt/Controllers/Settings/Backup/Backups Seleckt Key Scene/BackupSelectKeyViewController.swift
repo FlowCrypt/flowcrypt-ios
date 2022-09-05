@@ -63,10 +63,10 @@ extension BackupSelectKeyViewController {
 // MARK: - Actions
 extension BackupSelectKeyViewController {
     @objc private func handleSave() {
-        if backupsContext.filter({ $0.1 == true }).isEmpty {
-            showAlert(message: "backup_select_key_screen_no_selection".localized)
-        } else {
+        if backupsContext.contains(where: { $0.1 == true }) {
             makeBackup()
+        } else {
+            showAlert(message: "backup_select_key_screen_no_selection".localized)
         }
     }
 

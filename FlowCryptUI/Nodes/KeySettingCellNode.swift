@@ -45,7 +45,7 @@ public final class KeySettingCellNode: CellNode {
         separatorNode.backgroundColor = .lightGray
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let nameLocationStack = ASStackLayoutSpec.vertical()
         nameLocationStack.spacing = 6
         nameLocationStack.style.flexShrink = 1.0

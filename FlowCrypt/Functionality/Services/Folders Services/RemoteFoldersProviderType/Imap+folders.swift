@@ -2,7 +2,7 @@
 //  Imap+folders.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 9/11/19.
+//  Created by Anton Kharchevskyi on 9/11/19
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 

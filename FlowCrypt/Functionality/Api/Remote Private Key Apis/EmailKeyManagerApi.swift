@@ -59,7 +59,8 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             URLHeader(
                 value: "Bearer \(idToken)",
                 httpHeaderField: "Authorization"
-            )]
+            )
+        ]
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: urlString,

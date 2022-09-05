@@ -244,7 +244,7 @@ extension ComposeViewDecorator {
             backgroundColor: .titleNodeBackgroundColor,
             borderColor: .borderColor,
             textColor: .mainTextColor,
-            image: #imageLiteral(resourceName: "retry"),
+            image: UIImage(named: "retry"),
             accessibilityIdentifier: "gray"
         )
     }
@@ -314,7 +314,7 @@ extension ComposeViewDecorator {
             backgroundColor: .red,
             borderColor: .borderColor,
             textColor: .white,
-            image: #imageLiteral(resourceName: "retry"),
+            image: UIImage(named: "retry"),
             accessibilityIdentifier: "red"
         )
     }

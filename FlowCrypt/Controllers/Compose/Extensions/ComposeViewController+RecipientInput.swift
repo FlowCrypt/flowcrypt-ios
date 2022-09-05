@@ -76,7 +76,7 @@ extension ComposeViewController {
             state: decorator.recipientIdleState
         )
 
-        if idleRecipients.firstIndex(where: { $0.email == newRecipient.email }) == nil {
+        if !idleRecipients.contains(where: { $0.email == newRecipient.email }) {
             // add new recipient
             contextToSend.add(recipient: newRecipient)
 
@@ -145,7 +145,7 @@ extension ComposeViewController {
     }
 
     internal func handleBackspaceAction(with textField: UITextField, for recipientType: RecipientType) {
-        guard textField.text == "" else { return }
+        guard textField.text != "" else { return }
 
         var recipients = contextToSend.recipients(type: recipientType)
 
@@ -177,8 +177,9 @@ extension ComposeViewController {
     }
 
     internal func handleEditingChanged(with text: String?) {
-        shouldDisplaySearchResult = text != ""
-        search.send(text ?? "")
+        let inputText = text ?? ""
+        shouldDisplaySearchResult = !inputText.isEmpty
+        search.send(inputText)
     }
 
     internal func handleDidBeginEditing(recipientType: RecipientType) {

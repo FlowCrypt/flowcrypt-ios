@@ -68,7 +68,7 @@ public final class ContactKeyCellNode: CellNode {
         borderNode.isUserInteractionEnabled = false
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let specs = [
             [fingerprintTitleNode, fingerprintNode],
             [createdAtTitleNode, createdAtNode],

@@ -37,7 +37,7 @@ public final class ComposeRecipientPopupNameNode: CellNode {
         super.init()
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let stack = ASStackLayoutSpec.vertical()
         if name != nil {
             stack.children = [nameNode, emailNode]

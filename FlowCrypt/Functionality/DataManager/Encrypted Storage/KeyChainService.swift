@@ -2,8 +2,8 @@
 //  KeyChainService.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 25.11.2019.
-//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
+//  Created by Anton Kharchevskyi on 25.11.2019
+//  Copyright © 2017-present FlowCrypt a.s. All rights reserved.
 //
 
 import FlowCryptCommon

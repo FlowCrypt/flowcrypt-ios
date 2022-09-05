@@ -58,8 +58,8 @@ extension Keypair {
         self.public = object.public
         self.passphrase = object.passphrase
         self.source = object.source
-        self.allFingerprints = object.allFingerprints.map { $0 }
-        self.allLongids = object.allLongids.map { $0 }
+        self.allFingerprints = Array(object.allFingerprints)
+        self.allLongids = Array(object.allLongids)
         self.lastModified = object.lastModified
         self.isRevoked = object.isRevoked
     }

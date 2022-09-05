@@ -11,7 +11,7 @@ import FlowCryptCommon
 
 @MainActor
 open class ViewController: ASDKViewController<ASDisplayNode> {
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         super.viewDidLoad()
         Logger.nested(Self.self).logDebug("View did load")
     }

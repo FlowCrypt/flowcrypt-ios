@@ -48,11 +48,11 @@ extension ComposeMessageContext {
     }
 
     var hasCcOrBccRecipients: Bool {
-        recipients.first(where: { $0.type == .cc || $0.type == .bcc }) != nil
+        recipients.contains(where: { $0.type == .cc || $0.type == .bcc })
     }
 
     var hasRecipientsWithoutPubKey: Bool {
-        recipients.first { $0.keyState == .empty } != nil
+        recipients.contains(where: { $0.keyState == .empty })
     }
 
     var hasMessagePasswordIfNeeded: Bool {

@@ -289,7 +289,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
         }
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
         menuNode.style.preferredSize = CGSize(width: 36, height: 44)
         expandNode.style.preferredSize = CGSize(width: 36, height: 44)

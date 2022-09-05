@@ -2,7 +2,7 @@
 //  GlobalRouter.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 9/13/19.
+//  Created by Anton Kharchevskyi on 9/13/19
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
@@ -75,7 +75,7 @@ extension GlobalRouter: GlobalRouterType {
             keyWindow.rootViewController?.showAlert(
                 title: "error".localized,
                 message: message,
-                onOk: { fatalError() }
+                onOk: { fatalError(message) }
             )
 
             return

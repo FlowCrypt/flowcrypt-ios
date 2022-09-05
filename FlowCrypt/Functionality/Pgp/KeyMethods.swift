@@ -56,7 +56,7 @@ final class KeyMethods: KeyMethodsType {
         guard parsed.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
-        let usable = parsed.filter { $0.isKeyUsable }
+        let usable = parsed.filter(\.isKeyUsable)
         guard usable.isNotEmpty else {
             throw MessageValidationError.noUsableAccountKeys
         }

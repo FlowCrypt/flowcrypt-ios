@@ -117,7 +117,7 @@ extension ComposeViewController {
         }
 
         var displayName = name
-        if let name = name, let address = MCOAddress.init(nonEncodedRFC822String: name), address.displayName != nil {
+        if let name = name, let address = MCOAddress(nonEncodedRFC822String: name), address.displayName != nil {
             displayName = address.displayName
         }
 

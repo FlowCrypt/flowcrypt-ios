@@ -45,7 +45,7 @@ public final class EmptyFolderCellNode: CellNode {
         emptyFolder?()
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let stack = ASStackLayoutSpec.horizontal()
         textNode.style.maxWidth = ASDimensionMake(constrainedSize.max.width - 60)
         stack.children = [

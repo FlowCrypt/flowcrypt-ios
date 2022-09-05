@@ -2,8 +2,8 @@
 //  Version6SchemaMigration.swift
 //  FlowCrypt
 //
-//  Created by  Ivan Ushakov on 07.12.2021
-//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
+//  Created by Ivan Ushakov on 07.12.2021
+//  Copyright © 2017-present FlowCrypt a.s. All rights reserved.
 //
 
 import FlowCryptCommon

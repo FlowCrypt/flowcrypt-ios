@@ -33,7 +33,7 @@ public extension String {
     ) -> String {
         String(
             self.enumerated()
-                .map { $0 > 0 && $0 % stride == 0 ? [separator, $1] : [$1] }
+                .map { $0 > 0 && $0.isMultiple(of: stride) ? [separator, $1] : [$1] }
                 .joined()
         )
     }

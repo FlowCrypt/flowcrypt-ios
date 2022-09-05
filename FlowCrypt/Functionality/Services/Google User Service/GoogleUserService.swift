@@ -30,7 +30,7 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
         switch self {
         case .cancelledAuthorization:
             return "google_user_service_error_auth_cancelled".localized
-        case .wrongAccount(let signedAccount, let currentAccount):
+        case let .wrongAccount(signedAccount, currentAccount):
             return "google_user_service_error_wrong_account".localizeWithArguments(
                 signedAccount, currentAccount, currentAccount
             )
@@ -326,7 +326,7 @@ extension GoogleUserService {
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
 
-        while decodedString.utf16.count % 4 != 0 {
+        while decodedString.utf16.count.isMultiple(of: 4) {
             decodedString += "="
         }
 

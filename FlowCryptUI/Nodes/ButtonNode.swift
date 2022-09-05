@@ -2,7 +2,7 @@
 //  ButtonNode.swift
 //  FlowCrypt
 //
-//  Created by Anton Kharchevskyi on 29.10.2019.
+//  Created by Anton Kharchevskyi on 29.10.2019
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 

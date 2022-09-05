@@ -3,7 +3,7 @@
 //  FlowCrypt
 //
 //  Created by Tom on 30.11.2021
-//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
+//  Copyright © 2017-present FlowCrypt a.s. All rights reserved.
 //
 
 import Foundation

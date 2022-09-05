@@ -52,7 +52,7 @@ public final class InfoCellNode: CellNode {
         }
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         guard imageNode.image != nil else {
             return ASInsetLayoutSpec(
                 insets: input?.insets ?? .zero,

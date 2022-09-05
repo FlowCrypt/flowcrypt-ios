@@ -60,7 +60,7 @@ public final class EmptyCellNode: CellNode {
         accessibilityIdentifier = input.accessibilityIdentifier
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let spec = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 16,

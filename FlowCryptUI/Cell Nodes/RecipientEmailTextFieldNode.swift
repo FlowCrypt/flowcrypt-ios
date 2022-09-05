@@ -10,7 +10,7 @@ import AsyncDisplayKit
 
 public final class RecipientEmailTextFieldNode: TextFieldCellNode {
 
-    public override init(
+    override public init(
         input: TextFieldCellNode.Input,
         action: TextFieldAction? = nil
     ) {
@@ -20,12 +20,12 @@ public final class RecipientEmailTextFieldNode: TextFieldCellNode {
     }
 
     @discardableResult
-    public override func becomeFirstResponder() -> Bool {
+    override public func becomeFirstResponder() -> Bool {
         textField.becomeFirstResponder()
         return true
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         textField.style.preferredSize.height = input.height
 
         return ASInsetLayoutSpec(insets: input.insets, child: textField)

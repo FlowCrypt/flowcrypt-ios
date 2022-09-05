@@ -11,9 +11,9 @@ enum GmailServiceError: Error {
     case invalidGrant(Error)
 }
 
-extension Task where Failure == Error {
+public extension Task where Failure == Error {
     @discardableResult
-    static public func retrying(
+    static func retrying(
         priority: TaskPriority? = nil,
         maxRetryCount: Int = 2,
         retryDelayMs: UInt64 = 1000,

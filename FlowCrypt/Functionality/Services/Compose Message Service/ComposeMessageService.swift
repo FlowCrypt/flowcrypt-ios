@@ -95,33 +95,7 @@ final class ComposeMessageService {
         contextToSend: ComposeMessageContext,
         isDraft: Bool = false
     ) async throws -> SendableMsg {
-        if !isDraft { onStateChanged?(.validatingMessage) }
-
         let recipients = contextToSend.recipients
-
-        guard recipients.isNotEmpty else {
-            throw MessageValidationError.emptyRecipient
-        }
-
-        let emails = recipients.map(\.email)
-        let emptyEmails = emails.filter { !$0.hasContent }
-
-        guard emails.isNotEmpty, emptyEmails.isEmpty else {
-            throw MessageValidationError.emptyRecipient
-        }
-
-        guard emails.filter({ !$0.isValidEmail }).isEmpty else {
-            throw MessageValidationError.invalidEmailRecipient
-        }
-
-        guard input.isQuote || contextToSend.subject?.hasContent ?? false else {
-            throw MessageValidationError.emptySubject
-        }
-
-        guard let text = contextToSend.message, text.hasContent else {
-            throw MessageValidationError.emptyMessage
-        }
-
         let subject = contextToSend.subject ?? "(no subject)"
 
         let senderKeys = try await keyMethods.chooseSenderKeys(
@@ -130,8 +104,46 @@ final class ComposeMessageService {
             senderEmail: contextToSend.sender
         )
 
-        guard senderKeys.isNotEmpty else {
-            throw MessageValidationError.noUsableAccountKeys
+        if !isDraft {
+            onStateChanged?(.validatingMessage)
+
+            guard recipients.isNotEmpty else {
+                throw MessageValidationError.emptyRecipient
+            }
+
+            let emails = recipients.map(\.email)
+            let emptyEmails = emails.filter { !$0.hasContent }
+
+            guard emails.isNotEmpty, emptyEmails.isEmpty else {
+                throw MessageValidationError.emptyRecipient
+            }
+
+            guard !emails.contains(where: { !$0.isValidEmail }) else {
+                throw MessageValidationError.invalidEmailRecipient
+            }
+
+            guard input.isQuote || contextToSend.subject?.hasContent ?? false else {
+                throw MessageValidationError.emptySubject
+            }
+
+            guard let text = contextToSend.message, text.hasContent else {
+                throw MessageValidationError.emptyMessage
+            }
+
+            if let password = contextToSend.messagePassword, password.isNotEmpty {
+                if subject.lowercased().contains(password.lowercased()) {
+                    throw MessageValidationError.subjectContainsPassword
+                }
+
+                let allAvailablePassPhrases = try appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
+                if allAvailablePassPhrases.contains(password) {
+                    throw MessageValidationError.notUniquePassword
+                }
+            }
+
+            guard senderKeys.isNotEmpty else {
+                throw MessageValidationError.noUsableAccountKeys
+            }
         }
 
         let sendableAttachments: [SendableMsg.Attachment] = !isDraft
@@ -144,21 +156,12 @@ final class ComposeMessageService {
             hasMessagePassword: contextToSend.hasMessagePassword
         )
 
-        if let password = contextToSend.messagePassword, password.isNotEmpty {
-            if subject.lowercased().contains(password.lowercased()) {
-                throw MessageValidationError.subjectContainsPassword
-            }
-
-            let allAvailablePassPhrases = try appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
-            if allAvailablePassPhrases.contains(password) {
-                throw MessageValidationError.notUniquePassword
-            }
-        }
-
         let signingPrv = try await prepareSigningKey(senderEmail: contextToSend.sender)
 
+        print("create sendable")
+
         return SendableMsg(
-            text: text,
+            text: contextToSend.message ?? "",
             html: nil,
             to: contextToSend.recipientEmails(type: .to),
             cc: contextToSend.recipientEmails(type: .cc),
@@ -195,7 +198,7 @@ final class ComposeMessageService {
         hasMessagePassword: Bool
     ) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
-            recipients.first(where: { $0.keyState == keyState }) != nil
+            recipients.contains(where: { $0.keyState == keyState })
         }
 
         logger.logDebug("validate recipients: \(recipients)")

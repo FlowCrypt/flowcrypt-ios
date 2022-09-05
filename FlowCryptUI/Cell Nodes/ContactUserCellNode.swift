@@ -31,7 +31,7 @@ public final class ContactUserCellNode: CellNode {
         userNode.accessibilityIdentifier = "aid-user-email"
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: .deviceSpecificTextInsets(top: 8, bottom: 8),
             child: ASStackLayoutSpec(

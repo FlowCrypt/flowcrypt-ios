@@ -96,10 +96,11 @@ extension ComposeViewController {
 
         for aliasEmail in sendAsList {
             let action = UIAlertAction(
-                title: aliasEmail.descriptoin,
-                style: .default) { [weak self] _ in
-                    self?.changeSendAs(to: aliasEmail.sendAsEmail)
-                }
+                title: aliasEmail.description,
+                style: .default
+            ) { [weak self] _ in
+                self?.changeSendAs(to: aliasEmail.sendAsEmail)
+            }
             // Remove @, . in email part as appium throws error for identifiers which contain @, .
             let emailIentifier = aliasEmail.sendAsEmail
                 .replacingOccurrences(of: "@", with: "-")

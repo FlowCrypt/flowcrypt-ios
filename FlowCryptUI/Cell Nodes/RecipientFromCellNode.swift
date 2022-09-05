@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 
-final public class RecipientFromCellNode: CellNode {
+public final class RecipientFromCellNode: CellNode {
     private enum Constants {
         static let sectionInset = UIEdgeInsets(top: 4, left: 0, bottom: 0, right: 0)
         static let minimumLineSpacing: CGFloat = 4
@@ -54,7 +54,7 @@ final public class RecipientFromCellNode: CellNode {
         self.toggleButtonAction = toggleButtonAction
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 0, bottom: 0)
 
         toggleButtonNode.style.preferredSize = CGSize(width: 40, height: 28)

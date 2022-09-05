@@ -183,7 +183,7 @@ public extension UIViewController {
 
     @MainActor
     func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
-        guard view.subviews.first(where: { $0 is MBProgressHUD }) == nil else {
+        guard !view.subviews.contains(where: { $0 is MBProgressHUD }) else {
             // hud is already shown
             return
         }

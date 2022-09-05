@@ -88,7 +88,7 @@ public class TextFieldCellNode: CellNode {
         }
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let preferredWidth = input.width ?? (constrainedSize.max.width - input.insets.width)
         textField.style.preferredSize = CGSize(
             width: max(0, preferredWidth),
@@ -98,7 +98,7 @@ public class TextFieldCellNode: CellNode {
     }
 
     @discardableResult
-    public override func becomeFirstResponder() -> Bool {
+    override public func becomeFirstResponder() -> Bool {
         textField.becomeFirstResponder()
         return true
     }
