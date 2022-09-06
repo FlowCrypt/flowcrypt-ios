@@ -95,7 +95,7 @@ final class ComposeMessageService {
         isDraft: Bool = false
     ) async throws -> SendableMsg {
         let recipients = contextToSend.recipients
-        let subject = contextToSend.subject ?? "(no subject)"
+        let subject = contextToSend.subject ?? ""
 
         let senderKeys = try await keyMethods.chooseSenderKeys(
             for: .encryption,
@@ -121,7 +121,7 @@ final class ComposeMessageService {
                 throw MessageValidationError.invalidEmailRecipient
             }
 
-            guard input.isQuote || contextToSend.subject?.hasContent ?? false else {
+            guard input.isQuote || subject.hasContent else {
                 throw MessageValidationError.emptySubject
             }
 

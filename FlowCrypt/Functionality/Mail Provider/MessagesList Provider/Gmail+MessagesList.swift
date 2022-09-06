@@ -13,7 +13,7 @@ import GoogleAPIClientForREST_Gmail
 // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Remove in scope of the ticket
 extension GmailService: MessagesListProvider {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
-        return try await withThrowingTaskGroup(of: Message.self) { [weak self] taskGroup -> MessageContext in
+        return try await withThrowingTaskGroup(of: Message.self) { [weak self] taskGroup in
             let list = try await fetchMessagesList(using: context)
             let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
 
@@ -41,20 +41,23 @@ extension GmailService: MessagesListProvider {
 
 extension GmailService: DraftsListProvider {
     func fetchDrafts(using context: FetchMessageContext) async throws -> MessageContext {
-        return try await withThrowingTaskGroup(of: Message.self) { taskGroup -> MessageContext in
+        return try await withThrowingTaskGroup(of: Message.self) { taskGroup in
             let list = try await fetchDraftsList(using: context)
 
             for draft in list.drafts ?? [] {
                 taskGroup.addTask {
                     try await self.fetchFullMessage(
                         with: draft.message?.identifier ?? "",
-                        draftIdentifier: draft.identifier)
+                        draftIdentifier: draft.identifier
+                    )
                 }
             }
+
             var messages: [Message] = []
             for try await result in taskGroup {
                 messages.append(result)
             }
+            messages.sort(by: { $0.date > $1.date })
 
             return MessageContext(
                 messages: messages,

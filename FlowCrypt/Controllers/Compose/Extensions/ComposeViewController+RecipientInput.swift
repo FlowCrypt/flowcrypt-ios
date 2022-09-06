@@ -145,7 +145,7 @@ extension ComposeViewController {
     }
 
     func handleBackspaceAction(with textField: UITextField, for recipientType: RecipientType) {
-        guard let text = textField.text, !text.isEmpty else { return }
+        guard let text = textField.text, text.isEmpty else { return }
 
         var recipients = contextToSend.recipients(type: recipientType)
 

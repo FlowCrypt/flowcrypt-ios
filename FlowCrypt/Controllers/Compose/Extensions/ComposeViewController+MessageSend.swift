@@ -28,7 +28,7 @@ extension ComposeViewController {
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
         try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
 
-        let sendableMsg = try await self.composeMessageService.validateAndProduceSendableMsg(
+        let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
             input: self.input,
             contextToSend: self.contextToSend
         )
@@ -46,9 +46,8 @@ extension ComposeViewController {
                 self.handle(error: ComposeMessageError.passPhraseRequired)
             },
             onCompletion: { [weak self] passPhrase in
-                guard let self = self else {
-                    return
-                }
+                guard let self = self else { return }
+
                 Task<Void, Never> {
                     do {
                         let matched = try await self.composeMessageService.handlePassPhraseEntry(
@@ -56,11 +55,13 @@ extension ComposeViewController {
                             for: signingKey
                         )
                         if matched {
+                            self.signingKeyWithMissingPassphrase = nil
                             if isDraft {
-                                self.saveDraftIfNeeded()
+                                self.saveDraftIfNeeded(isForceSave: true)
                             } else {
                                 self.handleSendTap()
                             }
+                            self.reload(sections: [.passphrase])
                         } else {
                             self.handle(error: ComposeMessageError.passPhraseNoMatch)
                         }

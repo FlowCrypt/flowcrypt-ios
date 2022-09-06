@@ -49,7 +49,7 @@
 "message_compose_secure" = "Compose Secure Message";
 "message_unknown_sender" = "(unknown sender)";
 "message_no_recipients" = "(no recipients)";
-"message_missing_subject" = "No subject";
+"message_missing_subject" = "(no subject)";
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved. %@";

@@ -37,8 +37,9 @@ extension ComposeViewController {
         }
     }
 
-    func saveDraftIfNeeded() {
-        guard shouldSaveDraft() else { return }
+    // TODO: Better naming
+    func saveDraftIfNeeded(isForceSave: Bool = false) {
+        guard isForceSave || shouldSaveDraft() else { return }
 
         Task {
             do {

@@ -46,9 +46,14 @@ extension InboxRenderable {
 extension InboxRenderable {
 
     init(message: Message) {
-        self.title = message.sender?.shortName ?? "message_unknown_sender".localized
+        self.title = Self.messageTitle(for: message)
         self.messageCount = 1
-        self.subtitle = message.subject ?? "message_missing_subject".localized
+        if let subject = message.subject, subject.hasContent {
+            self.subtitle = subject
+        } else {
+            self.subtitle = "message_missing_subject".localized
+        }
+
         self.dateString = DateFormatter().formatDate(message.date)
         self.isRead = message.isMessageRead
         self.date = message.date
@@ -59,7 +64,7 @@ extension InboxRenderable {
 
     init(thread: MessageThread, folderPath: String?) {
 
-        self.title = InboxRenderable.messageTitle(for: thread, folderPath: folderPath)
+        self.title = Self.messageTitle(for: thread, folderPath: folderPath)
 
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missing_subject".localized
@@ -78,9 +83,7 @@ extension InboxRenderable {
     }
 
     private static func messageTitle(for thread: MessageThread, folderPath: String?) -> String {
-        // for now its not exactly clear how titles on other folders should look like
-        // so in scope of this PR we are applying this title presentation only for "sent" folder
-        if folderPath == MessageLabel.sent.value {
+        if folderPath == MessageLabel.sent.value || folderPath == MessageLabel.draft.value {
             let recipients = thread.messages
                 .flatMap(\.allRecipients)
                 .map(\.shortName)
@@ -92,6 +95,15 @@ extension InboxRenderable {
                 .compactMap(\.sender?.shortName)
                 .unique()
                 .joined(separator: ",")
+        }
+    }
+
+    private static func messageTitle(for message: Message) -> String {
+        if message.labels.contains(.draft) {
+            let recipients = message.allRecipients.map(\.shortName).joined(separator: ", ")
+            return recipients.isEmpty ? "" : "To: \(recipients)"
+        } else {
+            return message.sender?.shortName ?? "message_unknown_sender".localized
         }
     }
 
