@@ -1,5 +1,5 @@
 //
-//  MessagePasswordCellNode.swift
+//  MessageActionCellNode.swift
 //  FlowCryptUI
 //
 //  Created by Roma Sosnovsky on 15/12/21
@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 import UIKit
 
-public final class MessagePasswordCellNode: CellNode {
+public final class MessageActionCellNode: CellNode {
     public struct Input {
         let text: NSAttributedString?
         let color: UIColor
@@ -27,12 +27,11 @@ public final class MessagePasswordCellNode: CellNode {
     private let input: Input
 
     private let buttonNode = ASButtonNode()
-    private let setMessagePassword: (() -> Void)?
+    private let action: (() -> Void)?
 
-    public init(input: Input,
-                setMessagePassword: (() -> Void)?) {
+    public init(input: Input, action: (() -> Void)?) {
         self.input = input
-        self.setMessagePassword = setMessagePassword
+        self.action = action
 
         super.init()
 
@@ -75,6 +74,6 @@ public final class MessagePasswordCellNode: CellNode {
     }
 
     @objc private func onButtonTap() {
-        setMessagePassword?()
+        action?()
     }
 }

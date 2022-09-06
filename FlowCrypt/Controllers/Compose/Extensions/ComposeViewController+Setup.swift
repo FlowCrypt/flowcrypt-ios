@@ -11,7 +11,7 @@ import FlowCryptUI
 
 // MARK: - Setup UI
 extension ComposeViewController {
-    internal func setupNavigationBar() {
+    func setupNavigationBar() {
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(
@@ -34,7 +34,7 @@ extension ComposeViewController {
         )
     }
 
-    internal func setupUI() {
+    func setupUI() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTableTap))
 
         node.do {
@@ -49,7 +49,7 @@ extension ComposeViewController {
         updateView(newState: .main)
     }
 
-    internal func setupQuote() {
+    func setupQuote() {
         guard input.isQuote else { return }
 
         for recipient in input.quoteRecipients {
@@ -65,16 +65,15 @@ extension ComposeViewController {
         }
     }
 
-    internal func setupNodes() {
+    func setupNodes() {
         setupTextNode()
         setupSubjectNode()
-        setupFromNode()
     }
 }
 
 // MARK: - Search
 extension ComposeViewController {
-    internal func setupSearch() {
+    func setupSearch() {
         search
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()

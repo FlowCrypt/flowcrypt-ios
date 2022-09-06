@@ -87,7 +87,7 @@
 		51114DB6280EB699006C252A /* gmp-interface.m in Sources */ = {isa = PBXBuildFile; fileRef = 51114DB5280EB699006C252A /* gmp-interface.m */; };
 		5113D22D28C0C43700A131E0 /* Gmail+MessageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5113D22C28C0C43700A131E0 /* Gmail+MessageExtension.swift */; };
 		511737682851F31700337B9F /* GoogleScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511737672851F31700337B9F /* GoogleScope.swift */; };
-		511D07E12769FBBA0050417B /* MessagePasswordCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */; };
+		511D07E12769FBBA0050417B /* MessageActionCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessageActionCellNode.swift */; };
 		511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */; };
 		512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */ = {isa = PBXBuildFile; productRef = 512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */; };
 		5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */; };
@@ -557,7 +557,7 @@
 		51114DBA280EBB78006C252A /* gmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
 		5113D22C28C0C43700A131E0 /* Gmail+MessageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+MessageExtension.swift"; sourceTree = "<group>"; };
 		511737672851F31700337B9F /* GoogleScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleScope.swift; sourceTree = "<group>"; };
-		511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagePasswordCellNode.swift; sourceTree = "<group>"; };
+		511D07E02769FBBA0050417B /* MessageActionCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionCellNode.swift; sourceTree = "<group>"; };
 		511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithPaddingNode.swift; sourceTree = "<group>"; };
 		5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailViewController.swift; sourceTree = "<group>"; };
 		5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailDecorator.swift; sourceTree = "<group>"; };
@@ -2188,7 +2188,7 @@
 				5180CB9027356D48001FC7EF /* MessageSubjectNode.swift */,
 				04CF208127F5ABE100BC4E3D /* ComposeRecipientPopupNameNode.swift */,
 				9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */,
-				511D07E02769FBBA0050417B /* MessagePasswordCellNode.swift */,
+				511D07E02769FBBA0050417B /* MessageActionCellNode.swift */,
 				5180CB96273724E9001FC7EF /* ThreadMessageInfoCellNode.swift */,
 				9F56BD3123438B5B00A7371A /* InboxCellNode.swift */,
 				9F56BD3523438B9D00A7371A /* TextCellNode.swift */,
@@ -3001,7 +3001,7 @@
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
 				5165ABCC27B526D100CCC379 /* RecipientEmailTextFieldNode.swift in Sources */,
 				D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */,
-				511D07E12769FBBA0050417B /* MessagePasswordCellNode.swift in Sources */,
+				511D07E12769FBBA0050417B /* MessageActionCellNode.swift in Sources */,
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
 				D2E26F7224F26FFF00612AF1 /* ContactUserCellNode.swift in Sources */,
 				D211CE6F23FC358000D1CE38 /* ButtonNode.swift in Sources */,

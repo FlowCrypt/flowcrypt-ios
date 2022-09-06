@@ -15,7 +15,7 @@ public final class RecipientFromCellNode: CellNode {
         static let minimumLineSpacing: CGFloat = 4
     }
 
-    lazy var labelTextNode: ASTextNode2 = {
+    private lazy var labelTextNode: ASTextNode2 = {
         let textNode = ASTextNode2()
         let textTitle = "compose_recipient_from".localized
         textNode.attributedText = textTitle.attributed(.regular(17), color: .lightGray, alignment: .left)
@@ -23,19 +23,15 @@ public final class RecipientFromCellNode: CellNode {
         return textNode
     }()
 
-    lazy var valueTextNode: ASTextNode2 = {
+    private lazy var valueTextNode: ASTextNode2 = {
         let textNode = ASTextNode2()
         textNode.accessibilityIdentifier = "aid-from-value-node"
         return textNode
     }()
 
-    public var fromEmail: String? {
-        didSet {
-            self.valueTextNode.attributedText = fromEmail?.attributed(.regular(17))
-        }
-    }
+    private let fromEmail: String
 
-    lazy var toggleButtonNode: ASButtonNode = {
+    private lazy var toggleButtonNode: ASButtonNode = {
         let configuration = UIImage.SymbolConfiguration(pointSize: 14, weight: .light)
         let image = UIImage(systemName: "chevron.down", withConfiguration: configuration)
         let button = ASButtonNode()
@@ -43,15 +39,16 @@ public final class RecipientFromCellNode: CellNode {
         button.setImage(image, for: .normal)
         button.contentEdgeInsets = UIEdgeInsets(top: 3, left: 0, bottom: 0, right: 0)
         button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.secondaryLabel)
-        button.addTarget(self, action: #selector(self.onToggleButtonTap), forControlEvents: .touchUpInside)
+        button.addTarget(self, action: #selector(onToggleButtonTap), forControlEvents: .touchUpInside)
         return button
     }()
 
-    var toggleButtonAction: (() -> Void)?
+    private var toggleButtonAction: (() -> Void)?
 
-    public init(toggleButtonAction: (() -> Void)?) {
-        super.init()
+    public init(fromEmail: String, toggleButtonAction: (() -> Void)?) {
+        self.fromEmail = fromEmail
         self.toggleButtonAction = toggleButtonAction
+        super.init()
     }
 
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
@@ -62,14 +59,15 @@ public final class RecipientFromCellNode: CellNode {
         let stack = ASStackLayoutSpec.horizontal()
         stack.verticalAlignment = .center
         valueTextNode.style.flexGrow = 1
+        valueTextNode.attributedText = fromEmail.attributed(.regular(17))
 
-        let textNodeStack = ASInsetLayoutSpec(insets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0), child: labelTextNode)
+        let textNodeStack = ASInsetLayoutSpec(insets: .zero, child: labelTextNode)
         stack.children = [textNodeStack, valueTextNode, toggleButtonNode]
 
         return ASInsetLayoutSpec(insets: insets, child: stack)
     }
 
-    @objc func onToggleButtonTap() {
+    @objc private func onToggleButtonTap() {
         toggleButtonAction?()
     }
 }

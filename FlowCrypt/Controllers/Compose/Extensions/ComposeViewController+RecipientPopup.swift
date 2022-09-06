@@ -10,7 +10,7 @@ import FlowCryptUI
 import UIKit
 
 extension ComposeViewController {
-    internal func displayRecipientPopOver(with indexPath: IndexPath, type: RecipientType, sender: CellNode) {
+   func displayRecipientPopOver(with indexPath: IndexPath, type: RecipientType, sender: CellNode) {
         guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
         popoverVC = ComposeRecipientPopupViewController(
@@ -25,7 +25,7 @@ extension ComposeViewController {
         self.present(popoverVC, animated: true, completion: nil)
     }
 
-    internal func hideRecipientPopOver() {
+    func hideRecipientPopOver() {
         if popoverVC != nil {
             popoverVC.dismiss(animated: true, completion: nil)
         }

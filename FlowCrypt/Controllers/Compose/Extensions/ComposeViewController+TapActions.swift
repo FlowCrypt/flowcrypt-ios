@@ -8,15 +8,15 @@
 
 // MARK: - Handle actions
 extension ComposeViewController {
-    internal func handleInfoTap() {
+    func handleInfoTap() {
         showToast("Please email us at human@flowcrypt.com for help")
     }
 
-    internal func handleAttachTap() {
+    func handleAttachTap() {
         openAttachmentsInputSourcesSheet()
     }
 
-    internal func handleSendTap() {
+    func handleSendTap() {
         Task {
             do {
                 guard contextToSend.hasMessagePasswordIfNeeded else {
@@ -30,7 +30,7 @@ extension ComposeViewController {
         }
     }
 
-    @objc internal func handleTableTap() {
+    @objc func handleTableTap() {
         if case .searchEmails = state,
            let selectedRecipientType = selectedRecipientType,
            let textField = recipientsTextField(type: selectedRecipientType),

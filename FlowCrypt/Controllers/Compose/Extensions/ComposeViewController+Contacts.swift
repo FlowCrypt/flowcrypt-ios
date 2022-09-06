@@ -9,7 +9,7 @@
 import UIKit
 
 extension ComposeViewController {
-    internal func askForContactsPermission() {
+    func askForContactsPermission() {
         shouldEvaluateRecipientInput = false
 
         Task {

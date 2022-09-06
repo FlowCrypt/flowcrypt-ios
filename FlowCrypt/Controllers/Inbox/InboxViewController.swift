@@ -18,7 +18,7 @@ class InboxViewController: ViewController {
     private let draftsListProvider: DraftsListProvider?
     private let messageOperationsProvider: MessageOperationsProvider
     private let refreshControl = UIRefreshControl()
-    internal let tableNode: ASTableNode
+    let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
@@ -26,7 +26,7 @@ class InboxViewController: ViewController {
     private let inboxDataProvider: InboxDataProvider
     private let viewModel: InboxViewModel
     private var inboxInput: [InboxRenderable] = []
-    internal var state: InboxViewController.State = .idle
+    var state: InboxViewController.State = .idle
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
     }
@@ -34,12 +34,12 @@ class InboxViewController: ViewController {
         inboxInput.isNotEmpty && (viewModel.path == "SPAM" || viewModel.path == "TRASH")
     }
 
-    internal var path: String { viewModel.path }
+    var path: String { viewModel.path }
 
     // Search related varaibles
     private var isSearch = false
     private var shouldBeginFetch = true
-    internal var searchedExpression = ""
+    var searchedExpression = ""
 
     private var isVisible = false
     private var didLayoutSubviews = false
@@ -124,7 +124,7 @@ extension InboxViewController {
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
     }
 
-    internal func setupTableNode() {
+    func setupTableNode() {
         tableNode.do {
             $0.delegate = self
             $0.dataSource = self
@@ -231,7 +231,7 @@ extension InboxViewController {
         return "\(searchedExpression) OR subject:\(searchedExpression)"
     }
 
-    internal func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
+    func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
         Task {
             do {
                 if isSearch {

@@ -10,8 +10,8 @@ import UIKit
 
 // MARK: - State Handling
 extension ComposeViewController {
-    internal func updateView(newState: State) {
-        if case .searchEmails = newState, !self.shouldDisplaySearchResult {
+    func updateView(newState: State) {
+        if case .searchEmails = newState, !shouldDisplaySearchResult {
             return
         }
 
@@ -20,11 +20,11 @@ extension ComposeViewController {
 
         switch state {
         case .main:
-            sectionsList = Section.recipientsSections + [.recipientsLabel, .password, .compose, .attachments]
+            sectionsList = [.passphrase] + Section.recipientsSections + [.recipientsLabel, .password, .compose, .attachments]
             node.reloadData()
         case .searchEmails:
             let previousSectionsCount = sectionsList.count
-            sectionsList = Section.recipientsSections + [.searchResults, .contacts]
+            sectionsList = [.passphrase] + Section.recipientsSections + [.searchResults, .contacts]
 
             let deletedSectionsCount = previousSectionsCount - sectionsList.count
 

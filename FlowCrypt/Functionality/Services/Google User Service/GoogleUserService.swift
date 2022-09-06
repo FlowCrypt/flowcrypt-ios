@@ -105,7 +105,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         static let index = "GTMAppAuthAuthorizerIndex"
     }
 
-    internal lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
+    lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
     private var tokenResponse: OIDTokenResponse? {
         authorization?.authState.lastTokenResponse
@@ -326,7 +326,7 @@ extension GoogleUserService {
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
 
-        while decodedString.utf16.count.isMultiple(of: 4) {
+        while !decodedString.utf16.count.isMultiple(of: 4) {
             decodedString += "="
         }
 

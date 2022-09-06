@@ -12,7 +12,7 @@ import FlowCryptUI
 
 // MARK: - Message Sending
 extension ComposeViewController {
-    internal func sendMessage() async throws {
+    func sendMessage() async throws {
         view.endEditing(true)
         navigationItem.rightBarButtonItem?.isEnabled = false
 
@@ -40,7 +40,7 @@ extension ComposeViewController {
         handleSuccessfullySentMessage()
     }
 
-    internal func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false) {
+    func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false) {
         let alert = alertsFactory.makePassPhraseAlert(
             onCancel: {
                 self.handle(error: ComposeMessageError.passPhraseRequired)
@@ -73,7 +73,7 @@ extension ComposeViewController {
         present(alert, animated: true, completion: nil)
     }
 
-    internal func handle(error: Error) {
+    func handle(error: Error) {
         reEnableSendButton()
 
         if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {

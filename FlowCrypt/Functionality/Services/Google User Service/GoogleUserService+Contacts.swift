@@ -64,7 +64,7 @@ extension GoogleUserService {
         return contactsScope.allSatisfy(currentScope.contains)
     }
 
-    internal func runWarmupQuery() {
+    func runWarmupQuery() {
         Task {
             // Warmup query for google contacts cache
             _ = await searchContacts(query: "")

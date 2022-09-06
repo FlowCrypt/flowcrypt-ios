@@ -20,6 +20,8 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         guard let sectionItem = sectionsList[safe: section] else { return 0 }
 
         switch (state, sectionItem) {
+        case (.main, .passphrase):
+            return signingKeyWithMissingPassphrase != nil ? 1 : 0
         case (.main, .recipientsLabel):
             return shouldShowEmailRecipientsLabel ? 1 : 0
         case (.main, .recipients(.to)):
@@ -54,12 +56,14 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
             switch (self.state, section) {
             case (_, .recipients(.from)):
-                return self.fromCellNode
+                return self.fromCellNode()
             case (_, .recipients(.to)), (_, .recipients(.cc)), (_, .recipients(.bcc)):
-                let recipientType = RecipientType.allCases[indexPath.section]
+                let recipientType = RecipientType.allCases[indexPath.section - 1]
                 return self.recipientsNode(type: recipientType)
             case (.main, .recipientsLabel):
                 return self.recipientTextNode()
+            case (.main, .passphrase):
+                return self.messagePassPhraseNode()
             case (.main, .password):
                 return self.messagePasswordNode()
             case (.main, .compose):
@@ -119,7 +123,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    internal func reload(sections: [Section]) {
+    func reload(sections: [Section]) {
         let indexes = sectionsList.enumerated().compactMap { index, section in
             sections.contains(section) ? index : nil
         }

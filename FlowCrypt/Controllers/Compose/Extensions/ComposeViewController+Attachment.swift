@@ -10,7 +10,7 @@ import UIKit
 
 // MARK: - Attachments sheet handling
 extension ComposeViewController {
-    internal func openAttachmentsInputSourcesSheet() {
+    func openAttachmentsInputSourcesSheet() {
         let alert = UIAlertController(
             title: "files_picking_select_input_source_title".localized,
             message: nil,
@@ -42,7 +42,7 @@ extension ComposeViewController {
         present(alert, animated: true, completion: nil)
     }
 
-    internal func takePhoto() {
+    func takePhoto() {
         Task {
             do {
                 try await photosManager.takePhoto(from: self)

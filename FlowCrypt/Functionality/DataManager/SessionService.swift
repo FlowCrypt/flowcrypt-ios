@@ -36,7 +36,6 @@ protocol SessionServiceType {
     func startSessionFor(session: SessionType) throws
     func switchActiveSessionFor(user: User) throws -> SessionType?
     func startActiveSessionForNextUser() throws -> SessionType?
-    func logOutUsersThatDontHaveAnyKeysSetUp() throws
     func cleanup() throws
 }
 
@@ -110,22 +109,6 @@ extension SessionService: SessionServiceType {
         }
 
         return try switchActiveSession(for: currentUser)
-    }
-
-    func logOutUsersThatDontHaveAnyKeysSetUp() throws {
-        logger.logInfo("Clean up sessions")
-        for user in try encryptedStorage.getAllUsers() {
-            if try !encryptedStorage.doesAnyKeypairExist(for: user.email) {
-                logger.logInfo("User session to clean up \(user.email)")
-                try logOut(user: user)
-            }
-        }
-
-        let users = try encryptedStorage.getAllUsers()
-        if !users.contains(where: { $0.isActive }),
-            let user = try users.first(where: { try encryptedStorage.doesAnyKeypairExist(for: $0.email) }) {
-            try switchActiveSession(for: user)
-        }
     }
 
     @discardableResult

@@ -15,22 +15,22 @@ import Foundation
  **/
 final class ComposeViewController: TableNodeViewController {
 
-    internal enum Constants {
+    enum Constants {
         static let endTypingCharacters = [",", "\n", ";"]
         static let minRecipientsPartHeight: CGFloat = 32
     }
 
-    internal struct ComposedDraft: Equatable {
+    struct ComposedDraft: Equatable {
         let input: ComposeMessageInput
         let contextToSend: ComposeMessageContext
     }
 
-    internal enum State {
+    enum State {
         case main, searchEmails([Recipient])
     }
 
     enum Section: Hashable {
-        case recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
+        case passphrase, recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
         static var recipientsSections: [Section] {
             RecipientType.allCases.map { Self.recipients($0) }
@@ -41,55 +41,54 @@ final class ComposeViewController: TableNodeViewController {
         case delete, reload, add, scrollToBottom
     }
 
-    internal enum ComposePart: Int, CaseIterable {
+    enum ComposePart: Int, CaseIterable {
         case topDivider, subject, subjectDivider, text
     }
 
-    internal var shouldDisplaySearchResult = false
-    internal var userTappedOutSideRecipientsArea = false
-    internal var shouldShowEmailRecipientsLabel = false
-    internal let appContext: AppContextWithUser
-    internal let composeMessageService: ComposeMessageService
-    internal var decorator: ComposeViewDecorator
-    internal let localContactsProvider: LocalContactsProviderType
-    internal let pubLookup: PubLookupType
-    internal let googleUserService: GoogleUserServiceType
-    internal let filesManager: FilesManagerType
-    internal let photosManager: PhotosManagerType
-    internal let router: GlobalRouterType
+    var shouldDisplaySearchResult = false
+    var userTappedOutSideRecipientsArea = false
+    var shouldShowEmailRecipientsLabel = false
+    let appContext: AppContextWithUser
+    let composeMessageService: ComposeMessageService
+    var decorator: ComposeViewDecorator
+    let localContactsProvider: LocalContactsProviderType
+    let pubLookup: PubLookupType
+    let googleUserService: GoogleUserServiceType
+    let filesManager: FilesManagerType
+    let photosManager: PhotosManagerType
+    let router: GlobalRouterType
 
     private let clientConfiguration: ClientConfiguration
-    internal var isMessagePasswordSupported: Bool {
-        return clientConfiguration.isUsingFes
-    }
+    var isMessagePasswordSupported: Bool { clientConfiguration.isUsingFes }
 
-    internal let search = PassthroughSubject<String, Never>()
-    internal var cancellable = Set<AnyCancellable>()
+    let search = PassthroughSubject<String, Never>()
+    var cancellable = Set<AnyCancellable>()
 
-    internal var input: ComposeMessageInput
-    internal var contextToSend: ComposeMessageContext
+    var input: ComposeMessageInput
+    var contextToSend: ComposeMessageContext
 
-    internal var state: State = .main
-    internal var shouldEvaluateRecipientInput = true
+    var state: State = .main
+    var shouldEvaluateRecipientInput = true
 
-    internal weak var saveDraftTimer: Timer?
-    internal var composedLatestDraft: ComposedDraft?
+    weak var saveDraftTimer: Timer?
+    var composedLatestDraft: ComposedDraft?
 
-    internal lazy var alertsFactory = AlertsFactory()
-    internal var messagePasswordAlertController: UIAlertController?
+    var signingKeyWithMissingPassphrase: Keypair?
+    var messagePasswordAlertController: UIAlertController?
+    lazy var alertsFactory = AlertsFactory()
+
     private var didLayoutSubviews = false
     private var topContentInset: CGFloat {
         navigationController?.navigationBar.frame.maxY ?? 0
     }
 
-    internal var selectedRecipientType: RecipientType? = .to
-    internal var shouldShowAllRecipientTypes = false
-    internal var popoverVC: ComposeRecipientPopupViewController!
+    var selectedRecipientType: RecipientType? = .to
+    var shouldShowAllRecipientTypes = false
+    var popoverVC: ComposeRecipientPopupViewController!
 
-    internal var sectionsList: [Section] = []
+    var sectionsList: [Section] = []
     var composeTextNode: ASCellNode!
     var composeSubjectNode: ASCellNode!
-    var fromCellNode: RecipientFromCellNode!
     var sendAsList: [SendAsModel] = []
 
     init(

@@ -50,7 +50,6 @@ final class ComposeMessageService {
         self.draftGateway = draftGateway
         self.core = core
         self.localContactsProvider = localContactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
-        self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
     private var onStateChanged: ((State) -> Void)?
@@ -158,8 +157,6 @@ final class ComposeMessageService {
 
         let signingPrv = try await prepareSigningKey(senderEmail: contextToSend.sender)
 
-        print("create sendable")
-
         return SendableMsg(
             text: contextToSend.message ?? "",
             html: nil,
@@ -230,7 +227,9 @@ final class ComposeMessageService {
                 input: MessageGatewayInput(
                     mime: r.mimeEncoded,
                     threadId: threadId
-                ), draft: draft)
+                ),
+                draft: draft
+            )
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }

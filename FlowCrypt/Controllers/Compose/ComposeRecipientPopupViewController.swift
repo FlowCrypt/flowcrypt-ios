@@ -25,12 +25,12 @@ final class ComposeRecipientPopupViewController: TableNodeViewController {
         case nameEmail, divider, copy, edit, remove
     }
 
-    var parts: [Parts] {
-        return [.nameEmail, .divider, .copy, .edit, .divider, .remove]
+    private var parts: [Parts] {
+        [.nameEmail, .divider, .copy, .edit, .divider, .remove]
     }
 
     private let recipient: ComposeMessageRecipient
-    internal let type: RecipientType
+    let type: RecipientType
     var delegate: ComposeRecipientPopupViewControllerProtocol?
 
     init(

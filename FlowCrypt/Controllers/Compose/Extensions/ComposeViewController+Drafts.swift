@@ -8,14 +8,14 @@
 
 // MARK: - Drafts
 extension ComposeViewController {
-    @objc internal func startDraftTimer() {
+    @objc func startDraftTimer() {
         saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.saveDraftIfNeeded()
         }
         saveDraftTimer?.fire()
     }
 
-    @objc internal func stopDraftTimer() {
+    @objc func stopDraftTimer() {
         saveDraftTimer?.invalidate()
         saveDraftTimer = nil
         saveDraftIfNeeded()
@@ -37,10 +37,8 @@ extension ComposeViewController {
         }
     }
 
-    internal func saveDraftIfNeeded() {
+    func saveDraftIfNeeded() {
         guard shouldSaveDraft() else { return }
-
-        print("saving draft")
 
         Task {
             do {
@@ -51,12 +49,10 @@ extension ComposeViewController {
                 )
                 try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
             } catch {
-                print("got error")
-                print(error)
                 if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
-                    requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
-                }
-                if !(error is MessageValidationError) {
+                    signingKeyWithMissingPassphrase = keyPair
+                    reload(sections: [.passphrase])
+                } else if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
                     // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?

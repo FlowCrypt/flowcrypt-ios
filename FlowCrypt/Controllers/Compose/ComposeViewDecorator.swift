@@ -127,16 +127,24 @@ struct ComposeViewDecorator {
         return (text + message).attributed(.regular(17))
     }
 
-    func styledEmptyMessagePasswordInput() -> MessagePasswordCellNode.Input {
-        messagePasswordInput(
+    func styledMessagePassPhraseInput() -> MessageActionCellNode.Input {
+        messageActionInput(
+            text: "compose_passphrase_placeholder".localized,
+            color: .warningColor,
+            imageName: "lock"
+        )
+    }
+
+    func styledEmptyMessagePasswordInput() -> MessageActionCellNode.Input {
+        messageActionInput(
             text: "compose_password_placeholder".localized,
             color: .warningColor,
             imageName: "lock"
         )
     }
 
-    func styledFilledMessagePasswordInput() -> MessagePasswordCellNode.Input {
-        messagePasswordInput(
+    func styledFilledMessagePasswordInput() -> MessageActionCellNode.Input {
+        messageActionInput(
             text: "compose_password_set_message".localized,
             color: .main,
             imageName: "checkmark.circle"
@@ -180,11 +188,11 @@ struct ComposeViewDecorator {
         completion?()
     }
 
-    private func messagePasswordInput(
+    private func messageActionInput(
         text: String,
         color: UIColor,
         imageName: String
-    ) -> MessagePasswordCellNode.Input {
+    ) -> MessageActionCellNode.Input {
         .init(
             text: text.attributed(.regular(14), color: color),
             color: color,
