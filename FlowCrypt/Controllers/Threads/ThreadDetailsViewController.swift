@@ -102,7 +102,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         Task {
             try await threadOperationsProvider.mark(thread: thread, asRead: true, in: currentFolderPath)
         }
-        let indexOfSectionToExpand = input.firstIndex(where: { $0.rawMessage.isMessageRead == false }) ?? input.count - 1
+        let indexOfSectionToExpand = input.firstIndex(where: { !$0.rawMessage.isRead }) ?? input.count - 1
         let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand + 1)
         handleExpandTap(at: indexPath)
     }
@@ -111,18 +111,15 @@ final class ThreadDetailsViewController: TableNodeViewController {
 extension ThreadDetailsViewController {
 
     private func handleExpandTap(at indexPath: IndexPath) {
-        guard let threadNode = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode else {
-            logger.logError("Fail to handle tap at \(indexPath)")
-            return
-        }
-
         input[indexPath.section - 1].isExpanded.toggle()
 
         if input[indexPath.section - 1].isExpanded {
             UIView.animate(
                 withDuration: 0.3,
                 animations: {
-                    threadNode.expandNode.view.alpha = 0
+                    if let threadNode = self.node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode {
+                        threadNode.expandNode.view.alpha = 0
+                    }
                 },
                 completion: { [weak self] _ in
                     guard let self = self else { return }
@@ -151,6 +148,27 @@ extension ThreadDetailsViewController {
 
     private func handleReplyTap(at indexPath: IndexPath) {
         composeNewMessage(at: indexPath, quoteType: .reply)
+    }
+
+    private func handleDraftTap(at indexPath: IndexPath) {
+        Task {
+            do {
+                let draft = input[indexPath.section - 1]
+
+                let draftInfo = ComposeMessageInput.MessageQuoteInfo(
+                    message: draft.rawMessage,
+                    processed: draft.processedMessage
+                )
+
+                let controller = try await ComposeViewController(
+                    appContext: appContext,
+                    input: .init(type: .draft(draftInfo))
+                )
+                navigationController?.pushViewController(controller, animated: true)
+            } catch {
+                showAlert(message: error.localizedDescription)
+            }
+        }
     }
 
     private func handleMenuTap(at indexPath: IndexPath) {
@@ -286,6 +304,7 @@ extension ThreadDetailsViewController {
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
             recipients: recipients,
             ccRecipients: ccRecipients,
+            bccRecipients: [],
             sender: input.rawMessage.sender,
             subject: [quoteType.subjectPrefix, subject].joined(),
             sentDate: input.rawMessage.date,
@@ -305,14 +324,13 @@ extension ThreadDetailsViewController {
             }
         }()
 
-        let composeInput = ComposeMessageInput(type: composeType)
-
         Task {
             do {
-                navigationController?.pushViewController(
-                    try await ComposeViewController(appContext: appContext, input: composeInput),
-                    animated: true
+                let composeVC = try await ComposeViewController(
+                    appContext: appContext,
+                    input: ComposeMessageInput(type: composeType)
                 )
+                navigationController?.pushViewController(composeVC, animated: true)
             } catch {
                 showAlert(message: error.localizedDescription)
             }
@@ -365,14 +383,14 @@ extension ThreadDetailsViewController {
             UIView.animate(
                 withDuration: 0.2,
                 animations: {
-                    self.node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
+                    self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
                 },
                 completion: { [weak self] _ in
                     self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
                 })
         } else {
             input[messageIndex].processedMessage?.signature = processedMessage.signature
-            node.reloadSections(IndexSet(integer: indexPath.section), with: .fade)
+            node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
         }
     }
 
@@ -584,7 +602,9 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        guard section > 0, input[section - 1].isExpanded else { return 1 }
+        guard section > 0, input[section - 1].isExpanded,
+              !input[section - 1].rawMessage.isDraft
+        else { return 1 }
 
         let attachmentsCount = input[section - 1].processedMessage?.attachments.count ?? 0
         return Parts.allCases.count + attachmentsCount
@@ -602,7 +622,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             let messageIndex = indexPath.section - 1
             let message = self.input[messageIndex]
 
-            if indexPath.row == 0 {
+            if !message.rawMessage.isDraft && indexPath.row == 0 {
                 return ThreadMessageInfoCellNode(
                     input: .init(threadMessage: message, index: messageIndex),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
@@ -613,6 +633,16 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
             guard let processedMessage = message.processedMessage else {
                 return ASCellNode()
+            }
+
+            if message.rawMessage.isDraft {
+                let draft = processedMessage.message.body.textWithoutThreadQuote
+                return LabelCellNode(
+                    input: .init(
+                        title: "compose_draft".localized.attributed(color: .red),
+                        text: draft.attributed(color: .secondaryLabel)
+                    )
+                )
             }
 
             guard indexPath.row > 1 else {
@@ -636,7 +666,12 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             handleExpandTap(at: indexPath)
         case is AttachmentNode:
             handleAttachmentTap(at: indexPath)
-        default: return
+        default:
+            let message = input[indexPath.section - 1]
+
+            if message.rawMessage.isDraft {
+                handleDraftTap(at: indexPath)
+            }
         }
     }
 

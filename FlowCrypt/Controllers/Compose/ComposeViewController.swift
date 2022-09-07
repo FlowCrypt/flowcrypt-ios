@@ -113,9 +113,11 @@ final class ComposeViewController: TableNodeViewController {
             appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate,
             shouldRunWarmupQuery: true
         )
+        let draftGateway = try appContext.getRequiredMailProvider().draftGateway
         self.composeMessageService = composeMessageService ?? ComposeMessageService(
             appContext: appContext,
-            keyMethods: keyMethods
+            keyMethods: keyMethods,
+            draftGateway: draftGateway
         )
         self.filesManager = filesManager
         self.photosManager = photosManager
@@ -152,7 +154,7 @@ final class ComposeViewController: TableNodeViewController {
         observeKeyboardNotifications()
         observerAppStates()
         observeComposeUpdates()
-        setupQuote()
+        fillDataFromInput()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -189,25 +191,6 @@ final class ComposeViewController: TableNodeViewController {
 
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-
-    func update(with message: Message) {
-        if let sender = message.sender?.email {
-            contextToSend.sender = sender
-        }
-
-        contextToSend.subject = message.subject
-        contextToSend.message = message.raw
-
-        for recipient in message.to {
-            add(recipient: recipient, type: .to)
-        }
-        for recipient in message.cc {
-            add(recipient: recipient, type: .cc)
-        }
-        for recipient in message.bcc {
-            add(recipient: recipient, type: .bcc)
-        }
     }
 
     func add(recipient: Recipient, type: RecipientType) {

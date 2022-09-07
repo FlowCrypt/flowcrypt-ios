@@ -14,6 +14,7 @@ struct ComposeMessageInput: Equatable {
     struct MessageQuoteInfo: Equatable {
         let recipients: [Recipient]
         let ccRecipients: [Recipient]
+        let bccRecipients: [Recipient]
         let sender: Recipient?
         let subject: String?
         let sentDate: Date
@@ -28,26 +29,17 @@ struct ComposeMessageInput: Equatable {
         case idle
         case reply(MessageQuoteInfo)
         case forward(MessageQuoteInfo)
+        case draft(MessageQuoteInfo)
     }
 
     let type: InputType
 
-    var quoteRecipients: [Recipient] {
-        guard case .reply(let info) = type else {
-            return []
-        }
-        return info.recipients
-    }
-
-    var quoteCCRecipients: [Recipient] {
-        guard case .reply(let info) = type else {
-            return []
-        }
-        return info.ccRecipients
-    }
-
     var subject: String? {
         type.info?.subject
+    }
+
+    var message: String? {
+        type.info?.message
     }
 
     var replyToMsgId: String? {
@@ -70,7 +62,7 @@ struct ComposeMessageInput: Equatable {
 extension ComposeMessageInput {
     var successfullySentToast: String {
         switch type {
-        case .idle:
+        case .idle, .draft:
             return "compose_encrypted_sent".localized
         case .forward:
             return "compose_forward_successful".localized
@@ -82,14 +74,21 @@ extension ComposeMessageInput {
 
 extension ComposeMessageInput {
     var isQuote: Bool {
-        type != .idle
-    }
-
-    var isReply: Bool {
-        guard case .reply = type else {
+        switch type {
+        case .reply, .forward:
+            return true
+        case .idle, .draft:
             return false
         }
-        return true
+    }
+
+    var shouldFocusTextNode: Bool {
+        switch type {
+        case .reply, .draft:
+            return true
+        case .idle, .forward:
+            return false
+        }
     }
 }
 
@@ -98,8 +97,24 @@ extension ComposeMessageInput.InputType {
         switch self {
         case .idle:
             return nil
-        case .reply(let info), .forward(let info):
+        case .reply(let info), .forward(let info), .draft(let info):
             return info
         }
+    }
+}
+
+extension ComposeMessageInput.MessageQuoteInfo {
+    init(message: Message, processed: ProcessedMessage?) {
+        self.recipients = message.to
+        self.ccRecipients = message.cc
+        self.bccRecipients = message.bcc
+        self.sender = message.sender
+        self.subject = message.subject
+        self.sentDate = message.date
+        self.message = processed?.text ?? message.body.text
+        self.threadId = message.threadId
+        self.replyToMsgId = nil // TODO: draft.rawMessage.replyToMsgId,
+        self.inReplyTo = message.inReplyTo
+        self.attachments = processed?.attachments ?? message.attachments
     }
 }

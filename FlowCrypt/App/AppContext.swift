@@ -105,7 +105,7 @@ class AppContext {
 
     @MainActor
     func getBackupService() throws -> BackupService {
-        let mailProvider = try self.getRequiredMailProvider()
+        let mailProvider = try getRequiredMailProvider()
         return BackupService(
             backupProvider: try mailProvider.backupProvider,
             messageSender: try mailProvider.messageSender
@@ -115,16 +115,16 @@ class AppContext {
     @MainActor
     func getFoldersService() throws -> FoldersService {
         return FoldersService(
-            encryptedStorage: self.encryptedStorage,
-            remoteFoldersProvider: try self.getRequiredMailProvider().remoteFoldersProvider
+            encryptedStorage: encryptedStorage,
+            remoteFoldersProvider: try getRequiredMailProvider().remoteFoldersProvider
         )
     }
 
     @MainActor
     func getSendAsService() throws -> SendAsService {
         return SendAsService(
-            encryptedStorage: self.encryptedStorage,
-            remoteSendAsProvider: try self.getRequiredMailProvider().remoteSendAsProvider
+            encryptedStorage: encryptedStorage,
+            remoteSendAsProvider: try getRequiredMailProvider().remoteSendAsProvider
         )
     }
 }

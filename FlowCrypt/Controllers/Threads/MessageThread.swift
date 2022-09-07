@@ -43,7 +43,7 @@ struct MessageThread: Equatable {
     }
 
     var isRead: Bool {
-        !messages.contains(where: { !$0.isMessageRead })
+        !messages.contains(where: { !$0.isRead })
     }
 }
 

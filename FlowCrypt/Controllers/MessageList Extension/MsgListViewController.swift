@@ -11,8 +11,9 @@ import UIKit
 @MainActor
 protocol MsgListViewController {
     var path: String { get }
+    var appContext: AppContextWithUser { get }
 
-    func open(message: InboxRenderable, path: String, appContext: AppContextWithUser)
+    func open(message: InboxRenderable, path: String)
 
     func getUpdatedIndex(for message: InboxRenderable) -> Int?
     func updateMessage(isRead: Bool, at index: Int)
@@ -21,12 +22,14 @@ protocol MsgListViewController {
 }
 
 extension MsgListViewController where Self: UIViewController {
-
-    // todo - tom - don't know how to add AppContext into init of protocol/extension
-    func open(message: InboxRenderable, path: String, appContext: AppContextWithUser) {
+    func open(message: InboxRenderable, path: String) {
         switch message.wrappedType {
         case .message(let message):
-            open(message: message, path: path, appContext: appContext)
+            if message.isDraft {
+                open(draft: message, appContext: appContext)
+            } else {
+                open(message: message, path: path, appContext: appContext)
+            }
         case .thread(let thread):
             open(thread: thread, appContext: appContext)
         }
@@ -35,8 +38,15 @@ extension MsgListViewController where Self: UIViewController {
     private func open(draft: Message, appContext: AppContextWithUser) {
         Task {
             do {
-                let controller = try await ComposeViewController(appContext: appContext)
-                controller.update(with: draft)
+                let draftInfo = ComposeMessageInput.MessageQuoteInfo(
+                    message: draft,
+                    processed: nil
+                )
+
+                let controller = try await ComposeViewController(
+                    appContext: appContext,
+                    input: .init(type: .draft(draftInfo))
+                )
                 navigationController?.pushViewController(controller, animated: true)
             } catch {
                 showAlert(message: error.localizedDescription)

@@ -163,11 +163,12 @@ extension ComposeViewController {
             }
         }
         .then {
-            let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
-            let mutableString = NSMutableAttributedString(attributedString: messageText)
+            let message = contextToSend.message ?? input.message ?? ""
+            let attributedString = decorator.styledMessage(with: message)
+            let mutableString = NSMutableAttributedString(attributedString: attributedString)
             let textNode = $0
 
-            if input.isQuote && !messageText.string.contains(styledQuote.string) {
+            if input.isQuote && !mutableString.string.contains(styledQuote.string) {
                 mutableString.append(styledQuote)
             }
 
@@ -178,7 +179,7 @@ extension ComposeViewController {
                     from: textNode.textView.textView.beginningOfDocument,
                     to: textNode.textView.textView.beginningOfDocument
                 )
-                if self.input.isReply {
+                if self.input.shouldFocusTextNode {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
                         textNode.becomeFirstResponder()
                     })

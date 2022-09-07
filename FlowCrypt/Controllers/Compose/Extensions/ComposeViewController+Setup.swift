@@ -49,19 +49,29 @@ extension ComposeViewController {
         updateView(newState: .main)
     }
 
-    func setupQuote() {
-        guard input.isQuote else { return }
+    func fillDataFromInput() {
+        switch input.type {
+        case .draft(let info), .reply(let info), .forward(let info):
+            contextToSend.subject = info.subject
+            contextToSend.message = info.message
 
-        for recipient in input.quoteRecipients {
-            add(recipient: recipient, type: .to)
-        }
+            for recipient in info.recipients {
+                add(recipient: recipient, type: .to)
+            }
 
-        for recipient in input.quoteCCRecipients {
-            add(recipient: recipient, type: .cc)
-        }
+            for recipient in info.ccRecipients {
+                add(recipient: recipient, type: .cc)
+            }
 
-        if input.quoteCCRecipients.isNotEmpty {
-            shouldShowAllRecipientTypes.toggle()
+            for recipient in info.bccRecipients {
+                add(recipient: recipient, type: .bcc)
+            }
+
+            if info.ccRecipients.isNotEmpty || info.bccRecipients.isNotEmpty {
+                shouldShowAllRecipientTypes.toggle()
+            }
+        case .idle:
+            return
         }
     }
 

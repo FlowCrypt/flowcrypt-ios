@@ -13,12 +13,13 @@ class InboxViewController: ViewController {
 
     private let numberOfInboxItemsToLoad: Int
 
-    private let appContext: AppContextWithUser
+    let appContext: AppContextWithUser
+    let tableNode: ASTableNode
+
     private let decorator: InboxViewDecorator
     private let draftsListProvider: DraftsListProvider?
     private let messageOperationsProvider: MessageOperationsProvider
     private let refreshControl = UIRefreshControl()
-    let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
@@ -475,7 +476,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
             return
         }
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(message: message, path: viewModel.path, appContext: appContext)
+        open(message: message, path: viewModel.path)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
@@ -505,16 +506,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 var rowNumber = indexPath.row
                 if self.shouldShowEmptyView {
                     if indexPath.row == 0 {
-                        return EmptyFolderCellNode(
-                            path: self.viewModel.path,
-                            emptyFolder: {
-                                self.showConfirmAlert(
-                                    message: "folder_empty_confirm".localized,
-                                    onConfirm: { [weak self] _ in
-                                        self?.emptyInboxFolder()
-                                    }
-                                )
-                            })
+                        return self.emptyFolderNode()
                     }
                     rowNumber -= 1
                 }
@@ -539,6 +531,19 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 )
             }
         }
+    }
+
+    private func emptyFolderNode() -> ASCellNode {
+        return EmptyFolderCellNode(
+            path: viewModel.path,
+            emptyFolder: { [weak self] in
+                self?.showConfirmAlert(
+                    message: "folder_empty_confirm".localized,
+                    onConfirm: { [weak self] _ in
+                        self?.emptyInboxFolder()
+                    }
+                )
+            })
     }
 
     private func emptyInboxFolder() {

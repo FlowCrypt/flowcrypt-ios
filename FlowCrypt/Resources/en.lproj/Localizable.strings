@@ -152,6 +152,7 @@
 "compose_recipient_copy" = "Copy";
 "compose_recipient_edit" = "Edit";
 "compose_recipient_remove" = "Remove";
+"compose_draft" = "Draft";
 
 // Folders
 "folder_all_mail" = "All Mail";

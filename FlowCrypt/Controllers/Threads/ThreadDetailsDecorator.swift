@@ -19,7 +19,7 @@ extension ThreadMessageInfoCellNode.Input {
             .joined(separator: ", ")
         let recipientLabel = [recipientPrefix, recipientsList].joined(separator: " ")
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
-        let isMessageRead = threadMessage.rawMessage.isMessageRead
+        let isMessageRead = threadMessage.rawMessage.isRead
 
         let style: NSAttributedString.Style = isMessageRead
             ? .regular(16)

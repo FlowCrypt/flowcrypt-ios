@@ -29,7 +29,7 @@ struct Message: Hashable {
     let inReplyTo: String?
     private(set) var labels: [MessageLabel]
 
-    var isMessageRead: Bool {
+    var isRead: Bool {
         // imap
         if labels.contains(.none) {
             return false
@@ -40,6 +40,8 @@ struct Message: Hashable {
         }
         return true
     }
+
+    var isDraft: Bool { labels.contains(.draft) }
 
     var isPgp: Bool {
         (body.text.contains("-----BEGIN PGP ") && body.text.contains("-----END PGP ")) || hasSignatureAttachment
@@ -144,4 +146,15 @@ struct Identifier: Equatable, Hashable {
 struct MessageBody: Hashable {
     let text: String
     let html: String?
+}
+
+extension MessageBody {
+    var textWithoutThreadQuote: String {
+        guard let range = text.range(
+            of: "On [a-zA-Z]*, [a-zA-Z0-9 ]* at [0-9:]*, .*",
+            options: [.regularExpression]
+        ) else { return text }
+
+        return text[text.startIndex..<range.lowerBound].trimmingCharacters(in: .whitespacesAndNewlines)
+    }
 }

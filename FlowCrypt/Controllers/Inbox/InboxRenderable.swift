@@ -55,7 +55,7 @@ extension InboxRenderable {
         }
 
         self.dateString = DateFormatter().formatDate(message.date)
-        self.isRead = message.isMessageRead
+        self.isRead = message.isRead
         self.date = message.date
         self.wrappedType = .message(message)
         self.badge = nil

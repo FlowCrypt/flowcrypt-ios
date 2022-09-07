@@ -219,13 +219,14 @@ final class ComposeMessageService {
     private var draft: GTLRGmail_Draft?
     func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
         do {
-            let r = try await core.composeEmail(
+            let mime = try await core.composeEmail(
                 msg: message,
                 fmt: .encryptInline
-            )
+            ).mimeEncoded
+
             draft = try await draftGateway?.saveDraft(
                 input: MessageGatewayInput(
-                    mime: r.mimeEncoded,
+                    mime: mime,
                     threadId: threadId
                 ),
                 draft: draft
