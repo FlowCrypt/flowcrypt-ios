@@ -74,11 +74,14 @@ extension AttachmentNode.Input {
     }
 }
 
-private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input {
+private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input? {
+    guard let type = input.processedMessage?.type else { return nil }
+
     let icon: String
     let text: String
     let color: UIColor
-    switch input.processedMessage?.type {
+
+    switch type {
     case .error:
         icon = "lock.open"
         text = "message_decrypt_error".localized

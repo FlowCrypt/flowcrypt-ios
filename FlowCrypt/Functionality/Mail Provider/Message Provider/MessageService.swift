@@ -17,7 +17,7 @@ enum MessageFetchState {
 
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
-    case missingPassPhrase(_ message: Message)
+    case missingPassPhrase
     case emptyKeys
     case emptyKeysForEKM
     case attachmentNotFound
@@ -101,7 +101,6 @@ final class MessageService {
         if message.isPgp {
             return try await decryptAndProcess(
                 message: message,
-                sender: message.sender,
                 onlyLocalKeys: onlyLocalKeys,
                 userEmail: userEmail,
                 isUsingKeyManager: isUsingKeyManager
@@ -113,7 +112,6 @@ final class MessageService {
 
     func decryptAndProcess(
         message: Message,
-        sender: Recipient?,
         onlyLocalKeys: Bool,
         userEmail: String,
         isUsingKeyManager: Bool
@@ -125,7 +123,10 @@ final class MessageService {
             }
             throw MessageServiceError.emptyKeys
         }
-        let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
+        let verificationPubKeys = try await fetchVerificationPubKeys(
+            for: message.sender,
+            onlyLocal: onlyLocalKeys
+        )
 
         var message = message
         if message.hasSignatureAttachment {
@@ -142,8 +143,8 @@ final class MessageService {
             verificationPubKeys: verificationPubKeys
         )
 
-        guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-            throw MessageServiceError.missingPassPhrase(message)
+        guard !hasMsgBlockThatNeedsPassPhrase(decrypted) else {
+            throw MessageServiceError.missingPassPhrase
         }
 
         return try await process(
@@ -174,8 +175,8 @@ final class MessageService {
             let err = decryptErrBlock.decryptErr?.error
             let hideContent = err?.type == .badMdc || err?.type == .noMdc
             let rawMsg = hideContent
-            ? "content_hidden".localized
-            : decryptErrBlock.content
+                ? "content_hidden".localized
+                : decryptErrBlock.content
 
             text = "error_decrypt".localized
             + "\n\(err?.type.rawValue ?? "unknown".localized): \(err?.message ?? "??")\n\n\n\(rawMsg)"

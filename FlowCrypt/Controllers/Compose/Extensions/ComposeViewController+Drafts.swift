@@ -48,7 +48,11 @@ extension ComposeViewController {
                     contextToSend: contextToSend,
                     isDraft: true
                 )
-                try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
+                try await composeMessageService.encryptAndSaveDraft(
+                    message: sendableMsg,
+                    threadId: input.threadId,
+                    draftId: input.draftId
+                )
             } catch {
                 if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
                     signingKeyWithMissingPassphrase = keyPair

@@ -52,6 +52,7 @@ final class ComposeViewController: TableNodeViewController {
     let composeMessageService: ComposeMessageService
     var decorator: ComposeViewDecorator
     let localContactsProvider: LocalContactsProviderType
+    let messageService: MessageService
     let pubLookup: PubLookupType
     let googleUserService: GoogleUserServiceType
     let filesManager: FilesManagerType
@@ -96,6 +97,7 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         composeMessageService: ComposeMessageService? = nil,
+        messageService: MessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods()
@@ -127,6 +129,15 @@ final class ComposeViewController: TableNodeViewController {
         )
         self.router = appContext.globalRouter
         self.clientConfiguration = clientConfiguration
+
+        let mailProvider = try appContext.getRequiredMailProvider()
+        self.messageService = try messageService ?? MessageService(
+            localContactsProvider: localContactsProvider,
+            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
+            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
+            messageProvider: try mailProvider.messageProvider,
+            combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
+        )
 
         self.sendAsList = try await appContext.getSendAsService()
             .fetchList(isForceReload: false, for: appContext.user)
@@ -232,3 +243,8 @@ final class ComposeViewController: TableNodeViewController {
 }
 
 extension ComposeViewController: FilesManagerPresenter {}
+
+// update draft, don't create a new one each time
+// decrypt draft body
+// add delete button for drafts in thread view
+// add delete button for drafts in compose view

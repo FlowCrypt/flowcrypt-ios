@@ -9,7 +9,7 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: DraftGateway {
-    func saveDraft(input: MessageGatewayInput, draft: GTLRGmail_Draft?) async throws -> GTLRGmail_Draft {
+    func saveDraft(input: MessageGatewayInput, draftId: String?) async throws -> GTLRGmail_Draft {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_Draft, Error>) in
             guard let raw = GTLREncodeBase64(input.mime) else {
                 return continuation.resume(throwing: GmailServiceError.messageEncode)
@@ -18,7 +18,7 @@ extension GmailService: DraftGateway {
             let draftQuery = createQueryForDraftAction(
                 raw: raw,
                 threadId: input.threadId,
-                draft: draft
+                draftId: draftId
             )
 
             gmailService.executeQuery(draftQuery) { _, object, error in
@@ -36,42 +36,36 @@ extension GmailService: DraftGateway {
     func deleteDraft(with identifier: String) async {
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             let query = GTLRGmailQuery_UsersDraftsDelete.query(withUserId: .me, identifier: identifier)
-            gmailService.executeQuery(query) { _, _, _ in
+            gmailService.executeQuery(query) { response, object, error in
                 return continuation.resume()
             }
         }
     }
 
-    private func createQueryForDraftAction(raw: String, threadId: String?, draft: GTLRGmail_Draft?) -> GTLRGmailQuery {
-        guard
-            let existingDraft = draft,
-            let draftIdentifier = existingDraft.identifier
-        else {
-            // draft is not created yet. creating draft
-            let newDraft = GTLRGmail_Draft()
-            let gtlMessage = GTLRGmail_Message()
-            gtlMessage.raw = raw
-            gtlMessage.threadId = threadId
-            newDraft.message = gtlMessage
+    private func createQueryForDraftAction(raw: String, threadId: String?, draftId: String?) -> GTLRGmailQuery {
+        let draft = GTLRGmail_Draft()
 
+        let message = GTLRGmail_Message()
+        message.raw = raw
+        message.threadId = threadId
+
+        draft.message = message
+
+        if let draftId = draftId {
+            draft.identifier = draftId
+
+            return GTLRGmailQuery_UsersDraftsUpdate.query(
+                withObject: draft,
+                userId: "me",
+                identifier: draftId,
+                uploadParameters: nil
+            )
+        } else {
             return GTLRGmailQuery_UsersDraftsCreate.query(
-                withObject: newDraft,
+                withObject: draft,
                 userId: "me",
                 uploadParameters: nil
             )
         }
-
-        // updating existing draft with new data
-        let gtlMessage = GTLRGmail_Message()
-        gtlMessage.raw = raw
-        gtlMessage.threadId = threadId
-        existingDraft.message = gtlMessage
-
-        return GTLRGmailQuery_UsersDraftsUpdate.query(
-            withObject: existingDraft,
-            userId: "me",
-            identifier: draftIdentifier,
-            uploadParameters: nil
-        )
     }
 }

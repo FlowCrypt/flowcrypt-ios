@@ -12,13 +12,14 @@ struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
     struct MessageQuoteInfo: Equatable {
+        let id: String?
         let recipients: [Recipient]
         let ccRecipients: [Recipient]
         let bccRecipients: [Recipient]
         let sender: Recipient?
         let subject: String?
         let sentDate: Date
-        let message: String
+        let text: String
         let threadId: String?
         let replyToMsgId: String?
         let inReplyTo: String?
@@ -34,12 +35,26 @@ struct ComposeMessageInput: Equatable {
 
     let type: InputType
 
+    var draftId: String? {
+        switch type {
+        case .draft(let info):
+            return info.id
+        case .forward, .idle, .reply:
+            return nil
+        }
+    }
+
     var subject: String? {
         type.info?.subject
     }
 
-    var message: String? {
-        type.info?.message
+    var text: String? {
+        type.info?.text
+    }
+
+    var isPgp: Bool {
+        guard let text = text else { return false }
+        return text.contains("-----BEGIN PGP ") && text.contains("-----END PGP ")
     }
 
     var replyToMsgId: String? {
@@ -105,13 +120,14 @@ extension ComposeMessageInput.InputType {
 
 extension ComposeMessageInput.MessageQuoteInfo {
     init(message: Message, processed: ProcessedMessage?) {
+        self.id = message.identifier.stringId
         self.recipients = message.to
         self.ccRecipients = message.cc
         self.bccRecipients = message.bcc
         self.sender = message.sender
         self.subject = message.subject
         self.sentDate = message.date
-        self.message = processed?.text ?? message.body.text
+        self.text = processed?.text ?? message.body.text
         self.threadId = message.threadId
         self.replyToMsgId = nil // TODO: draft.rawMessage.replyToMsgId,
         self.inReplyTo = message.inReplyTo

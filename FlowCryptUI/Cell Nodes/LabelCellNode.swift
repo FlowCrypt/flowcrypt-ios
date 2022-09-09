@@ -7,7 +7,6 @@
 //
 
 import AsyncDisplayKit
-import Foundation
 
 public final class LabelCellNode: CellNode {
     public struct Input {
@@ -17,6 +16,8 @@ public final class LabelCellNode: CellNode {
         let spacing: CGFloat
         let accessibilityIdentifier: String?
         let labelAccessibilityIdentifier: String?
+        let actionButtonImageName: String?
+        let action: (() -> Void)?
 
         public init(
             title: NSAttributedString,
@@ -24,7 +25,9 @@ public final class LabelCellNode: CellNode {
             insets: UIEdgeInsets = .deviceSpecificTextInsets(top: 8, bottom: 8),
             spacing: CGFloat = 4,
             accessibilityIdentifier: String? = nil,
-            labelAccessibilityIdentifier: String? = nil
+            labelAccessibilityIdentifier: String? = nil,
+            actionButtonImageName: String? = nil,
+            action: (() -> Void)? = nil
         ) {
             self.title = title
             self.text = text
@@ -32,12 +35,16 @@ public final class LabelCellNode: CellNode {
             self.spacing = spacing
             self.accessibilityIdentifier = accessibilityIdentifier
             self.labelAccessibilityIdentifier = labelAccessibilityIdentifier
+            self.actionButtonImageName = actionButtonImageName
+            self.action = action
         }
     }
 
     private let titleNode = ASTextNode2()
     private let textNode = ASTextNode2()
+    private let actionButtonNode = ASButtonNode()
     private let input: Input
+    private var action: (() -> Void)?
 
     public init(input: Input) {
         self.input = input
@@ -47,18 +54,46 @@ public final class LabelCellNode: CellNode {
         titleNode.accessibilityIdentifier = input.labelAccessibilityIdentifier
         textNode.attributedText = input.text
         textNode.accessibilityIdentifier = input.accessibilityIdentifier
+
+        action = input.action
+        actionButtonNode.addTarget(self, action: #selector(onActionButtonTap), forControlEvents: .touchUpInside)
+
+        if let imageName = input.actionButtonImageName {
+            actionButtonNode.setImage(UIImage(systemName: imageName)?.tinted(.secondaryLabel), for: .normal)
+        }
+    }
+
+    @objc private func onActionButtonTap() {
+        action?()
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        ASInsetLayoutSpec(
-            insets: input.insets,
-            child: ASStackLayoutSpec(
-                direction: .vertical,
-                spacing: input.spacing,
-                justifyContent: .start,
-                alignItems: .start,
-                children: [titleNode, textNode]
-            )
+        let labelSpec = ASStackLayoutSpec(
+            direction: .vertical,
+            spacing: input.spacing,
+            justifyContent: .start,
+            alignItems: .start,
+            children: [titleNode, textNode]
         )
+        if action != nil {
+            actionButtonNode.style.preferredSize = CGSize(width: 36, height: 44)
+
+            let spec = ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: input.spacing,
+                justifyContent: .spaceBetween,
+                alignItems: .stretch,
+                children: [labelSpec, actionButtonNode]
+            )
+            return ASInsetLayoutSpec(
+                insets: input.insets,
+                child: spec
+            )
+        } else {
+            return ASInsetLayoutSpec(
+                insets: input.insets,
+                child: labelSpec
+            )
+        }
     }
 }

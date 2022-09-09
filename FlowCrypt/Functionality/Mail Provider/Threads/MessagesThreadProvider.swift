@@ -77,17 +77,7 @@ extension GmailService: MessagesThreadProvider {
                         return continuation.resume(throwing: AppErr.cast("GTLRGmail_Thread"))
                     }
 
-                    guard let threadMsg = thread.messages else {
-                        let empty = MessageThread(
-                            identifier: identifier,
-                            snippet: snippet,
-                            path: path,
-                            messages: []
-                        )
-                        return continuation.resume(returning: empty)
-                    }
-
-                    let messages = threadMsg.compactMap { try? Message(gmailMessage: $0) }
+                    let messages = thread.messages?.compactMap { try? Message(gmailMessage: $0) } ?? []
 
                     let result = MessageThread(
                         identifier: thread.identifier,

@@ -6,7 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 struct InboxRenderable: Equatable {
     enum WrappedType: Equatable {
@@ -14,7 +14,7 @@ struct InboxRenderable: Equatable {
         case thread(MessageThread)
     }
 
-    let title: String
+    let title: NSAttributedString
     let messageCount: Int
     let subtitle: String
     let dateString: String
@@ -64,7 +64,7 @@ extension InboxRenderable {
 
     init(thread: MessageThread, folderPath: String?) {
 
-        self.title = Self.messageTitle(for: thread, folderPath: folderPath)
+        self.title = Self.messageTitle(for: thread, folderPath: folderPath, isRead: thread.isRead)
 
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missing_subject".localized
@@ -82,28 +82,50 @@ extension InboxRenderable {
         self.updateBadge()
     }
 
-    private static func messageTitle(for thread: MessageThread, folderPath: String?) -> String {
+    private static func messageTitle(for thread: MessageThread, folderPath: String?, isRead: Bool) -> NSAttributedString {
+        let style: NSAttributedString.Style = isRead
+            ? .regular(17)
+            : .bold(17)
+
+        let textColor: UIColor = isRead
+            ? .lightGray
+            : .mainTextUnreadColor
+
         if folderPath == MessageLabel.sent.value || folderPath == MessageLabel.draft.value {
             let recipients = thread.messages
                 .flatMap(\.allRecipients)
                 .map(\.shortName)
                 .unique()
                 .joined(separator: ", ")
-            return "To: \(recipients)"
+            return "To: \(recipients)".attributed(style, color: textColor)
         } else {
-            return thread.messages
+            let hasDrafts = thread.messages.contains(where: { $0.isDraft })
+            let senderNames = thread.messages
                 .compactMap(\.sender?.shortName)
                 .unique()
                 .joined(separator: ",")
+                .attributed(style, color: textColor)
+
+            if hasDrafts {
+                let draftLabel = "compose_draft".localized.attributed(style, color: .red.withAlphaComponent(0.65))
+                let title = senderNames.mutable()
+                title.append(",".attributed(style, color: textColor))
+                title.append(draftLabel)
+                return title
+            } else {
+                return senderNames
+            }
         }
     }
 
-    private static func messageTitle(for message: Message) -> String {
+    private static func messageTitle(for message: Message) -> NSAttributedString {
         if message.labels.contains(.draft) {
             let recipients = message.allRecipients.map(\.shortName).joined(separator: ", ")
-            return recipients.isEmpty ? "" : "To: \(recipients)"
+            let title = recipients.isEmpty ? "" : "To: \(recipients)"
+            return title.attributed()
         } else {
-            return message.sender?.shortName ?? "message_unknown_sender".localized
+            let title = message.sender?.shortName ?? "message_unknown_sender".localized
+            return title.attributed()
         }
     }
 

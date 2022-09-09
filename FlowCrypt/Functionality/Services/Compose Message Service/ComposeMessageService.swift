@@ -8,7 +8,6 @@
 
 import FlowCryptUI
 import Foundation
-import GoogleAPIClientForREST_Gmail
 import FlowCryptCommon
 import UIKit
 
@@ -216,21 +215,21 @@ final class ComposeMessageService {
     }
 
     // MARK: - Drafts
-    private var draft: GTLRGmail_Draft?
-    func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
+    private var draftId: String?
+    func encryptAndSaveDraft(message: SendableMsg, threadId: String?, draftId: String?) async throws {
         do {
             let mime = try await core.composeEmail(
                 msg: message,
                 fmt: .encryptInline
             ).mimeEncoded
 
-            draft = try await draftGateway?.saveDraft(
+            self.draftId = try await draftGateway?.saveDraft(
                 input: MessageGatewayInput(
                     mime: mime,
                     threadId: threadId
                 ),
-                draft: draft
-            )
+                draftId: draftId
+            ).identifier
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }
@@ -267,7 +266,7 @@ final class ComposeMessageService {
             )
 
             // cleaning any draft saved/created/fetched during editing
-            if let draftId = draft?.identifier {
+            if let draftId = draftId {
                 await draftGateway?.deleteDraft(with: draftId)
             }
 

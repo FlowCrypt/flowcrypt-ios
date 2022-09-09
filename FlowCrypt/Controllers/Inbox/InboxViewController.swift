@@ -196,17 +196,19 @@ extension InboxViewController {
 // MARK: - Functionality
 extension InboxViewController {
     private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
-        if let provider = draftsListProvider, viewModel.isDrafts {
-            fetchAndRenderDrafts(batchContext, draftsProvider: provider)
+        if viewModel.isDrafts {
+            fetchAndRenderDrafts(batchContext)
         } else {
             fetchAndRenderEmailsOnly(batchContext)
         }
     }
 
-    private func fetchAndRenderDrafts(_ batchContext: ASBatchContext?, draftsProvider: DraftsListProvider) {
+    private func fetchAndRenderDrafts(_ batchContext: ASBatchContext?) {
+        guard let draftsListProvider = draftsListProvider else { return }
+
         Task {
             do {
-                let context = try await draftsProvider.fetchDrafts(
+                let context = try await draftsListProvider.fetchDrafts(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: numberOfInboxItemsToLoad,
@@ -237,7 +239,7 @@ extension InboxViewController {
             do {
                 if isSearch {
                     state = .searching
-                    await self.tableNode.reloadData()
+                    await tableNode.reloadData()
                 } else {
                     state = .fetching
                 }
@@ -248,7 +250,8 @@ extension InboxViewController {
                         count: numberOfInboxItemsToLoad,
                         searchQuery: getSearchQuery(),
                         pagination: currentMessagesListPagination()
-                    ), userEmail: appContext.user.email
+                    ),
+                    userEmail: appContext.user.email
                 )
                 state = .refresh
                 handleEndFetching(with: context, context: batchContext)
@@ -351,11 +354,7 @@ extension InboxViewController {
         shouldBeginFetch = false
         inboxInput = input.data
         if inboxInput.isEmpty {
-            if isSearch {
-                state = .searchEmpty
-            } else {
-                state = .empty
-            }
+            state = isSearch ? .searchEmpty : .empty
         } else {
             state = .fetched(input.pagination)
         }
@@ -416,7 +415,7 @@ extension InboxViewController {
             let viewController = try SearchViewController(
                 appContext: appContext,
                 viewModel: viewModel,
-                provider: self.inboxDataProvider,
+                provider: inboxDataProvider,
                 isSearch: true
             )
             navigationController?.pushViewController(viewController, animated: false)
@@ -549,14 +548,14 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     private func emptyInboxFolder() {
         Task {
             do {
-                self.showSpinner()
+                showSpinner()
                 try await self.messageOperationsProvider.emptyFolder(path: viewModel.path)
                 self.state = .empty
                 self.inboxInput = []
                 await tableNode.reloadData()
-                self.hideSpinner()
+                hideSpinner()
             } catch {
-                self.showAlert(message: error.errorMessage)
+                showAlert(message: error.errorMessage)
             }
         }
     }

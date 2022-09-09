@@ -122,7 +122,7 @@ struct ComposeViewDecorator {
             + "compose_quote_from".localizeWithArguments(date, time, from)
             + "\n"
 
-        let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
+        let message = " > " + info.text.replacingOccurrences(of: "\n", with: "\n > ")
 
         return (text + message).attributed(.regular(17))
     }

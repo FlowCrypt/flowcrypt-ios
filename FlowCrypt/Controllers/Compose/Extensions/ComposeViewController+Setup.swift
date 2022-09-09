@@ -50,28 +50,49 @@ extension ComposeViewController {
     }
 
     func fillDataFromInput() {
-        switch input.type {
-        case .draft(let info), .reply(let info), .forward(let info):
-            contextToSend.subject = info.subject
-            contextToSend.message = info.message
+        guard let info = input.type.info else { return }
 
-            for recipient in info.recipients {
-                add(recipient: recipient, type: .to)
-            }
+        contextToSend.subject = info.subject
 
-            for recipient in info.ccRecipients {
-                add(recipient: recipient, type: .cc)
-            }
+        for recipient in info.recipients {
+            add(recipient: recipient, type: .to)
+        }
 
-            for recipient in info.bccRecipients {
-                add(recipient: recipient, type: .bcc)
-            }
+        for recipient in info.ccRecipients {
+            add(recipient: recipient, type: .cc)
+        }
 
-            if info.ccRecipients.isNotEmpty || info.bccRecipients.isNotEmpty {
-                shouldShowAllRecipientTypes.toggle()
+        for recipient in info.bccRecipients {
+            add(recipient: recipient, type: .bcc)
+        }
+
+        if info.ccRecipients.isNotEmpty || info.bccRecipients.isNotEmpty {
+            shouldShowAllRecipientTypes.toggle()
+        }
+
+        if input.isPgp {
+            let message = Message(
+                identifier: .random,
+                date: info.sentDate,
+                sender: info.sender,
+                subject: info.subject,
+                size: nil,
+                labels: [],
+                attachmentIds: [],
+                body: .init(text: info.text, html: nil)
+            )
+            Task {
+                let processedMessage = try await messageService.decryptAndProcess(
+                    message: message,
+                    onlyLocalKeys: false,
+                    userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                )
+                contextToSend.message = processedMessage.text
+                reload(sections: [.compose])
             }
-        case .idle:
-            return
+        } else {
+            contextToSend.message = info.text
         }
     }
 

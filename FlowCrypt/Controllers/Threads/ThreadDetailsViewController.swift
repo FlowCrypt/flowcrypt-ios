@@ -34,6 +34,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
 
     private let appContext: AppContextWithUser
+    private let draftGateway: DraftGateway?
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
@@ -58,6 +59,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage
         )
         let mailProvider = try appContext.getRequiredMailProvider()
+        self.draftGateway = try mailProvider.draftGateway
         self.messageService = try messageService ?? MessageService(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
@@ -65,8 +67,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             messageProvider: try mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
-        let threadOperationsProvider = try mailProvider.threadOperationsProvider
-        self.threadOperationsProvider = threadOperationsProvider
+        self.threadOperationsProvider = try mailProvider.threadOperationsProvider
         self.messageOperationsProvider = try mailProvider.messageOperationsProvider
         self.trashFolderProvider = TrashFolderProvider(
             user: appContext.user,
@@ -302,13 +303,14 @@ extension ThreadDetailsViewController {
         let replyToMsgId = input.rawMessage.identifier.stringId
 
         let replyInfo = ComposeMessageInput.MessageQuoteInfo(
+            id: nil,
             recipients: recipients,
             ccRecipients: ccRecipients,
             bccRecipients: [],
             sender: input.rawMessage.sender,
             subject: [quoteType.subjectPrefix, subject].joined(),
             sentDate: input.rawMessage.date,
-            message: processedMessage.text,
+            text: processedMessage.text,
             threadId: threadId,
             replyToMsgId: replyToMsgId,
             inReplyTo: input.rawMessage.inReplyTo,
@@ -399,8 +401,8 @@ extension ThreadDetailsViewController {
         hideSpinner()
 
         switch error as? MessageServiceError {
-        case let .missingPassPhrase(message):
-            handleWrongPassPhrase(for: message, at: indexPath)
+        case .missingPassPhrase:
+            handleWrongPassPhrase(indexPath: indexPath)
         default:
             // TODO: - Ticket - Improve error handling for ThreadDetailsViewController
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
@@ -444,7 +446,7 @@ extension ThreadDetailsViewController {
         present(alertController, animated: true)
     }
 
-    private func handleWrongPassPhrase(_ passPhrase: String? = nil, for message: Message, at indexPath: IndexPath) {
+    private func handleWrongPassPhrase(_ passPhrase: String? = nil, indexPath: IndexPath) {
         let title = passPhrase == nil
             ? "setup_enter_pass_phrase".localized
             : "setup_wrong_pass_phrase_retry".localized
@@ -455,14 +457,14 @@ extension ThreadDetailsViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                self?.handlePassPhraseEntry(message: message, with: passPhrase, at: indexPath)
+                self?.handlePassPhraseEntry(passPhrase, indexPath: indexPath)
             }
         )
 
         present(alert, animated: true, completion: nil)
     }
 
-    private func handlePassPhraseEntry(message: Message, with passPhrase: String, at indexPath: IndexPath) {
+    private func handlePassPhraseEntry(_ passPhrase: String, indexPath: IndexPath) {
         presentedViewController?.dismiss(animated: true)
 
         handleFetchProgress(state: .decrypt)
@@ -473,18 +475,17 @@ extension ThreadDetailsViewController {
                     passPhrase,
                     userEmail: appContext.user.email
                 )
+                let message = input[indexPath.section - 1].rawMessage
                 if matched {
-                    let sender = input[indexPath.section - 1].rawMessage.sender
                     let processedMessage = try await messageService.decryptAndProcess(
                         message: message,
-                        sender: sender,
                         onlyLocalKeys: false,
                         userEmail: appContext.user.email,
                         isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                     )
                     handleReceived(message: processedMessage, at: indexPath)
                 } else {
-                    handleWrongPassPhrase(passPhrase, for: message, at: indexPath)
+                    handleWrongPassPhrase(passPhrase, indexPath: indexPath)
                 }
             } catch {
                 handleError(error, at: indexPath)
@@ -631,18 +632,26 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 )
             }
 
-            guard let processedMessage = message.processedMessage else {
-                return ASCellNode()
-            }
-
             if message.rawMessage.isDraft {
-                let draft = processedMessage.message.body.textWithoutThreadQuote
+                let messageData = message.processedMessage?.message ?? message.rawMessage
                 return LabelCellNode(
                     input: .init(
                         title: "compose_draft".localized.attributed(color: .red),
-                        text: draft.attributed(color: .secondaryLabel)
+                        text: messageData.body.textWithoutThreadQuote.attributed(color: .secondaryLabel),
+                        actionButtonImageName: "trash",
+                        action: { [weak self] in
+                            guard let id = messageData.draftIdentifier else { return }
+
+                            Task {
+                                await self?.draftGateway?.deleteDraft(with: id)
+                            }
+                        }
                     )
                 )
+            }
+
+            guard let processedMessage = message.processedMessage else {
+                return ASCellNode()
             }
 
             guard indexPath.row > 1 else {

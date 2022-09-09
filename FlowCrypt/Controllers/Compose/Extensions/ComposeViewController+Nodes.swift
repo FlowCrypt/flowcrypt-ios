@@ -163,7 +163,7 @@ extension ComposeViewController {
             }
         }
         .then {
-            let message = contextToSend.message ?? input.message ?? ""
+            let message = contextToSend.message ?? input.text ?? ""
             let attributedString = decorator.styledMessage(with: message)
             let mutableString = NSMutableAttributedString(attributedString: attributedString)
             let textNode = $0

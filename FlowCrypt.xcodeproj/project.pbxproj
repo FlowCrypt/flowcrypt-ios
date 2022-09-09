@@ -2338,7 +2338,6 @@
 			buildConfigurationList = C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */;
 			buildPhases = (
 				85C230714DC341D246864AD0 /* [CP] Check Pods Manifest.lock */,
-				D2324CAA2471D47B00FD1C6F /* Format code */,
 				D2324CA92471CED200FD1C6F /* SwiftLint */,
 				C132B9AC1EC2DBD800763715 /* Sources */,
 				C132B9AD1EC2DBD800763715 /* Frameworks */,
@@ -2656,24 +2655,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
-		};
-		D2324CAA2471D47B00FD1C6F /* Format code */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Format code";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cd BuildTools\nSDKROOT=(xcrun --sdk macosx --show-sdk-path)\n# swift package update\n# Uncomment this line temporarily to update the version used to the latest matching your BuildTools/Package.swift file\nswift run -c release swiftformat \"$SRCROOT\" --exclude appium,fastlane,Pods,vendor\n";
 		};
 		E531C3B50A9C90454C72F878 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -3591,7 +3572,7 @@
 				CODE_SIGN_ENTITLEMENTS = FlowCrypt/FlowCrypt.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6DZ6CC3YMY;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
