@@ -640,10 +640,11 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                         text: messageData.body.textWithoutThreadQuote.attributed(color: .secondaryLabel),
                         actionButtonImageName: "trash",
                         action: { [weak self] in
-                            guard let id = messageData.draftIdentifier else { return }
-
                             Task {
-                                await self?.draftGateway?.deleteDraft(with: id)
+                                try await self?.messageOperationsProvider.deleteMessage(
+                                    id: messageData.identifier,
+                                    from: nil
+                                )
                             }
                         }
                     )

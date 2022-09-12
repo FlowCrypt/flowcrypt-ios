@@ -33,7 +33,7 @@ extension GmailService: MessageGateway {
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                return continuation.resume(returning: ())
+                return continuation.resume()
             }
         }
     }

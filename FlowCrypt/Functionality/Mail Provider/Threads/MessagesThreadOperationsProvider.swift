@@ -35,7 +35,7 @@ extension GmailService: MessagesThreadOperationsProvider {
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                continuation.resume(returning: ())
+                return continuation.resume()
             }
         }
     }
@@ -61,8 +61,8 @@ extension GmailService: MessagesThreadOperationsProvider {
             for message in thread.messages {
                 taskGroup.addTask {
                     asRead
-                    ? try await self.markAsRead(message: message, folder: folder)
-                    : try await self.markAsUnread(message: message, folder: folder)
+                    ? try await self.markAsRead(id: message.identifier, folder: folder)
+                    : try await self.markAsUnread(id: message.identifier, folder: folder)
                 }
             }
 
@@ -100,7 +100,7 @@ extension GmailService: MessagesThreadOperationsProvider {
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                return continuation.resume(returning: ())
+                return continuation.resume()
             }
         }
     }

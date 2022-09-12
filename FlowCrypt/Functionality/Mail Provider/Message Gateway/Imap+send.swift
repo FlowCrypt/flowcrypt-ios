@@ -14,7 +14,7 @@ extension Imap: MessageGateway {
                         if let error = error {
                             return continuation.resume(throwing: error)
                         }
-                        return continuation.resume(returning: ())
+                        return continuation.resume()
                     }
             } catch {
                 return continuation.resume(throwing: ImapError.noSession)
