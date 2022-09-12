@@ -12,25 +12,29 @@ import FlowCryptUI
 // MARK: - Setup UI
 extension ComposeViewController {
     func setupNavigationBar() {
+        let deleteButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "trash")
+        ) { [weak self] in
+            // TODO:
+        }
+        let helpButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "questionmark.circle")
+        ) { [weak self] in
+            self?.handleInfoTap()
+        }
+        let attachmentButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "paperclip")
+        ) { [weak self] in
+            self?.handleAttachTap()
+        }
+        let sendButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "paperplane"),
+            accessibilityId: "aid-compose-send"
+        ) { [weak self] in
+            self?.handleSendTap()
+        }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
-            with: [
-                NavigationBarItemsView.Input(
-                    image: UIImage(systemName: "questionmark.circle")
-                ) { [weak self] in
-                    self?.handleInfoTap()
-                },
-                NavigationBarItemsView.Input(
-                    image: UIImage(systemName: "paperclip")
-                ) { [weak self] in
-                    self?.handleAttachTap()
-                },
-                NavigationBarItemsView.Input(
-                    image: UIImage(systemName: "paperplane"),
-                    accessibilityId: "aid-compose-send"
-                ) { [weak self] in
-                    self?.handleSendTap()
-                }
-            ]
+            with: [deleteButton, helpButton, attachmentButton, sendButton]
         )
     }
 

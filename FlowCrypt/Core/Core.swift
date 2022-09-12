@@ -183,7 +183,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
         let blocks = parsed.data
             .split(separator: 10) // newline separated block jsons, one json per line
-            .map { data in
+            .map { data -> MsgBlock in
                 guard let block = try? data.decodeJson(as: MsgBlock.self) else {
                     let content = String(data: data, encoding: .utf8) ?? "(utf err)"
                     return MsgBlock.blockParseErr(with: content)

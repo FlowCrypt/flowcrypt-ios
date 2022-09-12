@@ -246,4 +246,3 @@ extension ComposeViewController: FilesManagerPresenter {}
 
 // update draft, don't create a new one each time
 // decrypt draft body
-// add delete button for drafts in compose view
