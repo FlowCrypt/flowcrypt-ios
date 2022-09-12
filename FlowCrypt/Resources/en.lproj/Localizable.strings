@@ -404,6 +404,8 @@
 
 "message_permanently_delete" = "You're about to permanently delete a message";
 "message_permanently_delete_title" = "Are you sure?";
+"draft_delete_confirmation" = "Delete draft?";
+
 
 "contacts_fingerprint" = "Fingerprint:";
 "contacts_created" = "Created:";

@@ -84,10 +84,11 @@ public extension UIViewController {
     @MainActor
     func showAlertWithAction(
         title: String?,
-        message: String,
+        message: String?,
         cancelButtonTitle: String = "cancel".localized,
         actionButtonTitle: String,
         actionAccessibilityIdentifier: String? = nil,
+        actionStyle: UIAlertAction.Style = .default,
         onAction: ((UIAlertAction) -> Void)?,
         onCancel: ((UIAlertAction) -> Void)? = nil
     ) {
@@ -100,7 +101,7 @@ public extension UIViewController {
         )
         let action = UIAlertAction(
             title: actionButtonTitle,
-            style: .default,
+            style: actionStyle,
             handler: onAction
         )
         action.accessibilityIdentifier = actionAccessibilityIdentifier
@@ -109,6 +110,7 @@ public extension UIViewController {
             style: .cancel,
             handler: onCancel
         )
+        cancel.accessibilityIdentifier = "aid-cancel-button"
         alert.addAction(action)
         alert.addAction(cancel)
         present(alert, animated: true, completion: nil)

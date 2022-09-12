@@ -126,29 +126,19 @@ extension MessageActionsHandler where Self: UIViewController {
 
     private func deleteMessage(trashPath: String) {
         guard currentFolderPath.caseInsensitiveCompare(trashPath) != .orderedSame else {
-            awaitUserDeleteConfirmation { [weak self] in
-                self?.permanentlyDelete()
-            }
+            showAlertWithAction(
+                title: "message_permanently_delete_title".localized,
+                message: "message_permanently_delete".localized,
+                actionButtonTitle: "delete".localized,
+                actionStyle: .destructive,
+                onAction: { [weak self] _ in
+                    self?.permanentlyDelete()
+                }
+            )
+
             return
         }
 
         moveToTrash(with: trashPath)
-    }
-
-    private func awaitUserDeleteConfirmation(_ completion: @escaping () -> Void) {
-        let alert = UIAlertController(
-            title: "message_permanently_delete_title".localized,
-            message: "message_permanently_delete".localized,
-            preferredStyle: .alert
-        )
-        alert.addAction(
-            UIAlertAction(title: "cancel".localized, style: .default)
-        )
-        alert.addAction(
-            UIAlertAction(title: "delete".localized, style: .destructive) { _ in
-                completion()
-            }
-        )
-        present(alert, animated: true, completion: nil)
     }
 }

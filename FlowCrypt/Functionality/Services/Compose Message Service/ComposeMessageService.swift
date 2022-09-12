@@ -151,7 +151,8 @@ final class ComposeMessageService {
         let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
         let validPubKeys = try validate(
             recipients: recipientsWithPubKeys,
-            hasMessagePassword: contextToSend.hasMessagePassword
+            hasMessagePassword: contextToSend.hasMessagePassword,
+            ignoreErrors: isDraft
         )
 
         let signingPrv = try await prepareSigningKey(senderEmail: contextToSend.sender)
@@ -191,7 +192,8 @@ final class ComposeMessageService {
 
     private func validate(
         recipients: [RecipientWithSortedPubKeys],
-        hasMessagePassword: Bool
+        hasMessagePassword: Bool,
+        ignoreErrors: Bool = false
     ) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.contains(where: { $0.keyState == keyState })
@@ -200,15 +202,17 @@ final class ComposeMessageService {
         logger.logDebug("validate recipients: \(recipients)")
         logger.logDebug("validate recipient keyStates: \(recipients.map(\.keyState))")
 
-        guard hasMessagePassword || !contains(keyState: .empty) else {
-            throw MessageValidationError.noPubRecipients
-        }
+        if !ignoreErrors {
+            guard hasMessagePassword || !contains(keyState: .empty) else {
+                throw MessageValidationError.noPubRecipients
+            }
 
-        guard !contains(keyState: .expired) else {
-            throw MessageValidationError.expiredKeyRecipients
-        }
-        guard !contains(keyState: .revoked) else {
-            throw MessageValidationError.revokedKeyRecipients
+            guard !contains(keyState: .expired) else {
+                throw MessageValidationError.expiredKeyRecipients
+            }
+            guard !contains(keyState: .revoked) else {
+                throw MessageValidationError.revokedKeyRecipients
+            }
         }
 
         return recipients.flatMap(\.activePubKeys).map(\.armored)

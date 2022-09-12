@@ -65,24 +65,13 @@ extension ComposeViewController {
     }
 
     private func showNoAccessToCameraAlert() {
-        let alert = UIAlertController(
+        showAlertWithAction(
             title: "files_picking_no_camera_access_error_title".localized,
             message: "files_picking_no_camera_access_error_message".localized,
-            preferredStyle: .alert
+            actionButtonTitle: "settings".localized,
+            onAction: { _ in
+                UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+            }
         )
-        let okAction = UIAlertAction(
-            title: "ok".localized,
-            style: .cancel
-        ) { _ in }
-        let settingsAction = UIAlertAction(
-            title: "settings".localized,
-            style: .default
-        ) { _ in
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
-        }
-        alert.addAction(okAction)
-        alert.addAction(settingsAction)
-
-        present(alert, animated: true, completion: nil)
     }
 }

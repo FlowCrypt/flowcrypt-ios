@@ -7,11 +7,10 @@
 //
 
 @testable import FlowCrypt
-import Foundation
 import GoogleAPIClientForREST_Gmail
 
 class DraftGatewayMock: DraftGateway {
-    func saveDraft(input: MessageGatewayInput, draft: GTLRGmail_Draft?) async throws -> GTLRGmail_Draft {
+    func saveDraft(input: MessageGatewayInput, draftId: String?) async throws -> GTLRGmail_Draft {
         return GTLRGmail_Draft()
     }
 

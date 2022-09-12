@@ -421,29 +421,20 @@ extension ThreadDetailsViewController {
     }
 
     private func handleAttachmentDecryptError(_ error: Error, at indexPath: IndexPath) {
-        hideSpinner()
         let message = "message_attachment_corrupted_file".localized
 
-        let alertController = UIAlertController(
+        showAlertWithAction(
             title: "message_attachment_decrypt_error".localized,
             message: "\n\(error.errorMessage)\n\n\(message)",
-            preferredStyle: .alert
-        )
-
-        let downloadAction = UIAlertAction(title: "download".localized, style: .default) { [weak self] _ in
-            guard let attachment = self?.input[indexPath.section - 1].processedMessage?.attachments[indexPath.row - 2] else {
-                return
+            actionButtonTitle: "download".localized,
+            actionAccessibilityIdentifier: "aid-download-button",
+            onAction: { [weak self] _ in
+                guard let attachment = self?.input[indexPath.section - 1].processedMessage?.attachments[indexPath.row - 2] else {
+                    return
+                }
+                self?.show(attachment: attachment)
             }
-            self?.show(attachment: attachment)
-        }
-        downloadAction.accessibilityIdentifier = "aid-download-button"
-        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
-        cancelAction.accessibilityIdentifier = "aid-cancel-button"
-
-        alertController.addAction(downloadAction)
-        alertController.addAction(cancelAction)
-
-        present(alertController, animated: true)
+        )
     }
 
     private func handleWrongPassPhrase(_ passPhrase: String? = nil, indexPath: IndexPath) {
@@ -633,22 +624,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             if message.rawMessage.isDraft {
-                let messageData = message.processedMessage?.message ?? message.rawMessage
-                return LabelCellNode(
-                    input: .init(
-                        title: "compose_draft".localized.attributed(color: .red),
-                        text: messageData.body.textWithoutThreadQuote.attributed(color: .secondaryLabel),
-                        actionButtonImageName: "trash",
-                        action: { [weak self] in
-                            Task {
-                                try await self?.messageOperationsProvider.deleteMessage(
-                                    id: messageData.identifier,
-                                    from: nil
-                                )
-                            }
-                        }
-                    )
-                )
+                return self.draftNode(messageIndex: messageIndex)
             }
 
             guard let processedMessage = message.processedMessage else {
@@ -691,6 +667,40 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         section > 0 && section < input.count ? 1 / UIScreen.main.nativeScale : 0
+    }
+
+    private func draftNode(messageIndex: Int) -> ASCellNode {
+        let message = input[messageIndex]
+        let messageData = message.processedMessage?.message ?? message.rawMessage
+        return LabelCellNode(
+            input: .init(
+                title: "compose_draft".localized.attributed(color: .red),
+                text: messageData.body.textWithoutThreadQuote.attributed(color: .secondaryLabel),
+                actionButtonImageName: "trash",
+                action: { [weak self] in
+                    self?.deleteDraft(id: messageData.identifier, at: messageIndex)
+                }
+            )
+        )
+    }
+
+    private func deleteDraft(id: Identifier, at index: Int) {
+        showAlertWithAction(
+            title: "draft_delete_confirmation".localized,
+            message: nil,
+            actionButtonTitle: "delete".localized,
+            actionStyle: .destructive,
+            onAction: { [weak self] _ in
+                Task {
+                    try await self?.messageOperationsProvider.deleteMessage(
+                        id: id,
+                        from: nil
+                    )
+                    self?.input.remove(at: index)
+                    self?.node.deleteSections([index + 1], with: .automatic)
+                }
+            }
+        )
     }
 
     private func dividerView() -> UIView {

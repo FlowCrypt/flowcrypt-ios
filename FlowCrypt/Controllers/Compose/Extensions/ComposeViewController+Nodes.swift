@@ -28,20 +28,20 @@ extension ComposeViewController {
     func showRecipientLabelIfNecessary() {
         let isRecipientLoading = self.contextToSend.recipients.filter { $0.state == decorator.recipientIdleState }.isNotEmpty
         guard !isRecipientLoading,
-              self.contextToSend.recipients.isNotEmpty,
-              self.userTappedOutSideRecipientsArea else {
+              contextToSend.recipients.isNotEmpty,
+              userTappedOutSideRecipientsArea else {
             return
         }
-        if !self.shouldShowEmailRecipientsLabel {
-            self.shouldShowEmailRecipientsLabel = true
-            self.userTappedOutSideRecipientsArea = false
-            self.reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+        if !shouldShowEmailRecipientsLabel {
+            shouldShowEmailRecipientsLabel = true
+            userTappedOutSideRecipientsArea = false
+            reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
         }
     }
 
     func hideRecipientLabel() {
-        self.shouldShowEmailRecipientsLabel = false
-        self.reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+        shouldShowEmailRecipientsLabel = false
+        reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
     }
 
     func setupSubjectNode() {
@@ -163,7 +163,7 @@ extension ComposeViewController {
             }
         }
         .then {
-            let message = contextToSend.message ?? input.text ?? ""
+            let message = contextToSend.message ?? ""
             let attributedString = decorator.styledMessage(with: message)
             let mutableString = NSMutableAttributedString(attributedString: attributedString)
             let textNode = $0

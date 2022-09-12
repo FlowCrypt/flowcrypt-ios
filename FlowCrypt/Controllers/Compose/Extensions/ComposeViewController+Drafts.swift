@@ -37,7 +37,6 @@ extension ComposeViewController {
         }
     }
 
-    // TODO: Better naming
     func saveDraftIfNeeded(isForceSave: Bool = false) {
         guard isForceSave || shouldSaveDraft() else { return }
 
@@ -48,6 +47,7 @@ extension ComposeViewController {
                     contextToSend: contextToSend,
                     isDraft: true
                 )
+
                 try await composeMessageService.encryptAndSaveDraft(
                     message: sendableMsg,
                     threadId: input.threadId,
