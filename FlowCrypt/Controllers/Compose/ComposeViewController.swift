@@ -92,6 +92,8 @@ final class ComposeViewController: TableNodeViewController {
     var composeSubjectNode: ASCellNode!
     var sendAsList: [SendAsModel] = []
 
+    let onDelete: ((Identifier) -> Void)?
+
     init(
         appContext: AppContextWithUser,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
@@ -100,7 +102,8 @@ final class ComposeViewController: TableNodeViewController {
         messageService: MessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
-        keyMethods: KeyMethodsType = KeyMethods()
+        keyMethods: KeyMethodsType = KeyMethods(),
+        onDelete: ((Identifier) -> Void)? = nil
     ) async throws {
         self.appContext = appContext
         self.input = input
@@ -116,11 +119,17 @@ final class ComposeViewController: TableNodeViewController {
             shouldRunWarmupQuery: true
         )
         let draftGateway = try appContext.getRequiredMailProvider().draftGateway
-        self.composeMessageService = composeMessageService ?? ComposeMessageService(
-            appContext: appContext,
-            keyMethods: keyMethods,
-            draftGateway: draftGateway
-        )
+
+        if let composeMessageService = composeMessageService {
+            self.composeMessageService = composeMessageService
+        } else {
+            self.composeMessageService = try await ComposeMessageService(
+                appContext: appContext,
+                keyMethods: keyMethods,
+                draftGateway: draftGateway
+            )
+        }
+
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.pubLookup = PubLookup(
@@ -148,6 +157,7 @@ final class ComposeViewController: TableNodeViewController {
             subject: input.subject,
             attachments: input.attachments
         )
+        self.onDelete = onDelete
         super.init(node: TableNode())
     }
 

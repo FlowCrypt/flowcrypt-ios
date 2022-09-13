@@ -30,6 +30,32 @@ extension ComposeViewController {
         }
     }
 
+    func handleTrashTap() {
+        showAlertWithAction(
+            title: "draft_delete_confirmation".localized,
+            message: nil,
+            actionButtonTitle: "delete".localized,
+            actionStyle: .destructive,
+            onAction: { [weak self] _ in
+                guard let self = self else { return }
+                Task {
+                    do {
+                        let messageId = self.input.type.info?.id
+                        try await self.composeMessageService.deleteDraft(messageId: messageId)
+
+                        if let messageId = messageId {
+                            self.onDelete?(Identifier(stringId: messageId))
+                        }
+
+                        self.navigationController?.popViewController(animated: true)
+                    } catch {
+                        self.handle(error: error)
+                    }
+                }
+            }
+        )
+    }
+
     @objc func handleTableTap() {
         if case .searchEmails = state,
            let selectedRecipientType = selectedRecipientType,

@@ -26,6 +26,7 @@ final class ComposeMessageService {
     private let localContactsProvider: LocalContactsProviderType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
+    private let messageOperationsProvider: MessageOperationsProvider
     private lazy var logger = Logger.nested(Self.self)
 
     private struct ReplyInfo: Encodable {
@@ -43,12 +44,13 @@ final class ComposeMessageService {
         draftGateway: DraftGateway? = nil,
         core: CoreComposeMessageType & KeyParser = Core.shared,
         localContactsProvider: LocalContactsProviderType? = nil
-    ) {
+    ) async throws {
         self.appContext = appContext
         self.keyMethods = keyMethods
         self.draftGateway = draftGateway
         self.core = core
         self.localContactsProvider = localContactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
+        self.messageOperationsProvider = try await appContext.getRequiredMailProvider().messageOperationsProvider
     }
 
     private var onStateChanged: ((State) -> Void)?
@@ -239,6 +241,15 @@ final class ComposeMessageService {
         }
     }
 
+    func deleteDraft(messageId: String?) async throws {
+        if let draftId = draftId {
+            try await draftGateway?.deleteDraft(with: draftId)
+        } else if let messageId = messageId {
+            let id = Identifier(stringId: messageId)
+            try await messageOperationsProvider.deleteMessage(id: id, from: nil)
+        }
+    }
+
     // MARK: - Encrypt and Send
     func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
         do {
@@ -271,7 +282,7 @@ final class ComposeMessageService {
 
             // cleaning any draft saved/created/fetched during editing
             if let draftId = draftId {
-                await draftGateway?.deleteDraft(with: draftId)
+                try await draftGateway?.deleteDraft(with: draftId)
             }
 
             onStateChanged?(.messageSent)

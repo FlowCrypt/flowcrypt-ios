@@ -122,7 +122,7 @@ extension InboxRenderable {
         if message.labels.contains(.draft) {
             let recipients = message.allRecipients.map(\.shortName).joined(separator: ", ")
             let title = recipients.isEmpty ? "" : "To: \(recipients)"
-            return title.attributed()
+            return title.attributed(.regular(17), color: .lightGray)
         } else {
             let title = message.sender?.shortName ?? "message_unknown_sender".localized
             return title.attributed()

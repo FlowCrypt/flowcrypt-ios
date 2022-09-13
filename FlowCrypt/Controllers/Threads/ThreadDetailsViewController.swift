@@ -163,7 +163,15 @@ extension ThreadDetailsViewController {
 
                 let controller = try await ComposeViewController(
                     appContext: appContext,
-                    input: .init(type: .draft(draftInfo))
+                    input: .init(type: .draft(draftInfo)),
+                    onDelete: { [weak self] identifier in
+                        guard let self = self,
+                              let index = self.input.firstIndex(where: { $0.rawMessage.identifier == identifier })
+                        else { return }
+
+                        self.input.remove(at: index)
+                        self.node.deleteSections([index + 1], with: .automatic)
+                    }
                 )
                 navigationController?.pushViewController(controller, animated: true)
             } catch {
@@ -528,8 +536,8 @@ extension ThreadDetailsViewController: MessageActionsHandler {
         navigationController?.popViewController(animated: true)
     }
 
-    private func handleMessageAction(error: Error) {
-        logger.logError("Error mark as read \(error)")
+    private func handleMessageAction(error: Error, action: MessageAction) {
+        logger.logError("\(action.error ?? "Error: ") \(error)")
         hideSpinner()
     }
 
@@ -582,7 +590,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
                 handleSuccessfulMessage(action: action)
             } catch {
-                handleMessageAction(error: error)
+                handleMessageAction(error: error, action: action)
             }
         }
     }
@@ -718,7 +726,7 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         logger.logInfo("Back button. Messages are all read")
         onComplete(
-            MessageAction.markAsRead(true),
+            .markAsRead(true),
             .init(thread: thread, folderPath: currentFolderPath)
         )
         navigationController?.popViewController(animated: true)

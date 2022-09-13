@@ -15,7 +15,7 @@ extension ComposeViewController {
         let deleteButton = NavigationBarItemsView.Input(
             image: UIImage(systemName: "trash")
         ) { [weak self] in
-            // TODO:
+            self?.handleTrashTap()
         }
         let helpButton = NavigationBarItemsView.Input(
             image: UIImage(systemName: "questionmark.circle")

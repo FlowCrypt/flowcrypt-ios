@@ -33,10 +33,13 @@ extension GmailService: DraftGateway {
         }
     }
 
-    func deleteDraft(with identifier: String) async {
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+    func deleteDraft(with identifier: String) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let query = GTLRGmailQuery_UsersDraftsDelete.query(withUserId: .me, identifier: identifier)
-            gmailService.executeQuery(query) { _, _, _ in
+            gmailService.executeQuery(query) { _, _, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
                 return continuation.resume()
             }
         }

@@ -179,7 +179,6 @@
 		9F3861A227A18AAF00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A127A18AAF00851419 /* .swiftformat */; };
 		9F3861A427A18ABA00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A327A18ABA00851419 /* .swiftformat */; };
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
-		9F3EF33123B1785600FA0CEF /* MsgListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF33023B1785600FA0CEF /* MsgListViewController.swift */; };
 		9F4163B8265ED61C00106194 /* SetupInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */; };
 		9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163E5266520B600106194 /* CommonNodesInputs.swift */; };
 		9F416428266575DC00106194 /* BackupServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F416427266575DC00106194 /* BackupServiceType.swift */; };
@@ -655,7 +654,6 @@
 		9F3861A327A18ABA00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
 		9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelper.swift; sourceTree = "<group>"; };
 		9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelperTest.swift; sourceTree = "<group>"; };
-		9F3EF33023B1785600FA0CEF /* MsgListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MsgListViewController.swift; sourceTree = "<group>"; };
 		9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupInitialViewController.swift; sourceTree = "<group>"; };
 		9F4163E5266520B600106194 /* CommonNodesInputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonNodesInputs.swift; sourceTree = "<group>"; };
 		9F416427266575DC00106194 /* BackupServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceType.swift; sourceTree = "<group>"; };
@@ -1918,7 +1916,6 @@
 				04B4728F1ECE29F600B8266F /* Compose */,
 				D29AFFF02409300600C1387D /* Search */,
 				5A39F42E239EC32B001F4607 /* Settings */,
-				D29A0001240C137700C1387D /* MessageList Extension */,
 				9F778E7F271620AF001D4B21 /* Threads */,
 			);
 			path = Controllers;
@@ -2102,14 +2099,6 @@
 				040CF0D92809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		D29A0001240C137700C1387D /* MessageList Extension */ = {
-			isa = PBXGroup;
-			children = (
-				9F3EF33023B1785600FA0CEF /* MsgListViewController.swift */,
-			);
-			path = "MessageList Extension";
 			sourceTree = "<group>";
 		};
 		D29A0002240C140500C1387D /* Key Detail Info */ = {
@@ -2831,7 +2820,6 @@
 				04722B45281ABD2C00D0242F /* EKMVcHelper.swift in Sources */,
 				9F6F3BEF26ADF5DE005BD9C6 /* ComposeMessageError.swift in Sources */,
 				5ADEDCAF23A3EA9E00EC495E /* KeySettingsViewDecorator.swift in Sources */,
-				9F3EF33123B1785600FA0CEF /* MsgListViewController.swift in Sources */,
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
 				9F5C2A92257E94DF00DE9B4B /* Imap+MessageOperations.swift in Sources */,
 				D27B911F24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift in Sources */,
