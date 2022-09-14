@@ -116,6 +116,7 @@
 		51B7421B27F318D300E702C8 /* XCTestCaseExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B7421A27F318D300E702C8 /* XCTestCaseExtension.swift */; };
 		51B9EE6F27567B520080B2D5 /* MessageRecipientsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */; };
 		51C0C1EF271982A1000C9738 /* MailCore in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1EE271982A1000C9738 /* MailCore */; };
+		51C0C63828D1E42A003C540E /* ComposeViewController+ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C0C63728D1E42A003C540E /* ComposeViewController+ErrorHandling.swift */; };
 		51DA5BD62721AB07001C4359 /* PubKeyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD52721AB07001C4359 /* PubKeyState.swift */; };
 		51DA5BDA2722C82E001C4359 /* RecipientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD92722C82E001C4359 /* RecipientTests.swift */; };
 		51DAD9BD273E7DD20076CBA7 /* BadgeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */; };
@@ -583,6 +584,7 @@
 		51B4AE5227144E590001F33B /* PubKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubKey.swift; sourceTree = "<group>"; };
 		51B7421A27F318D300E702C8 /* XCTestCaseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestCaseExtension.swift; sourceTree = "<group>"; };
 		51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRecipientsNode.swift; sourceTree = "<group>"; };
+		51C0C63728D1E42A003C540E /* ComposeViewController+ErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+ErrorHandling.swift"; sourceTree = "<group>"; };
 		51DA5BD52721AB07001C4359 /* PubKeyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubKeyState.swift; sourceTree = "<group>"; };
 		51DA5BD92722C82E001C4359 /* RecipientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientTests.swift; sourceTree = "<group>"; };
 		51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeNode.swift; sourceTree = "<group>"; };
@@ -925,20 +927,21 @@
 		049E607227FDBCC30089EE2A /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				049E606C27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift */,
 				049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */,
-				049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */,
-				049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */,
-				049E605E27FDB8500089EE2A /* ComposeViewController+MessageSend.swift */,
-				049E606027FDB9370089EE2A /* ComposeViewController+Setup.swift */,
+				51FC336028C236770098313D /* ComposeViewController+Contacts.swift */,
+				049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */,
+				51C0C63728D1E42A003C540E /* ComposeViewController+ErrorHandling.swift */,
 				049E606227FDB9C70089EE2A /* ComposeViewController+Keyboard.swift */,
-				049E606427FDBA9F0089EE2A /* ComposeViewController+State.swift */,
+				049E605E27FDB8500089EE2A /* ComposeViewController+MessageSend.swift */,
+				049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */,
+				049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */,
 				049E606627FDBAEF0089EE2A /* ComposeViewController+RecipientInput.swift */,
 				049E606827FDBB2D0089EE2A /* ComposeViewController+RecipientPopup.swift */,
-				049E606C27FDBB5B0089EE2A /* ComposeViewController+ActionHandling.swift */,
-				049E606E27FDBBD50089EE2A /* ComposeViewController+Picker.swift */,
-				049E607027FDBC690089EE2A /* ComposeViewController+Drafts.swift */,
+				049E606027FDB9370089EE2A /* ComposeViewController+Setup.swift */,
+				049E606427FDBA9F0089EE2A /* ComposeViewController+State.swift */,
+				049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */,
 				049E607327FDBDBE0089EE2A /* ComposeViewController+TapActions.swift */,
-				51FC336028C236770098313D /* ComposeViewController+Contacts.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -959,10 +962,10 @@
 			isa = PBXGroup;
 			children = (
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
-				049E607227FDBCC30089EE2A /* Extensions */,
 				D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */,
 				9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */,
 				042B140127F596C70018BDC4 /* ComposeRecipientPopupViewController.swift */,
+				049E607227FDBCC30089EE2A /* Extensions */,
 			);
 			path = Compose;
 			sourceTree = "<group>";
@@ -2838,6 +2841,7 @@
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
 				049E606327FDB9C70089EE2A /* ComposeViewController+Keyboard.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
+				51C0C63828D1E42A003C540E /* ComposeViewController+ErrorHandling.swift in Sources */,
 				5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */,
 				A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */,
 				9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */,

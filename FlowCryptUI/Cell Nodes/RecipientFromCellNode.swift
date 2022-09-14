@@ -7,7 +7,6 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptCommon
 
 public final class RecipientFromCellNode: CellNode {
     private enum Constants {

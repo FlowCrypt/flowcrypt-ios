@@ -322,6 +322,7 @@ extension ThreadDetailsViewController {
             threadId: threadId,
             replyToMsgId: replyToMsgId,
             inReplyTo: input.rawMessage.inReplyTo,
+            draftIdentifier: nil,
             attachments: attachments
         )
 

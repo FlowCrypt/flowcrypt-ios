@@ -65,7 +65,7 @@ final class ComposeMessageService {
             throw ComposeMessageError.noKeysFoundForSign(keys.count, senderEmail)
         }
         if signingKey.passphrase == nil {
-            throw ComposeMessageError.promptUserToEnterPassPhraseForSigningKey(signingKey)
+            throw ComposeMessageError.missingPassPhrase(signingKey)
         }
         return signingKey
     }

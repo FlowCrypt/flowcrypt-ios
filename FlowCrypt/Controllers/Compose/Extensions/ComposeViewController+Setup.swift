@@ -54,7 +54,10 @@ extension ComposeViewController {
     }
 
     func fillDataFromInput() {
-        guard let info = input.type.info else { return }
+        guard let info = input.type.info else {
+            didFinishSetup = true
+            return
+        }
 
         contextToSend.subject = info.subject
 
@@ -75,6 +78,8 @@ extension ComposeViewController {
         }
 
         if input.isPgp {
+            // showSpinner("processing_title".localized)
+
             let message = Message(
                 identifier: .random,
                 date: info.sentDate,
@@ -86,22 +91,34 @@ extension ComposeViewController {
                 body: .init(text: info.text, html: nil)
             )
             Task {
-                let processedMessage = try await messageService.decryptAndProcess(
-                    message: message,
-                    onlyLocalKeys: false,
-                    userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                )
-                contextToSend.message = processedMessage.text
-                reload(sections: [.compose])
+                do {
+                    let processedMessage = try await messageService.decryptAndProcess(
+                        message: message,
+                        onlyLocalKeys: false,
+                        userEmail: appContext.user.email,
+                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    )
+                    contextToSend.message = processedMessage.text
+                    setupTextNode()
+                    reload(sections: [.compose])
+                    didFinishSetup = true
+                } catch {
+                    if case .missingPassPhrase(let keyPair) = error as? MessageServiceError, let keyPair = keyPair {
+                        requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
+                        return
+                    } else {
+                        handle(error: error)
+                    }
+                }
             }
         } else {
             contextToSend.message = info.text
+            reload(sections: Section.recipientsSections)
+            didFinishSetup = true
         }
     }
 
     func setupNodes() {
-        setupTextNode()
         setupSubjectNode()
     }
 }
@@ -123,5 +140,25 @@ extension ComposeViewController {
                 self?.searchEmail(with: $0)
             })
             .store(in: &cancellable)
+    }
+}
+
+// MARK: - NavigationChildController
+extension ComposeViewController: NavigationChildController {
+    func handleBackButtonTap() {
+        // TODO:
+        navigationController?.popViewController(animated: true)
+//        if let keyPair = signingKeyWithMissingPassphrase {
+//            requestMissingPassPhraseWithModal(for: keyPair, isDraft: true, withDiscard: true)
+//        } else {
+//            saveDraftIfNeeded(withAlert: true) { [weak self] error in
+//                guard let self = self else { return }
+//                if case .missingPassphrase(let keyPair) = error as? ComposeMessageError {
+//                    self.requestMissingPassPhraseWithModal(for: keyPair)
+//                } else {
+//                    self.navigationController?.popViewController(animated: true)
+//                }
+//            }
+//        }
     }
 }

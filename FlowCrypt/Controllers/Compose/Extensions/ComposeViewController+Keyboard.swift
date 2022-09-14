@@ -45,7 +45,7 @@ extension ComposeViewController {
             object: nil)
     }
 
-    func adjustForKeyboard(height: CGFloat) {
+    private func adjustForKeyboard(height: CGFloat) {
         node.contentInset.bottom = height + 8
 
         guard let textView = node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first?.textView.textView,

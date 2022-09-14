@@ -23,6 +23,7 @@ struct ComposeMessageInput: Equatable {
         let threadId: String?
         let replyToMsgId: String?
         let inReplyTo: String?
+        let draftIdentifier: String?
         let attachments: [MessageAttachment]
     }
 
@@ -34,15 +35,6 @@ struct ComposeMessageInput: Equatable {
     }
 
     let type: InputType
-
-    var draftId: String? {
-        switch type {
-        case .draft(let info):
-            return info.id
-        case .forward, .idle, .reply:
-            return nil
-        }
-    }
 
     var subject: String? {
         type.info?.subject
@@ -131,6 +123,7 @@ extension ComposeMessageInput.MessageQuoteInfo {
         self.threadId = message.threadId
         self.replyToMsgId = nil // TODO: draft.rawMessage.replyToMsgId,
         self.inReplyTo = message.inReplyTo
+        self.draftIdentifier = message.draftIdentifier
         self.attachments = processed?.attachments ?? message.attachments
     }
 }

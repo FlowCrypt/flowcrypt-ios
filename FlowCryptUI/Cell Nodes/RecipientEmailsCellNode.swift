@@ -7,7 +7,6 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptCommon
 
 public final class RecipientEmailsCellNode: CellNode {
     public typealias RecipientTap = (RecipientEmailTapAction) -> Void

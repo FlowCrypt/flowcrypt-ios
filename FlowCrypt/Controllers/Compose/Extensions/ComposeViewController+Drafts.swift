@@ -21,40 +21,44 @@ extension ComposeViewController {
         saveDraftIfNeeded()
     }
 
-    private func shouldSaveDraft() -> Bool {
+    private func createDraft() -> ComposedDraft? {
         let newDraft = ComposedDraft(
             input: input,
             contextToSend: contextToSend
         )
 
         if let existingDraft = composedLatestDraft {
-            let draftHasChanges = newDraft != existingDraft
-            self.composedLatestDraft = newDraft
-            return draftHasChanges
+            return newDraft != existingDraft ? newDraft : nil
         } else { // save initial draft
             composedLatestDraft = newDraft
-            return false
+            return nil
         }
     }
 
-    func saveDraftIfNeeded(isForceSave: Bool = false) {
-        guard isForceSave || shouldSaveDraft() else { return }
+    func saveDraftIfNeeded(withAlert: Bool = false, completion: ((Error?) -> Void)? = nil) {
+        guard let draft = createDraft() else {
+            completion?(nil)
+            return
+        }
 
         Task {
             do {
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
-                    input: input,
-                    contextToSend: contextToSend,
+                    input: draft.input,
+                    contextToSend: draft.contextToSend,
                     isDraft: true
                 )
 
                 try await composeMessageService.encryptAndSaveDraft(
                     message: sendableMsg,
-                    threadId: input.threadId,
-                    draftId: input.draftId
+                    threadId: draft.input.threadId,
+                    draftId: draft.input.type.info?.draftIdentifier
                 )
+
+                composedLatestDraft = draft
+                completion?(nil)
             } catch {
-                if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
+                if case .missingPassPhrase(let keyPair) = error as? ComposeMessageError {
                     signingKeyWithMissingPassphrase = keyPair
                     reload(sections: [.passphrase])
                 } else if !(error is MessageValidationError) {
@@ -63,6 +67,7 @@ extension ComposeViewController {
                     // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?
                     showToast("Error saving draft: \(error.errorMessage)")
                 }
+                completion?(error)
             }
         }
     }

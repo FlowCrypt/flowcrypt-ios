@@ -35,13 +35,13 @@ extension ComposeViewController {
         if !shouldShowEmailRecipientsLabel {
             shouldShowEmailRecipientsLabel = true
             userTappedOutSideRecipientsArea = false
-            reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+            reload(sections: Section.recipientsSections + [.recipientsLabel])
         }
     }
 
     func hideRecipientLabel() {
         shouldShowEmailRecipientsLabel = false
-        reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+        reload(sections: Section.recipientsSections + [.recipientsLabel])
     }
 
     func setupSubjectNode() {

@@ -78,6 +78,11 @@ final class ComposeViewController: TableNodeViewController {
     var messagePasswordAlertController: UIAlertController?
     lazy var alertsFactory = AlertsFactory()
 
+    var didFinishSetup = false {
+        didSet {
+            if didFinishSetup { setupTextNode() }
+        }
+    }
     private var didLayoutSubviews = false
     private var topContentInset: CGFloat {
         navigationController?.navigationBar.frame.maxY ?? 0
@@ -88,8 +93,8 @@ final class ComposeViewController: TableNodeViewController {
     var popoverVC: ComposeRecipientPopupViewController!
 
     var sectionsList: [Section] = []
-    var composeTextNode: ASCellNode!
-    var composeSubjectNode: ASCellNode!
+    var composeTextNode: ASCellNode?
+    var composeSubjectNode: ASCellNode?
     var sendAsList: [SendAsModel] = []
 
     let onDelete: ((Identifier) -> Void)?
@@ -182,6 +187,7 @@ final class ComposeViewController: TableNodeViewController {
         super.viewWillDisappear(animated)
         node.view.endEditing(true)
         stopDraftTimer()
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -253,6 +259,3 @@ final class ComposeViewController: TableNodeViewController {
 }
 
 extension ComposeViewController: FilesManagerPresenter {}
-
-// update draft, don't create a new one each time
-// decrypt draft body

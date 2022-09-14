@@ -17,11 +17,11 @@ enum MessageFetchState {
 
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
-    case missingPassPhrase
+    case missingPassPhrase(Keypair?)
     case emptyKeys
     case emptyKeysForEKM
     case attachmentNotFound
-    case attachmentDecryptFailed(_ message: String)
+    case attachmentDecryptFailed(String)
 }
 
 extension MessageServiceError {
@@ -144,7 +144,8 @@ final class MessageService {
         )
 
         guard !hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-            throw MessageServiceError.missingPassPhrase
+            let keyPair = keys.first(where: { $0.passphrase == nil })
+            throw MessageServiceError.missingPassPhrase(keyPair)
         }
 
         return try await process(

@@ -129,7 +129,7 @@ struct ComposeViewDecorator {
 
     func styledMessagePassPhraseInput() -> MessageActionCellNode.Input {
         messageActionInput(
-            text: "compose_passphrase_placeholder".localized,
+            text: "compose_draft_passphrase_placeholder".localized,
             color: .warningColor,
             imageName: "lock"
         )

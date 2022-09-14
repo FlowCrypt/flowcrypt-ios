@@ -57,7 +57,7 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
     case passPhraseRequired
     case passPhraseNoMatch
     case gatewayError(Error)
-    case promptUserToEnterPassPhraseForSigningKey(Keypair)
+    case missingPassPhrase(Keypair)
     case noKeysFoundForSign(Int, String)
 
     var description: String {
