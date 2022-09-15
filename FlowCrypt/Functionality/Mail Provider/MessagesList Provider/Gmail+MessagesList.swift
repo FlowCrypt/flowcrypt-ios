@@ -39,62 +39,6 @@ extension GmailService: MessagesListProvider {
     }
 }
 
-extension GmailService: DraftsListProvider {
-    func fetchDrafts(using context: FetchMessageContext) async throws -> MessageContext {
-        return try await withThrowingTaskGroup(of: Message.self) { taskGroup in
-            let list = try await fetchDraftsList(using: context)
-
-            for draft in list.drafts ?? [] {
-                taskGroup.addTask {
-                    try await self.fetchFullMessage(
-                        with: draft.message?.identifier ?? "",
-                        draftIdentifier: draft.identifier
-                    )
-                }
-            }
-
-            var messages: [Message] = []
-            for try await result in taskGroup {
-                messages.append(result)
-            }
-            messages.sort(by: { $0.date > $1.date })
-
-            return MessageContext(
-                messages: messages,
-                pagination: .byNextPage(token: list.nextPageToken)
-            )
-        }
-    }
-
-    private func fetchDraftsList(using context: FetchMessageContext) async throws -> GTLRGmail_ListDraftsResponse {
-        let query = GTLRGmailQuery_UsersDraftsList.query(withUserId: .me)
-
-        if let pagination = context.pagination {
-            guard case let .byNextPage(token) = pagination else {
-                throw GmailServiceError.paginationError(pagination)
-            }
-            query.pageToken = token
-        }
-
-        if let count = context.count {
-            query.maxResults = UInt(count)
-        }
-
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListDraftsResponse, Error>) in
-            gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
-                }
-
-                guard let messageList = data as? GTLRGmail_ListDraftsResponse else {
-                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListDraftsResponse"))
-                }
-                return continuation.resume(returning: messageList)
-            }
-        }
-    }
-}
-
 extension GmailService {
     func fetchMessagesList(using context: FetchMessageContext) async throws -> GTLRGmail_ListMessagesResponse {
         let query = GTLRGmailQuery_UsersMessagesList.query(withUserId: .me)
@@ -131,7 +75,7 @@ extension GmailService {
         }
     }
 
-    private func fetchFullMessage(with identifier: String, draftIdentifier: String? = nil) async throws -> Message {
+    private func fetchFullMessage(with identifier: String) async throws -> Message {
         let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
         query.format = kGTLRGmailFormatFull
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Message, Error>) in
@@ -145,10 +89,8 @@ extension GmailService {
                 }
 
                 do {
-                    return continuation.resume(returning: try Message(
-                        gmailMessage: gmailMessage,
-                        draftIdentifier: draftIdentifier)
-                    )
+                    let message = try Message(gmailMessage: gmailMessage)
+                    return continuation.resume(returning: message)
                 } catch {
                     return continuation.resume(throwing: error)
                 }

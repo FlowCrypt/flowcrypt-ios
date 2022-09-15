@@ -23,7 +23,7 @@ struct Message: Hashable {
     let attachmentIds: [String]
     var attachments: [MessageAttachment]
     let threadId: String?
-    let draftIdentifier: String?
+    let rfc822MsgId: String?
     var raw: String?
     let body: MessageBody
     let inReplyTo: String?
@@ -62,7 +62,7 @@ struct Message: Hashable {
         body: MessageBody,
         attachments: [MessageAttachment] = [],
         threadId: String? = nil,
-        draftIdentifier: String? = nil,
+        rfc822MsgId: String? = nil,
         raw: String? = nil,
         to: String? = nil,
         cc: String? = nil,
@@ -80,7 +80,7 @@ struct Message: Hashable {
         self.attachments = attachments
         self.body = body
         self.threadId = threadId
-        self.draftIdentifier = draftIdentifier
+        self.rfc822MsgId = rfc822MsgId
         self.raw = raw
         self.to = Self.parseRecipients(to)
         self.cc = Self.parseRecipients(cc)

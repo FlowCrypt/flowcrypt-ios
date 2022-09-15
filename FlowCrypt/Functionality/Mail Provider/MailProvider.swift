@@ -89,12 +89,6 @@ final class MailProvider {
         }
     }
 
-    var draftsProvider: DraftsListProvider? {
-        get throws {
-            resolveOptionalService(of: DraftsListProvider.self)
-        }
-    }
-
     var messagesThreadProvider: MessagesThreadProvider {
         get throws {
             try resolveService(of: MessagesThreadProvider.self)

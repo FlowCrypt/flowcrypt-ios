@@ -123,6 +123,6 @@ extension SearchViewController: UISearchResultsUpdating {
 
     private func search(for searchText: String) {
         searchedExpression = searchText
-        fetchAndRenderEmailsOnly(nil)
+        fetchAndRenderEmails(nil)
     }
 }

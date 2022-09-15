@@ -63,5 +63,5 @@ extension String {
     static let bcc = "bcc"
     static let replyTo = "reply-to"
     static let inReplyTo = "in-reply-to"
-    static let identifier = "Message-ID"
+    static let identifier = "message-id"
 }

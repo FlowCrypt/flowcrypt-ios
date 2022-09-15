@@ -9,6 +9,27 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: DraftGateway {
+    func fetchDraftId(messageId: String) async throws -> String? {
+        let query = GTLRGmailQuery_UsersDraftsList.query(withUserId: .me)
+        query.q = "rfc822msgid:\(messageId)"
+        query.maxResults = 1
+
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String?, Error>) in
+            gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+
+                guard let list = data as? GTLRGmail_ListDraftsResponse else {
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListDraftsResponse"))
+                }
+
+                let draftId = list.drafts?.first?.identifier
+                return continuation.resume(returning: draftId)
+            }
+        }
+    }
+
     func saveDraft(input: MessageGatewayInput, draftId: String?) async throws -> GTLRGmail_Draft {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_Draft, Error>) in
             guard let raw = GTLREncodeBase64(input.mime) else {

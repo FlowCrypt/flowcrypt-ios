@@ -16,19 +16,12 @@ protocol MessagesThreadProvider {
 extension GmailService: MessagesThreadProvider {
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext {
         let threadsList = try await getThreadsList(using: context)
-        let requests = threadsList.threads?
-            .compactMap { thread -> (String, String?)? in
-                guard let id = thread.identifier else {
-                    return nil
-                }
-                return (id, thread.snippet)
-            }
-        ?? []
+        let identifiers = threadsList.threads?.compactMap(\.identifier) ?? []
         return try await withThrowingTaskGroup(of: MessageThread.self) { taskGroup in
             var messageThreadsById: [String: MessageThread] = [:]
-            for request in requests {
+            for identifier in identifiers {
                 taskGroup.addTask {
-                    try await self.getThread(with: request.0, snippet: request.1, path: context.folderPath ?? "")
+                    try await self.getThread(identifier: identifier, path: context.folderPath ?? "")
                 }
             }
             for try await result in taskGroup {
@@ -36,7 +29,7 @@ extension GmailService: MessagesThreadProvider {
                     messageThreadsById[id] = result
                 }
             }
-            let messageThreads = requests.compactMap { messageThreadsById[$0.0] }
+            let messageThreads = identifiers.compactMap { messageThreadsById[$0] }
             return MessageThreadContext(
                 threads: messageThreads,
                 pagination: .byNextPage(token: threadsList.nextPageToken)
@@ -63,7 +56,7 @@ extension GmailService: MessagesThreadProvider {
         }.value
     }
 
-    private func getThread(with identifier: String, snippet: String?, path: String) async throws -> MessageThread {
+    private func getThread(identifier: String, path: String) async throws -> MessageThread {
         return try await Task.retrying {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
                 self.gmailService.executeQuery(
@@ -81,7 +74,7 @@ extension GmailService: MessagesThreadProvider {
 
                     let result = MessageThread(
                         identifier: thread.identifier,
-                        snippet: snippet,
+                        snippet: thread.snippet,
                         path: path,
                         messages: messages
                     )

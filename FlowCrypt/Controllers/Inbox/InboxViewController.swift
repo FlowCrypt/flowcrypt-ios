@@ -17,7 +17,6 @@ class InboxViewController: ViewController {
     let tableNode: ASTableNode
 
     private let decorator: InboxViewDecorator
-    private let draftsListProvider: DraftsListProvider?
     private let messageOperationsProvider: MessageOperationsProvider
     private let refreshControl = UIRefreshControl()
     private lazy var composeButton = ComposeButtonNode { [weak self] in
@@ -50,7 +49,6 @@ class InboxViewController: ViewController {
         viewModel: InboxViewModel,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
-        draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator(),
         isSearch: Bool = false
     ) throws {
@@ -60,7 +58,6 @@ class InboxViewController: ViewController {
         self.inboxDataProvider = provider
 
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.draftsListProvider = try draftsListProvider ?? mailProvider.draftsProvider
         self.messageOperationsProvider = try mailProvider.messageOperationsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
@@ -179,8 +176,6 @@ extension InboxViewController {
 
     private func messagesToLoad() -> Int {
         switch state {
-        case .fetched(.byNextPage):
-            return numberOfInboxItemsToLoad
         case .fetched(.byNumber(let totalNumberOfMessages)):
             guard let total = totalNumberOfMessages else {
                 return numberOfInboxItemsToLoad
@@ -195,37 +190,6 @@ extension InboxViewController {
 
 // MARK: - Functionality
 extension InboxViewController {
-    private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
-        if viewModel.isDrafts {
-            fetchAndRenderDrafts(batchContext)
-        } else {
-            fetchAndRenderEmailsOnly(batchContext)
-        }
-    }
-
-    private func fetchAndRenderDrafts(_ batchContext: ASBatchContext?) {
-        guard let draftsListProvider = draftsListProvider else { return }
-
-        Task {
-            do {
-                let context = try await draftsListProvider.fetchDrafts(
-                    using: FetchMessageContext(
-                        folderPath: viewModel.path,
-                        count: numberOfInboxItemsToLoad,
-                        pagination: currentMessagesListPagination()
-                    )
-                )
-                let inboxContext = InboxContext(
-                    data: context.messages.map(InboxRenderable.init),
-                    pagination: context.pagination
-                )
-                handleEndFetching(with: inboxContext, context: batchContext)
-            } catch {
-                handle(error: error)
-            }
-        }
-    }
-
     private func getSearchQuery() -> String? {
         guard searchedExpression.isNotEmpty else { return nil }
 
@@ -234,7 +198,7 @@ extension InboxViewController {
         return "\(searchedExpression) OR subject:\(searchedExpression)"
     }
 
-    func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
+    func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
         Task {
             do {
                 if isSearch {
@@ -277,7 +241,8 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
                         pagination: pagination
-                    ), userEmail: appContext.user.email
+                    ),
+                    userEmail: appContext.user.email
                 )
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
@@ -652,7 +617,11 @@ extension InboxViewController {
                 open(message: message, path: path, appContext: appContext)
             }
         case .thread(let thread):
-            open(thread: thread, appContext: appContext)
+            if let message = thread.messages.first, thread.messages.count == 1, message.isDraft {
+                open(draft: message, appContext: appContext)
+            } else {
+                open(thread: thread, appContext: appContext)
+            }
         }
     }
 

@@ -19,6 +19,7 @@ protocol MessageGateway {
 }
 
 protocol DraftGateway {
+    func fetchDraftId(messageId: String) async throws -> String?
     func saveDraft(input: MessageGatewayInput, draftId: String?) async throws -> GTLRGmail_Draft
     func deleteDraft(with identifier: String) async throws
 }

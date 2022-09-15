@@ -59,6 +59,12 @@ extension ComposeViewController {
             return
         }
 
+        if case .draft = input.type, let messageId = input.type.info?.rfc822MsgId {
+            Task {
+                try await composeMessageService.fetchDraftId(messageId: messageId)
+            }
+        }
+
         contextToSend.subject = info.subject
 
         for recipient in info.recipients {

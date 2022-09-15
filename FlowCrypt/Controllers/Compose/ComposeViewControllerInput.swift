@@ -23,7 +23,7 @@ struct ComposeMessageInput: Equatable {
         let threadId: String?
         let replyToMsgId: String?
         let inReplyTo: String?
-        let draftIdentifier: String?
+        let rfc822MsgId: String?
         let attachments: [MessageAttachment]
     }
 
@@ -91,9 +91,9 @@ extension ComposeMessageInput {
 
     var shouldFocusTextNode: Bool {
         switch type {
-        case .reply, .draft:
+        case .reply:
             return true
-        case .idle, .forward:
+        case .idle, .forward, .draft:
             return false
         }
     }
@@ -111,7 +111,7 @@ extension ComposeMessageInput.InputType {
 }
 
 extension ComposeMessageInput.MessageQuoteInfo {
-    init(message: Message, processed: ProcessedMessage?) {
+    init(message: Message, processed: ProcessedMessage? = nil) {
         self.id = message.identifier.stringId
         self.recipients = message.to
         self.ccRecipients = message.cc
@@ -121,9 +121,9 @@ extension ComposeMessageInput.MessageQuoteInfo {
         self.sentDate = message.date
         self.text = processed?.text ?? message.body.text
         self.threadId = message.threadId
+        self.rfc822MsgId = message.rfc822MsgId
         self.replyToMsgId = nil // TODO: draft.rawMessage.replyToMsgId,
         self.inReplyTo = message.inReplyTo
-        self.draftIdentifier = message.draftIdentifier
         self.attachments = processed?.attachments ?? message.attachments
     }
 }

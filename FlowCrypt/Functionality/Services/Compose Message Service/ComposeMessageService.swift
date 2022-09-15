@@ -222,7 +222,12 @@ final class ComposeMessageService {
 
     // MARK: - Drafts
     private var draftId: String?
-    func encryptAndSaveDraft(message: SendableMsg, threadId: String?, draftId: String?) async throws {
+
+    func fetchDraftId(messageId: String) async throws {
+        self.draftId = try await draftGateway?.fetchDraftId(messageId: messageId)
+    }
+
+    func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
         do {
             let mime = try await core.composeEmail(
                 msg: message,
@@ -234,7 +239,7 @@ final class ComposeMessageService {
                     mime: mime,
                     threadId: threadId
                 ),
-                draftId: draftId
+                draftId: self.draftId
             ).identifier
         } catch {
             throw ComposeMessageError.gatewayError(error)
