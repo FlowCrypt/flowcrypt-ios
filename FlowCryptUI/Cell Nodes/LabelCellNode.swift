@@ -85,6 +85,7 @@ public final class LabelCellNode: CellNode {
                 alignItems: .stretch,
                 children: [labelSpec, actionButtonNode]
             )
+            labelSpec.style.flexShrink = 1
             return ASInsetLayoutSpec(
                 insets: input.insets,
                 child: spec

@@ -84,8 +84,6 @@ extension ComposeViewController {
         }
 
         if input.isPgp {
-            // showSpinner("processing_title".localized)
-
             let message = Message(
                 identifier: .random,
                 date: info.sentDate,
@@ -118,7 +116,6 @@ extension ComposeViewController {
                 }
             }
         } else {
-            contextToSend.message = info.text
             reload(sections: Section.recipientsSections)
             didFinishSetup = true
         }

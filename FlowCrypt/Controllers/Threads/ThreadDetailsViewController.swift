@@ -126,7 +126,7 @@ extension ThreadDetailsViewController {
                     guard let self = self else { return }
 
                     if let processedMessage = self.input[indexPath.section - 1].processedMessage {
-                        self.handleReceived(message: processedMessage, at: indexPath)
+                        self.handle(processedMessage: processedMessage, at: indexPath)
                     } else {
                         self.fetchDecryptAndRenderMsg(at: indexPath)
                     }
@@ -374,14 +374,14 @@ extension ThreadDetailsViewController {
                         indexPath: indexPath
                     )
                 }
-                handleReceived(message: processedMessage, at: indexPath)
+                handle(processedMessage: processedMessage, at: indexPath)
             } catch {
-                handleError(error, at: indexPath)
+                handle(error: error, at: indexPath)
             }
         }
     }
 
-    private func handleReceived(message processedMessage: ProcessedMessage, at indexPath: IndexPath) {
+    private func handle(processedMessage: ProcessedMessage, at indexPath: IndexPath) {
         hideSpinner()
 
         let messageIndex = indexPath.section - 1
@@ -405,7 +405,7 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func handleError(_ error: Error, at indexPath: IndexPath) {
+    private func handle(error: Error, at indexPath: IndexPath) {
         logger.logInfo("Error \(error)")
         hideSpinner()
 
@@ -475,20 +475,23 @@ extension ThreadDetailsViewController {
                     passPhrase,
                     userEmail: appContext.user.email
                 )
-                let message = input[indexPath.section - 1].rawMessage
+
                 if matched {
+                    let message = input[indexPath.section - 1].rawMessage
+
                     let processedMessage = try await messageService.decryptAndProcess(
                         message: message,
                         onlyLocalKeys: false,
                         userEmail: appContext.user.email,
                         isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                     )
-                    handleReceived(message: processedMessage, at: indexPath)
+
+                    handle(processedMessage: processedMessage, at: indexPath)
                 } else {
                     handleWrongPassPhrase(passPhrase, indexPath: indexPath)
                 }
             } catch {
-                handleError(error, at: indexPath)
+                handle(error: error, at: indexPath)
             }
         }
     }
@@ -507,7 +510,7 @@ extension ThreadDetailsViewController {
                     userEmail: appContext.user.email,
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
-                handleReceived(message: processedMessage, at: indexPath)
+                handle(processedMessage: processedMessage, at: indexPath)
             } catch {
                 let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
                 input[indexPath.section - 1].processedMessage?.signature = .error(message)
@@ -633,7 +636,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             if message.rawMessage.isDraft {
-                return self.draftNode(messageIndex: messageIndex)
+                return self.draftNode(messageIndex: messageIndex, isExpanded: message.isExpanded)
             }
 
             guard let processedMessage = message.processedMessage else {
@@ -678,16 +681,25 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         section > 0 && section < input.count ? 1 / UIScreen.main.nativeScale : 0
     }
 
-    private func draftNode(messageIndex: Int) -> ASCellNode {
-        let message = input[messageIndex]
-        let messageData = message.processedMessage?.message ?? message.rawMessage
+    private func draftNode(messageIndex: Int, isExpanded: Bool) -> ASCellNode {
+        let data = input[messageIndex]
+
+        let body: String
+        if let processedMessage = data.processedMessage {
+            body = processedMessage.text
+        } else if data.rawMessage.isPgp {
+            body = "Waiting for pass phrase to open draft..."
+        } else {
+            body = data.rawMessage.body.text
+        }
+
         return LabelCellNode(
             input: .init(
                 title: "compose_draft".localized.attributed(color: .red),
-                text: messageData.body.textWithoutThreadQuote.attributed(color: .secondaryLabel),
+                text: body.removingMailThreadQuote().attributed(color: .secondaryLabel),
                 actionButtonImageName: "trash",
                 action: { [weak self] in
-                    self?.deleteDraft(id: messageData.identifier, at: messageIndex)
+                    self?.deleteDraft(id: data.rawMessage.identifier, at: messageIndex)
                 }
             )
         )

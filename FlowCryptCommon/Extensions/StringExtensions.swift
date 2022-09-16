@@ -84,11 +84,20 @@ public extension String {
     }
 
     func removingHtmlTags() -> String? {
-        return try? NSAttributedString(
+        try? NSAttributedString(
             data: self.data(using: .utf8)!,
             options: [.documentType: NSAttributedString.DocumentType.html],
             documentAttributes: nil
         ).string
+    }
+
+    func removingMailThreadQuote() -> String {
+        guard let range = range(
+            of: "On [a-zA-Z0-9, ]*, at [a-zA-Z0-9: ]*, .* wrote:",
+            options: [.regularExpression]
+        ) else { return self }
+
+        return self[startIndex..<range.lowerBound].trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 

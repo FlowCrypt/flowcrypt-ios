@@ -107,7 +107,7 @@ struct ComposeViewDecorator {
         guard let info = input.type.info else { return NSAttributedString(string: "") }
 
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
+        dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
 
         let date = dateFormatter.string(from: info.sentDate)
@@ -116,7 +116,7 @@ struct ComposeViewDecorator {
         dateFormatter.timeStyle = .short
         let time = dateFormatter.string(from: info.sentDate)
 
-        let from = info.sender?.email ?? "unknown sender"
+        let from = info.sender?.formatted ?? "unknown sender"
 
         let text: String = "\n\n"
             + "compose_quote_from".localizeWithArguments(date, time, from)

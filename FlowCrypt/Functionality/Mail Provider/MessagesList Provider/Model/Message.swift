@@ -147,14 +147,3 @@ struct MessageBody: Hashable {
     let text: String
     let html: String?
 }
-
-extension MessageBody {
-    var textWithoutThreadQuote: String {
-        guard let range = text.range(
-            of: "On [a-zA-Z]*, [a-zA-Z0-9 ]* at [0-9:]*, .*",
-            options: [.regularExpression]
-        ) else { return text }
-
-        return text[text.startIndex..<range.lowerBound].trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-}
