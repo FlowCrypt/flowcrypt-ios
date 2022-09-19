@@ -11,16 +11,16 @@ import UIKit
 final class BackupService {
     let backupProvider: BackupProvider
     let core: Core
-    let messageSender: MessageGateway
+    let messageGateway: MessageGateway
 
     init(
         backupProvider: BackupProvider,
         core: Core = .shared,
-        messageSender: MessageGateway
+        messageGateway: MessageGateway
     ) {
         self.backupProvider = backupProvider
         self.core = core
-        self.messageSender = messageSender
+        self.messageGateway = messageGateway
     }
 }
 
@@ -70,7 +70,7 @@ extension BackupService: BackupServiceType {
         )
 
         let t = try await core.composeEmail(msg: message, fmt: .plain)
-        try await messageSender.sendMail(
+        try await messageGateway.sendMail(
             input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil),
             progressHandler: nil
         )

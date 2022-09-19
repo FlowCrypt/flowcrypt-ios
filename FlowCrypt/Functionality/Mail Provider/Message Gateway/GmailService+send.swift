@@ -10,8 +10,8 @@ import Foundation
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: MessageGateway {
-    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws -> Identifier {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Identifier, Error>) in
             guard let raw = GTLREncodeBase64(input.mime) else {
                 return continuation.resume(throwing: GmailServiceError.messageEncode)
             }
@@ -28,12 +28,19 @@ extension GmailService: MessageGateway {
                 uploadParameters: nil
             )
 
-            gmailService.executeQuery(querySend) { [weak self] _, _, error in
+            gmailService.executeQuery(querySend) { [weak self] _, data, error in
                 self?.progressHandler = nil
+
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                return continuation.resume()
+
+                guard let gmailMessage = data as? GTLRGmail_Message else {
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
+                }
+
+                let identifier = Identifier(stringId: gmailMessage.identifier)
+                return continuation.resume(returning: identifier)
             }
         }
     }

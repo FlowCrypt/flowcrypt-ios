@@ -122,7 +122,7 @@ extension ComposeMessageInput.MessageQuoteInfo {
         self.text = processed?.text ?? message.body.text
         self.threadId = message.threadId
         self.rfc822MsgId = message.rfc822MsgId
-        self.replyToMsgId = nil // TODO: draft.rawMessage.replyToMsgId,
+        self.replyToMsgId = message.replyToMsgId
         self.inReplyTo = message.inReplyTo
         self.attachments = processed?.attachments ?? message.attachments
     }

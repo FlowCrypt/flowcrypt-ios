@@ -54,9 +54,9 @@ extension GmailServiceError {
     static func convert(from error: NSError) -> GmailServiceError {
         switch error.code {
         case -10: // invalid_grant error code
-            return GmailServiceError.invalidGrant(error)
+            return .invalidGrant(error)
         default:
-            return GmailServiceError.providerError(error)
+            return .providerError(error)
         }
     }
 }

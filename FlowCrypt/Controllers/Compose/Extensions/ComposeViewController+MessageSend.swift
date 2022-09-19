@@ -28,15 +28,18 @@ extension ComposeViewController {
         try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
 
         let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
-            input: self.input,
-            contextToSend: self.contextToSend
+            input: input,
+            contextToSend: contextToSend
         )
         UIApplication.shared.isIdleTimerDisabled = true
-        try await composeMessageService.encryptAndSend(
+        let identifier = try await composeMessageService.encryptAndSend(
             message: sendableMsg,
             threadId: input.threadId
         )
+
         handleSuccessfullySentMessage()
+
+        handleAction?(.sent(identifier))
     }
 
     private func handleSuccessfullySentMessage() {

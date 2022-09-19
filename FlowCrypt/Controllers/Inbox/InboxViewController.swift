@@ -636,11 +636,21 @@ extension InboxViewController {
                 let controller = try await ComposeViewController(
                     appContext: appContext,
                     input: .init(type: .draft(draftInfo)),
-                    onDelete: { [weak self] identifier in
-                        guard let self = self,
-                              let index = self.inboxInput.firstIndex(where: { $0.wrappedMessage?.identifier == identifier }) else { return }
-                        self.inboxInput.remove(at: index)
-                        self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                    handleAction: { [weak self] action in
+                        guard let self = self else { return }
+
+                        switch action {
+                        case .create, .update:
+                            // todo
+                            break
+                        case .sent(let message):
+                            break
+                        case .delete(let identifier):
+                            guard let index = self.inboxInput.firstIndex(where: { $0.wrappedMessage?.identifier == identifier })
+                            else { return }
+                            self.inboxInput.remove(at: index)
+                            self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                        }
                     }
                 )
                 navigationController?.pushViewController(controller, animated: true)

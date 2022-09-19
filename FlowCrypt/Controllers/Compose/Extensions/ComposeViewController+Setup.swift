@@ -116,6 +116,9 @@ extension ComposeViewController {
                 }
             }
         } else {
+            if case .draft = input.type {
+                contextToSend.message = input.text
+            }
             reload(sections: Section.recipientsSections)
             didFinishSetup = true
         }
@@ -149,19 +152,19 @@ extension ComposeViewController {
 // MARK: - NavigationChildController
 extension ComposeViewController: NavigationChildController {
     func handleBackButtonTap() {
-        // TODO:
-        navigationController?.popViewController(animated: true)
-//        if let keyPair = signingKeyWithMissingPassphrase {
-//            requestMissingPassPhraseWithModal(for: keyPair, isDraft: true, withDiscard: true)
-//        } else {
-//            saveDraftIfNeeded(withAlert: true) { [weak self] error in
-//                guard let self = self else { return }
-//                if case .missingPassphrase(let keyPair) = error as? ComposeMessageError {
-//                    self.requestMissingPassPhraseWithModal(for: keyPair)
-//                } else {
-//                    self.navigationController?.popViewController(animated: true)
-//                }
-//            }
-//        }
+        if let keyPair = signingKeyWithMissingPassphrase {
+            requestMissingPassPhraseWithModal(for: keyPair, isDraft: true, withDiscard: true)
+        } else {
+            saveDraftIfNeeded(withAlert: true) { [weak self] error in
+                guard let self = self else { return }
+                if case .missingPassPhrase(let keyPair) = error as? ComposeMessageError {
+                    self.requestMissingPassPhraseWithModal(for: keyPair)
+                } else if let error = error {
+                    self.handle(error: error)
+                } else {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+        }
     }
 }

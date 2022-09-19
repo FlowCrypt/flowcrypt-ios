@@ -38,7 +38,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
-    private let thread: MessageThread
+    private var thread: MessageThread
     private var input: [ThreadDetailsViewController.Input]
 
     let trashFolderProvider: TrashFolderProviderType
@@ -97,13 +97,19 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
         setupNavigationBar(thread: thread)
         expandThreadMessageAndMarkAsRead()
+
+        Task {
+            try await decryptDrafts()
+        }
     }
 
     private func expandThreadMessageAndMarkAsRead() {
         Task {
             try await threadOperationsProvider.mark(thread: thread, asRead: true, in: currentFolderPath)
         }
-        let indexOfSectionToExpand = input.firstIndex(where: { !$0.rawMessage.isRead }) ?? input.count - 1
+        let indexOfSectionToExpand = input.firstIndex(where: { !$0.rawMessage.isRead })
+            ?? input.firstIndex(where: { !$0.rawMessage.isRead && !$0.rawMessage.isDraft })
+            ?? input.count - 1
         let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand + 1)
         handleExpandTap(at: indexPath)
     }
@@ -164,18 +170,37 @@ extension ThreadDetailsViewController {
                 let controller = try await ComposeViewController(
                     appContext: appContext,
                     input: .init(type: .draft(draftInfo)),
-                    onDelete: { [weak self] identifier in
-                        guard let self = self,
-                              let index = self.input.firstIndex(where: { $0.rawMessage.identifier == identifier })
-                        else { return }
+                    handleAction: { [weak self] action in
+                        guard let self = self else { return }
 
-                        self.input.remove(at: index)
-                        self.node.deleteSections([index + 1], with: .automatic)
+                        switch action {
+                        case .create, .update:
+                            // todo
+                            break
+                        case .sent(let identifier):
+                            Task {
+                                let processedMessage = try await self.messageService.getAndProcess(
+                                    identifier: identifier,
+                                    folder: self.thread.path,
+                                    onlyLocalKeys: false,
+                                    userEmail: self.appContext.user.email,
+                                    isUsingKeyManager: self.appContext.clientConfigurationService.configuration.isUsingKeyManager
+                                )
+                                let indexPath = IndexPath(row: 0, section: self.input.count)
+                                self.handle(processedMessage: processedMessage, at: indexPath)
+                            }
+                        case .delete(let identifier):
+                            guard let index = self.input.firstIndex(where: { $0.rawMessage.identifier == identifier })
+                            else { return }
+
+                            self.input.remove(at: index)
+                            self.node.deleteSections([index + 1], with: .automatic)
+                        }
                     }
                 )
                 navigationController?.pushViewController(controller, animated: true)
             } catch {
-                showAlert(message: error.localizedDescription)
+                showAlert(message: error.errorMessage)
             }
         }
     }
@@ -339,11 +364,38 @@ extension ThreadDetailsViewController {
             do {
                 let composeVC = try await ComposeViewController(
                     appContext: appContext,
-                    input: ComposeMessageInput(type: composeType)
+                    input: ComposeMessageInput(type: composeType),
+                    handleAction: { [weak self] action in
+                        guard let self = self else { return }
+
+                        switch action {
+                        case .create, .update:
+                            // todo
+                            break
+                        case .sent(let identifier):
+                            Task {
+                                let processedMessage = try await self.messageService.getAndProcess(
+                                    identifier: identifier,
+                                    folder: self.thread.path,
+                                    onlyLocalKeys: false,
+                                    userEmail: self.appContext.user.email,
+                                    isUsingKeyManager: self.appContext.clientConfigurationService.configuration.isUsingKeyManager
+                                )
+                                let indexPath = IndexPath(row: 0, section: self.input.count)
+                                self.handle(processedMessage: processedMessage, at: indexPath)
+                            }
+                        case .delete(let identifier):
+                            guard let index = self.input.firstIndex(where: { $0.rawMessage.identifier == identifier })
+                            else { return }
+
+                            self.input.remove(at: index)
+                            self.node.deleteSections([index + 1], with: .automatic)
+                        }
+                    }
                 )
                 navigationController?.pushViewController(composeVC, animated: true)
             } catch {
-                showAlert(message: error.localizedDescription)
+                showAlert(message: error.errorMessage)
             }
         }
     }
@@ -359,7 +411,7 @@ extension ThreadDetailsViewController {
         Task {
             do {
                 var processedMessage = try await messageService.getAndProcess(
-                    message: message,
+                    identifier: message.identifier,
                     folder: thread.path,
                     onlyLocalKeys: true,
                     userEmail: appContext.user.email,
@@ -479,17 +531,39 @@ extension ThreadDetailsViewController {
                 if matched {
                     let message = input[indexPath.section - 1].rawMessage
 
-                    let processedMessage = try await messageService.decryptAndProcess(
-                        message: message,
-                        onlyLocalKeys: false,
-                        userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                    )
+                    if !message.isDraft {
+                        let processedMessage = try await messageService.decryptAndProcess(
+                            message: message,
+                            onlyLocalKeys: false,
+                            userEmail: appContext.user.email,
+                            isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                        )
 
-                    handle(processedMessage: processedMessage, at: indexPath)
+                        handle(processedMessage: processedMessage, at: indexPath)
+                    }
+
+                    try await decryptDrafts()
                 } else {
                     handleWrongPassPhrase(passPhrase, indexPath: indexPath)
                 }
+            } catch {
+                handle(error: error, at: indexPath)
+            }
+        }
+    }
+
+    private func decryptDrafts() async throws {
+        for (index, data) in input.enumerated() {
+            guard data.rawMessage.isDraft && data.rawMessage.isPgp else { continue }
+            let indexPath = IndexPath(row: 0, section: index + 1)
+            do {
+                let processedMessage = try await messageService.decryptAndProcess(
+                    message: data.rawMessage,
+                    onlyLocalKeys: false,
+                    userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                )
+                handle(processedMessage: processedMessage, at: indexPath)
             } catch {
                 handle(error: error, at: indexPath)
             }
@@ -504,7 +578,7 @@ extension ThreadDetailsViewController {
         Task {
             do {
                 let processedMessage = try await messageService.getAndProcess(
-                    message: message,
+                    identifier: message.identifier,
                     folder: thread.path,
                     onlyLocalKeys: false,
                     userEmail: appContext.user.email,

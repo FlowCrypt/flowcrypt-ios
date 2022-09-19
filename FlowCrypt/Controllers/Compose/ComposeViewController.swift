@@ -97,7 +97,11 @@ final class ComposeViewController: TableNodeViewController {
     var composeSubjectNode: ASCellNode?
     var sendAsList: [SendAsModel] = []
 
-    let onDelete: ((Identifier) -> Void)?
+    let handleAction: ((ComposeMessageAction) -> Void)?
+
+    enum ComposeMessageAction {
+        case create(Message), update(Message), delete(Identifier), sent(Identifier)
+    }
 
     init(
         appContext: AppContextWithUser,
@@ -108,7 +112,7 @@ final class ComposeViewController: TableNodeViewController {
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods(),
-        onDelete: ((Identifier) -> Void)? = nil
+        handleAction: ((ComposeMessageAction) -> Void)? = nil
     ) async throws {
         self.appContext = appContext
         self.input = input
@@ -162,7 +166,7 @@ final class ComposeViewController: TableNodeViewController {
             subject: input.subject,
             attachments: input.attachments
         )
-        self.onDelete = onDelete
+        self.handleAction = handleAction
         super.init(node: TableNode())
     }
 
@@ -259,3 +263,11 @@ final class ComposeViewController: TableNodeViewController {
 }
 
 extension ComposeViewController: FilesManagerPresenter {}
+
+/*
+fixes
+ - save draft when tapping back
+ - add draft when going back from compose to thread view
+ - delete draft from list on send
+ - reload drafts list when going back from compose or thread screen
+*/

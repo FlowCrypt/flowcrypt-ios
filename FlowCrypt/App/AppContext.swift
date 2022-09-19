@@ -108,7 +108,7 @@ class AppContext {
         let mailProvider = try getRequiredMailProvider()
         return BackupService(
             backupProvider: try mailProvider.backupProvider,
-            messageSender: try mailProvider.messageSender
+            messageGateway: try mailProvider.messageGateway
         )
     }
 

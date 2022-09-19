@@ -22,7 +22,7 @@ extension GmailService: MessagesListProvider {
             if let self = self {
                 for identifier in messageIdentifiers {
                     taskGroup.addTask {
-                        try await self.fetchFullMessage(with: identifier)
+                        try await self.fetchMsg(id: Identifier(stringId: identifier), folder: "")
                     }
                 }
 
@@ -71,29 +71,6 @@ extension GmailService {
                 }
 
                 return continuation.resume(returning: messageList)
-            }
-        }
-    }
-
-    private func fetchFullMessage(with identifier: String) async throws -> Message {
-        let query = GTLRGmailQuery_UsersMessagesGet.query(withUserId: .me, identifier: identifier)
-        query.format = kGTLRGmailFormatFull
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Message, Error>) in
-            gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
-                }
-
-                guard let gmailMessage = data as? GTLRGmail_Message else {
-                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Message"))
-                }
-
-                do {
-                    let message = try Message(gmailMessage: gmailMessage)
-                    return continuation.resume(returning: message)
-                } catch {
-                    return continuation.resume(throwing: error)
-                }
             }
         }
     }

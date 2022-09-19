@@ -29,7 +29,7 @@ final class MailProvider {
     }
     private let services: [MailServiceProvider]
 
-    var messageSender: MessageGateway {
+    var messageGateway: MessageGateway {
         get throws {
             try resolveService(of: MessageGateway.self)
         }

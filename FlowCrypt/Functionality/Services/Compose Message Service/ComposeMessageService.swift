@@ -234,13 +234,14 @@ final class ComposeMessageService {
                 fmt: .encryptInline
             ).mimeEncoded
 
-            self.draftId = try await draftGateway?.saveDraft(
+            let draft = try await draftGateway?.saveDraft(
                 input: MessageGatewayInput(
                     mime: mime,
                     threadId: threadId
                 ),
                 draftId: self.draftId
-            ).identifier
+            )
+            self.draftId = draft?.identifier
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }
@@ -256,7 +257,7 @@ final class ComposeMessageService {
     }
 
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws -> Identifier {
         do {
             onStateChanged?(.startComposing)
 
@@ -277,7 +278,7 @@ final class ComposeMessageService {
                 threadId: threadId
             )
 
-            try await appContext.getRequiredMailProvider().messageSender.sendMail(
+            let identifier = try await appContext.getRequiredMailProvider().messageGateway.sendMail(
                 input: input,
                 progressHandler: { [weak self] progress in
                     let progressToShow = hasPassword ? 0.5 + progress / 2 : progress
@@ -291,6 +292,8 @@ final class ComposeMessageService {
             }
 
             onStateChanged?(.messageSent)
+
+            return identifier
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }

@@ -88,14 +88,14 @@ final class MessageService {
 
     // MARK: - Message processing
     func getAndProcess(
-        message: Message,
+        identifier: Identifier,
         folder: String,
         onlyLocalKeys: Bool,
         userEmail: String,
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
         let message = try await messageProvider.fetchMsg(
-            id: message.identifier,
+            id: identifier,
             folder: folder
         )
         if message.isPgp {
