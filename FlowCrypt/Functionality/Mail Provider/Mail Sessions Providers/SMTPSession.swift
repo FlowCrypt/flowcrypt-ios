@@ -6,7 +6,6 @@
 //  Copyright © 2020 FlowCrypt Limited. All rights reserved.
 //
 
-import Foundation
 import MailCore
 
 struct SMTPSession {

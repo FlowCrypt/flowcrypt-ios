@@ -7,7 +7,6 @@
 //
 
 @testable import FlowCrypt
-import Foundation
 
 class CoreComposeMessageMock: CoreComposeMessageType, KeyParser {
     var composeEmailResult: ((SendableMsg, MsgFmt) -> (CoreRes.ComposeEmail))!

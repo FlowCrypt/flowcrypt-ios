@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 
 enum SessionType: CustomStringConvertible {
     case google(_ email: String, name: String, token: String)

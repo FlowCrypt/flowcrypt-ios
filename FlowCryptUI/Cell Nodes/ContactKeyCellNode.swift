@@ -7,7 +7,6 @@
 //
 
 import AsyncDisplayKit
-import Foundation
 
 public final class ContactKeyCellNode: CellNode {
     public struct Input {

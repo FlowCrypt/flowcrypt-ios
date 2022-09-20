@@ -6,7 +6,6 @@ import AsyncDisplayKit
 import Combine
 import FlowCryptCommon
 import FlowCryptUI
-import Foundation
 
 /**
  * View controller to compose the message and send it
@@ -98,10 +97,6 @@ final class ComposeViewController: TableNodeViewController {
     var sendAsList: [SendAsModel] = []
 
     let handleAction: ((ComposeMessageAction) -> Void)?
-
-    enum ComposeMessageAction {
-        case create(Message), update(Message), delete(Identifier), sent(Identifier)
-    }
 
     init(
         appContext: AppContextWithUser,
@@ -271,3 +266,15 @@ fixes
  - delete draft from list on send
  - reload drafts list when going back from compose or thread screen
 */
+
+/* ui test
+- open compose
+- create draft
+ - go back
+ - go to drafts folder
+ - check if folder there
+ - go to inbox
+ - open existing thread
+ - create reply
+ - check draft
+ */

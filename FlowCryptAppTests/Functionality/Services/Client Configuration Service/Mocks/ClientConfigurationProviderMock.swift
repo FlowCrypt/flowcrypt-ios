@@ -7,7 +7,6 @@
 //
 
 @testable import FlowCrypt
-import Foundation
 
 class LocalClientConfigurationMock: LocalClientConfigurationType {
     var raw: RawClientConfiguration?

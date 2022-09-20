@@ -185,10 +185,7 @@ extension SetupImapViewController {
     private func update(for newState: State) {
         state = newState
 
-        node.reloadSections(
-            IndexSet(integer: 3),
-            with: .fade
-        )
+        node.reloadSections([3], with: .fade)
 
         node.scrollToRow(
             at: IndexPath(row: 2, section: 3),
@@ -292,14 +289,14 @@ extension SetupImapViewController {
 
     private func reloadImapSection() {
         node.reloadSections(
-            IndexSet(integer: Section.imap(.port).section),
+            [Section.imap(.port).section],
             with: .none
         )
     }
 
     private func reloadSmtpSection() {
         node.reloadSections(
-            IndexSet(integer: Section.smtp(.port).section),
+            [Section.smtp(.port).section],
             with: .none
         )
     }

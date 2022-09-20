@@ -7,7 +7,6 @@
 //
 
 @testable import FlowCrypt
-import Foundation
 
 class MessageGatewayMock: MessageGateway {
     var sendMailResult: ((Data) -> (Result<Identifier, Error>))!

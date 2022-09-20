@@ -9,7 +9,6 @@
 import FlowCryptCommon
 import FlowCryptUI
 import UIKit
-import Foundation
 
 extension DateFormatter {
     static let keySettingsFormatter: DateFormatter = {

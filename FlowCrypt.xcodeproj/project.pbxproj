@@ -117,6 +117,7 @@
 		51B9EE6F27567B520080B2D5 /* MessageRecipientsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */; };
 		51C0C1EF271982A1000C9738 /* MailCore in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1EE271982A1000C9738 /* MailCore */; };
 		51C0C63828D1E42A003C540E /* ComposeViewController+ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C0C63728D1E42A003C540E /* ComposeViewController+ErrorHandling.swift */; };
+		51CE196728D8AC5300A5B200 /* ComposeMessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CE196628D8AC5300A5B200 /* ComposeMessageAction.swift */; };
 		51DA5BD62721AB07001C4359 /* PubKeyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD52721AB07001C4359 /* PubKeyState.swift */; };
 		51DA5BDA2722C82E001C4359 /* RecipientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD92722C82E001C4359 /* RecipientTests.swift */; };
 		51DAD9BD273E7DD20076CBA7 /* BadgeNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */; };
@@ -584,6 +585,7 @@
 		51B7421A27F318D300E702C8 /* XCTestCaseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestCaseExtension.swift; sourceTree = "<group>"; };
 		51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRecipientsNode.swift; sourceTree = "<group>"; };
 		51C0C63728D1E42A003C540E /* ComposeViewController+ErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+ErrorHandling.swift"; sourceTree = "<group>"; };
+		51CE196628D8AC5300A5B200 /* ComposeMessageAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageAction.swift; sourceTree = "<group>"; };
 		51DA5BD52721AB07001C4359 /* PubKeyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubKeyState.swift; sourceTree = "<group>"; };
 		51DA5BD92722C82E001C4359 /* RecipientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientTests.swift; sourceTree = "<group>"; };
 		51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeNode.swift; sourceTree = "<group>"; };
@@ -959,6 +961,7 @@
 		04B4728F1ECE29F600B8266F /* Compose */ = {
 			isa = PBXGroup;
 			children = (
+				51CE196628D8AC5300A5B200 /* ComposeMessageAction.swift */,
 				32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */,
 				D269E02624103A20000495C3 /* ComposeViewControllerInput.swift */,
 				9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */,
@@ -2753,6 +2756,7 @@
 				2CC50FB12744167A0051629A /* Folder.swift in Sources */,
 				514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserRealmObject.swift in Sources */,
+				51CE196728D8AC5300A5B200 /* ComposeMessageAction.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
 				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
 				21489B80267CC39E00BDE4AC /* ClientConfigurationService.swift in Sources */,

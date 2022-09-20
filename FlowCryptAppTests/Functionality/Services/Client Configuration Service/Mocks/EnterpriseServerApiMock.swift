@@ -7,7 +7,6 @@
 //
 
 @testable import FlowCrypt
-import Foundation
 
 final class EnterpriseServerApiMock: EnterpriseServerApiType {
     var email = "example@flowcrypt.test"

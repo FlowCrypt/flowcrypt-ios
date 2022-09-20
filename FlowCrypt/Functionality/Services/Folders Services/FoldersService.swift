@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 
 protocol TrashFolderProviderType {
     var trashFolderPath: String? { get async throws }

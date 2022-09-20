@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 import MailCore
 
 // MARK: - RemoteFoldersProviderType

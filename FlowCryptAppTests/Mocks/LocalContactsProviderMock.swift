@@ -7,7 +7,6 @@
 //
 
 @testable import FlowCrypt
-import Foundation
 
 final class LocalContactsProviderMock: LocalContactsProviderType {
 

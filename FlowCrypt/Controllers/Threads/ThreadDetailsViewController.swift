@@ -9,7 +9,6 @@
 import AsyncDisplayKit
 import FlowCryptUI
 import FlowCryptCommon
-import Foundation
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
@@ -97,10 +96,6 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
         setupNavigationBar(thread: thread)
         expandThreadMessageAndMarkAsRead()
-
-        Task {
-            try await decryptDrafts()
-        }
     }
 
     private func expandThreadMessageAndMarkAsRead() {
@@ -122,7 +117,7 @@ extension ThreadDetailsViewController {
 
         if input[indexPath.section - 1].isExpanded {
             UIView.animate(
-                withDuration: 0.3,
+                withDuration: 0.2,
                 animations: {
                     if let threadNode = self.node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode {
                         threadNode.expandNode.view.alpha = 0
@@ -140,7 +135,7 @@ extension ThreadDetailsViewController {
             )
         } else {
             UIView.animate(withDuration: 0.3) {
-                self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
+                self.node.reloadSections([indexPath.section], with: .automatic)
             }
         }
     }
@@ -149,7 +144,7 @@ extension ThreadDetailsViewController {
         input[indexPath.section - 1].shouldShowRecipientsList.toggle()
 
         UIView.animate(withDuration: 0.3) {
-            self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
+            self.node.reloadSections([indexPath.section], with: .automatic)
         }
     }
 
@@ -171,31 +166,7 @@ extension ThreadDetailsViewController {
                     appContext: appContext,
                     input: .init(type: .draft(draftInfo)),
                     handleAction: { [weak self] action in
-                        guard let self = self else { return }
-
-                        switch action {
-                        case .create, .update:
-                            // todo
-                            break
-                        case .sent(let identifier):
-                            Task {
-                                let processedMessage = try await self.messageService.getAndProcess(
-                                    identifier: identifier,
-                                    folder: self.thread.path,
-                                    onlyLocalKeys: false,
-                                    userEmail: self.appContext.user.email,
-                                    isUsingKeyManager: self.appContext.clientConfigurationService.configuration.isUsingKeyManager
-                                )
-                                let indexPath = IndexPath(row: 0, section: self.input.count)
-                                self.handle(processedMessage: processedMessage, at: indexPath)
-                            }
-                        case .delete(let identifier):
-                            guard let index = self.input.firstIndex(where: { $0.rawMessage.identifier == identifier })
-                            else { return }
-
-                            self.input.remove(at: index)
-                            self.node.deleteSections([index + 1], with: .automatic)
-                        }
+                        self?.handleComposeMessageAction(action)
                     }
                 )
                 navigationController?.pushViewController(controller, animated: true)
@@ -226,6 +197,31 @@ extension ThreadDetailsViewController {
         alert.addAction(cancelAction)
 
         present(alert, animated: true, completion: nil)
+    }
+
+    private func handleComposeMessageAction(_ action: ComposeMessageAction) {
+        switch action {
+        case .create, .update:
+            break
+        case .sent(let identifier):
+            Task {
+                let processedMessage = try await self.messageService.getAndProcess(
+                    identifier: identifier,
+                    folder: self.thread.path,
+                    onlyLocalKeys: false,
+                    userEmail: self.appContext.user.email,
+                    isUsingKeyManager: self.appContext.clientConfigurationService.configuration.isUsingKeyManager
+                )
+                let indexPath = IndexPath(row: 0, section: self.input.count)
+                self.handle(processedMessage: processedMessage, at: indexPath)
+            }
+        case .delete(let identifier):
+            guard let index = self.input.firstIndex(where: { $0.rawMessage.identifier == identifier })
+            else { return }
+
+            self.input.remove(at: index)
+            self.node.deleteSections([index + 1], with: .automatic)
+        }
     }
 
     private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
@@ -366,31 +362,7 @@ extension ThreadDetailsViewController {
                     appContext: appContext,
                     input: ComposeMessageInput(type: composeType),
                     handleAction: { [weak self] action in
-                        guard let self = self else { return }
-
-                        switch action {
-                        case .create, .update:
-                            // todo
-                            break
-                        case .sent(let identifier):
-                            Task {
-                                let processedMessage = try await self.messageService.getAndProcess(
-                                    identifier: identifier,
-                                    folder: self.thread.path,
-                                    onlyLocalKeys: false,
-                                    userEmail: self.appContext.user.email,
-                                    isUsingKeyManager: self.appContext.clientConfigurationService.configuration.isUsingKeyManager
-                                )
-                                let indexPath = IndexPath(row: 0, section: self.input.count)
-                                self.handle(processedMessage: processedMessage, at: indexPath)
-                            }
-                        case .delete(let identifier):
-                            guard let index = self.input.firstIndex(where: { $0.rawMessage.identifier == identifier })
-                            else { return }
-
-                            self.input.remove(at: index)
-                            self.node.deleteSections([index + 1], with: .automatic)
-                        }
+                        self?.handleComposeMessageAction(action)
                     }
                 )
                 navigationController?.pushViewController(composeVC, animated: true)
@@ -446,14 +418,19 @@ extension ThreadDetailsViewController {
             UIView.animate(
                 withDuration: 0.2,
                 animations: {
-                    self.node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
+                    if indexPath.section < self.node.numberOfSections {
+                         self.node.reloadSections([indexPath.section], with: .automatic)
+                    } else {
+                        self.node.insertSections([indexPath.section], with: .automatic)
+                    }
                 },
                 completion: { [weak self] _ in
                     self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
+                    self?.decryptDrafts()
                 })
         } else {
             input[messageIndex].processedMessage?.signature = processedMessage.signature
-            node.reloadSections(IndexSet(integer: indexPath.section), with: .automatic)
+            node.reloadSections([indexPath.section], with: .automatic)
         }
     }
 
@@ -541,8 +518,6 @@ extension ThreadDetailsViewController {
 
                         handle(processedMessage: processedMessage, at: indexPath)
                     }
-
-                    try await decryptDrafts()
                 } else {
                     handleWrongPassPhrase(passPhrase, indexPath: indexPath)
                 }
@@ -552,20 +527,22 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func decryptDrafts() async throws {
-        for (index, data) in input.enumerated() {
-            guard data.rawMessage.isDraft && data.rawMessage.isPgp else { continue }
-            let indexPath = IndexPath(row: 0, section: index + 1)
-            do {
-                let processedMessage = try await messageService.decryptAndProcess(
-                    message: data.rawMessage,
-                    onlyLocalKeys: false,
-                    userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                )
-                handle(processedMessage: processedMessage, at: indexPath)
-            } catch {
-                handle(error: error, at: indexPath)
+    private func decryptDrafts() {
+        Task {
+            for (index, data) in input.enumerated() {
+                guard data.rawMessage.isDraft && data.rawMessage.isPgp && data.processedMessage == nil else { continue }
+                let indexPath = IndexPath(row: 0, section: index + 1)
+                do {
+                    let processedMessage = try await messageService.decryptAndProcess(
+                        message: data.rawMessage,
+                        onlyLocalKeys: false,
+                        userEmail: appContext.user.email,
+                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    )
+                    handle(processedMessage: processedMessage, at: indexPath)
+                } catch {
+                    handle(error: error, at: indexPath)
+                }
             }
         }
     }
@@ -773,13 +750,13 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 text: body.removingMailThreadQuote().attributed(color: .secondaryLabel),
                 actionButtonImageName: "trash",
                 action: { [weak self] in
-                    self?.deleteDraft(id: data.rawMessage.identifier, at: messageIndex)
+                    self?.deleteDraft(id: data.rawMessage.identifier)
                 }
             )
         )
     }
 
-    private func deleteDraft(id: Identifier, at index: Int) {
+    private func deleteDraft(id: Identifier) {
         showAlertWithAction(
             title: "draft_delete_confirmation".localized,
             message: nil,
@@ -791,6 +768,9 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                         id: id,
                         from: nil
                     )
+
+                    guard let index = self?.input.firstIndex(where: { $0.rawMessage.identifier == id }) else { return }
+
                     self?.input.remove(at: index)
                     self?.node.deleteSections([index + 1], with: .automatic)
                 }

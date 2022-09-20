@@ -158,7 +158,7 @@ extension ComposeViewController: NavigationChildController {
             saveDraftIfNeeded(withAlert: true) { [weak self] error in
                 guard let self = self else { return }
                 if case .missingPassPhrase(let keyPair) = error as? ComposeMessageError {
-                    self.requestMissingPassPhraseWithModal(for: keyPair)
+                    self.requestMissingPassPhraseWithModal(for: keyPair, isDraft: true, withDiscard: true)
                 } else if let error = error {
                     self.handle(error: error)
                 } else {

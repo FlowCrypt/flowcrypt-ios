@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 
 protocol SendAsServiceType {
     func fetchList(isForceReload: Bool, for user: User) async throws -> [SendAsModel]

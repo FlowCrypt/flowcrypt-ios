@@ -5,7 +5,7 @@
 //  Created by Evgenii Kyivskyi on 10/22/21
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
-import Foundation
+
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: DraftGateway {

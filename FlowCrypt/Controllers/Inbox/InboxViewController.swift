@@ -5,7 +5,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Foundation
 
 @MainActor
 class InboxViewController: ViewController {

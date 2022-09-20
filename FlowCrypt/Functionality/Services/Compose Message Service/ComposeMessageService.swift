@@ -7,9 +7,7 @@
 //
 
 import FlowCryptUI
-import Foundation
 import FlowCryptCommon
-import UIKit
 
 typealias RecipientState = RecipientEmailsCellNode.Input.State
 

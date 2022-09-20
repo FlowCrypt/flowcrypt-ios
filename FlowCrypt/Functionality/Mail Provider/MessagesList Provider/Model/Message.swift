@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 import GoogleAPIClientForREST_Gmail
 
 struct Message: Hashable {

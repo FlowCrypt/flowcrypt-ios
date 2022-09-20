@@ -8,7 +8,6 @@
 
 import AsyncDisplayKit
 import FlowCryptUI
-import Foundation
 
 final class BackupSelectKeyViewController: TableNodeViewController {
 
