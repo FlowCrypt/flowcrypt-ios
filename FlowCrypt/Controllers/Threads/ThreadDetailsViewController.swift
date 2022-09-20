@@ -21,10 +21,11 @@ final class ThreadDetailsViewController: TableNodeViewController {
         var shouldShowRecipientsList: Bool
         var processedMessage: ProcessedMessage?
 
-        init(message: Message, isExpanded: Bool = false, shouldShowRecipientsList: Bool = false) {
+        init(message: Message, isExpanded: Bool = false, shouldShowRecipientsList: Bool = false, processedMessage: ProcessedMessage? = nil) {
             self.rawMessage = message
             self.isExpanded = isExpanded
             self.shouldShowRecipientsList = shouldShowRecipientsList
+            self.processedMessage = processedMessage
         }
     }
 
@@ -201,26 +202,46 @@ extension ThreadDetailsViewController {
 
     private func handleComposeMessageAction(_ action: ComposeMessageAction) {
         switch action {
-        case .create, .update:
-            break
-        case .sent(let identifier):
+        case .create(let messageId):
             Task {
-                let processedMessage = try await self.messageService.getAndProcess(
-                    identifier: identifier,
-                    folder: self.thread.path,
+                let processedMessage = try await messageService.getAndProcess(
+                    identifier: messageId,
+                    folder: thread.path,
                     onlyLocalKeys: false,
-                    userEmail: self.appContext.user.email,
-                    isUsingKeyManager: self.appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                )
+
+                let indexPath = IndexPath(row: 0, section: self.input.count + 1)
+                self.handle(processedMessage: processedMessage, at: indexPath)
+            }
+        case .update:
+            break
+        case let .sent(draftId, identifier):
+            Task {
+                if let draftId = draftId {
+                    guard let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) else { return }
+
+                    input.remove(at: index)
+                    node.deleteSections([index + 1], with: .automatic)
+                }
+
+                let processedMessage = try await messageService.getAndProcess(
+                    identifier: identifier,
+                    folder: thread.path,
+                    onlyLocalKeys: false,
+                    userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
                 let indexPath = IndexPath(row: 0, section: self.input.count)
                 self.handle(processedMessage: processedMessage, at: indexPath)
             }
         case .delete(let identifier):
-            guard let index = self.input.firstIndex(where: { $0.rawMessage.identifier == identifier })
+            guard let index = input.firstIndex(where: { $0.rawMessage.identifier == identifier })
             else { return }
 
-            self.input.remove(at: index)
-            self.node.deleteSections([index + 1], with: .automatic)
+            input.remove(at: index)
+            node.deleteSections([index + 1], with: .automatic)
         }
     }
 
@@ -392,7 +413,7 @@ extension ThreadDetailsViewController {
 
                 if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
-                    retryVerifyingSignatureWithRemotelyFetchedKeys(
+                    await retryVerifyingSignatureWithRemotelyFetchedKeys(
                         message: message,
                         folder: thread.path,
                         indexPath: indexPath
@@ -409,11 +430,16 @@ extension ThreadDetailsViewController {
         hideSpinner()
 
         let messageIndex = indexPath.section - 1
-        let isAlreadyProcessed = input[messageIndex].processedMessage != nil
+        let isAlreadyProcessed = messageIndex < input.count && input[messageIndex].processedMessage != nil
 
         if !isAlreadyProcessed {
-            input[messageIndex].processedMessage = processedMessage
-            input[messageIndex].isExpanded = true
+            if messageIndex < input.count {
+                input[messageIndex].rawMessage = processedMessage.message
+                input[messageIndex].processedMessage = processedMessage
+                input[messageIndex].isExpanded = true
+            } else {
+                input.append(Input(message: processedMessage.message, isExpanded: true, processedMessage: processedMessage))
+            }
 
             UIView.animate(
                 withDuration: 0.2,
@@ -508,16 +534,14 @@ extension ThreadDetailsViewController {
                 if matched {
                     let message = input[indexPath.section - 1].rawMessage
 
-                    if !message.isDraft {
-                        let processedMessage = try await messageService.decryptAndProcess(
-                            message: message,
-                            onlyLocalKeys: false,
-                            userEmail: appContext.user.email,
-                            isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                        )
+                    let processedMessage = try await messageService.decryptAndProcess(
+                        message: message,
+                        onlyLocalKeys: false,
+                        userEmail: appContext.user.email,
+                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    )
 
-                        handle(processedMessage: processedMessage, at: indexPath)
-                    }
+                    handle(processedMessage: processedMessage, at: indexPath)
                 } else {
                     handleWrongPassPhrase(passPhrase, indexPath: indexPath)
                 }
@@ -551,21 +575,19 @@ extension ThreadDetailsViewController {
         message: Message,
         folder: String,
         indexPath: IndexPath
-    ) {
-        Task {
-            do {
-                let processedMessage = try await messageService.getAndProcess(
-                    identifier: message.identifier,
-                    folder: thread.path,
-                    onlyLocalKeys: false,
-                    userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                )
-                handle(processedMessage: processedMessage, at: indexPath)
-            } catch {
-                let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
-                input[indexPath.section - 1].processedMessage?.signature = .error(message)
-            }
+    ) async {
+        do {
+            let processedMessage = try await messageService.getAndProcess(
+                identifier: message.identifier,
+                folder: thread.path,
+                onlyLocalKeys: false,
+                userEmail: appContext.user.email,
+                isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+            )
+            handle(processedMessage: processedMessage, at: indexPath)
+        } catch {
+            let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
+            input[indexPath.section - 1].processedMessage?.signature = .error(message)
         }
     }
 

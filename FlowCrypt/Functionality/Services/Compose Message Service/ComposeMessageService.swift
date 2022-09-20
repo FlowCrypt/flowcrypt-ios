@@ -219,10 +219,13 @@ final class ComposeMessageService {
     }
 
     // MARK: - Drafts
-    private var draftId: String?
+    private(set) var draft: MessageDraft?
 
-    func fetchDraftId(messageId: String) async throws {
-        self.draftId = try await draftGateway?.fetchDraftId(messageId: messageId)
+    func fetchDraft(for messageId: String) async throws {
+        guard draft == nil else { return }
+
+        let identifier = Identifier(stringId: messageId)
+        self.draft = try await draftGateway?.fetchDraft(for: identifier)
     }
 
     func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
@@ -232,22 +235,21 @@ final class ComposeMessageService {
                 fmt: .encryptInline
             ).mimeEncoded
 
-            let draft = try await draftGateway?.saveDraft(
+            self.draft = try await draftGateway?.saveDraft(
                 input: MessageGatewayInput(
                     mime: mime,
                     threadId: threadId
                 ),
-                draftId: self.draftId
+                draftId: self.draft?.id
             )
-            self.draftId = draft?.identifier
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }
     }
 
     func deleteDraft(messageId: String?) async throws {
-        if let draftId = draftId {
-            try await draftGateway?.deleteDraft(with: draftId)
+        if let draft = draft {
+            try await draftGateway?.deleteDraft(with: draft.id)
         } else if let messageId = messageId {
             let id = Identifier(stringId: messageId)
             try await messageOperationsProvider.deleteMessage(id: id, from: nil)
@@ -285,8 +287,8 @@ final class ComposeMessageService {
             )
 
             // cleaning any draft saved/created/fetched during editing
-            if let draftId = draftId {
-                try await draftGateway?.deleteDraft(with: draftId)
+            if let draft = draft {
+                try await draftGateway?.deleteDraft(with: draft.id)
             }
 
             onStateChanged?(.messageSent)

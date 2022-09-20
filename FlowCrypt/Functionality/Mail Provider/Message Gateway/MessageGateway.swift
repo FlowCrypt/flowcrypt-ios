@@ -6,7 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import GoogleAPIClientForREST_Gmail
+import Foundation
 
 struct MessageGatewayInput {
     let mime: Data
@@ -18,7 +18,8 @@ protocol MessageGateway {
 }
 
 protocol DraftGateway {
-    func fetchDraftId(messageId: String) async throws -> String?
-    func saveDraft(input: MessageGatewayInput, draftId: String?) async throws -> GTLRGmail_Draft
-    func deleteDraft(with identifier: String) async throws
+    func fetchMessage(draftIdentifier: Identifier) async throws -> Message?
+    func fetchDraft(for messageId: Identifier) async throws -> MessageDraft?
+    func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageDraft
+    func deleteDraft(with identifier: Identifier) async throws
 }

@@ -37,9 +37,9 @@ extension ComposeViewController {
             threadId: input.threadId
         )
 
-        handleSuccessfullySentMessage()
+        handleAction?(.sent(composeMessageService.draft?.id, identifier))
 
-        handleAction?(.sent(identifier))
+        handleSuccessfullySentMessage()
     }
 
     private func handleSuccessfullySentMessage() {

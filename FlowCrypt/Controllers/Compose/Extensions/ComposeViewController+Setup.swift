@@ -61,7 +61,7 @@ extension ComposeViewController {
 
         if case .draft = input.type, let messageId = input.type.info?.rfc822MsgId {
             Task {
-                try await composeMessageService.fetchDraftId(messageId: messageId)
+                try await composeMessageService.fetchDraft(for: messageId)
             }
         }
 
@@ -162,6 +162,9 @@ extension ComposeViewController: NavigationChildController {
                 } else if let error = error {
                     self.handle(error: error)
                 } else {
+                    if let messageId = self.composeMessageService.draft?.messageId {
+                        self.handleAction?(.create(messageId))
+                    }
                     self.navigationController?.popViewController(animated: true)
                 }
             }

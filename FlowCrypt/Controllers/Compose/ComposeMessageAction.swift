@@ -9,5 +9,8 @@
 import Foundation
 
 enum ComposeMessageAction {
-    case create(Message), update(Message), delete(Identifier), sent(Identifier)
+    case create(Identifier),
+         update(Identifier),
+         delete(Identifier),
+         sent(Identifier?, Identifier)
 }

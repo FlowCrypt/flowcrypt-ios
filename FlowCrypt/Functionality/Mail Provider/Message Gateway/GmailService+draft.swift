@@ -9,12 +9,42 @@
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: DraftGateway {
-    func fetchDraftId(messageId: String) async throws -> String? {
+    func fetchMessage(draftIdentifier: Identifier) async throws -> Message? {
+        guard let id = draftIdentifier.stringId else { return nil }
+
+        let query = GTLRGmailQuery_UsersDraftsGet.query(withUserId: .me, identifier: id)
+        query.format = kGTLRGmailFormatFull
+
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Message, Error>) in
+            gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+
+                guard let draft = data as? GTLRGmail_Draft else {
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Draft"))
+                }
+
+                guard let gmailMessage = draft.message else {
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Draft"))
+                }
+
+                do {
+                    let message = try Message(gmailMessage: gmailMessage)
+                    return continuation.resume(returning: message)
+                } catch {
+                    return continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+
+    func fetchDraft(for messageId: Identifier) async throws -> MessageDraft? {
         let query = GTLRGmailQuery_UsersDraftsList.query(withUserId: .me)
         query.q = "rfc822msgid:\(messageId)"
         query.maxResults = 1
 
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String?, Error>) in
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageDraft?, Error>) in
             gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
@@ -24,14 +54,17 @@ extension GmailService: DraftGateway {
                     return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListDraftsResponse"))
                 }
 
-                let draftId = list.drafts?.first?.identifier
-                return continuation.resume(returning: draftId)
+                guard let gmailDraft = list.drafts?.first else {
+                    return continuation.resume(returning: nil)
+                }
+                let draft = MessageDraft(gmailDraft: gmailDraft)
+                return continuation.resume(returning: draft)
             }
         }
     }
 
-    func saveDraft(input: MessageGatewayInput, draftId: String?) async throws -> GTLRGmail_Draft {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_Draft, Error>) in
+    func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageDraft {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageDraft, Error>) in
             guard let raw = GTLREncodeBase64(input.mime) else {
                 return continuation.resume(throwing: GmailServiceError.messageEncode)
             }
@@ -39,13 +72,14 @@ extension GmailService: DraftGateway {
             let draftQuery = createQueryForDraftAction(
                 raw: raw,
                 threadId: input.threadId,
-                draftId: draftId
+                draftId: draftId?.stringId
             )
 
             gmailService.executeQuery(draftQuery) { _, object, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
-                } else if let draft = object as? GTLRGmail_Draft {
+                } else if let gmailDraft = object as? GTLRGmail_Draft {
+                    let draft = MessageDraft(gmailDraft: gmailDraft)
                     return continuation.resume(returning: draft)
                 } else {
                     return continuation.resume(throwing: GmailServiceError.failedToParseData(nil))
@@ -54,9 +88,10 @@ extension GmailService: DraftGateway {
         }
     }
 
-    func deleteDraft(with identifier: String) async throws {
+    func deleteDraft(with identifier: Identifier) async throws {
+        guard let id = identifier.stringId else { return }
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let query = GTLRGmailQuery_UsersDraftsDelete.query(withUserId: .me, identifier: identifier)
+            let query = GTLRGmailQuery_UsersDraftsDelete.query(withUserId: .me, identifier: id)
             gmailService.executeQuery(query) { _, _, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
