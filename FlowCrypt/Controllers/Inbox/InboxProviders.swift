@@ -28,12 +28,16 @@ class InboxMessageThreadsProvider: InboxDataProvider {
     func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
 
-        let inboxData = result.threads.map {
-            InboxRenderable(
-                thread: $0,
-                folderPath: context.folderPath
-            )
-        }
+        let inboxData = result.threads
+            .sorted(by: {
+                $0.latestMessageDate(with: context.folderPath) > $1.latestMessageDate(with: context.folderPath)
+            })
+            .map {
+                InboxRenderable(
+                    thread: $0,
+                    folderPath: context.folderPath
+                )
+            }
 
         let inboxContext = InboxContext(
             data: inboxData,

@@ -17,6 +17,7 @@ extension GmailService: MessagesThreadProvider {
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext {
         let threadsList = try await getThreadsList(using: context)
         let identifiers = threadsList.threads?.compactMap(\.identifier) ?? []
+
         return try await withThrowingTaskGroup(of: MessageThread.self) { taskGroup in
             var messageThreadsById: [String: MessageThread] = [:]
             for identifier in identifiers {

@@ -45,6 +45,17 @@ struct MessageThread: Equatable {
     var isRead: Bool {
         !messages.contains(where: { !$0.isRead })
     }
+
+    private func messages(with label: String?) -> [Message] {
+        guard let label = label else { return messages }
+
+        let messageLabel = MessageLabel(gmailLabel: label)
+        return messages.filter { $0.labels.contains(messageLabel) }
+    }
+
+    func latestMessageDate(with label: String?) -> Date {
+        messages(with: label).map(\.date).max() ?? .distantPast
+    }
 }
 
 extension MessageThread {

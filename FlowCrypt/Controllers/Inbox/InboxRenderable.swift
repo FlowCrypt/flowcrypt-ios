@@ -69,13 +69,8 @@ extension InboxRenderable {
         self.messageCount = thread.messages.count
         self.subtitle = thread.subject ?? "message_missing_subject".localized
         self.isRead = thread.isRead
-        let date = thread.messages.last?.date
-        if let date = date {
-            self.dateString = DateFormatter().formatDate(date)
-        } else {
-            self.dateString = ""
-        }
-        self.date = date ?? Date()
+        self.date = thread.latestMessageDate(with: folderPath)
+        self.dateString = DateFormatter().formatDate(date)
         self.wrappedType = .thread(thread)
         self.folderPath = folderPath
 
@@ -143,12 +138,14 @@ extension InboxRenderable {
     }
 
     mutating func updateBadge() {
-        // show 'inbox' badge in 'All Mail' folder
+        // show 'inbox' badge in 'All Mail' and 'Drafts' folders
         switch wrappedType {
         case .thread(let thread):
-            self.badge = folderPath.isEmptyOrNil && thread.isInbox
-                ? "folder_all_inbox".localized.lowercased()
-                : nil
+            guard thread.isInbox,
+                  folderPath.isEmptyOrNil || folderPath == MessageLabel.draft.value
+            else { self.badge = nil; return }
+
+            self.badge = "folder_all_inbox".localized.lowercased()
         case .message:
             self.badge = nil
         }
