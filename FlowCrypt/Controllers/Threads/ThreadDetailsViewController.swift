@@ -21,7 +21,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
         var shouldShowRecipientsList: Bool
         var processedMessage: ProcessedMessage?
 
-        init(message: Message, isExpanded: Bool = false, shouldShowRecipientsList: Bool = false, processedMessage: ProcessedMessage? = nil) {
+        init(
+            message: Message,
+            isExpanded: Bool = false,
+            shouldShowRecipientsList: Bool = false,
+            processedMessage: ProcessedMessage? = nil
+        ) {
             self.rawMessage = message
             self.isExpanded = isExpanded
             self.shouldShowRecipientsList = shouldShowRecipientsList
@@ -202,8 +207,9 @@ extension ThreadDetailsViewController {
 
     private func handleComposeMessageAction(_ action: ComposeMessageAction) {
         switch action {
-        case .create(let messageId):
+        case let .update(draft, previousMessageId):
             Task {
+                guard let messageId = draft.messageId else { return }
                 let processedMessage = try await messageService.getAndProcess(
                     identifier: messageId,
                     folder: thread.path,
@@ -212,16 +218,18 @@ extension ThreadDetailsViewController {
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
 
-                let indexPath = IndexPath(row: 0, section: self.input.count + 1)
+                let indexPath: IndexPath
+                if let index = input.firstIndex(where: { $0.rawMessage.identifier == previousMessageId }) {
+                    indexPath = IndexPath(row: 0, section: index + 1)
+                } else {
+                    indexPath = IndexPath(row: 0, section: input.count + 1)
+                }
+
                 self.handle(processedMessage: processedMessage, at: indexPath)
             }
-        case .update:
-            break
         case let .sent(draftId, identifier):
             Task {
-                if let draftId = draftId {
-                    guard let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) else { return }
-
+                if let draftId = draftId, let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) {
                     input.remove(at: index)
                     node.deleteSections([index + 1], with: .automatic)
                 }
@@ -233,7 +241,7 @@ extension ThreadDetailsViewController {
                     userEmail: appContext.user.email,
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
-                let indexPath = IndexPath(row: 0, section: self.input.count)
+                let indexPath = IndexPath(row: 0, section: input.count + 1)
                 self.handle(processedMessage: processedMessage, at: indexPath)
             }
         case .delete(let identifier):
@@ -455,7 +463,8 @@ extension ThreadDetailsViewController {
                     self?.decryptDrafts()
                 })
         } else {
-            input[messageIndex].processedMessage?.signature = processedMessage.signature
+            input[messageIndex].rawMessage = processedMessage.message
+            input[messageIndex].processedMessage = processedMessage
             node.reloadSections([indexPath.section], with: .automatic)
         }
     }

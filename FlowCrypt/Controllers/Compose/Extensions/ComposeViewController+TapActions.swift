@@ -44,7 +44,7 @@ extension ComposeViewController {
                         try await self.composeMessageService.deleteDraft(messageId: messageId)
 
                         if let messageId = messageId {
-                            self.handleAction?(.delete(Identifier(stringId: messageId)))
+                            self.handleAction?(.delete(messageId))
                         }
 
                         self.navigationController?.popViewController(animated: true)

@@ -247,12 +247,11 @@ final class ComposeMessageService {
         }
     }
 
-    func deleteDraft(messageId: String?) async throws {
+    func deleteDraft(messageId: Identifier?) async throws {
         if let draft = draft {
             try await draftGateway?.deleteDraft(with: draft.id)
         } else if let messageId = messageId {
-            let id = Identifier(stringId: messageId)
-            try await messageOperationsProvider.deleteMessage(id: id, from: nil)
+            try await messageOperationsProvider.deleteMessage(id: messageId, from: nil)
         }
     }
 

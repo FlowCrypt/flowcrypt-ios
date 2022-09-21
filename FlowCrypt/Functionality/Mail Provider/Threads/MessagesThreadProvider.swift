@@ -66,19 +66,19 @@ extension GmailService: MessagesThreadProvider {
                         return continuation.resume(throwing: GmailServiceError.providerError(error))
                     }
 
-                    guard let thread = data as? GTLRGmail_Thread else {
+                    guard let gmailThread = data as? GTLRGmail_Thread else {
                         return continuation.resume(throwing: AppErr.cast("GTLRGmail_Thread"))
                     }
 
-                    let messages = thread.messages?.compactMap { try? Message(gmailMessage: $0) } ?? []
+                    let messages = gmailThread.messages?.compactMap { try? Message(gmailMessage: $0) } ?? []
 
-                    let result = MessageThread(
-                        identifier: thread.identifier,
-                        snippet: thread.snippet,
+                    let thread = MessageThread(
+                        identifier: gmailThread.identifier,
+                        snippet: gmailThread.snippet,
                         path: path,
                         messages: messages
                     )
-                    return continuation.resume(returning: result)
+                    return continuation.resume(returning: thread)
                 }
             }
         }.value

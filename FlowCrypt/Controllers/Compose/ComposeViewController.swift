@@ -260,10 +260,6 @@ final class ComposeViewController: TableNodeViewController {
 extension ComposeViewController: FilesManagerPresenter {}
 
 /*
-fixes
- - save draft when tapping back
- - add draft when going back from compose to thread view
- - delete draft from list on send
  - reload drafts list when going back from compose or thread screen
 */
 

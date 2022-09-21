@@ -162,8 +162,9 @@ extension ComposeViewController: NavigationChildController {
                 } else if let error = error {
                     self.handle(error: error)
                 } else {
-                    if let messageId = self.composeMessageService.draft?.messageId {
-                        self.handleAction?(.create(messageId))
+                    if let draft = self.composeMessageService.draft {
+                        let initialMessageId = self.input.type.info?.id
+                        self.handleAction?(.update(draft, initialMessageId))
                     }
                     self.navigationController?.popViewController(animated: true)
                 }

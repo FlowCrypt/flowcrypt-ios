@@ -12,7 +12,7 @@ struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
     struct MessageQuoteInfo: Equatable {
-        let id: String?
+        let id: Identifier?
         let recipients: [Recipient]
         let ccRecipients: [Recipient]
         let bccRecipients: [Recipient]
@@ -112,7 +112,7 @@ extension ComposeMessageInput.InputType {
 
 extension ComposeMessageInput.MessageQuoteInfo {
     init(message: Message, processed: ProcessedMessage? = nil) {
-        self.id = message.identifier.stringId
+        self.id = message.identifier
         self.recipients = message.to
         self.ccRecipients = message.cc
         self.bccRecipients = message.bcc

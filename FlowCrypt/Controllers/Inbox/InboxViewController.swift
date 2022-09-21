@@ -639,10 +639,10 @@ extension InboxViewController {
                         guard let self = self else { return }
 
                         switch action {
-                        case .create, .update:
+                        case .update:
                             // todo
                             break
-                        case .sent(let message):
+                        case .sent(let draftId, let messageId):
                             break
                         case .delete(let identifier):
                             guard let index = self.inboxInput.firstIndex(where: { $0.wrappedMessage?.identifier == identifier })

@@ -40,8 +40,10 @@ extension GmailService: DraftGateway {
     }
 
     func fetchDraft(for messageId: Identifier) async throws -> MessageDraft? {
+        guard let id = messageId.stringId else { return nil }
+
         let query = GTLRGmailQuery_UsersDraftsList.query(withUserId: .me)
-        query.q = "rfc822msgid:\(messageId)"
+        query.q = "rfc822msgid:\(id)"
         query.maxResults = 1
 
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageDraft?, Error>) in
