@@ -18,8 +18,7 @@ protocol MessageGateway {
 }
 
 protocol DraftGateway {
-    func fetchMessage(draftIdentifier: Identifier) async throws -> Message?
-    func fetchDraft(for messageId: Identifier) async throws -> MessageDraft?
-    func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageDraft
+    func fetchDraftIdentifier(for messageId: Identifier) async throws -> MessageIdentifier?
+    func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageIdentifier
     func deleteDraft(with identifier: Identifier) async throws
 }

@@ -207,9 +207,10 @@ extension ThreadDetailsViewController {
 
     private func handleComposeMessageAction(_ action: ComposeMessageAction) {
         switch action {
-        case let .update(draft, previousMessageId):
+        case .update(let messageIdentifier):
             Task {
-                guard let messageId = draft.messageId else { return }
+                guard let messageId = messageIdentifier.messageId else { return }
+
                 let processedMessage = try await messageService.getAndProcess(
                     identifier: messageId,
                     folder: thread.path,
@@ -219,7 +220,7 @@ extension ThreadDetailsViewController {
                 )
 
                 let indexPath: IndexPath
-                if let index = input.firstIndex(where: { $0.rawMessage.identifier == previousMessageId }) {
+                if let index = input.firstIndex(where: { $0.rawMessage.identifier == messageIdentifier.draftMessageId }) {
                     indexPath = IndexPath(row: 0, section: index + 1)
                 } else {
                     indexPath = IndexPath(row: 0, section: input.count + 1)
@@ -227,13 +228,14 @@ extension ThreadDetailsViewController {
 
                 self.handle(processedMessage: processedMessage, at: indexPath)
             }
-        case let .sent(draftId, identifier):
+        case .sent(let messageIdentifier):
             Task {
-                if let draftId = draftId, let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) {
+                if let draftId = messageIdentifier.draftId, let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) {
                     input.remove(at: index)
                     node.deleteSections([index + 1], with: .automatic)
                 }
 
+                guard let identifier = messageIdentifier.messageId else { return } // todo - throw
                 let processedMessage = try await messageService.getAndProcess(
                     identifier: identifier,
                     folder: thread.path,
@@ -241,11 +243,11 @@ extension ThreadDetailsViewController {
                     userEmail: appContext.user.email,
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
-                let indexPath = IndexPath(row: 0, section: input.count + 1)
+                let indexPath = IndexPath(row: 0, section: self.input.count + 1)
                 self.handle(processedMessage: processedMessage, at: indexPath)
             }
-        case .delete(let identifier):
-            guard let index = input.firstIndex(where: { $0.rawMessage.identifier == identifier })
+        case .delete(let messageIdentifier):
+            guard let index = input.firstIndex(where: { $0.rawMessage.identifier == messageIdentifier.messageId })
             else { return }
 
             input.remove(at: index)

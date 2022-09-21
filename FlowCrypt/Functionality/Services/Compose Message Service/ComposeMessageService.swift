@@ -219,13 +219,11 @@ final class ComposeMessageService {
     }
 
     // MARK: - Drafts
-    private(set) var draft: MessageDraft?
+    private(set) var messageIdentifier: MessageIdentifier?
 
-    func fetchDraft(for messageId: String) async throws {
-        guard draft == nil else { return }
-
+    func fetchDraftIdentifier(for messageId: String) async throws {
         let identifier = Identifier(stringId: messageId)
-        self.draft = try await draftGateway?.fetchDraft(for: identifier)
+        self.messageIdentifier = try await draftGateway?.fetchDraftIdentifier(for: identifier)
     }
 
     func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
@@ -235,12 +233,12 @@ final class ComposeMessageService {
                 fmt: .encryptInline
             ).mimeEncoded
 
-            self.draft = try await draftGateway?.saveDraft(
+            self.messageIdentifier = try await draftGateway?.saveDraft(
                 input: MessageGatewayInput(
                     mime: mime,
                     threadId: threadId
                 ),
-                draftId: self.draft?.id
+                draftId: self.messageIdentifier?.draftId
             )
         } catch {
             throw ComposeMessageError.gatewayError(error)
@@ -248,8 +246,8 @@ final class ComposeMessageService {
     }
 
     func deleteDraft(messageId: Identifier?) async throws {
-        if let draft = draft {
-            try await draftGateway?.deleteDraft(with: draft.id)
+        if let draftId = messageIdentifier?.draftId {
+            try await draftGateway?.deleteDraft(with: draftId)
         } else if let messageId = messageId {
             try await messageOperationsProvider.deleteMessage(id: messageId, from: nil)
         }
@@ -286,8 +284,8 @@ final class ComposeMessageService {
             )
 
             // cleaning any draft saved/created/fetched during editing
-            if let draft = draft {
-                try await draftGateway?.deleteDraft(with: draft.id)
+            if let draftId = messageIdentifier?.draftId {
+                try await draftGateway?.deleteDraft(with: draftId)
             }
 
             onStateChanged?(.messageSent)

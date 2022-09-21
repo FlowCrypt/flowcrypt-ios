@@ -8,15 +8,16 @@
 
 import GoogleAPIClientForREST_Gmail
 
-struct MessageDraft {
-    let id: Identifier
-    let threadId: String?
-    let messageId: Identifier?
+struct MessageIdentifier {
+    var draftId: Identifier?
+    var threadId: String?
+    var messageId: Identifier?
+    var draftMessageId: Identifier?
 }
 
-extension MessageDraft {
+extension MessageIdentifier {
     init(gmailDraft: GTLRGmail_Draft) {
-        self.id = Identifier(stringId: gmailDraft.identifier)
+        self.draftId = Identifier(stringId: gmailDraft.identifier)
         self.threadId = gmailDraft.message?.threadId
         self.messageId = Identifier(stringId: gmailDraft.message?.identifier)
     }

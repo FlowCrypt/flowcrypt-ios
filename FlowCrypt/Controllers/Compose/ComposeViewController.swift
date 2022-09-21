@@ -261,6 +261,7 @@ extension ComposeViewController: FilesManagerPresenter {}
 
 /*
  - reload drafts list when going back from compose or thread screen
+ - check drafts for forward and reply all
 */
 
 /* ui test

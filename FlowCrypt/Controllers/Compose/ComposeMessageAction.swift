@@ -9,7 +9,7 @@
 import Foundation
 
 enum ComposeMessageAction {
-    case update(MessageDraft, Identifier?),
-         delete(Identifier),
-         sent(Identifier?, Identifier)
+    case update(MessageIdentifier),
+         delete(MessageIdentifier),
+         sent(MessageIdentifier)
 }

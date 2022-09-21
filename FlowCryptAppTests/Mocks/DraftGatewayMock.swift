@@ -10,13 +10,13 @@
 import GoogleAPIClientForREST_Gmail
 
 class DraftGatewayMock: DraftGateway {
-    func fetchDraftId(messageId: String) async throws -> String? {
+    func fetchDraftIdentifier(for messageId: Identifier) async throws -> MessageIdentifier? {
         return nil
     }
 
-    func saveDraft(input: MessageGatewayInput, draftId: String?) async throws -> GTLRGmail_Draft {
-        return GTLRGmail_Draft()
+    func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageIdentifier {
+        return MessageIdentifier(draftId: draftId ?? .random, threadId: nil, messageId: nil)
     }
 
-    func deleteDraft(with identifier: String) async {}
+    func deleteDraft(with identifier: Identifier) async {}
 }

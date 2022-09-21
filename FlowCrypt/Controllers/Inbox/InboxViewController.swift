@@ -642,10 +642,11 @@ extension InboxViewController {
                         case .update:
                             // todo
                             break
-                        case .sent(let draftId, let messageId):
+                        case .sent(let messageIdentifier):
+                            // todo
                             break
                         case .delete(let identifier):
-                            guard let index = self.inboxInput.firstIndex(where: { $0.wrappedMessage?.identifier == identifier })
+                            guard let index = self.inboxInput.firstIndex(where: { $0.wrappedMessage?.identifier == identifier.messageId })
                             else { return }
                             self.inboxInput.remove(at: index)
                             self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)

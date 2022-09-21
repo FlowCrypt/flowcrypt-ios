@@ -13,6 +13,7 @@ import FlowCryptUI
 extension ComposeViewController {
     func sendMessage() async throws {
         view.endEditing(true)
+        stopDraftTimer()
         navigationItem.rightBarButtonItem?.isEnabled = false
 
         let spinnerTitle = contextToSend.attachments.isEmpty ? "sending_title" : "encrypting_title"
@@ -37,7 +38,12 @@ extension ComposeViewController {
             threadId: input.threadId
         )
 
-        handleAction?(.sent(input.type.info?.id, identifier))
+        let messageIdentifier = MessageIdentifier(
+            draftId: input.type.info?.id,
+            threadId: input.threadId,
+            messageId: identifier
+        )
+        handleAction?(.sent(messageIdentifier))
 
         handleSuccessfullySentMessage()
     }
