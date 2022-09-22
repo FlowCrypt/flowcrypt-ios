@@ -22,7 +22,7 @@ extension GmailService: MessagesListProvider {
             if let self = self {
                 for identifier in messageIdentifiers {
                     taskGroup.addTask {
-                        try await self.fetchMsg(id: Identifier(stringId: identifier), folder: "")
+                        try await self.fetchMessage(id: Identifier(stringId: identifier), folder: "")
                     }
                 }
 

@@ -44,7 +44,10 @@ extension ComposeViewController {
                         try await self.composeMessageService.deleteDraft(messageId: messageId)
 
                         if let messageId = messageId {
-                            let identifier = MessageIdentifier(messageId: messageId)
+                            let identifier = MessageIdentifier(
+                                threadId: self.input.type.info?.threadId,
+                                messageId: messageId
+                            )
                             self.handleAction?(.delete(identifier))
                         }
 

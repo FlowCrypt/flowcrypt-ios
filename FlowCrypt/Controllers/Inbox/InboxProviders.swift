@@ -14,7 +14,8 @@ struct InboxContext {
 }
 
 protocol InboxDataProvider {
-    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext
+    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxRenderable?
+    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext
 }
 
 // used when displaying conversations (threads) in inbox (Gmail API default)
@@ -25,7 +26,13 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxRenderable? {
+        guard let id = identifier.stringId else { return nil }
+        let thread = try await provider.fetchThread(identifier: id, path: path)
+        return InboxRenderable(thread: thread, folderPath: path)
+    }
+
+    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
 
         let inboxData = result.threads
@@ -56,7 +63,12 @@ class InboxMessageListProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxRenderable? {
+        let message = try await provider.fetchMessage(id: identifier, folder: path)
+        return InboxRenderable(message: message)
+    }
+
+    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
 
         let inboxData = result.messages.map(InboxRenderable.init)

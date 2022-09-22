@@ -9,8 +9,8 @@
 import Foundation
 
 protocol MessageProvider {
-    func fetchMsg(id: Identifier, folder: String) async throws -> Message
-    func fetchRawMsg(id: Identifier) async throws -> String
+    func fetchMessage(id: Identifier, folder: String) async throws -> Message
+    func fetchRawMessage(id: Identifier) async throws -> String
     func fetchAttachment(
         id: Identifier,
         messageId: Identifier,

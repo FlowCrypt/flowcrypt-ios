@@ -50,12 +50,14 @@ final class ThreadDetailsViewController: TableNodeViewController {
     var currentFolderPath: String {
         thread.path
     }
+    private let onComposeMessageAction: ((ComposeMessageAction) -> Void)?
     private let onComplete: MessageActionCompletion
 
     init(
         appContext: AppContextWithUser,
         messageService: MessageService? = nil,
         thread: MessageThread,
+        onComposeMessageAction: ((ComposeMessageAction) -> Void)?,
         completion: @escaping MessageActionCompletion
     ) async throws {
         self.appContext = appContext
@@ -82,6 +84,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             )
         )
         self.thread = thread
+        self.onComposeMessageAction = onComposeMessageAction
         self.onComplete = completion
         self.input = thread.messages
             .sorted(by: >)
@@ -206,6 +209,8 @@ extension ThreadDetailsViewController {
     }
 
     private func handleComposeMessageAction(_ action: ComposeMessageAction) {
+        onComposeMessageAction?(action)
+
         switch action {
         case .update(let messageIdentifier):
             Task {
@@ -615,36 +620,38 @@ extension ThreadDetailsViewController {
 }
 
 extension ThreadDetailsViewController: MessageActionsHandler {
-    private func handleSuccessfulMessage(action: MessageAction) {
+    private func handle(action: MessageAction, error: Error? = nil) {
         hideSpinner()
+
+        if let error = error {
+            logger.logError("\(action.error ?? "Error: ") \(error)")
+            return
+        }
+
         onComplete(
             action,
             .init(thread: thread, folderPath: currentFolderPath)
         )
-        navigationController?.popViewController(animated: true)
-    }
 
-    private func handleMessageAction(error: Error, action: MessageAction) {
-        logger.logError("\(action.error ?? "Error: ") \(error)")
-        hideSpinner()
+        navigationController?.popViewController(animated: true)
     }
 
     func permanentlyDelete() {
         logger.logInfo("permanently delete")
-        handle(action: .permanentlyDelete)
+        perform(action: .permanentlyDelete)
     }
 
     func moveToTrash(with trashPath: String) {
         logger.logInfo("move to trash \(trashPath)")
-        handle(action: .moveToTrash)
+        perform(action: .moveToTrash)
     }
 
     func handleArchiveTap() {
-        handle(action: .archive)
+        perform(action: .archive)
     }
 
     func handleMoveToInboxTap() {
-        handle(action: .moveToInbox)
+        perform(action: .moveToInbox)
     }
 
     func handleMarkUnreadTap() {
@@ -652,10 +659,10 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
         guard messages.isNotEmpty else { return }
 
-        handle(action: .markAsRead(false))
+        perform(action: .markAsRead(false))
     }
 
-    func handle(action: MessageAction) {
+    func perform(action: MessageAction) {
         Task {
             do {
                 showSpinner()
@@ -676,9 +683,9 @@ extension ThreadDetailsViewController: MessageActionsHandler {
                     try await threadOperationsProvider.delete(thread: thread)
                 }
 
-                handleSuccessfulMessage(action: action)
+                handle(action: action)
             } catch {
-                handleMessageAction(error: error, action: action)
+                handle(action: action, error: error)
             }
         }
     }

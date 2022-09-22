@@ -213,8 +213,7 @@ extension InboxViewController {
                         count: numberOfInboxItemsToLoad,
                         searchQuery: getSearchQuery(),
                         pagination: currentMessagesListPagination()
-                    ),
-                    userEmail: appContext.user.email
+                    )
                 )
                 state = .refresh
                 handleEndFetching(with: context, context: batchContext)
@@ -240,8 +239,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
                         pagination: pagination
-                    ),
-                    userEmail: appContext.user.email
+                    )
                 )
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
@@ -431,13 +429,12 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        var rowNumber = indexPath.row
-        if shouldShowEmptyView {
-            rowNumber -= 1
-        }
+        let rowNumber = shouldShowEmptyView ? indexPath.row - 1 : indexPath.row
+
         guard let message = inboxInput[safe: rowNumber] else {
             return
         }
+
         tableNode.deselectRow(at: indexPath, animated: true)
         open(message: message, path: viewModel.path)
     }
@@ -639,7 +636,7 @@ extension InboxViewController {
                         guard let self = self else { return }
 
                         switch action {
-                        case .update:
+                        case .update(let identifier):
                             // todo
                             break
                         case .sent(let identifier):
@@ -682,13 +679,36 @@ extension InboxViewController {
             do {
                 let viewController = try await ThreadDetailsViewController(
                     appContext: appContext,
-                    thread: thread
-                ) { [weak self] action, message in
-                    self?.handleMessageOperation(message: message, action: action)
-                }
+                    thread: thread,
+                    onComposeMessageAction: { [weak self] action in
+                        guard let self = self else { return }
+
+                        switch action {
+                        case .update(let identifier), .sent(let identifier):
+                            if let threadId = identifier.threadId {
+                                if let index = self.inboxInput.firstIndex(where: { $0.wrappedThread?.identifier == threadId }) {
+                                    Task {
+                                        if let inboxItem = try await self.inboxDataProvider.fetchInboxItem(
+                                            identifier: Identifier(stringId: threadId),
+                                            path: self.path
+                                        ) {
+                                            self.inboxInput[index] = inboxItem
+                                            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                                        }
+                                    }
+                                }
+                            }
+                        case .delete(let identifier):
+                            print(identifier)
+                        }
+                    },
+                    completion: { [weak self] action, message in
+                        self?.handleMessageOperation(message: message, action: action)
+                    }
+                )
                 navigationController?.pushViewController(viewController, animated: true)
             } catch {
-                showAlert(message: error.localizedDescription)
+                showAlert(message: error.errorMessage)
             }
         }
     }

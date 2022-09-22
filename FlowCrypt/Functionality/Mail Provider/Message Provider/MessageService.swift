@@ -93,7 +93,7 @@ final class MessageService {
         userEmail: String,
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
-        let message = try await messageProvider.fetchMsg(
+        let message = try await messageProvider.fetchMessage(
             id: identifier,
             folder: folder
         )
@@ -130,7 +130,7 @@ final class MessageService {
         var message = message
         if message.hasSignatureAttachment {
             // raw data is needed for verification of detached signature
-            message.raw = try await messageProvider.fetchRawMsg(id: message.identifier)
+            message.raw = try await messageProvider.fetchRawMessage(id: message.identifier)
         }
 
         let encrypted = message.raw ?? message.body.text

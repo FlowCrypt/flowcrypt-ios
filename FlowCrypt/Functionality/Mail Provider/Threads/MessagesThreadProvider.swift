@@ -10,6 +10,7 @@ import FlowCryptCommon
 import GoogleAPIClientForREST_Gmail
 
 protocol MessagesThreadProvider {
+    func fetchThread(identifier: String, path: String) async throws -> MessageThread
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext
 }
 
@@ -22,7 +23,7 @@ extension GmailService: MessagesThreadProvider {
             var messageThreadsById: [String: MessageThread] = [:]
             for identifier in identifiers {
                 taskGroup.addTask {
-                    try await self.getThread(identifier: identifier, path: context.folderPath ?? "")
+                    try await self.fetchThread(identifier: identifier, path: context.folderPath ?? "")
                 }
             }
             for try await result in taskGroup {
@@ -57,7 +58,7 @@ extension GmailService: MessagesThreadProvider {
         }.value
     }
 
-    private func getThread(identifier: String, path: String) async throws -> MessageThread {
+    func fetchThread(identifier: String, path: String) async throws -> MessageThread {
         return try await Task.retrying {
             try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
                 self.gmailService.executeQuery(

@@ -11,7 +11,7 @@ import GTMSessionFetcherCore
 
 extension GmailService: MessageProvider {
 
-    func fetchMsg(
+    func fetchMessage(
         id: Identifier,
         folder: String
     ) async throws -> Message {
@@ -40,7 +40,7 @@ extension GmailService: MessageProvider {
         }
     }
 
-    func fetchRawMsg(id: Identifier) async throws -> String {
+    func fetchRawMessage(id: Identifier) async throws -> String {
         guard let identifier = id.stringId else {
             throw GmailServiceError.missingMessageInfo("id")
         }
