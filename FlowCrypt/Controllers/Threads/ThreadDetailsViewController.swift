@@ -428,7 +428,7 @@ extension ThreadDetailsViewController {
 
                 if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
-                    await retryVerifyingSignatureWithRemotelyFetchedKeys(
+                    retryVerifyingSignatureWithRemotelyFetchedKeys(
                         message: message,
                         folder: thread.path,
                         indexPath: indexPath
@@ -591,19 +591,21 @@ extension ThreadDetailsViewController {
         message: Message,
         folder: String,
         indexPath: IndexPath
-    ) async {
-        do {
-            let processedMessage = try await messageService.getAndProcess(
-                identifier: message.identifier,
-                folder: thread.path,
-                onlyLocalKeys: false,
-                userEmail: appContext.user.email,
-                isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-            )
-            handle(processedMessage: processedMessage, at: indexPath)
-        } catch {
-            let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
-            input[indexPath.section - 1].processedMessage?.signature = .error(message)
+    ) {
+        Task {
+            do {
+                let processedMessage = try await messageService.getAndProcess(
+                    identifier: message.identifier,
+                    folder: thread.path,
+                    onlyLocalKeys: false,
+                    userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                )
+                handle(processedMessage: processedMessage, at: indexPath)
+            } catch {
+                let message = "message_signature_fail_reason".localizeWithArguments(error.errorMessage)
+                input[indexPath.section - 1].processedMessage?.signature = .error(message)
+            }
         }
     }
 

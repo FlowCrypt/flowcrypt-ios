@@ -4,7 +4,7 @@
     "id": "180b3b8f20d6cbd5",
     "threadId": "180b3b5efbdc46da",
     "labelIds": [
-      "INBOX"
+      "SENT"
     ],
     "snippet": "-----BEGIN PGP MESSAGE----- Version: FlowCrypt iOS 0.2 Gmail Encryption Comment: Seamlessly send and receive encrypted email wV4DT2ZlSmhZ1GoSAQdAK+ZpNvOwRHDXhg/3BRx1bUjbq3HADZ+lzdlReVDB",
     "payload": {
@@ -18,11 +18,11 @@
         },
         {
           "name": "To",
-          "value": "e2e.enterprise.test@flowcrypt.com"
+          "value": "Demo key 2 <demo@flowcrypt.com>, Dmitry at FlowCrypt <dmitry@flowcrypt.com>"
         },
         {
           "name": "From",
-          "value": "dmitry@flowcrypt.com"
+          "value": "e2e.enterprise.test@flowcrypt.com"
         },
         {
           "name": "Subject",
