@@ -16,6 +16,5 @@ struct MessageThreadContext {
 struct MessageThread: Equatable {
     let identifier: String?
     let snippet: String?
-    let path: String
     var messages: [Message]
 }

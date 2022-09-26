@@ -396,7 +396,15 @@ extension InboxViewController {
         Task {
             do {
                 TapTicFeedback.generate(.light)
-                let composeVc = try await ComposeViewController(appContext: appContext)
+                let composeVc = try await ComposeViewController(
+                    appContext: appContext,
+                    handleAction: { [weak self] action in
+                        switch action {
+                        case .update(let identifier), .sent(let identifier), .delete(let identifier):
+                            self?.fetchUpdatedInboxItem(identifier: identifier)
+                        }
+                    }
+                )
                 navigationController?.pushViewController(composeVc, animated: true)
             } catch {
                 showAlert(message: error.localizedDescription)
@@ -638,33 +646,10 @@ extension InboxViewController {
                     handleAction: { [weak self] action in
                         guard let self = self else { return }
 
-//                        switch action {
-//                        case .update(let identifier):
-//                            // todo
-//                            break
-//                        case .sent(let identifier):
-//                            guard let index = self.inboxInput.firstIndex(where: {
-//                                if let threadId = $0.wrappedThread?.identifier {
-//                                    return threadId == identifier.threadId?.stringId
-//                                } else if let messageId = $0.wrappedMessage?.identifier {
-//                                    return messageId == identifier.messageId
-//                                }
-//                                return false
-//                            }) else { return }
-//
-//                        case .delete(let identifier):
-//                            guard let index = self.inboxInput.firstIndex(where: {
-//                                if let threadId = $0.wrappedThread?.identifier {
-//                                    return threadId == identifier.threadId?.stringId
-//                                } else if let messageId = $0.wrappedMessage?.identifier {
-//                                    return messageId == identifier.messageId
-//                                }
-//                                return false
-//                            }) else { return }
-//
-//                            self.inboxInput.remove(at: index)
-//                            self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-//                        }
+                        switch action {
+                        case .update(let identifier), .sent(let identifier), .delete(let identifier):
+                            self.fetchUpdatedInboxItem(identifier: identifier)
+                        }
                     }
                 )
                 navigationController?.pushViewController(controller, animated: true)
@@ -675,16 +660,26 @@ extension InboxViewController {
     }
 
     private func fetchUpdatedInboxItem(identifier: MessageIdentifier) {
-        guard let index = inboxInput.firstIndex(where: {
-            switch $0.type {
-            case .thread(let threadId):
-                return threadId == identifier.threadId
-            case .message(let messageId):
-                return messageId == identifier.messageId
-            }
-        }) else { return }
-
         Task {
+            guard let index = inboxInput.firstIndex(where: {
+                switch $0.type {
+                case .thread(let threadId):
+                    return threadId == identifier.threadId
+                case .message(let messageId):
+                    return messageId == identifier.messageId
+                }
+            }) else {
+                if let threadId = identifier.threadId {
+                    if let inboxItem = try await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path) {
+                        if !inboxItem.messages(with: path).isEmpty {
+                            self.inboxInput.insert(inboxItem, at: 0)
+                            self.tableNode.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                        }
+                    }
+                }
+                return
+            }
+
             switch inboxInput[index].type {
             case .thread(let threadId):
                 guard let inboxItem = try await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path)

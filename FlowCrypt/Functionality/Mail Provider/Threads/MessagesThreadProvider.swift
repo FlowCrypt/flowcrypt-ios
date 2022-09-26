@@ -77,7 +77,6 @@ extension GmailService: MessagesThreadProvider {
                     let thread = MessageThread(
                         identifier: gmailThread.identifier,
                         snippet: gmailThread.snippet,
-                        path: path,
                         messages: messages
                     )
                     return continuation.resume(returning: thread)
