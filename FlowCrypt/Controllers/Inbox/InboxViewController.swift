@@ -24,13 +24,13 @@ class InboxViewController: ViewController {
 
     private let inboxDataProvider: InboxDataProvider
     private let viewModel: InboxViewModel
-    private var inboxInput: [InboxRenderable] = []
+    private var inboxInput: [InboxItem] = []
     var state: InboxViewController.State = .idle
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
     }
     private var shouldShowEmptyView: Bool {
-        inboxInput.isNotEmpty && (viewModel.path == "SPAM" || viewModel.path == "TRASH")
+        inboxInput.isNotEmpty && (["SPAM", "TRASH"].contains(viewModel.path))
     }
 
     var path: String { viewModel.path }
@@ -431,12 +431,13 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         let rowNumber = shouldShowEmptyView ? indexPath.row - 1 : indexPath.row
 
-        guard let message = inboxInput[safe: rowNumber] else {
+        guard let inboxItem = inboxInput[safe: rowNumber] else {
             return
         }
 
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(message: message, path: viewModel.path)
+
+        open(inboxItem: inboxItem, path: viewModel.path)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
@@ -522,13 +523,12 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 }
 
-// MARK: - MsgListViewController
 extension InboxViewController {
-    func getUpdatedIndex(for message: InboxRenderable) -> Int? {
+    func getUpdatedIndex(for inboxItem: InboxItem) -> Int? {
         let index = inboxInput.firstIndex(where: {
-            $0.title == message.title && $0.subtitle == message.subtitle && $0.wrappedType == message.wrappedType
+            $0.title == inboxItem.title && $0.subtitle == inboxItem.subtitle && $0.type == inboxItem.type
         })
-        logger.logInfo("Try to update message at \(String(describing: index))")
+        logger.logInfo("Try to update inbox item at \(String(describing: index))")
         return index
     }
 
@@ -536,18 +536,9 @@ extension InboxViewController {
         guard inboxInput.count > index else { return }
 
         logger.logInfo("Mark as read \(isRead) at \(index)")
-        inboxInput[index].isRead = isRead
 
         // Mark wrapped message/thread(all mails in thread) as read/unread
-        if var wrappedThread = inboxInput[index].wrappedThread {
-            for i in 0 ..< wrappedThread.messages.count {
-                wrappedThread.messages[i].markAsRead(isRead)
-            }
-            inboxInput[index].wrappedType = .thread(wrappedThread)
-        } else if var wrappedMessage = inboxInput[index].wrappedMessage {
-            wrappedMessage.markAsRead(isRead)
-            inboxInput[index].wrappedType = .message(wrappedMessage)
-        }
+        inboxInput[index].markAsRead(isRead)
 
         let animationDuration = 0.3
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
@@ -558,7 +549,7 @@ extension InboxViewController {
     func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int) {
         guard inboxInput.count > index else { return }
 
-        inboxInput[index].updateMessage(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+        inboxInput[index].update(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
 
         let animationDuration = 0.3
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
@@ -604,19 +595,31 @@ extension InboxViewController {
         }
     }
 
-    func open(message: InboxRenderable, path: String) {
-        switch message.wrappedType {
-        case .message(let message):
-            if message.isDraft {
-                open(draft: message, appContext: appContext)
-            } else {
-                open(message: message, path: path, appContext: appContext)
-            }
-        case .thread(let thread):
-            if let message = thread.messages.first, thread.messages.count == 1, message.isDraft {
-                open(draft: message, appContext: appContext)
-            } else {
-                open(thread: thread, appContext: appContext)
+    func open(inboxItem: InboxItem, path: String) {
+        if inboxItem.isDraft, let draft = inboxItem.messages.first {
+            open(draft: draft, appContext: appContext)
+        } else {
+            Task {
+                do {
+                    let viewController = try await ThreadDetailsViewController(
+                        appContext: appContext,
+                        inboxItem: inboxItem,
+                        onComposeMessageAction: { [weak self] action in
+                            guard let self = self else { return }
+
+                            switch action {
+                            case .update(let identifier), .sent(let identifier), .delete(let identifier):
+                                self.fetchUpdatedInboxItem(identifier: identifier)
+                            }
+                        },
+                        completion: { [weak self] action, message in
+                            self?.handleMessageOperation(message: message, action: action)
+                        }
+                    )
+                    navigationController?.pushViewController(viewController, animated: true)
+                } catch {
+                    showAlert(message: error.errorMessage)
+                }
             }
         }
     }
@@ -635,26 +638,33 @@ extension InboxViewController {
                     handleAction: { [weak self] action in
                         guard let self = self else { return }
 
-                        switch action {
-                        case .update(let identifier):
-                            // todo
-                            break
-                        case .sent(let identifier):
-                            // todo
-                            break
-                        case .delete(let identifier):
-                            guard let index = self.inboxInput.firstIndex(where: {
-                                if let threadId = $0.wrappedThread?.identifier {
-                                    return threadId == identifier.threadId
-                                } else if let messageId = $0.wrappedMessage?.identifier {
-                                    return messageId == identifier.messageId
-                                }
-                                return false
-                            }) else { return }
-
-                            self.inboxInput.remove(at: index)
-                            self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-                        }
+//                        switch action {
+//                        case .update(let identifier):
+//                            // todo
+//                            break
+//                        case .sent(let identifier):
+//                            guard let index = self.inboxInput.firstIndex(where: {
+//                                if let threadId = $0.wrappedThread?.identifier {
+//                                    return threadId == identifier.threadId?.stringId
+//                                } else if let messageId = $0.wrappedMessage?.identifier {
+//                                    return messageId == identifier.messageId
+//                                }
+//                                return false
+//                            }) else { return }
+//
+//                        case .delete(let identifier):
+//                            guard let index = self.inboxInput.firstIndex(where: {
+//                                if let threadId = $0.wrappedThread?.identifier {
+//                                    return threadId == identifier.threadId?.stringId
+//                                } else if let messageId = $0.wrappedMessage?.identifier {
+//                                    return messageId == identifier.messageId
+//                                }
+//                                return false
+//                            }) else { return }
+//
+//                            self.inboxInput.remove(at: index)
+//                            self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+//                        }
                     }
                 )
                 navigationController?.pushViewController(controller, animated: true)
@@ -664,57 +674,37 @@ extension InboxViewController {
         }
     }
 
-    private func open(message: Message, path: String, appContext: AppContextWithUser) {
-        let thread = MessageThread(
-            identifier: message.threadId,
-            snippet: nil,
-            path: path,
-            messages: [message]
-        )
-        open(thread: thread, appContext: appContext)
-    }
+    private func fetchUpdatedInboxItem(identifier: MessageIdentifier) {
+        guard let index = inboxInput.firstIndex(where: {
+            switch $0.type {
+            case .thread(let threadId):
+                return threadId == identifier.threadId
+            case .message(let messageId):
+                return messageId == identifier.messageId
+            }
+        }) else { return }
 
-    private func open(thread: MessageThread, appContext: AppContextWithUser) {
         Task {
-            do {
-                let viewController = try await ThreadDetailsViewController(
-                    appContext: appContext,
-                    thread: thread,
-                    onComposeMessageAction: { [weak self] action in
-                        guard let self = self else { return }
+            switch inboxInput[index].type {
+            case .thread(let threadId):
+                guard let inboxItem = try await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path)
+                else { return }
 
-                        switch action {
-                        case .update(let identifier), .sent(let identifier):
-                            if let threadId = identifier.threadId {
-                                if let index = self.inboxInput.firstIndex(where: { $0.wrappedThread?.identifier == threadId }) {
-                                    Task {
-                                        if let inboxItem = try await self.inboxDataProvider.fetchInboxItem(
-                                            identifier: Identifier(stringId: threadId),
-                                            path: self.path
-                                        ) {
-                                            self.inboxInput[index] = inboxItem
-                                            self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-                                        }
-                                    }
-                                }
-                            }
-                        case .delete(let identifier):
-                            print(identifier)
-                        }
-                    },
-                    completion: { [weak self] action, message in
-                        self?.handleMessageOperation(message: message, action: action)
-                    }
-                )
-                navigationController?.pushViewController(viewController, animated: true)
-            } catch {
-                showAlert(message: error.errorMessage)
+                if inboxItem.messages(with: path).isEmpty {
+                    self.inboxInput.remove(at: index)
+                    self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                } else {
+                    self.inboxInput[index] = inboxItem
+                    self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                }
+            case .message(let messageId):
+                break
             }
         }
     }
 
     // MARK: Operation
-    private func handleMessageOperation(message: InboxRenderable, action: MessageAction) {
+    private func handleMessageOperation(message: InboxItem, action: MessageAction) {
         guard let indexToUpdate = getUpdatedIndex(for: message) else {
             return
         }
@@ -737,3 +727,14 @@ extension InboxViewController {
         }
     }
 }
+
+/*
+open draft:
+ - update
+  - fetch updated thread
+ - sent
+  - fetch updated thread and check if drafts there
+ - delete
+  - fetch updated thread
+
+ */

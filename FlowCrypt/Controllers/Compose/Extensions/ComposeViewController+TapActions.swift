@@ -45,7 +45,7 @@ extension ComposeViewController {
 
                         if let messageId = messageId {
                             let identifier = MessageIdentifier(
-                                threadId: self.input.type.info?.threadId,
+                                threadId: Identifier(stringId: self.input.type.info?.threadId),
                                 messageId: messageId
                             )
                             self.handleAction?(.delete(identifier))

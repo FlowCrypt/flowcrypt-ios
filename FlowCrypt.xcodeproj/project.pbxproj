@@ -227,7 +227,7 @@
 		9F7E8F19269C538E0021C07F /* NavigationChildController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E8F18269C538E0021C07F /* NavigationChildController.swift */; };
 		9F7E903926A1AD7A0021C07F /* KeyDetailsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7E903826A1AD7A0021C07F /* KeyDetailsTests.swift */; };
 		9F7ECCA7272C3FB4008A1770 /* TextImageNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ECCA6272C3FB4008A1770 /* TextImageNode.swift */; };
-		9F7ECCA9272C47DB008A1770 /* InboxRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ECCA8272C47DA008A1770 /* InboxRenderable.swift */; };
+		9F7ECCA9272C47DB008A1770 /* InboxItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F7ECCA8272C47DA008A1770 /* InboxItem.swift */; };
 		9F82D352256D74FA0069A702 /* InboxViewContainerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F82D351256D74FA0069A702 /* InboxViewContainerController.swift */; };
 		9F883912271F242900669B56 /* ThreadDetailsDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */; };
 		9F8839142721EB5000669B56 /* MessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8839132721EB5000669B56 /* MessageAction.swift */; };
@@ -715,7 +715,7 @@
 		9F7E8F18269C538E0021C07F /* NavigationChildController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationChildController.swift; sourceTree = "<group>"; };
 		9F7E903826A1AD7A0021C07F /* KeyDetailsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailsTests.swift; sourceTree = "<group>"; };
 		9F7ECCA6272C3FB4008A1770 /* TextImageNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextImageNode.swift; sourceTree = "<group>"; };
-		9F7ECCA8272C47DA008A1770 /* InboxRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxRenderable.swift; sourceTree = "<group>"; };
+		9F7ECCA8272C47DA008A1770 /* InboxItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InboxItem.swift; sourceTree = "<group>"; };
 		9F8220D426336626004B2009 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		9F8277952373732000E19C07 /* UIImageExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImageExtensions.swift; sourceTree = "<group>"; };
 		9F82779D23737E3800E19C07 /* MessageTextSubjectNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextSubjectNode.swift; sourceTree = "<group>"; };
@@ -1944,7 +1944,7 @@
 		C132B9D71EC30E0B00763715 /* Inbox */ = {
 			isa = PBXGroup;
 			children = (
-				9F7ECCA8272C47DA008A1770 /* InboxRenderable.swift */,
+				9F7ECCA8272C47DA008A1770 /* InboxItem.swift */,
 				C132B9D81EC30E1D00763715 /* InboxViewController.swift */,
 				9FAFD75A2713880300321FA4 /* InboxViewController+Factory.swift */,
 				9FAFD7582713870800321FA4 /* InboxViewController+State.swift */,
@@ -2831,7 +2831,7 @@
 				215897E8267A553300423694 /* FilesManager.swift in Sources */,
 				9F5C2A77257D705100DE9B4B /* MessageLabel.swift in Sources */,
 				9F93623F2573D16F0009912F /* Gmail+Message.swift in Sources */,
-				9F7ECCA9272C47DB008A1770 /* InboxRenderable.swift in Sources */,
+				9F7ECCA9272C47DB008A1770 /* InboxItem.swift in Sources */,
 				042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */,
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
 				049E606327FDB9C70089EE2A /* ComposeViewController+Keyboard.swift in Sources */,

@@ -9,25 +9,28 @@
 import GoogleAPIClientForREST_Gmail
 
 protocol MessagesThreadOperationsProvider {
-    func mark(thread: MessageThread, asRead: Bool, in folder: String) async throws
-    func delete(thread: MessageThread) async throws
-    func moveThreadToTrash(thread: MessageThread) async throws
-    func moveThreadToInbox(thread: MessageThread) async throws
-    func markThreadAsUnread(thread: MessageThread, folder: String) async throws
-    func markThreadAsRead(thread: MessageThread, folder: String) async throws
-    func archive(thread: MessageThread, in folder: String) async throws
+    func mark(id: String?, asRead: Bool, in folder: String) async throws
+    func delete(id: String?) async throws
+    func moveThreadToTrash(id: String?, labels: Set<MessageLabel>) async throws
+    func moveThreadToInbox(id: String?) async throws
+    func markThreadAsUnread(id: String?, folder: String) async throws
+    func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws
+    func archive(messages: [Message], in folder: String) async throws
 }
 
 extension GmailService: MessagesThreadOperationsProvider {
-    func delete(thread: MessageThread) async throws {
+    func mark(id: String?, asRead: Bool, in folder: String) async throws {
+    }
+
+    func delete(id: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            guard let identifier = thread.identifier else {
+            guard let id = id else {
                 return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
             let query = GTLRGmailQuery_UsersThreadsDelete.query(
                 withUserId: .me,
-                identifier: identifier
+                identifier: id
             )
 
             self.gmailService.executeQuery(query) { _, _, error in
@@ -39,30 +42,30 @@ extension GmailService: MessagesThreadOperationsProvider {
         }
     }
 
-    func moveThreadToTrash(thread: MessageThread) async throws {
-        let labelsToRemove = [MessageLabel.inbox, MessageLabel.sent].filter { thread.labels.contains($0) }
-        try await update(thread: thread, labelsToAdd: [.trash], labelsToRemove: labelsToRemove)
+    func moveThreadToTrash(id: String?, labels: Set<MessageLabel>) async throws {
+        let labelsToRemove = [MessageLabel.inbox, MessageLabel.sent].filter { labels.contains($0) }
+        try await update(id: id, labelsToAdd: [.trash], labelsToRemove: labelsToRemove)
     }
 
-    func moveThreadToInbox(thread: MessageThread) async throws {
-        try await update(thread: thread, labelsToAdd: [.inbox], labelsToRemove: [.trash])
+    func moveThreadToInbox(id: String?) async throws {
+        try await update(id: id, labelsToAdd: [.inbox], labelsToRemove: [.trash])
     }
 
-    func markThreadAsUnread(thread: MessageThread, folder: String) async throws {
-        try await update(thread: thread, labelsToAdd: [.unread])
+    func markThreadAsUnread(id: String?, folder: String) async throws {
+        try await update(id: id, labelsToAdd: [.unread])
     }
 
-    func markThreadAsRead(thread: MessageThread, folder: String) async throws {
-        try await update(thread: thread, labelsToRemove: [.unread])
+    func markThreadAsRead(id: String?, folder: String) async throws {
+        try await update(id: id, labelsToRemove: [.unread])
     }
 
-    func mark(thread: MessageThread, asRead: Bool, in folder: String) async throws {
+    func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws {
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
-            for message in thread.messages {
+            for id in messagesIds {
                 taskGroup.addTask {
                     asRead
-                    ? try await self.markAsRead(id: message.identifier, folder: folder)
-                    : try await self.markAsUnread(id: message.identifier, folder: folder)
+                    ? try await self.markAsRead(id: id, folder: folder)
+                    : try await self.markAsUnread(id: id, folder: folder)
                 }
             }
 
@@ -70,19 +73,22 @@ extension GmailService: MessagesThreadOperationsProvider {
         }
     }
 
-    func archive(thread: MessageThread, in folder: String) async throws {
+    func archive(messages: [Message], in folder: String) async throws {
         // manually updated each message rather than using update(thread:...) method
         // https://github.com/FlowCrypt/flowcrypt-ios/pull/1769#discussion_r932964129
-        try await archiveBatchMessages(messages: thread.messages)
+        try await batchUpdate(
+            messages: messages,
+            labelsToRemove: [.inbox]
+        )
     }
 
     private func update(
-        thread: MessageThread,
+        id: String?,
         labelsToAdd: [MessageLabel] = [],
         labelsToRemove: [MessageLabel] = []
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            guard let identifier = thread.identifier else {
+            guard let id = id else {
                 return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
@@ -93,7 +99,7 @@ extension GmailService: MessagesThreadOperationsProvider {
             let query = GTLRGmailQuery_UsersThreadsModify.query(
                 withObject: request,
                 userId: .me,
-                identifier: identifier
+                identifier: id
             )
 
             self.gmailService.executeQuery(query) { _, _, error in

@@ -260,6 +260,7 @@ final class ComposeViewController: TableNodeViewController {
 extension ComposeViewController: FilesManagerPresenter {}
 
 /*
+ - show empty view as inbox table header
  - reload drafts list when going back from compose or thread screen
  - check drafts for forward and reply all
 */

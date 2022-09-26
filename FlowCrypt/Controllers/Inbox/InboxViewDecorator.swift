@@ -10,7 +10,7 @@ import FlowCryptUI
 import UIKit
 
 extension InboxCellNode.Input {
-    init(_ element: InboxRenderable) {
+    init(_ element: InboxItem) {
         let email = element.title
         let date = element.dateString
         let msg = element.subtitle
@@ -32,8 +32,8 @@ extension InboxCellNode.Input {
         self.init(
             emailText: email,
             countText: {
-                guard element.messageCount > 1 else { return nil }
-                let count = element.messageCount > 99 ? "99+" : String(element.messageCount)
+                guard element.messages.count > 1 else { return nil }
+                let count = element.messages.count > 99 ? "99+" : String(element.messages.count)
                 return NSAttributedString.text(from: "(\(count))", style: style, color: textColor)
             }(),
             dateText: NSAttributedString.text(from: date, style: style, color: dateColor),

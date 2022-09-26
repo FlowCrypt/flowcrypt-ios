@@ -9,12 +9,12 @@
 import Foundation
 
 struct InboxContext {
-    let data: [InboxRenderable]
+    let data: [InboxItem]
     let pagination: MessagesListPagination
 }
 
 protocol InboxDataProvider {
-    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxRenderable?
+    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxItem?
     func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext
 }
 
@@ -26,25 +26,29 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxRenderable? {
+    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxItem? {
         guard let id = identifier.stringId else { return nil }
         let thread = try await provider.fetchThread(identifier: id, path: path)
-        return InboxRenderable(thread: thread, folderPath: path)
+        return InboxItem(
+            messages: thread.messages,
+            folderPath: path,
+            type: .thread(identifier)
+        )
     }
 
     func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
 
         let inboxData = result.threads
-            .sorted(by: {
-                $0.latestMessageDate(with: context.folderPath) > $1.latestMessageDate(with: context.folderPath)
-            })
             .map {
-                InboxRenderable(
+                InboxItem(
                     thread: $0,
                     folderPath: context.folderPath
                 )
             }
+            .sorted(by: {
+                $0.latestMessageDate(with: context.folderPath) > $1.latestMessageDate(with: context.folderPath)
+            })
 
         let inboxContext = InboxContext(
             data: inboxData,
@@ -63,15 +67,15 @@ class InboxMessageListProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxRenderable? {
+    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxItem? {
         let message = try await provider.fetchMessage(id: identifier, folder: path)
-        return InboxRenderable(message: message)
+        return InboxItem(message: message)
     }
 
     func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
 
-        let inboxData = result.messages.map(InboxRenderable.init)
+        let inboxData = result.messages.map(InboxItem.init)
 
         let inboxContext = InboxContext(
             data: inboxData,

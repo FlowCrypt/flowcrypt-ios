@@ -30,11 +30,11 @@ extension MessageActionsHandler where Self: UIViewController {
         Logger.nested("MessageActions")
     }
 
-    func setupNavigationBar(thread: MessageThread) {
+    func setupNavigationBar(inboxItem: InboxItem) {
         Task {
             do {
                 let path = try await trashFolderProvider.trashFolderPath
-                setupNavigationBarItems(thread: thread, trashFolderPath: path)
+                setupNavigationBarItems(inboxItem: inboxItem, trashFolderPath: path)
             } catch {
                 // todo - handle?
                 logger.logError("setupNavigationBar: \(error)")
@@ -42,7 +42,7 @@ extension MessageActionsHandler where Self: UIViewController {
         }
     }
 
-    private func setupNavigationBarItems(thread: MessageThread, trashFolderPath: String?) {
+    private func setupNavigationBarItems(inboxItem: InboxItem, trashFolderPath: String?) {
         logger.logInfo("setup navigation bar with \(trashFolderPath ?? "N/A")")
         logger.logInfo("currentFolderPath \(currentFolderPath)")
 
@@ -92,10 +92,10 @@ extension MessageActionsHandler where Self: UIViewController {
         default:
             // in any other folders
             items = [helpButton, trashButton, unreadButton]
-            if thread.isInbox {
+            if inboxItem.isInbox {
                 logger.logInfo("inbox - helpButton, archiveButton, trashButton, unreadButton")
                 items.insert(archiveButton, at: 1)
-            } else if thread.shouldShowMoveToInboxButton {
+            } else if inboxItem.shouldShowMoveToInboxButton {
                 logger.logInfo("archive - helpButton, moveToInboxButton, trashButton, unreadButton")
                 items.insert(moveToInboxButton, at: 1)
             } else {

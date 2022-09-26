@@ -43,12 +43,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
     private let messageService: MessageService
     private let messageOperationsProvider: MessageOperationsProvider
     private let threadOperationsProvider: MessagesThreadOperationsProvider
-    private var thread: MessageThread
+    private var inboxItem: InboxItem
     private var input: [ThreadDetailsViewController.Input]
 
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
-        thread.path
+        inboxItem.folderPath
     }
     private let onComposeMessageAction: ((ComposeMessageAction) -> Void)?
     private let onComplete: MessageActionCompletion
@@ -56,7 +56,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     init(
         appContext: AppContextWithUser,
         messageService: MessageService? = nil,
-        thread: MessageThread,
+        inboxItem: InboxItem,
         onComposeMessageAction: ((ComposeMessageAction) -> Void)?,
         completion: @escaping MessageActionCompletion
     ) async throws {
@@ -83,10 +83,10 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 remoteFoldersProvider: try mailProvider.remoteFoldersProvider
             )
         )
-        self.thread = thread
+        self.inboxItem = inboxItem
         self.onComposeMessageAction = onComposeMessageAction
         self.onComplete = completion
-        self.input = thread.messages
+        self.input = inboxItem.messages
             .sorted(by: >)
             .map { Input(message: $0) }
 
@@ -103,16 +103,16 @@ final class ThreadDetailsViewController: TableNodeViewController {
         node.delegate = self
         node.dataSource = self
 
-        setupNavigationBar(thread: thread)
+        setupNavigationBar(inboxItem: inboxItem)
         expandThreadMessageAndMarkAsRead()
     }
 
     private func expandThreadMessageAndMarkAsRead() {
         Task {
-            try await threadOperationsProvider.mark(thread: thread, asRead: true, in: currentFolderPath)
+            try await threadOperationsProvider.mark(id: inboxItem.threadId, asRead: true, in: inboxItem.folderPath)
         }
         let indexOfSectionToExpand = input.firstIndex(where: { !$0.rawMessage.isRead })
-            ?? input.firstIndex(where: { !$0.rawMessage.isRead && !$0.rawMessage.isDraft })
+            ?? input.lastIndex(where: { !$0.rawMessage.isDraft })
             ?? input.count - 1
         let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand + 1)
         handleExpandTap(at: indexPath)
@@ -218,7 +218,7 @@ extension ThreadDetailsViewController {
 
                 let processedMessage = try await messageService.getAndProcess(
                     identifier: messageId,
-                    folder: thread.path,
+                    folder: inboxItem.folderPath,
                     onlyLocalKeys: false,
                     userEmail: appContext.user.email,
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
@@ -243,7 +243,7 @@ extension ThreadDetailsViewController {
                 guard let identifier = messageIdentifier.messageId else { return } // todo - throw
                 let processedMessage = try await messageService.getAndProcess(
                     identifier: identifier,
-                    folder: thread.path,
+                    folder: inboxItem.folderPath,
                     onlyLocalKeys: false,
                     userEmail: appContext.user.email,
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
@@ -420,7 +420,7 @@ extension ThreadDetailsViewController {
             do {
                 var processedMessage = try await messageService.getAndProcess(
                     identifier: message.identifier,
-                    folder: thread.path,
+                    folder: inboxItem.folderPath,
                     onlyLocalKeys: true,
                     userEmail: appContext.user.email,
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
@@ -430,7 +430,7 @@ extension ThreadDetailsViewController {
                     processedMessage.signature = .pending
                     retryVerifyingSignatureWithRemotelyFetchedKeys(
                         message: message,
-                        folder: thread.path,
+                        folder: inboxItem.folderPath,
                         indexPath: indexPath
                     )
                 }
@@ -488,7 +488,7 @@ extension ThreadDetailsViewController {
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
                 // todo - the missing msg should be removed from the list in inbox view
                 // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
-                showToast("Message not found in folder: \(thread.path)")
+                showToast("Message not found in folder: \(inboxItem.folderPath)")
             } else {
                 showRetryAlert(message: error.errorMessage, onRetry: { [weak self] _ in
                     self?.fetchDecryptAndRenderMsg(at: indexPath)
@@ -596,7 +596,7 @@ extension ThreadDetailsViewController {
             do {
                 let processedMessage = try await messageService.getAndProcess(
                     identifier: message.identifier,
-                    folder: thread.path,
+                    folder: inboxItem.folderPath,
                     onlyLocalKeys: false,
                     userEmail: appContext.user.email,
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
@@ -632,7 +632,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
         onComplete(
             action,
-            .init(thread: thread, folderPath: currentFolderPath)
+            inboxItem
         )
 
         navigationController?.popViewController(animated: true)
@@ -671,18 +671,18 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
                 switch action {
                 case .archive:
-                    try await threadOperationsProvider.archive(thread: thread, in: currentFolderPath)
+                    try await threadOperationsProvider.archive(messages: inboxItem.messages, in: inboxItem.folderPath)
                 case .markAsRead(let isRead):
                     guard !isRead else { return }
                     Task { // Run mark as unread operation in another thread
-                        try await threadOperationsProvider.mark(thread: thread, asRead: false, in: currentFolderPath)
+                        try await threadOperationsProvider.mark(id: inboxItem.threadId, asRead: false, in: inboxItem.folderPath)
                     }
                 case .moveToTrash:
-                    try await threadOperationsProvider.moveThreadToTrash(thread: thread)
+                    try await threadOperationsProvider.moveThreadToTrash(id: inboxItem.threadId, labels: inboxItem.labels)
                 case .moveToInbox:
-                    try await threadOperationsProvider.moveThreadToInbox(thread: thread)
+                    try await threadOperationsProvider.moveThreadToInbox(id: inboxItem.threadId)
                 case .permanentlyDelete:
-                    try await threadOperationsProvider.delete(thread: thread)
+                    try await threadOperationsProvider.delete(id: inboxItem.threadId)
                 }
 
                 handle(action: action)
@@ -712,7 +712,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             guard let self = self else { return ASCellNode() }
 
             guard indexPath.section > 0 else {
-                let subject = self.thread.subject ?? "no subject"
+                let subject = self.inboxItem.subject ?? "no subject"
                 return MessageSubjectNode(subject.attributed(.medium(18)))
             }
 
@@ -805,16 +805,22 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             actionButtonTitle: "delete".localized,
             actionStyle: .destructive,
             onAction: { [weak self] _ in
+                guard let self = self else { return }
                 Task {
-                    try await self?.messageOperationsProvider.deleteMessage(
+                    try await self.messageOperationsProvider.deleteMessage(
                         id: id,
                         from: nil
                     )
 
-                    guard let index = self?.input.firstIndex(where: { $0.rawMessage.identifier == id }) else { return }
+                    let messageIdentifier = MessageIdentifier(
+                        threadId: Identifier(stringId: self.inboxItem.threadId)
+                    )
+                    self.onComposeMessageAction?(.delete(messageIdentifier))
 
-                    self?.input.remove(at: index)
-                    self?.node.deleteSections([index + 1], with: .automatic)
+                    guard let index = self.input.firstIndex(where: { $0.rawMessage.identifier == id }) else { return }
+
+                    self.input.remove(at: index)
+                    self.node.deleteSections([index + 1], with: .automatic)
                 }
             }
         )
@@ -836,7 +842,7 @@ extension ThreadDetailsViewController: NavigationChildController {
         logger.logInfo("Back button. Messages are all read")
         onComplete(
             .markAsRead(true),
-            .init(thread: thread, folderPath: currentFolderPath)
+            inboxItem
         )
         navigationController?.popViewController(animated: true)
     }

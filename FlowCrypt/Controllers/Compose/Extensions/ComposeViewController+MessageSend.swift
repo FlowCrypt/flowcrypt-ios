@@ -40,7 +40,7 @@ extension ComposeViewController {
 
         let messageIdentifier = MessageIdentifier(
             draftId: input.type.info?.id,
-            threadId: input.threadId,
+            threadId: Identifier(stringId: input.threadId),
             messageId: identifier
         )
         handleAction?(.sent(messageIdentifier))
