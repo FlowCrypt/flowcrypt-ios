@@ -261,18 +261,5 @@ extension ComposeViewController: FilesManagerPresenter {}
 
 /*
  - show empty view as inbox table header
- - reload drafts list when going back from compose or thread screen
  - check drafts for forward and reply all
 */
-
-/* ui test
-- open compose
-- create draft
- - go back
- - go to drafts folder
- - check if folder there
- - go to inbox
- - open existing thread
- - create reply
- - check draft
- */

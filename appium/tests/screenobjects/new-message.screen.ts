@@ -18,7 +18,9 @@ const SELECTORS = {
   SET_PASSWORD_BUTTON: '~Set',
   CANCEL_BUTTON: '~Cancel',
   BACK_BUTTON: '~aid-back-button',
+  DELETE_BUTTON: '~aid-compose-delete',
   SEND_BUTTON: '~aid-compose-send',
+  CONFIRM_DELETING: '~Delete',
   MESSAGE_PASSWORD_MODAL: '~aid-message-password-modal',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
@@ -84,8 +86,16 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.BACK_BUTTON);
   }
 
+  get deleteButton() {
+    return $(SELECTORS.DELETE_BUTTON);
+  }
+
   get sendButton() {
     return $(SELECTORS.SEND_BUTTON);
+  }
+
+  get confirmDeletingButton() {
+    return $(SELECTORS.CONFIRM_DELETING)
   }
 
   get passwordCell() {
@@ -364,8 +374,16 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.backButton);
   }
 
+  clickDeleteButton = async () => {
+    await ElementHelper.waitAndClick(await this.deleteButton);
+  }
+
   clickSendButton = async () => {
     await ElementHelper.waitAndClick(await this.sendButton);
+  }
+
+  confirmDelete = async () => {
+    await ElementHelper.waitAndClick(await this.confirmDeletingButton);
   }
 
   clickToggleRecipientsButton = async () => {
@@ -399,6 +417,15 @@ class NewMessageScreen extends BaseScreen {
   setMessagePassword = async (password: string) => {
     await (await this.passwordTextField).setValue(password);
     await this.clickSetPasswordButton();
+  }
+
+  clickComposeMessage = async () => {
+    await ElementHelper.waitAndClick(await this.composeSecurityMessage);
+  }
+
+  addMessageText = async (text: string) => {
+    const messageEl = await this.composeSecurityMessage;
+    await messageEl.sendKeys([text]);
   }
 }
 

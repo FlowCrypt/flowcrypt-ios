@@ -790,6 +790,9 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             input: .init(
                 title: "compose_draft".localized.attributed(color: .red),
                 text: body.removingMailThreadQuote().attributed(color: .secondaryLabel),
+                accessibilityIdentifier: "aid-draft-body-\(messageIndex)",
+                labelAccessibilityIdentifier: "aid-draft-label-\(messageIndex)",
+                buttonAccessibilityIdentifier: "aid-draft-delete-button-\(messageIndex)",
                 actionButtonImageName: "trash",
                 action: { [weak self] in
                     self?.deleteDraft(id: data.rawMessage.identifier)

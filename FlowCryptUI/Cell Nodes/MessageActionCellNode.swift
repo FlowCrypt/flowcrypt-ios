@@ -54,22 +54,11 @@ public final class MessageActionCellNode: CellNode {
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        buttonNode.style.flexShrink = 1.0
-
-        let spacer = ASLayoutSpec()
-        spacer.style.flexGrow = 1.0
-
-        let spec = ASStackLayoutSpec(
-            direction: .horizontal,
-            spacing: 4,
-            justifyContent: .start,
-            alignItems: .start,
-            children: [buttonNode, spacer]
-        )
+        buttonNode.style.flexGrow = 1.0
 
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
-            child: spec
+            child: buttonNode
         )
     }
 

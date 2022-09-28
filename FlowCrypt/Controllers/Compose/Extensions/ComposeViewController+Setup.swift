@@ -13,7 +13,8 @@ import FlowCryptUI
 extension ComposeViewController {
     func setupNavigationBar() {
         let deleteButton = NavigationBarItemsView.Input(
-            image: UIImage(systemName: "trash")
+            image: UIImage(systemName: "trash"),
+            accessibilityId: "aid-compose-delete"
         ) { [weak self] in
             self?.handleTrashTap()
         }

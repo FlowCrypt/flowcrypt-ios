@@ -16,6 +16,7 @@ public final class LabelCellNode: CellNode {
         let spacing: CGFloat
         let accessibilityIdentifier: String?
         let labelAccessibilityIdentifier: String?
+        let buttonAccessibilityIdentifier: String?
         let actionButtonImageName: String?
         let action: (() -> Void)?
 
@@ -26,6 +27,7 @@ public final class LabelCellNode: CellNode {
             spacing: CGFloat = 4,
             accessibilityIdentifier: String? = nil,
             labelAccessibilityIdentifier: String? = nil,
+            buttonAccessibilityIdentifier: String? = nil,
             actionButtonImageName: String? = nil,
             action: (() -> Void)? = nil
         ) {
@@ -35,6 +37,7 @@ public final class LabelCellNode: CellNode {
             self.spacing = spacing
             self.accessibilityIdentifier = accessibilityIdentifier
             self.labelAccessibilityIdentifier = labelAccessibilityIdentifier
+            self.buttonAccessibilityIdentifier = buttonAccessibilityIdentifier
             self.actionButtonImageName = actionButtonImageName
             self.action = action
         }
@@ -59,6 +62,7 @@ public final class LabelCellNode: CellNode {
         actionButtonNode.addTarget(self, action: #selector(onActionButtonTap), forControlEvents: .touchUpInside)
 
         if let imageName = input.actionButtonImageName {
+            actionButtonNode.accessibilityIdentifier = input.buttonAccessibilityIdentifier
             actionButtonNode.setImage(UIImage(systemName: imageName)?.tinted(.secondaryLabel), for: .normal)
         }
     }

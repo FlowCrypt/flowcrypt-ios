@@ -8,7 +8,7 @@ import { isDelete, isGet, isPost, isPut, parseResourceId } from '../../lib/mock-
 import { oauth } from '../../lib/oauth';
 import { GoogleMockAccountEmail } from './google-messages';
 
-// type DraftSaveModel = { message: { raw: string, threadId: string } };
+type DraftSaveModel = { message: { raw: string, threadId: string }, id?: string };
 type LabelsModifyModel = { addLabelIds: string[], removeLabelIds: string[] }
 interface BatchModifyInterface {
   ids: string[];
@@ -121,6 +121,11 @@ export const getMockGoogleEndpoints = (
           return GoogleData.fmtMsg(msg, parsedReq.query.format);
         }
         throw new HttpErr(`MOCK Message not found for ${acct}: ${id}`, Status.NOT_FOUND);
+      } else if (isDelete(req)) {
+        const id = parseResourceId(req.url!);
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
+        data.deleteMessages([id]);
+        return {}
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
@@ -170,29 +175,44 @@ export const getMockGoogleEndpoints = (
       }
       return {}
     },
-    '/gmail/v1/users/me/drafts': async () => {
-      return {}
-      // if (isPost(req)) {
-      //   const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
-      //   const body = parsedReq.body as DraftSaveModel;
-      //   if (body && body.message && body.message.raw && typeof body.message.raw === 'string') {
-      //     if (body.message.threadId && !(await GoogleData.withInitializedData(acct, googleConfig)).getThreads().find(t => t.id === body.message.threadId)) {
-      //       throw new HttpErr('The thread you are replying to not found', 404);
-      //     }
-      //     const decoded = await Parse.convertBase64ToMimeMsg(body.message.raw);
-      //     if (!decoded.text?.startsWith('[flowcrypt:') && !decoded.text?.startsWith('(saving of this draft was interrupted - to decrypt it, send it to yourself)')) {
-      //       throw new Error(`The "flowcrypt" draft prefix was not found in the draft. Instead starts with: ${decoded.text?.substring(0, 100)}`);
-      //     }
-      //     return {
-      //       id: 'mockfakedraftsave', message: {
-      //         id: 'mockfakedmessageraftsave',
-      //         labelIds: ['DRAFT'],
-      //         threadId: body.message.threadId
-      //       }
-      //     };
-      //   }
-      // }
-      // throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
+    '/gmail/v1/users/me/drafts': async (parsedReq, req) => {
+      if (isPost(req)) {
+        const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
+        const body = parsedReq.body as DraftSaveModel;
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
+        if (body && body.message && body.message.raw && typeof body.message.raw === 'string') {
+          if (body.message.threadId && !(data.getThreads().find(t => t.id === body.message.threadId))) {
+            throw new HttpErr('The thread you are replying to not found', 404);
+          }
+          const decoded = await Parse.convertBase64ToMimeMsg(body.message.raw);
+          // if (!decoded.text?.startsWith('[flowcrypt:') && !decoded.text?.startsWith('(saving of this draft was interrupted - to decrypt it, send it to yourself)')) {
+          //   throw new Error(`The "flowcrypt" draft prefix was not found in the draft. Instead starts with: ${decoded.text?.substring(0, 100)}`);
+          // }
+
+          const draft = data.addDraft(body.message.raw, decoded, undefined, body.message.threadId);
+
+          return {
+            id: draft.draftId, message: {
+              id: draft.id,
+              labelIds: ['DRAFT'],
+              threadId: draft.threadId
+            }
+          };
+        }
+      } else if (isGet(req)) {
+        const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
+        const message = data.getMessages(['DRAFT'], parsedReq.query.q)[0];
+        return {
+          drafts: [
+            {
+              id: message.draftId,
+              message: message
+            }
+          ]
+        };
+      }
+      throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
     '/gmail/v1/users/me/drafts/?': async (parsedReq, req) => {
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
@@ -205,20 +225,24 @@ export const getMockGoogleEndpoints = (
         }
         throw new HttpErr(`MOCK draft not found for ${acct} (draftId: ${id})`, Status.NOT_FOUND);
       } else if (isPut(req)) {
-        const raw = (parsedReq.body as { message?: { raw?: string } })?.message?.raw;
+        const body = parsedReq.body as DraftSaveModel;
+        const raw = body.message?.raw;
         if (!raw) {
           throw new Error('mock Draft PUT without raw data');
         }
-        const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
-        if ((mimeMsg.subject || '').includes('saving and rendering a draft with image')) {
-          const data = (await GoogleData.withInitializedData(acct, googleConfig));
-          data.addDraft('draft_with_image', raw, mimeMsg);
-        }
-        if ((mimeMsg.subject || '').includes('RTL')) {
-          const data = await GoogleData.withInitializedData(acct, googleConfig);
-          data.addDraft(`draft_with_rtl_text_${mimeMsg.subject?.includes('rich text') ? 'rich' : 'plain'}`, raw, mimeMsg);
-        }
-        return {};
+        const decoded = await Parse.convertBase64ToMimeMsg(raw);
+
+        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        const draft = data.addDraft(raw, decoded, body.id, body.message?.threadId)
+
+        // const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
+        return {
+          id: draft.draftId, message: {
+            id: draft.id,
+            labelIds: ['DRAFT'],
+            threadId: draft.threadId
+          }
+        };
       } else if (isDelete(req)) {
         return {};
       }

@@ -131,7 +131,7 @@ struct ComposeViewDecorator {
         messageActionInput(
             text: "compose_draft_passphrase_placeholder".localized,
             color: .warningColor,
-            imageName: "lock"
+            imageName: "square.and.pencil"
         )
     }
 

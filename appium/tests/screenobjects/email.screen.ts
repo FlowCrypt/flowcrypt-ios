@@ -292,6 +292,25 @@ class EmailScreen extends BaseScreen {
     const text = await el.getText();
     expect(text.includes(value)).toBeTrue();
   }
+
+  draftBody = async (index: number) => {
+    return $(`~aid-draft-body-${index}`);
+  }
+
+  checkDraft = async (text: string, index: number) => {
+    const draftBodyEl = await this.draftBody(index);
+    expect(await draftBodyEl.getValue()).toEqual(text);
+  }
+
+  openDraft = async (index: number) => {
+    await ElementHelper.waitAndClick(await this.draftBody(index));
+  }
+
+  deleteDraft = async (index: number) => {
+    await ElementHelper.waitAndClick(await $(`~aid-draft-delete-button-${index}`));
+    await this.confirmDelete();
+    await ElementHelper.waitElementInvisible(await this.draftBody(index));
+  }
 }
 
 export default new EmailScreen();

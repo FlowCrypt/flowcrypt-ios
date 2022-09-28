@@ -25,16 +25,18 @@ export class GmailMsg {
   public historyId: string;
   public sizeEstimate?: number;
   public threadId: string | null;
+  public draftId?: string | null;
   public payload?: GmailMsg$payload;
   public internalDate?: number | string;
   public labelIds?: GmailMsg$labelId[];
   public snippet?: string;
   public raw?: string;
 
-  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, payload?: GmailMsg$payload, mimeMsg: ParsedMail, threadId?: string | null }) {
+  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, payload?: GmailMsg$payload, mimeMsg: ParsedMail, threadId?: string | null, draftId?: string | null }) {
     this.id = msg.id;
     this.historyId = msg.id;
     this.threadId = msg.threadId ?? msg.id;
+    this.draftId = msg.draftId;
     this.labelIds = msg.labelIds;
     this.raw = msg.raw;
     this.sizeEstimate = Buffer.byteLength(msg.raw, "utf-8");
@@ -210,6 +212,11 @@ export class GoogleData {
     return (subjectHeader && subjectHeader.value) || '';
   };
 
+  private static msgId = (m: GmailMsg): string => {
+    const msgIdHeader = m.payload && m.payload.headers && m.payload.headers.find(h => h.name.toLowerCase() === 'message-id');
+    return (msgIdHeader && msgIdHeader.value) || '';
+  };
+
   private static parseAcctMessages = async (acct: GoogleMockAccountEmail, config?: GoogleConfig) => {
     if (config?.accounts[acct]?.messages) {
       const dir = GoogleData.exportedMsgsPath;
@@ -269,7 +276,7 @@ export class GoogleData {
   }
 
   public getMessage = (id: string): GmailMsg | undefined => {
-    return DATA[this.acct].messages.find(m => m.id === id);
+    return this.getMessagesAndDrafts().find(m => m.id === id);
   };
 
   public getMessageBySubject = (subject: string): GmailMsg | undefined => {
@@ -311,8 +318,12 @@ export class GoogleData {
 
   public getMessages = (labelIds: string[] = [], query?: string) => {
     const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
+    const rfc822Msgid = (query?.match(/rfc822msgid:([^"]+)/) || [])[1]?.trim();
     return DATA[this.acct].messages.filter(m => {
       if (subject && !GoogleData.msgSubject(m).toLowerCase().includes(subject)) {
+        return false;
+      }
+      if (rfc822Msgid && GoogleData.msgId(m) !== rfc822Msgid) {
         return false;
       }
       if (labelIds && !m.labelIds?.some(l => labelIds.includes(l))) {
@@ -342,14 +353,19 @@ export class GoogleData {
     DATA[this.acct].messages = DATA[this.acct].messages.filter(m => !ids.includes(m.id));
   }
 
-  public addDraft = (id: string, raw: string, mimeMsg: ParsedMail) => {
-    const draft = new GmailMsg({ labelIds: ['DRAFT'], id, raw, mimeMsg });
-    const index = DATA[this.acct].drafts.findIndex(d => d.id === draft.id);
+  public addDraft = (raw: string, mimeMsg: ParsedMail, id?: string, threadId?: string) => {
+    const draftId = id ?? `draft_id_${lousyRandom()}`;
+    const msgId = `msg_id_${lousyRandom()}`;
+    const draft = new GmailMsg({ labelIds: ['DRAFT'], id: msgId, raw, mimeMsg, threadId: threadId, draftId: draftId });
+    const index = DATA[this.acct].messages.findIndex(d => d.draftId === draftId);
+
     if (index === -1) {
-      DATA[this.acct].drafts.push(draft);
+      DATA[this.acct].messages.push(draft);
     } else {
-      DATA[this.acct].drafts[index] = draft;
+      DATA[this.acct].messages[index] = draft;
     }
+
+    return draft;
   };
 
   public getDraft = (id: string): GmailMsg | undefined => {
