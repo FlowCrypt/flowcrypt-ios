@@ -138,7 +138,7 @@ extension SetupBackupsViewController {
                     email: appContext.user.email,
                     fingerprintsOfAssociatedKey: backup.fingerprints
                 )
-                try appContext.combinedPassPhraseStorage.savePassPhrase(
+                try await appContext.combinedPassPhraseStorage.savePassPhrase(
                     with: pp,
                     storageMethod: storageMethod
                 )

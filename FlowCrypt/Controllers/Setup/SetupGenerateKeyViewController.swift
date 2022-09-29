@@ -77,7 +77,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
                 email: appContext.user.email,
                 fingerprintsOfAssociatedKey: encryptedPrv.key.fingerprints
             )
-            try appContext.combinedPassPhraseStorage.savePassPhrase(
+            try await appContext.combinedPassPhraseStorage.savePassPhrase(
                 with: passPhrase,
                 storageMethod: .memory
             )

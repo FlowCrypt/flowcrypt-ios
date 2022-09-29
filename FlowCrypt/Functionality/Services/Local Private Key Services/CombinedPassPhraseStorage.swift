@@ -68,15 +68,15 @@ protocol PassPhraseStorageType {
     func remove(passPhrase: PassPhrase) throws
     func removePassPhrases(for email: String) throws
 
-    func getPassPhrases(for email: String) throws -> [PassPhrase]
+    func getPassPhrases(for email: String) async throws -> [PassPhrase]
 }
 
 // MARK: - CombinedPassPhraseStorage
 protocol CombinedPassPhraseStorageType {
-    func getPassPhrases(for email: String) throws -> [PassPhrase]
-    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws
+    func getPassPhrases(for email: String) async throws -> [PassPhrase]
+    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) async throws
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws
-    func savePassPhrasesInMemory(for email: String, _ passPhrase: String, privateKeys: [Keypair]) throws
+    func savePassPhrasesInMemory(for email: String, _ passPhrase: String, privateKeys: [Keypair]) async throws
 }
 
 final class CombinedPassPhraseStorage: CombinedPassPhraseStorageType {
@@ -87,19 +87,19 @@ final class CombinedPassPhraseStorage: CombinedPassPhraseStorageType {
 
     init(
         encryptedStorage: PassPhraseStorageType,
-        inMemoryStorage: PassPhraseStorageType = InMemoryPassPhraseStorage()
+        inMemoryStorage: PassPhraseStorageType
     ) {
         self.encryptedStorage = encryptedStorage
         self.inMemoryStorage = inMemoryStorage
     }
 
-    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws {
+    func savePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) async throws {
         logger.logInfo("\(storageMethod): saving passphrase for key \(passPhrase.primaryFingerprintOfAssociatedKey)")
         switch storageMethod {
         case .persistent:
             try encryptedStorage.save(passPhrase: passPhrase)
         case .memory:
-            let storedPassPhrases = try encryptedStorage.getPassPhrases(for: passPhrase.email)
+            let storedPassPhrases = try await encryptedStorage.getPassPhrases(for: passPhrase.email)
             let fingerprint = passPhrase.primaryFingerprintOfAssociatedKey
             if storedPassPhrases.contains(where: { $0.primaryFingerprintOfAssociatedKey == fingerprint }) {
                 logger.logInfo("\(PassPhraseStorageMethod.persistent): removing pass phrase for key \(fingerprint)")
@@ -119,18 +119,18 @@ final class CombinedPassPhraseStorage: CombinedPassPhraseStorageType {
         }
     }
 
-    func getPassPhrases(for email: String) throws -> [PassPhrase] {
-        try encryptedStorage.getPassPhrases(for: email) + inMemoryStorage.getPassPhrases(for: email)
+    func getPassPhrases(for email: String) async throws -> [PassPhrase] {
+        return try await encryptedStorage.getPassPhrases(for: email) + inMemoryStorage.getPassPhrases(for: email)
     }
 
-    func savePassPhrasesInMemory(for email: String, _ passPhrase: String, privateKeys: [Keypair]) throws {
+    func savePassPhrasesInMemory(for email: String, _ passPhrase: String, privateKeys: [Keypair]) async throws {
         for privateKey in privateKeys {
             let pp = PassPhrase(
                 value: passPhrase,
                 email: email,
                 fingerprintsOfAssociatedKey: privateKey.allFingerprints
             )
-            try savePassPhrase(with: pp, storageMethod: .memory)
+            try await savePassPhrase(with: pp, storageMethod: .memory)
         }
     }
 }

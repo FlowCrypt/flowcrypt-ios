@@ -230,10 +230,10 @@ extension SetupManuallyEnterPassPhraseViewController {
         }
         let privateKeys = try appContext.encryptedStorage.getKeypairs(by: email).map(\.private)
         let keyDetails = try await keyMethods.parseKeys(armored: privateKeys)
-        try importKeys(with: keyDetails, and: passPhrase)
+        try await importKeys(with: keyDetails, and: passPhrase)
     }
 
-    private func importKeys(with existingKeys: [KeyDetails], and passPhrase: String) throws {
+    private func importKeys(with existingKeys: [KeyDetails], and passPhrase: String) async throws {
         let keysToUpdate = existingKeys
             .getUniqueByFingerprintByPreferingLatestLastModified()
             .filter { existingKey in
@@ -279,7 +279,7 @@ extension SetupManuallyEnterPassPhraseViewController {
                 )
             }
             for newPassPhrase in newPassPhrases {
-                try appContext.combinedPassPhraseStorage.savePassPhrase(
+                try await appContext.combinedPassPhraseStorage.savePassPhrase(
                     with: newPassPhrase,
                     storageMethod: storageMethod
                 )

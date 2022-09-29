@@ -36,6 +36,7 @@ struct RawClientConfiguration: Codable, Equatable {
     let keyManagerUrl: String?
     let fesUrl: String?
     let allowAttesterSearchOnlyForDomains: [String]?
+    let inMemoryPassPhraseSessionLength: Int?
     let disallowAttesterSearchForDomains: [String]?
     let enforceKeygenAlgo: String?
     let enforceKeygenExpireMonths: Int?
@@ -45,6 +46,7 @@ struct RawClientConfiguration: Codable, Equatable {
         customKeyserverUrl: String? = nil,
         keyManagerUrl: String? = nil,
         fesUrl: String? = nil,
+        inMemoryPassPhraseSessionLength: Int? = nil,
         allowAttesterSearchOnlyForDomains: [String]? = nil,
         disallowAttesterSearchForDomains: [String]? = nil,
         enforceKeygenAlgo: String? = nil,
@@ -54,6 +56,7 @@ struct RawClientConfiguration: Codable, Equatable {
         self.customKeyserverUrl = customKeyserverUrl
         self.keyManagerUrl = keyManagerUrl
         self.fesUrl = fesUrl
+        self.inMemoryPassPhraseSessionLength = inMemoryPassPhraseSessionLength
         self.allowAttesterSearchOnlyForDomains = allowAttesterSearchOnlyForDomains
         self.disallowAttesterSearchForDomains = disallowAttesterSearchForDomains
         self.enforceKeygenAlgo = enforceKeygenAlgo

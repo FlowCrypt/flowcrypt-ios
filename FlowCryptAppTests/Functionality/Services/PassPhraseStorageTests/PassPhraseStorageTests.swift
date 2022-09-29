@@ -26,18 +26,18 @@ class PassPhraseStorageTests: XCTestCase {
         )
     }
 
-    func testGetPassPhrasesWhenEmpty() throws {
+    func testGetPassPhrasesWhenEmpty() async throws {
         // no pass phrases in storage
         encryptedStorage.getPassPhrasesResult = { [] }
         // no pass phrases in localStorage
         inMemoryStorage.getPassPhrasesResult = { [] }
 
-        let result = try sut.getPassPhrases(for: testPassPhraseAccount)
+        let result = try await sut.getPassPhrases(for: testPassPhraseAccount)
 
         XCTAssertTrue(result.isEmpty)
     }
 
-    func testGetValidPassPhraseFromStorage() throws {
+    func testGetValidPassPhraseFromStorage() async throws {
         let passPhrase1 = PassPhrase(
             value: "some",
             email: testPassPhraseAccount,
@@ -53,7 +53,7 @@ class PassPhraseStorageTests: XCTestCase {
         // no pass phrases in localStorage
         inMemoryStorage.getPassPhrasesResult = { [] }
 
-        var result = try sut.getPassPhrases(for: testPassPhraseAccount)
+        var result = try await sut.getPassPhrases(for: testPassPhraseAccount)
 
         XCTAssertTrue(result.count == 1)
 
@@ -61,12 +61,12 @@ class PassPhraseStorageTests: XCTestCase {
             [passPhrase1, passPhrase2]
         }
 
-        result = try sut.getPassPhrases(for: testPassPhraseAccount)
+        result = try await sut.getPassPhrases(for: testPassPhraseAccount)
 
         XCTAssertTrue(result.count == 2)
     }
 
-    func testGetValidPassPhraseInLocalStorage() throws {
+    func testGetValidPassPhraseInLocalStorage() async throws {
         encryptedStorage.getPassPhrasesResult = { [] }
 
         let savedDate = Date()
@@ -81,11 +81,11 @@ class PassPhraseStorageTests: XCTestCase {
         // current timeout = 2
         sleep(1)
 
-        let result = try sut.getPassPhrases(for: testPassPhraseAccount)
+        let result = try await sut.getPassPhrases(for: testPassPhraseAccount)
         XCTAssertTrue(result.isNotEmpty)
     }
 
-    func testBothStorageContainsValidPassPhrase() throws {
+    func testBothStorageContainsValidPassPhrase() async throws {
         let passPhrase1 = PassPhrase(
             value: "some",
             email: testPassPhraseAccount,
@@ -110,11 +110,11 @@ class PassPhraseStorageTests: XCTestCase {
 
         inMemoryStorage.getPassPhrasesResult = { [localPassPhrase] }
 
-        let result = try sut.getPassPhrases(for: testPassPhraseAccount)
+        let result = try await sut.getPassPhrases(for: testPassPhraseAccount)
         XCTAssertTrue(result.count == 3)
     }
 
-    func testSavePassPhraseInPersistenStorage() throws {
+    func testSavePassPhraseInPersistenStorage() async throws {
         let passPhraseToSave = PassPhrase(
             value: "pass",
             email: testPassPhraseAccount,
@@ -143,14 +143,14 @@ class PassPhraseStorageTests: XCTestCase {
             }
         }
 
-        try sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
+        try await sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
         XCTAssertFalse(inMemoryStorage.saveResult != nil )
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
 
-    func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() throws {
+    func testSavePassPhraseInPersistentStorageWithoutAnyPassPhrases() async throws {
         let passPhraseToSave = PassPhrase(
             value: "pass",
             email: testPassPhraseAccount,
@@ -167,7 +167,7 @@ class PassPhraseStorageTests: XCTestCase {
             expectation.fulfill()
         }
 
-        try sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
+        try await sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
         XCTAssertFalse(inMemoryStorage.saveResult != nil )
 

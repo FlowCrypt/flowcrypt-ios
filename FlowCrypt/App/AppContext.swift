@@ -38,7 +38,10 @@ class AppContext {
     @MainActor
     static func setup(globalRouter: GlobalRouterType) async throws -> AppContext {
         let encryptedStorage = try await EncryptedStorage()
-        let combinedPassPhraseStorage = CombinedPassPhraseStorage(encryptedStorage: encryptedStorage)
+        let combinedPassPhraseStorage = CombinedPassPhraseStorage(
+            encryptedStorage: encryptedStorage,
+            inMemoryStorage: InMemoryPassPhraseStorage(encryptedStorage: encryptedStorage)
+        )
         let keyAndPassPhraseStorage = KeyAndPassPhraseStorage(
             encryptedStorage: encryptedStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorage
@@ -57,6 +60,7 @@ class AppContext {
             session: sessionType,
             userAccountService: try SessionService(
                 encryptedStorage: encryptedStorage,
+                passPhraseStorage: InMemoryPassPhraseStorage(encryptedStorage: encryptedStorage),
                 googleService: GoogleUserService(
                     currentUserEmail: try encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate

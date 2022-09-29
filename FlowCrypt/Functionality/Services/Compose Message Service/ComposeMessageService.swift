@@ -79,7 +79,7 @@ final class ComposeMessageService {
         }
         let matchingKeys = try await keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try appContext.combinedPassPhraseStorage.savePassPhrasesInMemory(
+        try await appContext.combinedPassPhraseStorage.savePassPhrasesInMemory(
             for: sender,
             passPhrase,
             privateKeys: matchingKeys
@@ -149,7 +149,7 @@ final class ComposeMessageService {
                 throw MessageValidationError.subjectContainsPassword
             }
 
-            let allAvailablePassPhrases = try appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
+            let allAvailablePassPhrases = try await appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
             if allAvailablePassPhrases.contains(password) {
                 throw MessageValidationError.notUniquePassword
             }

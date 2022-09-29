@@ -98,7 +98,7 @@ extension SetupEKMKeyViewController {
         // Save pass phrase in memory when FORBID_STORING_PASS_PHRASE is set
         if storageMethod == .memory {
             for allFingerprintsOfOneKey in allFingerprintsOfAllKeys {
-                try appContext.combinedPassPhraseStorage.savePassPhrase(
+                try await appContext.combinedPassPhraseStorage.savePassPhrase(
                     with: PassPhrase(
                         value: passPhrase,
                         email: appContext.user.email,

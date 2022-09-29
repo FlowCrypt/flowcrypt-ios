@@ -12,16 +12,16 @@ import UIKit
 final class InMemoryPassPhraseStorage: PassPhraseStorageType {
     private lazy var logger = Logger.nested(Self.self)
 
-    let timeoutInSeconds: Int
     let calendar = Calendar.current
     let passPhraseProvider: InMemoryPassPhraseProviderType
+    let encryptedStorage: EncryptedStorageType
 
     init(
         passPhraseProvider: InMemoryPassPhraseProviderType = InMemoryPassPhraseProvider.shared,
-        timeoutInSeconds: Int = 4*60*60 // 4 hours
+        encryptedStorage: EncryptedStorageType
     ) {
         self.passPhraseProvider = passPhraseProvider
-        self.timeoutInSeconds = timeoutInSeconds
+        self.encryptedStorage = encryptedStorage
     }
 
     func save(passPhrase: PassPhrase) {
@@ -38,7 +38,15 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
         passPhraseProvider.remove(passPhrases: [passPhrase])
     }
 
-    func getPassPhrases(for email: String) throws -> [PassPhrase] {
+    func getPassPhrases(for email: String) async throws -> [PassPhrase] {
+        let enterpriseServer = try EnterpriseServerApi(email: email)
+        let clientConfigurationService = ClientConfigurationService(
+            server: enterpriseServer,
+            local: LocalClientConfiguration(
+                encryptedStorage: self.encryptedStorage
+            )
+        )
+        let sessionLegnth = try await clientConfigurationService.configuration.passphraseSessionLengthInSeconds
         return passPhraseProvider.passPhrases
             .compactMap { passPhrase -> PassPhrase? in
                 guard let dateToCompare = passPhrase.date else {
@@ -53,7 +61,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
                 )
 
                 let timePassed = components.second ?? 0
-                let isPassPhraseValid = timePassed < timeoutInSeconds
+                let isPassPhraseValid = timePassed < sessionLegnth
 
                 return isPassPhraseValid ? passPhrase : nil
             }

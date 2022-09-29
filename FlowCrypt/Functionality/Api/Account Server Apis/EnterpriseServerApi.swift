@@ -60,7 +60,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         }
     }
 
-    init(email: String) async throws {
+    init(email: String) throws {
         self.email = email
 
         super.init()

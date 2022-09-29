@@ -82,7 +82,7 @@ final class MessageService {
             keys: keysWithoutPassPhrases,
             passPhrase: passPhrase
         )
-        try combinedPassPhraseStorage.savePassPhrasesInMemory(for: userEmail, passPhrase, privateKeys: matchingKeys)
+        try await combinedPassPhraseStorage.savePassPhrasesInMemory(for: userEmail, passPhrase, privateKeys: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 
