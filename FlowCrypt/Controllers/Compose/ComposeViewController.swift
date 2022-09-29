@@ -73,7 +73,6 @@ final class ComposeViewController: TableNodeViewController {
     weak var saveDraftTimer: Timer?
     var composedLatestDraft: ComposedDraft?
 
-    var signingKeyWithMissingPassphrase: Keypair?
     var messagePasswordAlertController: UIAlertController?
     lazy var alertsFactory = AlertsFactory()
 
@@ -185,7 +184,7 @@ final class ComposeViewController: TableNodeViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         node.view.endEditing(true)
-        stopDraftTimer()
+        stopDraftTimer(withSave: false)
         navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
 

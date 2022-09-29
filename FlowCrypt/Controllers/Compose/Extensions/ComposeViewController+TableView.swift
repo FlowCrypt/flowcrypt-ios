@@ -20,8 +20,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         guard let sectionItem = sectionsList[safe: section] else { return 0 }
 
         switch (state, sectionItem) {
-        case (.main, .passphrase):
-            return signingKeyWithMissingPassphrase != nil ? 1 : 0
         case (.main, .recipientsLabel):
             return shouldShowEmailRecipientsLabel ? 1 : 0
         case (.main, .recipients(.to)):
@@ -62,8 +60,6 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
                 return self.recipientsNode(type: recipientType)
             case (.main, .recipientsLabel):
                 return self.recipientTextNode()
-            case (.main, .passphrase):
-                return self.messagePassPhraseNode()
             case (.main, .password):
                 return self.messagePasswordNode()
             case (.main, .compose):

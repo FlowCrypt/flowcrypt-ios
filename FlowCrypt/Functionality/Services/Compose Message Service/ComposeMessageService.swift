@@ -155,7 +155,7 @@ final class ComposeMessageService {
             ignoreErrors: isDraft
         )
 
-        let signingPrv = try await prepareSigningKey(senderEmail: contextToSend.sender)
+        let signingPrv = isDraft ? nil : try await prepareSigningKey(senderEmail: contextToSend.sender)
 
         return SendableMsg(
             text: contextToSend.message ?? "",

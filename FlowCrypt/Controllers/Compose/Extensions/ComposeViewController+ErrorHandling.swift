@@ -31,7 +31,6 @@ extension ComposeViewController {
                         )
                         // TODO: make more readable
                         if matched {
-                            self.signingKeyWithMissingPassphrase = nil
                             if isDraft {
                                 if self.didFinishSetup {
                                     if withDiscard {

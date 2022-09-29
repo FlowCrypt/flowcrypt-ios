@@ -460,7 +460,7 @@ extension ThreadDetailsViewController {
                 withDuration: 0.2,
                 animations: {
                     if indexPath.section < self.node.numberOfSections {
-                         self.node.reloadSections([indexPath.section], with: .automatic)
+                        self.node.reloadSections([indexPath.section], with: .automatic)
                     } else {
                         self.node.insertSections([indexPath.section], with: .automatic)
                     }

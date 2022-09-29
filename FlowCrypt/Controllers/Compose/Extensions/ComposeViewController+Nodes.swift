@@ -118,19 +118,6 @@ extension ComposeViewController {
         reload(sections: [.recipients(.from)])
     }
 
-    func messagePassPhraseNode() -> ASCellNode {
-        MessageActionCellNode(
-            input: decorator.styledMessagePassPhraseInput(),
-            action: { [weak self] in
-                guard let self = self,
-                      let keyPair = self.signingKeyWithMissingPassphrase
-                else { return }
-
-                self.requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
-            }
-        )
-    }
-
     func messagePasswordNode() -> ASCellNode {
         let input = contextToSend.hasMessagePassword
         ? decorator.styledFilledMessagePasswordInput()

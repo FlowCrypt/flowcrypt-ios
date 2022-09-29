@@ -15,10 +15,15 @@ extension ComposeViewController {
         saveDraftTimer?.fire()
     }
 
-    @objc func stopDraftTimer() {
+    @objc func stopDraftTimer(withSave: Bool = true) {
+        guard saveDraftTimer != nil else { return }
+
         saveDraftTimer?.invalidate()
         saveDraftTimer = nil
-        saveDraftIfNeeded()
+
+        if withSave {
+            saveDraftIfNeeded()
+        }
     }
 
     private func createDraft() -> ComposedDraft? {
@@ -57,10 +62,7 @@ extension ComposeViewController {
                 composedLatestDraft = draft
                 completion?(nil)
             } catch {
-                if case .missingPassPhrase(let keyPair) = error as? ComposeMessageError {
-                    signingKeyWithMissingPassphrase = keyPair
-                    reload(sections: [.passphrase])
-                } else if !(error is MessageValidationError) {
+                if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
                     // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?

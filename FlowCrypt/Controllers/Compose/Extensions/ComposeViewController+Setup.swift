@@ -153,24 +153,19 @@ extension ComposeViewController {
 // MARK: - NavigationChildController
 extension ComposeViewController: NavigationChildController {
     func handleBackButtonTap() {
-        stopDraftTimer()
+        stopDraftTimer(withSave: false)
 
-        if let keyPair = signingKeyWithMissingPassphrase {
-            requestMissingPassPhraseWithModal(for: keyPair, isDraft: true, withDiscard: true)
-        } else {
-            saveDraftIfNeeded(withAlert: true) { [weak self] error in
-                guard let self = self else { return }
-                if case .missingPassPhrase(let keyPair) = error as? ComposeMessageError {
-                    self.requestMissingPassPhraseWithModal(for: keyPair, isDraft: true, withDiscard: true)
-                } else if let error = error {
-                    self.handle(error: error)
-                } else {
-                    if var messageIdentifier = self.composeMessageService.messageIdentifier {
-                        messageIdentifier.draftMessageId = self.input.type.info?.id
-                        self.handleAction?(.update(messageIdentifier))
-                    }
-                    self.navigationController?.popViewController(animated: true)
+        saveDraftIfNeeded(withAlert: true) { [weak self] error in
+            guard let self = self else { return }
+
+            if let error = error {
+                self.handle(error: error)
+            } else {
+                if var messageIdentifier = self.composeMessageService.messageIdentifier {
+                    messageIdentifier.draftMessageId = self.input.type.info?.id
+                    self.handleAction?(.update(messageIdentifier))
                 }
+                self.navigationController?.popViewController(animated: true)
             }
         }
     }

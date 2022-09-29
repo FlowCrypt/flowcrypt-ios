@@ -1,8 +1,6 @@
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
-import { CommonData } from 'tests/data';
-import AppiumHelper from 'tests/helpers/AppiumHelper';
 import {
   EmailScreen,
   MailFolderScreen, MenuBarScreen, NewMessageScreen,
@@ -32,9 +30,6 @@ describe('COMPOSE EMAIL: ', () => {
         [MockUserList.robot.email]: MockUserList.robot.pub!
       }
     };
-
-    const processArgs = CommonData.mockProcessArgs;
-    const passPhrase = CommonData.account.passPhrase;
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
@@ -74,14 +69,14 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.clickDeleteButton();
       await NewMessageScreen.confirmDelete();
 
-      await AppiumHelper.restartApp(processArgs);
+      await EmailScreen.clickBackButton();
+      await MenuBarScreen.clickMenuBtn();
+      await MenuBarScreen.clickInboxButton();
 
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.composeEmail(recipient.email, draftSubject, draftText1);
-      await NewMessageScreen.checkPassphraseCellIsVisible();
       await NewMessageScreen.clickBackButton();
-      await NewMessageScreen.setMessagePassphrase(passPhrase);
 
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickDraftsButton();
@@ -97,7 +92,3 @@ describe('COMPOSE EMAIL: ', () => {
     });
   });
 });
-
-// check passphrase modal after app restart
-// check compose new draft is added to drafts folder
-// check sending message from drafts
