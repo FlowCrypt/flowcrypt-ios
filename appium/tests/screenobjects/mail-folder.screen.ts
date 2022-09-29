@@ -131,6 +131,11 @@ class MailFolderScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.helpBtn);
   }
 
+  checkIfFolderIsEmpty = async () => {
+    const emailCount = await this.getEmailCount();
+    return emailCount === 0;
+  }
+
   emptyFolder = async () => {
     await ElementHelper.waitAndClick(await this.emptyFolderBtn);
     await BaseScreen.clickConfirmButton();

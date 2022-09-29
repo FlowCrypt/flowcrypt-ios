@@ -9,8 +9,7 @@
 import UIKit
 
 struct BackupViewDecorator {
-    let sceneTitle: String = "backup_screen_title"
-        .localized
+    let sceneTitle = "backup_screen_title".localized
 
     func buttonTitle(for state: BackupViewController.State) -> NSAttributedString {
         (state.hasAnyBackups ? "backup_screen_found_action" : "backup_screen_not_found_action")

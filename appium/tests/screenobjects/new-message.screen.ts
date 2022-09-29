@@ -11,17 +11,19 @@ const SELECTORS = {
   COMPOSE_SECURITY_MESSAGE: '~aid-message-text-view',
   RECIPIENTS_LIST: '~aid-recipients-list',
   PASSWORD_CELL: '~aid-message-password-cell',
+  PASSPHRASE_CELL: '~aid-message-passphrase-cell',
   ATTACHMENT_CELL: '~aid-attachment-cell-0',
   ATTACHMENT_NAME_LABEL: '~aid-attachment-title-label-0',
   DELETE_ATTACHMENT_BUTTON: '~aid-attachment-delete-button-0',
   RETURN_BUTTON: '~Return',
   SET_PASSWORD_BUTTON: '~Set',
+  SAVE_PASSPHRASE_BUTTON: '~Save',
   CANCEL_BUTTON: '~Cancel',
   BACK_BUTTON: '~aid-back-button',
   DELETE_BUTTON: '~aid-compose-delete',
   SEND_BUTTON: '~aid-compose-send',
   CONFIRM_DELETING: '~Delete',
-  MESSAGE_PASSWORD_MODAL: '~aid-message-password-modal',
+  MESSAGE_PASSPHRASE_TEXTFIELD: '~aid-message-passphrase-textfield',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
   RECIPIENT_POPUP_EMAIL_NODE: '~aid-recipient-popup-email-node',
@@ -98,16 +100,24 @@ class NewMessageScreen extends BaseScreen {
     return $(SELECTORS.CONFIRM_DELETING)
   }
 
+  get passphraseCell() {
+    return $(SELECTORS.PASSPHRASE_CELL);
+  }
+
   get passwordCell() {
     return $(SELECTORS.PASSWORD_CELL);
   }
 
-  get passwordModal() {
-    return $(SELECTORS.MESSAGE_PASSWORD_MODAL);
-  }
-
   get currentModal() {
     return $(SELECTORS.ALERT);
+  }
+
+  get passphraseTextField() {
+    return $(SELECTORS.MESSAGE_PASSPHRASE_TEXTFIELD);
+  }
+
+  get savePassphraseButton() {
+    return $(SELECTORS.SAVE_PASSPHRASE_BUTTON);
   }
 
   get passwordTextField() {
@@ -395,8 +405,20 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.setPasswordButton);
   }
 
+  clickSavePassphraseButton = async () => {
+    await ElementHelper.waitAndClick(await this.savePassphraseButton);
+  }
+
   clickCancelButton = async () => {
     await ElementHelper.waitAndClick(await this.cancelButton);
+  }
+
+  checkPassphraseCellIsVisible = async () => {
+    await ElementHelper.waitElementVisible(await this.passphraseCell);
+  }
+
+  clickPassphraseCell = async () => {
+    await ElementHelper.waitAndClick(await this.passphraseCell);
   }
 
   checkSetPasswordButton = async (isEnabled: boolean) => {
@@ -417,6 +439,11 @@ class NewMessageScreen extends BaseScreen {
   setMessagePassword = async (password: string) => {
     await (await this.passwordTextField).setValue(password);
     await this.clickSetPasswordButton();
+  }
+
+  setMessagePassphrase = async (passphrase: string) => {
+    await (await this.passphraseTextField).setValue(passphrase);
+    await this.clickSavePassphraseButton();
   }
 
   clickComposeMessage = async () => {

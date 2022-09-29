@@ -35,9 +35,10 @@ class AlertsFactory {
         alert.addTextField { [weak self] tf in
             tf.isSecureTextEntry = true
             tf.delegate = self?.textFieldDelegate
+            tf.accessibilityIdentifier = "aid-message-passphrase-textfield"
         }
         let saveAction = UIAlertAction(
-            title: "ok".localized,
+            title: "save".localized,
             style: .default
         ) { _ in
             guard let textField = alert.textFields?.first,

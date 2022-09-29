@@ -29,7 +29,7 @@ public final class Trace {
     public func finish(roundedTo: Int = 3) -> String {
         let resultValue = result()
 
-        let timeValue: String = resultValue <= 1 ? " ms" : " sec"
+        let timeValue = resultValue <= 1 ? " ms" : " sec"
 
         return resultValue.roundedString(toPlace: roundedTo) + timeValue
     }

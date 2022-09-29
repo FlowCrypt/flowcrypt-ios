@@ -29,11 +29,16 @@ extension ComposeViewController {
                             passPhrase,
                             for: signingKey
                         )
+                        // TODO: make more readable
                         if matched {
                             self.signingKeyWithMissingPassphrase = nil
                             if isDraft {
                                 if self.didFinishSetup {
-                                    self.saveDraftIfNeeded()
+                                    if withDiscard {
+                                        self.handleBackButtonTap()
+                                    } else {
+                                        self.saveDraftIfNeeded()
+                                    }
                                 } else {
                                     self.fillDataFromInput()
                                 }
@@ -84,6 +89,7 @@ extension ComposeViewController {
 
     private func reEnableSendButton() {
         UIApplication.shared.isIdleTimerDisabled = false
+        startDraftTimer()
         hideSpinner()
         navigationItem.rightBarButtonItem?.isEnabled = true
     }

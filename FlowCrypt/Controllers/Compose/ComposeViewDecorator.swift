@@ -118,7 +118,7 @@ struct ComposeViewDecorator {
 
         let from = info.sender?.formatted ?? "unknown sender"
 
-        let text: String = "\n\n"
+        let text = "\n\n"
             + "compose_quote_from".localizeWithArguments(date, time, from)
             + "\n"
 
@@ -131,7 +131,8 @@ struct ComposeViewDecorator {
         messageActionInput(
             text: "compose_draft_passphrase_placeholder".localized,
             color: .warningColor,
-            imageName: "square.and.pencil"
+            imageName: "square.and.pencil",
+            accessibilityIdentifier: "aid-message-passphrase-cell"
         )
     }
 
@@ -139,7 +140,8 @@ struct ComposeViewDecorator {
         messageActionInput(
             text: "compose_password_placeholder".localized,
             color: .warningColor,
-            imageName: "lock"
+            imageName: "lock",
+            accessibilityIdentifier: "aid-message-password-cell"
         )
     }
 
@@ -147,7 +149,8 @@ struct ComposeViewDecorator {
         messageActionInput(
             text: "compose_password_set_message".localized,
             color: .main,
-            imageName: "checkmark.circle"
+            imageName: "checkmark.circle",
+            accessibilityIdentifier: "aid-message-password-cell"
         )
     }
 
@@ -191,12 +194,14 @@ struct ComposeViewDecorator {
     private func messageActionInput(
         text: String,
         color: UIColor,
-        imageName: String
+        imageName: String,
+        accessibilityIdentifier: String?
     ) -> MessageActionCellNode.Input {
         .init(
             text: text.attributed(.regular(14), color: color),
             color: color,
-            image: UIImage(systemName: imageName)?.tinted(color)
+            image: UIImage(systemName: imageName)?.tinted(color),
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 

@@ -153,6 +153,8 @@ extension ComposeViewController {
 // MARK: - NavigationChildController
 extension ComposeViewController: NavigationChildController {
     func handleBackButtonTap() {
+        stopDraftTimer()
+
         if let keyPair = signingKeyWithMissingPassphrase {
             requestMissingPassPhraseWithModal(for: keyPair, isDraft: true, withDiscard: true)
         } else {

@@ -14,13 +14,18 @@ public final class MessageActionCellNode: CellNode {
         let text: NSAttributedString?
         let color: UIColor
         let image: UIImage?
+        let accessibilityIdentifier: String?
 
-        public init(text: NSAttributedString?,
-                    color: UIColor,
-                    image: UIImage?) {
+        public init(
+            text: NSAttributedString?,
+            color: UIColor,
+            image: UIImage?,
+            accessibilityIdentifier: String?
+        ) {
             self.text = text
             self.color = color
             self.image = image
+            self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 
@@ -46,7 +51,7 @@ public final class MessageActionCellNode: CellNode {
         buttonNode.borderWidth = 1
         buttonNode.cornerRadius = 6
         buttonNode.contentHorizontalAlignment = .left
-        buttonNode.accessibilityIdentifier = "aid-message-password-cell"
+        buttonNode.accessibilityIdentifier = input.accessibilityIdentifier
 
         buttonNode.setAttributedTitle(input.text, for: .normal)
         buttonNode.setImage(input.image, for: .normal)

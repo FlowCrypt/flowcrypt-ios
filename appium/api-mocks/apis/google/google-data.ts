@@ -342,6 +342,7 @@ export class GoogleData {
     const rawBase64 = Buffer.from(decodedRaw).toString('base64');
 
     const msg = new GmailMsg({ labelIds: ['SENT'], id, raw: rawBase64, mimeMsg });
+    DATA[this.acct].messages = DATA[this.acct].messages.filter(m => GoogleData.msgId(m) === mimeMsg.messageId);
     DATA[this.acct].messages.unshift(msg);
   };
 

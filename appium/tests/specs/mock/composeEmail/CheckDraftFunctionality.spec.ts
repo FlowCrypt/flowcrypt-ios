@@ -1,5 +1,8 @@
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
+import { MockUserList } from 'api-mocks/mock-data';
+import { CommonData } from 'tests/data';
+import AppiumHelper from 'tests/helpers/AppiumHelper';
 import {
   EmailScreen,
   MailFolderScreen, MenuBarScreen, NewMessageScreen,
@@ -11,17 +14,27 @@ describe('COMPOSE EMAIL: ', () => {
 
   it('check drafts functionality', async () => {
     const mockApi = new MockApi();
+
+    const recipient = MockUserList.robot;
     const subject = 'Test 1';
+    const draftSubject = "Draft subject";
+    const draftText1 = 'Draft text';
+    const updatedDraftText = 'Some new text';
+    const draftText2 = 'Another draft';
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
       messages: [subject],
     });
+    mockApi.attesterConfig = {
+      servedPubkeys: {
+        [MockUserList.robot.email]: MockUserList.robot.pub!
+      }
+    };
 
-    const draftText1 = 'Draft text';
-    const updatedDraftText = 'Some new text';
-    const draftText2 = 'Another draft';
+    const processArgs = CommonData.mockProcessArgs;
+    const passPhrase = CommonData.account.passPhrase;
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
@@ -41,7 +54,6 @@ describe('COMPOSE EMAIL: ', () => {
 
       await EmailScreen.checkDraft(draftText1, 1);
       await EmailScreen.checkDraft(draftText2, 2);
-
       await EmailScreen.openDraft(1);
 
       await NewMessageScreen.setComposeSecurityMessage(updatedDraftText);
@@ -49,7 +61,6 @@ describe('COMPOSE EMAIL: ', () => {
 
       await EmailScreen.checkDraft(updatedDraftText, 1);
       await EmailScreen.checkDraft(draftText2, 2);
-
       await EmailScreen.deleteDraft(1);
       await EmailScreen.clickBackButton();
 
@@ -62,9 +73,31 @@ describe('COMPOSE EMAIL: ', () => {
 
       await NewMessageScreen.clickDeleteButton();
       await NewMessageScreen.confirmDelete();
+
+      await AppiumHelper.restartApp(processArgs);
+
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickCreateEmail();
+      await NewMessageScreen.composeEmail(recipient.email, draftSubject, draftText1);
+      await NewMessageScreen.checkPassphraseCellIsVisible();
+      await NewMessageScreen.clickBackButton();
+      await NewMessageScreen.setMessagePassphrase(passPhrase);
+
+      await MenuBarScreen.clickMenuBtn();
+      await MenuBarScreen.clickDraftsButton();
+      await MailFolderScreen.clickOnEmailBySubject(draftSubject);
+      await NewMessageScreen.clickSendButton();
+      await NewMessageScreen.clickBackButton();
+      await MailFolderScreen.checkIfFolderIsEmpty();
+      await MenuBarScreen.clickMenuBtn();
+      await MenuBarScreen.clickSentButton();
+      await MailFolderScreen.clickOnEmailBySubject(draftSubject);
+
+      await browser.pause(600000);
     });
   });
 });
 
 // check passphrase modal after app restart
 // check compose new draft is added to drafts folder
+// check sending message from drafts
