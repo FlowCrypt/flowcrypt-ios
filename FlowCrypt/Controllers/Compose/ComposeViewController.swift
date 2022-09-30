@@ -259,6 +259,5 @@ final class ComposeViewController: TableNodeViewController {
 extension ComposeViewController: FilesManagerPresenter {}
 
 /*
- - improve InboxItem 'var title'
- - improve fetchUpdatedInboxItem
+ - split decryptAndProcess in MessageService for parsing drafts
  */

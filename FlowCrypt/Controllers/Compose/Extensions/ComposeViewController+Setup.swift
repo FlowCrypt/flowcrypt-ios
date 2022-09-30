@@ -67,7 +67,19 @@ extension ComposeViewController {
         }
 
         contextToSend.subject = info.subject
+        addRecipients(from: info)
 
+        if input.isPgp {
+            decodeDraft(from: info)
+        } else {
+            if case .draft = input.type {
+                contextToSend.message = input.text
+            }
+            reload(sections: Section.recipientsSections)
+        }
+    }
+
+    private func addRecipients(from info: ComposeMessageInput.MessageQuoteInfo) {
         for recipient in info.recipients {
             add(recipient: recipient, type: .to)
         }
@@ -83,45 +95,40 @@ extension ComposeViewController {
         if info.ccRecipients.isNotEmpty || info.bccRecipients.isNotEmpty {
             shouldShowAllRecipientTypes.toggle()
         }
+    }
 
-        if input.isPgp {
-            let message = Message(
-                identifier: .random,
-                date: info.sentDate,
-                sender: info.sender,
-                subject: info.subject,
-                size: nil,
-                labels: [],
-                attachmentIds: [],
-                body: .init(text: info.text, html: nil)
-            )
-            Task {
-                do {
-                    let processedMessage = try await messageService.decryptAndProcess(
-                        message: message,
-                        onlyLocalKeys: false,
-                        userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                    )
-                    contextToSend.message = processedMessage.text
-                    setupTextNode()
-                    reload(sections: [.compose])
-                    didFinishSetup = true
-                } catch {
-                    if case .missingPassPhrase(let keyPair) = error as? MessageServiceError, let keyPair = keyPair {
-                        requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
-                        return
-                    } else {
-                        handle(error: error)
-                    }
+    private func decodeDraft(from info: ComposeMessageInput.MessageQuoteInfo) {
+        let message = Message(
+            identifier: .random,
+            date: info.sentDate,
+            sender: info.sender,
+            subject: info.subject,
+            size: nil,
+            labels: [],
+            attachmentIds: [],
+            body: .init(text: info.text, html: nil)
+        )
+
+        Task {
+            do {
+                let processedMessage = try await messageService.decryptAndProcess(
+                    message: message,
+                    onlyLocalKeys: false,
+                    userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                )
+                contextToSend.message = processedMessage.text
+                setupTextNode()
+                reload(sections: [.compose])
+                didFinishSetup = true
+            } catch {
+                if case .missingPassPhrase(let keyPair) = error as? MessageServiceError, let keyPair = keyPair {
+                    requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
+                    return
+                } else {
+                    handle(error: error)
                 }
             }
-        } else {
-            if case .draft = input.type {
-                contextToSend.message = input.text
-            }
-            reload(sections: Section.recipientsSections)
-            didFinishSetup = true
         }
     }
 

@@ -109,7 +109,11 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     private func expandThreadMessageAndMarkAsRead() {
         Task {
-            try await threadOperationsProvider.mark(id: inboxItem.threadId, asRead: true, in: inboxItem.folderPath)
+            try await threadOperationsProvider.mark(
+                messagesIds: inboxItem.messages.map(\.identifier),
+                asRead: true,
+                in: inboxItem.folderPath
+            )
         }
         let indexOfSectionToExpand = input.firstIndex(where: { !$0.rawMessage.isRead })
             ?? input.lastIndex(where: { !$0.rawMessage.isDraft })
@@ -212,52 +216,77 @@ extension ThreadDetailsViewController {
         onComposeMessageAction?(action)
 
         switch action {
-        case .update(let messageIdentifier):
-            Task {
-                guard let messageId = messageIdentifier.messageId else { return }
-
-                let processedMessage = try await messageService.getAndProcess(
-                    identifier: messageId,
-                    folder: inboxItem.folderPath,
-                    onlyLocalKeys: false,
-                    userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                )
-
-                let indexPath: IndexPath
-                if let index = input.firstIndex(where: { $0.rawMessage.identifier == messageIdentifier.draftMessageId }) {
-                    indexPath = IndexPath(row: 0, section: index + 1)
-                } else {
-                    indexPath = IndexPath(row: 0, section: input.count + 1)
-                }
-
-                self.handle(processedMessage: processedMessage, at: indexPath)
-            }
-        case .sent(let messageIdentifier):
-            Task {
-                if let draftId = messageIdentifier.draftId, let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) {
-                    input.remove(at: index)
-                    node.deleteSections([index + 1], with: .automatic)
-                }
-
-                guard let identifier = messageIdentifier.messageId else { return } // todo - throw
-                let processedMessage = try await messageService.getAndProcess(
-                    identifier: identifier,
-                    folder: inboxItem.folderPath,
-                    onlyLocalKeys: false,
-                    userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                )
-                let indexPath = IndexPath(row: 0, section: self.input.count + 1)
-                self.handle(processedMessage: processedMessage, at: indexPath)
-            }
-        case .delete(let messageIdentifier):
-            guard let index = input.firstIndex(where: { $0.rawMessage.identifier == messageIdentifier.messageId })
-            else { return }
-
-            input.remove(at: index)
-            node.deleteSections([index + 1], with: .automatic)
+        case .update(let identifier):
+            updateMessage(identifier: identifier)
+        case .sent(let identifier):
+            handleSentMessage(identifier: identifier)
+        case .delete(let identifier):
+            deleteMessage(identifier: identifier)
         }
+    }
+
+    private func updateMessage(identifier: MessageIdentifier) {
+        Task {
+            guard let messageId = identifier.messageId else { return }
+
+            let processedMessage = try await getAndProcessMessage(
+                identifier: messageId,
+                folder: inboxItem.folderPath
+            )
+
+            let section: Int
+            if let index = input.firstIndex(where: { $0.rawMessage.identifier == identifier.draftMessageId }) {
+                section = index + 1
+            } else {
+                section = input.count + 1
+            }
+
+            handle(processedMessage: processedMessage, at: IndexPath(row: 0, section: section))
+        }
+    }
+
+    private func handleSentMessage(identifier: MessageIdentifier) {
+        Task {
+            if let draftId = identifier.draftId,
+                let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) {
+                input.remove(at: index)
+                node.deleteSections([index + 1], with: .automatic)
+            }
+
+            guard let messageId = identifier.messageId else { return }
+
+            let processedMessage = try await getAndProcessMessage(
+                identifier: messageId,
+                folder: inboxItem.folderPath
+            )
+            let indexPath = IndexPath(row: 0, section: input.count + 1)
+            handle(processedMessage: processedMessage, at: indexPath)
+        }
+    }
+
+    private func deleteMessage(identifier: MessageIdentifier) {
+        guard let messageId = identifier.messageId,
+              let index = input.firstIndex(where: {
+                  $0.rawMessage.identifier == messageId
+              })
+        else { return }
+
+        input.remove(at: index)
+        node.deleteSections([index + 1], with: .automatic)
+    }
+
+    private func getAndProcessMessage(
+        identifier: Identifier,
+        folder: String,
+        onlyLocalKeys: Bool = false
+    ) async throws -> ProcessedMessage {
+        return try await messageService.getAndProcess(
+            identifier: identifier,
+            folder: folder,
+            onlyLocalKeys: onlyLocalKeys,
+            userEmail: appContext.user.email,
+            isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+        )
     }
 
     private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
@@ -418,12 +447,10 @@ extension ThreadDetailsViewController {
 
         Task {
             do {
-                var processedMessage = try await messageService.getAndProcess(
+                var processedMessage = try await getAndProcessMessage(
                     identifier: message.identifier,
                     folder: inboxItem.folderPath,
-                    onlyLocalKeys: true,
-                    userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    onlyLocalKeys: true
                 )
 
                 if case .missingPubkey = processedMessage.signature {
@@ -594,12 +621,9 @@ extension ThreadDetailsViewController {
     ) {
         Task {
             do {
-                let processedMessage = try await messageService.getAndProcess(
+                let processedMessage = try await getAndProcessMessage(
                     identifier: message.identifier,
-                    folder: inboxItem.folderPath,
-                    onlyLocalKeys: false,
-                    userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    folder: inboxItem.folderPath
                 )
                 handle(processedMessage: processedMessage, at: indexPath)
             } catch {
@@ -671,11 +695,17 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
                 switch action {
                 case .archive:
-                    try await threadOperationsProvider.archive(messages: inboxItem.messages, in: inboxItem.folderPath)
+                    try await threadOperationsProvider.archive(
+                        messagesIds: inboxItem.messages.map(\.identifier),
+                        in: inboxItem.folderPath
+                    )
                 case .markAsRead(let isRead):
                     guard !isRead else { return }
                     Task { // Run mark as unread operation in another thread
-                        try await threadOperationsProvider.mark(id: inboxItem.threadId, asRead: false, in: inboxItem.folderPath)
+                        try await threadOperationsProvider.markThreadAsUnread(
+                            id: inboxItem.threadId,
+                            folder: inboxItem.folderPath
+                        )
                     }
                 case .moveToTrash:
                     try await threadOperationsProvider.moveThreadToTrash(id: inboxItem.threadId, labels: inboxItem.labels)

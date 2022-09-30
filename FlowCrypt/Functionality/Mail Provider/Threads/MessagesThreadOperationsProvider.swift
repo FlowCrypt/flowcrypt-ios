@@ -9,19 +9,15 @@
 import GoogleAPIClientForREST_Gmail
 
 protocol MessagesThreadOperationsProvider {
-    func mark(id: String?, asRead: Bool, in folder: String) async throws
     func delete(id: String?) async throws
     func moveThreadToTrash(id: String?, labels: Set<MessageLabel>) async throws
     func moveThreadToInbox(id: String?) async throws
     func markThreadAsUnread(id: String?, folder: String) async throws
     func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws
-    func archive(messages: [Message], in folder: String) async throws
+    func archive(messagesIds: [Identifier], in folder: String) async throws
 }
 
 extension GmailService: MessagesThreadOperationsProvider {
-    func mark(id: String?, asRead: Bool, in folder: String) async throws {
-    }
-
     func delete(id: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let id = id else {
@@ -55,10 +51,6 @@ extension GmailService: MessagesThreadOperationsProvider {
         try await update(id: id, labelsToAdd: [.unread])
     }
 
-    func markThreadAsRead(id: String?, folder: String) async throws {
-        try await update(id: id, labelsToRemove: [.unread])
-    }
-
     func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws {
         try await withThrowingTaskGroup(of: Void.self) { taskGroup in
             for id in messagesIds {
@@ -73,11 +65,11 @@ extension GmailService: MessagesThreadOperationsProvider {
         }
     }
 
-    func archive(messages: [Message], in folder: String) async throws {
+    func archive(messagesIds: [Identifier], in folder: String) async throws {
         // manually updated each message rather than using update(thread:...) method
         // https://github.com/FlowCrypt/flowcrypt-ios/pull/1769#discussion_r932964129
         try await batchUpdate(
-            messages: messages,
+            messagesIds: messagesIds,
             labelsToRemove: [.inbox]
         )
     }

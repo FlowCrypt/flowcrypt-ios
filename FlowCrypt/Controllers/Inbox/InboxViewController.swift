@@ -658,26 +658,39 @@ extension InboxViewController {
     }
 
     private func fetchUpdatedInboxItem(identifier: MessageIdentifier) {
-        Task {
-            guard let index = inboxInput.firstIndex(where: {
-                switch $0.type {
-                case .thread(let threadId):
-                    return threadId == identifier.threadId
-                case .message(let messageId):
-                    return messageId == identifier.messageId
-                }
-            }) else {
-                if let threadId = identifier.threadId {
-                    if let inboxItem = try await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path) {
-                        if !inboxItem.messages(with: path).isEmpty {
-                            self.inboxInput.insert(inboxItem, at: 0)
-                            self.tableNode.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
-                        }
-                    }
-                }
-                return
-            }
+        guard let index = findInboxItemIndex(identifier: identifier) else {
+            addInboxItem(identifier: identifier)
+            return
+        }
 
+        updateInboxItem(at: index)
+    }
+
+    private func findInboxItemIndex(identifier: MessageIdentifier) -> Int? {
+        return inboxInput.firstIndex(where: {
+            switch $0.type {
+            case .thread(let threadId):
+                return threadId == identifier.threadId
+            case .message(let messageId):
+                return messageId == identifier.messageId
+            }
+        })
+    }
+
+    private func addInboxItem(identifier: MessageIdentifier) {
+        Task {
+            guard let threadId = identifier.threadId,
+                  let inboxItem = try await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path),
+                  !inboxItem.messages(with: path).isEmpty
+            else { return }
+
+            inboxInput.insert(inboxItem, at: 0)
+            tableNode.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        }
+    }
+
+    private func updateInboxItem(at index: Int) {
+        Task {
             switch inboxInput[index].type {
             case .thread(let threadId):
                 guard let inboxItem = try? await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path),
@@ -689,7 +702,8 @@ extension InboxViewController {
                 }
                 inboxInput[index] = inboxItem
                 tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-            case .message(let messageId):
+            case .message:
+                // used only with imap, can be implemented later
                 break
             }
         }

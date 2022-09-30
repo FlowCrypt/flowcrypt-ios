@@ -12,10 +12,6 @@ import Foundation
 extension Imap: MessagesThreadOperationsProvider {
     private var error: Error { AppErr.general("Doesn't support yet") }
 
-    func mark(id: String?, asRead: Bool, in folder: String) async throws {
-        throw error
-    }
-
     func delete(id: String?) async throws {
         throw error
     }
@@ -32,15 +28,11 @@ extension Imap: MessagesThreadOperationsProvider {
         throw error
     }
 
-    func markThreadAsRead(id: String?, folder: String) async throws {
-        throw error
-    }
-
     func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws {
         throw error
     }
 
-    func archive(messages: [Message], in folder: String) async throws {
+    func archive(messagesIds: [Identifier], in folder: String) async throws {
         throw error
     }
 }

@@ -90,12 +90,12 @@ extension GmailService: MessageOperationsProvider {
     }
 
     func batchUpdate(
-        messages: [Message],
+        messagesIds: [Identifier],
         labelsToAdd: [MessageLabel] = [],
         labelsToRemove: [MessageLabel] = []
     ) async throws {
         let request = GTLRGmail_BatchModifyMessagesRequest()
-        request.ids = messages.compactMap(\.identifier.stringId)
+        request.ids = messagesIds.compactMap(\.stringId)
         request.addLabelIds = labelsToAdd.map(\.value)
         request.removeLabelIds = labelsToRemove.map(\.value)
         let query = GTLRGmailQuery_UsersMessagesBatchModify.query(
