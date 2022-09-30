@@ -37,27 +37,25 @@ extension ComposeViewController {
             actionButtonTitle: "delete".localized,
             actionStyle: .destructive,
             onAction: { [weak self] _ in
-                guard let self = self else { return }
-                Task {
-                    do {
-                        let messageId = self.input.type.info?.id
-                        try await self.composeMessageService.deleteDraft(messageId: messageId)
-
-                        if let messageId = messageId {
-                            let identifier = MessageIdentifier(
-                                threadId: Identifier(stringId: self.input.type.info?.threadId),
-                                messageId: messageId
-                            )
-                            self.handleAction?(.delete(identifier))
-                        }
-
-                        self.navigationController?.popViewController(animated: true)
-                    } catch {
-                        self.handle(error: error)
-                    }
-                }
+                self?.deleteDraft()
             }
         )
+    }
+
+    private func deleteDraft() {
+        Task {
+            do {
+                try await composeMessageService.deleteDraft()
+
+                if let messageIdentifier = composeMessageService.messageIdentifier {
+                    handleAction?(.delete(messageIdentifier))
+                }
+
+                navigationController?.popViewController(animated: true)
+            } catch {
+                handle(error: error)
+            }
+        }
     }
 
     @objc func handleTableTap() {

@@ -245,12 +245,9 @@ final class ComposeMessageService {
         }
     }
 
-    func deleteDraft(messageId: Identifier?) async throws {
-        if let draftId = messageIdentifier?.draftId {
-            try await draftGateway?.deleteDraft(with: draftId)
-        } else if let messageId = messageId {
-            try await messageOperationsProvider.deleteMessage(id: messageId, from: nil)
-        }
+    func deleteDraft() async throws {
+        guard let draftId = messageIdentifier?.draftId else { return }
+        try await draftGateway?.deleteDraft(with: draftId)
     }
 
     // MARK: - Encrypt and Send

@@ -29,26 +29,17 @@ class InboxMessageThreadsProvider: InboxDataProvider {
     func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxItem? {
         guard let id = identifier.stringId else { return nil }
         let thread = try await provider.fetchThread(identifier: id, path: path)
-        return InboxItem(
-            messages: thread.messages,
-            folderPath: path,
-            type: .thread(identifier)
-        )
+        return InboxItem(thread: thread, folderPath: path)
     }
 
     func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
 
         let inboxData = result.threads
-            .map {
-                InboxItem(
-                    thread: $0,
-                    folderPath: context.folderPath
-                )
-            }
-            .sorted(by: {
+            .map { InboxItem(thread: $0, folderPath: context.folderPath) }
+            .sorted {
                 $0.latestMessageDate(with: context.folderPath) > $1.latestMessageDate(with: context.folderPath)
-            })
+            }
 
         let inboxContext = InboxContext(
             data: inboxData,

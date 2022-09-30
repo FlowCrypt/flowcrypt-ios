@@ -56,7 +56,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             case (_, .recipients(.from)):
                 return self.fromCellNode()
             case (_, .recipients(.to)), (_, .recipients(.cc)), (_, .recipients(.bcc)):
-                let recipientType = RecipientType.allCases[indexPath.section - 1]
+                let recipientType = RecipientType.allCases[indexPath.section]
                 return self.recipientsNode(type: recipientType)
             case (.main, .recipientsLabel):
                 return self.recipientTextNode()

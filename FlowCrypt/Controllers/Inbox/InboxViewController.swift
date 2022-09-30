@@ -644,11 +644,9 @@ extension InboxViewController {
                     appContext: appContext,
                     input: .init(type: .draft(draftInfo)),
                     handleAction: { [weak self] action in
-                        guard let self = self else { return }
-
                         switch action {
                         case .update(let identifier), .sent(let identifier), .delete(let identifier):
-                            self.fetchUpdatedInboxItem(identifier: identifier)
+                            self?.fetchUpdatedInboxItem(identifier: identifier)
                         }
                     }
                 )
@@ -682,16 +680,15 @@ extension InboxViewController {
 
             switch inboxInput[index].type {
             case .thread(let threadId):
-                guard let inboxItem = try await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path)
-                else { return }
-
-                if inboxItem.messages(with: path).isEmpty {
-                    self.inboxInput.remove(at: index)
-                    self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-                } else {
-                    self.inboxInput[index] = inboxItem
-                    self.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                guard let inboxItem = try? await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path),
+                      !inboxItem.messages(with: path).isEmpty
+                else {
+                    inboxInput.remove(at: index)
+                    tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+                    return
                 }
+                inboxInput[index] = inboxItem
+                tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
             case .message(let messageId):
                 break
             }
@@ -722,14 +719,3 @@ extension InboxViewController {
         }
     }
 }
-
-/*
-open draft:
- - update
-  - fetch updated thread
- - sent
-  - fetch updated thread and check if drafts there
- - delete
-  - fetch updated thread
-
- */

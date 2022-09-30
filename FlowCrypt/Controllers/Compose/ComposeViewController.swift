@@ -29,7 +29,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     enum Section: Hashable {
-        case passphrase, recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
+        case recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
         static var recipientsSections: [Section] {
             RecipientType.allCases.map { Self.recipients($0) }
@@ -259,6 +259,6 @@ final class ComposeViewController: TableNodeViewController {
 extension ComposeViewController: FilesManagerPresenter {}
 
 /*
- - show empty view as inbox table header
- - check drafts for forward and reply all
-*/
+ - improve InboxItem 'var title'
+ - improve fetchUpdatedInboxItem
+ */

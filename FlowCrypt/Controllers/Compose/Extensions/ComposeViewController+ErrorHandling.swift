@@ -44,7 +44,6 @@ extension ComposeViewController {
                             } else {
                                 self.handleSendTap()
                             }
-                            self.reload(sections: [.passphrase])
                         } else {
                             self.handle(error: ComposeMessageError.passPhraseNoMatch)
                         }

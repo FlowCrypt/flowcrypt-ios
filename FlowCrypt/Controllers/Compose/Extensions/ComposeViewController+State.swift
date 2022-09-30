@@ -20,11 +20,11 @@ extension ComposeViewController {
 
         switch state {
         case .main:
-            sectionsList = [.passphrase] + Section.recipientsSections + [.recipientsLabel, .password, .compose, .attachments]
+            sectionsList = Section.recipientsSections + [.recipientsLabel, .password, .compose, .attachments]
             node.reloadData()
         case .searchEmails:
             let previousSectionsCount = sectionsList.count
-            sectionsList = [.passphrase] + Section.recipientsSections + [.searchResults, .contacts]
+            sectionsList = Section.recipientsSections + [.searchResults, .contacts]
 
             let deletedSectionsCount = previousSectionsCount - sectionsList.count
 
