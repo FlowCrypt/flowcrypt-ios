@@ -46,7 +46,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
                 encryptedStorage: self.encryptedStorage
             )
         )
-        let sessionLegnth = try await clientConfigurationService.configuration.passphraseSessionLengthInSeconds
+        let sessionLengthInSeconds = try await clientConfigurationService.configuration.passphraseSessionLengthInSeconds
         return passPhraseProvider.passPhrases
             .compactMap { passPhrase -> PassPhrase? in
                 guard let dateToCompare = passPhrase.date else {
@@ -61,7 +61,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
                 )
 
                 let timePassed = components.second ?? 0
-                let isPassPhraseValid = timePassed < sessionLegnth
+                let isPassPhraseValid = timePassed < sessionLengthInSeconds
 
                 return isPassPhraseValid ? passPhrase : nil
             }
