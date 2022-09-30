@@ -76,6 +76,7 @@ extension ComposeViewController {
                 contextToSend.message = input.text
             }
             reload(sections: Section.recipientsSections)
+            didFinishSetup = true
         }
     }
 

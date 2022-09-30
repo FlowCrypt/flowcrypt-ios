@@ -82,13 +82,10 @@ describe('COMPOSE EMAIL: ', () => {
       await MenuBarScreen.clickDraftsButton();
       await MailFolderScreen.clickOnEmailBySubject(draftSubject);
       await NewMessageScreen.clickSendButton();
-      await NewMessageScreen.clickBackButton();
       await MailFolderScreen.checkIfFolderIsEmpty();
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickSentButton();
       await MailFolderScreen.clickOnEmailBySubject(draftSubject);
-
-      await browser.pause(600000);
     });
   });
 });
