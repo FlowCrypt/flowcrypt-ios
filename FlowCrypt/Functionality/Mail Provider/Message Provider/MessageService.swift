@@ -109,19 +109,50 @@ final class MessageService {
         }
     }
 
-    func decryptAndProcess(
-        message: Message,
-        onlyLocalKeys: Bool,
-        userEmail: String,
-        isUsingKeyManager: Bool
-    ) async throws -> ProcessedMessage {
-        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
+    private func getKeypairs(email: String, isUsingKeyManager: Bool) async throws -> [Keypair] {
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: email)
+
         guard keys.isNotEmpty else {
             if isUsingKeyManager {
                 throw MessageServiceError.emptyKeysForEKM
             }
             throw MessageServiceError.emptyKeys
         }
+
+        return keys
+    }
+
+    func decrypt(
+        text: String,
+        userEmail: String,
+        isUsingKeyManager: Bool
+    ) async throws -> String {
+        let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
+
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: text.data(),
+            keys: keys,
+            msgPwd: nil,
+            isMime: false,
+            verificationPubKeys: []
+        )
+
+        guard !hasMsgBlockThatNeedsPassPhrase(decrypted) else {
+            let keyPair = keys.first(where: { $0.passphrase == nil })
+            throw MessageServiceError.missingPassPhrase(keyPair)
+        }
+
+        return decrypted.text
+    }
+
+    func decryptAndProcess(
+        message: Message,
+        onlyLocalKeys: Bool,
+        userEmail: String,
+        isUsingKeyManager: Bool
+    ) async throws -> ProcessedMessage {
+        let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
+
         let verificationPubKeys = try await fetchVerificationPubKeys(
             for: message.sender,
             onlyLocal: onlyLocalKeys

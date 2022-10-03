@@ -153,8 +153,7 @@ export const getMockGoogleEndpoints = (
         const id = parseResourceId(req.url!);
         const msgs = (await GoogleData.withInitializedData(acct, googleConfig)).getMessagesAndDraftsByThread(id);
         if (!msgs.length) {
-          const statusCode = id === '16841ce0ce5cb74d' ? 404 : 400; // intentionally testing missing thread
-          throw new HttpErr(`MOCK thread not found for ${acct}: ${id}`, statusCode);
+          throw new HttpErr(`MOCK thread not found for ${acct}: ${id}`, 404);
         }
         return { id, historyId: msgs[0].historyId, messages: msgs.map(m => GoogleData.fmtMsg(m, parsedReq.query.format)) };
       } else if (isPost(req)) {

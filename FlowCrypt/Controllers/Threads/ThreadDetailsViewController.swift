@@ -600,12 +600,13 @@ extension ThreadDetailsViewController {
                 guard data.rawMessage.isDraft && data.rawMessage.isPgp && data.processedMessage == nil else { continue }
                 let indexPath = IndexPath(row: 0, section: index + 1)
                 do {
-                    let processedMessage = try await messageService.decryptAndProcess(
-                        message: data.rawMessage,
-                        onlyLocalKeys: false,
+                    let decryptedText = try await messageService.decrypt(
+                        text: data.rawMessage.body.text,
                         userEmail: appContext.user.email,
                         isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                     )
+
+                    let processedMessage = ProcessedMessage(message: data.rawMessage, text: decryptedText, type: .plain, attachments: [])
                     handle(processedMessage: processedMessage, at: indexPath)
                 } catch {
                     handle(error: error, at: indexPath)

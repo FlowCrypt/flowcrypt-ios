@@ -132,10 +132,6 @@ extension ComposeViewController {
             }
         }
     }
-
-    func setupNodes() {
-        setupSubjectNode()
-    }
 }
 
 // MARK: - Search

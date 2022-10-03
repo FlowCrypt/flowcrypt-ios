@@ -174,7 +174,7 @@ final class ComposeViewController: TableNodeViewController {
 
         setupUI()
         setupNavigationBar()
-        setupNodes()
+        setupSubjectNode()
         observeKeyboardNotifications()
         observerAppStates()
         observeComposeUpdates()
