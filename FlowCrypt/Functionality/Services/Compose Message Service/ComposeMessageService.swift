@@ -149,7 +149,7 @@ final class ComposeMessageService {
                 throw MessageValidationError.subjectContainsPassword
             }
 
-            let allAvailablePassPhrases = try await appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
+            let allAvailablePassPhrases = try appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
             if allAvailablePassPhrases.contains(password) {
                 throw MessageValidationError.notUniquePassword
             }
