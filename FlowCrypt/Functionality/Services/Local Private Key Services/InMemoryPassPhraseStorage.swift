@@ -14,14 +14,14 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
 
     let calendar = Calendar.current
     let passPhraseProvider: InMemoryPassPhraseProviderType
-    let encryptedStorage: EncryptedStorageType
+    let clientConfigurationStorage: ClientConfigurationStorageType
 
     init(
         passPhraseProvider: InMemoryPassPhraseProviderType = InMemoryPassPhraseProvider.shared,
-        encryptedStorage: EncryptedStorageType
+        clientConfigurationStorage: ClientConfigurationStorageType
     ) {
         self.passPhraseProvider = passPhraseProvider
-        self.encryptedStorage = encryptedStorage
+        self.clientConfigurationStorage = clientConfigurationStorage
     }
 
     func save(passPhrase: PassPhrase) {
@@ -43,7 +43,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
         let clientConfigurationService = ClientConfigurationService(
             server: enterpriseServer,
             local: LocalClientConfiguration(
-                encryptedStorage: self.encryptedStorage
+                encryptedStorage: self.clientConfigurationStorage
             )
         )
         let sessionLengthInSeconds = try await clientConfigurationService.configuration.passphraseSessionLengthInSeconds

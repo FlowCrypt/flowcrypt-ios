@@ -10,7 +10,9 @@ import FlowCryptCommon
 import RealmSwift
 import UIKit
 
-protocol EncryptedStorageType {
+protocol ClientConfigurationStorageType {}
+
+protocol EncryptedStorageType: ClientConfigurationStorageType {
     var storage: Realm { get throws }
 
     var activeUser: User? { get throws }

@@ -60,7 +60,7 @@ class AppContext {
             session: sessionType,
             userAccountService: try SessionService(
                 encryptedStorage: encryptedStorage,
-                passPhraseStorage: InMemoryPassPhraseStorage(encryptedStorage: encryptedStorage),
+                inMemoryPassPhraseStorage: InMemoryPassPhraseStorage(clientConfigurationStorage: encryptedStorage),
                 googleService: GoogleUserService(
                     currentUserEmail: try encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
