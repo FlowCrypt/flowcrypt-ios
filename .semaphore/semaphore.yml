@@ -28,7 +28,7 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - xcversion select 13.4.1
+            - xcversion select 14.0
             - bundle exec fastlane build
             - bundle exec fastlane test
       epilogue:
