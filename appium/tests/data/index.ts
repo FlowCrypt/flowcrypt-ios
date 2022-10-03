@@ -44,7 +44,7 @@ export const CommonData = {
       '>  > first message',
     firstDate: 'Feb 04',
     secondDate: 'Feb 06',
-    thirdDate: 'Feb 07',
+    thirdDate: 'Feb 08',
   },
   archivedThread: {
     subject: 'Archived thread'
