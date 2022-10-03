@@ -10,9 +10,7 @@ import FlowCryptCommon
 import RealmSwift
 import UIKit
 
-protocol ClientConfigurationStorageType {}
-
-protocol EncryptedStorageType: ClientConfigurationStorageType {
+protocol EncryptedStorageType {
     var storage: Realm { get throws }
 
     var activeUser: User? { get throws }
@@ -246,7 +244,7 @@ extension EncryptedStorage: PassPhraseStorageType {
         try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
     }
 
-    func getPassPhrases(for email: String) throws -> [PassPhrase] {
+    func getPassPhrases(for email: String, expirationInSeconds _: Int?) throws -> [PassPhrase] {
         return try storage.objects(KeypairRealmObject.self)
             .where({ $0.user.email == email })
             .compactMap(PassPhrase.init)

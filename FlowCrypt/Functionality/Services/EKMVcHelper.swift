@@ -74,7 +74,7 @@ final class EKMVcHelper: EKMVcHelperType {
     private func getPassphrase(in viewController: UIViewController) async throws -> String? {
         // If this is called when starting the app, then it doesn't make much difference
         // but conceptually it would be better to look pass phrase both in memory and storage
-        if let passPhrase = try await appContext.combinedPassPhraseStorage.getPassPhrases(
+        if let passPhrase = try appContext.combinedPassPhraseStorage.getPassPhrases(
             for: appContext.user.email
         ).first(where: { $0.value.isNotEmpty })?.value {
             return passPhrase
@@ -139,7 +139,7 @@ final class EKMVcHelper: EKMVcHelperType {
             email: appContext.user.email,
             fingerprintsOfAssociatedKey: keyDetail.fingerprints
         )
-        try await appContext.combinedPassPhraseStorage.savePassPhrase(
+        try appContext.combinedPassPhraseStorage.savePassPhrase(
             with: passPhraseObj,
             storageMethod: passPhraseStorageMethod
         )
@@ -195,7 +195,7 @@ final class EKMVcHelper: EKMVcHelperType {
         }
         let matchingKeys = try await self.keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try await appContext.combinedPassPhraseStorage.savePassPhrasesInMemory(for: appContext.user.email, passPhrase, privateKeys: matchingKeys)
+        try appContext.combinedPassPhraseStorage.savePassPhrasesInMemory(for: appContext.user.email, passPhrase, privateKeys: matchingKeys)
         return matchingKeys.isNotEmpty
     }
 }

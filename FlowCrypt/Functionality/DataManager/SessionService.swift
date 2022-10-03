@@ -52,7 +52,7 @@ final class SessionService {
 
     init(
         encryptedStorage: EncryptedStorageType,
-        inMemoryPassPhraseStorage: PassPhraseStorageType,
+        inMemoryPassPhraseStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
         localStorage: LocalStorageType = LocalStorage(),
         imap: Imap? = nil,
         googleService: GoogleUserService

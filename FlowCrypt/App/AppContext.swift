@@ -38,10 +38,7 @@ class AppContext {
     @MainActor
     static func setup(globalRouter: GlobalRouterType) async throws -> AppContext {
         let encryptedStorage = try await EncryptedStorage()
-        let combinedPassPhraseStorage = CombinedPassPhraseStorage(
-            encryptedStorage: encryptedStorage,
-            inMemoryStorage: InMemoryPassPhraseStorage(encryptedStorage: encryptedStorage)
-        )
+        let combinedPassPhraseStorage = CombinedPassPhraseStorage(encryptedStorage: encryptedStorage)
         let keyAndPassPhraseStorage = KeyAndPassPhraseStorage(
             encryptedStorage: encryptedStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorage
@@ -60,7 +57,6 @@ class AppContext {
             session: sessionType,
             userAccountService: try SessionService(
                 encryptedStorage: encryptedStorage,
-                inMemoryPassPhraseStorage: InMemoryPassPhraseStorage(clientConfigurationStorage: encryptedStorage),
                 googleService: GoogleUserService(
                     currentUserEmail: try encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
@@ -154,7 +150,7 @@ class AppContextWithUser: AppContext {
         self.authType = authType
         self.user = user
         self.userId = UserId(email: user.email, name: user.name)
-        self.enterpriseServer = try await EnterpriseServerApi(email: user.email)
+        self.enterpriseServer = try EnterpriseServerApi(email: user.email)
         self.clientConfigurationService = ClientConfigurationService(
             server: enterpriseServer,
             local: LocalClientConfiguration(
@@ -162,12 +158,14 @@ class AppContextWithUser: AppContext {
             )
         )
 
+        var updatedCombinedPassPhraseStorage = combinedPassPhraseStorage
+        updatedCombinedPassPhraseStorage.clientConfiguration = try await clientConfigurationService.configuration
         super.init(
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
-            combinedPassPhraseStorage: combinedPassPhraseStorage,
+            combinedPassPhraseStorage: updatedCombinedPassPhraseStorage,
             globalRouter: globalRouter
         )
     }

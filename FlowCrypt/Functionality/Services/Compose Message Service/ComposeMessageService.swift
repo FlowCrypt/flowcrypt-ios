@@ -79,7 +79,7 @@ final class ComposeMessageService {
         }
         let matchingKeys = try await keyMethods.filterByPassPhraseMatch(keys: allKeys, passPhrase: passPhrase)
         // save passphrase for all matching keys
-        try await appContext.combinedPassPhraseStorage.savePassPhrasesInMemory(
+        try appContext.combinedPassPhraseStorage.savePassPhrasesInMemory(
             for: sender,
             passPhrase,
             privateKeys: matchingKeys

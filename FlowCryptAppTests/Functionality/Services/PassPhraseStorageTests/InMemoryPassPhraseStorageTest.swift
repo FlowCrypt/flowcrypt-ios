@@ -24,8 +24,7 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
             fingerprintsOfAssociatedKey: ["11","12"]
         )
         sut = .init(
-            passPhraseProvider: passPhraseProvider,
-            encryptedStorage: EncryptedStorageMock()
+            passPhraseProvider: passPhraseProvider
         )
     }
 
@@ -49,13 +48,13 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
         XCTAssertTrue(passPhraseProvider.passPhrases.isEmpty)
     }
 
-    func testGetPassPhrases() async throws {
-        var passPhrases = try await sut.getPassPhrases(for: testPassPhraseAccount)
+    func testGetPassPhrases() throws {
+        var passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount, expirationInSeconds: 10)
         XCTAssertTrue(passPhrases.isEmpty)
 
         sut.save(passPhrase: testPassPhrase)
 
-        passPhrases = try await sut.getPassPhrases(for: testPassPhraseAccount)
+        passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount, expirationInSeconds: 10)
         XCTAssertTrue(passPhrases.count == 1)
         XCTAssertTrue(passPhrases.contains(
             where: { $0.primaryFingerprintOfAssociatedKey == "11" })
@@ -64,13 +63,13 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     }
 
     func testExpiredPassPhrases() async throws {
-//        let passphrase = try await sut.getPassPhrases(for: testPassPhraseAccount)
-//        XCTAssertTrue(passphrase.isEmpty)
-//
-//        sut.save(passPhrase: testPassPhrase)
-//        sleep(3)
-//        let newPassphrase = try await sut.getPassPhrases(for: testPassPhraseAccount)
-//        XCTAssertTrue(newPassphrase.isEmpty)
+        let passphrase = try sut.getPassPhrases(for: testPassPhraseAccount, expirationInSeconds: 10)
+        XCTAssertTrue(passphrase.isEmpty)
+
+        sut.save(passPhrase: testPassPhrase)
+        sleep(3)
+        let newPassphrase = try sut.getPassPhrases(for: testPassPhraseAccount, expirationInSeconds: 2)
+        XCTAssertTrue(newPassphrase.isEmpty)
     }
 }
 

@@ -27,7 +27,7 @@ final class KeyAndPassPhraseStorage: KeyAndPassPhraseStorageType {
     }
 
     func getKeypairsWithPassPhrases(email: String) async throws -> [Keypair] {
-        let storedPassPhrases = try await combinedPassPhraseStorage.getPassPhrases(for: email)
+        let storedPassPhrases = try combinedPassPhraseStorage.getPassPhrases(for: email)
         var keypairs = try encryptedStorage.getKeypairs(by: email)
         for i in keypairs.indices {
             keypairs[i].passphrase = keypairs[i].passphrase ?? storedPassPhrases

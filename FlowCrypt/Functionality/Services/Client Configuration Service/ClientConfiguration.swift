@@ -120,12 +120,11 @@ class ClientConfiguration {
     }
 
     /// The number to be interpreted as amount of seconds a pass phrase session will last.
-    /// Default is 4 hours.
-    var passphraseSessionLengthInSeconds: Int {
+    var passphraseSessionLengthInSeconds: Int? {
         if let sessionLength = raw.inMemoryPassPhraseSessionLength {
             return max(1, min(sessionLength, Int.max))
         }
-        return 4 * 60 * 60
+        return nil
     }
 
     /// Some orgs prefer to forbid publishing public keys publicly
