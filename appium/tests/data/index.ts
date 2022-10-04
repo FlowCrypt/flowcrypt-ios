@@ -43,8 +43,8 @@ export const CommonData = {
       '> On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
       '>  > first message',
     firstDate: 'Feb 04',
-    secondDate: 'Feb 06',
-    thirdDate: 'Feb 07',
+    secondDate: 'Feb 07',
+    thirdDate: 'Feb 08',
   },
   archivedThread: {
     subject: 'Archived thread'
