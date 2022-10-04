@@ -59,6 +59,7 @@ class ElementHelper {
   static async waitAndPasteString(element: WebdriverIO.Element, text: string) {
     const base64Encoded = Buffer.from(text).toString('base64');
     await driver.setClipboard(base64Encoded);
+    await browser.pause(100);
     await ElementHelper.waitAndClick(element);
     const pasteEl = await $('~Paste');
     await ElementHelper.waitAndClick(pasteEl);

@@ -39,12 +39,12 @@ Tips for debugging:
 - if appium doesn't even start simulator where it used to work, try deleting node_modules folder and running `npm install`. Also check your nodejs version is 16 with `node --version`
 
 ## Inspect accessibility identifiers
- 1. Install `https://github.com/appium/appium-inspector`. Releases `https://github.com/appium/appium-inspector/releases`
+ 1. Install https://github.com/appium/appium-inspector. Releases https://github.com/appium/appium-inspector/releases
  2. Download `appium-inspector.dmg`.
  3. Before opening package run `xattr -cr appium-inspector.dmg` on downloaded file.
- 4. Allow access in `System Prefferences -> Privacy Tab -> Accessibility`
+ 4. Allow access in `System Preferences -> Privacy Tab -> Accessibility`
  5. Use next capabilities for `Appium Inspector`  
- `
+ ```
  {
  "platformName": "iOS",
  "iosInstallPause": 5000,
@@ -58,6 +58,6 @@ Tips for debugging:
  "wdaStartupRetries": 4,
  "wdaStartupRetryInterval": 120000
  }
- `  
+ ```
  6. Remote host - `127.0.0.1`, Port - `4723`, Path - `/wd/hub`
  7. Run `Start Session`

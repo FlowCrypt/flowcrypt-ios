@@ -3,6 +3,7 @@ import ElementHelper from "../helpers/ElementHelper";
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
+  SYSTEM_BACK_BTN: '~Back',
   SAVE_BTN: '~aid-save-attachment-to-device',
   CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController 
 };
@@ -16,6 +17,10 @@ class AttachmentScreen extends BaseScreen {
     return $(SELECTORS.BACK_BTN);
   }
 
+  get systemBackButton() {
+    return $(SELECTORS.SYSTEM_BACK_BTN);
+  }
+
   get saveButton() {
     return $(SELECTORS.SAVE_BTN);
   }
@@ -25,13 +30,17 @@ class AttachmentScreen extends BaseScreen {
   }
 
   checkDownloadPopUp = async (name: string) => {
-    await ElementHelper.waitElementVisible(await this.cancelButton);
-    const attachment = `-ios class chain:**/XCUIElementTypeNavigationBar[\`name == "com_apple_DocumentManager_Service.DOCServiceTargetSelectionBrowserView"\`]/XCUIElementTypeButton/XCUIElementTypeStaticText`; //it works only with this selector
-    expect(await (await $(attachment)).getValue()).toEqual(name);
+    const attachmentTextField = $('-ios class chain:**/XCUIElementTypeTextField'); // textfield from system file dialog
+    await ElementHelper.waitElementVisible(await attachmentTextField);
+    expect(await attachmentTextField.getValue()).toEqual(name);
   }
 
   clickBackButton = async () => {
     await ElementHelper.waitAndClick(await this.backButton);
+  }
+
+  clickSystemBackButton = async () => {
+    await ElementHelper.waitAndClick(await this.systemBackButton);
   }
 
   clickCancelButton = async () => {
