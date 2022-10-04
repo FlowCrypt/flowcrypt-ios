@@ -158,14 +158,14 @@ class AppContextWithUser: AppContext {
             )
         )
 
-        var updatedCombinedPassPhraseStorage = combinedPassPhraseStorage
-        updatedCombinedPassPhraseStorage.clientConfiguration = try await clientConfigurationService.configuration
+        var combinedPassPhraseStorageWithConfiguration = combinedPassPhraseStorage
+        combinedPassPhraseStorageWithConfiguration.clientConfiguration = try await clientConfigurationService.configuration
         super.init(
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
-            combinedPassPhraseStorage: updatedCombinedPassPhraseStorage,
+            combinedPassPhraseStorage: combinedPassPhraseStorageWithConfiguration,
             globalRouter: globalRouter
         )
     }

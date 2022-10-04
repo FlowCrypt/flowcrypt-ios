@@ -25,6 +25,9 @@ describe('SETUP: ', () => {
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.e2e.prv]
     }
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      messages: [testMessageSubject],
+    });
 
     await mockApi.withMockedApis(async () => {
       // stage 1: setup
