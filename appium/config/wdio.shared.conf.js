@@ -16,7 +16,7 @@ exports.config = {
     requires: ['tsconfig-paths/register']
   },
   sync: true,
-  logLevel: 'error',
+  logLevel: 'debug',
   deprecationWarnings: true,
   bail: 0,
   waitforTimeout: 15000,
