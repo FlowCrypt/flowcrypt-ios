@@ -257,7 +257,3 @@ final class ComposeViewController: TableNodeViewController {
 }
 
 extension ComposeViewController: FilesManagerPresenter {}
-
-/*
- - split decryptAndProcess in MessageService for parsing drafts
- */

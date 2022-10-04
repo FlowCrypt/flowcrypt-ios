@@ -154,7 +154,7 @@ extension GoogleUserService: UserServiceType {
                         return continuation.resume(throwing: error)
                     }
                 }
-                Task<Void, Never> {
+                Task {
                     do {
                         return continuation.resume(
                             returning: try await self.handleGoogleAuthStateResult(

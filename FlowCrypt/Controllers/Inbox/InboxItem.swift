@@ -92,6 +92,7 @@ extension InboxItem {
             return "To: \(recipients)".attributed(style, color: textColor)
         } else {
             let hasDrafts = messages.contains(where: { $0.isDraft })
+
             let senderNames = messages
                 .compactMap(\.sender?.shortName)
                 .unique()

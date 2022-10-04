@@ -16,12 +16,14 @@ class SearchViewController: InboxViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setupSearchUI()
-        self.setupSearch()
+
+        setupSearchUI()
+        setupSearch()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
         searchController.isActive = true
     }
 

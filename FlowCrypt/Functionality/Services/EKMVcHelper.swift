@@ -159,7 +159,7 @@ final class EKMVcHelper: EKMVcHelperType {
 
                     viewController.presentedViewController?.dismiss(animated: true)
 
-                    Task<Void, Never> {
+                    Task {
                         do {
                             let matched = try await self.handlePassPhraseEntry(
                                 appContext: self.appContext,

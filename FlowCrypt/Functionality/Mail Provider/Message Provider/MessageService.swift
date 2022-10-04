@@ -97,16 +97,17 @@ final class MessageService {
             id: identifier,
             folder: folder
         )
-        if message.isPgp {
-            return try await decryptAndProcess(
-                message: message,
-                onlyLocalKeys: onlyLocalKeys,
-                userEmail: userEmail,
-                isUsingKeyManager: isUsingKeyManager
-            )
-        } else {
+
+        guard message.isPgp else {
             return ProcessedMessage(message: message)
         }
+
+        return try await decryptAndProcess(
+            message: message,
+            onlyLocalKeys: onlyLocalKeys,
+            userEmail: userEmail,
+            isUsingKeyManager: isUsingKeyManager
+        )
     }
 
     private func getKeypairs(email: String, isUsingKeyManager: Bool) async throws -> [Keypair] {
@@ -122,13 +123,12 @@ final class MessageService {
         return keys
     }
 
-    func decrypt(
+    private func decrypt(
         text: String,
-        userEmail: String,
-        isUsingKeyManager: Bool
-    ) async throws -> String {
-        let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
-
+        keys: [Keypair],
+        isMime: Bool = false,
+        verificationPubKeys: [String] = []
+    ) async throws -> CoreRes.ParseDecryptMsg {
         let decrypted = try await core.parseDecryptMsg(
             encrypted: text.data(),
             keys: keys,
@@ -142,6 +142,16 @@ final class MessageService {
             throw MessageServiceError.missingPassPhrase(keyPair)
         }
 
+        return decrypted
+    }
+
+    func decrypt(
+        text: String,
+        userEmail: String,
+        isUsingKeyManager: Bool
+    ) async throws -> String {
+        let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
+        let decrypted = try await decrypt(text: text, keys: keys)
         return decrypted.text
     }
 
@@ -165,18 +175,13 @@ final class MessageService {
         }
 
         let encrypted = message.raw ?? message.body.text
-        let decrypted = try await core.parseDecryptMsg(
-            encrypted: encrypted.data(),
+
+        let decrypted = try await decrypt(
+            text: encrypted,
             keys: keys,
-            msgPwd: nil,
             isMime: message.raw != nil,
             verificationPubKeys: verificationPubKeys
         )
-
-        guard !hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-            let keyPair = keys.first(where: { $0.passphrase == nil })
-            throw MessageServiceError.missingPassPhrase(keyPair)
-        }
 
         return try await process(
             message: message,

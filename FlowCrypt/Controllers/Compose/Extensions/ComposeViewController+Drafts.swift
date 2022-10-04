@@ -32,17 +32,17 @@ extension ComposeViewController {
             contextToSend: contextToSend
         )
 
-        if let existingDraft = composedLatestDraft {
-            return newDraft != existingDraft ? newDraft : nil
-        } else { // save initial draft
+        guard let existingDraft = composedLatestDraft else {
             composedLatestDraft = newDraft
             return nil
         }
+
+        return newDraft != existingDraft ? newDraft : nil
     }
 
-    func saveDraftIfNeeded(withAlert: Bool = false, completion: ((Error?) -> Void)? = nil) {
+    func saveDraftIfNeeded(withAlert: Bool = false, handler: ((Error?) -> Void)? = nil) {
         guard let draft = createDraft() else {
-            completion?(nil)
+            handler?(nil)
             return
         }
 
@@ -60,15 +60,14 @@ extension ComposeViewController {
                 )
 
                 composedLatestDraft = draft
-                completion?(nil)
+                handler?(nil)
             } catch {
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
-                    // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?
-                    showToast("Error saving draft: \(error.errorMessage)")
+                    showToast("Error saving draft: \(error.errorMessage)", position: .top)
                 }
-                completion?(error)
+                handler?(error)
             }
         }
     }

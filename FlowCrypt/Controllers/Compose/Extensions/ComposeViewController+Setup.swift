@@ -119,8 +119,7 @@ extension ComposeViewController {
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
                 contextToSend.message = processedMessage.text
-                setupTextNode()
-                reload(sections: [.compose])
+                reload(sections: Section.recipientsSections)
                 didFinishSetup = true
             } catch {
                 if case .missingPassPhrase(let keyPair) = error as? MessageServiceError, let keyPair = keyPair {

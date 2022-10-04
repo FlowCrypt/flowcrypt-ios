@@ -13,37 +13,24 @@ extension ComposeViewController {
     func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false, withDiscard: Bool = false) {
         let alert = alertsFactory.makePassPhraseAlert(
             onCancel: { [weak self] in
-                guard let self = self else { return }
                 if !withDiscard {
-                    self.handle(error: ComposeMessageError.passPhraseRequired)
+                    self?.navigationController?.popViewController(animated: true)
                 } else {
-                    self.navigationController?.popViewController(animated: true)
+                    self?.handle(error: ComposeMessageError.passPhraseRequired)
                 }
             },
             onCompletion: { [weak self] passPhrase in
                 guard let self = self else { return }
 
-                Task<Void, Never> {
+                Task {
                     do {
                         let matched = try await self.composeMessageService.handlePassPhraseEntry(
                             passPhrase,
                             for: signingKey
                         )
-                        // TODO: make more readable
+
                         if matched {
-                            if isDraft {
-                                if self.didFinishSetup {
-                                    if withDiscard {
-                                        self.handleBackButtonTap()
-                                    } else {
-                                        self.saveDraftIfNeeded()
-                                    }
-                                } else {
-                                    self.fillDataFromInput()
-                                }
-                            } else {
-                                self.handleSendTap()
-                            }
+                            self.handleMatchedPassphrase(isDraft: isDraft, withDiscard: withDiscard)
                         } else {
                             self.handle(error: ComposeMessageError.passPhraseNoMatch)
                         }
@@ -54,6 +41,24 @@ extension ComposeViewController {
             }
         )
         present(alert, animated: true, completion: nil)
+    }
+
+    private func handleMatchedPassphrase(isDraft: Bool, withDiscard: Bool) {
+        guard isDraft else {
+            handleSendTap()
+            return
+        }
+
+        guard didFinishSetup else {
+            fillDataFromInput()
+            return
+        }
+
+        if withDiscard {
+            handleBackButtonTap()
+        } else {
+            saveDraftIfNeeded()
+        }
     }
 
     func handle(error: Error) {
