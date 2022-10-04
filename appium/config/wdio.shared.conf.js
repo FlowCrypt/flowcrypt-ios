@@ -1,5 +1,5 @@
 const { join } = require('path');
-const video = require('wdio-video-reporter');
+// const video = require('wdio-video-reporter');
 
 process.on('unhandledRejection', (reason, promise) => {
   // without this, after lib update to v7, whole test suite may pass even if no tests ran successfully
@@ -16,7 +16,7 @@ exports.config = {
     requires: ['tsconfig-paths/register']
   },
   sync: true,
-  logLevel: 'debug',
+  logLevel: 'error',
   deprecationWarnings: true,
   bail: 0,
   waitforTimeout: 15000,
@@ -32,10 +32,10 @@ exports.config = {
       }
     }],
     // [video, {
-    //   saveAllVideos: true,       // If true, also saves videos for successful test cases
-    //   // videoSlowdownMultiplier: 3, // Higher to get slower videos, lower for faster videos [Value 1-100]
+    //   saveAllVideos: false,       // If true, also saves videos for successful test cases
+    //   videoSlowdownMultiplier: 3, // Higher to get slower videos, lower for faster videos [Value 1-100]
     //   videoRenderTimeout: 10,      // Max seconds to wait for a video to finish rendering
-    //   //   outputDir: './video',
+    //   outputDir: './video',
     // }]
   ],
   services: [

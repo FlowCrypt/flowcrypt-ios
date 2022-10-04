@@ -30,7 +30,7 @@ blocks:
           commands:
             - xcversion select 14.0
             - bundle exec fastlane build
-            # - bundle exec fastlane test
+            - bundle exec fastlane test
       epilogue:
         always:
           commands:
