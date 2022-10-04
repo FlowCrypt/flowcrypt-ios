@@ -88,6 +88,7 @@ extension RawClientConfiguration {
             customKeyserverUrl: unwrappedObject.customKeyserverUrl,
             keyManagerUrl: unwrappedObject.keyManagerUrl,
             fesUrl: unwrappedObject.fesUrl,
+            inMemoryPassPhraseSessionLength: object?.inMemoryPassPhraseSessionLength,
             allowAttesterSearchOnlyForDomains: try? object?.allowAttesterSearchOnlyForDomains.ifNotNil {
                 try JSONDecoder().decode([String].self, from: $0)
             },
