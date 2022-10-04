@@ -30,38 +30,38 @@ blocks:
           commands:
             - xcversion select 14.0
             - bundle exec fastlane build
-            # - bundle exec fastlane test
+            - bundle exec fastlane test
       epilogue:
         always:
           commands:
             - cd /var/tmp/derived_data/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-  # - name: TypeScript tests
-  #   dependencies: []
-  #   run:
-  #     when: 'change_in(''/'', {exclude: [''/appium/package.json'', ''/appium/package-lock.json'']})'
-  #   execution_time_limit:
-  #     minutes: 45
-  #   task:
-  #     env_vars:
-  #       - name: LANG
-  #         value: en_US.UTF-8
-  #       - name: SEMAPHORE_GIT_DIR
-  #         value: /Users/semaphore/git/flowcrypt-ios
-  #     prologue:
-  #       commands:
-  #         - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
-  #         - sem-version node 16
-  #         - ( cache restore common-npm && npm install && cache store common-npm node_modules )
-  #         - ( cd Core && cache restore core-npm && npm install && cache store core-npm node_modules )
-  #         - ( cd appium && cache restore appium-npm && npm install && cache store appium-npm node_modules )
-  #     jobs:
-  #       - name: TypeScript tests + code quality
-  #         commands:
-  #           - cd Core
-  #           - npm test
-  #           - npm run eslint
-  #           - cd ../appium
-  #           - npm run lint
+  - name: TypeScript tests
+    dependencies: []
+    run:
+      when: 'change_in(''/'', {exclude: [''/appium/package.json'', ''/appium/package-lock.json'']})'
+    execution_time_limit:
+      minutes: 45
+    task:
+      env_vars:
+        - name: LANG
+          value: en_US.UTF-8
+        - name: SEMAPHORE_GIT_DIR
+          value: /Users/semaphore/git/flowcrypt-ios
+      prologue:
+        commands:
+          - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
+          - sem-version node 16
+          - ( cache restore common-npm && npm install && cache store common-npm node_modules )
+          - ( cd Core && cache restore core-npm && npm install && cache store core-npm node_modules )
+          - ( cd appium && cache restore appium-npm && npm install && cache store appium-npm node_modules )
+      jobs:
+        - name: TypeScript tests + code quality
+          commands:
+            - cd Core
+            - npm test
+            - npm run eslint
+            - cd ../appium
+            - npm run lint
   - name: UI Tests
     dependencies:
       - Build + Swift Unit Test
@@ -88,20 +88,20 @@ blocks:
             - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
             - artifact push job ~/git/flowcrypt-ios/appium/video/*.mp4
       jobs:
-        # - name: Run Mock inbox tests
-        #   commands:
-        #     - npm run-script test.mock.inbox
-        # - name: Run Mock compose tests
-        #   commands:
-        #     - npm run-script test.mock.compose
-        # - name: Run Mock setup tests
-        #   commands:
-        #     - npm run-script test.mock.setup
+        - name: Run Mock inbox tests
+          commands:
+            - npm run-script test.mock.inbox
+        - name: Run Mock compose tests
+          commands:
+            - npm run-script test.mock.compose
+        - name: Run Mock setup tests
+          commands:
+            - npm run-script test.mock.setup
         - name: Run Mock other tests + Run Live tests
           commands:
-            # - npm run-script test.mock.login
-            # - sleep 3
-            # - npm run-script test.mock.settings
+            - npm run-script test.mock.login
+            - sleep 3
+            - npm run-script test.mock.settings
             - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             - unzip flowcrypt-ios-*.zip
             - npm run-script test.live.all
