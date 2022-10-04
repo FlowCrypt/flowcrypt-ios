@@ -45,7 +45,7 @@ class SetupKeyScreen extends BaseScreen {
     return $(SELECTORS.IMPORT_MY_KEY_BUTTON)
   }
 
-  setPassPhrase = async (withManualSubmit = false, text: string = CommonData.account.passPhrase) => {
+  setPassPhrase = async (withManualSubmit = true, text: string = CommonData.account.passPhrase) => {
     // retrying several times because following login, we switch
     //   from webview to our own view and then to another one several
     //   times, which was causing flaky tests. Originally we did a 10s
