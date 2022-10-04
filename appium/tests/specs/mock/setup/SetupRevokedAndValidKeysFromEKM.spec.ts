@@ -32,7 +32,7 @@ describe('SETUP: ', () => {
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
-      await SetupKeyScreen.setPassPhrase();
+      await SetupKeyScreen.setPassPhrase(false);
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
 
