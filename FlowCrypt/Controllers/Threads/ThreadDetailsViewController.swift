@@ -843,7 +843,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             actionButtonTitle: "delete".localized,
             actionStyle: .destructive,
             onAction: { [weak self] _ in
-                guard let self = self else { return }
+                guard let self else { return }
+
                 Task {
                     try await self.messageOperationsProvider.deleteMessage(
                         id: id,

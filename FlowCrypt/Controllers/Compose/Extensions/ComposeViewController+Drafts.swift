@@ -57,7 +57,7 @@ extension ComposeViewController {
                 try await composeMessageService.saveDraft(
                     message: sendableMsg,
                     threadId: draft.input.threadId,
-                    shouldEncrypt: draft.input.isPgp
+                    shouldEncrypt: draft.input.type.info?.shouldEncrypt ?? true
                 )
 
                 composedLatestDraft = draft

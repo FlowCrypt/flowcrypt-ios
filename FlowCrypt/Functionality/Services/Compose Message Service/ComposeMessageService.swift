@@ -147,22 +147,13 @@ final class ComposeMessageService {
         let sendableAttachments: [SendableMsg.Attachment] = isDraft
             ? []
             : contextToSend.attachments.map(\.sendableMsgAttachment)
-
-        let pubKeys: [String]
-
-        if isDraft {
-            pubKeys = []
-        } else {
-            let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
-            let validPubKeys = try validate(
-                recipients: recipientsWithPubKeys,
-                hasMessagePassword: contextToSend.hasMessagePassword,
-                ignoreErrors: isDraft
-            )
-            pubKeys = senderKeys.map(\.public) + validPubKeys
-        }
-
         let signingPrv = isDraft ? nil : try await prepareSigningKey(senderEmail: contextToSend.sender)
+
+        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
+        let validPubKeys = try validate(
+            recipients: recipientsWithPubKeys,
+            hasMessagePassword: contextToSend.hasMessagePassword
+        )
 
         return SendableMsg(
             text: contextToSend.message ?? "",
@@ -175,7 +166,7 @@ final class ComposeMessageService {
             replyToMsgId: input.replyToMsgId,
             inReplyTo: input.inReplyTo,
             atts: sendableAttachments,
-            pubKeys: pubKeys,
+            pubKeys: senderKeys.map(\.public) + validPubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )
@@ -199,8 +190,7 @@ final class ComposeMessageService {
 
     private func validate(
         recipients: [RecipientWithSortedPubKeys],
-        hasMessagePassword: Bool,
-        ignoreErrors: Bool = false
+        hasMessagePassword: Bool
     ) throws -> [String] {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.contains(where: { $0.keyState == keyState })
@@ -209,24 +199,22 @@ final class ComposeMessageService {
         logger.logDebug("validate recipients: \(recipients)")
         logger.logDebug("validate recipient keyStates: \(recipients.map(\.keyState))")
 
-        if !ignoreErrors {
-            guard hasMessagePassword || !contains(keyState: .empty) else {
-                throw MessageValidationError.noPubRecipients
-            }
+        guard hasMessagePassword || !contains(keyState: .empty) else {
+            throw MessageValidationError.noPubRecipients
+        }
 
-            guard !contains(keyState: .expired) else {
-                throw MessageValidationError.expiredKeyRecipients
-            }
-            guard !contains(keyState: .revoked) else {
-                throw MessageValidationError.revokedKeyRecipients
-            }
+        guard !contains(keyState: .expired) else {
+            throw MessageValidationError.expiredKeyRecipients
+        }
+        guard !contains(keyState: .revoked) else {
+            throw MessageValidationError.revokedKeyRecipients
         }
 
         return recipients.flatMap(\.activePubKeys).map(\.armored)
     }
 
     // MARK: - Drafts
-    private(set) var messageIdentifier: MessageIdentifier?
+    var messageIdentifier: MessageIdentifier?
 
     func fetchDraftIdentifier(for messageId: String) async throws {
         let identifier = Identifier(stringId: messageId)
@@ -255,7 +243,6 @@ final class ComposeMessageService {
     func deleteDraft() async throws {
         guard let draftId = messageIdentifier?.draftId else { return }
         try await draftGateway?.deleteDraft(with: draftId)
-        messageIdentifier = nil
     }
 
     // MARK: - Encrypt and Send

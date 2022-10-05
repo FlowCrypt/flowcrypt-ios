@@ -48,6 +48,7 @@ extension ComposeViewController {
                 try await composeMessageService.deleteDraft()
 
                 if let messageIdentifier = composeMessageService.messageIdentifier {
+                    composeMessageService.messageIdentifier = nil
                     handleAction?(.delete(messageIdentifier))
                 }
 
