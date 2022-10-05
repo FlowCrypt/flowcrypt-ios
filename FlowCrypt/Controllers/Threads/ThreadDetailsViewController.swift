@@ -242,6 +242,7 @@ extension ThreadDetailsViewController {
             }
 
             handle(processedMessage: processedMessage, at: IndexPath(row: 0, section: section))
+            showToast("draft_saved".localized)
         }
     }
 
@@ -273,6 +274,8 @@ extension ThreadDetailsViewController {
 
         input.remove(at: index)
         node.deleteSections([index + 1], with: .automatic)
+
+        showToast("draft_deleted".localized)
     }
 
     private func getAndProcessMessage(
@@ -409,6 +412,7 @@ extension ThreadDetailsViewController {
             replyToMsgId: replyToMsgId,
             inReplyTo: input.rawMessage.inReplyTo,
             rfc822MsgId: input.rawMessage.rfc822MsgId,
+            shouldEncrypt: input.rawMessage.isPgp,
             attachments: attachments
         )
 
@@ -819,7 +823,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
         return LabelCellNode(
             input: .init(
-                title: "compose_draft".localized.attributed(color: .red),
+                title: "draft".localized.attributed(color: .red),
                 text: body.removingMailThreadQuote().attributed(color: .secondaryLabel),
                 accessibilityIdentifier: "aid-draft-body-\(messageIndex)",
                 labelAccessibilityIdentifier: "aid-draft-label-\(messageIndex)",

@@ -53,7 +53,7 @@ extension MessageAttachment {
 }
 
 extension MessageAttachment {
-    func toSendableMsgAttachment() -> SendableMsg.Attachment {
-        return SendableMsg.Attachment(name: name, type: type, base64: data?.base64EncodedString() ?? "")
+    var sendableMsgAttachment: SendableMsg.Attachment {
+        SendableMsg.Attachment(name: name, type: type, base64: data?.base64EncodedString() ?? "")
     }
 }

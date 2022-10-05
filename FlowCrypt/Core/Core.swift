@@ -211,7 +211,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "inReplyTo": msg.inReplyTo,
             "atts": msg.atts.map { att in ["name": att.name, "type": att.type, "base64": att.base64] },
             "format": fmt.rawValue,
-            "pubKeys": msg.pubKeys,
+            "pubKeys": fmt == .plain ? nil : msg.pubKeys,
             "signingPrv": msg.signingPrv.ifNotNil(\.prvKeyInfoJsonDictForCore)
         ], data: nil)
         return CoreRes.ComposeEmail(mimeEncoded: r.data)

@@ -106,7 +106,7 @@ extension InboxItem {
                 .attributed(style, color: textColor)
 
             if hasDrafts {
-                let draftLabel = "compose_draft".localized
+                let draftLabel = "draft".localized
                     .attributed(style, color: .red.withAlphaComponent(0.65))
                 let title = sendersList.mutable()
                 title.append(",".attributed(style, color: textColor))

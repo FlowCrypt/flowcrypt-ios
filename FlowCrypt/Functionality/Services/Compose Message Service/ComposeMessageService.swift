@@ -144,16 +144,23 @@ final class ComposeMessageService {
             }
         }
 
-        let sendableAttachments: [SendableMsg.Attachment] = !isDraft
-            ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
-            : []
+        let sendableAttachments: [SendableMsg.Attachment] = isDraft
+            ? []
+            : contextToSend.attachments.map(\.sendableMsgAttachment)
 
-        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
-        let validPubKeys = try validate(
-            recipients: recipientsWithPubKeys,
-            hasMessagePassword: contextToSend.hasMessagePassword,
-            ignoreErrors: isDraft
-        )
+        let pubKeys: [String]
+
+        if isDraft {
+            pubKeys = []
+        } else {
+            let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
+            let validPubKeys = try validate(
+                recipients: recipientsWithPubKeys,
+                hasMessagePassword: contextToSend.hasMessagePassword,
+                ignoreErrors: isDraft
+            )
+            pubKeys = senderKeys.map(\.public) + validPubKeys
+        }
 
         let signingPrv = isDraft ? nil : try await prepareSigningKey(senderEmail: contextToSend.sender)
 
@@ -168,7 +175,7 @@ final class ComposeMessageService {
             replyToMsgId: input.replyToMsgId,
             inReplyTo: input.inReplyTo,
             atts: sendableAttachments,
-            pubKeys: senderKeys.map(\.public) + validPubKeys,
+            pubKeys: pubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )
@@ -226,11 +233,11 @@ final class ComposeMessageService {
         self.messageIdentifier = try await draftGateway?.fetchDraftIdentifier(for: identifier)
     }
 
-    func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
+    func saveDraft(message: SendableMsg, threadId: String?, shouldEncrypt: Bool) async throws {
         do {
             let mime = try await core.composeEmail(
                 msg: message,
-                fmt: .encryptInline
+                fmt: shouldEncrypt ? .encryptInline : .plain
             ).mimeEncoded
 
             self.messageIdentifier = try await draftGateway?.saveDraft(
