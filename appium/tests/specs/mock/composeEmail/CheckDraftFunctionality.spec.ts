@@ -1,6 +1,7 @@
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
+import { CommonData } from 'tests/data';
 import {
   EmailScreen,
   MailFolderScreen, MenuBarScreen, NewMessageScreen,
@@ -14,16 +15,16 @@ describe('COMPOSE EMAIL: ', () => {
     const mockApi = new MockApi();
 
     const recipient = MockUserList.robot;
-    const subject = 'Test 1';
-    const draftSubject = "Draft subject";
-    const draftText1 = 'Draft text';
-    const updatedDraftText = 'Some new text';
-    const draftText2 = 'Another draft';
+    const subject = CommonData.simpleEmail.subject;
+    const draftSubject = CommonData.draft.subject;
+    const draftText1 = CommonData.draft.text1;
+    const updatedDraftText = CommonData.draft.updatedText1;
+    const draftText2 = CommonData.draft.text2;
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      messages: [subject],
+      messages: ['Test 1'],
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
@@ -37,18 +38,23 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickOnEmailBySubject(subject);
 
+      // compose draft as reply to existing thread
       await EmailScreen.clickReplyButton();
       await NewMessageScreen.checkMessageFieldFocus();
       await NewMessageScreen.addMessageText(draftText1);
       await NewMessageScreen.clickBackButton();
 
+      // compose another draft
       await EmailScreen.clickReplyButton();
       await NewMessageScreen.checkMessageFieldFocus();
       await NewMessageScreen.addMessageText(draftText2);
       await NewMessageScreen.clickBackButton();
 
+      // check if drafts are added to thread messages
       await EmailScreen.checkDraft(draftText1, 1);
       await EmailScreen.checkDraft(draftText2, 2);
+
+      // update draft and check if changes are applied
       await EmailScreen.openDraft(1);
 
       await NewMessageScreen.setComposeSecurityMessage(updatedDraftText);
@@ -56,12 +62,15 @@ describe('COMPOSE EMAIL: ', () => {
 
       await EmailScreen.checkDraft(updatedDraftText, 1);
       await EmailScreen.checkDraft(draftText2, 2);
+
+      // delete draft from thread screen
       await EmailScreen.deleteDraft(1);
       await EmailScreen.clickBackButton();
 
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickDraftsButton();
 
+      // delete draft from compose screen
       await MailFolderScreen.clickOnEmailBySubject(subject);
       await EmailScreen.checkDraft(draftText2, 1);
       await EmailScreen.openDraft(1);
@@ -73,11 +82,13 @@ describe('COMPOSE EMAIL: ', () => {
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickInboxButton();
 
+      // compose new draft
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.composeEmail(recipient.email, draftSubject, draftText1);
       await NewMessageScreen.clickBackButton();
 
+      // send draft and check if sent message added to 'sent' folder
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickDraftsButton();
       await MailFolderScreen.clickOnEmailBySubject(draftSubject);

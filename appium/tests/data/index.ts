@@ -46,6 +46,12 @@ export const CommonData = {
     secondDate: 'Feb 07',
     thirdDate: 'Feb 08',
   },
+  draft: {
+    subject: 'Draft subject',
+    text1: 'Draft text',
+    updatedText1: 'Some new text',
+    text2: 'Another draft'
+  },
   archivedThread: {
     subject: 'Archived thread'
   },
