@@ -70,7 +70,7 @@ extension BackupService: BackupServiceType {
         )
 
         let t = try await core.composeEmail(msg: message, fmt: .plain)
-        try await messageGateway.sendMail(
+        _ = try await messageGateway.sendMail(
             input: MessageGatewayInput(mime: t.mimeEncoded, threadId: nil),
             progressHandler: nil
         )

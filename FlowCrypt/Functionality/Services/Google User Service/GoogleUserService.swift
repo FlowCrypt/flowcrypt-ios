@@ -274,7 +274,7 @@ extension GoogleUserService {
     private func fetchGoogleUser(
         with authorization: GTMAppAuthFetcherAuthorization
     ) async throws -> GTLROauth2_Userinfo {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLROauth2_Userinfo, Error>) in
+        return try await withCheckedThrowingContinuation { continuation in
             let query = GTLROauth2Query_UserinfoGet.query()
             let authService = GTLROauth2Service()
             if Bundle.shouldUseMockGmailApi {

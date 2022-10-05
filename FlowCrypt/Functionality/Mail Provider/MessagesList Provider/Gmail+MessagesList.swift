@@ -60,7 +60,7 @@ extension GmailService {
             query.q = searchQuery
         }
 
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListMessagesResponse, Error>) in
+        return try await withCheckedThrowingContinuation { continuation in
             gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))

@@ -42,7 +42,7 @@ extension GmailService: MessagesThreadProvider {
     private func getThreadsList(using context: FetchMessageContext) async throws -> GTLRGmail_ListThreadsResponse {
         let query = try makeQuery(using: context)
         return try await Task.retrying {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListThreadsResponse, Error>) in
+            try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(query) { _, data, error in
                     if let error = error {
                         let gmailError = GmailServiceError.convert(from: error as NSError)
@@ -60,7 +60,7 @@ extension GmailService: MessagesThreadProvider {
 
     func fetchThread(identifier: String, path: String) async throws -> MessageThread {
         return try await Task.retrying {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
+            try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(
                     GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
                 ) { _, data, error in

@@ -16,10 +16,6 @@ struct InboxViewModel {
         self.folderName = folderName
         self.path = folderName.isEmpty ? "Inbox" : path
     }
-
-    var isDrafts: Bool {
-        return folderName == "Drafts"
-    }
 }
 
 extension InboxViewModel {

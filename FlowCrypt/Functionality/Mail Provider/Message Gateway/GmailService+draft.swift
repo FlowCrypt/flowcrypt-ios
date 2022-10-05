@@ -16,7 +16,7 @@ extension GmailService: DraftGateway {
         query.q = "rfc822msgid:\(id)"
         query.maxResults = 1
 
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageIdentifier?, Error>) in
+        return try await withCheckedThrowingContinuation { continuation in
             gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
@@ -36,7 +36,7 @@ extension GmailService: DraftGateway {
     }
 
     func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageIdentifier {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageIdentifier, Error>) in
+        try await withCheckedThrowingContinuation { continuation in
             guard let raw = GTLREncodeBase64(input.mime) else {
                 return continuation.resume(throwing: GmailServiceError.messageEncode)
             }

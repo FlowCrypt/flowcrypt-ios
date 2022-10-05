@@ -146,7 +146,7 @@ final class EKMVcHelper: EKMVcHelperType {
 
     @MainActor
     private func requestPassPhraseWithModal(in viewController: UIViewController) async throws -> String {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+        return try await withCheckedThrowingContinuation { continuation in
             let alert = alertsFactory.makePassPhraseAlert(
                 title: "refresh_key_alert_title".localized,
                 onCancel: {

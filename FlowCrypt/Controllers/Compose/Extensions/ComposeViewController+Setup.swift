@@ -101,26 +101,14 @@ extension ComposeViewController {
     }
 
     private func decodeDraft(from info: ComposeMessageInput.MessageQuoteInfo) {
-        let message = Message(
-            identifier: .random,
-            date: info.sentDate,
-            sender: info.sender,
-            subject: info.subject,
-            size: nil,
-            labels: [],
-            attachmentIds: [],
-            body: .init(text: info.text, html: nil)
-        )
-
         Task {
             do {
-                let processedMessage = try await messageService.decryptAndProcess(
-                    message: message,
-                    onlyLocalKeys: false,
+                let decrypted = try await messageService.decrypt(
+                    text: info.text,
                     userEmail: appContext.user.email,
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
-                contextToSend.message = processedMessage.text
+                contextToSend.message = decrypted
                 reload(sections: Section.recipientsSections)
                 didFinishSetup = true
             } catch {

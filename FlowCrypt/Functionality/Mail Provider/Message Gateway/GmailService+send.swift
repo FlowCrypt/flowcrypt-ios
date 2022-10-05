@@ -10,7 +10,7 @@ import GoogleAPIClientForREST_Gmail
 
 extension GmailService: MessageGateway {
     func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws -> Identifier {
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Identifier, Error>) in
+        try await withCheckedThrowingContinuation { continuation in
             guard let raw = GTLREncodeBase64(input.mime) else {
                 return continuation.resume(throwing: GmailServiceError.messageEncode)
             }
