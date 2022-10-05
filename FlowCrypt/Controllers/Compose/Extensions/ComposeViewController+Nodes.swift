@@ -160,16 +160,20 @@ extension ComposeViewController {
             }
 
             DispatchQueue.main.async {
-                textNode.textView.attributedText = mutableString
+                if !mutableString.string.isEmpty {
+                    textNode.textView.attributedText = mutableString
+                }
+
                 // Set cursor position to start of text view
                 textNode.textView.textView.selectedTextRange = textNode.textView.textView.textRange(
                     from: textNode.textView.textView.beginningOfDocument,
                     to: textNode.textView.textView.beginningOfDocument
                 )
+                self.node.reloadData()
                 if self.input.shouldFocusTextNode {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         textNode.becomeFirstResponder()
-                    })
+                    }
                 }
             }
         }

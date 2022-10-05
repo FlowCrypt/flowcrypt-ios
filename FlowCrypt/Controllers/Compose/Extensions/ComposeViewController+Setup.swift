@@ -81,6 +81,8 @@ extension ComposeViewController {
     }
 
     private func addRecipients(from info: ComposeMessageInput.MessageQuoteInfo) {
+        guard contextToSend.recipients.isEmpty else { return }
+
         for recipient in info.recipients {
             add(recipient: recipient, type: .to)
         }
@@ -139,7 +141,7 @@ extension ComposeViewController {
         search
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()
-            .map { [weak self] query -> String in
+            .map { [weak self] query in
                 if query.isEmpty {
                     self?.updateView(newState: .main)
                 }

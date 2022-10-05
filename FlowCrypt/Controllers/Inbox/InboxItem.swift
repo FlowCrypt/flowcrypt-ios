@@ -27,6 +27,7 @@ extension InboxItem {
             return nil
         }
     }
+
     var subject: String? {
         messages
             .compactMap(\.subject)
@@ -74,6 +75,17 @@ extension InboxItem {
         DateFormatter().formatDate(date)
     }
 
+    var recipients: [String] {
+        messages
+            .flatMap(\.allRecipients)
+            .map(\.shortName)
+            .unique()
+    }
+
+    var senderNames: [String] {
+        messages.compactMap(\.sender?.shortName).unique()
+    }
+
     var title: NSAttributedString {
         let style: NSAttributedString.Style = isRead
             ? .regular(17)
@@ -84,29 +96,24 @@ extension InboxItem {
             : .mainTextUnreadColor
 
         if folderPath == MessageLabel.sent.value || folderPath == MessageLabel.draft.value {
-            let recipients = messages
-                .flatMap(\.allRecipients)
-                .map(\.shortName)
-                .unique()
-                .joined(separator: ", ")
-            return "To: \(recipients)".attributed(style, color: textColor)
+            let recipientsList = recipients.joined(separator: ",")
+            return "To: \(recipientsList)".attributed(style, color: textColor)
         } else {
             let hasDrafts = messages.contains(where: { $0.isDraft })
 
-            let senderNames = messages
-                .compactMap(\.sender?.shortName)
-                .unique()
+            let sendersList = senderNames
                 .joined(separator: ",")
                 .attributed(style, color: textColor)
 
             if hasDrafts {
-                let draftLabel = "compose_draft".localized.attributed(style, color: .red.withAlphaComponent(0.65))
-                let title = senderNames.mutable()
+                let draftLabel = "compose_draft".localized
+                    .attributed(style, color: .red.withAlphaComponent(0.65))
+                let title = sendersList.mutable()
                 title.append(",".attributed(style, color: textColor))
                 title.append(draftLabel)
                 return title
             } else {
-                return senderNames
+                return sendersList
             }
         }
     }
