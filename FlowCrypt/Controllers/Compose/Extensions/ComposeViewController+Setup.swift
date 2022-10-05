@@ -170,6 +170,7 @@ extension ComposeViewController: NavigationChildController {
                     messageIdentifier.draftMessageId = self.input.type.info?.id
                     self.handleAction?(.update(messageIdentifier))
                 }
+                self.showToast("draft_saved".localized)
                 self.navigationController?.popViewController(animated: true)
             }
         }

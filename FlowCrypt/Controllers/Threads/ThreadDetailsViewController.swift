@@ -242,7 +242,6 @@ extension ThreadDetailsViewController {
             }
 
             handle(processedMessage: processedMessage, at: IndexPath(row: 0, section: section))
-            showToast("draft_saved".localized)
         }
     }
 
@@ -274,8 +273,6 @@ extension ThreadDetailsViewController {
 
         input.remove(at: index)
         node.deleteSections([index + 1], with: .automatic)
-
-        showToast("draft_deleted".localized)
     }
 
     private func getAndProcessMessage(
