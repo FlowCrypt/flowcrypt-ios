@@ -42,7 +42,9 @@ exports.config = {
     ['appium', {
       command: './node_modules/.bin/appium',
       logPath: join(process.cwd(), './tmp'),
-      preLaunch: true
+      args: {
+        preLaunch: true
+      }
     }]
   ],
   port: 4723,
