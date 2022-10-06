@@ -24,7 +24,6 @@ final class ComposeMessageService {
     private let localContactsProvider: LocalContactsProviderType
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
-    private let messageOperationsProvider: MessageOperationsProvider
     private lazy var logger = Logger.nested(Self.self)
 
     private struct ReplyInfo: Encodable {
@@ -42,13 +41,12 @@ final class ComposeMessageService {
         draftGateway: DraftGateway? = nil,
         core: CoreComposeMessageType & KeyParser = Core.shared,
         localContactsProvider: LocalContactsProviderType? = nil
-    ) async throws {
+    ) {
         self.appContext = appContext
         self.keyMethods = keyMethods
         self.draftGateway = draftGateway
         self.core = core
         self.localContactsProvider = localContactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
-        self.messageOperationsProvider = try await appContext.getRequiredMailProvider().messageOperationsProvider
     }
 
     private var onStateChanged: ((State) -> Void)?

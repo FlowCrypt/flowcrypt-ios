@@ -69,6 +69,7 @@
 "message_decrypt_error" = "decrypt error";
 "message_mark_read_error" = "Could not mark message as read: %@";
 "message_reply_all" = "Reply all";
+"message_not_found_in_folder" = "Message not found in folder: ";
 
 // ERROR
 "error_fetch_folders" = "Could not fetch folders";

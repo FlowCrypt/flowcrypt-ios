@@ -46,8 +46,7 @@ struct ComposeMessageInput: Equatable {
     }
 
     var isPgp: Bool {
-        guard let text = text else { return false }
-        return text.contains("-----BEGIN PGP ") && text.contains("-----END PGP ")
+        text?.isPgp ?? false
     }
 
     var replyToMsgId: String? {

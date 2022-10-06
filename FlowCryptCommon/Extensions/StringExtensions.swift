@@ -9,6 +9,10 @@ public extension String {
         !trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    var isPgp: Bool {
+        contains("-----BEGIN PGP ") && contains("-----END PGP ")
+    }
+
     var trimLeadingSlash: String {
         if isNotEmpty, self[startIndex] == "/" {
             return String(dropFirst())

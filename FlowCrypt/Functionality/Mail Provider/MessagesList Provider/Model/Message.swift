@@ -44,7 +44,7 @@ struct Message: Hashable {
     var isDraft: Bool { labels.contains(.draft) }
 
     var isPgp: Bool {
-        (body.text.contains("-----BEGIN PGP ") && body.text.contains("-----END PGP ")) || hasSignatureAttachment
+        body.text.isPgp || hasSignatureAttachment
     }
 
     var hasSignatureAttachment: Bool {

@@ -516,7 +516,7 @@ extension ThreadDetailsViewController {
             if let someError = error as NSError?, someError.code == Imap.Err.fetch.rawValue {
                 // todo - the missing msg should be removed from the list in inbox view
                 // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
-                showToast("Message not found in folder: \(inboxItem.folderPath)")
+                showToast("message_not_found_in_folder".localized + inboxItem.folderPath)
             } else {
                 showRetryAlert(message: error.errorMessage, onRetry: { [weak self] _ in
                     self?.fetchDecryptAndRenderMsg(at: indexPath)

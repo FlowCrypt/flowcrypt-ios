@@ -126,7 +126,7 @@ final class ComposeViewController: TableNodeViewController {
         if let composeMessageService = composeMessageService {
             self.composeMessageService = composeMessageService
         } else {
-            self.composeMessageService = try await ComposeMessageService(
+            self.composeMessageService = ComposeMessageService(
                 appContext: appContext,
                 keyMethods: keyMethods,
                 draftGateway: draftGateway
