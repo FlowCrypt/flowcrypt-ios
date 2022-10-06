@@ -38,6 +38,7 @@ config.capabilities = [
       wdaConnectionTimeout: 600000,
       wdaStartupRetries: 4,
       wdaStartupRetryInterval: 120000,
+      usePrebuiltWDA: true,
       iosInstallPause: 5000,
     },
   },
