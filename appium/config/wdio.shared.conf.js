@@ -45,7 +45,6 @@ exports.config = {
     }]
   ],
   port: 4723,
-  path: '/wd/hub',
   specFileRetries: 1,
   specFileRetriesDeferred: false,
 
