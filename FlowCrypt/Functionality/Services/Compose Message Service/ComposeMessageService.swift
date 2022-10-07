@@ -93,12 +93,13 @@ final class ComposeMessageService {
     ) async throws -> SendableMsg {
         let recipients = contextToSend.recipients
         let subject = contextToSend.subject ?? ""
+        let pubKeys: [String]
 
         let senderKeys = try await keyMethods.chooseSenderKeys(
             for: .encryption,
             keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
             senderEmail: contextToSend.sender
-        )
+        ).map(\.public)
 
         if !isDraft {
             onStateChanged?(.validatingMessage)
@@ -140,18 +141,22 @@ final class ComposeMessageService {
             guard senderKeys.isNotEmpty else {
                 throw MessageValidationError.noUsableAccountKeys
             }
+
+            let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
+            let validPubKeys = try validate(
+                recipients: recipientsWithPubKeys,
+                hasMessagePassword: contextToSend.hasMessagePassword
+            )
+
+            pubKeys = senderKeys + validPubKeys
+        } else {
+            pubKeys = senderKeys
         }
 
         let sendableAttachments: [SendableMsg.Attachment] = isDraft
             ? []
             : contextToSend.attachments.map(\.sendableMsgAttachment)
         let signingPrv = isDraft ? nil : try await prepareSigningKey(senderEmail: contextToSend.sender)
-
-        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
-        let validPubKeys = try validate(
-            recipients: recipientsWithPubKeys,
-            hasMessagePassword: contextToSend.hasMessagePassword
-        )
 
         return SendableMsg(
             text: contextToSend.message ?? "",
@@ -164,7 +169,7 @@ final class ComposeMessageService {
             replyToMsgId: input.replyToMsgId,
             inReplyTo: input.inReplyTo,
             atts: sendableAttachments,
-            pubKeys: senderKeys.map(\.public) + validPubKeys,
+            pubKeys: pubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )

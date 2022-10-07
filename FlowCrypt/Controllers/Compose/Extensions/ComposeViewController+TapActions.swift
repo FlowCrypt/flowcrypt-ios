@@ -52,7 +52,7 @@ extension ComposeViewController {
                     handleAction?(.delete(messageIdentifier))
                 }
 
-                showToast("draft_deleted".localized)
+                showToast("draft_deleted".localized, duration: 1.0)
                 navigationController?.popViewController(animated: true)
             } catch {
                 handle(error: error)

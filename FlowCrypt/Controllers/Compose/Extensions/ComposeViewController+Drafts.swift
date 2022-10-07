@@ -40,7 +40,7 @@ extension ComposeViewController {
         return newDraft != existingDraft ? newDraft : nil
     }
 
-    func saveDraftIfNeeded(withAlert: Bool = false, handler: ((Error?) -> Void)? = nil) {
+    func saveDraftIfNeeded(handler: ((Error?) -> Void)? = nil) {
         guard let draft = createDraft() else {
             handler?(nil)
             return

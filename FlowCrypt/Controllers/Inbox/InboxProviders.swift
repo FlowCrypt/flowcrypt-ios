@@ -14,7 +14,7 @@ struct InboxContext {
 }
 
 protocol InboxDataProvider {
-    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxItem?
+    func fetchInboxItem(identifier: MessageIdentifier, path: String) async throws -> InboxItem?
     func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext
 }
 
@@ -26,8 +26,8 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxItem? {
-        guard let id = identifier.stringId else { return nil }
+    func fetchInboxItem(identifier: MessageIdentifier, path: String) async throws -> InboxItem? {
+        guard let id = identifier.threadId?.stringId else { return nil }
         let thread = try await provider.fetchThread(identifier: id, path: path)
         return InboxItem(thread: thread, folderPath: path)
     }
@@ -58,8 +58,9 @@ class InboxMessageListProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    func fetchInboxItem(identifier: Identifier, path: String) async throws -> InboxItem? {
-        let message = try await provider.fetchMessage(id: identifier, folder: path)
+    func fetchInboxItem(identifier: MessageIdentifier, path: String) async throws -> InboxItem? {
+        guard let id = identifier.messageId else { return nil }
+        let message = try await provider.fetchMessage(id: id, folder: path)
         return InboxItem(message: message)
     }
 

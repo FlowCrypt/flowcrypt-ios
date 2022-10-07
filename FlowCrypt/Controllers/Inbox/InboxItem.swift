@@ -166,3 +166,16 @@ extension InboxItem {
         }
     }
 }
+
+extension [InboxItem] {
+    func firstIndex(with messageIdentifier: MessageIdentifier) -> Int? {
+        firstIndex(where: {
+            switch $0.type {
+            case .thread(let threadId):
+                return threadId == messageIdentifier.threadId
+            case .message(let messageId):
+                return messageId == messageIdentifier.messageId
+            }
+        })
+    }
+}

@@ -645,68 +645,46 @@ extension InboxViewController {
                     input: .init(type: .draft(draftInfo)),
                     handleAction: { [weak self] action in
                         switch action {
-                        case .update(let identifier), .sent(let identifier), .delete(let identifier):
+                        case .update(let identifier):
                             self?.fetchUpdatedInboxItem(identifier: identifier)
+                        case .sent(let identifier), .delete(let identifier):
+                            self?.deleteInboxItem(identifier: identifier)
                         }
                     }
                 )
                 navigationController?.pushViewController(controller, animated: true)
             } catch {
-                showAlert(message: error.localizedDescription)
+                showAlert(message: error.errorMessage)
             }
         }
     }
 
     private func fetchUpdatedInboxItem(identifier: MessageIdentifier) {
-        guard let index = findInboxItemIndex(identifier: identifier) else {
-            addInboxItem(identifier: identifier)
-            return
-        }
-
-        updateInboxItem(at: index)
-    }
-
-    private func findInboxItemIndex(identifier: MessageIdentifier) -> Int? {
-        return inboxInput.firstIndex(where: {
-            switch $0.type {
-            case .thread(let threadId):
-                return threadId == identifier.threadId
-            case .message(let messageId):
-                return messageId == identifier.messageId
-            }
-        })
-    }
-
-    private func addInboxItem(identifier: MessageIdentifier) {
         Task {
-            guard let threadId = identifier.threadId,
-                  let inboxItem = try await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path),
-                  !inboxItem.messages(with: path).isEmpty
-            else { return }
+            guard let inboxItem = try await inboxDataProvider.fetchInboxItem(
+                identifier: identifier,
+                path: path
+            ), !inboxItem.messages(with: path).isEmpty else {
+                deleteInboxItem(identifier: identifier)
+                return
+            }
 
-            inboxInput.insert(inboxItem, at: 0)
-            tableNode.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            guard let index = inboxInput.firstIndex(with: identifier) else {
+                inboxInput.insert(inboxItem, at: 0)
+                tableNode.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                return
+            }
+
+            inboxInput[index] = inboxItem
+            tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
         }
     }
 
-    private func updateInboxItem(at index: Int) {
-        Task {
-            switch inboxInput[index].type {
-            case .thread(let threadId):
-                guard let inboxItem = try? await inboxDataProvider.fetchInboxItem(identifier: threadId, path: path),
-                      !inboxItem.messages(with: path).isEmpty
-                else {
-                    inboxInput.remove(at: index)
-                    tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-                    return
-                }
-                inboxInput[index] = inboxItem
-                tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-            case .message:
-                // used only with imap, can be implemented later
-                break
-            }
-        }
+    private func deleteInboxItem(identifier: MessageIdentifier) {
+        guard let index = inboxInput.firstIndex(with: identifier) else { return }
+
+        inboxInput.remove(at: index)
+        tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
     }
 
     // MARK: Operation
