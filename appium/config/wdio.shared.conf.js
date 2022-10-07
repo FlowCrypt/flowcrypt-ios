@@ -20,7 +20,7 @@ exports.config = {
   deprecationWarnings: true,
   bail: 0,
   waitforTimeout: 15000,
-  connectionRetryTimeout: 120000,
+  connectionRetryTimeout: 400000,
   connectionRetryCount: 3,
   maxInstancesPerCapability: 1,
   reporters: [
