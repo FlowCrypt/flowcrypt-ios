@@ -184,8 +184,10 @@ extension ComposeViewController {
     // MARK: - Message password
     func setMessagePassword() {
         Task {
+            stopDraftTimer(withSave: false)
             contextToSend.messagePassword = await enterMessagePassword()
             reload(sections: [.password])
+            startDraftTimer()
         }
     }
 
@@ -211,8 +213,8 @@ extension ComposeViewController {
             $0.addTarget(self, action: #selector(self.messagePasswordTextFieldDidChange), for: .editingChanged)
         }
 
-        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in
-            return continuation.resume(returning: self.contextToSend.messagePassword)
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel) { [weak self] _ in
+            return continuation.resume(returning: self?.contextToSend.messagePassword)
         }
         alert.addAction(cancelAction)
 

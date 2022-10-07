@@ -191,7 +191,7 @@ final class ComposeViewController: TableNodeViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        startDraftTimer()
+        startDraftTimer(withFire: true)
 
         guard shouldEvaluateRecipientInput else {
             shouldEvaluateRecipientInput = true

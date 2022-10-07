@@ -17,6 +17,8 @@ extension ComposeViewController {
     }
 
     func handleSendTap() {
+        stopDraftTimer(withSave: false)
+
         Task {
             do {
                 guard contextToSend.hasMessagePasswordIfNeeded else {
@@ -43,6 +45,8 @@ extension ComposeViewController {
     }
 
     private func deleteDraft() {
+        stopDraftTimer(withSave: false)
+
         Task {
             do {
                 try await composeMessageService.deleteDraft()

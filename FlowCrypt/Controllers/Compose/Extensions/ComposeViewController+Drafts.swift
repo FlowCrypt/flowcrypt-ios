@@ -8,11 +8,16 @@
 
 // MARK: - Drafts
 extension ComposeViewController {
-    @objc func startDraftTimer() {
+    @objc func startDraftTimer(withFire: Bool = false) {
+        guard saveDraftTimer == nil else { return }
+
         saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.saveDraftIfNeeded()
         }
-        saveDraftTimer?.fire()
+
+        if withFire {
+            saveDraftTimer?.fire()
+        }
     }
 
     @objc func stopDraftTimer(withSave: Bool = true) {
