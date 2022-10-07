@@ -51,6 +51,10 @@ extension ComposeMessageContext {
         recipients.contains(where: { $0.type == .cc || $0.type == .bcc })
     }
 
+    var hasRecipientsWithActivePubKey: Bool {
+        recipients.contains(where: { $0.keyState == .active })
+    }
+
     var hasRecipientsWithoutPubKey: Bool {
         recipients.contains(where: { $0.keyState == .empty })
     }

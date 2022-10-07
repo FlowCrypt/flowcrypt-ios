@@ -157,6 +157,7 @@
 "draft" = "Draft";
 "draft_saved" = "Draft saved";
 "draft_deleted" = "Draft deleted";
+"draft_error" = "Failed to save draft: %@";
 
 // Folders
 "folder_all_mail" = "All Mail";

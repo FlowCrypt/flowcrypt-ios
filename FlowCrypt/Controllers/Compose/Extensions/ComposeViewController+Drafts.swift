@@ -45,35 +45,39 @@ extension ComposeViewController {
         return newDraft != existingDraft ? newDraft : nil
     }
 
-    func saveDraftIfNeeded(handler: ((Error?) -> Void)? = nil) {
+    func saveDraftIfNeeded(handler: ((Bool, Error?) -> Void)? = nil) {
         guard let draft = createDraft() else {
-            handler?(nil)
+            handler?(false, nil)
             return
         }
 
         Task {
             do {
+                let shouldEncrypt = draft.input.type.info?.shouldEncrypt == true ||
+                    contextToSend.hasRecipientsWithActivePubKey
+
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
                     input: draft.input,
                     contextToSend: draft.contextToSend,
-                    isDraft: true
+                    isDraft: true,
+                    withPubKeys: shouldEncrypt
                 )
 
                 try await composeMessageService.saveDraft(
                     message: sendableMsg,
                     threadId: draft.input.threadId,
-                    shouldEncrypt: draft.input.type.info?.shouldEncrypt ?? true
+                    shouldEncrypt: shouldEncrypt
                 )
 
                 composedLatestDraft = draft
-                handler?(nil)
+                handler?(true, nil)
             } catch {
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
-                    showToast("Error saving draft: \(error.errorMessage)", position: .top)
+                    showToast("draft_error".localizeWithArguments(error.errorMessage), position: .top)
                 }
-                handler?(error)
+                handler?(false, error)
             }
         }
     }

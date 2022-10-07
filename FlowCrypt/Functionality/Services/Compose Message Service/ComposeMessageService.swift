@@ -89,26 +89,19 @@ final class ComposeMessageService {
     func validateAndProduceSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        isDraft: Bool = false
+        isDraft: Bool = false,
+        withPubKeys: Bool = true
     ) async throws -> SendableMsg {
-        let recipients = contextToSend.recipients
         let subject = contextToSend.subject ?? ""
-        let pubKeys: [String]
-
-        let senderKeys = try await keyMethods.chooseSenderKeys(
-            for: .encryption,
-            keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
-            senderEmail: contextToSend.sender
-        ).map(\.public)
 
         if !isDraft {
             onStateChanged?(.validatingMessage)
 
-            guard recipients.isNotEmpty else {
+            guard contextToSend.recipients.isNotEmpty else {
                 throw MessageValidationError.emptyRecipient
             }
 
-            let emails = recipients.map(\.email)
+            let emails = contextToSend.recipients.map(\.email)
             let emptyEmails = emails.filter { !$0.hasContent }
 
             guard emails.isNotEmpty, emptyEmails.isEmpty else {
@@ -137,21 +130,14 @@ final class ComposeMessageService {
                     throw MessageValidationError.notUniquePassword
                 }
             }
-
-            guard senderKeys.isNotEmpty else {
-                throw MessageValidationError.noUsableAccountKeys
-            }
-
-            let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
-            let validPubKeys = try validate(
-                recipients: recipientsWithPubKeys,
-                hasMessagePassword: contextToSend.hasMessagePassword
-            )
-
-            pubKeys = senderKeys + validPubKeys
-        } else {
-            pubKeys = senderKeys
         }
+
+        let pubKeys = withPubKeys ? try await getPubKeys(
+            senderEmail: contextToSend.sender,
+            recipients: contextToSend.recipients,
+            hasMessagePassword: contextToSend.hasMessagePassword,
+            withValidation: !isDraft
+        ) : []
 
         let sendableAttachments: [SendableMsg.Attachment] = isDraft
             ? []
@@ -173,6 +159,31 @@ final class ComposeMessageService {
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )
+    }
+
+    private func getPubKeys(
+        senderEmail: String,
+        recipients: [ComposeMessageRecipient],
+        hasMessagePassword: Bool,
+        withValidation: Bool
+    ) async throws -> [String] {
+        let senderKeys = try await keyMethods.chooseSenderKeys(
+            for: .encryption,
+            keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
+            senderEmail: senderEmail
+        ).map(\.public)
+
+        if withValidation, senderKeys.isEmpty {
+            throw MessageValidationError.noUsableAccountKeys
+        }
+
+        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
+        let validPubKeys = try validate(
+            recipients: recipientsWithPubKeys,
+            hasMessagePassword: hasMessagePassword
+        )
+
+        return senderKeys + validPubKeys
     }
 
     private func getRecipientKeys(for composeRecipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
