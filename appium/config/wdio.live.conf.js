@@ -17,12 +17,6 @@ config.capabilities = [
       deviceName: 'iPhone 14',
       platformVersion: '16.0',
       app: join(process.cwd(), './FlowCrypt.app'),
-      newCommandTimeout: 10000,
-      wdaLaunchTimeout: 300000,
-      wdaConnectionTimeout: 600000,
-      wdaStartupRetries: 4,
-      wdaStartupRetryInterval: 120000,
-      iosInstallPause: 5000,
     },
   },
 ];

@@ -98,10 +98,9 @@ blocks:
             - npm run-script test.mock.login
             - sleep 3
             - npm run-script test.mock.settings
-            # temporary disabled because of e2e account login issue
-            # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
-            # - unzip flowcrypt-ios-*.zip
-            # - npm run-script test.live.all
+            - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
+            - unzip flowcrypt-ios-*.zip
+            - npm run-script test.live.all
       secrets:
         - name: flowcrypt-ios-ci-secrets
     run:
