@@ -33,12 +33,6 @@ config.capabilities = [
       platformVersion: '16.0',
       app: join(process.cwd(), './FlowCrypt.app'),
       processArguments: { 'args': ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'] },
-      newCommandTimeout: 10000,
-      wdaLaunchTimeout: 300000,
-      wdaConnectionTimeout: 600000,
-      wdaStartupRetries: 4,
-      wdaStartupRetryInterval: 120000,
-      iosInstallPause: 5000,
     },
   },
 ];
