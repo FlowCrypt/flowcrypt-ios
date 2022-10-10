@@ -20,7 +20,7 @@ exports.config = {
   deprecationWarnings: true,
   bail: 0,
   waitforTimeout: 15000,
-  connectionRetryTimeout: 90000,
+  connectionRetryTimeout: 400000,
   connectionRetryCount: 3,
   maxInstancesPerCapability: 1,
   reporters: [
@@ -45,7 +45,6 @@ exports.config = {
     }]
   ],
   port: 4723,
-  path: '/wd/hub',
   specFileRetries: 1,
   specFileRetriesDeferred: false,
 
