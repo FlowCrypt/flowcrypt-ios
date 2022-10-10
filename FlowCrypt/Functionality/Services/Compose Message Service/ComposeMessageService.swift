@@ -17,6 +17,15 @@ protocol CoreComposeMessageType {
     func encrypt(file: Data, name: String, pubKeys: [String]?) async throws -> Data
 }
 
+enum DraftSaveState {
+    case cancelled, saving(ComposedDraft), success(SendableMsg), error(Error)
+}
+
+struct ComposedDraft: Equatable {
+    let input: ComposeMessageInput
+    let contextToSend: ComposeMessageContext
+}
+
 final class ComposeMessageService {
 
     private let appContext: AppContextWithUser
@@ -153,6 +162,7 @@ final class ComposeMessageService {
             from: contextToSend.sender,
             subject: subject,
             replyToMsgId: input.replyToMsgId,
+            threadId: input.threadId,
             inReplyTo: input.inReplyTo,
             atts: sendableAttachments,
             pubKeys: pubKeys,

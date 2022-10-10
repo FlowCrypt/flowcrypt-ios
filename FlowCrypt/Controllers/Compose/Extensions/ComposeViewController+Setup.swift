@@ -148,20 +148,23 @@ extension ComposeViewController: NavigationChildController {
     func handleBackButtonTap() {
         stopDraftTimer(withSave: false)
 
-        saveDraftIfNeeded { [weak self] didSave, error in
-            guard let self = self else { return }
+        saveDraftIfNeeded { [weak self] state in
+            guard let self else { return }
 
-            if let error = error {
+            switch state {
+            case .cancelled:
+                break
+            case .error(let error):
                 self.showToast("draft_error".localizeWithArguments(error.errorMessage))
-            } else {
+            case .success:
                 if var messageIdentifier = self.composeMessageService.messageIdentifier {
                     messageIdentifier.draftMessageId = self.input.type.info?.id
                     self.handleAction?(.update(messageIdentifier))
                 }
 
-                if didSave {
-                    self.showToast("draft_saved".localized, duration: 1.0)
-                }
+                self.showToast("draft_saved".localized, duration: 1.0)
+            case .saving:
+                self.showToast("draft_saving".localized, duration: 10.0)
             }
         }
 

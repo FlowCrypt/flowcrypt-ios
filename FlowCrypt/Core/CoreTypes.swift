@@ -128,6 +128,8 @@ struct SendableMsg: Equatable {
     let from: String
     let subject: String
     let replyToMsgId: String?
+    let threadId: String?
+    var draftId: Identifier?
     let inReplyTo: String?
     let atts: [Attachment]
     let pubKeys: [String]?
@@ -146,6 +148,7 @@ extension SendableMsg {
             from: self.from,
             subject: self.subject,
             replyToMsgId: self.replyToMsgId,
+            threadId: self.threadId,
             inReplyTo: self.inReplyTo,
             atts: atts,
             pubKeys: pubKeys,

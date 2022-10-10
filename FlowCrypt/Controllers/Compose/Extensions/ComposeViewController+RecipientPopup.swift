@@ -22,7 +22,7 @@ extension ComposeViewController {
         popoverVC.popoverPresentationController?.permittedArrowDirections = .up
         popoverVC.popoverPresentationController?.delegate = self
         popoverVC.delegate = self
-        self.present(popoverVC, animated: true, completion: nil)
+        present(popoverVC, animated: true, completion: nil)
     }
 
     func hideRecipientPopOver() {
@@ -41,9 +41,8 @@ extension ComposeViewController: UIPopoverPresentationControllerDelegate {
     }
 
     public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        guard let popoverVC = presentationController.presentedViewController as? ComposeRecipientPopupViewController else {
-            return
-        }
+        guard let popoverVC = presentationController.presentedViewController as? ComposeRecipientPopupViewController
+        else { return }
         let recipients = contextToSend.recipients(type: popoverVC.type)
         let selectedRecipients = recipients.filter { $0.state.isSelected }
         // Deselect previous selected receipients
@@ -56,21 +55,21 @@ extension ComposeViewController: UIPopoverPresentationControllerDelegate {
 
 extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
     func removeRecipient(email: String, type: RecipientType) {
-        let tempRecipients = self.contextToSend.recipients(type: type)
-        self.contextToSend.remove(recipient: email, type: type)
+        let tempRecipients = contextToSend.recipients(type: type)
+        contextToSend.remove(recipient: email, type: type)
         reload(sections: [.password])
         refreshRecipient(for: email, type: type, refreshType: .delete, tempRecipients: tempRecipients)
     }
 
     func editRecipient(email: String, type: RecipientType) {
         removeRecipient(email: email, type: type)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             if let textField = self.recipientsTextField(type: type) {
                 textField.text = email
                 if !textField.isFirstResponder() {
                     textField.becomeFirstResponder()
                 }
             }
-        })
+        }
     }
 }

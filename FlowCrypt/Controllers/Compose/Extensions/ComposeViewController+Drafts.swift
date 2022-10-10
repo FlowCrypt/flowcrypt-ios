@@ -45,11 +45,13 @@ extension ComposeViewController {
         return newDraft != existingDraft ? newDraft : nil
     }
 
-    func saveDraftIfNeeded(handler: ((Bool, Error?) -> Void)? = nil) {
+    func saveDraftIfNeeded(handler: ((DraftSaveState) -> Void)? = nil) {
         guard let draft = createDraft() else {
-            handler?(false, nil)
+            handler?(.cancelled)
             return
         }
+
+        handler?(.saving(draft))
 
         Task {
             do {
@@ -70,14 +72,14 @@ extension ComposeViewController {
                 )
 
                 composedLatestDraft = draft
-                handler?(true, nil)
+                handler?(.success(sendableMsg))
             } catch {
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
                     showToast("draft_error".localizeWithArguments(error.errorMessage), position: .top)
                 }
-                handler?(false, error)
+                handler?(.error(error))
             }
         }
     }

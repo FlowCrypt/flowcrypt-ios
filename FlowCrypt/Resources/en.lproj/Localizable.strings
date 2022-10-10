@@ -155,6 +155,7 @@
 
 // Drafts
 "draft" = "Draft";
+"draft_saving" = "Saving draft...";
 "draft_saved" = "Draft saved";
 "draft_deleted" = "Draft deleted";
 "draft_error" = "Failed to save draft: %@";

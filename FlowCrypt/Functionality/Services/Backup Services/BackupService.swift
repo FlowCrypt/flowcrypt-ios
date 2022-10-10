@@ -62,6 +62,7 @@ extension BackupService: BackupServiceType {
             from: userId.toMime,
             subject: "backup_subject".localized,
             replyToMsgId: nil,
+            threadId: nil,
             inReplyTo: nil,
             atts: attachments,
             pubKeys: nil,

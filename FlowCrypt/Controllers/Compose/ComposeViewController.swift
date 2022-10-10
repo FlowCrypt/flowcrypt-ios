@@ -19,11 +19,6 @@ final class ComposeViewController: TableNodeViewController {
         static let minRecipientsPartHeight: CGFloat = 32
     }
 
-    struct ComposedDraft: Equatable {
-        let input: ComposeMessageInput
-        let contextToSend: ComposeMessageContext
-    }
-
     enum State {
         case main, searchEmails([Recipient])
     }
