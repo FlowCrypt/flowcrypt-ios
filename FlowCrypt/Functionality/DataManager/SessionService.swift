@@ -40,7 +40,7 @@ protocol SessionServiceType {
 
 final class SessionService {
     private let encryptedStorage: EncryptedStorageType
-    private let passPhraseStorage: PassPhraseStorageType
+    private let inMemoryPassPhraseStorage: PassPhraseStorageType
     private let localStorage: LocalStorageType
 
     private let imap: Imap
@@ -50,7 +50,7 @@ final class SessionService {
 
     init(
         encryptedStorage: EncryptedStorageType,
-        passPhraseStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
+        inMemoryPassPhraseStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
         localStorage: LocalStorageType = LocalStorage(),
         imap: Imap? = nil,
         googleService: GoogleUserService
@@ -61,7 +61,7 @@ final class SessionService {
         self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
         self.localStorage = localStorage
-        self.passPhraseStorage = passPhraseStorage
+        self.inMemoryPassPhraseStorage = inMemoryPassPhraseStorage
     }
 }
 
@@ -142,7 +142,7 @@ extension SessionService: SessionServiceType {
         }
         do {
             try encryptedStorage.deleteAccount(email: user.email)
-            try passPhraseStorage.removePassPhrases(for: user.email)
+            try inMemoryPassPhraseStorage.removePassPhrases(for: user.email)
             localStorage.cleanup()
         } catch {
             logger.logError("storage error \(error)")

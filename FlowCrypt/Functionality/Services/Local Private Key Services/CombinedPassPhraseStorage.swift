@@ -68,11 +68,12 @@ protocol PassPhraseStorageType {
     func remove(passPhrase: PassPhrase) throws
     func removePassPhrases(for email: String) throws
 
-    func getPassPhrases(for email: String) throws -> [PassPhrase]
+    func getPassPhrases(for email: String, expirationInSeconds: Int?) throws -> [PassPhrase]
 }
 
 // MARK: - CombinedPassPhraseStorage
 protocol CombinedPassPhraseStorageType {
+    var clientConfiguration: ClientConfiguration? { get set }
     func getPassPhrases(for email: String) throws -> [PassPhrase]
     func savePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws
     func updatePassPhrase(with passPhrase: PassPhrase, storageMethod: PassPhraseStorageMethod) throws
@@ -82,6 +83,7 @@ protocol CombinedPassPhraseStorageType {
 final class CombinedPassPhraseStorage: CombinedPassPhraseStorageType {
     private lazy var logger = Logger.nested(Self.self)
 
+    var clientConfiguration: ClientConfiguration?
     let encryptedStorage: PassPhraseStorageType
     let inMemoryStorage: PassPhraseStorageType
 
@@ -99,7 +101,7 @@ final class CombinedPassPhraseStorage: CombinedPassPhraseStorageType {
         case .persistent:
             try encryptedStorage.save(passPhrase: passPhrase)
         case .memory:
-            let storedPassPhrases = try encryptedStorage.getPassPhrases(for: passPhrase.email)
+            let storedPassPhrases = try encryptedStorage.getPassPhrases(for: passPhrase.email, expirationInSeconds: nil)
             let fingerprint = passPhrase.primaryFingerprintOfAssociatedKey
             if storedPassPhrases.contains(where: { $0.primaryFingerprintOfAssociatedKey == fingerprint }) {
                 logger.logInfo("\(PassPhraseStorageMethod.persistent): removing pass phrase for key \(fingerprint)")
@@ -120,7 +122,13 @@ final class CombinedPassPhraseStorage: CombinedPassPhraseStorageType {
     }
 
     func getPassPhrases(for email: String) throws -> [PassPhrase] {
-        try encryptedStorage.getPassPhrases(for: email) + inMemoryStorage.getPassPhrases(for: email)
+        try encryptedStorage.getPassPhrases(
+            for: email,
+            expirationInSeconds: nil
+        ) + inMemoryStorage.getPassPhrases(
+            for: email,
+            expirationInSeconds: clientConfiguration?.passphraseSessionLengthInSeconds
+        )
     }
 
     func savePassPhrasesInMemory(for email: String, _ passPhrase: String, privateKeys: [Keypair]) throws {
