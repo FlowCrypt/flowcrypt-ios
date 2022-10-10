@@ -162,7 +162,6 @@ final class ComposeMessageService {
             from: contextToSend.sender,
             subject: subject,
             replyToMsgId: input.replyToMsgId,
-            threadId: input.threadId,
             inReplyTo: input.inReplyTo,
             atts: sendableAttachments,
             pubKeys: pubKeys,
