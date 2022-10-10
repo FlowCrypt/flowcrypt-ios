@@ -11,7 +11,9 @@ import RealmSwift
 final class EncryptedStorageMock: EncryptedStorageType {
 
     var storage: Realm {
-        fatalError()
+        get throws {
+            return try Realm()
+        }
     }
 
     var activeUser: FlowCrypt.User?

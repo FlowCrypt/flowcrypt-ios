@@ -48,6 +48,7 @@ final class EncryptedStorage: EncryptedStorageType {
         case version10
         case version11
         case version12
+        case version13
 
         var version: SchemaVersion {
             switch self {
@@ -69,6 +70,8 @@ final class EncryptedStorage: EncryptedStorageType {
                 return SchemaVersion(appVersion: "1.1.0", dbSchemaVersion: 11)
             case .version12:
                 return SchemaVersion(appVersion: "1.1.0", dbSchemaVersion: 12)
+            case .version13:
+                return SchemaVersion(appVersion: "1.1.1", dbSchemaVersion: 13)
             }
         }
     }
@@ -76,7 +79,7 @@ final class EncryptedStorage: EncryptedStorageType {
     private lazy var migrationLogger = Logger.nested(in: Self.self, with: .migration)
     private lazy var logger = Logger.nested(Self.self)
 
-    private let currentSchema: EncryptedStorageSchema = .version12
+    private let currentSchema: EncryptedStorageSchema = .version13
     private let supportedSchemas = EncryptedStorageSchema.allCases
 
     private let storageEncryptionKey: Data
@@ -241,7 +244,7 @@ extension EncryptedStorage: PassPhraseStorageType {
         try updateKeys(with: passPhrase.primaryFingerprintOfAssociatedKey, passphrase: nil)
     }
 
-    func getPassPhrases(for email: String) throws -> [PassPhrase] {
+    func getPassPhrases(for email: String, expirationInSeconds _: Int?) throws -> [PassPhrase] {
         return try storage.objects(KeypairRealmObject.self)
             .where({ $0.user.email == email })
             .compactMap(PassPhrase.init)

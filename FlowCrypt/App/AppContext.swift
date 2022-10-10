@@ -150,7 +150,7 @@ class AppContextWithUser: AppContext {
         self.authType = authType
         self.user = user
         self.userId = UserId(email: user.email, name: user.name)
-        self.enterpriseServer = try await EnterpriseServerApi(email: user.email)
+        self.enterpriseServer = try EnterpriseServerApi(email: user.email)
         self.clientConfigurationService = ClientConfigurationService(
             server: enterpriseServer,
             local: LocalClientConfiguration(
@@ -158,12 +158,14 @@ class AppContextWithUser: AppContext {
             )
         )
 
+        var combinedPassPhraseStorageWithConfiguration = combinedPassPhraseStorage
+        combinedPassPhraseStorageWithConfiguration.clientConfiguration = try await clientConfigurationService.configuration
         super.init(
             encryptedStorage: encryptedStorage,
             session: session,
             userAccountService: userAccountService,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
-            combinedPassPhraseStorage: combinedPassPhraseStorage,
+            combinedPassPhraseStorage: combinedPassPhraseStorageWithConfiguration,
             globalRouter: globalRouter
         )
     }

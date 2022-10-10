@@ -15,6 +15,7 @@ final class ClientConfigurationRealmObject: Object {
     @Persisted var customKeyserverUrl: String?
     @Persisted var keyManagerUrl: String?
     @Persisted var fesUrl: String?
+    @Persisted var inMemoryPassPhraseSessionLength: Int?
     @Persisted var allowAttesterSearchOnlyForDomains: Data?
     @Persisted var disallowAttesterSearchForDomains: Data?
     @Persisted var enforceKeygenAlgo: String?
@@ -25,6 +26,7 @@ final class ClientConfigurationRealmObject: Object {
         customKeyserverUrl: String?,
         keyManagerUrl: String?,
         fesUrl: String?,
+        inMemoryPassPhraseSessionLength: Int?,
         allowAttesterSearchOnlyForDomains: [String]?,
         disallowAttesterSearchForDomains: [String]?,
         enforceKeygenAlgo: String?,
@@ -38,6 +40,7 @@ final class ClientConfigurationRealmObject: Object {
         self.customKeyserverUrl = customKeyserverUrl
         self.keyManagerUrl = keyManagerUrl
         self.fesUrl = fesUrl
+        self.inMemoryPassPhraseSessionLength = inMemoryPassPhraseSessionLength
         self.allowAttesterSearchOnlyForDomains = try? allowAttesterSearchOnlyForDomains.ifNotNil { try JSONEncoder().encode($0) }
         self.disallowAttesterSearchForDomains = try? disallowAttesterSearchForDomains.ifNotNil { try JSONEncoder().encode($0) }
         self.enforceKeygenAlgo = enforceKeygenAlgo
@@ -53,6 +56,7 @@ extension ClientConfigurationRealmObject {
             customKeyserverUrl: configuration.customKeyserverUrl,
             keyManagerUrl: configuration.keyManagerUrl,
             fesUrl: fesUrl,
+            inMemoryPassPhraseSessionLength: configuration.inMemoryPassPhraseSessionLength,
             allowAttesterSearchOnlyForDomains: configuration.allowAttesterSearchOnlyForDomains,
             disallowAttesterSearchForDomains: configuration.disallowAttesterSearchForDomains,
             enforceKeygenAlgo: configuration.enforceKeygenAlgo,

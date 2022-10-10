@@ -18,15 +18,13 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
 
     override func setUp() {
         passPhraseProvider = InMemoryPassPhraseProviderMock()
-        timeoutInSeconds = 2
         testPassPhrase = PassPhrase(
             value: "A",
             email: testPassPhraseAccount,
             fingerprintsOfAssociatedKey: ["11","12"]
         )
         sut = .init(
-            passPhraseProvider: passPhraseProvider,
-            timeoutInSeconds: timeoutInSeconds
+            passPhraseProvider: passPhraseProvider
         )
     }
 
@@ -51,12 +49,12 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
     }
 
     func testGetPassPhrases() throws {
-        var passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount)
+        var passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount, expirationInSeconds: 10)
         XCTAssertTrue(passPhrases.isEmpty)
 
         sut.save(passPhrase: testPassPhrase)
 
-        passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount)
+        passPhrases = try sut.getPassPhrases(for: testPassPhraseAccount, expirationInSeconds: 10)
         XCTAssertTrue(passPhrases.count == 1)
         XCTAssertTrue(passPhrases.contains(
             where: { $0.primaryFingerprintOfAssociatedKey == "11" })
@@ -64,12 +62,14 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
         XCTAssertTrue(passPhrases.filter { $0.date == nil }.isEmpty)
     }
 
-    func testExpiredPassPhrases() {
-        XCTAssertTrue(try sut.getPassPhrases(for: testPassPhraseAccount).isEmpty)
+    func testExpiredPassPhrases() async throws {
+        let passphrase = try sut.getPassPhrases(for: testPassPhraseAccount, expirationInSeconds: 10)
+        XCTAssertTrue(passphrase.isEmpty)
 
         sut.save(passPhrase: testPassPhrase)
         sleep(3)
-        XCTAssertTrue(try sut.getPassPhrases(for: testPassPhraseAccount).isEmpty)
+        let newPassphrase = try sut.getPassPhrases(for: testPassPhraseAccount, expirationInSeconds: 2)
+        XCTAssertTrue(newPassphrase.isEmpty)
     }
 }
 

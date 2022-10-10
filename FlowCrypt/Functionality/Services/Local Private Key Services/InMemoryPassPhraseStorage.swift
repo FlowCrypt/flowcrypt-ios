@@ -12,16 +12,14 @@ import UIKit
 final class InMemoryPassPhraseStorage: PassPhraseStorageType {
     private lazy var logger = Logger.nested(Self.self)
 
-    let timeoutInSeconds: Int
+    let DEFAULT_PASSPHRASE_TIMEOUT_IN_SECONDS = 4 * 60 * 60 // 4 hours
     let calendar = Calendar.current
     let passPhraseProvider: InMemoryPassPhraseProviderType
 
     init(
-        passPhraseProvider: InMemoryPassPhraseProviderType = InMemoryPassPhraseProvider.shared,
-        timeoutInSeconds: Int = 4*60*60 // 4 hours
+        passPhraseProvider: InMemoryPassPhraseProviderType = InMemoryPassPhraseProvider.shared
     ) {
         self.passPhraseProvider = passPhraseProvider
-        self.timeoutInSeconds = timeoutInSeconds
     }
 
     func save(passPhrase: PassPhrase) {
@@ -38,7 +36,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
         passPhraseProvider.remove(passPhrases: [passPhrase])
     }
 
-    func getPassPhrases(for email: String) throws -> [PassPhrase] {
+    func getPassPhrases(for email: String, expirationInSeconds: Int?) throws -> [PassPhrase] {
         return passPhraseProvider.passPhrases
             .compactMap { passPhrase -> PassPhrase? in
                 guard let dateToCompare = passPhrase.date else {
@@ -53,7 +51,7 @@ final class InMemoryPassPhraseStorage: PassPhraseStorageType {
                 )
 
                 let timePassed = components.second ?? 0
-                let isPassPhraseValid = timePassed < timeoutInSeconds
+                let isPassPhraseValid = timePassed < (expirationInSeconds ?? DEFAULT_PASSPHRASE_TIMEOUT_IN_SECONDS)
 
                 return isPassPhraseValid ? passPhrase : nil
             }
