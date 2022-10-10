@@ -83,10 +83,6 @@ blocks:
           commands:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
             - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
-        on_fail:
-          commands:
-            - artifact push job ~/Library/Logs/DiagnosticReports/FlowCrypt_*
-            - artifact push job ~/git/flowcrypt-ios/appium/video/*.mp4
       jobs:
         - name: Run Mock inbox tests
           commands:
