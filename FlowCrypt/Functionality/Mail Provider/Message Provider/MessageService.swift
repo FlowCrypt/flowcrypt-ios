@@ -134,7 +134,7 @@ final class MessageService {
             keys: keys,
             msgPwd: nil,
             isMime: false,
-            verificationPubKeys: []
+            verificationPubKeys: verificationPubKeys
         )
 
         guard !hasMsgBlockThatNeedsPassPhrase(decrypted) else {

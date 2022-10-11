@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa",
       "state" : {
-        "revision" : "ae4278abe1fcdcd616b410e098a744c1cc73e0bd",
-        "version" : "10.31.0"
+        "revision" : "7055d820a133da4395742758bd48bab0841cc4bf",
+        "version" : "10.32.0"
       }
     },
     {

@@ -22,6 +22,7 @@ describe('SETUP: ', () => {
       }
     };
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com')
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

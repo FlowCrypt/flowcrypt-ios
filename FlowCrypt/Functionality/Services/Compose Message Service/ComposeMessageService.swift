@@ -35,6 +35,8 @@ final class ComposeMessageService {
     private let draftGateway: DraftGateway?
     private lazy var logger = Logger.nested(Self.self)
 
+    private var saveDraftTask: Task<MessageIdentifier?, Error>?
+
     private struct ReplyInfo: Encodable {
         let sender: String
         let recipient: [String]
@@ -245,22 +247,30 @@ final class ComposeMessageService {
     }
 
     func saveDraft(message: SendableMsg, threadId: String?, shouldEncrypt: Bool) async throws {
-        do {
-            let mime = try await core.composeEmail(
-                msg: message,
-                fmt: shouldEncrypt ? .encryptInline : .plain
-            ).mimeEncoded
+        saveDraftTask?.cancel()
 
-            self.messageIdentifier = try await draftGateway?.saveDraft(
-                input: MessageGatewayInput(
-                    mime: mime,
-                    threadId: threadId
-                ),
-                draftId: self.messageIdentifier?.draftId
-            )
-        } catch {
-            throw ComposeMessageError.gatewayError(error)
+        saveDraftTask = Task {
+            do {
+                let mime = try await self.core.composeEmail(
+                    msg: message,
+                    fmt: shouldEncrypt ? .encryptInline : .plain
+                ).mimeEncoded
+
+                if Task.isCancelled { return self.messageIdentifier }
+
+                return try await self.draftGateway?.saveDraft(
+                    input: MessageGatewayInput(
+                        mime: mime,
+                        threadId: threadId
+                    ),
+                    draftId: self.messageIdentifier?.draftId
+                )
+            } catch {
+                throw ComposeMessageError.gatewayError(error)
+            }
         }
+
+        messageIdentifier = try await saveDraftTask?.value
     }
 
     func deleteDraft() async throws {

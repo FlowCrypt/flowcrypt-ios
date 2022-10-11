@@ -5,7 +5,7 @@
 import { Buffers, EndpointRes, fmtContentBlock, fmtRes, isContentBlock } from './format-output';
 import { DecryptErrTypes, PgpMsg } from '../core/pgp-msg';
 import { KeyDetails, PgpKey } from '../core/pgp-key';
-import { Mime, RichHeaders } from '../core/mime';
+import { Mime, RichHeaders, SendableMsgBody } from '../core/mime';
 
 import { Att } from '../core/att';
 import { Buf } from '../core/buf';
@@ -55,9 +55,10 @@ export class Endpoints {
     if (req.format === 'plain') {
       const atts = (req.atts || []).map(({ name, type, base64 }) =>
         new Att({ name, type, data: Buf.fromBase64Str(base64) }));
-      return fmtRes({}, Buf.fromUtfStr(await Mime.encode(
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        { 'text/plain': req.text, 'text/html': req.html }, mimeHeaders, atts)));
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const body: SendableMsgBody = { 'text/plain': req.text };
+      if (req.html) { body['text/html'] = req.html; }
+      return fmtRes({}, Buf.fromUtfStr(await Mime.encode(body, mimeHeaders, atts)));
     } else if (req.format === 'encrypt-inline') {
       const encryptedAtts: Att[] = [];
       for (const att of req.atts || []) {

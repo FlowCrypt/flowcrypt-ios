@@ -128,7 +128,7 @@ extension InboxItem {
     }
 
     func messages(with label: String?) -> [Message] {
-        guard let label = label else { return messages }
+        guard let label = label, !label.isEmpty else { return messages }
 
         let messageLabel = MessageLabel(gmailLabel: label)
         return messages.filter { $0.labels.contains(messageLabel) }
