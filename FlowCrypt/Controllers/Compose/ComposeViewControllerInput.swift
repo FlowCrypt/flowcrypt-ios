@@ -24,6 +24,7 @@ struct ComposeMessageInput: Equatable {
         let replyToMsgId: String?
         let inReplyTo: String?
         let rfc822MsgId: String?
+        let draftId: Identifier?
         let shouldEncrypt: Bool
         let attachments: [MessageAttachment]
     }
@@ -122,6 +123,7 @@ extension ComposeMessageInput.MessageQuoteInfo {
         self.text = processed?.text ?? message.body.text
         self.threadId = message.threadId
         self.rfc822MsgId = message.rfc822MsgId
+        self.draftId = message.draftId
         self.replyToMsgId = message.replyToMsgId
         self.inReplyTo = message.inReplyTo
         self.shouldEncrypt = message.isPgp

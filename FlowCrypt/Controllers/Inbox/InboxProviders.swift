@@ -29,7 +29,7 @@ class InboxMessageThreadsProvider: InboxDataProvider {
     func fetchInboxItem(identifier: MessageIdentifier, path: String) async throws -> InboxItem? {
         guard let id = identifier.threadId?.stringId else { return nil }
         let thread = try await provider.fetchThread(identifier: id, path: path)
-        return InboxItem(thread: thread, folderPath: path)
+        return InboxItem(thread: thread, folderPath: path, identifier: identifier)
     }
 
     func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {

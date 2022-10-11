@@ -409,6 +409,7 @@ extension ThreadDetailsViewController {
             replyToMsgId: replyToMsgId,
             inReplyTo: input.rawMessage.inReplyTo,
             rfc822MsgId: input.rawMessage.rfc822MsgId,
+            draftId: nil,
             shouldEncrypt: input.rawMessage.isPgp,
             attachments: attachments
         )

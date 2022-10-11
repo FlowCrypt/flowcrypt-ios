@@ -241,9 +241,15 @@ final class ComposeMessageService {
     // MARK: - Drafts
     var messageIdentifier: MessageIdentifier?
 
-    func fetchDraftIdentifier(for messageId: String) async throws {
-        let identifier = Identifier(stringId: messageId)
-        self.messageIdentifier = try await draftGateway?.fetchDraftIdentifier(for: identifier)
+    func fetchMessageIdentifier(info: ComposeMessageInput.MessageQuoteInfo) {
+        Task {
+            if let draftId = info.draftId {
+                messageIdentifier = try await draftGateway?.fetchDraft(id: draftId)
+            } else if let messageId = info.rfc822MsgId {
+                let identifier = Identifier(stringId: messageId)
+                messageIdentifier = try await draftGateway?.fetchDraftIdentifier(for: identifier)
+            }
+        }
     }
 
     func saveDraft(message: SendableMsg, threadId: String?, shouldEncrypt: Bool) async throws {

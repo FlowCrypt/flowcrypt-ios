@@ -9,6 +9,25 @@
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: DraftGateway {
+    func fetchDraft(id: Identifier) async throws -> MessageIdentifier? {
+        guard let identifier = id.stringId else { return nil }
+        let query = GTLRGmailQuery_UsersDraftsGet.query(withUserId: .me, identifier: identifier)
+        return try await withCheckedThrowingContinuation { continuation in
+            gmailService.executeQuery(query) { _, data, error in
+                if let error = error {
+                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                }
+
+                guard let gmailDraft = data as? GTLRGmail_Draft else {
+                    return continuation.resume(throwing: AppErr.cast("GTLRGmail_Draft"))
+                }
+
+                let draft = MessageIdentifier(gmailDraft: gmailDraft)
+                return continuation.resume(returning: draft)
+            }
+        }
+    }
+
     func fetchDraftIdentifier(for messageId: Identifier) async throws -> MessageIdentifier? {
         guard let id = messageId.stringId else { return nil }
 
@@ -29,6 +48,7 @@ extension GmailService: DraftGateway {
                 guard let gmailDraft = list.drafts?.first else {
                     return continuation.resume(returning: nil)
                 }
+
                 let draft = MessageIdentifier(gmailDraft: gmailDraft)
                 return continuation.resume(returning: draft)
             }

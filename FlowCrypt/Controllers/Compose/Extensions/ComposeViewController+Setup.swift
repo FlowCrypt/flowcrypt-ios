@@ -60,10 +60,8 @@ extension ComposeViewController {
             return
         }
 
-        if case .draft = input.type, let messageId = input.type.info?.rfc822MsgId {
-            Task {
-                try await composeMessageService.fetchDraftIdentifier(for: messageId)
-            }
+        if case .draft = input.type {
+            composeMessageService.fetchMessageIdentifier(info: info)
         }
 
         contextToSend.subject = info.subject

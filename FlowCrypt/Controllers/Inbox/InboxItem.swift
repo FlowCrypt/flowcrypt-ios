@@ -146,10 +146,15 @@ extension InboxItem {
         self.type = .message(message.identifier)
     }
 
-    init(thread: MessageThread, folderPath: String?) {
+    init(thread: MessageThread, folderPath: String?, identifier: MessageIdentifier? = nil) {
         self.messages = thread.messages
         self.folderPath = folderPath ?? ""
         self.type = .thread(Identifier(stringId: thread.identifier))
+
+        if let draftId = identifier?.draftId, let messageId = identifier?.messageId {
+            guard let index = self.messages.firstIndex(where: { $0.identifier == messageId }) else { return }
+            self.messages[index].draftId = draftId
+        }
     }
 
     mutating func update(labelsToAdd: [MessageLabel] = [], labelsToRemove: [MessageLabel] = []) {

@@ -10,6 +10,10 @@
 import GoogleAPIClientForREST_Gmail
 
 class DraftGatewayMock: DraftGateway {
+    func fetchDraft(id: Identifier) async throws -> MessageIdentifier? {
+        return nil
+    }
+
     func fetchDraftIdentifier(for messageId: Identifier) async throws -> MessageIdentifier? {
         return nil
     }
