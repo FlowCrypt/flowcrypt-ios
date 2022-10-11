@@ -133,7 +133,7 @@ final class MessageService {
             encrypted: text.data(),
             keys: keys,
             msgPwd: nil,
-            isMime: false,
+            isMime: isMime,
             verificationPubKeys: verificationPubKeys
         )
 
