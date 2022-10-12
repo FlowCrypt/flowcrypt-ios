@@ -48,7 +48,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self,
+            guard let self,
                   let section = self.sectionsList[safe: indexPath.section]
             else { return ASCellNode() }
 

@@ -26,17 +26,19 @@ extension ComposeViewController {
     }
 
     func showRecipientLabelIfNecessary() {
-        let isRecipientLoading = self.contextToSend.recipients.filter { $0.state == decorator.recipientIdleState }.isNotEmpty
+        let isRecipientLoading = contextToSend.recipients.contains(where: {
+            $0.state == decorator.recipientIdleState
+        })
+
         guard !isRecipientLoading,
               contextToSend.recipients.isNotEmpty,
-              userTappedOutSideRecipientsArea else {
-            return
-        }
-        if !shouldShowEmailRecipientsLabel {
-            shouldShowEmailRecipientsLabel = true
-            userTappedOutSideRecipientsArea = false
-            reload(sections: Section.recipientsSections + [.recipientsLabel])
-        }
+              userTappedOutSideRecipientsArea,
+              !shouldShowEmailRecipientsLabel
+        else { return }
+
+        shouldShowEmailRecipientsLabel = true
+        userTappedOutSideRecipientsArea = false
+        reload(sections: Section.recipientsSections + [.recipientsLabel])
     }
 
     func hideRecipientLabel() {
@@ -62,7 +64,7 @@ extension ComposeViewController {
             }
         }
         .onShouldReturn { [weak self] _ in
-            guard let self = self else { return true }
+            guard let self else { return true }
             if !self.input.isQuote, let node = self.node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first {
                 node.becomeFirstResponder()
             } else {
@@ -138,7 +140,7 @@ extension ComposeViewController {
                 accessibilityIdentifier: "aid-message-text-view"
             )
         ) { [weak self] event in
-            guard let self = self else { return }
+            guard let self else { return }
             switch event {
             case .didBeginEditing:
                 self.userTappedOutSideRecipientsArea = true
@@ -169,7 +171,7 @@ extension ComposeViewController {
                     from: textNode.textView.textView.beginningOfDocument,
                     to: textNode.textView.textView.beginningOfDocument
                 )
-                self.node.reloadData()
+
                 if self.input.shouldFocusTextNode {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         textNode.becomeFirstResponder()
@@ -216,26 +218,28 @@ extension ComposeViewController {
                     type: type,
                     completion: {
                         if let indexPath = self?.recipientsIndexPath(type: type),
-                           let emailNode = self?.node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
-                            emailNode.style.preferredSize.height = layoutHeight
-                            emailNode.setNeedsLayout()
+                           let emailsNode = self?.node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
+                            emailsNode.style.preferredSize.height = layoutHeight
+                            emailsNode.setNeedsLayout()
                         }
                     }
                 )
             }
             .onItemSelect { [weak self] action in
+                guard let self else { return }
+
                 switch action {
                 case let .imageTap(indexPath):
-                    self?.handleRecipientAction(with: indexPath, type: type)
+                    self.handleRecipientAction(with: indexPath, type: type)
                 case let .select(indexPath, sender):
-                    self?.handleRecipientSelection(with: indexPath, type: type)
-                    self?.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
+                    self.handleRecipientSelection(with: indexPath, type: type)
+                    self.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
                 }
             }
     }
 
     func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
-        return RecipientEmailTextFieldNode(
+        RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
                 with: "",
                 keyboardType: .emailAddress,

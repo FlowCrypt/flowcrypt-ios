@@ -138,7 +138,7 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
         let width = collectionNode.style.preferredSize.width
 
         return { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return ASCellNode()
             }
             if indexPath.row == self.recipients.count {
@@ -180,7 +180,7 @@ extension RecipientEmailsCellNode {
             toggleButtonNode.view.transform = CGAffineTransform(rotationAngle: angle)
         }
 
-        let angle = self.isToggleButtonRotated ? .pi : 0
+        let angle = isToggleButtonRotated ? .pi : 0
         if animated {
             UIView.animate(withDuration: 0.3) {
                 rotateButton(angle: angle)

@@ -89,7 +89,7 @@ class WkdApi: WkdApiType {
             )
             _ = try await ApiCall.call(request)
         } catch {
-            Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
+            Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error.errorMessage)")
             return InternalResult(hasPolicy: false, keys: nil, method: urls.method)
         }
 

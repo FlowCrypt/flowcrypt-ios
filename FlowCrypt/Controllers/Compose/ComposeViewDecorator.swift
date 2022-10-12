@@ -163,7 +163,7 @@ struct ComposeViewDecorator {
         type: RecipientType,
         completion: (() -> Void)? = nil
     ) {
-        let currentHeight = self.recipientsNodeHeight(type: type)
+        let currentHeight = recipientsNodeHeight(type: type)
 
         guard currentHeight != layoutHeight, layoutHeight > 0 else {
             return
@@ -171,11 +171,11 @@ struct ComposeViewDecorator {
 
         switch type {
         case .to:
-            self.calculatedRecipientsToPartHeight = layoutHeight
+            calculatedRecipientsToPartHeight = layoutHeight
         case .cc:
-            self.calculatedRecipientsCcPartHeight = layoutHeight
+            calculatedRecipientsCcPartHeight = layoutHeight
         case .bcc:
-            self.calculatedRecipientsBccPartHeight = layoutHeight
+            calculatedRecipientsBccPartHeight = layoutHeight
         default:
             break
         }
