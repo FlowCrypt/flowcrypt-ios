@@ -821,7 +821,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
         return LabelCellNode(
             input: .init(
-                title: "draft".localized.attributed(color: .red),
+                title: "draft".localized.attributed(color: .systemRed),
                 text: body.removingMailThreadQuote().attributed(color: .secondaryLabel),
                 accessibilityIdentifier: "aid-draft-body-\(messageIndex)",
                 labelAccessibilityIdentifier: "aid-draft-label-\(messageIndex)",

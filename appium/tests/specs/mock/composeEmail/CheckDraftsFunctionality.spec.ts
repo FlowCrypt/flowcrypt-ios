@@ -15,6 +15,7 @@ describe('COMPOSE EMAIL: ', () => {
     const mockApi = new MockApi();
 
     const recipient = MockUserList.robot;
+    const recipientWithoutPubKeys = MockUserList.demo;
     const subject = CommonData.simpleEmail.subject;
     const draftSubject = CommonData.draft.subject;
     const draftText1 = CommonData.draft.text1;
@@ -82,13 +83,34 @@ describe('COMPOSE EMAIL: ', () => {
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickInboxButton();
 
-      // compose new draft
+      // compose 2 new drafts and then delete them both
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickCreateEmail();
+      await NewMessageScreen.composeEmail(recipientWithoutPubKeys.email, draftSubject, draftText1);
+      await NewMessageScreen.clickBackButton();
+
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickCreateEmail();
+      await NewMessageScreen.composeEmail(recipient.email, subject, draftText2);
+      await NewMessageScreen.clickBackButton();
+
+      await MailFolderScreen.clickOnEmailBySubject(subject);
+      await NewMessageScreen.clickDeleteButton();
+      await NewMessageScreen.confirmDelete();
+
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickOnEmailBySubject(draftSubject);
+      await NewMessageScreen.clickDeleteButton();
+      await NewMessageScreen.confirmDelete();
+
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.checkIfFolderIsEmpty();
+
+      // compose draft, send it and check if sent message added to 'sent' folder
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.composeEmail(recipient.email, draftSubject, draftText1);
       await NewMessageScreen.clickBackButton();
-
-      // send draft and check if sent message added to 'sent' folder
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickDraftsButton();
       await MailFolderScreen.clickOnEmailBySubject(draftSubject);
