@@ -78,6 +78,8 @@ blocks:
           - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
+          - xcrun xctrace list devices
+          - xcrun simctl list
       epilogue:
         always:
           commands:
