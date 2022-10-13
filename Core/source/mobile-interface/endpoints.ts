@@ -57,7 +57,9 @@ export class Endpoints {
         new Att({ name, type, data: Buf.fromBase64Str(base64) }));
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const body: SendableMsgBody = { 'text/plain': req.text };
-      if (req.html) { body['text/html'] = req.html; }
+      if (req.html) {
+        body['text/html'] = req.html;
+      }
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode(body, mimeHeaders, atts)));
     } else if (req.format === 'encrypt-inline') {
       const encryptedAtts: Att[] = [];
