@@ -30,7 +30,7 @@ config.capabilities = [
     'appium:automationName': 'XCUITest',
     'appium:options': {
       deviceName: 'iPhone 14',
-      platformVersion: '16.1',
+      platformVersion: '16.0',
       app: join(process.cwd(), './FlowCrypt.app'),
       processArguments: { 'args': ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'] },
     },
