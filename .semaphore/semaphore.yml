@@ -28,8 +28,7 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - xcversion installed
-            - xcversion select 14.0
+            - xcversion select 14.1
             - bundle exec fastlane build
             - bundle exec fastlane test
       epilogue:
@@ -74,7 +73,6 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - xcrun simctl list
           - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
           - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
