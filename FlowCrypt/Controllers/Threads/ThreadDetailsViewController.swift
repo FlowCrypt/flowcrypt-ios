@@ -35,7 +35,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
 
     private enum Parts: Int, CaseIterable {
-        case thread, message
+        case thread, message, divider
     }
 
     private let appContext: AppContextWithUser
@@ -137,7 +137,7 @@ extension ThreadDetailsViewController {
                     }
                 },
                 completion: { [weak self] _ in
-                    guard let self = self else { return }
+                    guard let self else { return }
 
                     if let processedMessage = self.input[indexPath.section - 1].processedMessage {
                         self.handle(processedMessage: processedMessage, at: indexPath)
@@ -734,7 +734,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
         guard section > 0, input[section - 1].isExpanded,
               !input[section - 1].rawMessage.isDraft
-        else { return 1 }
+        else { return 2 }
 
         let attachmentsCount = input[section - 1].processedMessage?.attachments.count ?? 0
         return Parts.allCases.count + attachmentsCount
@@ -742,11 +742,15 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
 
             guard indexPath.section > 0 else {
-                let subject = self.inboxItem.subject ?? "no subject"
-                return MessageSubjectNode(subject.attributed(.medium(18)))
+                if indexPath.row == 0 {
+                    let subject = self.inboxItem.subject ?? "no subject"
+                    return MessageSubjectNode(subject.attributed(.medium(18)))
+                } else {
+                    return self.dividerNode(indexPath: indexPath)
+                }
             }
 
             let messageIndex = indexPath.section - 1
@@ -762,25 +766,31 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             if message.rawMessage.isDraft {
-                return self.draftNode(messageIndex: messageIndex, isExpanded: message.isExpanded)
+                if indexPath.row == 0 {
+                    return self.draftNode(messageIndex: messageIndex, isExpanded: message.isExpanded)
+                } else {
+                    return self.dividerNode(indexPath: indexPath)
+                }
             }
 
-            guard let processedMessage = message.processedMessage else {
-                return ASCellNode()
-            }
+            guard message.isExpanded, let processedMessage = message.processedMessage
+            else { return self.dividerNode(indexPath: indexPath) }
 
             guard indexPath.row > 1 else {
                 return MessageTextSubjectNode(processedMessage.attributedMessage, index: messageIndex)
             }
 
             let attachmentIndex = indexPath.row - 2
-            let attachment = processedMessage.attachments[attachmentIndex]
-            return AttachmentNode(
-                input: .init(
-                    msgAttachment: attachment,
-                    index: attachmentIndex
+            if let attachment = processedMessage.attachments[safe: attachmentIndex] {
+                return AttachmentNode(
+                    input: .init(
+                        msgAttachment: attachment,
+                        index: attachmentIndex
+                    )
                 )
-            )
+            } else {
+                return self.dividerNode(indexPath: indexPath)
+            }
         }
     }
 
@@ -797,14 +807,6 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 handleDraftTap(at: indexPath)
             }
         }
-    }
-
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        dividerView()
-    }
-
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        section > 0 && section < input.count ? 1 / UIScreen.main.nativeScale : 0
     }
 
     private func draftNode(messageIndex: Int, isExpanded: Bool) -> ASCellNode {
@@ -863,14 +865,13 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         )
     }
 
-    private func dividerView() -> UIView {
-        UIView().then {
-            let frame = CGRect(x: 8, y: 0, width: view.frame.width - 16, height: 1 / UIScreen.main.nativeScale)
-            let divider = UIView(frame: frame)
-            $0.addSubview(divider)
-            $0.backgroundColor = .clear
-            divider.backgroundColor = .borderColor
-        }
+    private func dividerNode(indexPath: IndexPath) -> ASCellNode {
+        let height = indexPath.section < input.count ? 1 / UIScreen.main.nativeScale : 0
+        return DividerCellNode(
+            inset: .init(top: 0, left: 8, bottom: 0, right: 8),
+            color: .borderColor,
+            height: height
+        )
     }
 }
 
