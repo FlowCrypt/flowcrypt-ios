@@ -28,7 +28,9 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - xcversion select 14.1
+            - xcversion simulators
+            - xcversion select 14.0
+            - xcode-select -s /Applications/Xcode-14.0.app
             - bundle exec fastlane build
             - bundle exec fastlane test
       epilogue:
@@ -84,27 +86,24 @@ blocks:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
             - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
       jobs:
-        - name: Run UI tests
+        - name: Run Mock inbox tests
           commands:
-            - npm run-script test.mock.all
-        # - name: Run Mock inbox tests
-        #   commands:
-        #     - npm run-script test.mock.inbox
-        # - name: Run Mock compose tests
-        #   commands:
-        #     - npm run-script test.mock.compose
-        # - name: Run Mock setup tests
-        #   commands:
-        #     - npm run-script test.mock.setup
-        # - name: Run Mock other tests + Run Live tests
-        #   commands:
-        #     - npm run-script test.mock.login
-        #     - sleep 3
-        #     - npm run-script test.mock.settings
-        #     # temporary disabled because of e2e account login issue
-        #     # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
-        #     # - unzip flowcrypt-ios-*.zip
-        #     # - npm run-script test.live.all
+            - npm run-script test.mock.inbox
+        - name: Run Mock compose tests
+          commands:
+            - npm run-script test.mock.compose
+        - name: Run Mock setup tests
+          commands:
+            - npm run-script test.mock.setup
+        - name: Run Mock other tests + Run Live tests
+          commands:
+            - npm run-script test.mock.login
+            - sleep 3
+            - npm run-script test.mock.settings
+            # temporary disabled because of e2e account login issue
+            # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
+            # - unzip flowcrypt-ios-*.zip
+            # - npm run-script test.live.all
       secrets:
         - name: flowcrypt-ios-ci-secrets
     run:
