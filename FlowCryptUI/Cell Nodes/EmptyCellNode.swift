@@ -70,7 +70,7 @@ public final class EmptyCellNode: CellNode {
         )
         spec.style.preferredSize = size
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16),
+            insets: UIEdgeInsets.side(16),
             child: ASCenterLayoutSpec(child: spec)
         )
     }

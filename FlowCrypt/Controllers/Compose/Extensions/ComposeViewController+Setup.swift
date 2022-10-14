@@ -107,8 +107,8 @@ extension ComposeViewController {
                     isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                 )
                 contextToSend.message = decrypted
-                reload(sections: Section.recipientsSections)
                 didFinishSetup = true
+                reload(sections: Section.recipientsSections + [.compose])
             } catch {
                 if case .missingPassPhrase(let keyPair) = error as? MessageServiceError, let keyPair = keyPair {
                     requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
@@ -151,7 +151,8 @@ extension ComposeViewController: NavigationChildController {
 
             switch state {
             case .cancelled:
-                break
+                guard let identifier = self.composeMessageService.messageIdentifier else { break }
+                self.handleAction?(.update(identifier))
             case .error(let error):
                 self.showToast("draft_error".localizeWithArguments(error.errorMessage))
             case .success:

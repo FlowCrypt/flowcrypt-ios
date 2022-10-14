@@ -147,7 +147,7 @@ final class ComposeMessageService {
             senderEmail: contextToSend.sender,
             recipients: contextToSend.recipients,
             hasMessagePassword: contextToSend.hasMessagePassword,
-            withValidation: !isDraft
+            shouldValidate: !isDraft
         ) : []
 
         let sendableAttachments: [SendableMsg.Attachment] = isDraft
@@ -176,7 +176,7 @@ final class ComposeMessageService {
         senderEmail: String,
         recipients: [ComposeMessageRecipient],
         hasMessagePassword: Bool,
-        withValidation: Bool
+        shouldValidate: Bool
     ) async throws -> [String] {
         let senderKeys = try await keyMethods.chooseSenderKeys(
             for: .encryption,
@@ -184,15 +184,15 @@ final class ComposeMessageService {
             senderEmail: senderEmail
         ).map(\.public)
 
-        if withValidation, senderKeys.isEmpty {
+        if shouldValidate, senderKeys.isEmpty {
             throw MessageValidationError.noUsableAccountKeys
         }
 
         let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
-        let validPubKeys = try validate(
-            recipients: recipientsWithPubKeys,
-            hasMessagePassword: hasMessagePassword
-        )
+        if shouldValidate {
+            try validate(recipients: recipientsWithPubKeys, hasMessagePassword: hasMessagePassword)
+        }
+        let validPubKeys = recipientsWithPubKeys.flatMap(\.activePubKeys).map(\.armored)
 
         return senderKeys + validPubKeys
     }
@@ -216,7 +216,7 @@ final class ComposeMessageService {
     private func validate(
         recipients: [RecipientWithSortedPubKeys],
         hasMessagePassword: Bool
-    ) throws -> [String] {
+    ) throws {
         func contains(keyState: PubKeyState) -> Bool {
             recipients.contains(where: { $0.keyState == keyState })
         }
@@ -234,8 +234,6 @@ final class ComposeMessageService {
         guard !contains(keyState: .revoked) else {
             throw MessageValidationError.revokedKeyRecipients
         }
-
-        return recipients.flatMap(\.activePubKeys).map(\.armored)
     }
 
     // MARK: - Drafts

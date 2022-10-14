@@ -450,7 +450,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
 
             switch self.state {
             case .empty:
@@ -613,7 +613,7 @@ extension InboxViewController {
                         appContext: appContext,
                         inboxItem: inboxItem,
                         onComposeMessageAction: { [weak self] action in
-                            guard let self = self else { return }
+                            guard let self else { return }
 
                             switch action {
                             case .update(let identifier), .sent(let identifier), .delete(let identifier):
@@ -660,6 +660,11 @@ extension InboxViewController {
     }
 
     private func fetchUpdatedInboxItem(identifier: MessageIdentifier) {
+        guard !inboxInput.isEmpty else {
+            fetchAndRenderEmails(nil)
+            return
+        }
+
         Task {
             guard let inboxItem = try await inboxDataProvider.fetchInboxItem(
                 identifier: identifier,
@@ -684,7 +689,13 @@ extension InboxViewController {
         guard let index = inboxInput.firstIndex(with: identifier) else { return }
 
         inboxInput.remove(at: index)
-        tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+
+        if inboxInput.isEmpty {
+            state = .empty
+            tableNode.reloadData()
+        } else {
+            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        }
     }
 
     // MARK: Operation
