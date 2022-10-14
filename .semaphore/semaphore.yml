@@ -28,6 +28,7 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
+            - rm -rf /var/tmp/derived_data/SourcePackages/artifacts/*
             - xcversion select 14.0
             - sudo xcode-select -s /Applications/Xcode-14.app
             - bundle exec fastlane build
