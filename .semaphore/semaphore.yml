@@ -29,7 +29,7 @@ blocks:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - xcversion select 14.0
-            - xcode-select -s /Applications/Xcode-14.app
+            - sudo xcode-select -s /Applications/Xcode-14.app
             - bundle exec fastlane build
             - bundle exec fastlane test
       epilogue:
