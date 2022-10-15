@@ -10,14 +10,10 @@ import UIKit
 
 // MARK: - Error handling
 extension ComposeViewController {
-    func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false, withDiscard: Bool = false) {
+    func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false) {
         let alert = alertsFactory.makePassPhraseAlert(
             onCancel: { [weak self] in
-                if !withDiscard {
-                    self?.navigationController?.popViewController(animated: true)
-                } else {
-                    self?.handle(error: ComposeMessageError.passPhraseRequired)
-                }
+                self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
                 guard let self = self else { return }
@@ -30,7 +26,7 @@ extension ComposeViewController {
                         )
 
                         if matched {
-                            self.handleMatchedPassphrase(isDraft: isDraft, withDiscard: withDiscard)
+                            self.handleMatchedPassphrase(isDraft: isDraft)
                         } else {
                             self.handle(error: ComposeMessageError.passPhraseNoMatch)
                         }
@@ -43,7 +39,7 @@ extension ComposeViewController {
         present(alert, animated: true, completion: nil)
     }
 
-    private func handleMatchedPassphrase(isDraft: Bool, withDiscard: Bool) {
+    private func handleMatchedPassphrase(isDraft: Bool) {
         guard isDraft else {
             handleSendTap()
             return
@@ -54,11 +50,7 @@ extension ComposeViewController {
             return
         }
 
-        if withDiscard {
-            handleBackButtonTap()
-        } else {
-            saveDraftIfNeeded()
-        }
+        saveDraftIfNeeded()
     }
 
     func handle(error: Error) {
@@ -71,7 +63,7 @@ extension ComposeViewController {
 
         let hideSpinnerAnimationDuration: TimeInterval = 1
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
 
             if self.isMessagePasswordSupported {
                 switch error {

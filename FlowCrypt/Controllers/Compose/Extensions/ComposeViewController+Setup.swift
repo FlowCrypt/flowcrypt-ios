@@ -151,16 +151,11 @@ extension ComposeViewController: NavigationChildController {
 
             switch state {
             case .cancelled:
-                guard let identifier = self.composeMessageService.messageIdentifier else { break }
-                self.handleAction?(.update(identifier))
+                self.handleUpdateAction()
             case .error(let error):
                 self.showToast("draft_error".localizeWithArguments(error.errorMessage))
             case .success:
-                if var messageIdentifier = self.composeMessageService.messageIdentifier {
-                    messageIdentifier.draftMessageId = self.input.type.info?.id
-                    self.handleAction?(.update(messageIdentifier))
-                }
-
+                self.handleUpdateAction()
                 self.showToast("draft_saved".localized, duration: 1.0)
             case .saving:
                 self.showToast("draft_saving".localized, duration: 10.0)
@@ -168,5 +163,11 @@ extension ComposeViewController: NavigationChildController {
         }
 
         navigationController?.popViewController(animated: true)
+    }
+
+    private func handleUpdateAction() {
+        guard var messageIdentifier = composeMessageService.messageIdentifier else { return }
+        messageIdentifier.draftMessageId = input.type.info?.id
+        handleAction?(.update(messageIdentifier))
     }
 }

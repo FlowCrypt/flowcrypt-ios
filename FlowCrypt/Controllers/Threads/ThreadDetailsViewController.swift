@@ -801,11 +801,11 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         case is AttachmentNode:
             handleAttachmentTap(at: indexPath)
         default:
-            let message = input[indexPath.section - 1]
+            guard let message = input[safe: indexPath.section - 1],
+                  message.rawMessage.isDraft
+            else { return }
 
-            if message.rawMessage.isDraft {
-                handleDraftTap(at: indexPath)
-            }
+            handleDraftTap(at: indexPath)
         }
     }
 
