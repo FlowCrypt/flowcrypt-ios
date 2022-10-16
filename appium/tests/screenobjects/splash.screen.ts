@@ -94,8 +94,9 @@ class SplashScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.termsTab);
     await ElementHelper.waitElementVisible(await this.securityTab);
     await ElementHelper.waitElementVisible(await this.continueWithGmailBtn);
-    await ElementHelper.waitElementVisible(await this.continueWithOutlookBtn);
-    await ElementHelper.waitElementVisible(await this.otherEmailProviderButton);
+    // these login methods currently disabled on ios
+    // await ElementHelper.waitElementVisible(await this.continueWithOutlookBtn);
+    // await ElementHelper.waitElementVisible(await this.otherEmailProviderButton);
   }
 
   clickContinueWithGmail = async () => {

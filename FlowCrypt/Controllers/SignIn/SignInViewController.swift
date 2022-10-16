@@ -22,7 +22,7 @@ final class SignInViewController: TableNodeViewController {
     }
 
     enum Parts: Int, CaseIterable {
-        case links, logo, description, gmail, outlook, other
+        case links, logo, description, gmail
     }
 
     private let appContext: AppContext
@@ -91,14 +91,6 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
             case .gmail:
                 return SigninButtonNode(.gmail) { [weak self] in
                     self?.signInWithGmail()
-                }
-            case .outlook:
-                return SigninButtonNode(.outlook) { [weak self] in
-                    self?.signInWithOutlook()
-                }
-            case .other:
-                return SigninButtonNode(.other) { [weak self] in
-                    self?.proceedToOtherProvider()
                 }
             }
         }
