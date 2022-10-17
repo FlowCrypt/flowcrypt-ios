@@ -7,6 +7,7 @@ const SELECTORS = {
   SENT_HEADER: '~aid-navigation-item-sent',
   CREATE_EMAIL_BUTTON: '~aid-compose-message-button',
   INBOX_HEADER: '~aid-navigation-item-inbox',
+  DRAFTS_HEADER: '~aid-navigation-item-drafts',
   SEARCH_BTN: '~aid-search-btn',
   HELP_BTN: '~aid-help-btn',
   SEARCH_FIELD: '~aid-search-all-emails',
@@ -14,7 +15,8 @@ const SELECTORS = {
   // INBOX_ITEM: '~aid-inbox-item',
   // TODO: Couldn't use accessibility identifier because $$ selector returns only visible cells
   INBOX_ITEM: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
-  IDLE_NODE: '~aid-inbox-idle-node'
+  IDLE_NODE: '~aid-inbox-idle-node',
+  EMPTY_CELL_NODE: '~aid-empty-cell-node'
 };
 
 class MailFolderScreen extends BaseScreen {
@@ -42,6 +44,10 @@ class MailFolderScreen extends BaseScreen {
     return $(SELECTORS.INBOX_HEADER)
   }
 
+  get draftsHeader() {
+    return $(SELECTORS.DRAFTS_HEADER)
+  }
+
   get createEmailButton() {
     return $(SELECTORS.CREATE_EMAIL_BUTTON);
   }
@@ -60,6 +66,10 @@ class MailFolderScreen extends BaseScreen {
 
   get idleNode() {
     return $(SELECTORS.IDLE_NODE);
+  }
+
+  get emptyCellNode() {
+    return $(SELECTORS.EMPTY_CELL_NODE);
   }
 
   checkTrashScreen = async () => {
@@ -112,10 +122,10 @@ class MailFolderScreen extends BaseScreen {
     await TouchHelper.scrollDownToElement(await elem);
   };
 
-  getEmailCount = async () => {
+  checkEmailCount = async (expectedCount: number) => {
     await ElementHelper.waitElementInvisible(await this.idleNode);
     await browser.pause(1000);
-    return await this.inboxList.length;
+    expect(await this.inboxList.length).toEqual(expectedCount);
   };
 
   scrollUpToFirstEmail = async () => {
@@ -131,16 +141,21 @@ class MailFolderScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.helpBtn);
   }
 
+  checkDraftsScreen = async () => {
+    await ElementHelper.waitElementVisible(await this.draftsHeader);
+    await ElementHelper.waitElementVisible(await this.searchBtn);
+    await ElementHelper.waitElementVisible(await this.helpBtn);
+  }
+
   checkIfFolderIsEmpty = async () => {
-    const emailCount = await this.getEmailCount();
-    return emailCount === 0;
+    await ElementHelper.waitElementVisible(await this.emptyCellNode);
   }
 
   emptyFolder = async () => {
     await ElementHelper.waitAndClick(await this.emptyFolderBtn);
     await BaseScreen.clickConfirmButton();
     // Give some time to delete messages
-    await browser.pause(3000);
+    await browser.pause(500);
   }
 
   clickSearchButton = async () => {

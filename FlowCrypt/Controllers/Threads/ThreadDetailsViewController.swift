@@ -492,6 +492,9 @@ extension ThreadDetailsViewController {
                         self.node.reloadSections([indexPath.section], with: .automatic)
                     } else {
                         self.node.insertSections([indexPath.section], with: .automatic)
+                        if indexPath.section > 0 {
+                            self.node.reloadSections([indexPath.section - 1], with: .automatic)
+                        }
                     }
                 },
                 completion: { [weak self] _ in

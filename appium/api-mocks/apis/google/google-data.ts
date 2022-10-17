@@ -354,6 +354,10 @@ export class GoogleData {
     DATA[this.acct].messages = DATA[this.acct].messages.filter(m => !ids.includes(m.id));
   }
 
+  public deleteDraft = (id: string) => {
+    DATA[this.acct].messages = DATA[this.acct].messages.filter(m => id !== m.draftId);
+  }
+
   public addDraft = (raw: string, mimeMsg: ParsedMail, id?: string, threadId?: string) => {
     const draftId = id ?? `draft_id_${lousyRandom()}`;
     const msgId = `msg_id_${lousyRandom()}`;
@@ -370,7 +374,7 @@ export class GoogleData {
   };
 
   public getDraft = (id: string): GmailMsg | undefined => {
-    return DATA[this.acct].drafts.find(d => d.id === id);
+    return DATA[this.acct].messages.find(d => d.draftId === id);
   };
 
   public getAttachment = (attachmentId: string) => {

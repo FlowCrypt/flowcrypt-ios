@@ -49,7 +49,8 @@ struct InboxViewDecorator {
             backgroundColor: .backgroundColor,
             title: title + " " + "empty".localized,
             size: size,
-            imageName: imageName
+            imageName: imageName,
+            accessibilityIdentifier: "aid-empty-cell-node"
         )
     }
 

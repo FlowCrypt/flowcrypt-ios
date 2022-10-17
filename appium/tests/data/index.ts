@@ -47,7 +47,8 @@ export const CommonData = {
     thirdDate: 'Feb 08',
   },
   draft: {
-    subject: 'Draft subject',
+    subject1: 'Draft subject',
+    subject2: 'Subject for another draft',
     text1: 'Draft text',
     updatedText1: 'Some new text',
     text2: 'Another draft'

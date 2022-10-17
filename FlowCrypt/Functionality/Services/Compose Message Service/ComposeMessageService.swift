@@ -262,6 +262,8 @@ final class ComposeMessageService {
 
                 if Task.isCancelled { return self.messageIdentifier }
 
+                let threadId = self.messageIdentifier?.threadId?.stringId ?? threadId
+
                 return try await self.draftGateway?.saveDraft(
                     input: MessageGatewayInput(
                         mime: mime,

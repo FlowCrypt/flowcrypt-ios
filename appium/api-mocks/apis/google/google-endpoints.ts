@@ -184,10 +184,6 @@ export const getMockGoogleEndpoints = (
             throw new HttpErr('The thread you are replying to not found', 404);
           }
           const decoded = await Parse.convertBase64ToMimeMsg(body.message.raw);
-          // if (!decoded.text?.startsWith('[flowcrypt:') && !decoded.text?.startsWith('(saving of this draft was interrupted - to decrypt it, send it to yourself)')) {
-          //   throw new Error(`The "flowcrypt" draft prefix was not found in the draft. Instead starts with: ${decoded.text?.substring(0, 100)}`);
-          // }
-
           const draft = data.addDraft(body.message.raw, decoded, undefined, body.message.threadId);
 
           return {
@@ -196,7 +192,7 @@ export const getMockGoogleEndpoints = (
               labelIds: ['DRAFT'],
               threadId: draft.threadId
             }
-          };
+          }
         }
       } else if (isGet(req)) {
         const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
@@ -220,7 +216,7 @@ export const getMockGoogleEndpoints = (
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
         const draft = data.getDraft(id);
         if (draft) {
-          return { id: draft.id, message: draft };
+          return { id: draft.draftId, message: draft };
         }
         throw new HttpErr(`MOCK draft not found for ${acct} (draftId: ${id})`, Status.NOT_FOUND);
       } else if (isPut(req)) {
@@ -232,17 +228,19 @@ export const getMockGoogleEndpoints = (
         const decoded = await Parse.convertBase64ToMimeMsg(raw);
 
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
-        const draft = data.addDraft(raw, decoded, body.id, body.message?.threadId)
+        const draft = data.addDraft(raw, decoded, body.id, body.message?.threadId);
 
-        // const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
         return {
           id: draft.draftId, message: {
             id: draft.id,
             labelIds: ['DRAFT'],
             threadId: draft.threadId
           }
-        };
+        }
       } else if (isDelete(req)) {
+        const id = parseResourceId(req.url!);
+        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        data.deleteDraft(id);
         return {};
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);

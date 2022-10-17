@@ -14,10 +14,11 @@ describe('COMPOSE EMAIL: ', () => {
   it('check drafts functionality', async () => {
     const mockApi = new MockApi();
 
-    const recipient = MockUserList.robot;
+    const recipient = MockUserList.dmitry;
     const recipientWithoutPubKeys = MockUserList.demo;
     const subject = CommonData.simpleEmail.subject;
-    const draftSubject = CommonData.draft.subject;
+    const draftSubject1 = CommonData.draft.subject1;
+    const draftSubject2 = CommonData.draft.subject2;
     const draftText1 = CommonData.draft.text1;
     const updatedDraftText = CommonData.draft.updatedText1;
     const draftText2 = CommonData.draft.text2;
@@ -29,7 +30,7 @@ describe('COMPOSE EMAIL: ', () => {
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
-        [MockUserList.robot.email]: MockUserList.robot.pub!
+        [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
       }
     };
 
@@ -70,6 +71,7 @@ describe('COMPOSE EMAIL: ', () => {
 
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickDraftsButton();
+      await MailFolderScreen.checkDraftsScreen();
 
       // delete draft from compose screen
       await MailFolderScreen.clickOnEmailBySubject(subject);
@@ -80,45 +82,47 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.confirmDelete();
 
       await EmailScreen.clickBackButton();
-      await MenuBarScreen.clickMenuBtn();
-      await MenuBarScreen.clickInboxButton();
+      await MailFolderScreen.checkDraftsScreen();
+      await MailFolderScreen.checkIfFolderIsEmpty();
 
       // compose 2 new drafts and then delete them both
-      await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.composeEmail(recipientWithoutPubKeys.email, draftSubject, draftText1);
+      await NewMessageScreen.composeEmail(recipientWithoutPubKeys.email, draftSubject1, draftText1);
       await NewMessageScreen.clickBackButton();
 
-      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.checkDraftsScreen();
       await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.composeEmail(recipient.email, subject, draftText2);
+      await NewMessageScreen.composeEmail(recipient.email, draftSubject2, draftText2);
       await NewMessageScreen.clickBackButton();
 
-      await MailFolderScreen.clickOnEmailBySubject(subject);
+      await MailFolderScreen.checkDraftsScreen();
+      await MailFolderScreen.checkEmailCount(2);
+
+      await MailFolderScreen.clickOnEmailBySubject(draftSubject1);
       await NewMessageScreen.clickDeleteButton();
       await NewMessageScreen.confirmDelete();
 
-      await MailFolderScreen.checkInboxScreen();
-      await MailFolderScreen.clickOnEmailBySubject(draftSubject);
+      await MailFolderScreen.checkDraftsScreen();
+      await MailFolderScreen.clickOnEmailBySubject(draftSubject2);
       await NewMessageScreen.clickDeleteButton();
       await NewMessageScreen.confirmDelete();
 
-      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.checkDraftsScreen();
       await MailFolderScreen.checkIfFolderIsEmpty();
 
       // compose draft, send it and check if sent message added to 'sent' folder
-      await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
-      await NewMessageScreen.composeEmail(recipient.email, draftSubject, draftText1);
+      await NewMessageScreen.composeEmail(recipient.email, draftSubject1, draftText1);
       await NewMessageScreen.clickBackButton();
-      await MenuBarScreen.clickMenuBtn();
-      await MenuBarScreen.clickDraftsButton();
-      await MailFolderScreen.clickOnEmailBySubject(draftSubject);
+      await MailFolderScreen.checkDraftsScreen();
+      await MailFolderScreen.clickOnEmailBySubject(draftSubject1);
       await NewMessageScreen.clickSendButton();
+      await MailFolderScreen.checkDraftsScreen();
       await MailFolderScreen.checkIfFolderIsEmpty();
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickSentButton();
-      await MailFolderScreen.clickOnEmailBySubject(draftSubject);
+      await MailFolderScreen.checkSentScreen();
+      await MailFolderScreen.clickOnEmailBySubject(draftSubject1);
     });
   });
 });
