@@ -48,13 +48,13 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
     // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self,
+            guard let self,
                   let section = self.sectionsList[safe: indexPath.section]
             else { return ASCellNode() }
 
             switch (self.state, section) {
             case (_, .recipients(.from)):
-                return self.fromCellNode
+                return self.fromCellNode()
             case (_, .recipients(.to)), (_, .recipients(.cc)), (_, .recipients(.bcc)):
                 let recipientType = RecipientType.allCases[indexPath.section]
                 return self.recipientsNode(type: recipientType)
@@ -65,8 +65,8 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             case (.main, .compose):
                 guard let part = ComposePart(rawValue: indexPath.row) else { return ASCellNode() }
                 switch part {
-                case .subject: return self.composeSubjectNode
-                case .text: return self.composeTextNode
+                case .subject: return self.composeSubjectNode ?? ASCellNode()
+                case .text: return self.composeTextNode ?? ASCellNode()
                 case .topDivider, .subjectDivider: return DividerCellNode()
                 }
             case (.main, .attachments):
@@ -77,7 +77,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             case let (.searchEmails(recipients), .searchResults):
                 guard indexPath.row > 0 else { return DividerCellNode() }
                 guard recipients.isNotEmpty else { return self.noSearchResultsNode() }
-                guard let recipient = recipients[safe: indexPath.row-1] else { return ASCellNode() }
+                guard let recipient = recipients[safe: indexPath.row - 1] else { return ASCellNode() }
 
                 if let name = recipient.name {
                     let input = self.decorator.styledRecipientInfo(
@@ -103,7 +103,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
 
             switch section {
             case .searchResults:
-                let recipient = recipients[safe: indexPath.row-1]
+                let recipient = recipients[safe: indexPath.row - 1]
                 handleEndEditingAction(with: recipient?.email, name: recipient?.name, for: recipientType)
             case .contacts:
                 askForContactsPermission()
@@ -119,7 +119,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
-    internal func reload(sections: [Section]) {
+    func reload(sections: [Section]) {
         let indexes = sectionsList.enumerated().compactMap { index, section in
             sections.contains(section) ? index : nil
         }

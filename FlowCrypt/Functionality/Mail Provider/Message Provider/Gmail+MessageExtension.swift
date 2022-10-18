@@ -9,7 +9,7 @@
 import GoogleAPIClientForREST_Gmail
 
 extension Message {
-    init(gmailMessage: GTLRGmail_Message, draftIdentifier: String? = nil) throws {
+    init(gmailMessage: GTLRGmail_Message) throws {
         guard let payload = gmailMessage.payload else {
             throw GmailServiceError.missingMessagePayload
         }
@@ -38,6 +38,7 @@ extension Message {
         var bcc: String?
         var replyTo: String?
         var inReplyTo: String?
+        var rfc822MsgId: String?
 
         for messageHeader in messageHeaders.compactMap({ $0 }) {
             guard let name = messageHeader.name?.lowercased(),
@@ -52,6 +53,7 @@ extension Message {
             case .bcc: bcc = value
             case .replyTo: replyTo = value
             case .inReplyTo: inReplyTo = value
+            case .identifier: rfc822MsgId = value
             default: break
             }
         }
@@ -68,7 +70,7 @@ extension Message {
             body: body,
             attachments: attachments,
             threadId: gmailMessage.threadId,
-            draftIdentifier: draftIdentifier,
+            rfc822MsgId: rfc822MsgId,
             raw: gmailMessage.raw,
             to: to,
             cc: cc,

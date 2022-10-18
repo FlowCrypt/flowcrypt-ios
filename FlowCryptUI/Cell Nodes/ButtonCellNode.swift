@@ -33,7 +33,7 @@ public final class ButtonCellNode: CellNode {
     private let insets: UIEdgeInsets
     private let buttonColor: UIColor?
 
-    public var isButtonEnabled: Bool = true {
+    public var isButtonEnabled = true {
         didSet {
             button.isEnabled = isButtonEnabled
             let alpha: CGFloat = isButtonEnabled ? 1 : 0.5
@@ -53,7 +53,7 @@ public final class ButtonCellNode: CellNode {
         button.setAttributedTitle(input.title, for: .normal)
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
             child: button

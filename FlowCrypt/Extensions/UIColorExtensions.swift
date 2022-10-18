@@ -72,9 +72,9 @@ public extension UIColor {
 extension UIColor {
     convenience init(r: Int, g: Int, b: Int, alpha: CGFloat = 1) {
         self.init(
-            red: CGFloat(r)/CGFloat(255.0),
-            green: CGFloat(g)/CGFloat(255.0),
-            blue: CGFloat(b)/CGFloat(255.0),
+            red: CGFloat(r) / CGFloat(255.0),
+            green: CGFloat(g) / CGFloat(255.0),
+            blue: CGFloat(b) / CGFloat(255.0),
             alpha: alpha
         )
     }

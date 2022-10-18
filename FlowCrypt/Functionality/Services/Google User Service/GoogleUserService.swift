@@ -9,7 +9,6 @@
 import AppAuth
 import Combine
 import FlowCryptCommon
-import Foundation
 import GTMAppAuth
 import RealmSwift
 import GoogleAPIClientForREST_Oauth2
@@ -30,7 +29,7 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
         switch self {
         case .cancelledAuthorization:
             return "google_user_service_error_auth_cancelled".localized
-        case .wrongAccount(let signedAccount, let currentAccount):
+        case let .wrongAccount(signedAccount, currentAccount):
             return "google_user_service_error_wrong_account".localizeWithArguments(
                 signedAccount, currentAccount, currentAccount
             )
@@ -105,7 +104,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         static let index = "GTMAppAuthAuthorizerIndex"
     }
 
-    internal lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
+    lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
     private var tokenResponse: OIDTokenResponse? {
         authorization?.authState.lastTokenResponse
@@ -155,7 +154,7 @@ extension GoogleUserService: UserServiceType {
                         return continuation.resume(throwing: error)
                     }
                 }
-                Task<Void, Never> {
+                Task {
                     do {
                         return continuation.resume(
                             returning: try await self.handleGoogleAuthStateResult(
@@ -275,7 +274,7 @@ extension GoogleUserService {
     private func fetchGoogleUser(
         with authorization: GTMAppAuthFetcherAuthorization
     ) async throws -> GTLROauth2_Userinfo {
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLROauth2_Userinfo, Error>) in
+        return try await withCheckedThrowingContinuation { continuation in
             let query = GTLROauth2Query_UserinfoGet.query()
             let authService = GTLROauth2Service()
             if Bundle.shouldUseMockGmailApi {
@@ -326,7 +325,7 @@ extension GoogleUserService {
             .replacingOccurrences(of: "-", with: "+")
             .replacingOccurrences(of: "_", with: "/")
 
-        while decodedString.utf16.count % 4 != 0 {
+        while !decodedString.utf16.count.isMultiple(of: 4) {
             decodedString += "="
         }
 

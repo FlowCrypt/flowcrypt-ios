@@ -45,7 +45,7 @@ public final class SigninButtonNode: CellNode {
         onTap?()
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: .deviceSpecificInsets(
                 top: 16,

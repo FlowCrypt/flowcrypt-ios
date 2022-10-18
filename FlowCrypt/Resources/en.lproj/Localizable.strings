@@ -49,7 +49,7 @@
 "message_compose_secure" = "Compose Secure Message";
 "message_unknown_sender" = "(unknown sender)";
 "message_no_recipients" = "(no recipients)";
-"message_missing_subject" = "No subject";
+"message_missing_subject" = "(no subject)";
 "message_attachment_saved_successfully_title" = "Attachment Saved";
 "message_attachment_saved_successfully_message" = "Your attachment was saved in Files. Would you like to open it?";
 "message_attachment_saved_with_error" = "Attachment could not be saved. %@";
@@ -69,6 +69,7 @@
 "message_decrypt_error" = "decrypt error";
 "message_mark_read_error" = "Could not mark message as read: %@";
 "message_reply_all" = "Reply all";
+"message_not_found_in_folder" = "Message not found in folder: ";
 
 // ERROR
 "error_fetch_folders" = "Could not fetch folders";
@@ -129,7 +130,7 @@
 "compose_password_modal_message" = "The recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)\n\nPassword should include:\n- one uppercase\n- one lowercase\n- one number\n- one special character eg &/#\"-'_%-@,;:!*()\n- min 8 characters length";
 "compose_error" = "Could not compose message";
 "compose_reply_successful" = "Reply successfully sent";
-"compose_quote_from" = "On %@ at %@ %@ wrote:"; // Date, time, sender
+"compose_quote_from" = "On %@, at %@, %@ wrote:"; // Date, time, sender
 "compose_forward_successful" = "Message forwarded successfully";
 "compose_encrypted_sent" = "Encrypted message sent";
 "compose_message_sent" = "Message sent";
@@ -152,6 +153,13 @@
 "compose_recipient_edit" = "Edit";
 "compose_recipient_remove" = "Remove";
 
+// Drafts
+"draft" = "Draft";
+"draft_saving" = "Saving draft...";
+"draft_saved" = "Draft saved";
+"draft_deleted" = "Draft deleted";
+"draft_error" = "Failed to save draft: %@";
+
 // Folders
 "folder_all_mail" = "All Mail";
 "folder_all_inbox" = "Inbox";
@@ -162,7 +170,7 @@
 "folder_SENT" = "Sent";
 "folder_IMPORTANT" = "Important";
 "folder_TRASH" = "Trash";
-"folder_DRAFT" = "Draft";
+"folder_DRAFT" = "Drafts";
 "folder_SPAM" = "Spam";
 "folder_STARRED" = "Starred";
 "folder_UNREAD" = "Unread";
@@ -402,6 +410,8 @@
 
 "message_permanently_delete" = "You're about to permanently delete a message";
 "message_permanently_delete_title" = "Are you sure?";
+"draft_delete_confirmation" = "Delete draft?";
+
 
 "contacts_fingerprint" = "Fingerprint:";
 "contacts_created" = "Created:";

@@ -162,17 +162,19 @@ extension SetupImapViewController {
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillShowNotification,
             object: nil,
-            queue: .main) { [weak self] notification in
-                guard let self = self else { return }
-                self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
-            }
+            queue: .main
+        ) { [weak self] notification in
+            guard let self = self else { return }
+            self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
+        }
 
         NotificationCenter.default.addObserver(
             forName: UIResponder.keyboardWillHideNotification,
             object: nil,
-            queue: .main) { [weak self] _ in
-                self?.adjustForKeyboard(height: 0)
-            }
+            queue: .main
+        ) { [weak self] _ in
+            self?.adjustForKeyboard(height: 0)
+        }
     }
 
     private func adjustForKeyboard(height: CGFloat) {
@@ -183,10 +185,7 @@ extension SetupImapViewController {
     private func update(for newState: State) {
         state = newState
 
-        node.reloadSections(
-            IndexSet(integer: 3),
-            with: .fade
-        )
+        node.reloadSections([3], with: .fade)
 
         node.scrollToRow(
             at: IndexPath(row: 2, section: 3),
@@ -290,14 +289,14 @@ extension SetupImapViewController {
 
     private func reloadImapSection() {
         node.reloadSections(
-            IndexSet(integer: Section.imap(.port).section),
+            [Section.imap(.port).section],
             with: .none
         )
     }
 
     private func reloadSmtpSection() {
         node.reloadSections(
-            IndexSet(integer: Section.smtp(.port).section),
+            [Section.smtp(.port).section],
             with: .none
         )
     }

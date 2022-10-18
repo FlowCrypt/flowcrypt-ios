@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import GoogleAPIClientForREST_Gmail
 
 struct MessageGatewayInput {
     let mime: Data
@@ -15,10 +14,12 @@ struct MessageGatewayInput {
 }
 
 protocol MessageGateway {
-    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws
+    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws -> Identifier
 }
 
 protocol DraftGateway {
-    func saveDraft(input: MessageGatewayInput, draft: GTLRGmail_Draft?) async throws -> GTLRGmail_Draft
-    func deleteDraft(with identifier: String) async
+    func fetchDraft(id: Identifier) async throws -> MessageIdentifier?
+    func fetchDraftIdentifier(for messageId: Identifier) async throws -> MessageIdentifier?
+    func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageIdentifier
+    func deleteDraft(with identifier: Identifier) async throws
 }

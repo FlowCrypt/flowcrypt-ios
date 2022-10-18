@@ -11,7 +11,7 @@ import GTMSessionFetcherCore
 
 extension GmailService: MessageProvider {
 
-    func fetchMsg(
+    func fetchMessage(
         id: Identifier,
         folder: String
     ) async throws -> Message {
@@ -20,7 +20,7 @@ extension GmailService: MessageProvider {
         }
 
         let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatFull)
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Message, Error>) in
+        return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
@@ -40,13 +40,13 @@ extension GmailService: MessageProvider {
         }
     }
 
-    func fetchRawMsg(id: Identifier) async throws -> String {
+    func fetchRawMessage(id: Identifier) async throws -> String {
         guard let identifier = id.stringId else {
             throw GmailServiceError.missingMessageInfo("id")
         }
 
         let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatRaw)
-        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
+        return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
@@ -85,7 +85,7 @@ extension GmailService: MessageProvider {
         let fetcher = createAttachmentFetcher(identifier: identifier, messageId: messageIdentifier)
         if let estimatedSize = estimatedSize {
             fetcher.receivedProgressBlock = { _, received in
-                let progress = min(Float(received)/estimatedSize, 1)
+                let progress = min(Float(received) / estimatedSize, 1)
                 progressHandler?(progress)
             }
         }

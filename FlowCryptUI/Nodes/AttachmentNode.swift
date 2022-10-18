@@ -68,7 +68,7 @@ public final class AttachmentNode: CellNode {
         onDeleteTap?()
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let verticalStack = ASStackLayoutSpec.vertical()
         verticalStack.spacing = 3
         verticalStack.style.flexShrink = 1.0

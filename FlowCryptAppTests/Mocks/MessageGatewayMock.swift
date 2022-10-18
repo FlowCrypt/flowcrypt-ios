@@ -7,13 +7,13 @@
 //
 
 @testable import FlowCrypt
-import Foundation
 
 class MessageGatewayMock: MessageGateway {
-    var sendMailResult: ((Data) -> (Result<Void, Error>))!
-    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws {
+    var sendMailResult: ((Data) -> (Result<Identifier, Error>))!
+    func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws -> Identifier {
         if case .failure(let error) = sendMailResult(input.mime) {
             throw error
         }
+        return .random
     }
 }

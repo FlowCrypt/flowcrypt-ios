@@ -23,7 +23,7 @@ public final class SignInImageNode: CellNode {
         setNeedsLayout()
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize.height = imageHeight
 
         return ASInsetLayoutSpec(

@@ -71,7 +71,7 @@ public final class TextViewCellNode: CellNode {
         if shouldAnimate { action?(.heightChanged(textView.textView)) }
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         textView.style.preferredSize.height = height
 
         return ASInsetLayoutSpec(
@@ -81,7 +81,7 @@ public final class TextViewCellNode: CellNode {
     }
 
     @discardableResult
-    public override func becomeFirstResponder() -> Bool {
+    override public func becomeFirstResponder() -> Bool {
         DispatchQueue.main.async {
             _ = self.textView.textView.becomeFirstResponder()
         }

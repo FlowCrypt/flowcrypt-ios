@@ -6,7 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 import MailCore
 
 extension Imap {
@@ -85,7 +84,7 @@ extension Imap {
         _ imapSess: MCOIMAPSession,
         _ executor: @escaping (MCOIMAPSession, @escaping (Error?) -> Void) -> Void
     ) async throws {
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             executor(imapSess) { error in
                 if let error = error {
                     return continuation.resume(throwing: error)

@@ -107,7 +107,7 @@ struct ComposeViewDecorator {
         guard let info = input.type.info else { return NSAttributedString(string: "") }
 
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
+        dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .none
 
         let date = dateFormatter.string(from: info.sentDate)
@@ -116,30 +116,32 @@ struct ComposeViewDecorator {
         dateFormatter.timeStyle = .short
         let time = dateFormatter.string(from: info.sentDate)
 
-        let from = info.sender?.email ?? "unknown sender"
+        let from = info.sender?.formatted ?? "unknown sender"
 
-        let text: String = "\n\n"
+        let text = "\n\n"
             + "compose_quote_from".localizeWithArguments(date, time, from)
             + "\n"
 
-        let message = " > " + info.message.replacingOccurrences(of: "\n", with: "\n > ")
+        let message = " > " + info.text.replacingOccurrences(of: "\n", with: "\n > ")
 
         return (text + message).attributed(.regular(17))
     }
 
-    func styledEmptyMessagePasswordInput() -> MessagePasswordCellNode.Input {
-        messagePasswordInput(
+    func styledEmptyMessagePasswordInput() -> MessageActionCellNode.Input {
+        messageActionInput(
             text: "compose_password_placeholder".localized,
             color: .warningColor,
-            imageName: "lock"
+            imageName: "lock",
+            accessibilityIdentifier: "aid-message-password-cell"
         )
     }
 
-    func styledFilledMessagePasswordInput() -> MessagePasswordCellNode.Input {
-        messagePasswordInput(
+    func styledFilledMessagePasswordInput() -> MessageActionCellNode.Input {
+        messageActionInput(
             text: "compose_password_set_message".localized,
             color: .main,
-            imageName: "checkmark.circle"
+            imageName: "checkmark.circle",
+            accessibilityIdentifier: "aid-message-password-cell"
         )
     }
 
@@ -161,7 +163,7 @@ struct ComposeViewDecorator {
         type: RecipientType,
         completion: (() -> Void)? = nil
     ) {
-        let currentHeight = self.recipientsNodeHeight(type: type)
+        let currentHeight = recipientsNodeHeight(type: type)
 
         guard currentHeight != layoutHeight, layoutHeight > 0 else {
             return
@@ -169,26 +171,28 @@ struct ComposeViewDecorator {
 
         switch type {
         case .to:
-            self.calculatedRecipientsToPartHeight = layoutHeight
+            calculatedRecipientsToPartHeight = layoutHeight
         case .cc:
-            self.calculatedRecipientsCcPartHeight = layoutHeight
+            calculatedRecipientsCcPartHeight = layoutHeight
         case .bcc:
-            self.calculatedRecipientsBccPartHeight = layoutHeight
+            calculatedRecipientsBccPartHeight = layoutHeight
         default:
             break
         }
         completion?()
     }
 
-    private func messagePasswordInput(
+    private func messageActionInput(
         text: String,
         color: UIColor,
-        imageName: String
-    ) -> MessagePasswordCellNode.Input {
+        imageName: String,
+        accessibilityIdentifier: String?
+    ) -> MessageActionCellNode.Input {
         .init(
             text: text.attributed(.regular(14), color: color),
             color: color,
-            image: UIImage(systemName: imageName)?.tinted(color)
+            image: UIImage(systemName: imageName)?.tinted(color),
+            accessibilityIdentifier: accessibilityIdentifier
         )
     }
 
@@ -244,7 +248,7 @@ extension ComposeViewDecorator {
             backgroundColor: .titleNodeBackgroundColor,
             borderColor: .borderColor,
             textColor: .mainTextColor,
-            image: #imageLiteral(resourceName: "retry"),
+            image: UIImage(named: "retry"),
             accessibilityIdentifier: "gray"
         )
     }
@@ -314,7 +318,7 @@ extension ComposeViewDecorator {
             backgroundColor: .red,
             borderColor: .borderColor,
             textColor: .white,
-            image: #imageLiteral(resourceName: "retry"),
+            image: UIImage(named: "retry"),
             accessibilityIdentifier: "red"
         )
     }

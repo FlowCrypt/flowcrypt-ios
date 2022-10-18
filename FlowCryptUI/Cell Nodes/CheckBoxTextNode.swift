@@ -51,7 +51,7 @@ public final class CheckBoxTextNode: CellNode {
         }
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         checkBox.style.preferredSize = input.preferredSize
 
         if input.subtitle != nil {

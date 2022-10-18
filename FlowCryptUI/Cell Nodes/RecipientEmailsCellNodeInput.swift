@@ -9,8 +9,8 @@
 import UIKit
 
 // MARK: Input
-extension RecipientEmailsCellNode {
-    public struct Input {
+public extension RecipientEmailsCellNode {
+    struct Input {
         public struct StateContext: Equatable {
             let backgroundColor, borderColor, textColor: UIColor
             let image: UIImage?
@@ -55,11 +55,11 @@ extension RecipientEmailsCellNode {
                 }
             }
 
-            public var backgroundColor: UIColor {
+            var backgroundColor: UIColor {
                 stateContext.backgroundColor
             }
 
-            public var borderColor: UIColor {
+            var borderColor: UIColor {
                 stateContext.borderColor
             }
 
@@ -67,11 +67,11 @@ extension RecipientEmailsCellNode {
                 stateContext.textColor
             }
 
-            public var stateImage: UIImage? {
+            var stateImage: UIImage? {
                 stateContext.image
             }
 
-            public var accessibilityIdentifier: String? {
+            var accessibilityIdentifier: String? {
                 stateContext.accessibilityIdentifier
             }
 
@@ -96,9 +96,9 @@ extension RecipientEmailsCellNode {
             }
         }
 
-        public let email: NSAttributedString
-        public let type: String
-        public var state: State
+        let email: NSAttributedString
+        let type: String
+        var state: State
 
         public init(
             email: NSAttributedString,

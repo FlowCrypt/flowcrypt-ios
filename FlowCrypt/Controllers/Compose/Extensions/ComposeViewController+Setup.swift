@@ -11,30 +11,35 @@ import FlowCryptUI
 
 // MARK: - Setup UI
 extension ComposeViewController {
-    internal func setupNavigationBar() {
+    func setupNavigationBar() {
+        let deleteButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "trash"),
+            accessibilityId: "aid-compose-delete"
+        ) { [weak self] in
+            self?.handleTrashTap()
+        }
+        let helpButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "questionmark.circle")
+        ) { [weak self] in
+            self?.handleInfoTap()
+        }
+        let attachmentButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "paperclip")
+        ) { [weak self] in
+            self?.handleAttachTap()
+        }
+        let sendButton = NavigationBarItemsView.Input(
+            image: UIImage(systemName: "paperplane"),
+            accessibilityId: "aid-compose-send"
+        ) { [weak self] in
+            self?.handleSendTap()
+        }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
-            with: [
-                NavigationBarItemsView.Input(
-                    image: UIImage(systemName: "questionmark.circle")
-                ) { [weak self] in
-                    self?.handleInfoTap()
-                },
-                NavigationBarItemsView.Input(
-                    image: UIImage(systemName: "paperclip")
-                ) { [weak self] in
-                    self?.handleAttachTap()
-                },
-                NavigationBarItemsView.Input(
-                    image: UIImage(systemName: "paperplane"),
-                    accessibilityId: "aid-compose-send"
-                ) { [weak self] in
-                    self?.handleSendTap()
-                }
-            ]
+            with: [deleteButton, helpButton, attachmentButton, sendButton]
         )
     }
 
-    internal func setupUI() {
+    func setupUI() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTableTap))
 
         node.do {
@@ -49,36 +54,80 @@ extension ComposeViewController {
         updateView(newState: .main)
     }
 
-    internal func setupQuote() {
-        guard input.isQuote else { return }
-
-        for recipient in input.quoteRecipients {
-            evaluateMessage(recipient: recipient, type: .to)
+    func fillDataFromInput() {
+        guard let info = input.type.info else {
+            didFinishSetup = true
+            return
         }
 
-        for recipient in input.quoteCCRecipients {
-            evaluateMessage(recipient: recipient, type: .cc)
+        if case .draft = input.type {
+            composeMessageService.fetchMessageIdentifier(info: info)
         }
 
-        if input.quoteCCRecipients.isNotEmpty {
+        contextToSend.subject = info.subject
+        addRecipients(from: info)
+
+        if input.isPgp {
+            decodeDraft(from: info)
+        } else {
+            if case .draft = input.type {
+                contextToSend.message = input.text
+            }
+            reload(sections: Section.recipientsSections)
+            didFinishSetup = true
+        }
+    }
+
+    private func addRecipients(from info: ComposeMessageInput.MessageQuoteInfo) {
+        guard contextToSend.recipients.isEmpty else { return }
+
+        for recipient in info.recipients {
+            add(recipient: recipient, type: .to)
+        }
+
+        for recipient in info.ccRecipients {
+            add(recipient: recipient, type: .cc)
+        }
+
+        for recipient in info.bccRecipients {
+            add(recipient: recipient, type: .bcc)
+        }
+
+        if info.ccRecipients.isNotEmpty || info.bccRecipients.isNotEmpty {
             shouldShowAllRecipientTypes.toggle()
         }
     }
 
-    internal func setupNodes() {
-        setupTextNode()
-        setupSubjectNode()
-        setupFromNode()
+    private func decodeDraft(from info: ComposeMessageInput.MessageQuoteInfo) {
+        Task {
+            do {
+                let decrypted = try await messageService.decrypt(
+                    text: info.text,
+                    userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                )
+                contextToSend.message = decrypted
+                didFinishSetup = true
+                reload(sections: Section.recipientsSections + [.compose])
+            } catch {
+                if case .missingPassPhrase(let keyPair) = error as? MessageServiceError, let keyPair = keyPair {
+                    requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
+                    return
+                } else {
+                    handle(error: error)
+                }
+            }
+        }
     }
 }
 
 // MARK: - Search
 extension ComposeViewController {
-    internal func setupSearch() {
+    func setupSearch() {
         search
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
             .removeDuplicates()
-            .map { [weak self] query -> String in
+            .map { [weak self] query in
                 if query.isEmpty {
                     self?.updateView(newState: .main)
                 }
@@ -89,5 +138,36 @@ extension ComposeViewController {
                 self?.searchEmail(with: $0)
             })
             .store(in: &cancellable)
+    }
+}
+
+// MARK: - NavigationChildController
+extension ComposeViewController: NavigationChildController {
+    func handleBackButtonTap() {
+        stopDraftTimer(withSave: false)
+
+        saveDraftIfNeeded { [weak self] state in
+            guard let self else { return }
+
+            switch state {
+            case .cancelled:
+                self.handleUpdateAction()
+            case .error(let error):
+                self.showToast("draft_error".localizeWithArguments(error.errorMessage))
+            case .success:
+                self.handleUpdateAction()
+                self.showToast("draft_saved".localized, duration: 1.0)
+            case .saving:
+                self.showToast("draft_saving".localized, duration: 10.0)
+            }
+        }
+
+        navigationController?.popViewController(animated: true)
+    }
+
+    private func handleUpdateAction() {
+        guard var messageIdentifier = composeMessageService.messageIdentifier else { return }
+        messageIdentifier.draftMessageId = input.type.info?.id
+        handleAction?(.update(messageIdentifier))
     }
 }

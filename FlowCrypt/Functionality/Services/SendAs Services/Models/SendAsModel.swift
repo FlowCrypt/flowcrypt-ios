@@ -14,8 +14,8 @@ struct SendAsModel {
     let isDefault: Bool
     let verificationStatus: SendAsVerificationStatus
 
-    var descriptoin: String {
-        if displayName == "" {
+    var description: String {
+        if displayName.isEmpty {
             return sendAsEmail
         }
         return "\(sendAsEmail) (\(displayName))"

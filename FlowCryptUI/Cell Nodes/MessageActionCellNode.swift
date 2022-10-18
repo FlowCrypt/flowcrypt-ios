@@ -1,5 +1,5 @@
 //
-//  MessagePasswordCellNode.swift
+//  MessageActionCellNode.swift
 //  FlowCryptUI
 //
 //  Created by Roma Sosnovsky on 15/12/21
@@ -9,30 +9,34 @@
 import AsyncDisplayKit
 import UIKit
 
-public final class MessagePasswordCellNode: CellNode {
+public final class MessageActionCellNode: CellNode {
     public struct Input {
         let text: NSAttributedString?
         let color: UIColor
         let image: UIImage?
+        let accessibilityIdentifier: String?
 
-        public init(text: NSAttributedString?,
-                    color: UIColor,
-                    image: UIImage?) {
+        public init(
+            text: NSAttributedString?,
+            color: UIColor,
+            image: UIImage?,
+            accessibilityIdentifier: String?
+        ) {
             self.text = text
             self.color = color
             self.image = image
+            self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
 
     private let input: Input
 
     private let buttonNode = ASButtonNode()
-    private let setMessagePassword: (() -> Void)?
+    private let action: (() -> Void)?
 
-    public init(input: Input,
-                setMessagePassword: (() -> Void)?) {
+    public init(input: Input, action: (() -> Void)?) {
         self.input = input
-        self.setMessagePassword = setMessagePassword
+        self.action = action
 
         super.init()
 
@@ -47,34 +51,23 @@ public final class MessagePasswordCellNode: CellNode {
         buttonNode.borderWidth = 1
         buttonNode.cornerRadius = 6
         buttonNode.contentHorizontalAlignment = .left
-        buttonNode.accessibilityIdentifier = "aid-message-password-cell"
+        buttonNode.accessibilityIdentifier = input.accessibilityIdentifier
 
         buttonNode.setAttributedTitle(input.text, for: .normal)
         buttonNode.setImage(input.image, for: .normal)
         buttonNode.addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        buttonNode.style.flexShrink = 1.0
-
-        let spacer = ASLayoutSpec()
-        spacer.style.flexGrow = 1.0
-
-        let spec = ASStackLayoutSpec(
-            direction: .horizontal,
-            spacing: 4,
-            justifyContent: .start,
-            alignItems: .start,
-            children: [buttonNode, spacer]
-        )
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+        buttonNode.style.flexGrow = 1.0
 
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8),
-            child: spec
+            child: buttonNode
         )
     }
 
     @objc private func onButtonTap() {
-        setMessagePassword?()
+        action?()
     }
 }

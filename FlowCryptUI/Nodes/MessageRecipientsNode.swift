@@ -95,7 +95,7 @@ public final class MessageRecipientsNode: ASDisplayNode {
         return node
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let recipientsNodes: [ASStackLayoutSpec] = RecipientType.allCases.compactMap { type in
             let recipients: [MessageRecipient]
             switch type {

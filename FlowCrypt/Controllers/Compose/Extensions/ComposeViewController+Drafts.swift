@@ -8,53 +8,78 @@
 
 // MARK: - Drafts
 extension ComposeViewController {
-    @objc internal func startDraftTimer() {
-        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] _ in
+    @objc func startDraftTimer(withFire: Bool = false) {
+        guard saveDraftTimer == nil else { return }
+
+        saveDraftTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
             self?.saveDraftIfNeeded()
         }
-        saveDraftTimer?.fire()
+
+        if withFire {
+            saveDraftTimer?.fire()
+        }
     }
 
-    @objc internal func stopDraftTimer() {
+    @objc func stopDraftTimer(withSave: Bool = true) {
+        guard saveDraftTimer != nil else { return }
+
         saveDraftTimer?.invalidate()
         saveDraftTimer = nil
-        saveDraftIfNeeded()
+
+        if withSave {
+            saveDraftIfNeeded()
+        }
     }
 
-    private func shouldSaveDraft() -> Bool {
-        // https://github.com/FlowCrypt/flowcrypt-ios/issues/975
-        return false
-//        let newDraft = ComposedDraft(email: email, input: input, contextToSend: contextToSend)
-//        guard let oldDraft = composedLatestDraft else {
-//            composedLatestDraft = newDraft
-//            return true
-//        }
-//        let result = newDraft != oldDraft
-//        composedLatestDraft = newDraft
-//        return result
+    private func createDraft() -> ComposedDraft? {
+        let newDraft = ComposedDraft(
+            input: input,
+            contextToSend: contextToSend
+        )
+
+        guard let existingDraft = composedLatestDraft else {
+            composedLatestDraft = newDraft
+            return nil
+        }
+
+        return newDraft != existingDraft ? newDraft : nil
     }
 
-    internal func saveDraftIfNeeded() {
-        guard shouldSaveDraft() else { return }
+    func saveDraftIfNeeded(handler: ((DraftSaveState) -> Void)? = nil) {
+        guard let draft = createDraft() else {
+            handler?(.cancelled)
+            return
+        }
+
+        handler?(.saving(draft))
+
         Task {
             do {
+                let shouldEncrypt = draft.input.type.info?.shouldEncrypt == true ||
+                    contextToSend.hasRecipientsWithActivePubKey
+
                 let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
-                    senderEmail: selectedFromEmail,
-                    input: input,
-                    contextToSend: contextToSend,
-                    includeAttachments: false
+                    input: draft.input,
+                    contextToSend: draft.contextToSend,
+                    isDraft: true,
+                    withPubKeys: shouldEncrypt
                 )
-                try await composeMessageService.encryptAndSaveDraft(message: sendableMsg, threadId: input.threadId)
+
+                try await composeMessageService.saveDraft(
+                    message: sendableMsg,
+                    threadId: draft.input.threadId,
+                    shouldEncrypt: shouldEncrypt
+                )
+
+                composedLatestDraft = draft
+                handler?(.success(sendableMsg))
             } catch {
-                if case .promptUserToEnterPassPhraseForSigningKey(let keyPair) = error as? ComposeMessageError {
-                    requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
-                }
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
-                    // todo - should make sure that the toast doesn't hide the keyboard. Also should be toasted on top when keyboard open?
-                    showToast("Error saving draft: \(error.errorMessage)")
+                    showToast("draft_error".localizeWithArguments(error.errorMessage), position: .top)
                 }
+                handler?(.error(error))
             }
         }
     }

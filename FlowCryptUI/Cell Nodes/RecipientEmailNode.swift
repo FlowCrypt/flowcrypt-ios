@@ -29,7 +29,7 @@ final class RecipientEmailNode: CellNode {
     let input: Input
     let imageNode = ASImageNode()
 
-    public var onTap: ((Tap) -> Void)?
+    var onTap: ((Tap) -> Void)?
 
     init(input: Input, index: Int) {
         self.input = input
@@ -47,7 +47,7 @@ final class RecipientEmailNode: CellNode {
         titleNode.clipsToBounds = true
         titleNode.borderWidth = 1
         titleNode.borderColor = input.recipient.state.borderColor.cgColor
-        titleNode.textContainerInset = RecipientEmailNode.Constants.titleInsets
+        titleNode.textContainerInset = Self.Constants.titleInsets
 
         imageNode.image = input.recipient.state.stateImage
         imageNode.alpha = 0

@@ -12,31 +12,27 @@ import Foundation
 extension Imap: MessagesThreadOperationsProvider {
     private var error: Error { AppErr.general("Doesn't support yet") }
 
-    func mark(thread: MessageThread, asRead: Bool, in folder: String) async throws {
+    func delete(id: String?) async throws {
         throw error
     }
 
-    func delete(thread: MessageThread) async throws {
+    func moveThreadToTrash(id: String?, labels: Set<MessageLabel>) async throws {
         throw error
     }
 
-    func moveThreadToTrash(thread: MessageThread) async throws {
+    func moveThreadToInbox(id: String?) async throws {
         throw error
     }
 
-    func moveThreadToInbox(thread: MessageThread) async throws {
+    func markThreadAsUnread(id: String?, folder: String) async throws {
         throw error
     }
 
-    func markThreadAsUnread(thread: MessageThread, folder: String) async throws {
+    func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws {
         throw error
     }
 
-    func markThreadAsRead(thread: MessageThread, folder: String) async throws {
-        throw error
-    }
-
-    func archive(thread: MessageThread, in folder: String) async throws {
+    func archive(messagesIds: [Identifier], in folder: String) async throws {
         throw error
     }
 }

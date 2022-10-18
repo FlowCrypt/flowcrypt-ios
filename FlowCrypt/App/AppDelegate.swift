@@ -4,9 +4,7 @@
 //
 
 import AppAuth
-import UIKit
 import GTMAppAuth
-import FlowCryptCommon
 import Combine
 
 @main

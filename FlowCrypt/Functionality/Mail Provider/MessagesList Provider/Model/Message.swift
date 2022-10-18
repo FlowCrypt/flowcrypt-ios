@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 import GoogleAPIClientForREST_Gmail
 
 struct Message: Hashable {
@@ -23,13 +22,15 @@ struct Message: Hashable {
     let attachmentIds: [String]
     var attachments: [MessageAttachment]
     let threadId: String?
-    let draftIdentifier: String?
+    let rfc822MsgId: String?
+    var draftId: Identifier?
     var raw: String?
     let body: MessageBody
     let inReplyTo: String?
+    let replyToMsgId: String?
     private(set) var labels: [MessageLabel]
 
-    var isMessageRead: Bool {
+    var isRead: Bool {
         // imap
         if labels.contains(.none) {
             return false
@@ -41,12 +42,14 @@ struct Message: Hashable {
         return true
     }
 
+    var isDraft: Bool { labels.contains(.draft) }
+
     var isPgp: Bool {
-        (body.text.contains("-----BEGIN PGP ") && body.text.contains("-----END PGP ")) || hasSignatureAttachment
+        body.text.isPgp || hasSignatureAttachment
     }
 
     var hasSignatureAttachment: Bool {
-        attachments.first(where: { $0.type == "application/pgp-signature" }) != nil
+        attachments.contains(where: { $0.type == "application/pgp-signature" })
     }
 
     init(
@@ -60,13 +63,15 @@ struct Message: Hashable {
         body: MessageBody,
         attachments: [MessageAttachment] = [],
         threadId: String? = nil,
-        draftIdentifier: String? = nil,
+        rfc822MsgId: String? = nil,
+        draftId: Identifier? = nil,
         raw: String? = nil,
         to: String? = nil,
         cc: String? = nil,
         bcc: String? = nil,
         replyTo: String? = nil,
-        inReplyTo: String? = nil
+        inReplyTo: String? = nil,
+        replyToMsgId: String? = nil
     ) {
         self.identifier = identifier
         self.date = date
@@ -78,13 +83,15 @@ struct Message: Hashable {
         self.attachments = attachments
         self.body = body
         self.threadId = threadId
-        self.draftIdentifier = draftIdentifier
+        self.rfc822MsgId = rfc822MsgId
+        self.draftId = draftId
         self.raw = raw
-        self.to = Message.parseRecipients(to)
-        self.cc = Message.parseRecipients(cc)
-        self.bcc = Message.parseRecipients(bcc)
-        self.replyTo = Message.parseRecipients(replyTo)
+        self.to = Self.parseRecipients(to)
+        self.cc = Self.parseRecipients(cc)
+        self.bcc = Self.parseRecipients(bcc)
+        self.replyTo = Self.parseRecipients(replyTo)
         self.inReplyTo = inReplyTo
+        self.replyToMsgId = replyToMsgId
     }
 }
 

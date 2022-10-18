@@ -8,8 +8,8 @@
 
 import Foundation
 
-extension Optional {
-    public func ifNotNil<U>(_ transform: (Wrapped) throws -> U) rethrows -> U? {
+public extension Optional {
+    func ifNotNil<U>(_ transform: (Wrapped) throws -> U) rethrows -> U? {
         switch self {
         case .some(let value):
           return .some(try transform(value))
@@ -19,8 +19,8 @@ extension Optional {
     }
 }
 
-extension Optional where Wrapped: Collection {
-    public var isEmptyOrNil: Bool {
+public extension Optional where Wrapped: Collection {
+    var isEmptyOrNil: Bool {
         self?.isEmpty ?? true
     }
 }

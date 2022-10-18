@@ -9,6 +9,10 @@ public extension String {
         !trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    var isPgp: Bool {
+        contains("-----BEGIN PGP ") && contains("-----END PGP ")
+    }
+
     var trimLeadingSlash: String {
         if isNotEmpty, self[startIndex] == "/" {
             return String(dropFirst())
@@ -33,7 +37,7 @@ public extension String {
     ) -> String {
         String(
             self.enumerated()
-                .map { $0 > 0 && $0 % stride == 0 ? [separator, $1] : [$1] }
+                .map { $0 > 0 && $0.isMultiple(of: stride) ? [separator, $1] : [$1] }
                 .joined()
         )
     }
@@ -84,11 +88,20 @@ public extension String {
     }
 
     func removingHtmlTags() -> String? {
-        return try? NSAttributedString(
+        try? NSAttributedString(
             data: self.data(using: .utf8)!,
             options: [.documentType: NSAttributedString.DocumentType.html],
             documentAttributes: nil
         ).string
+    }
+
+    func removingMailThreadQuote() -> String {
+        guard let range = range(
+            of: "On [a-zA-Z0-9, ]*, at [a-zA-Z0-9: ]*, .* wrote:",
+            options: [.regularExpression]
+        ) else { return self }
+
+        return self[startIndex..<range.lowerBound].trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 

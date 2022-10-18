@@ -5,7 +5,6 @@
 import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
-import Foundation
 
 @MainActor
 class InboxViewController: ViewController {
@@ -13,33 +12,33 @@ class InboxViewController: ViewController {
 
     private let numberOfInboxItemsToLoad: Int
 
-    private let appContext: AppContextWithUser
+    let appContext: AppContextWithUser
+    let tableNode: ASTableNode
+
     private let decorator: InboxViewDecorator
-    private let draftsListProvider: DraftsListProvider?
     private let messageOperationsProvider: MessageOperationsProvider
     private let refreshControl = UIRefreshControl()
-    internal let tableNode: ASTableNode
     private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
 
     private let inboxDataProvider: InboxDataProvider
     private let viewModel: InboxViewModel
-    internal var inboxInput: [InboxRenderable] = []
-    internal var state: InboxViewController.State = .idle
+    private var inboxInput: [InboxItem] = []
+    var state: InboxViewController.State = .idle
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
     }
     private var shouldShowEmptyView: Bool {
-        inboxInput.isNotEmpty && (viewModel.path == "SPAM" || viewModel.path == "TRASH")
+        inboxInput.isNotEmpty && (["SPAM", "TRASH"].contains(viewModel.path))
     }
 
     var path: String { viewModel.path }
 
     // Search related varaibles
-    internal var isSearch = false
-    internal var searchedExpression = ""
-    var shouldBeginFetch = true
+    private var isSearch = false
+    private var shouldBeginFetch = true
+    var searchedExpression = ""
 
     private var isVisible = false
     private var didLayoutSubviews = false
@@ -49,7 +48,6 @@ class InboxViewController: ViewController {
         viewModel: InboxViewModel,
         numberOfInboxItemsToLoad: Int = 50,
         provider: InboxDataProvider,
-        draftsListProvider: DraftsListProvider? = nil,
         decorator: InboxViewDecorator = InboxViewDecorator(),
         isSearch: Bool = false
     ) throws {
@@ -59,7 +57,6 @@ class InboxViewController: ViewController {
         self.inboxDataProvider = provider
 
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.draftsListProvider = try draftsListProvider ?? mailProvider.draftsProvider
         self.messageOperationsProvider = try mailProvider.messageOperationsProvider
         self.decorator = decorator
         self.tableNode = TableNode()
@@ -124,7 +121,7 @@ extension InboxViewController {
         refreshControl.addTarget(self, action: #selector(refresh), for: .valueChanged)
     }
 
-    internal func setupTableNode() {
+    func setupTableNode() {
         tableNode.do {
             $0.delegate = self
             $0.dataSource = self
@@ -178,8 +175,6 @@ extension InboxViewController {
 
     private func messagesToLoad() -> Int {
         switch state {
-        case .fetched(.byNextPage):
-            return numberOfInboxItemsToLoad
         case .fetched(.byNumber(let totalNumberOfMessages)):
             guard let total = totalNumberOfMessages else {
                 return numberOfInboxItemsToLoad
@@ -194,35 +189,6 @@ extension InboxViewController {
 
 // MARK: - Functionality
 extension InboxViewController {
-    private func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
-        if let provider = draftsListProvider, viewModel.isDrafts {
-            fetchAndRenderDrafts(batchContext, draftsProvider: provider)
-        } else {
-            fetchAndRenderEmailsOnly(batchContext)
-        }
-    }
-
-    private func fetchAndRenderDrafts(_ batchContext: ASBatchContext?, draftsProvider: DraftsListProvider) {
-        Task {
-            do {
-                let context = try await draftsProvider.fetchDrafts(
-                    using: FetchMessageContext(
-                        folderPath: viewModel.path,
-                        count: numberOfInboxItemsToLoad,
-                        pagination: currentMessagesListPagination()
-                    )
-                )
-                let inboxContext = InboxContext(
-                    data: context.messages.map(InboxRenderable.init),
-                    pagination: context.pagination
-                )
-                handleEndFetching(with: inboxContext, context: batchContext)
-            } catch {
-                handle(error: error)
-            }
-        }
-    }
-
     private func getSearchQuery() -> String? {
         guard searchedExpression.isNotEmpty else { return nil }
 
@@ -231,12 +197,12 @@ extension InboxViewController {
         return "\(searchedExpression) OR subject:\(searchedExpression)"
     }
 
-    internal func fetchAndRenderEmailsOnly(_ batchContext: ASBatchContext?) {
+    func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
         Task {
             do {
                 if isSearch {
                     state = .searching
-                    await self.tableNode.reloadData()
+                    await tableNode.reloadData()
                 } else {
                     state = .fetching
                 }
@@ -247,7 +213,7 @@ extension InboxViewController {
                         count: numberOfInboxItemsToLoad,
                         searchQuery: getSearchQuery(),
                         pagination: currentMessagesListPagination()
-                    ), userEmail: appContext.user.email
+                    )
                 )
                 state = .refresh
                 handleEndFetching(with: context, context: batchContext)
@@ -273,7 +239,7 @@ extension InboxViewController {
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
                         pagination: pagination
-                    ), userEmail: appContext.user.email
+                    )
                 )
                 state = .fetched(context.pagination)
                 handleEndFetching(with: context, context: batchContext)
@@ -350,11 +316,7 @@ extension InboxViewController {
         shouldBeginFetch = false
         inboxInput = input.data
         if inboxInput.isEmpty {
-            if isSearch {
-                state = .searchEmpty
-            } else {
-                state = .empty
-            }
+            state = isSearch ? .searchEmpty : .empty
         } else {
             state = .fetched(input.pagination)
         }
@@ -415,7 +377,7 @@ extension InboxViewController {
             let viewController = try SearchViewController(
                 appContext: appContext,
                 viewModel: viewModel,
-                provider: self.inboxDataProvider,
+                provider: inboxDataProvider,
                 isSearch: true
             )
             navigationController?.pushViewController(viewController, animated: false)
@@ -434,7 +396,15 @@ extension InboxViewController {
         Task {
             do {
                 TapTicFeedback.generate(.light)
-                let composeVc = try await ComposeViewController(appContext: appContext)
+                let composeVc = try await ComposeViewController(
+                    appContext: appContext,
+                    handleAction: { [weak self] action in
+                        switch action {
+                        case .update(let identifier), .sent(let identifier), .delete(let identifier):
+                            self?.fetchUpdatedInboxItem(identifier: identifier)
+                        }
+                    }
+                )
                 navigationController?.pushViewController(composeVc, animated: true)
             } catch {
                 showAlert(message: error.localizedDescription)
@@ -467,20 +437,20 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        var rowNumber = indexPath.row
-        if shouldShowEmptyView {
-            rowNumber -= 1
-        }
-        guard let message = inboxInput[safe: rowNumber] else {
+        let rowNumber = shouldShowEmptyView ? indexPath.row - 1 : indexPath.row
+
+        guard let inboxItem = inboxInput[safe: rowNumber] else {
             return
         }
+
         tableNode.deselectRow(at: indexPath, animated: true)
-        open(message: message, path: viewModel.path, appContext: appContext)
+
+        open(inboxItem: inboxItem, path: viewModel.path)
     }
 
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
 
             switch self.state {
             case .empty:
@@ -505,15 +475,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 var rowNumber = indexPath.row
                 if self.shouldShowEmptyView {
                     if indexPath.row == 0 {
-                        return EmptyFolderCellNode(path: self.viewModel.path, emptyFolder: {
-                            self.showConfirmAlert(
-                                message: "folder_empty_confirm".localized,
-                                onConfirm: { [weak self] _ in
-                                    self?.emptyInboxFolder()
-                                }
-                            )
-
-                        })
+                        return self.emptyFolderNode()
                     }
                     rowNumber -= 1
                 }
@@ -529,7 +491,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 return InboxCellNode(input: .init(input))
             case let .error(message):
                 return TextCellNode(
-                    input: TextCellNode.Input(
+                    input: .init(
                         backgroundColor: .backgroundColor,
                         title: message,
                         withSpinner: false,
@@ -540,29 +502,41 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         }
     }
 
+    private func emptyFolderNode() -> ASCellNode {
+        return EmptyFolderCellNode(
+            path: viewModel.path,
+            emptyFolder: { [weak self] in
+                self?.showConfirmAlert(
+                    message: "folder_empty_confirm".localized,
+                    onConfirm: { [weak self] _ in
+                        self?.emptyInboxFolder()
+                    }
+                )
+            })
+    }
+
     private func emptyInboxFolder() {
         Task {
             do {
-                self.showSpinner()
+                showSpinner()
                 try await self.messageOperationsProvider.emptyFolder(path: viewModel.path)
                 self.state = .empty
                 self.inboxInput = []
                 await tableNode.reloadData()
-                self.hideSpinner()
+                hideSpinner()
             } catch {
-                self.showAlert(message: error.errorMessage)
+                showAlert(message: error.errorMessage)
             }
         }
     }
 }
 
-// MARK: - MsgListViewController
-extension InboxViewController: MsgListViewController {
-    func getUpdatedIndex(for message: InboxRenderable) -> Int? {
+extension InboxViewController {
+    func getUpdatedIndex(for inboxItem: InboxItem) -> Int? {
         let index = inboxInput.firstIndex(where: {
-            $0.title == message.title && $0.subtitle == message.subtitle && $0.wrappedType == message.wrappedType
+            $0.title == inboxItem.title && $0.subtitle == inboxItem.subtitle && $0.type == inboxItem.type
         })
-        logger.logInfo("Try to update message at \(String(describing: index))")
+        logger.logInfo("Try to update inbox item at \(String(describing: index))")
         return index
     }
 
@@ -570,18 +544,9 @@ extension InboxViewController: MsgListViewController {
         guard inboxInput.count > index else { return }
 
         logger.logInfo("Mark as read \(isRead) at \(index)")
-        inboxInput[index].isRead = isRead
 
         // Mark wrapped message/thread(all mails in thread) as read/unread
-        if var wrappedThread = inboxInput[index].wrappedThread {
-            for i in 0 ..< wrappedThread.messages.count {
-                wrappedThread.messages[i].markAsRead(isRead)
-            }
-            inboxInput[index].wrappedType = .thread(wrappedThread)
-        } else if var wrappedMessage = inboxInput[index].wrappedMessage {
-            wrappedMessage.markAsRead(isRead)
-            inboxInput[index].wrappedType = .message(wrappedMessage)
-        }
+        inboxInput[index].markAsRead(isRead)
 
         let animationDuration = 0.3
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
@@ -592,7 +557,7 @@ extension InboxViewController: MsgListViewController {
     func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int) {
         guard inboxInput.count > index else { return }
 
-        inboxInput[index].updateMessage(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+        inboxInput[index].update(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
 
         let animationDuration = 0.3
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
@@ -634,6 +599,125 @@ extension InboxViewController: MsgListViewController {
                 }
             } catch {
                 showAlert(message: "Failed to remove message at \(index) in \(state): \(error)")
+            }
+        }
+    }
+
+    func open(inboxItem: InboxItem, path: String) {
+        if inboxItem.isDraft, let draft = inboxItem.messages.first {
+            open(draft: draft, appContext: appContext)
+        } else {
+            Task {
+                do {
+                    let viewController = try await ThreadDetailsViewController(
+                        appContext: appContext,
+                        inboxItem: inboxItem,
+                        onComposeMessageAction: { [weak self] action in
+                            guard let self else { return }
+
+                            switch action {
+                            case .update(let identifier), .sent(let identifier), .delete(let identifier):
+                                self.fetchUpdatedInboxItem(identifier: identifier)
+                            }
+                        },
+                        completion: { [weak self] action, message in
+                            self?.handleMessageOperation(message: message, action: action)
+                        }
+                    )
+                    navigationController?.pushViewController(viewController, animated: true)
+                } catch {
+                    showAlert(message: error.errorMessage)
+                }
+            }
+        }
+    }
+
+    private func open(draft: Message, appContext: AppContextWithUser) {
+        Task {
+            do {
+                let draftInfo = ComposeMessageInput.MessageQuoteInfo(
+                    message: draft,
+                    processed: nil
+                )
+
+                let controller = try await ComposeViewController(
+                    appContext: appContext,
+                    input: .init(type: .draft(draftInfo)),
+                    handleAction: { [weak self] action in
+                        switch action {
+                        case .update(let identifier):
+                            self?.fetchUpdatedInboxItem(identifier: identifier)
+                        case .sent(let identifier), .delete(let identifier):
+                            self?.deleteInboxItem(identifier: identifier)
+                        }
+                    }
+                )
+                navigationController?.pushViewController(controller, animated: true)
+            } catch {
+                showAlert(message: error.errorMessage)
+            }
+        }
+    }
+
+    private func fetchUpdatedInboxItem(identifier: MessageIdentifier) {
+        guard !inboxInput.isEmpty else {
+            fetchAndRenderEmails(nil)
+            return
+        }
+
+        Task {
+            guard let inboxItem = try await inboxDataProvider.fetchInboxItem(
+                identifier: identifier,
+                path: path
+            ), !inboxItem.messages(with: path).isEmpty else {
+                deleteInboxItem(identifier: identifier)
+                return
+            }
+
+            guard let index = inboxInput.firstIndex(with: identifier) else {
+                inboxInput.insert(inboxItem, at: 0)
+                tableNode.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                return
+            }
+
+            inboxInput[index] = inboxItem
+            tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        }
+    }
+
+    private func deleteInboxItem(identifier: MessageIdentifier) {
+        guard let index = inboxInput.firstIndex(with: identifier) else { return }
+
+        inboxInput.remove(at: index)
+
+        if inboxInput.isEmpty {
+            state = .empty
+            tableNode.reloadData()
+        } else {
+            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        }
+    }
+
+    // MARK: Operation
+    private func handleMessageOperation(message: InboxItem, action: MessageAction) {
+        guard let indexToUpdate = getUpdatedIndex(for: message) else {
+            return
+        }
+
+        switch action {
+        case .markAsRead(let isRead):
+            updateMessage(isRead: isRead, at: indexToUpdate)
+        case .moveToTrash, .permanentlyDelete:
+            removeMessage(at: indexToUpdate)
+        case .archive, .moveToInbox:
+            if path.isEmpty { // no need to remove in 'All Mail' folder
+                updateMessage(
+                    labelsToAdd: action == .moveToInbox ? [.inbox] : [],
+                    labelsToRemove: action == .archive ? [.inbox] : [],
+                    at: indexToUpdate
+                )
+            } else {
+                removeMessage(at: indexToUpdate)
             }
         }
     }

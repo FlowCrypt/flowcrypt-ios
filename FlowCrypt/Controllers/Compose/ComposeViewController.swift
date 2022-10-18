@@ -6,7 +6,6 @@ import AsyncDisplayKit
 import Combine
 import FlowCryptCommon
 import FlowCryptUI
-import Foundation
 
 /**
  * View controller to compose the message and send it
@@ -15,18 +14,12 @@ import Foundation
  **/
 final class ComposeViewController: TableNodeViewController {
 
-    internal enum Constants {
+    enum Constants {
         static let endTypingCharacters = [",", "\n", ";"]
         static let minRecipientsPartHeight: CGFloat = 32
     }
 
-    internal struct ComposedDraft: Equatable {
-        let email: String
-        let input: ComposeMessageInput
-        let contextToSend: ComposeMessageContext
-    }
-
-    internal enum State {
+    enum State {
         case main, searchEmails([Recipient])
     }
 
@@ -34,7 +27,7 @@ final class ComposeViewController: TableNodeViewController {
         case recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
         static var recipientsSections: [Section] {
-            RecipientType.allCases.map { Section.recipients($0) }
+            RecipientType.allCases.map { Self.recipients($0) }
         }
     }
 
@@ -42,67 +35,73 @@ final class ComposeViewController: TableNodeViewController {
         case delete, reload, add, scrollToBottom
     }
 
-    internal enum ComposePart: Int, CaseIterable {
+    enum ComposePart: Int, CaseIterable {
         case topDivider, subject, subjectDivider, text
     }
 
-    internal var shouldDisplaySearchResult = false
-    internal var userTappedOutSideRecipientsArea = false
-    internal var shouldShowEmailRecipientsLabel = false
-    internal let appContext: AppContextWithUser
-    internal let composeMessageService: ComposeMessageService
-    internal var decorator: ComposeViewDecorator
-    internal let localContactsProvider: LocalContactsProviderType
-    internal let pubLookup: PubLookupType
-    internal let googleUserService: GoogleUserServiceType
-    internal let filesManager: FilesManagerType
-    internal let photosManager: PhotosManagerType
-    internal let router: GlobalRouterType
-    internal let clientConfiguration: ClientConfiguration
-    internal let sendAsService: SendAsServiceType
+    var shouldDisplaySearchResult = false
+    var userTappedOutSideRecipientsArea = false
+    var shouldShowEmailRecipientsLabel = false
+    let appContext: AppContextWithUser
+    let composeMessageService: ComposeMessageService
+    var decorator: ComposeViewDecorator
+    let localContactsProvider: LocalContactsProviderType
+    let messageService: MessageService
+    let pubLookup: PubLookupType
+    let googleUserService: GoogleUserServiceType
+    let filesManager: FilesManagerType
+    let photosManager: PhotosManagerType
+    let router: GlobalRouterType
 
-    internal var isMessagePasswordSupported: Bool {
-        return clientConfiguration.isUsingFes
+    private let clientConfiguration: ClientConfiguration
+    var isMessagePasswordSupported: Bool { clientConfiguration.isUsingFes }
+
+    let search = PassthroughSubject<String, Never>()
+    var cancellable = Set<AnyCancellable>()
+
+    var input: ComposeMessageInput
+    var contextToSend: ComposeMessageContext
+
+    var state: State = .main
+    var shouldEvaluateRecipientInput = true
+
+    weak var saveDraftTimer: Timer?
+    var composedLatestDraft: ComposedDraft?
+
+    var messagePasswordAlertController: UIAlertController?
+    lazy var alertsFactory = AlertsFactory()
+
+    var didFinishSetup = false {
+        didSet {
+            if didFinishSetup { setupTextNode() }
+        }
     }
-
-    internal let search = PassthroughSubject<String, Never>()
-    internal var cancellable = Set<AnyCancellable>()
-
-    internal var input: ComposeMessageInput
-    internal var contextToSend = ComposeMessageContext()
-
-    internal var state: State = .main
-    internal var shouldEvaluateRecipientInput = true
-
-    internal weak var saveDraftTimer: Timer?
-    internal var composedLatestDraft: ComposedDraft?
-
-    internal lazy var alertsFactory = AlertsFactory()
-    internal var messagePasswordAlertController: UIAlertController?
-    internal var didLayoutSubviews = false
-    internal var topContentInset: CGFloat {
+    private var didLayoutSubviews = false
+    private var topContentInset: CGFloat {
         navigationController?.navigationBar.frame.maxY ?? 0
     }
 
-    internal var selectedRecipientType: RecipientType? = .to
-    internal var shouldShowAllRecipientTypes = false
-    internal var popoverVC: ComposeRecipientPopupViewController!
+    var selectedRecipientType: RecipientType? = .to
+    var shouldShowAllRecipientTypes = false
+    var popoverVC: ComposeRecipientPopupViewController!
 
-    internal var sectionsList: [Section] = []
-    var composeTextNode: ASCellNode!
-    var composeSubjectNode: ASCellNode!
-    var fromCellNode: RecipientFromCellNode!
+    var sectionsList: [Section] = []
+    var composeTextNode: ASCellNode?
+    var composeSubjectNode: ASCellNode?
     var sendAsList: [SendAsModel] = []
-    var selectedFromEmail = ""
+
+    let handleAction: ((ComposeMessageAction) -> Void)?
 
     init(
         appContext: AppContextWithUser,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         composeMessageService: ComposeMessageService? = nil,
+        messageService: MessageService? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
-        keyMethods: KeyMethodsType = KeyMethods()
+        keyMethods: KeyMethodsType = KeyMethods(),
+        handleAction: ((ComposeMessageAction) -> Void)? = nil
     ) async throws {
         self.appContext = appContext
         self.input = input
@@ -117,10 +116,18 @@ final class ComposeViewController: TableNodeViewController {
             appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate,
             shouldRunWarmupQuery: true
         )
-        self.composeMessageService = composeMessageService ?? ComposeMessageService(
-            appContext: appContext,
-            keyMethods: keyMethods
-        )
+        let draftGateway = try appContext.getRequiredMailProvider().draftGateway
+
+        if let composeMessageService = composeMessageService {
+            self.composeMessageService = composeMessageService
+        } else {
+            self.composeMessageService = ComposeMessageService(
+                appContext: appContext,
+                keyMethods: keyMethods,
+                draftGateway: draftGateway
+            )
+        }
+
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.pubLookup = PubLookup(
@@ -128,13 +135,27 @@ final class ComposeViewController: TableNodeViewController {
             localContactsProvider: self.localContactsProvider
         )
         self.router = appContext.globalRouter
-        self.contextToSend.subject = input.subject
-        self.contextToSend.attachments = input.attachments
         self.clientConfiguration = clientConfiguration
-        self.sendAsService = try appContext.getSendAsService()
-        self.sendAsList = try await sendAsService.fetchList(isForceReload: false, for: appContext.user)
-        self.sendAsList = self.sendAsList.filter { $0.verificationStatus == .accepted || $0.isDefault }
-        self.selectedFromEmail = appContext.user.email
+
+        let mailProvider = try appContext.getRequiredMailProvider()
+        self.messageService = try messageService ?? MessageService(
+            localContactsProvider: localContactsProvider,
+            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
+            keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
+            messageProvider: try mailProvider.messageProvider,
+            combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
+        )
+
+        self.sendAsList = try await appContext.getSendAsService()
+            .fetchList(isForceReload: false, for: appContext.user)
+            .filter { $0.verificationStatus == .accepted || $0.isDefault }
+
+        self.contextToSend = ComposeMessageContext(
+            sender: appContext.user.email,
+            subject: input.subject,
+            attachments: input.attachments
+        )
+        self.handleAction = handleAction
         super.init(node: TableNode())
     }
 
@@ -148,23 +169,24 @@ final class ComposeViewController: TableNodeViewController {
 
         setupUI()
         setupNavigationBar()
-        setupNodes()
+        setupSubjectNode()
         observeKeyboardNotifications()
         observerAppStates()
         observeComposeUpdates()
-        setupQuote()
+        fillDataFromInput()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         node.view.endEditing(true)
-        stopDraftTimer()
+        stopDraftTimer(withSave: false)
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        startDraftTimer()
+        startDraftTimer(withFire: true)
 
         guard shouldEvaluateRecipientInput else {
             shouldEvaluateRecipientInput = true
@@ -191,29 +213,15 @@ final class ComposeViewController: TableNodeViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    func update(with message: Message) {
-        self.contextToSend.subject = message.subject
-        self.contextToSend.message = message.raw
-        for recipient in message.to {
-            evaluateMessage(recipient: recipient, type: .to)
-        }
-        for recipient in message.cc {
-            evaluateMessage(recipient: recipient, type: .cc)
-        }
-        for recipient in message.bcc {
-            evaluateMessage(recipient: recipient, type: .bcc)
-        }
-    }
-
-    func evaluateMessage(recipient: Recipient, type: RecipientType) {
-        let recipient = ComposeMessageRecipient(
+    func add(recipient: Recipient, type: RecipientType) {
+        let composeRecipient = ComposeMessageRecipient(
             email: recipient.email,
             name: recipient.name,
             type: type,
             state: decorator.recipientIdleState
         )
-        contextToSend.add(recipient: recipient)
-        evaluate(recipient: recipient)
+        contextToSend.add(recipient: composeRecipient)
+        evaluate(recipient: composeRecipient)
     }
 
     private func observeComposeUpdates() {

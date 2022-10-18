@@ -77,7 +77,7 @@ class WkdApi: WkdApiType {
 
     private func parseAndFilter(keysData: Data, email: String) async throws -> [KeyDetails] {
         return try await core.parseKeys(armoredOrBinary: keysData).keyDetails
-            .filter { !$0.users.filter { $0.contains(email) }.isEmpty }
+            .filter { $0.users.contains { user in user.contains(email) } }
     }
 
     private func urlLookup(_ urls: WkdUrls) async throws -> InternalResult {
@@ -89,7 +89,7 @@ class WkdApi: WkdApiType {
             )
             _ = try await ApiCall.call(request)
         } catch {
-            Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error)")
+            Logger.nested("WkdApi").logInfo("Failed to load \(urls.policy) with error \(error.errorMessage)")
             return InternalResult(hasPolicy: false, keys: nil, method: urls.method)
         }
 

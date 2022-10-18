@@ -9,7 +9,7 @@
 import AsyncDisplayKit
 
 public final class TableNode: ASTableNode {
-    public override init(style: UITableView.Style) {
+    override public init(style: UITableView.Style) {
         super.init(style: style)
         view.showsVerticalScrollIndicator = false
         view.separatorStyle = .none
@@ -17,7 +17,7 @@ public final class TableNode: ASTableNode {
         backgroundColor = .backgroundColor
     }
 
-    public var bounces: Bool = true {
+    public var bounces = true {
         didSet {
             DispatchQueue.main.async {
                 self.view.bounces = self.bounces
@@ -25,14 +25,14 @@ public final class TableNode: ASTableNode {
         }
     }
 
-    public override func asyncTraitCollectionDidChange(
+    override public func asyncTraitCollectionDidChange(
         withPreviousTraitCollection previousTraitCollection: ASPrimitiveTraitCollection
     ) {
         super.asyncTraitCollectionDidChange(withPreviousTraitCollection: previousTraitCollection)
         backgroundColor = .backgroundColor
     }
 
-    public override func reloadData() {
+    override public func reloadData() {
         DispatchQueue.main.async {
             super.reloadData()
         }

@@ -15,7 +15,7 @@ protocol RecipientBase {
 
 extension RecipientBase {
     var formatted: String {
-        guard let name = name else { return email }
+        guard let name else { return email }
         return "\(name) <\(email)>"
     }
 
@@ -26,7 +26,7 @@ extension RecipientBase {
     }
 
     var displayName: String {
-        if let name = name, name != "" {
+        if let name, !name.isEmpty {
             return name
         }
         return email

@@ -12,24 +12,21 @@ import UIKit
 
 // MARK: - Action Handling
 extension ComposeViewController {
-    internal func searchEmail(with query: String) {
+    func searchEmail(with query: String) {
         Task {
             do {
                 let cloudRecipients = try await googleUserService.searchContacts(query: query)
                 let localRecipients = try localContactsProvider.searchRecipients(query: query)
 
-                let recipients = (cloudRecipients + localRecipients)
-                                    .unique()
-                                    .sorted()
-
+                let recipients = (cloudRecipients + localRecipients).unique().sorted()
                 updateView(newState: .searchEmails(recipients))
             } catch {
-                showAlert(message: error.localizedDescription)
+                showAlert(message: error.errorMessage)
             }
         }
     }
 
-    internal func evaluate(recipient: ComposeMessageRecipient) {
+    func evaluate(recipient: ComposeMessageRecipient) {
         guard recipient.email.isValidEmail else {
             updateRecipient(
                 email: recipient.email,
@@ -62,7 +59,7 @@ extension ComposeViewController {
         }
     }
 
-    internal func handleEvaluation(for recipient: RecipientWithSortedPubKeys) {
+    func handleEvaluation(for recipient: RecipientWithSortedPubKeys) {
         let state = getRecipientState(from: recipient)
 
         updateRecipient(
@@ -73,7 +70,7 @@ extension ComposeViewController {
         )
     }
 
-    internal func getRecipientState(from recipient: RecipientWithSortedPubKeys) -> RecipientState {
+    func getRecipientState(from recipient: RecipientWithSortedPubKeys) -> RecipientState {
         switch recipient.keyState {
         case .active:
             return decorator.recipientKeyFoundState
@@ -86,7 +83,7 @@ extension ComposeViewController {
         }
     }
 
-    internal func handleEvaluation(error: Error, with email: String, contact: RecipientWithSortedPubKeys?) {
+    func handleEvaluation(error: Error, with email: String, contact: RecipientWithSortedPubKeys?) {
         let recipientState: RecipientState = {
             if let contact = contact, contact.keyState == .active {
                 return getRecipientState(from: contact)
@@ -106,7 +103,7 @@ extension ComposeViewController {
         )
     }
 
-    internal func updateRecipient(
+    func updateRecipient(
         email: String,
         name: String? = nil,
         state: RecipientState,
@@ -117,7 +114,7 @@ extension ComposeViewController {
         }
 
         var displayName = name
-        if let name = name, let address = MCOAddress.init(nonEncodedRFC822String: name), address.displayName != nil {
+        if let name = name, let address = MCOAddress(nonEncodedRFC822String: name), address.displayName != nil {
             displayName = address.displayName
         }
 
@@ -138,7 +135,7 @@ extension ComposeViewController {
         }
     }
 
-    internal func handleRecipientSelection(with indexPath: IndexPath, type: RecipientType) {
+    func handleRecipientSelection(with indexPath: IndexPath, type: RecipientType) {
         guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
         let isSelected = recipient.state.isSelected
@@ -158,7 +155,7 @@ extension ComposeViewController {
         textField?.reset()
     }
 
-    internal func handleRecipientAction(with indexPath: IndexPath, type: RecipientType) {
+    func handleRecipientAction(with indexPath: IndexPath, type: RecipientType) {
         guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
         switch recipient.state {
@@ -185,15 +182,17 @@ extension ComposeViewController {
     }
 
     // MARK: - Message password
-    internal func setMessagePassword() {
+    func setMessagePassword() {
         Task {
+            stopDraftTimer(withSave: false)
             contextToSend.messagePassword = await enterMessagePassword()
             reload(sections: [.password])
+            startDraftTimer()
         }
     }
 
-    internal func enterMessagePassword() async -> String? {
-        return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
+    func enterMessagePassword() async -> String? {
+        return await withCheckedContinuation { continuation in
             self.messagePasswordAlertController = createMessagePasswordAlert(continuation: continuation)
             self.present(self.messagePasswordAlertController!, animated: true, completion: nil)
         }
@@ -214,8 +213,8 @@ extension ComposeViewController {
             $0.addTarget(self, action: #selector(self.messagePasswordTextFieldDidChange), for: .editingChanged)
         }
 
-        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in
-            return continuation.resume(returning: self.contextToSend.messagePassword)
+        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel) { [weak self] _ in
+            return continuation.resume(returning: self?.contextToSend.messagePassword)
         }
         alert.addAction(cancelAction)
 

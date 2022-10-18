@@ -7,7 +7,6 @@
 //
 
 @testable import FlowCrypt
-import Foundation
 import XCTest
 
 class ClientConfigurationTests: XCTestCase {

@@ -50,7 +50,7 @@ public final class BadgeNode: ASDisplayNode {
         cornerRadius = 4
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let contentSpec = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 2,

@@ -33,7 +33,7 @@ final class SettingsViewController: TableNodeViewController {
         }
 
         static func filtered(with rules: ClientConfiguration) -> [SettingsMenuItem] {
-            var cases = SettingsMenuItem.allCases
+            var cases = Self.allCases
 
             if !rules.canBackupKeys {
                 cases.removeAll(where: { $0 == .backups })

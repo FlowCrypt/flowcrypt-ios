@@ -134,7 +134,7 @@ struct AppStartup {
         guard let mailProvider = try await appContext.getOptionalMailProvider() else {
             return
         }
-        return try await mailProvider.sessionProvider.renewSession()
+        try await mailProvider.sessionProvider.renewSession()
     }
 
     @MainActor
@@ -247,8 +247,8 @@ struct AppStartup {
             Task {
                 do {
                     try await appContext.globalRouter.signOut(appContext: appContext)
-                } catch let logoutError {
-                    Logger.logError("Logout failed due to \(logoutError.localizedDescription)")
+                } catch {
+                    Logger.logError("Logout failed due to \(error.errorMessage)")
                 }
             }
         }

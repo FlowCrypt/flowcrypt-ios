@@ -6,29 +6,28 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 import GoogleAPIClientForREST_Gmail
 
 extension GmailService: MessageOperationsProvider {
-    func markAsUnread(message: Message, folder: String) async throws {
-        try await update(message: message, labelsToAdd: [.unread])
+    func markAsUnread(id: Identifier, folder: String) async throws {
+        try await updateMessage(id: id, labelsToAdd: [.unread])
     }
 
-    func markAsRead(message: Message, folder: String) async throws {
-        try await update(message: message, labelsToRemove: [.unread])
+    func markAsRead(id: Identifier, folder: String) async throws {
+        try await updateMessage(id: id, labelsToRemove: [.unread])
     }
 
-    func moveMessageToInbox(message: Message, folderPath: String) async throws {
-        try await update(message: message, labelsToAdd: [.inbox])
+    func moveMessageToInbox(id: Identifier, folderPath: String) async throws {
+        try await updateMessage(id: id, labelsToAdd: [.inbox])
     }
 
-    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
-        try await update(message: message, labelsToAdd: [.trash])
+    func moveMessageToTrash(id: Identifier, trashPath: String?, from folder: String) async throws {
+        try await updateMessage(id: id, labelsToAdd: [.trash])
     }
 
-    func delete(message: Message, from folderPath: String?) async throws {
+    func deleteMessage(id: Identifier, from folderPath: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            guard let identifier = message.identifier.stringId else {
+            guard let identifier = id.stringId else {
                 return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
@@ -41,24 +40,31 @@ extension GmailService: MessageOperationsProvider {
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                return continuation.resume(returning: ())
+                return continuation.resume()
             }
         }
     }
 
     func emptyFolder(path: String) async throws {
-        let messageIdentifiers = try await fetchAllMessageIdentifers(for: path)
+        let messageIdentifiers = try await fetchAllMessageIdentifiers(for: path)
         try await batchDeleteMessages(identifiers: messageIdentifiers, from: path)
     }
 
-    private func fetchAllMessageIdentifers(for path: String, token: String? = nil, result: [String] = []) async throws -> [String] {
+    private func fetchAllMessageIdentifiers(
+        for path: String,
+        token: String? = nil,
+        result: [String] = []
+    ) async throws -> [String] {
         let context = FetchMessageContext(folderPath: path, count: 500, pagination: .byNextPage(token: token))
         let list = try await fetchMessagesList(using: context)
-        var newResult = (list.messages?.compactMap(\.identifier) ?? []) + result
+
+        let newResult = (list.messages?.compactMap(\.identifier) ?? []) + result
+
         if let nextPageToken = list.nextPageToken {
-            newResult = try await fetchAllMessageIdentifers(for: path, token: nextPageToken, result: newResult)
+            return try await fetchAllMessageIdentifiers(for: path, token: nextPageToken, result: newResult)
+        } else {
+            return newResult
         }
-        return newResult
     }
 
     func batchDeleteMessages(identifiers: [String], from folderPath: String?) async throws {
@@ -71,32 +77,25 @@ extension GmailService: MessageOperationsProvider {
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                return continuation.resume(returning: ())
+                return continuation.resume()
             }
         }
     }
 
-    func archiveMessage(message: Message, folderPath: String) async throws {
-        try await update(
-            message: message,
+    func archiveMessage(id: Identifier, folderPath: String) async throws {
+        try await updateMessage(
+            id: id,
             labelsToRemove: [.inbox]
         )
     }
 
-    func archiveBatchMessages(messages: [Message]) async throws {
-        try await batchUpdate(
-            messages: messages,
-            labelsToRemove: [.inbox]
-        )
-    }
-
-    private func batchUpdate(
-        messages: [Message],
+    func batchUpdate(
+        messagesIds: [Identifier],
         labelsToAdd: [MessageLabel] = [],
         labelsToRemove: [MessageLabel] = []
     ) async throws {
         let request = GTLRGmail_BatchModifyMessagesRequest()
-        request.ids = messages.compactMap { $0.identifier.stringId }
+        request.ids = messagesIds.compactMap(\.stringId)
         request.addLabelIds = labelsToAdd.map(\.value)
         request.removeLabelIds = labelsToRemove.map(\.value)
         let query = GTLRGmailQuery_UsersMessagesBatchModify.query(
@@ -104,23 +103,23 @@ extension GmailService: MessageOperationsProvider {
             userId: .me
         )
 
-        return try await withCheckedThrowingContinuation { continuation in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                return continuation.resume(returning: ())
+                return continuation.resume()
             }
         }
     }
 
-    private func update(
-        message: Message,
+    private func updateMessage(
+        id: Identifier,
         labelsToAdd: [MessageLabel] = [],
         labelsToRemove: [MessageLabel] = []
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            guard let identifier = message.identifier.stringId else {
+            guard let identifier = id.stringId else {
                 return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
             let request = GTLRGmail_ModifyMessageRequest()
@@ -136,7 +135,7 @@ extension GmailService: MessageOperationsProvider {
                 if let error = error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
-                return continuation.resume(returning: ())
+                return continuation.resume()
             }
         }
     }

@@ -7,7 +7,6 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptCommon
 import UIKit
 
 public final class TextCellNode: CellNode {
@@ -65,7 +64,7 @@ public final class TextCellNode: CellNode {
         backgroundColor = input.backgroundColor
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let spec = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 16,

@@ -22,7 +22,7 @@ public final class KeyTextCellNode: CellNode {
         textNode.attributedText = title
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         ASInsetLayoutSpec(
             insets: insets,
             child: textNode

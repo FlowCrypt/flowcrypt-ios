@@ -7,9 +7,8 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptCommon
 
-final public class RecipientEmailsCellNode: CellNode {
+public final class RecipientEmailsCellNode: CellNode {
     public typealias RecipientTap = (RecipientEmailTapAction) -> Void
 
     public enum RecipientEmailTapAction {
@@ -91,7 +90,7 @@ final public class RecipientEmailsCellNode: CellNode {
         self.toggleButtonAction = toggleButtonAction
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let collectionNodeSize = CGSize(width: constrainedSize.max.width, height: collectionLayoutHeight)
         let buttonSize = CGSize(width: 40, height: 32)
 
@@ -118,13 +117,13 @@ final public class RecipientEmailsCellNode: CellNode {
     }
 }
 
-extension RecipientEmailsCellNode {
-    public func onItemSelect(_ action: RecipientTap?) -> Self {
+public extension RecipientEmailsCellNode {
+    func onItemSelect(_ action: RecipientTap?) -> Self {
         self.onAction = action
         return self
     }
 
-    public func onLayoutHeightChanged(_ completion: @escaping (CGFloat) -> Void) -> Self {
+    func onLayoutHeightChanged(_ completion: @escaping (CGFloat) -> Void) -> Self {
         self.layout.onHeightChanged = completion
         return self
     }
@@ -139,7 +138,7 @@ extension RecipientEmailsCellNode: ASCollectionDelegate, ASCollectionDataSource 
         let width = collectionNode.style.preferredSize.width
 
         return { [weak self] in
-            guard let self = self else {
+            guard let self else {
                 return ASCellNode()
             }
             if indexPath.row == self.recipients.count {
@@ -181,7 +180,7 @@ extension RecipientEmailsCellNode {
             toggleButtonNode.view.transform = CGAffineTransform(rotationAngle: angle)
         }
 
-        let angle = self.isToggleButtonRotated ? .pi : 0
+        let angle = isToggleButtonRotated ? .pi : 0
         if animated {
             UIView.animate(withDuration: 0.3) {
                 rotateButton(angle: angle)

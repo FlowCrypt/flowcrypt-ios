@@ -4,7 +4,6 @@
 
 import CommonCrypto // for hashing
 import FlowCryptCommon
-import Foundation
 import IDZSwiftCommonCrypto // for aes
 import JavaScriptCore // for export to js
 import Security // for rng

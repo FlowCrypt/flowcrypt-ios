@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias MessageActionCompletion = (MessageAction, InboxRenderable) -> Void
+typealias MessageActionCompletion = (MessageAction, InboxItem) -> Void
 
 enum MessageAction: Equatable {
     case moveToTrash, moveToInbox, archive, markAsRead(Bool), permanentlyDelete

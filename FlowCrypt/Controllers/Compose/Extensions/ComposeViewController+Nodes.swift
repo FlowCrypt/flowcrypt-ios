@@ -12,7 +12,7 @@ import FlowCryptUI
 
 // MARK: - Nodes
 extension ComposeViewController {
-    internal func recipientTextNode() -> ComposeRecipientCellNode {
+    func recipientTextNode() -> ComposeRecipientCellNode {
         let recipients = contextToSend.recipients.map(RecipientEmailsCellNode.Input.init)
         let textNode = ComposeRecipientCellNode(
             input: ComposeRecipientCellNode.Input(recipients: recipients),
@@ -25,26 +25,28 @@ extension ComposeViewController {
         return textNode
     }
 
-    internal func showRecipientLabelIfNecessary() {
-        let isRecipientLoading = self.contextToSend.recipients.filter { $0.state == decorator.recipientIdleState }.isNotEmpty
+    func showRecipientLabelIfNecessary() {
+        let isRecipientLoading = contextToSend.recipients.contains(where: {
+            $0.state == decorator.recipientIdleState
+        })
+
         guard !isRecipientLoading,
-              self.contextToSend.recipients.isNotEmpty,
-              self.userTappedOutSideRecipientsArea else {
-            return
-        }
-        if !self.shouldShowEmailRecipientsLabel {
-            self.shouldShowEmailRecipientsLabel = true
-            self.userTappedOutSideRecipientsArea = false
-            self.reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
-        }
+              contextToSend.recipients.isNotEmpty,
+              userTappedOutSideRecipientsArea,
+              !shouldShowEmailRecipientsLabel
+        else { return }
+
+        shouldShowEmailRecipientsLabel = true
+        userTappedOutSideRecipientsArea = false
+        reload(sections: Section.recipientsSections + [.recipientsLabel])
     }
 
-    internal func hideRecipientLabel() {
-        self.shouldShowEmailRecipientsLabel = false
-        self.reload(sections: [.recipientsLabel, .recipients(.from), .recipients(.to), .recipients(.cc), .recipients(.bcc)])
+    func hideRecipientLabel() {
+        shouldShowEmailRecipientsLabel = false
+        reload(sections: Section.recipientsSections + [.recipientsLabel])
     }
 
-    internal func setupSubjectNode() {
+    func setupSubjectNode() {
         composeSubjectNode = TextFieldCellNode(
             input: decorator.styledTextFieldInput(
                 with: "compose_subject".localized,
@@ -62,7 +64,7 @@ extension ComposeViewController {
             }
         }
         .onShouldReturn { [weak self] _ in
-            guard let self = self else { return true }
+            guard let self else { return true }
             if !self.input.isQuote, let node = self.node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first {
                 node.becomeFirstResponder()
             } else {
@@ -75,13 +77,13 @@ extension ComposeViewController {
         }
     }
 
-    internal func setupFromNode() {
-        fromCellNode = RecipientFromCellNode(
-            toggleButtonAction: {
-                self.presentSendAsActionSheet()
+    func fromCellNode() -> RecipientFromCellNode {
+        RecipientFromCellNode(
+            fromEmail: contextToSend.sender,
+            toggleButtonAction: { [weak self] in
+                self?.presentSendAsActionSheet()
             }
         )
-        fromCellNode.fromEmail = selectedFromEmail
     }
 
     private func presentSendAsActionSheet() {
@@ -96,15 +98,16 @@ extension ComposeViewController {
 
         for aliasEmail in sendAsList {
             let action = UIAlertAction(
-                title: aliasEmail.descriptoin,
-                style: .default) { [weak self] _ in
-                    self?.changeSendAs(to: aliasEmail.sendAsEmail)
-                }
+                title: aliasEmail.description,
+                style: .default
+            ) { [weak self] _ in
+                self?.changeSendAs(to: aliasEmail.sendAsEmail)
+            }
             // Remove @, . in email part as appium throws error for identifiers which contain @, .
-            let emailIentifier = aliasEmail.sendAsEmail
+            let emailIdentifier = aliasEmail.sendAsEmail
                 .replacingOccurrences(of: "@", with: "-")
                 .replacingOccurrences(of: ".", with: "-")
-            action.accessibilityIdentifier = "aid-send-as-\(emailIentifier)"
+            action.accessibilityIdentifier = "aid-send-as-\(emailIdentifier)"
             alert.addAction(action)
         }
         alert.addAction(cancelAction)
@@ -113,26 +116,22 @@ extension ComposeViewController {
     }
 
     private func changeSendAs(to email: String) {
-        guard let section = sectionsList.firstIndex(of: .recipients(.from)),
-              let fromCell = node.nodeForRow(at: IndexPath(row: 0, section: section)) as? RecipientFromCellNode else {
-            return
-        }
-        fromCell.fromEmail = email
-        self.selectedFromEmail = email
+        contextToSend.sender = email
+        reload(sections: [.recipients(.from)])
     }
 
-    internal func messagePasswordNode() -> ASCellNode {
+    func messagePasswordNode() -> ASCellNode {
         let input = contextToSend.hasMessagePassword
         ? decorator.styledFilledMessagePasswordInput()
         : decorator.styledEmptyMessagePasswordInput()
 
-        return MessagePasswordCellNode(
+        return MessageActionCellNode(
             input: input,
-            setMessagePassword: { [weak self] in self?.setMessagePassword() }
+            action: { [weak self] in self?.setMessagePassword() }
         )
     }
 
-    internal func setupTextNode() {
+    func setupTextNode() {
         let styledQuote = decorator.styledQuote(with: input)
         let height = max(decorator.frame(for: styledQuote).height, 40)
         composeTextNode = TextViewCellNode(
@@ -141,7 +140,7 @@ extension ComposeViewController {
                 accessibilityIdentifier: "aid-message-text-view"
             )
         ) { [weak self] event in
-            guard let self = self else { return }
+            guard let self else { return }
             switch event {
             case .didBeginEditing:
                 self.userTappedOutSideRecipientsArea = true
@@ -153,31 +152,36 @@ extension ComposeViewController {
             }
         }
         .then {
-            let messageText = decorator.styledMessage(with: contextToSend.message ?? "")
-            let mutableString = NSMutableAttributedString(attributedString: messageText)
+            let message = contextToSend.message ?? ""
+            let attributedString = decorator.styledMessage(with: message)
+            let mutableString = NSMutableAttributedString(attributedString: attributedString)
             let textNode = $0
 
-            if input.isQuote && !messageText.string.contains(styledQuote.string) {
+            if input.isQuote && !mutableString.string.contains(styledQuote.string) {
                 mutableString.append(styledQuote)
             }
 
             DispatchQueue.main.async {
-                textNode.textView.attributedText = mutableString
+                if !mutableString.string.isEmpty {
+                    textNode.textView.attributedText = mutableString
+                }
+
                 // Set cursor position to start of text view
                 textNode.textView.textView.selectedTextRange = textNode.textView.textView.textRange(
                     from: textNode.textView.textView.beginningOfDocument,
                     to: textNode.textView.textView.beginningOfDocument
                 )
-                if self.input.isReply {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+
+                if self.input.shouldFocusTextNode {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         textNode.becomeFirstResponder()
-                    })
+                    }
                 }
             }
         }
     }
 
-    internal func ensureCursorVisible(textView: UITextView) {
+    func ensureCursorVisible(textView: UITextView) {
         guard let range = textView.selectedTextRange else { return }
 
         let cursorRect = textView.caretRect(for: range.start)
@@ -191,7 +195,7 @@ extension ComposeViewController {
         }
     }
 
-    internal func recipientsNode(type: RecipientType) -> ASCellNode {
+    func recipientsNode(type: RecipientType) -> ASCellNode {
         let recipients = contextToSend.recipients(type: type)
 
         let shouldShowToggleButton = type == .to
@@ -214,50 +218,52 @@ extension ComposeViewController {
                     type: type,
                     completion: {
                         if let indexPath = self?.recipientsIndexPath(type: type),
-                           let emailNode = self?.node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
-                            emailNode.style.preferredSize.height = layoutHeight
-                            emailNode.setNeedsLayout()
+                           let emailsNode = self?.node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
+                            emailsNode.style.preferredSize.height = layoutHeight
+                            emailsNode.setNeedsLayout()
                         }
                     }
                 )
             }
-            .onItemSelect { [weak self] (action: RecipientEmailsCellNode.RecipientEmailTapAction) in
+            .onItemSelect { [weak self] action in
+                guard let self else { return }
+
                 switch action {
                 case let .imageTap(indexPath):
-                    self?.handleRecipientAction(with: indexPath, type: type)
+                    self.handleRecipientAction(with: indexPath, type: type)
                 case let .select(indexPath, sender):
-                    self?.handleRecipientSelection(with: indexPath, type: type)
-                    self?.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
+                    self.handleRecipientSelection(with: indexPath, type: type)
+                    self.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
                 }
             }
     }
 
-    internal func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
-        return RecipientEmailTextFieldNode(
+    func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
+        RecipientEmailTextFieldNode(
             input: decorator.styledTextFieldInput(
                 with: "",
                 keyboardType: .emailAddress,
                 accessibilityIdentifier: "aid-recipients-text-field-\(type.rawValue)",
-                insets: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+                insets: .zero
             ),
             action: { [weak self] action in
                 self?.handle(textFieldAction: action, for: type)
             }
         )
-        .onShouldReturn { [weak self] textField -> (Bool) in
+        .onShouldReturn { [weak self] textField in
             if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
                 textField.resignFirstResponder()
                 return true
             }
             return false
         }
-        .onShouldEndEditing { [weak self] textField -> (Bool) in
+        .onShouldEndEditing { [weak self] textField in
             if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
                 return true
             }
             return false
         }
-        .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
+        .onShouldChangeCharacters { [weak self] textField, character in
             self?.shouldChange(with: textField, and: character, for: type) ?? true
         }
         .then {
@@ -267,7 +273,7 @@ extension ComposeViewController {
         }
     }
 
-    internal func showAlertIfTextFieldNotValidEmail(textField: UITextField) -> Bool {
+    func showAlertIfTextFieldNotValidEmail(textField: UITextField) -> Bool {
         if let text = textField.text, text.isEmpty || text.isValidEmail {
             return true
         }
@@ -275,7 +281,7 @@ extension ComposeViewController {
         return false
     }
 
-    internal func attachmentNode(for index: Int) -> ASCellNode {
+    func attachmentNode(for index: Int) -> ASCellNode {
         AttachmentNode(
             input: .init(
                 attachment: contextToSend.attachments[index],
@@ -288,7 +294,7 @@ extension ComposeViewController {
         )
     }
 
-    internal func noSearchResultsNode() -> ASCellNode {
+    func noSearchResultsNode() -> ASCellNode {
         TextCellNode(input: .init(
             backgroundColor: .clear,
             title: "compose_no_contacts_found".localized,
@@ -299,7 +305,7 @@ extension ComposeViewController {
         )
     }
 
-    internal func enableGoogleContactsNode() -> ASCellNode {
+    func enableGoogleContactsNode() -> ASCellNode {
         TextWithIconNode(input: .init(
             title: "compose_enable_google_contacts_search"
                 .localized

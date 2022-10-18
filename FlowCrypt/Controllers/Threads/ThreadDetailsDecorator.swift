@@ -19,7 +19,7 @@ extension ThreadMessageInfoCellNode.Input {
             .joined(separator: ", ")
         let recipientLabel = [recipientPrefix, recipientsList].joined(separator: " ")
         let date = DateFormatter().formatDate(threadMessage.rawMessage.date)
-        let isMessageRead = threadMessage.rawMessage.isMessageRead
+        let isMessageRead = threadMessage.rawMessage.isRead
 
         let style: NSAttributedString.Style = isMessageRead
             ? .regular(16)
@@ -74,11 +74,14 @@ extension AttachmentNode.Input {
     }
 }
 
-private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input {
+private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input? {
+    guard let type = input.processedMessage?.type else { return nil }
+
     let icon: String
     let text: String
     let color: UIColor
-    switch input.processedMessage?.type {
+
+    switch type {
     case .error:
         icon = "lock.open"
         text = "message_decrypt_error".localized

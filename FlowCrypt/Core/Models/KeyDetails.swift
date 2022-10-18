@@ -8,7 +8,6 @@
 
 import FlowCryptCommon
 import MailCore
-import Foundation
 
 protocol ArmoredPrvWithIdentity {
     var primaryFingerprint: String { get throws }

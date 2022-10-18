@@ -146,7 +146,7 @@ extension SetupCreatePassphraseAbstractViewController {
     }
 
     private func awaitUserPassPhraseEntry() async throws -> String? {
-        return await withCheckedContinuation { (continuation: CheckedContinuation<String?, Never>) in
+        return await withCheckedContinuation { continuation in
             DispatchQueue.main.async {
                 let alert = UIAlertController(
                     title: "setup_pass_phrase_title".localized,

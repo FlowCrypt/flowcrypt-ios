@@ -7,10 +7,7 @@
 //
 
 import FlowCryptUI
-import Foundation
-import GoogleAPIClientForREST_Gmail
 import FlowCryptCommon
-import UIKit
 
 typealias RecipientState = RecipientEmailsCellNode.Input.State
 
@@ -18,6 +15,15 @@ protocol CoreComposeMessageType {
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail
     func encrypt(data: Data, pubKeys: [String]?, password: String?) async throws -> Data
     func encrypt(file: Data, name: String, pubKeys: [String]?) async throws -> Data
+}
+
+enum DraftSaveState {
+    case cancelled, saving(ComposedDraft), success(SendableMsg), error(Error)
+}
+
+struct ComposedDraft: Equatable {
+    let input: ComposeMessageInput
+    let contextToSend: ComposeMessageContext
 }
 
 final class ComposeMessageService {
@@ -28,6 +34,8 @@ final class ComposeMessageService {
     private let core: CoreComposeMessageType & KeyParser
     private let draftGateway: DraftGateway?
     private lazy var logger = Logger.nested(Self.self)
+
+    private var saveDraftTask: Task<MessageIdentifier?, Error>?
 
     private struct ReplyInfo: Encodable {
         let sender: String
@@ -50,7 +58,6 @@ final class ComposeMessageService {
         self.draftGateway = draftGateway
         self.core = core
         self.localContactsProvider = localContactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
-        self.logger = Logger.nested(in: Self.self, with: "ComposeMessageService")
     }
 
     private var onStateChanged: ((State) -> Void)?
@@ -65,14 +72,14 @@ final class ComposeMessageService {
             throw ComposeMessageError.noKeysFoundForSign(keys.count, senderEmail)
         }
         if signingKey.passphrase == nil {
-            throw ComposeMessageError.promptUserToEnterPassPhraseForSigningKey(signingKey)
+            throw ComposeMessageError.missingPassPhrase(signingKey)
         }
         return signingKey
     }
 
     func handlePassPhraseEntry(_ passPhrase: String, for signingKey: Keypair) async throws -> Bool {
         // since pass phrase was entered (an inconvenient thing for user to do),
-        //  let's find all keys that match and save the pass phrase for all
+        // let's find all keys that match and save the pass phrase for all
         let allKeys = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender)
         guard allKeys.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
@@ -91,87 +98,103 @@ final class ComposeMessageService {
 
     // MARK: - Validation
     func validateAndProduceSendableMsg(
-        senderEmail: String,
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        includeAttachments: Bool = true
+        isDraft: Bool = false,
+        withPubKeys: Bool = true
     ) async throws -> SendableMsg {
-        onStateChanged?(.validatingMessage)
+        let subject = contextToSend.subject ?? ""
 
-        let recipients = contextToSend.recipients
-        guard recipients.isNotEmpty else {
-            throw MessageValidationError.emptyRecipient
-        }
+        if !isDraft {
+            onStateChanged?(.validatingMessage)
 
-        let emails = recipients.map(\.email)
-        let emptyEmails = emails.filter { !$0.hasContent }
-
-        guard emails.isNotEmpty, emptyEmails.isEmpty else {
-            throw MessageValidationError.emptyRecipient
-        }
-
-        guard emails.filter({ !$0.isValidEmail }).isEmpty else {
-            throw MessageValidationError.invalidEmailRecipient
-        }
-
-        guard input.isQuote || contextToSend.subject?.hasContent ?? false else {
-            throw MessageValidationError.emptySubject
-        }
-
-        guard let text = contextToSend.message, text.hasContent else {
-            throw MessageValidationError.emptyMessage
-        }
-
-        let subject = contextToSend.subject ?? "(no subject)"
-
-        let senderKeys = try await keyMethods.chooseSenderKeys(
-            for: .encryption,
-            keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
-            senderEmail: senderEmail
-        )
-
-        guard senderKeys.isNotEmpty else {
-            throw MessageValidationError.noUsableAccountKeys
-        }
-
-        let sendableAttachments: [SendableMsg.Attachment] = includeAttachments
-            ? contextToSend.attachments.map { $0.toSendableMsgAttachment() }
-            : []
-
-        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
-        let validPubKeys = try validate(
-            recipients: recipientsWithPubKeys,
-            hasMessagePassword: contextToSend.hasMessagePassword
-        )
-
-        if let password = contextToSend.messagePassword, password.isNotEmpty {
-            if subject.lowercased().contains(password.lowercased()) {
-                throw MessageValidationError.subjectContainsPassword
+            guard contextToSend.recipients.isNotEmpty else {
+                throw MessageValidationError.emptyRecipient
             }
 
-            let allAvailablePassPhrases = try appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
-            if allAvailablePassPhrases.contains(password) {
-                throw MessageValidationError.notUniquePassword
+            let emails = contextToSend.recipients.map(\.email)
+            let emptyEmails = emails.filter { !$0.hasContent }
+
+            guard emails.isNotEmpty, emptyEmails.isEmpty else {
+                throw MessageValidationError.emptyRecipient
+            }
+
+            guard !emails.contains(where: { !$0.isValidEmail }) else {
+                throw MessageValidationError.invalidEmailRecipient
+            }
+
+            guard input.isQuote || subject.hasContent else {
+                throw MessageValidationError.emptySubject
+            }
+
+            guard let text = contextToSend.message, text.hasContent else {
+                throw MessageValidationError.emptyMessage
+            }
+
+            if let password = contextToSend.messagePassword, password.isNotEmpty {
+                if subject.lowercased().contains(password.lowercased()) {
+                    throw MessageValidationError.subjectContainsPassword
+                }
+
+                let allAvailablePassPhrases = try appContext.combinedPassPhraseStorage.getPassPhrases(for: sender).map(\.value)
+                if allAvailablePassPhrases.contains(password) {
+                    throw MessageValidationError.notUniquePassword
+                }
             }
         }
 
-        let signingPrv = try await prepareSigningKey(senderEmail: senderEmail)
+        let pubKeys = withPubKeys ? try await getPubKeys(
+            senderEmail: contextToSend.sender,
+            recipients: contextToSend.recipients,
+            hasMessagePassword: contextToSend.hasMessagePassword,
+            shouldValidate: !isDraft
+        ) : []
+
+        let sendableAttachments: [SendableMsg.Attachment] = isDraft
+            ? []
+            : contextToSend.attachments.map(\.sendableMsgAttachment)
+        let signingPrv = isDraft ? nil : try await prepareSigningKey(senderEmail: contextToSend.sender)
 
         return SendableMsg(
-            text: text,
+            text: contextToSend.message ?? "",
             html: nil,
             to: contextToSend.recipientEmails(type: .to),
             cc: contextToSend.recipientEmails(type: .cc),
             bcc: contextToSend.recipientEmails(type: .bcc),
-            from: senderEmail,
+            from: contextToSend.sender,
             subject: subject,
             replyToMsgId: input.replyToMsgId,
             inReplyTo: input.inReplyTo,
             atts: sendableAttachments,
-            pubKeys: senderKeys.map(\.public) + validPubKeys,
+            pubKeys: pubKeys,
             signingPrv: signingPrv,
             password: contextToSend.messagePassword
         )
+    }
+
+    private func getPubKeys(
+        senderEmail: String,
+        recipients: [ComposeMessageRecipient],
+        hasMessagePassword: Bool,
+        shouldValidate: Bool
+    ) async throws -> [String] {
+        let senderKeys = try await keyMethods.chooseSenderKeys(
+            for: .encryption,
+            keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
+            senderEmail: senderEmail
+        ).map(\.public)
+
+        if shouldValidate, senderKeys.isEmpty {
+            throw MessageValidationError.noUsableAccountKeys
+        }
+
+        let recipientsWithPubKeys = try await getRecipientKeys(for: recipients)
+        if shouldValidate {
+            try validate(recipients: recipientsWithPubKeys, hasMessagePassword: hasMessagePassword)
+        }
+        let validPubKeys = recipientsWithPubKeys.flatMap(\.activePubKeys).map(\.armored)
+
+        return senderKeys + validPubKeys
     }
 
     private func getRecipientKeys(for composeRecipients: [ComposeMessageRecipient]) async throws -> [RecipientWithSortedPubKeys] {
@@ -190,10 +213,12 @@ final class ComposeMessageService {
         return recipientsWithKeys
     }
 
-    private func validate(recipients: [RecipientWithSortedPubKeys],
-                          hasMessagePassword: Bool) throws -> [String] {
+    private func validate(
+        recipients: [RecipientWithSortedPubKeys],
+        hasMessagePassword: Bool
+    ) throws {
         func contains(keyState: PubKeyState) -> Bool {
-            recipients.first(where: { $0.keyState == keyState }) != nil
+            recipients.contains(where: { $0.keyState == keyState })
         }
 
         logger.logDebug("validate recipients: \(recipients)")
@@ -209,30 +234,63 @@ final class ComposeMessageService {
         guard !contains(keyState: .revoked) else {
             throw MessageValidationError.revokedKeyRecipients
         }
-
-        return recipients.flatMap(\.activePubKeys).map(\.armored)
     }
 
     // MARK: - Drafts
-    private var draft: GTLRGmail_Draft?
-    func encryptAndSaveDraft(message: SendableMsg, threadId: String?) async throws {
-        do {
-            let r = try await core.composeEmail(
-                msg: message,
-                fmt: .encryptInline
-            )
-            draft = try await draftGateway?.saveDraft(input: MessageGatewayInput(mime: r.mimeEncoded, threadId: threadId), draft: draft)
-        } catch {
-            throw ComposeMessageError.gatewayError(error)
+    var messageIdentifier: MessageIdentifier?
+
+    func fetchMessageIdentifier(info: ComposeMessageInput.MessageQuoteInfo) {
+        Task {
+            if let draftId = info.draftId {
+                messageIdentifier = try await draftGateway?.fetchDraft(id: draftId)
+            } else if let messageId = info.rfc822MsgId {
+                let identifier = Identifier(stringId: messageId)
+                messageIdentifier = try await draftGateway?.fetchDraftIdentifier(for: identifier)
+            }
         }
     }
 
+    func saveDraft(message: SendableMsg, threadId: String?, shouldEncrypt: Bool) async throws {
+        if let saveDraftTask {
+            _ = try await saveDraftTask.value
+        }
+
+        saveDraftTask = Task {
+            do {
+                let mime = try await self.core.composeEmail(
+                    msg: message,
+                    fmt: shouldEncrypt ? .encryptInline : .plain
+                ).mimeEncoded
+
+                let threadId = self.messageIdentifier?.threadId?.stringId ?? threadId
+
+                return try await self.draftGateway?.saveDraft(
+                    input: MessageGatewayInput(
+                        mime: mime,
+                        threadId: threadId
+                    ),
+                    draftId: self.messageIdentifier?.draftId
+                )
+            } catch {
+                throw ComposeMessageError.gatewayError(error)
+            }
+        }
+
+        messageIdentifier = try await saveDraftTask?.value
+        saveDraftTask = nil
+    }
+
+    func deleteDraft() async throws {
+        guard let draftId = messageIdentifier?.draftId else { return }
+        try await draftGateway?.deleteDraft(with: draftId)
+    }
+
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg, threadId: String?) async throws {
+    func encryptAndSend(message: SendableMsg, threadId: String?) async throws -> Identifier {
         do {
             onStateChanged?(.startComposing)
 
-            let hasPassword = (message.password ?? "").isNotEmpty
+            let hasPassword = !message.password.isEmptyOrNil
             let composedEmail: CoreRes.ComposeEmail
 
             if hasPassword {
@@ -249,7 +307,7 @@ final class ComposeMessageService {
                 threadId: threadId
             )
 
-            try await appContext.getRequiredMailProvider().messageSender.sendMail(
+            let identifier = try await appContext.getRequiredMailProvider().messageGateway.sendMail(
                 input: input,
                 progressHandler: { [weak self] progress in
                     let progressToShow = hasPassword ? 0.5 + progress / 2 : progress
@@ -258,11 +316,13 @@ final class ComposeMessageService {
             )
 
             // cleaning any draft saved/created/fetched during editing
-            if let draftId = draft?.identifier {
-                await draftGateway?.deleteDraft(with: draftId)
+            if let draftId = messageIdentifier?.draftId {
+                try await draftGateway?.deleteDraft(with: draftId)
             }
 
             onStateChanged?(.messageSent)
+
+            return identifier
         } catch {
             throw ComposeMessageError.gatewayError(error)
         }
@@ -376,7 +436,6 @@ extension ComposeMessageService {
         return "<div style=\"display: none\" class=\"cryptup_reply\" cryptup-data=\"\(replyInfoJsonString)\"></div>"
     }
 
-    // TODO: - Anton - compose_password_link
     private func createMessageBodyWithPasswordLink(sender: String, url: String) -> SendableMsgBody {
         let text = "compose_password_link".localizeWithArguments(sender, url)
         let aStyle = "padding: 2px 6px; background: #2199e8; color: #fff; display: inline-block; text-decoration: none;"

@@ -5,6 +5,7 @@
 import AsyncDisplayKit
 import ENSwiftSideMenu
 import FlowCryptUI
+import UIKit
 
 /**
  * Menu view controller
@@ -30,8 +31,8 @@ final class MyMenuViewController: ViewController {
 
         var arrowImage: UIImage? {
             switch self {
-            case .folders: return #imageLiteral(resourceName: "arrow_down").tinted(.white)
-            case .accountAdding: return #imageLiteral(resourceName: "arrow_up").tinted(.white)
+            case .folders: return UIImage(named: "arrow_down")?.tinted(.white)
+            case .accountAdding: return UIImage(named: "arrow_up")?.tinted(.white)
             }
         }
     }

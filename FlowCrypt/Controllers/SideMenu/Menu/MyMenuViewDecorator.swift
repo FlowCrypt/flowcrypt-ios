@@ -72,7 +72,7 @@ extension InfoCellNode.Input {
             attributedText: "folder_add_account"
                 .localized
                 .attributed(.regular(17), color: .mainTextColor),
-            image: #imageLiteral(resourceName: "plus").tinted(.mainTextColor),
+            image: UIImage(named: "plus")?.tinted(.mainTextColor),
             insets: .side(16),
             backgroundColor: .backgroundColor,
             accessibilityIdentifier: "aid-add-account-btn"

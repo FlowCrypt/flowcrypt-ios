@@ -42,7 +42,7 @@ public final class TextWithIconNode: CellNode {
         imageNode.image = input.image
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize = input.imageSize
 
         return ASInsetLayoutSpec(

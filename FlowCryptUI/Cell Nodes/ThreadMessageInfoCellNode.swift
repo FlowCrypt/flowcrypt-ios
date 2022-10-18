@@ -12,7 +12,7 @@ import UIKit
 public final class ThreadMessageInfoCellNode: CellNode {
     // MARK: - Input
     public struct Input {
-        public let encryptionBadge: BadgeNode.Input
+        public let encryptionBadge: BadgeNode.Input?
         public let signatureBadge: BadgeNode.Input?
         public let sender: NSAttributedString
         public let recipientLabel: NSAttributedString
@@ -26,7 +26,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
         public let index: Int
 
         public init(
-            encryptionBadge: BadgeNode.Input,
+            encryptionBadge: BadgeNode.Input?,
             signatureBadge: BadgeNode.Input?,
             sender: NSAttributedString,
             recipientLabel: NSAttributedString,
@@ -148,7 +148,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
             bccRecipients: input.bccRecipients
         )
     )
-    private lazy var encryptionNode = BadgeNode(input: input.encryptionBadge)
+    private lazy var encryptionNode: BadgeNode? = input.encryptionBadge.map(BadgeNode.init)
     private lazy var signatureNode: BadgeNode? = input.signatureBadge.map(BadgeNode.init)
 
     // MARK: - Properties
@@ -289,7 +289,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
         }
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         replyNode.style.preferredSize = CGSize(width: 44, height: 44)
         menuNode.style.preferredSize = CGSize(width: 36, height: 44)
         expandNode.style.preferredSize = CGSize(width: 36, height: 44)

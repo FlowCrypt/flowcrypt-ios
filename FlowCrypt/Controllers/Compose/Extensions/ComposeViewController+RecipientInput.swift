@@ -11,7 +11,7 @@ import FlowCryptUI
 
 // MARK: - Recipients Input
 extension ComposeViewController {
-    internal func shouldChange(with textField: UITextField, and character: String, for recipientType: RecipientType) -> Bool {
+    func shouldChange(with textField: UITextField, and character: String, for recipientType: RecipientType) -> Bool {
         func nextResponder() {
             guard let node = node.visibleNodes[safe: ComposePart.subject.rawValue] as? TextFieldCellNode else { return }
             node.becomeFirstResponder()
@@ -38,7 +38,7 @@ extension ComposeViewController {
         return true
     }
 
-    internal func handle(textFieldAction: TextFieldActionType, for recipientType: RecipientType) {
+    func handle(textFieldAction: TextFieldActionType, for recipientType: RecipientType) {
         switch textFieldAction {
         case let .deleteBackward(textField): handleBackspaceAction(with: textField, for: recipientType)
         case let .didEndEditing(text): handleEndEditingAction(with: text, for: recipientType)
@@ -48,7 +48,7 @@ extension ComposeViewController {
         }
     }
 
-    internal func handleEndEditingAction(with email: String?, name: String? = nil, for recipientType: RecipientType) {
+    func handleEndEditingAction(with email: String?, name: String? = nil, for recipientType: RecipientType) {
         guard shouldEvaluateRecipientInput,
               let email = email, email.isNotEmpty
         else { return }
@@ -76,7 +76,7 @@ extension ComposeViewController {
             state: decorator.recipientIdleState
         )
 
-        if idleRecipients.firstIndex(where: { $0.email == newRecipient.email }) == nil {
+        if !idleRecipients.contains(where: { $0.email == newRecipient.email }) {
             // add new recipient
             contextToSend.add(recipient: newRecipient)
 
@@ -101,7 +101,7 @@ extension ComposeViewController {
     /// - Parameter type: Recipient type.
     /// - Parameter refreshType: Refresh type (delete/add/reload/scrollToBottom).
     /// - Parameter TempRecipients: Temp recipients (Optional). Used to get deleted recipient index
-    internal func refreshRecipient(
+    func refreshRecipient(
         for email: String,
         type: RecipientType,
         refreshType: RefreshType,
@@ -134,18 +134,18 @@ extension ComposeViewController {
         }
     }
 
-    internal func recipientsIndexPath(type: RecipientType) -> IndexPath? {
+    func recipientsIndexPath(type: RecipientType) -> IndexPath? {
         guard let section = sectionsList.firstIndex(of: .recipients(type)) else { return nil }
         return IndexPath(row: 0, section: section)
     }
 
-    internal func recipientsTextField(type: RecipientType) -> TextFieldNode? {
+    func recipientsTextField(type: RecipientType) -> TextFieldNode? {
         guard let indexPath = recipientsIndexPath(type: type) else { return nil }
         return (node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode)?.recipientInput.textField
     }
 
-    internal func handleBackspaceAction(with textField: UITextField, for recipientType: RecipientType) {
-        guard textField.text == "" else { return }
+    func handleBackspaceAction(with textField: UITextField, for recipientType: RecipientType) {
+        guard let text = textField.text, text.isEmpty else { return }
 
         var recipients = contextToSend.recipients(type: recipientType)
 
@@ -176,17 +176,18 @@ extension ComposeViewController {
         }
     }
 
-    internal func handleEditingChanged(with text: String?) {
-        shouldDisplaySearchResult = text != ""
-        search.send(text ?? "")
+    func handleEditingChanged(with text: String?) {
+        let inputText = text ?? ""
+        shouldDisplaySearchResult = !inputText.isEmpty
+        search.send(inputText)
     }
 
-    internal func handleDidBeginEditing(recipientType: RecipientType) {
+    func handleDidBeginEditing(recipientType: RecipientType) {
         selectedRecipientType = recipientType
         node.view.keyboardDismissMode = .none
     }
 
-    internal func toggleRecipientsList() {
+    func toggleRecipientsList() {
         shouldShowAllRecipientTypes.toggle()
         reload(sections: [.recipients(.cc), .recipients(.bcc)])
     }

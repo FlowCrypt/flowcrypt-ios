@@ -60,7 +60,7 @@ public final class EmptyCellNode: CellNode {
         accessibilityIdentifier = input.accessibilityIdentifier
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let spec = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 16,
@@ -70,7 +70,7 @@ public final class EmptyCellNode: CellNode {
         )
         spec.style.preferredSize = size
         return ASInsetLayoutSpec(
-            insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16),
+            insets: UIEdgeInsets.side(16),
             child: ASCenterLayoutSpec(child: spec)
         )
     }

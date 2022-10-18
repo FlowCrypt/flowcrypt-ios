@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 
 protocol ClientConfigurationServiceType {
     var configuration: ClientConfiguration { get async throws }

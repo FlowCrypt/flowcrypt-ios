@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 
 protocol SendAsServiceType {
     func fetchList(isForceReload: Bool, for user: User) async throws -> [SendAsModel]
@@ -49,9 +48,9 @@ final class SendAsService: SendAsServiceType {
                     try self.localSendAsProvider.save(list: fetchedList, for: user)
 
                     // return list
-                    continuation.resume(returning: fetchedList)
+                    return continuation.resume(returning: fetchedList)
                 } catch {
-                    continuation.resume(throwing: error)
+                    return continuation.resume(throwing: error)
                 }
             }
         }

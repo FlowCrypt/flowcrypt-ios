@@ -10,25 +10,20 @@ import FlowCryptCommon
 import GoogleAPIClientForREST_Gmail
 
 protocol MessagesThreadProvider {
+    func fetchThread(identifier: String, path: String) async throws -> MessageThread
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext
 }
 
 extension GmailService: MessagesThreadProvider {
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext {
         let threadsList = try await getThreadsList(using: context)
-        let requests = threadsList.threads?
-            .compactMap { (thread) -> (String, String?)? in
-                guard let id = thread.identifier else {
-                    return nil
-                }
-                return (id, thread.snippet)
-            }
-        ?? []
-        return try await withThrowingTaskGroup(of: MessageThread.self) { (taskGroup) in
+        let identifiers = threadsList.threads?.compactMap(\.identifier) ?? []
+
+        return try await withThrowingTaskGroup(of: MessageThread.self) { taskGroup in
             var messageThreadsById: [String: MessageThread] = [:]
-            for request in requests {
+            for identifier in identifiers {
                 taskGroup.addTask {
-                    try await self.getThread(with: request.0, snippet: request.1, path: context.folderPath ?? "")
+                    try await self.fetchThread(identifier: identifier, path: context.folderPath ?? "")
                 }
             }
             for try await result in taskGroup {
@@ -36,7 +31,7 @@ extension GmailService: MessagesThreadProvider {
                     messageThreadsById[id] = result
                 }
             }
-            let messageThreads = requests.compactMap { messageThreadsById[$0.0] }
+            let messageThreads = identifiers.compactMap { messageThreadsById[$0] }
             return MessageThreadContext(
                 threads: messageThreads,
                 pagination: .byNextPage(token: threadsList.nextPageToken)
@@ -47,7 +42,7 @@ extension GmailService: MessagesThreadProvider {
     private func getThreadsList(using context: FetchMessageContext) async throws -> GTLRGmail_ListThreadsResponse {
         let query = try makeQuery(using: context)
         return try await Task.retrying {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<GTLRGmail_ListThreadsResponse, Error>) in
+            try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(query) { _, data, error in
                     if let error = error {
                         let gmailError = GmailServiceError.convert(from: error as NSError)
@@ -63,39 +58,28 @@ extension GmailService: MessagesThreadProvider {
         }.value
     }
 
-    private func getThread(with identifier: String, snippet: String?, path: String) async throws -> MessageThread {
+    func fetchThread(identifier: String, path: String) async throws -> MessageThread {
         return try await Task.retrying {
-            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<MessageThread, Error>) in
+            try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(
                     GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
-                ) { (_, data, error) in
+                ) { _, data, error in
                     if let error = error {
                         return continuation.resume(throwing: GmailServiceError.providerError(error))
                     }
 
-                    guard let thread = data as? GTLRGmail_Thread else {
+                    guard let gmailThread = data as? GTLRGmail_Thread else {
                         return continuation.resume(throwing: AppErr.cast("GTLRGmail_Thread"))
                     }
 
-                    guard let threadMsg = thread.messages else {
-                        let empty = MessageThread(
-                            identifier: identifier,
-                            snippet: snippet,
-                            path: path,
-                            messages: []
-                        )
-                        return continuation.resume(returning: empty)
-                    }
+                    let messages = gmailThread.messages?.compactMap { try? Message(gmailMessage: $0) } ?? []
 
-                    let messages = threadMsg.compactMap { try? Message(gmailMessage: $0) }
-
-                    let result = MessageThread(
-                        identifier: thread.identifier,
-                        snippet: snippet,
-                        path: path,
+                    let thread = MessageThread(
+                        identifier: gmailThread.identifier,
+                        snippet: gmailThread.snippet,
                         messages: messages
                     )
-                    return continuation.resume(returning: result)
+                    return continuation.resume(returning: thread)
                 }
             }
         }.value

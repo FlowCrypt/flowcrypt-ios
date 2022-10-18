@@ -9,14 +9,13 @@
 import Foundation
 
 struct InboxContext {
-    let data: [InboxRenderable]
+    let data: [InboxItem]
     let pagination: MessagesListPagination
 }
 
-class InboxDataProvider {
-    func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
-        fatalError("Should be implemented")
-    }
+protocol InboxDataProvider {
+    func fetchInboxItem(identifier: MessageIdentifier, path: String) async throws -> InboxItem?
+    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext
 }
 
 // used when displaying conversations (threads) in inbox (Gmail API default)
@@ -27,15 +26,20 @@ class InboxMessageThreadsProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+    func fetchInboxItem(identifier: MessageIdentifier, path: String) async throws -> InboxItem? {
+        guard let id = identifier.threadId?.stringId else { return nil }
+        let thread = try await provider.fetchThread(identifier: id, path: path)
+        return InboxItem(thread: thread, folderPath: path, identifier: identifier)
+    }
+
+    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchThreads(using: context)
 
-        let inboxData = result.threads.map {
-            InboxRenderable(
-                thread: $0,
-                folderPath: context.folderPath
-            )
-        }
+        let inboxData = result.threads
+            .map { InboxItem(thread: $0, folderPath: context.folderPath) }
+            .sorted {
+                $0.latestMessageDate(with: context.folderPath) > $1.latestMessageDate(with: context.folderPath)
+            }
 
         let inboxContext = InboxContext(
             data: inboxData,
@@ -54,10 +58,16 @@ class InboxMessageListProvider: InboxDataProvider {
         self.provider = provider
     }
 
-    override func fetchInboxItems(using context: FetchMessageContext, userEmail: String) async throws -> InboxContext {
+    func fetchInboxItem(identifier: MessageIdentifier, path: String) async throws -> InboxItem? {
+        guard let id = identifier.messageId else { return nil }
+        let message = try await provider.fetchMessage(id: id, folder: path)
+        return InboxItem(message: message)
+    }
+
+    func fetchInboxItems(using context: FetchMessageContext) async throws -> InboxContext {
         let result = try await provider.fetchMessages(using: context)
 
-        let inboxData = result.messages.map(InboxRenderable.init)
+        let inboxData = result.messages.map(InboxItem.init)
 
         let inboxContext = InboxContext(
             data: inboxData,

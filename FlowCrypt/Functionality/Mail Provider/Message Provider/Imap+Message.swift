@@ -9,7 +9,7 @@
 import Foundation
 
 extension Imap: MessageProvider {
-    func fetchMsg(
+    func fetchMessage(
         id: Identifier,
         folder: String
     ) async throws -> Message {
@@ -25,7 +25,7 @@ extension Imap: MessageProvider {
 //        })
     }
 
-    func fetchRawMsg(id: Identifier) async throws -> String {
+    func fetchRawMessage(id: Identifier) async throws -> String {
         throw AppErr.unexpected("Not implemented")
     }
 

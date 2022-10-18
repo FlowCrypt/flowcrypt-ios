@@ -8,11 +8,13 @@
 
 import Foundation
 
-@inline(__always) private func localize(_ key: String) -> String {
+@inline(__always)
+private func localize(_ key: String) -> String {
     return NSLocalizedString(key, comment: "")
 }
 
-@inline(__always) private func LocalizedString(_ key: String) -> String {
+@inline(__always)
+private func LocalizedString(_ key: String) -> String {
     return localize(key)
 }
 
@@ -21,12 +23,14 @@ public extension String {
         return LocalizedString(self)
     }
 
-    @inline(__always) func localizeWithArguments(_ arguments: String...) -> String {
+    @inline(__always)
+    func localizeWithArguments(_ arguments: String...) -> String {
         String(format: localize(self), arguments: arguments)
     }
 
     /// use to localize plurals with Localizable.stringsdict
-    @inline(__always) func localizePluralsWithArguments(_ arguments: Int...) -> String {
+    @inline(__always)
+    func localizePluralsWithArguments(_ arguments: Int...) -> String {
         String(format: localize(self), arguments: arguments)
     }
 }

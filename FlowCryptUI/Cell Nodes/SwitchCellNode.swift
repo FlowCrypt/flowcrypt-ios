@@ -60,7 +60,7 @@ public final class SwitchCellNode: CellNode {
         onAction(sender.isOn)
     }
 
-    public override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         switchNode.style.preferredSize = CGSize(width: 100, height: 30)
         return ASStackLayoutSpec(
             direction: .horizontal,

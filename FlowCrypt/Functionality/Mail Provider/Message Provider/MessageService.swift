@@ -6,7 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 import FlowCryptCommon
 import UIKit
 
@@ -17,11 +16,11 @@ enum MessageFetchState {
 
 // MARK: - MessageServiceError
 enum MessageServiceError: Error, CustomStringConvertible {
-    case missingPassPhrase(_ message: Message)
+    case missingPassPhrase(Keypair?)
     case emptyKeys
     case emptyKeysForEKM
     case attachmentNotFound
-    case attachmentDecryptFailed(_ message: String)
+    case attachmentDecryptFailed(String)
 }
 
 extension MessageServiceError {
@@ -88,63 +87,101 @@ final class MessageService {
 
     // MARK: - Message processing
     func getAndProcess(
-        message: Message,
+        identifier: Identifier,
         folder: String,
         onlyLocalKeys: Bool,
         userEmail: String,
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
-        let message = try await messageProvider.fetchMsg(
-            id: message.identifier,
+        let message = try await messageProvider.fetchMessage(
+            id: identifier,
             folder: folder
         )
-        if message.isPgp {
-            return try await decryptAndProcess(
-                message: message,
-                sender: message.sender,
-                onlyLocalKeys: onlyLocalKeys,
-                userEmail: userEmail,
-                isUsingKeyManager: isUsingKeyManager
-            )
-        } else {
+
+        guard message.isPgp else {
             return ProcessedMessage(message: message)
         }
+
+        return try await decryptAndProcess(
+            message: message,
+            onlyLocalKeys: onlyLocalKeys,
+            userEmail: userEmail,
+            isUsingKeyManager: isUsingKeyManager
+        )
     }
 
-    func decryptAndProcess(
-        message: Message,
-        sender: Recipient?,
-        onlyLocalKeys: Bool,
-        userEmail: String,
-        isUsingKeyManager: Bool
-    ) async throws -> ProcessedMessage {
-        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
+    private func getKeypairs(email: String, isUsingKeyManager: Bool) async throws -> [Keypair] {
+        let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: email)
+
         guard keys.isNotEmpty else {
             if isUsingKeyManager {
                 throw MessageServiceError.emptyKeysForEKM
             }
             throw MessageServiceError.emptyKeys
         }
-        let verificationPubKeys = try await fetchVerificationPubKeys(for: sender, onlyLocal: onlyLocalKeys)
+
+        return keys
+    }
+
+    private func decrypt(
+        text: String,
+        keys: [Keypair],
+        isMime: Bool = false,
+        verificationPubKeys: [String] = []
+    ) async throws -> CoreRes.ParseDecryptMsg {
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: text.data(),
+            keys: keys,
+            msgPwd: nil,
+            isMime: isMime,
+            verificationPubKeys: verificationPubKeys
+        )
+
+        guard !hasMsgBlockThatNeedsPassPhrase(decrypted) else {
+            let keyPair = keys.first(where: { $0.passphrase == nil })
+            throw MessageServiceError.missingPassPhrase(keyPair)
+        }
+
+        return decrypted
+    }
+
+    func decrypt(
+        text: String,
+        userEmail: String,
+        isUsingKeyManager: Bool
+    ) async throws -> String {
+        let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
+        let decrypted = try await decrypt(text: text, keys: keys)
+        return decrypted.text
+    }
+
+    func decryptAndProcess(
+        message: Message,
+        onlyLocalKeys: Bool,
+        userEmail: String,
+        isUsingKeyManager: Bool
+    ) async throws -> ProcessedMessage {
+        let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
+
+        let verificationPubKeys = try await fetchVerificationPubKeys(
+            for: message.sender,
+            onlyLocal: onlyLocalKeys
+        )
 
         var message = message
         if message.hasSignatureAttachment {
             // raw data is needed for verification of detached signature
-            message.raw = try await messageProvider.fetchRawMsg(id: message.identifier)
+            message.raw = try await messageProvider.fetchRawMessage(id: message.identifier)
         }
 
         let encrypted = message.raw ?? message.body.text
-        let decrypted = try await core.parseDecryptMsg(
-            encrypted: encrypted.data(),
+
+        let decrypted = try await decrypt(
+            text: encrypted,
             keys: keys,
-            msgPwd: nil,
             isMime: message.raw != nil,
             verificationPubKeys: verificationPubKeys
         )
-
-        guard !self.hasMsgBlockThatNeedsPassPhrase(decrypted) else {
-            throw MessageServiceError.missingPassPhrase(message)
-        }
 
         return try await process(
             message: message,
@@ -174,8 +211,8 @@ final class MessageService {
             let err = decryptErrBlock.decryptErr?.error
             let hideContent = err?.type == .badMdc || err?.type == .noMdc
             let rawMsg = hideContent
-            ? "content_hidden".localized
-            : decryptErrBlock.content
+                ? "content_hidden".localized
+                : decryptErrBlock.content
 
             text = "error_decrypt".localized
             + "\n\(err?.type.rawValue ?? "unknown".localized): \(err?.message ?? "??")\n\n\n\(rawMsg)"

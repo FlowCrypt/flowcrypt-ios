@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 
 /// Organisational rules, set domain-wide, and delivered from FlowCrypt Backend
 /// These either enforce, alter or forbid various behavior to fit customer needs

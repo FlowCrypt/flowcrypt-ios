@@ -7,7 +7,6 @@
 //
 
 import CryptoKit
-import Foundation
 
 /// WKD - Web Key Directory, follow this link for more information https://wiki.gnupg.org/WKD
 

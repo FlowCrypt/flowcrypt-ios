@@ -6,56 +6,47 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 import MailCore
 
 extension Imap: MessageOperationsProvider {
 
-    func markAsUnread(message: Message, folder: String) async throws {
-        guard let identifier = message.identifier.intId else {
+    func markAsUnread(id: Identifier, folder: String) async throws {
+        guard let identifier = id.intId else {
             throw ImapError.missingMessageInfo("intId")
         }
         try await executeVoid("markAsUnread", { sess, respond in
             sess.storeFlagsOperation(
                 withFolder: folder,
                 uids: MCOIndexSet(index: UInt64(identifier)),
-                kind: MCOIMAPStoreFlagsRequestKind.remove,
-                flags: [MCOMessageFlag.seen]
+                kind: .remove,
+                flags: [.seen]
             ).start { error in respond(error) }
         })
     }
 
-    func markAsRead(message: Message, folder: String) async throws {
-        guard let identifier = message.identifier.intId else {
+    func markAsRead(id: Identifier, folder: String) async throws {
+        guard let identifier = id.intId else {
             throw ImapError.missingMessageInfo("intId")
         }
-        var flags: MCOMessageFlag = []
-        let imapFlagValues = message.labels.map(\.imapFlagValue)
-        // keep previous flags
-        for value in imapFlagValues {
-            flags.insert(MCOMessageFlag(rawValue: value))
-        }
-        // add seen flag
-        flags.insert(MCOMessageFlag.seen)
         try await executeVoid("markAsRead", { sess, respond in
             sess.storeFlagsOperation(
                 withFolder: folder,
                 uids: MCOIndexSet(index: UInt64(identifier)),
-                kind: MCOIMAPStoreFlagsRequestKind.add,
-                flags: flags
+                kind: .add,
+                flags: [.seen]
             ).start { error in respond(error) }
         })
     }
 
-    func moveMessageToInbox(message: Message, folderPath: String) async throws {
+    func moveMessageToInbox(id: Identifier, folderPath: String) async throws {
         // should be implemented later
-        guard message.identifier.intId != nil else {
+        guard id.intId != nil else {
             throw ImapError.missingMessageInfo("intId")
         }
     }
 
-    func moveMessageToTrash(message: Message, trashPath: String?, from folder: String) async throws {
-        guard let identifier = message.identifier.intId else {
+    func moveMessageToTrash(id: Identifier, trashPath: String?, from folder: String) async throws {
+        guard let identifier = id.intId else {
             throw ImapError.missingMessageInfo("intId")
         }
         guard let trashPath = trashPath else {
@@ -74,8 +65,8 @@ extension Imap: MessageOperationsProvider {
         })
     }
 
-    func delete(message: Message, from folderPath: String?) async throws {
-        guard let identifier = message.identifier.intId else {
+    func deleteMessage(id: Identifier, from folderPath: String?) async throws {
+        guard let identifier = id.intId else {
             throw ImapError.missingMessageInfo("intId")
         }
         guard let folderPath = folderPath else {
@@ -101,7 +92,7 @@ extension Imap: MessageOperationsProvider {
             sess.storeFlagsOperation(
                 withFolder: folder,
                 uids: MCOIndexSet(index: UInt64(identifier)),
-                kind: MCOIMAPStoreFlagsRequestKind.set,
+                kind: .set,
                 flags: flags
             ).start { error in respond(error) }
         })
@@ -115,8 +106,8 @@ extension Imap: MessageOperationsProvider {
         })
     }
 
-    func archiveMessage(message: Message, folderPath: String) async throws {
-        guard let identifier = message.identifier.intId else {
+    func archiveMessage(id: Identifier, folderPath: String) async throws {
+        guard let identifier = id.intId else {
             throw ImapError.missingMessageInfo("intId")
         }
         try await pushUpdatedMsgFlags(with: identifier, folder: folderPath, flags: MCOMessageFlag.deleted)

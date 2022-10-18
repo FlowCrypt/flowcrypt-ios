@@ -8,15 +8,17 @@
 
 // MARK: - Handle actions
 extension ComposeViewController {
-    internal func handleInfoTap() {
+    func handleInfoTap() {
         showToast("Please email us at human@flowcrypt.com for help")
     }
 
-    internal func handleAttachTap() {
+    func handleAttachTap() {
         openAttachmentsInputSourcesSheet()
     }
 
-    internal func handleSendTap() {
+    func handleSendTap() {
+        stopDraftTimer(withSave: false)
+
         Task {
             do {
                 guard contextToSend.hasMessagePasswordIfNeeded else {
@@ -30,7 +32,39 @@ extension ComposeViewController {
         }
     }
 
-    @objc internal func handleTableTap() {
+    func handleTrashTap() {
+        showAlertWithAction(
+            title: "draft_delete_confirmation".localized,
+            message: nil,
+            actionButtonTitle: "delete".localized,
+            actionStyle: .destructive,
+            onAction: { [weak self] _ in
+                self?.deleteDraft()
+            }
+        )
+    }
+
+    private func deleteDraft() {
+        stopDraftTimer(withSave: false)
+
+        Task {
+            do {
+                try await composeMessageService.deleteDraft()
+
+                if let messageIdentifier = composeMessageService.messageIdentifier {
+                    composeMessageService.messageIdentifier = nil
+                    handleAction?(.delete(messageIdentifier))
+                }
+
+                showToast("draft_deleted".localized, duration: 1.0)
+                navigationController?.popViewController(animated: true)
+            } catch {
+                handle(error: error)
+            }
+        }
+    }
+
+    @objc func handleTableTap() {
         if case .searchEmails = state,
            let selectedRecipientType = selectedRecipientType,
            let textField = recipientsTextField(type: selectedRecipientType),

@@ -7,7 +7,6 @@
 //
 
 import FlowCryptCommon
-import Foundation
 
 protocol KeyMethodsType {
     func filterByPassPhraseMatch<T: ArmoredPrvWithIdentity>(keys: [T], passPhrase: String) async throws -> [T]
@@ -56,7 +55,7 @@ final class KeyMethods: KeyMethodsType {
         guard parsed.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
-        let usable = parsed.filter { $0.isKeyUsable }
+        let usable = parsed.filter(\.isKeyUsable)
         guard usable.isNotEmpty else {
             throw MessageValidationError.noUsableAccountKeys
         }

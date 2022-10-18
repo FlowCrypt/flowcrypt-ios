@@ -33,5 +33,6 @@ enum MessagesListPagination {
 }
 
 protocol MessagesListProvider {
+    func fetchMessage(id: Identifier, folder: String) async throws -> Message
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext
 }

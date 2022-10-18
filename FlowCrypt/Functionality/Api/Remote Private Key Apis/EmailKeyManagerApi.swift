@@ -6,7 +6,6 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
 import FlowCryptCommon
 
 protocol EmailKeyManagerApiType {
@@ -59,7 +58,8 @@ actor EmailKeyManagerApi: EmailKeyManagerApiType {
             URLHeader(
                 value: "Bearer \(idToken)",
                 httpHeaderField: "Authorization"
-            )]
+            )
+        ]
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: urlString,

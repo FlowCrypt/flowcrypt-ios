@@ -12,15 +12,20 @@ struct ComposeMessageInput: Equatable {
     static let empty = ComposeMessageInput(type: .idle)
 
     struct MessageQuoteInfo: Equatable {
+        let id: Identifier?
         let recipients: [Recipient]
         let ccRecipients: [Recipient]
+        let bccRecipients: [Recipient]
         let sender: Recipient?
         let subject: String?
         let sentDate: Date
-        let message: String
+        let text: String
         let threadId: String?
         let replyToMsgId: String?
         let inReplyTo: String?
+        let rfc822MsgId: String?
+        let draftId: Identifier?
+        let shouldEncrypt: Bool
         let attachments: [MessageAttachment]
     }
 
@@ -28,26 +33,21 @@ struct ComposeMessageInput: Equatable {
         case idle
         case reply(MessageQuoteInfo)
         case forward(MessageQuoteInfo)
+        case draft(MessageQuoteInfo)
     }
 
     let type: InputType
 
-    var quoteRecipients: [Recipient] {
-        guard case .reply(let info) = type else {
-            return []
-        }
-        return info.recipients
-    }
-
-    var quoteCCRecipients: [Recipient] {
-        guard case .reply(let info) = type else {
-            return []
-        }
-        return info.ccRecipients
-    }
-
     var subject: String? {
         type.info?.subject
+    }
+
+    var text: String? {
+        type.info?.text
+    }
+
+    var isPgp: Bool {
+        text?.isPgp ?? false
     }
 
     var replyToMsgId: String? {
@@ -70,7 +70,7 @@ struct ComposeMessageInput: Equatable {
 extension ComposeMessageInput {
     var successfullySentToast: String {
         switch type {
-        case .idle:
+        case .idle, .draft:
             return "compose_encrypted_sent".localized
         case .forward:
             return "compose_forward_successful".localized
@@ -82,14 +82,21 @@ extension ComposeMessageInput {
 
 extension ComposeMessageInput {
     var isQuote: Bool {
-        type != .idle
-    }
-
-    var isReply: Bool {
-        guard case .reply = type else {
+        switch type {
+        case .reply, .forward:
+            return true
+        case .idle, .draft:
             return false
         }
-        return true
+    }
+
+    var shouldFocusTextNode: Bool {
+        switch type {
+        case .reply:
+            return true
+        case .idle, .forward, .draft:
+            return false
+        }
     }
 }
 
@@ -98,8 +105,28 @@ extension ComposeMessageInput.InputType {
         switch self {
         case .idle:
             return nil
-        case .reply(let info), .forward(let info):
+        case .reply(let info), .forward(let info), .draft(let info):
             return info
         }
+    }
+}
+
+extension ComposeMessageInput.MessageQuoteInfo {
+    init(message: Message, processed: ProcessedMessage? = nil) {
+        self.id = message.identifier
+        self.recipients = message.to
+        self.ccRecipients = message.cc
+        self.bccRecipients = message.bcc
+        self.sender = message.sender
+        self.subject = message.subject
+        self.sentDate = message.date
+        self.text = processed?.text ?? message.body.text
+        self.threadId = message.threadId
+        self.rfc822MsgId = message.rfc822MsgId
+        self.draftId = message.draftId
+        self.replyToMsgId = message.replyToMsgId
+        self.inReplyTo = message.inReplyTo
+        self.shouldEncrypt = message.isPgp
+        self.attachments = processed?.attachments ?? message.attachments
     }
 }

@@ -7,7 +7,6 @@
 //
 
 import FlowCryptUI
-import Foundation
 
 struct ContactDetailDecorator {
     let title = "contact_detail_screen_title".localized

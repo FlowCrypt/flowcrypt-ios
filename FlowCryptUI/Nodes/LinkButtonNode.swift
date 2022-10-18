@@ -43,7 +43,7 @@ public final class LinkButtonNode: CellNode {
         tapAction?(identifier)
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         return ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 30, left: 16, bottom: 8, right: 18),
             child: ASCenterLayoutSpec(

@@ -76,7 +76,7 @@ public final class InboxCellNode: CellNode {
         accessibilityIdentifier = "aid-inbox-item"
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let emailElement: ASLayoutElement = {
             guard let countNode = countNode else { return emailNode }
             emailNode.style.flexShrink = 1.0

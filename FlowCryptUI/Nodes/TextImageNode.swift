@@ -63,7 +63,7 @@ public final class TextImageNode: CellNode {
         onTap?(self)
     }
 
-    public override func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         imageNode.style.preferredSize = input.imageSize
         subTitleNode.style.flexGrow = 1
         subTitleNode.style.flexShrink = 1

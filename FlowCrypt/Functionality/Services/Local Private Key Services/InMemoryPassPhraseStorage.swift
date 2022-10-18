@@ -74,7 +74,7 @@ protocol InMemoryPassPhraseProviderType {
 
 /// - Warning: - should be shared instance
 final class InMemoryPassPhraseProvider: InMemoryPassPhraseProviderType {
-    static let shared: InMemoryPassPhraseProvider = InMemoryPassPhraseProvider()
+    static let shared = InMemoryPassPhraseProvider()
 
     private(set) var passPhrases: Set<PassPhrase> = []
 
