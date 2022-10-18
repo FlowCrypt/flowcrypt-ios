@@ -251,7 +251,9 @@ final class ComposeMessageService {
     }
 
     func saveDraft(message: SendableMsg, threadId: String?, shouldEncrypt: Bool) async throws {
-        saveDraftTask?.cancel()
+        if let saveDraftTask {
+            _ = try await saveDraftTask.value
+        }
 
         saveDraftTask = Task {
             do {
@@ -259,8 +261,6 @@ final class ComposeMessageService {
                     msg: message,
                     fmt: shouldEncrypt ? .encryptInline : .plain
                 ).mimeEncoded
-
-                if Task.isCancelled { return self.messageIdentifier }
 
                 let threadId = self.messageIdentifier?.threadId?.stringId ?? threadId
 
@@ -277,6 +277,7 @@ final class ComposeMessageService {
         }
 
         messageIdentifier = try await saveDraftTask?.value
+        saveDraftTask = nil
     }
 
     func deleteDraft() async throws {
