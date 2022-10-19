@@ -53,6 +53,13 @@ export const CommonData = {
     updatedText1: 'Some new text',
     text2: 'Another draft'
   },
+  richTextMessage: {
+    subject: 'Rich text message with attachment',
+    sender: 'flowcrypt.compatibility@gmail.com',
+    message: 'The Rich Text Format (RTF) Specification is a method of encoding formatted text and graphics for easy transfer between applications.',
+    attachmentName: 'simple.txt',
+    attachmentText: 'It\'s a text attachment'
+  },
   archivedThread: {
     subject: 'Archived thread'
   },

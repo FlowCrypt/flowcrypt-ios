@@ -45,11 +45,15 @@ struct Message: Hashable {
     var isDraft: Bool { labels.contains(.draft) }
 
     var isPgp: Bool {
-        body.text.isPgp || hasSignatureAttachment
+        body.text.isPgp || hasSignatureAttachment || hasRichTextAttachment
     }
 
     var hasSignatureAttachment: Bool {
         attachments.contains(where: { $0.type == "application/pgp-signature" })
+    }
+
+    var hasRichTextAttachment: Bool {
+        attachments.contains(where: { $0.name == "encrypted.asc" })
     }
 
     init(

@@ -11,4 +11,4 @@ export type GoogleMockMessage = 'CC and BCC test' | 'Test 1' | 'Signed and encry
   'message encrypted for another public key (only one pubkey used)' | 'wrong checksum' |
   'not integrity protected - should show a warning and not decrypt automatically' |
   'key mismatch unexpectedly produces a modal' | 'Test "archive thread" too aggressive' |
-  'Test "archive thread" too aggressive new message';
+  'Test "archive thread" too aggressive new message' | 'Rich text message with attachment';

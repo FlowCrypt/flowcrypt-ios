@@ -353,8 +353,10 @@ extension ThreadDetailsViewController {
     }
 
     private func show(attachment: MessageAttachment) {
-        let attachmentViewController = AttachmentViewController(file: attachment)
-        navigationController?.pushViewController(attachmentViewController, animated: true)
+        navigationController?.pushViewController(
+            AttachmentViewController(file: attachment),
+            animated: true
+        )
     }
 
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
@@ -611,7 +613,12 @@ extension ThreadDetailsViewController {
                         isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
                     )
 
-                    let processedMessage = ProcessedMessage(message: data.rawMessage, text: decryptedText, type: .plain, attachments: [])
+                    let processedMessage = ProcessedMessage(
+                        message: data.rawMessage,
+                        text: decryptedText,
+                        type: .plain,
+                        attachments: []
+                    )
                     handle(processedMessage: processedMessage, at: indexPath)
                 } catch {
                     handle(error: error, at: indexPath)
@@ -660,11 +667,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
             return
         }
 
-        onComplete(
-            action,
-            inboxItem
-        )
-
+        onComplete(action, inboxItem)
         navigationController?.popViewController(animated: true)
     }
 

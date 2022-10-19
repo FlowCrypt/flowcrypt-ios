@@ -23,7 +23,7 @@ Code in [source/core](https://github.com/FlowCrypt/flowcrypt-mobile-core/tree/ma
 
 The TS Core API meant to be used on Android/iOS has the following methods (see [entrypoint.ts](https://github.com/FlowCrypt/flowcrypt-mobile-core/blob/master/source/node/endpoints.ts)):
  - `generateKey`: generate a `curve25519|rsa2048|rsa4096` key
- - `composeEmail`: compose a MIME message as `encrypt-inline|encrypt-pgpmime|plain`
+ - `composeEmail`: compose a MIME message as `encryptInline|encryptPgpmime|plain`
  - `parseDecryptMsg`: parse a MIME message into `MsgBlock[]` (representing text, html, attachments, encrypted parts, ...), decrypt encrypted blocks with available keys
  - `encryptFile`, `decryptFile`: encrypt/decrypt OpenPGP data without armoring/dearmoring
  - `zxcvbnStrengthBar`: turn estimated pass phrase guess count into actionable representation of strength, and how long would it take to bruteforce it using 20k cores. Uses [zxcvbn](https://github.com/dropbox/zxcvbn) to estimate bruteforce guesses.

@@ -61,7 +61,7 @@ export class Endpoints {
         body['text/html'] = req.html;
       }
       return fmtRes({}, Buf.fromUtfStr(await Mime.encode(body, mimeHeaders, atts)));
-    } else if (req.format === 'encrypt-inline') {
+    } else if (req.format === 'encryptInline') {
       const encryptedAtts: Att[] = [];
       for (const att of req.atts || []) {
         const encryptedAtt = await PgpMsg.encrypt({

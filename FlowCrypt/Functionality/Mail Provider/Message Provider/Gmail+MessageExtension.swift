@@ -104,24 +104,21 @@ private extension GTLRGmail_Message {
     }
 
     func body(type: MessageBodyType) -> String? {
-        let base64String: String?
+        guard let base64String = findBase64Body(type: type) else { return nil }
+        return GTLRDecodeWebSafeBase64(base64String)?.toStr()
+    }
 
+    private func findBase64Body(type: MessageBodyType) -> String? {
         if let text = textParts.findMessageBody(type: type)?.body?.data {
-            base64String = text
+            return text
         } else if let multipartBody = textParts.findMultipartBody(),
                   let text = multipartBody.parts?.findMessageBody(type: type)?.body?.data {
-            base64String = text
+            return text
         } else if let body = payload?.body?.data {
-            base64String = body
-        } else {
-            base64String = nil
+            return body
         }
 
-        guard let base64String = base64String else {
-            return nil
-        }
-
-        return GTLRDecodeWebSafeBase64(base64String)?.toStr()
+        return nil
     }
 
     func parseAttachments() -> [MessageAttachment] {

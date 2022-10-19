@@ -315,11 +315,11 @@ ADjvgywpiGmrwdehioKtS0SrHRvExYx8ory0iLo0cLGERArZ3jycF8F+S2Xp
   t.pass();
 });
 
-ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => {
+ava.default('composeEmail format:encryptInline -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { pubKeys, keys } = getKeypairs('rsa1');
   const req = {
-    pubKeys, format: 'encrypt-inline', text: content,
+    pubKeys, format: 'encryptInline', text: content,
     to: ['encrypted@to.com'], cc: [], bcc: [], from: 'encr@from.com', subject: 'encr subj'
   };
   const { data: encryptedMimeMsg, json: encryptJson } = parseResponse(await endpoints.composeEmail(req));
@@ -336,11 +336,11 @@ ava.default('composeEmail format:encrypt-inline -> parseDecryptMsg', async t => 
   t.pass();
 });
 
-ava.default('composeEmail format:encrypt-inline with attachment', async t => {
+ava.default('composeEmail format:encryptInline with attachment', async t => {
   const content = 'hello\nwrld';
   const { pubKeys } = getKeypairs('rsa1');
   const req = {
-    pubKeys, format: 'encrypt-inline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [],
+    pubKeys, format: 'encryptInline', text: content, to: ['encrypted@to.com'], cc: [], bcc: [],
     from: 'encr@from.com',
     subject: 'encr subj',
     atts: [{
