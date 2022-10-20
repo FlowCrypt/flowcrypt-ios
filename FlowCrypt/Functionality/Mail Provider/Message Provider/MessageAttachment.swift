@@ -43,12 +43,20 @@ extension MessageAttachment {
         self.init(name: fileURL.lastPathComponent, data: data)
     }
 
-    init(name: String, data: Data) {
-        self.id = Identifier.random
+    init(name: String, data: Data, mimeType: String? = nil) {
+        self.id = .random
         self.name = name
         self.data = data
         self.estimatedSize = data.count
-        self.mimeType = name.mimeType
+        self.mimeType = mimeType ?? name.mimeType
+    }
+
+    init?(attMeta: MsgBlock.AttMeta) {
+        guard let data = Data(base64Encoded: attMeta.data.data()) else {
+            return nil
+        }
+
+        self.init(name: attMeta.name, data: data, mimeType: attMeta.type)
     }
 }
 

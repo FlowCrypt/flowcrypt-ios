@@ -26,7 +26,7 @@ export namespace NodeRequest {
   export interface ComposeEmailPlain extends ComposeEmailBase { format: 'plain' }
 
   export interface ComposeEmailEncrypted extends ComposeEmailBase {
-    format: 'encrypt-inline' | 'encrypt-pgpmime',
+    format: 'encryptInline' | 'encryptPgpmime',
     pubKeys: string[],
     signingPrv: PrvKeyInfo | undefined
   }
@@ -87,14 +87,14 @@ export class ValidateInput {
       throw new Error('Wrong atts structure for NodeRequest.composeEmail, need: {name, type, base64}');
     }
     if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?')
-      && v.pubKeys.length && (v.format === 'encrypt-inline' || v.format === 'encrypt-pgpmime')) {
+      && v.pubKeys.length && (v.format === 'encryptInline' || v.format === 'encryptPgpmime')) {
       return v as NodeRequest.ComposeEmailEncrypted;
     }
     if (!v.pubKeys && v.format === 'plain') {
       return v as NodeRequest.ComposeEmailPlain;
     }
     throw new Error(
-      'Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encrypt-inline OR format:plain allowed');
+      'Wrong choice of pubKeys and format. Either pubKeys:[..]+format:encryptInline OR format:plain allowed');
   };
 
   public static parseDecryptMsg = (v: unknown): NodeRequest.parseDecryptMsg => {

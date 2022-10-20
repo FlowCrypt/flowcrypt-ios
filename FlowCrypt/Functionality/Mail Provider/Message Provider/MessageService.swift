@@ -169,8 +169,9 @@ final class MessageService {
         )
 
         var message = message
-        if message.hasSignatureAttachment {
+        if message.hasSignatureAttachment || message.hasRichTextAttachment {
             // raw data is needed for verification of detached signature
+            // and decrypting pgp/mime attachment
             message.raw = try await messageProvider.fetchRawMessage(id: message.identifier)
         }
 
@@ -227,11 +228,18 @@ final class MessageService {
             )
         }
 
+        let attachments: [MessageAttachment]
+        if message.raw != nil {
+            attachments = decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
+        } else {
+            attachments = message.attachments
+        }
+
         return ProcessedMessage(
             message: message,
             text: text,
             type: messageType,
-            attachments: message.attachments,
+            attachments: attachments,
             signature: signature
         )
     }
@@ -286,7 +294,7 @@ final class MessageService {
 // MARK: - Message verification
 extension MessageService {
     private func fetchVerificationPubKeys(for sender: Recipient?, onlyLocal: Bool) async throws -> [String] {
-        guard let sender = sender else { return [] }
+        guard let sender else { return [] }
 
         let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email, shouldUpdateLastUsed: false)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
@@ -302,7 +310,7 @@ extension MessageService {
     private func evaluateSignatureVerificationResult(
         signature: MsgBlock.VerifyRes?
     ) async -> ProcessedMessage.MessageSignature {
-        guard let signature = signature else { return .unsigned }
+        guard let signature else { return .unsigned }
 
         if let error = signature.error {
             if let signer = signature.signer, signature.match == nil {

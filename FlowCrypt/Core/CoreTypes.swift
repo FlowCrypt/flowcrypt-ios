@@ -97,9 +97,7 @@ enum ReplyType: String, Decodable {
 }
 
 enum MsgFmt: String {
-    case plain
-    case encryptInline = "encrypt-inline" // todo - rename these in TypeScript to be camelCase
-    case encryptPgpmime = "encrypt-pgpmime"
+    case plain, encryptInline, encryptPgpmime
 }
 
 enum KeyVariant: String {
@@ -192,7 +190,7 @@ struct DecryptErr: Decodable {
 
 struct MsgBlock: Decodable {
     static func blockParseErr(with content: String) -> MsgBlock {
-        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil, verifyRes: nil)
+        MsgBlock(type: .blockParseErr, content: content, decryptErr: nil, keyDetails: nil, verifyRes: nil, attMeta: nil)
     }
 
     let type: BlockType
@@ -200,6 +198,7 @@ struct MsgBlock: Decodable {
     let decryptErr: DecryptErr? // always present in decryptErr BlockType
     let keyDetails: KeyDetails? // always present in publicKey BlockType
     let verifyRes: VerifyRes?
+    let attMeta: AttMeta?
 
     struct VerifyRes: Decodable {
         let match: Bool?
@@ -207,6 +206,13 @@ struct MsgBlock: Decodable {
         let error: String?
         let mixed: Bool?
         let partial: Bool?
+    }
+
+    struct AttMeta: Decodable {
+        let name: String
+        let data: String
+        let type: String
+        let length: Int
     }
 
     enum BlockType: String, Decodable {
@@ -221,5 +227,15 @@ struct MsgBlock: Decodable {
         case decryptErr
         case blockParseErr // block type for situations where block json could not be parsed out
         // case cryptupVerification; // not sure if Swift code will ever encounter this
+    }
+
+    static func decode(from data: Data) -> MsgBlock {
+        guard let block = try? data.decodeJson(as: MsgBlock.self)
+        else {
+            let content = String(data: data, encoding: .utf8) ?? "(utf err)"
+            return MsgBlock.blockParseErr(with: content)
+        }
+        
+        return block
     }
 }
