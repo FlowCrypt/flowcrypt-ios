@@ -76,6 +76,7 @@ final class ComposeViewController: TableNodeViewController {
             if didFinishSetup { setupTextNode() }
         }
     }
+
     private var didLayoutSubviews = false
     private var topContentInset: CGFloat {
         navigationController?.navigationBar.frame.maxY ?? 0
@@ -118,7 +119,7 @@ final class ComposeViewController: TableNodeViewController {
         )
         let draftGateway = try appContext.getRequiredMailProvider().draftGateway
 
-        if let composeMessageService = composeMessageService {
+        if let composeMessageService {
             self.composeMessageService = composeMessageService
         } else {
             self.composeMessageService = ComposeMessageService(
@@ -234,7 +235,7 @@ final class ComposeViewController: TableNodeViewController {
 
     private func updateSpinner(with state: ComposeMessageService.State) {
         switch state {
-        case .progressChanged(let progress):
+        case let .progressChanged(progress):
             if progress < 1 {
                 showProgressHUD(
                     progress: progress,

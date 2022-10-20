@@ -6,10 +6,10 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import FlowCryptCommon
+import FlowCryptUI
 import UIKit
 import WebKit
-import FlowCryptUI
-import FlowCryptCommon
 
 @MainActor
 final class AttachmentViewController: UIViewController {

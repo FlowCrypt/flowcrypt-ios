@@ -64,7 +64,7 @@ extension Keypair {
         self.isRevoked = object.isRevoked
     }
 
-    init (_ k: KeyDetails, passPhrase: String?, source: String) throws {
+    init(_ k: KeyDetails, passPhrase: String?, source: String) throws {
         guard let privateKey = k.private, let isFullyEncrypted = k.isFullyEncrypted else {
             throw KeypairError.missingPrivateKey("storing pubkey as private")
         }

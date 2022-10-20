@@ -148,7 +148,7 @@ extension SetupInitialViewController {
                 state = .fetchingKeysFromEKM
             case .doesNotUseEKM:
                 state = .searchingKeyBackupsInInbox
-            case .inconsistentClientConfiguration(let error):
+            case let .inconsistentClientConfiguration(error):
                 showAlert(message: error.description) { [weak self] in
                     self?.signOut()
                 }
@@ -196,14 +196,14 @@ extension SetupInitialViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_ node: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
 
             switch self.state {
             case .idle, .decidingIfEKMshouldBeUsed, .fetchingKeysFromEKM:
                 return ASCellNode()
             case .searchingKeyBackupsInInbox:
                 return self.searchStateNode(for: indexPath)
-            case .error(let error):
+            case let .error(error):
                 return self.errorStateNode(for: indexPath, error: error)
             case .noKeyBackupsInInbox:
                 return self.noKeysStateNode(for: indexPath)

@@ -9,7 +9,7 @@
 import GoogleAPIClientForREST_Gmail
 import UIKit
 
-// TODO - Instead of get properties use some DI mechanism
+// TODO: - Instead of get properties use some DI mechanism
 // to reuse already initialised services
 // and remove them on logout
 
@@ -26,6 +26,7 @@ final class MailProvider {
             return .password(password)
         }
     }
+
     private let services: [MailServiceProvider]
 
     var messageGateway: MessageGateway {
@@ -128,7 +129,7 @@ final class MailProvider {
     }
 }
 
-private struct MailServiceProviderFactory {
+private enum MailServiceProviderFactory {
     static func services(
         user: User,
         delegate: AppDelegateGoogleSessionContainer?

@@ -77,7 +77,7 @@ extension SignInViewController: ASTableDelegate, ASTableDataSource {
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         let imageHeight = tableNode.bounds.size.height * 0.2
         return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            guard let self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .links:
                 return LinkButtonNode(SignInViewController.AppLinks.allCases) { [weak self] identifier in

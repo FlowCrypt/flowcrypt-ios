@@ -19,7 +19,7 @@ extension GmailService: MessagesListProvider {
 
             var messages: [Message] = []
 
-            if let self = self {
+            if let self {
                 for identifier in messageIdentifiers {
                     taskGroup.addTask {
                         try await self.fetchMessage(id: Identifier(stringId: identifier), folder: "")
@@ -62,7 +62,7 @@ extension GmailService {
 
         return try await withCheckedThrowingContinuation { continuation in
             gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 

@@ -6,17 +6,6 @@ disabled_rules:
     - nesting
     - type_name
     - cyclomatic_complexity
-#   - legacy_hashing
-#   - line_length
-#   - identifier_name 
-#   - force_cast
-#   - weak_delegate
-#   - force_try
-#   - function_parameter_count
-#   - file_length
-#   - function_body_length
-#   - class_delegate_protocol #disabled this rule since it cannot track inheritance of protocol if protocols declared in different files
-#   - operator_whitespace 
 
 analyzer_rules:
   - unused_declaration

@@ -90,7 +90,7 @@ private enum MessageBodyType: String {
 
 private extension GTLRGmail_Message {
     var textParts: [GTLRGmail_MessagePart] {
-        payload?.parts?.filter { $0.filename.isEmptyOrNil } ?? []
+        payload?.parts?.filter(\.filename.isEmptyOrNil) ?? []
     }
 
     var attachmentParts: [GTLRGmail_MessagePart] {

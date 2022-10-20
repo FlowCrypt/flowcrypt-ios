@@ -22,8 +22,7 @@ enum PhotosManagerError: Error {
     case noAccessToCamera
 }
 
-final class PhotosManager {
-}
+final class PhotosManager {}
 
 extension PhotosManager: PhotosManagerType {
     func takePhoto(from viewController: TakePhotoViewController) async throws {

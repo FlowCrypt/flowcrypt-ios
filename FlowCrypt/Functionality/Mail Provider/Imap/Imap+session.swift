@@ -22,7 +22,7 @@ extension Imap {
                 .startLogging()
                 .loginOperation()?
                 .start { error in
-                    if let error = error {
+                    if let error {
                         return continuation.resume(throwing: error)
                     } else {
                         return continuation.resume()
@@ -37,7 +37,7 @@ extension Imap {
                 .startLogging()
                 .connectOperation()?
                 .start { error in
-                    if let error = error {
+                    if let error {
                         return continuation.resume(throwing: error)
                     } else {
                         return continuation.resume()
@@ -49,7 +49,7 @@ extension Imap {
     func disconnect() throws {
         let start = Trace(id: "Imap disconnect")
         try imapSess.disconnectOperation().start { [weak self] error in
-            if let error = error {
+            if let error {
                 self?.logger.logError("disconnect with \(error)")
             } else {
                 self?.logger.logInfo("disconnect with duration \(start.finish())")
@@ -62,7 +62,7 @@ extension MCOIMAPSession {
     @discardableResult
     func startLogging() -> Self {
         connectionLogger = { _, type, data in
-            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
+            guard let data, let string = String(data: data, encoding: .utf8) else { return }
             Logger.nested("IMAP").logInfo("\(type):\(string)")
         }
         return self
@@ -73,7 +73,7 @@ extension MCOSMTPSession {
     @discardableResult
     func startLogging() -> Self {
         connectionLogger = { _, type, data in
-            guard let data = data, let string = String(data: data, encoding: .utf8) else { return }
+            guard let data, let string = String(data: data, encoding: .utf8) else { return }
             Logger.nested("SMTP").logInfo("\(type):\(string)")
         }
         return self

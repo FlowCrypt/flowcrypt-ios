@@ -189,18 +189,18 @@ extension EncryptedStorage {
     }
 
     func getKeypairs(by email: String) throws -> [Keypair] {
-        return try storage.objects(KeypairRealmObject.self).where({
+        return try storage.objects(KeypairRealmObject.self).where {
             $0.user.email == email
-        }).map(Keypair.init)
+        }.map(Keypair.init)
     }
 
     func removeKeypairs(keypairs: [Keypair]) throws {
         let fingerprintsToBeDeleted = keypairs.map(\.primaryFingerprint)
         let keypairRealmObjectsToDelete = try storage
             .objects(KeypairRealmObject.self)
-            .where({ keypairRealmObject in
+            .where { keypairRealmObject in
                 keypairRealmObject.primaryFingerprint.in(fingerprintsToBeDeleted)
-        })
+            }
         try storage.write {
             try storage.delete(keypairRealmObjectsToDelete)
         }
@@ -246,13 +246,13 @@ extension EncryptedStorage: PassPhraseStorageType {
 
     func getPassPhrases(for email: String, expirationInSeconds _: Int?) throws -> [PassPhrase] {
         return try storage.objects(KeypairRealmObject.self)
-            .where({ $0.user.email == email })
+            .where { $0.user.email == email }
             .compactMap(PassPhrase.init)
     }
 
     func removePassPhrases(for email: String) throws {
         let keyPairs = try storage.objects(KeypairRealmObject.self)
-            .where({ $0.user.email == email })
+            .where { $0.user.email == email }
         for keyPair in keyPairs {
             try updateKeys(with: keyPair.primaryFingerprint, passphrase: nil)
         }

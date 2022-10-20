@@ -35,11 +35,11 @@ extension Imap: MessagesListProvider {
     }
 
     private func folderInfo(for path: String) async throws -> MCOIMAPFolderInfo {
-        return try await execute("folderInfo", { sess, respond in
+        return try await execute("folderInfo") { sess, respond in
             sess.folderInfoOperation(
                 path
             ).start { error, info in respond(error, info) }
-        })
+        }
     }
 }
 

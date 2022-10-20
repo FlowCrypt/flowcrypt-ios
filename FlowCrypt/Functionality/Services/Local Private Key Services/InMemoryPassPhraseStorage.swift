@@ -78,8 +78,7 @@ final class InMemoryPassPhraseProvider: InMemoryPassPhraseProviderType {
 
     private(set) var passPhrases: Set<PassPhrase> = []
 
-    private init() {
-    }
+    private init() {}
 
     func save(passPhrase: PassPhrase) {
         passPhrases.update(with: passPhrase)

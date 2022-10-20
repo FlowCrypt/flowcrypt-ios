@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
 
 typealias RecipientState = RecipientEmailsCellNode.Input.State
 
@@ -93,7 +93,7 @@ final class ComposeMessageService {
         )
         // now figure out if the pass phrase also matched the signing prv itself
         let matched = matchingKeys.first(where: { $0.allFingerprints.first == signingKey.primaryFingerprint })
-        return matched != nil// true if the pass phrase matched signing key
+        return matched != nil // true if the pass phrase matched signing key
     }
 
     // MARK: - Validation

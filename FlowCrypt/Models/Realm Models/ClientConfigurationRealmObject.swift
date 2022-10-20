@@ -33,7 +33,7 @@ final class ClientConfigurationRealmObject: Object {
         email: String
     ) {
         self.init()
-        if let flags = flags {
+        if let flags {
             self.flags = try? JSONEncoder().encode(flags)
         }
         self.customKeyserverUrl = customKeyserverUrl

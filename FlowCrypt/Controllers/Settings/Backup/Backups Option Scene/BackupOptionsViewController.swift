@@ -31,6 +31,7 @@ final class BackupOptionsViewController: TableNodeViewController {
     private var selectedOption: BackupOption = .email {
         didSet { handleOptionChange() }
     }
+
     private let userId: UserId
     private let appContext: AppContext
 
@@ -133,7 +134,7 @@ extension BackupOptionsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            guard let self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
 
             switch part {
             case .download:

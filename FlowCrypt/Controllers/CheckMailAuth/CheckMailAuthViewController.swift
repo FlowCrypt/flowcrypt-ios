@@ -41,7 +41,7 @@ extension CheckMailAuthViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_ node: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
             return self.unauthStateNode(for: indexPath)
         }
     }

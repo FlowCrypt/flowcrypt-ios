@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import PhotosUI
+import UIKit
 
 // MARK: - UIImagePickerControllerDelegate & UINavigationControllerDelegate
 extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -81,13 +81,13 @@ extension ComposeViewController: PHPickerViewControllerDelegate {
 
     private func handleRepresentation(url: URL?, error: Error?, isVideo: Bool) {
         guard
-            let url = url,
+            let url,
             let composeMessageAttachment = MessageAttachment(fileURL: url)
         else {
             let message = isVideo
                 ? "files_picking_videos_error_message".localized
                 : "files_picking_photos_error_message".localized
-            let errorMessage = error.flatMap({ "." + $0.localizedDescription }) ?? ""
+            let errorMessage = error.flatMap { "." + $0.localizedDescription } ?? ""
             showAlert(message: message + errorMessage)
             return
         }

@@ -94,7 +94,7 @@ extension KeySettingsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
             if self.keys.isEmpty {
                 return EmptyCellNode(input: self.decorator.emptyNodeInput())
             }

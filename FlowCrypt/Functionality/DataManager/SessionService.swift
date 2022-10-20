@@ -23,9 +23,9 @@ enum SessionType: CustomStringConvertible {
 
     var email: String {
         switch self {
-        case .google(let email, _, _):
+        case let .google(email, _, _):
             return email
-        case .session(let user):
+        case let .session(user):
             return user.email
         }
     }
@@ -102,7 +102,7 @@ extension SessionService: SessionServiceType {
             .getAllUsers()
             .first(where: { $0.email == user.email })
 
-        guard let currentUser = currentUser else {
+        guard let currentUser else {
             logger.logWarning("UserObject should be persisted to encrypted storage in case of switching accounts")
             return nil
         }
@@ -116,7 +116,7 @@ extension SessionService: SessionServiceType {
 
         let sessionType: SessionType
         switch user.authType {
-        case .oAuthGmail(let token):
+        case let .oAuthGmail(token):
             sessionType = .google(user.email, name: user.name, token: token)
         case .password:
             sessionType = .session(user)

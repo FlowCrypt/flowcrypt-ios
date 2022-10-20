@@ -90,7 +90,7 @@ extension GlobalRouter: GlobalRouterType {
         logger.logInfo("Sign in with \(route)")
         do {
             switch route {
-            case .gmailLogin(let viewController):
+            case let .gmailLogin(viewController):
                 viewController.showSpinner()
 
                 let googleService = GoogleUserService(
@@ -105,12 +105,12 @@ extension GlobalRouter: GlobalRouterType {
                 try appContext.userAccountService.startSessionFor(session: session)
                 viewController.hideSpinner()
                 try await proceed(with: appContext, session: session)
-            case .other(let session):
+            case let .other(session):
                 try appContext.userAccountService.startSessionFor(session: session)
                 try await proceed(with: appContext, session: session)
             }
         } catch {
-            if case .gmailLogin(let viewController) = route {
+            if case let .gmailLogin(viewController) = route {
                 viewController.hideSpinner()
             }
             logger.logError("Failed to sign in due to \(error.errorMessage)")
@@ -133,7 +133,7 @@ extension GlobalRouter: GlobalRouterType {
         logger.logInfo("Ask for contacts permission with \(route)")
 
         switch route {
-        case .gmailLogin(let viewController):
+        case let .gmailLogin(viewController):
             do {
                 let googleService = GoogleUserService(
                     currentUserEmail: appContext.user.email,
@@ -173,7 +173,7 @@ extension GlobalRouter: GlobalRouterType {
             switch gmailUserError {
             case .cancelledAuthorization:
                 return // don't show error modal when user cancels authorization
-            case .userNotAllowedAllNeededScopes(_, let email):
+            case let .userNotAllowedAllNeededScopes(_, email):
                 showMissingScopesView(appContext: appContext, email: email)
                 return
             default:

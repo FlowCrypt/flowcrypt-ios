@@ -85,7 +85,7 @@ extension ComposeViewController {
 
     func handleEvaluation(error: Error, with email: String, contact: RecipientWithSortedPubKeys?) {
         let recipientState: RecipientState = {
-            if let contact = contact, contact.keyState == .active {
+            if let contact, contact.keyState == .active {
                 return getRecipientState(from: contact)
             }
             switch error {
@@ -114,7 +114,7 @@ extension ComposeViewController {
         }
 
         var displayName = name
-        if let name = name, let address = MCOAddress(nonEncodedRFC822String: name), address.displayName != nil {
+        if let name, let address = MCOAddress(nonEncodedRFC822String: name), address.displayName != nil {
             displayName = address.displayName
         }
 
@@ -124,7 +124,7 @@ extension ComposeViewController {
         contextToSend.recipients[index].state = state
         contextToSend.recipients[index].keyState = keyState
 
-        if let displayName = displayName, displayName.isNotEmpty {
+        if let displayName, displayName.isNotEmpty {
             contextToSend.recipients[index].name = displayName
         }
 
@@ -206,7 +206,7 @@ extension ComposeViewController {
         )
 
         alert.addTextField { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             $0.isSecureTextEntry = true
             $0.text = self.contextToSend.messagePassword
             $0.accessibilityLabel = "aid-message-password-textfield"

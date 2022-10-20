@@ -85,7 +85,7 @@ struct SetupImapViewDecorator {
                 placeholder = nil
             }
 
-            // IMAP
+        // IMAP
         case let .imap(part):
             switch part {
             case .port:
@@ -101,7 +101,7 @@ struct SetupImapViewDecorator {
                 placeholder = nil
             }
 
-            // SMTP
+        // SMTP
         case let .smtp(part):
             switch part {
             case .port:
@@ -117,7 +117,7 @@ struct SetupImapViewDecorator {
                 placeholder = nil
             }
 
-            // OTHER
+        // OTHER
         case let .other(part):
             switch part {
             case .name:

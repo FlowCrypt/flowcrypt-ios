@@ -21,9 +21,9 @@ extension ImapError: CustomStringConvertible {
         switch self {
         case .noSession:
             return "imap_error_no_session".localized
-        case .providerError(let error):
+        case let .providerError(error):
             return "imap_error_provider".localizeWithArguments(error.localizedDescription)
-        case .missingMessageInfo(let message):
+        case let .missingMessageInfo(message):
             return "imap_error_msg_info".localizeWithArguments(message)
         case .folderRequired:
             return "imap_error_folder_required".localized

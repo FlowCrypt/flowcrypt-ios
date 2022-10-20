@@ -24,9 +24,9 @@ struct ProcessedMessage {
                 return "message_signature_good_mixed".localized
             case .unsigned:
                 return "message_not_signed".localized
-            case .error(let message):
+            case let .error(message):
                 return "message_signature_verify_error".localizeWithArguments(message.lowercasingFirstLetter())
-            case .missingPubkey(let longid):
+            case let .missingPubkey(longid):
                 let message = "message_missing_pubkey".localizeWithArguments(longid)
                 return "message_signature_verify_error".localizeWithArguments(message)
             case .partial:

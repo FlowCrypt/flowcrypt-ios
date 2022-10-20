@@ -36,13 +36,13 @@ extension GmailServiceError: LocalizedError {
             return "gmail_service_message_encode_error_message".localized
         case .missingMessagePayload:
             return "gmail_service_missing_message_payload_error_message".localized
-        case .missingMessageInfo(let info):
+        case let .missingMessageInfo(info):
             return "gmail_service_missing_message_info_error_message".localizeWithArguments(info)
-        case .providerError(let error):
+        case let .providerError(error):
             return "gmail_service_provider_error_error_message".localizeWithArguments(error.localizedDescription)
-        case .paginationError(let pagination):
+        case let .paginationError(pagination):
             return "gmail_service_pagination_error".localizeWithArguments(String(describing: pagination))
-        case .missingBackupQuery(let error):
+        case let .missingBackupQuery(error):
             return "gmail_service_missing_back_query_error_message".localizeWithArguments(error.localizedDescription)
         case .invalidGrant:
             return "gmail_service_invalid_grant_error_message".localized

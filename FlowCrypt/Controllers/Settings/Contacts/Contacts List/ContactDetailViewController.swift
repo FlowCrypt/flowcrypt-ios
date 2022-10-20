@@ -73,7 +73,7 @@ final class ContactDetailViewController: TableNodeViewController {
 extension ContactDetailViewController {
     @objc private final func handleRemoveAction() {
         navigationController?.popViewController(animated: true) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.action?(.delete(self.recipient))
         }
     }
@@ -82,14 +82,14 @@ extension ContactDetailViewController {
         let keyToRemove: PubKey
         let indexPathToRemove: IndexPath
         switch context {
-        case .left(let key):
+        case let .left(key):
             keyToRemove = key
             guard let index = recipient.pubKeys.firstIndex(where: { $0 == key }) else {
                 assertionFailure("Can't find index of the contact")
                 return
             }
             indexPathToRemove = IndexPath(row: index, section: 1)
-        case .right(let indexPath):
+        case let .right(indexPath):
             indexPathToRemove = indexPath
             keyToRemove = recipient.pubKeys[indexPath.row]
         }
@@ -122,7 +122,7 @@ extension ContactDetailViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
-            guard let self = self, let section = Section(rawValue: indexPath.section)
+            guard let self, let section = Section(rawValue: indexPath.section)
             else { return ASCellNode() }
             return self.node(for: section, row: indexPath.row)
         }

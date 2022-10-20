@@ -19,6 +19,7 @@ struct RecipientWithSortedPubKeys: RecipientBase {
         get { sortedPubKeys }
         set { _pubKeys = newValue }
     }
+
     /// non-sorted public keys
     private var _pubKeys: [PubKey]
 }

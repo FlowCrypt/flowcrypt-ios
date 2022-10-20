@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
-import FlowCryptUI
 import AsyncDisplayKit
+import FlowCryptUI
+import UIKit
 
 // MARK: - ASTableDelegate, ASTableDataSource
 extension ComposeViewController: ASTableDelegate, ASTableDataSource {
@@ -34,7 +34,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
             return ComposePart.allCases.count
         case (.main, .attachments):
             return contextToSend.attachments.count
-        case (.searchEmails, .recipients(let type)):
+        case let (.searchEmails, .recipients(type)):
             return selectedRecipientType == type ? 1 : 0
         case let (.searchEmails(emails), .searchResults):
             return emails.isNotEmpty ? emails.count + 1 : 2

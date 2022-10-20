@@ -10,7 +10,7 @@ import FlowCryptUI
 import UIKit
 
 extension ComposeViewController {
-   func displayRecipientPopOver(with indexPath: IndexPath, type: RecipientType, sender: CellNode) {
+    func displayRecipientPopOver(with indexPath: IndexPath, type: RecipientType, sender: CellNode) {
         guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
         popoverVC = ComposeRecipientPopupViewController(
@@ -44,7 +44,7 @@ extension ComposeViewController: UIPopoverPresentationControllerDelegate {
         guard let popoverVC = presentationController.presentedViewController as? ComposeRecipientPopupViewController
         else { return }
         let recipients = contextToSend.recipients(type: popoverVC.type)
-        let selectedRecipients = recipients.filter { $0.state.isSelected }
+        let selectedRecipients = recipients.filter(\.state.isSelected)
         // Deselect previous selected receipients
         for recipient in selectedRecipients {
             contextToSend.update(recipient: recipient.email, type: popoverVC.type, state: decorator.recipientIdleState)

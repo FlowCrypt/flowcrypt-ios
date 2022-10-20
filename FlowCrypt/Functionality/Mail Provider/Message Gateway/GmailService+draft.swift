@@ -14,7 +14,7 @@ extension GmailService: DraftGateway {
         let query = GTLRGmailQuery_UsersDraftsGet.query(withUserId: .me, identifier: identifier)
         return try await withCheckedThrowingContinuation { continuation in
             gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
@@ -37,7 +37,7 @@ extension GmailService: DraftGateway {
 
         return try await withCheckedThrowingContinuation { continuation in
             gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
@@ -68,7 +68,7 @@ extension GmailService: DraftGateway {
             )
 
             gmailService.executeQuery(draftQuery) { _, object, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 } else if let gmailDraft = object as? GTLRGmail_Draft {
                     let draft = MessageIdentifier(gmailDraft: gmailDraft)
@@ -85,7 +85,7 @@ extension GmailService: DraftGateway {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let query = GTLRGmailQuery_UsersDraftsDelete.query(withUserId: .me, identifier: id)
             gmailService.executeQuery(query) { _, _, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 return continuation.resume()
@@ -102,7 +102,7 @@ extension GmailService: DraftGateway {
 
         draft.message = message
 
-        if let draftId = draftId {
+        if let draftId {
             draft.identifier = draftId
 
             return GTLRGmailQuery_UsersDraftsUpdate.query(

@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 // MARK: - Setup UI
 extension ComposeViewController {
@@ -110,7 +110,7 @@ extension ComposeViewController {
                 didFinishSetup = true
                 reload(sections: Section.recipientsSections + [.compose])
             } catch {
-                if case .missingPassPhrase(let keyPair) = error as? MessageServiceError, let keyPair = keyPair {
+                if case let .missingPassPhrase(keyPair) = error as? MessageServiceError, let keyPair {
                     requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
                     return
                 } else {
@@ -152,7 +152,7 @@ extension ComposeViewController: NavigationChildController {
             switch state {
             case .cancelled:
                 self.handleUpdateAction()
-            case .error(let error):
+            case let .error(error):
                 self.showToast("draft_error".localizeWithArguments(error.errorMessage))
             case .success:
                 self.handleUpdateAction()

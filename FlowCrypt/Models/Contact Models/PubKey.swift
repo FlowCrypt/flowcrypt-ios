@@ -40,7 +40,7 @@ extension PubKey {
     var keyState: PubKeyState {
         guard !isRevoked else { return .revoked }
 
-        guard let expiresOn = expiresOn,
+        guard let expiresOn,
               expiresOn.timeIntervalSinceNow.sign == .minus
         else { return .active }
 

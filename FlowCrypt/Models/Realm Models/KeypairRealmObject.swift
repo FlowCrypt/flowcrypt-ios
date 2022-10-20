@@ -2,8 +2,8 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import RealmSwift
 import CryptoKit
+import RealmSwift
 
 enum KeySource: String {
     case backup
@@ -40,8 +40,8 @@ extension KeypairRealmObject {
 
         let keypair = try Keypair(keyDetails, passPhrase: passphrase, source: source.rawValue)
 
-        self.`private` = keypair.private
-        self.`public` = keypair.public
+        self.private = keypair.private
+        self.public = keypair.public
         self.allFingerprints.append(objectsIn: keypair.allFingerprints)
         self.allLongids.append(objectsIn: keypair.allLongids)
         self.primaryKey = keypair.primaryFingerprint + user.email

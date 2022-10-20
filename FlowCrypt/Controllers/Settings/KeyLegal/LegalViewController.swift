@@ -79,7 +79,7 @@ extension LegalViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
             let legal = self.rows[indexPath.row]
             return TitleCellNode(
                 title: self.decorator.attributedSetting(legal.title),

@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 // MARK: - Recipients Input
 extension ComposeViewController {
@@ -23,7 +23,7 @@ extension ComposeViewController {
             // Pasted string
             let characterSet = CharacterSet(charactersIn: Constants.endTypingCharacters.joined())
             let recipients = character.components(separatedBy: characterSet)
-            let validRecipients = recipients.filter { $0.isValidEmail }
+            let validRecipients = recipients.filter(\.isValidEmail)
             guard validRecipients.count > 1 else { return true }
             for recipient in validRecipients {
                 handleEndEditingAction(with: recipient, for: recipientType)
@@ -50,7 +50,7 @@ extension ComposeViewController {
 
     func handleEndEditingAction(with email: String?, name: String? = nil, for recipientType: RecipientType) {
         guard shouldEvaluateRecipientInput,
-              let email = email, email.isNotEmpty
+              let email, email.isNotEmpty
         else { return }
 
         let recipients = contextToSend.recipients(type: recipientType)
@@ -109,14 +109,14 @@ extension ComposeViewController {
     ) {
         let recipients = tempRecipients ?? contextToSend.recipients(type: type)
         guard let indexPath = recipientsIndexPath(type: type),
-           let emailNode = node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode,
-           let emailIndex = recipients.firstIndex(where: { $0.email == email && $0.type == type }) else {
+              let emailNode = node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode,
+              let emailIndex = recipients.firstIndex(where: { $0.email == email && $0.type == type }) else {
             return
         }
         emailNode.setRecipientsInput(input: contextToSend.recipients(type: type).map(RecipientEmailsCellNode.Input.init))
 
         // Reload recipient section when there are no recipients left
-        if refreshType == .delete && contextToSend.recipients(type: type).count < 1 {
+        if refreshType == .delete, contextToSend.recipients(type: type).count < 1 {
             reload(sections: [.recipients(type)])
             return
         }
@@ -149,7 +149,7 @@ extension ComposeViewController {
 
         var recipients = contextToSend.recipients(type: recipientType)
 
-        let selectedRecipients = recipients.filter { $0.state.isSelected }
+        let selectedRecipients = recipients.filter(\.state.isSelected)
 
         guard selectedRecipients.isEmpty else {
             let tempRecipients = contextToSend.recipients(type: recipientType)

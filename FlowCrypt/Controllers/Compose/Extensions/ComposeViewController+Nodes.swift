@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import AsyncDisplayKit
 import FlowCryptUI
+import UIKit
 
 // MARK: - Nodes
 extension ComposeViewController {
@@ -54,7 +54,7 @@ extension ComposeViewController {
             )
         ) { [weak self] event in
             switch event {
-            case .editingChanged(let text), .didEndEditing(let text):
+            case let .editingChanged(text), let .didEndEditing(text):
                 self?.contextToSend.subject = text
             case .didBeginEditing:
                 self?.userTappedOutSideRecipientsArea = true
@@ -122,8 +122,8 @@ extension ComposeViewController {
 
     func messagePasswordNode() -> ASCellNode {
         let input = contextToSend.hasMessagePassword
-        ? decorator.styledFilledMessagePasswordInput()
-        : decorator.styledEmptyMessagePasswordInput()
+            ? decorator.styledFilledMessagePasswordInput()
+            : decorator.styledEmptyMessagePasswordInput()
 
         return MessageActionCellNode(
             input: input,
@@ -145,9 +145,9 @@ extension ComposeViewController {
             case .didBeginEditing:
                 self.userTappedOutSideRecipientsArea = true
                 self.showRecipientLabelIfNecessary()
-            case .editingChanged(let text), .didEndEditing(let text):
+            case let .editingChanged(text), let .didEndEditing(text):
                 self.contextToSend.message = text?.string
-            case .heightChanged(let textView):
+            case let .heightChanged(textView):
                 self.ensureCursorVisible(textView: textView)
             }
         }
@@ -157,7 +157,7 @@ extension ComposeViewController {
             let mutableString = NSMutableAttributedString(attributedString: attributedString)
             let textNode = $0
 
-            if input.isQuote && !mutableString.string.contains(styledQuote.string) {
+            if input.isQuote, !mutableString.string.contains(styledQuote.string) {
                 mutableString.append(styledQuote)
             }
 
@@ -211,31 +211,32 @@ extension ComposeViewController {
             toggleButtonAction: shouldShowToggleButton ? { [weak self] in
                 guard type == .to else { return }
                 self?.toggleRecipientsList()
-            } : nil)
-            .onLayoutHeightChanged { [weak self] layoutHeight in
-                self?.decorator.updateRecipientsNode(
-                    layoutHeight: layoutHeight,
-                    type: type,
-                    completion: {
-                        if let indexPath = self?.recipientsIndexPath(type: type),
-                           let emailsNode = self?.node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
-                            emailsNode.style.preferredSize.height = layoutHeight
-                            emailsNode.setNeedsLayout()
-                        }
+            } : nil
+        )
+        .onLayoutHeightChanged { [weak self] layoutHeight in
+            self?.decorator.updateRecipientsNode(
+                layoutHeight: layoutHeight,
+                type: type,
+                completion: {
+                    if let indexPath = self?.recipientsIndexPath(type: type),
+                       let emailsNode = self?.node.nodeForRow(at: indexPath) as? RecipientEmailsCellNode {
+                        emailsNode.style.preferredSize.height = layoutHeight
+                        emailsNode.setNeedsLayout()
                     }
-                )
-            }
-            .onItemSelect { [weak self] action in
-                guard let self else { return }
-
-                switch action {
-                case let .imageTap(indexPath):
-                    self.handleRecipientAction(with: indexPath, type: type)
-                case let .select(indexPath, sender):
-                    self.handleRecipientSelection(with: indexPath, type: type)
-                    self.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
                 }
+            )
+        }
+        .onItemSelect { [weak self] action in
+            guard let self else { return }
+
+            switch action {
+            case let .imageTap(indexPath):
+                self.handleRecipientAction(with: indexPath, type: type)
+            case let .select(indexPath, sender):
+                self.handleRecipientSelection(with: indexPath, type: type)
+                self.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
             }
+        }
     }
 
     func recipientInput(type: RecipientType) -> RecipientEmailTextFieldNode {
@@ -301,7 +302,8 @@ extension ComposeViewController {
             withSpinner: false,
             size: .zero,
             insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
-            itemsAlignment: .start)
+            itemsAlignment: .start
+        )
         )
     }
 
@@ -310,7 +312,8 @@ extension ComposeViewController {
             title: "compose_enable_google_contacts_search"
                 .localized
                 .attributed(.regular(16)),
-            image: UIImage(named: "gmail_icn"))
+            image: UIImage(named: "gmail_icn")
+        )
         )
     }
 }

@@ -27,9 +27,9 @@ struct BackupOptionsViewDecorator: BackupOptionsViewDecoratorType {
             ? "backup_option_screen_email_action"
             : "backup_option_screen_file_action"
         )
-            .localized
-            .uppercased()
-            .attributed(.bold(14), color: .white, alignment: .center)
+        .localized
+        .uppercased()
+        .attributed(.bold(14), color: .white, alignment: .center)
     }
 
     func description(for backupOption: BackupOption) -> NSAttributedString {
@@ -37,8 +37,8 @@ struct BackupOptionsViewDecorator: BackupOptionsViewDecoratorType {
             ? "backup_option_screen_email_description"
             : "backup_option_screen_download_description"
         )
-            .localized
-            .attributed(.medium(14), color: .textColor, alignment: .center)
+        .localized
+        .attributed(.medium(14), color: .textColor, alignment: .center)
     }
 
     func checkboxContext(

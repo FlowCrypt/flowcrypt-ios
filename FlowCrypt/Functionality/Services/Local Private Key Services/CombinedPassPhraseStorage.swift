@@ -40,8 +40,8 @@ struct PassPhrase: Codable, Hashable, Equatable {
     // they are exactly same if we don't implement custom == operator
     static func == (lhs: PassPhrase, rhs: PassPhrase) -> Bool {
         return lhs.primaryFingerprintOfAssociatedKey == rhs.primaryFingerprintOfAssociatedKey
-                && lhs.value == rhs.value
-                && lhs.email == rhs.email
+            && lhs.value == rhs.value
+            && lhs.email == rhs.email
     }
 
     // similarly here
@@ -56,8 +56,7 @@ extension PassPhrase {
 
         self.init(value: passphrase,
                   email: user.email,
-                  fingerprintsOfAssociatedKey: Array(keypair.allFingerprints)
-        )
+                  fingerprintsOfAssociatedKey: Array(keypair.allFingerprints))
     }
 }
 

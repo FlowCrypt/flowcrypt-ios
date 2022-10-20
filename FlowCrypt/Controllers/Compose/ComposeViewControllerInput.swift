@@ -105,7 +105,7 @@ extension ComposeMessageInput.InputType {
         switch self {
         case .idle:
             return nil
-        case .reply(let info), .forward(let info), .draft(let info):
+        case let .reply(info), let .forward(info), let .draft(info):
             return info
         }
     }

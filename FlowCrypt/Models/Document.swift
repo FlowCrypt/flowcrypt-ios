@@ -12,7 +12,7 @@ final class Document: UIDocument {
     var data: Data?
 
     override func contents(forType _: String) throws -> Any {
-        guard let data = data else { return Data() }
+        guard let data else { return Data() }
         return try NSKeyedArchiver.archivedData(
             withRootObject: data,
             requiringSecureCoding: true

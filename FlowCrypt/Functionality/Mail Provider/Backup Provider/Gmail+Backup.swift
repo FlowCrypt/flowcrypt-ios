@@ -48,7 +48,7 @@ extension GmailService: BackupProvider {
         )
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 guard let attachmentPart = data as? GTLRGmail_MessagePartBody else {

@@ -39,7 +39,7 @@ extension SchemaMigration {
                 migration.enumerateObjects(ofType: object.0) { oldObject, newObject in
                     guard
                         lastError == nil,
-                        let oldObject = oldObject,
+                        let oldObject,
                         newObject == nil
                     else {
                         if lastError == nil {
@@ -185,7 +185,7 @@ extension SchemaMigration {
                 throw AppErr.unexpected("Wrong RecipientObject pubKeys property")
             }
 
-            let keys: [MigrationObject] = try oldPubKeys.map({
+            let keys: [MigrationObject] = try oldPubKeys.map {
                 guard
                     let primaryKey = $0[Properties.PubKey.primaryFingerprint] as? String,
                     let object = newPubKeys[primaryKey]
@@ -193,7 +193,7 @@ extension SchemaMigration {
                     throw AppErr.unexpected("Wrong PubKeyObject primary key")
                 }
                 return object
-            })
+            }
 
             guard let newPubKeys = newObject[Properties.Recipient.pubKeys] as? List<MigrationObject> else {
                 throw AppErr.unexpected("Wrong RecipientRealmObject pubKeys property")

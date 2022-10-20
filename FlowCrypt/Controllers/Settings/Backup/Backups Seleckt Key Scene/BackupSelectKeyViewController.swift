@@ -112,7 +112,7 @@ extension BackupSelectKeyViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
 
             return CheckBoxTextNode(
                 input: self.decorator.checkboxContext(

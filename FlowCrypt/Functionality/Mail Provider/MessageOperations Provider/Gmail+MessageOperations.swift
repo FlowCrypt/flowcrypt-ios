@@ -37,7 +37,7 @@ extension GmailService: MessageOperationsProvider {
             )
 
             self.gmailService.executeQuery(query) { _, _, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 return continuation.resume()
@@ -74,7 +74,7 @@ extension GmailService: MessageOperationsProvider {
             let query = GTLRGmailQuery_UsersMessagesBatchDelete.query(withObject: request, userId: .me)
 
             self.gmailService.executeQuery(query) { _, _, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 return continuation.resume()
@@ -105,7 +105,7 @@ extension GmailService: MessageOperationsProvider {
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.gmailService.executeQuery(query) { _, _, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 return continuation.resume()
@@ -132,7 +132,7 @@ extension GmailService: MessageOperationsProvider {
             )
 
             self.gmailService.executeQuery(query) { _, _, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 return continuation.resume()

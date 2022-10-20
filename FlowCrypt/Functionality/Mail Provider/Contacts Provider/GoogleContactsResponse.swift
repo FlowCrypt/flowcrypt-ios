@@ -30,6 +30,6 @@ extension GoogleContactsResponse {
             .map(\.person)
             .flatMap(\.emailAddresses)
             .map { String($0.value) }
-        ?? []
+            ?? []
     }
 }

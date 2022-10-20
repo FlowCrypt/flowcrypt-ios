@@ -26,6 +26,7 @@ final class SetupEKMKeyViewController: SetupCreatePassphraseAbstractViewControll
     override var parts: [SetupCreatePassphraseAbstractViewController.Parts] {
         SetupCreatePassphraseAbstractViewController.Parts.ekmKeysSetup
     }
+
     private let keys: [KeyDetails]
 
     init(

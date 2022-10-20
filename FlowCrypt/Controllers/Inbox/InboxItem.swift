@@ -21,7 +21,7 @@ struct InboxItem: Equatable {
 extension InboxItem {
     var threadId: String? {
         switch type {
-        case .thread(let id):
+        case let .thread(id):
             return id.stringId
         case .message:
             return nil
@@ -60,7 +60,7 @@ extension InboxItem {
     }
 
     var subtitle: String {
-        if let subject = subject, subject.hasContent {
+        if let subject, subject.hasContent {
             return subject
         } else {
             return "message_missing_subject".localized
@@ -99,7 +99,7 @@ extension InboxItem {
             let recipientsList = recipients.joined(separator: ",")
             return "To: \(recipientsList)".attributed(style, color: textColor)
         } else {
-            let hasDrafts = messages.contains(where: { $0.isDraft })
+            let hasDrafts = messages.contains(where: \.isDraft)
 
             let sendersList = senderNames
                 .joined(separator: ",")
@@ -128,7 +128,7 @@ extension InboxItem {
     }
 
     func messages(with label: String?) -> [Message] {
-        guard let label = label, !label.isEmpty else { return messages }
+        guard let label, !label.isEmpty else { return messages }
 
         let messageLabel = MessageLabel(gmailLabel: label)
         return messages.filter { $0.labels.contains(messageLabel) }
@@ -176,9 +176,9 @@ extension [InboxItem] {
     func firstIndex(with messageIdentifier: MessageIdentifier) -> Int? {
         firstIndex(where: {
             switch $0.type {
-            case .thread(let threadId):
+            case let .thread(threadId):
                 return threadId == messageIdentifier.threadId
-            case .message(let messageId):
+            case let .message(messageId):
                 return messageId == messageIdentifier.messageId
             }
         })

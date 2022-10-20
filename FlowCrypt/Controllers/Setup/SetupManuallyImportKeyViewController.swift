@@ -88,7 +88,7 @@ extension SetupManuallyImportKeyViewController: ASTableDelegate, ASTableDataSour
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            guard let self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
                 return SetupTitleNode(
@@ -118,7 +118,7 @@ extension SetupManuallyImportKeyViewController: ASTableDelegate, ASTableDataSour
                     title: self.decorator.buttonTitle(for: .pasteBoard)
                 )
                 return ButtonCellNode(input: input) { [weak self] in
-                    guard let self = self else { return }
+                    guard let self else { return }
                     Task {
                         do {
                             try await self.proceedToKeyImportFromPasteboard()
@@ -211,7 +211,7 @@ extension SetupManuallyImportKeyViewController: UIDocumentPickerDelegate {
         document.open { [weak self] success in
             guard success else { assertionFailure("Failed to open doc"); return }
             guard let metadata = document.data else { assertionFailure("Failed to fetch data"); return }
-            guard let self = self else { return }
+            guard let self else { return }
             Task {
                 do {
                     try await self.parseUserProvided(data: metadata)

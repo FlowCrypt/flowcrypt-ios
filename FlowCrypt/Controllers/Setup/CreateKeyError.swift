@@ -25,7 +25,7 @@ enum CreateKeyError: Error {
 extension CreateKeyError: CustomStringConvertible {
     var description: String {
         switch self {
-        case .weakPassPhrase(let strength):
+        case let .weakPassPhrase(strength):
             return """
             Pass phrase strength: \(strength.word.word)
             crack time: \(strength.time)
@@ -38,7 +38,7 @@ extension CreateKeyError: CustomStringConvertible {
             return "backupServiceError_name".localized
         case .doesntMatch:
             return "pass_phrase_match_error".localized
-        case .submitKey(let error):
+        case let .submitKey(error):
             return "submit_key_error".localized
                 + "\n"
                 + "\(error.errorMessage)"

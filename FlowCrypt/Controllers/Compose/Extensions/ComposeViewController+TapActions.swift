@@ -66,7 +66,7 @@ extension ComposeViewController {
 
     @objc func handleTableTap() {
         if case .searchEmails = state,
-           let selectedRecipientType = selectedRecipientType,
+           let selectedRecipientType,
            let textField = recipientsTextField(type: selectedRecipientType),
            textField.text.isValidEmail {
             handleEndEditingAction(with: textField.text, for: selectedRecipientType)
