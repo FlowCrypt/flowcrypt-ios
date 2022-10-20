@@ -152,6 +152,7 @@ struct Identifier: Equatable, Hashable {
         Identifier(stringId: UUID().uuidString, intId: nil)
     }
 }
+
 struct MessageBody: Hashable {
     let text: String
     let html: String?

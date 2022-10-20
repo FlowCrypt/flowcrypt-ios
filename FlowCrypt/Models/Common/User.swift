@@ -17,6 +17,7 @@ struct User: Codable, Equatable {
             smtp?.username = name
         }
     }
+
     var imap: Session?
     var smtp: Session?
 
@@ -39,7 +40,7 @@ extension User {
 
 extension User {
     var authType: AuthType? {
-        if let password = password {
+        if let password {
             return .password(password)
         }
         if let token = smtp?.oAuth2Token {

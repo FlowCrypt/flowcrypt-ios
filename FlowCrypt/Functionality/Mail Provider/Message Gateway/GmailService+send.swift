@@ -30,7 +30,7 @@ extension GmailService: MessageGateway {
             gmailService.executeQuery(querySend) { [weak self] _, data, error in
                 self?.progressHandler = nil
 
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 

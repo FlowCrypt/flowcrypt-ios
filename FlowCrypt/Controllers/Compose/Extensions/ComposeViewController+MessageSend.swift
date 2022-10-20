@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 // MARK: - Message Sending
 extension ComposeViewController {

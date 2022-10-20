@@ -15,7 +15,7 @@ struct EnterpriseServerApiHelper {
         /// -1008 - resource unavailable
         /// -1200 - SSL Error
         /// 400 - 599: Http error
-        static let getToleratedNSErrorCodes = [-1001, -1003, -1004, -1005, -1006, -1007, -1008, -1200] + Array(400..<600)
+        static let getToleratedNSErrorCodes = [-1001, -1003, -1004, -1005, -1006, -1007, -1008, -1200] + Array(400 ..< 600)
         static let getActiveFesTimeout: TimeInterval = 4
         static let apiName = "EnterpriseServerApi"
     }

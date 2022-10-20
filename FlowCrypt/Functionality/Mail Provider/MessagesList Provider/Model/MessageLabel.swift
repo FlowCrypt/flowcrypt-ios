@@ -22,7 +22,7 @@ enum MessageLabel: Equatable, Hashable {
 
     var value: String {
         switch self {
-        case .label(let result): return result
+        case let .label(result): return result
         case .unread: return "UNREAD" // Gmail supports UNREAD flag
         case .starred: return "STARRED"
         case .sent: return "SENT"

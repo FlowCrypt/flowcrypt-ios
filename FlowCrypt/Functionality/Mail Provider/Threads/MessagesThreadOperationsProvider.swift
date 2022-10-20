@@ -20,7 +20,7 @@ protocol MessagesThreadOperationsProvider {
 extension GmailService: MessagesThreadOperationsProvider {
     func delete(id: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            guard let id = id else {
+            guard let id else {
                 return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
@@ -30,7 +30,7 @@ extension GmailService: MessagesThreadOperationsProvider {
             )
 
             self.gmailService.executeQuery(query) { _, _, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 return continuation.resume()
@@ -56,8 +56,8 @@ extension GmailService: MessagesThreadOperationsProvider {
             for id in messagesIds {
                 taskGroup.addTask {
                     asRead
-                    ? try await self.markAsRead(id: id, folder: folder)
-                    : try await self.markAsUnread(id: id, folder: folder)
+                        ? try await self.markAsRead(id: id, folder: folder)
+                        : try await self.markAsUnread(id: id, folder: folder)
                 }
             }
 
@@ -80,7 +80,7 @@ extension GmailService: MessagesThreadOperationsProvider {
         labelsToRemove: [MessageLabel] = []
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            guard let id = id else {
+            guard let id else {
                 return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
             }
 
@@ -95,7 +95,7 @@ extension GmailService: MessagesThreadOperationsProvider {
             )
 
             self.gmailService.executeQuery(query) { _, _, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
                 return continuation.resume()

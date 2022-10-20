@@ -44,7 +44,7 @@ extension GmailService: MessagesThreadProvider {
         return try await Task.retrying {
             try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(query) { _, data, error in
-                    if let error = error {
+                    if let error {
                         let gmailError = GmailServiceError.convert(from: error as NSError)
                         return continuation.resume(throwing: gmailError)
                     }
@@ -64,7 +64,7 @@ extension GmailService: MessagesThreadProvider {
                 self.gmailService.executeQuery(
                     GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
                 ) { _, data, error in
-                    if let error = error {
+                    if let error {
                         return continuation.resume(throwing: GmailServiceError.providerError(error))
                     }
 

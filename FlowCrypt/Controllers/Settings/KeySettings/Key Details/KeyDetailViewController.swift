@@ -58,7 +58,7 @@ extension KeyDetailViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self, let part = Part(rawValue: indexPath.row) else {
+            guard let self, let part = Part(rawValue: indexPath.row) else {
                 return ASCellNode()
             }
 

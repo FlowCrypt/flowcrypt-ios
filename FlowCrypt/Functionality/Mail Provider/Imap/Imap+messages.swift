@@ -14,13 +14,13 @@ extension Imap {
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet
     ) async throws -> [MCOIMAPMessage] {
-        return try await execute("fetchMsgsByNumber", { sess, respond in
+        return try await execute("fetchMsgsByNumber") { sess, respond in
             sess.fetchMessagesByNumberOperation(
                 withFolder: folder,
                 requestKind: kind,
                 numbers: set
             ).start { error, value, _ in respond(error, value) }
-        })
+        }
     }
 
     func fetchMessagesByUIDOperation(
@@ -28,12 +28,12 @@ extension Imap {
         kind: MCOIMAPMessagesRequestKind,
         set: MCOIndexSet
     ) async throws -> [MCOIMAPMessage] {
-        return try await execute("fetchMessagesByUIDOperation", { sess, respond in
+        return try await execute("fetchMessagesByUIDOperation") { sess, respond in
             sess.fetchMessagesOperation(
                 withFolder: folder,
                 requestKind: kind,
                 uids: set
             ).start { error, value, _ in respond(error, value) }
-        })
+        }
     }
 }

@@ -13,7 +13,7 @@ extension GmailService: RemoteSendAsProviderType {
         let query = GTLRGmailQuery_UsersSettingsSendAsList.query(withUserId: .me)
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     let gmailError = GmailServiceError.convert(from: error as NSError)
                     return continuation.resume(throwing: gmailError)
                 }

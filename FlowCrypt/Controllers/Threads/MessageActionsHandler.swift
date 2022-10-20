@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
+import UIKit
 
 @MainActor
 protocol MessageActionsHandler: AnyObject {

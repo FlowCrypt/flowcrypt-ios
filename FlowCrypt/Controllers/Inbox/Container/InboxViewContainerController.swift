@@ -104,7 +104,7 @@ final class InboxViewContainerController: TableNodeViewController {
             node.reloadData()
         case let .error(error):
             handle(error: error)
-        case .loadedFolders(let folders):
+        case let .loadedFolders(folders):
             do {
                 let folder = folders
                     .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
@@ -171,7 +171,7 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
         )
 
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
 
             // Retry Button
             if indexPath.row == 1 {
@@ -187,7 +187,7 @@ extension InboxViewContainerController: ASTableDelegate, ASTableDataSource {
             switch self.state {
             case .loading:
                 return TextCellNode.loading
-            case .error(let error):
+            case let .error(error):
                 return TextCellNode(
                     input: self.decorator.errorInput(with: descriptionSize, error: error)
                 )

@@ -164,7 +164,7 @@ extension SetupImapViewController {
             object: nil,
             queue: .main
         ) { [weak self] notification in
-            guard let self = self else { return }
+            guard let self else { return }
             self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
         }
 
@@ -206,7 +206,7 @@ extension SetupImapViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock { { [weak self] in
-        guard let self = self, let section = Section(indexPath: indexPath) else { return ASCellNode() }
+        guard let self, let section = Section(indexPath: indexPath) else { return ASCellNode() }
 
         switch section {
         case .account(.title):
@@ -222,7 +222,7 @@ extension SetupImapViewController: ASTableDelegate, ASTableDataSource {
         default:
             return self.textFieldNode(for: indexPath)
         }
-        }
+    }
     }
 }
 
@@ -240,7 +240,7 @@ extension SetupImapViewController {
 
     private func textFieldNode(for indexPath: IndexPath) -> ASCellNode {
         guard let section = Section(indexPath: indexPath),
-            let input = decorator.textFieldInput(for: section)
+              let input = decorator.textFieldInput(for: section)
         else { assertionFailure(); return ASCellNode() }
 
         return TextFieldCellNode(input: input) { [weak self] action in
@@ -303,7 +303,7 @@ extension SetupImapViewController {
 
     private func reloadSessionCredentials() {
         node.reloadSections(
-            IndexSet(integersIn: Section.imap(.port).section...Section.smtp(.port).section),
+            IndexSet(integersIn: Section.imap(.port).section ... Section.smtp(.port).section),
             with: .none
         )
     }
@@ -331,9 +331,9 @@ extension SetupImapViewController {
         selectedSection = section
 
         switch (section, action) {
-        case (.account(.email), .editingChanged(let email)):
+        case let (.account(.email), .editingChanged(email)):
             updateForEmailChanges(with: email)
-        case (.account(.password), .didEndEditing(let password)):
+        case let (.account(.password), .didEndEditing(password)):
             user.imap?.password = password
             user.smtp?.password = password
         case (.imap(.security), .didBeginEditing):
@@ -346,9 +346,9 @@ extension SetupImapViewController {
         case (.smtp(.security), .didEndEditing):
             updateUserSmtpCredentials()
             reloadSmtpSection()
-        case (.other(.name), .didEndEditing(let name)):
+        case let (.other(.name), .didEndEditing(name)):
             user.smtp?.username = name ?? user.name
-        case (.other(.password), .didEndEditing(let password)):
+        case let (.other(.password), .didEndEditing(password)):
             user.smtp?.password = password ?? user.password
         default: break
         }
@@ -445,7 +445,7 @@ extension SetupImapViewController {
 
     @discardableResult
     private func textFieldShouldReturn() -> Bool {
-        guard let selectedSection = selectedSection else {
+        guard let selectedSection else {
             assertionFailure("Check selected section property")
             view.endEditing(true)
             return true

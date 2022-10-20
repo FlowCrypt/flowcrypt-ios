@@ -32,7 +32,7 @@ extension ComposeMessageService {
         }
 
         var progress: Float? {
-            guard case .progressChanged(let progress) = self else {
+            guard case let .progressChanged(progress) = self else {
                 return nil
             }
             return progress

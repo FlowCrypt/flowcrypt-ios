@@ -197,7 +197,7 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
             sideMenu?.allowLeftSwipe = false
             interactivePopGestureRecognizer?.isEnabled = true
             navigationButton = .defaultBackButton { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 if let viewController = self.viewControllers.compactMap({ $0 as? NavigationChildController }).last {
                     viewController.handleBackButtonTap()
                 } else {

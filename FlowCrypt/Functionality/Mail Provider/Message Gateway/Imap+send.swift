@@ -11,7 +11,7 @@ extension Imap: MessageGateway {
                 let session = try self?.smtpSess
                 session?.sendOperation(with: input.mime)
                     .start { error in
-                        if let error = error {
+                        if let error {
                             return continuation.resume(throwing: error)
                         }
                         return continuation.resume(throwing: AppErr.unexpected("Not implemented"))

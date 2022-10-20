@@ -33,6 +33,7 @@ extension LocalStorage {
     var trashFolderPath: String? {
         storage.string(forKey: Constants.indexTrashFolder.rawValue)
     }
+
     func saveTrashFolder(path: String) {
         storage.set(path, forKey: Constants.indexTrashFolder.rawValue)
     }

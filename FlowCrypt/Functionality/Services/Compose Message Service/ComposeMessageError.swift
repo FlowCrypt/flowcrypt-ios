@@ -46,7 +46,7 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
             return "compose_recipient_expired".localized
         case .invalidEmailRecipient:
             return "compose_recipient_invalid_email".localized
-        case .internalError(let message):
+        case let .internalError(message):
             return message
         }
     }
@@ -62,7 +62,7 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
 
     var description: String {
         switch self {
-        case .validationError(let messageValidationError):
+        case let .validationError(messageValidationError):
             return messageValidationError.description
         case .passPhraseRequired:
             return "compose_sign_passphrase_required".localized
@@ -70,7 +70,7 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
             return "compose_sign_passphrase_no_match".localized
         case let .noKeysFoundForSign(count, sender):
             return "compose_sign_no_keys".localizeWithArguments("\(count)", sender)
-        case .gatewayError(let error):
+        case let .gatewayError(error):
             return error.localizedDescription
         default:
             return errorMessage

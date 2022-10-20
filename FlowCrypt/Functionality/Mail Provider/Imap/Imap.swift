@@ -18,6 +18,7 @@ final class Imap: MailServiceProvider {
             return MCOIMAPSession(session: imapSeesion)
         }
     }
+
     var smtpSess: MCOSMTPSession {
         get throws {
             let smtpSession = try imapSessionProvider.smtpSession()

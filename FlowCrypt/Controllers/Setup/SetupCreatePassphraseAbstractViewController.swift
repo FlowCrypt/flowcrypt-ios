@@ -107,7 +107,7 @@ extension SetupCreatePassphraseAbstractViewController {
             object: nil,
             queue: .main
         ) { [weak self] notification in
-            guard let self = self else { return }
+            guard let self else { return }
             self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
         }
 
@@ -189,7 +189,7 @@ extension SetupCreatePassphraseAbstractViewController {
 
     private func handleButtonAction() {
         view.endEditing(true)
-        guard let passPhrase = passPhrase, passPhrase.isNotEmpty else {
+        guard let passPhrase, passPhrase.isNotEmpty else {
             showAlert(message: "setup_wrong_pass_phrase_retry".localized)
             return
         }
@@ -207,7 +207,7 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
             let part = self.parts[indexPath.row]
             switch part {
             case .title:
@@ -229,7 +229,7 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
             case .passPhrase:
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     switch action {
-                    case .didEndEditing(let value):
+                    case let .didEndEditing(value):
                         self?.passPhrase = value
                     case let .didPaste(textField, value):
                         textField.text = value

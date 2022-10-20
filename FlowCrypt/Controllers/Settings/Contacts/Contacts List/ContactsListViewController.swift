@@ -82,7 +82,7 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self else { return ASCellNode() }
+            guard let self else { return ASCellNode() }
             let cellNode = ContactCellNode(
                 input: self.decorator.contactNodeInput(with: self.recipients[indexPath.row])
             ).then {
@@ -90,7 +90,7 @@ extension ContactsListViewController: ASTableDelegate, ASTableDataSource {
             }
             cellNode.action = { [weak self] in
                 // Get actual indexPath as above indexPath would be wrong if user deletes existing rows.
-                guard let self = self, let actualIndexPath = self.node.indexPath(for: cellNode) else {
+                guard let self, let actualIndexPath = self.node.indexPath(for: cellNode) else {
                     return
                 }
                 self.delete(contact: self.recipients[actualIndexPath.row])

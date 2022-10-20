@@ -25,7 +25,7 @@ struct CheckMailAuthViewDecorator {
             switch self {
             case .setup:
                 return "gmail_service_no_access_to_account_message".localized
-            case .invalidGrant(let email):
+            case let .invalidGrant(email):
                 return "gmail_service_invalid_grant_error_message".localizeWithArguments(email)
             }
         }

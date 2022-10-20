@@ -84,14 +84,14 @@ extension Imap: BackupProvider {
 
     // todo - this is likely a duplicate of another method on Imap class
     private func fetchMsgAttachment(in folder: String, msgUid: UInt32, part: MCOIMAPPart) async throws -> Data {
-        try await execute("fetchMsgAttachment", { sess, respond in
+        try await execute("fetchMsgAttachment") { sess, respond in
             sess.fetchMessageAttachmentOperation(
                 withFolder: folder,
                 uid: msgUid,
                 partID: part.partID,
                 encoding: part.encoding
             ).start { error, value in respond(error, value) }
-        })
+        }
     }
 
     private func subjectsExpr() throws -> MCOIMAPSearchExpression {

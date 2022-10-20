@@ -28,7 +28,7 @@ final class BackupViewController: TableNodeViewController {
 
         var backups: [KeyDetails] {
             switch self {
-            case .backups(let value): return value
+            case let .backups(value): return value
             default: return []
             }
         }
@@ -107,7 +107,7 @@ extension BackupViewController: ASTableDelegate, ASTableDataSource {
         let height = nodeHeight / 2 - 200
 
         return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            guard let self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
 
             switch part {
             case .info:

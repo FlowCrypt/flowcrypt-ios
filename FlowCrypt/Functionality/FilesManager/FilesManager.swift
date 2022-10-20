@@ -21,6 +21,7 @@ extension FileType {
     var formattedSize: String {
         ByteCountFormatter().string(fromByteCount: Int64(size))
     }
+
     var type: String { mimeType ?? name.mimeType }
     var isEncrypted: Bool {
         name.hasSuffix(".pgp") || name.hasSuffix(".asc")
@@ -41,9 +42,7 @@ protocol FilesManagerType {
 }
 
 final class FilesManager {
-    private let documentsDirectoryURL: URL = {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-    }()
+    private let documentsDirectoryURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
 }
 
 extension FilesManager: FilesManagerType {

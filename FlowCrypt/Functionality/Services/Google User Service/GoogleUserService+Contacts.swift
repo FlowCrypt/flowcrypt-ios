@@ -96,7 +96,7 @@ extension GoogleUserService {
     private func perform(query: GTLRPeopleServiceQuery) async throws -> [Recipient] {
         try await withCheckedThrowingContinuation { continuation in
             self.peopleService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: ContactsProviderError.providerError(error))
                 }
 

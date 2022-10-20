@@ -16,7 +16,7 @@ extension ComposeViewController {
                 self?.navigationController?.popViewController(animated: true)
             },
             onCompletion: { [weak self] passPhrase in
-                guard let self = self else { return }
+                guard let self else { return }
 
                 Task {
                     do {
@@ -56,7 +56,7 @@ extension ComposeViewController {
     func handle(error: Error) {
         reEnableSendButton()
 
-        if case .missingPassPhrase(let keyPair) = error as? ComposeMessageError {
+        if case let .missingPassPhrase(keyPair) = error as? ComposeMessageError {
             requestMissingPassPhraseWithModal(for: keyPair)
             return
         }
@@ -70,8 +70,8 @@ extension ComposeViewController {
                 case MessageValidationError.noPubRecipients:
                     self.setMessagePassword()
                 case MessageValidationError.notUniquePassword,
-                    MessageValidationError.subjectContainsPassword,
-                    MessageValidationError.weakPassword:
+                     MessageValidationError.subjectContainsPassword,
+                     MessageValidationError.weakPassword:
                     self.showAlert(message: error.errorMessage)
                 default:
                     self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)

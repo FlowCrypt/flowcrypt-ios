@@ -69,9 +69,9 @@ extension Imap {
     ) async throws -> RES {
         return try await withCheckedThrowingContinuation { continuation in
             executor(imapSess) { error, value in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: error)
-                } else if let value = value {
+                } else if let value {
                     return continuation.resume(returning: value)
                 } else {
                     return continuation.resume(throwing: AppErr.cast("Received nil from IMAP operation"))
@@ -86,7 +86,7 @@ extension Imap {
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             executor(imapSess) { error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: error)
                 } else {
                     return continuation.resume()

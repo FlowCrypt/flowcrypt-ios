@@ -85,7 +85,7 @@ extension SetupBackupsViewController {
             object: nil,
             queue: .main
         ) { [weak self] notification in
-            guard let self = self else { return }
+            guard let self else { return }
             self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
         }
 
@@ -156,7 +156,7 @@ extension SetupBackupsViewController {
     private func handleButtonPressed() {
         view.endEditing(true)
 
-        guard let passPhrase = passPhrase else { return }
+        guard let passPhrase else { return }
 
         guard passPhrase.isNotEmpty else {
             showPassPhraseErrorAlert()
@@ -178,7 +178,8 @@ extension SetupBackupsViewController {
                     message: "error_setup_failed".localized,
                     onOk: {
                         // todo - what to do? maybe nothing, since they should now see the same button again that they can press again
-                    })
+                    }
+                )
             }
         }
     }
@@ -206,7 +207,7 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
+            guard let self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
             switch part {
             case .title:
                 return SetupTitleNode(
@@ -227,7 +228,7 @@ extension SetupBackupsViewController: ASTableDelegate, ASTableDataSource {
             case .passPhrase:
                 return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
                     switch action {
-                    case .didEndEditing(let value):
+                    case let .didEndEditing(value):
                         self?.passPhrase = value
                     case let .didPaste(textField, value):
                         textField.text = value

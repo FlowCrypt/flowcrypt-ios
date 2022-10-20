@@ -36,7 +36,7 @@ extension MainNavigationController: UINavigationControllerDelegate {
     func navigationController(_: UINavigationController, didShow viewController: UIViewController, animated _: Bool) {
         guard shouldShowBackButton(for: viewController) else { return }
         viewController.navigationItem.leftBarButtonItem = .defaultBackButton { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             if let viewController = self.viewControllers.compactMap({ $0 as? NavigationChildController }).last {
                 viewController.handleBackButtonTap()
             } else {

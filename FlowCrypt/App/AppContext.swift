@@ -45,7 +45,7 @@ class AppContext {
         var sessionType: SessionType?
         if let user = try encryptedStorage.activeUser, let authType = user.authType {
             switch authType {
-            case .oAuthGmail(let token):
+            case let .oAuthGmail(token):
                 sessionType = .google(user.email, name: user.name, token: token)
             case .password:
                 sessionType = .session(user)

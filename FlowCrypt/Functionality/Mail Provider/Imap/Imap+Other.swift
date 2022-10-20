@@ -28,12 +28,12 @@ extension Imap {
         kind: MCOIMAPMessagesRequestKind,
         uids: MCOIndexSet
     ) async throws -> [MCOIMAPMessage] {
-        return try await execute("fetchMessages", { sess, respond in
+        return try await execute("fetchMessages") { sess, respond in
             sess.fetchMessagesOperation(
                 withFolder: folder,
                 requestKind: kind,
                 uids: uids
             ).start { error, msgs, _ in respond(error, msgs) }
-        })
+        }
     }
 }

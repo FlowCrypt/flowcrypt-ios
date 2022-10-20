@@ -22,7 +22,7 @@ extension GmailService: MessageProvider {
         let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatFull)
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
@@ -48,7 +48,7 @@ extension GmailService: MessageProvider {
         let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatRaw)
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
@@ -83,7 +83,7 @@ extension GmailService: MessageProvider {
         }
 
         let fetcher = createAttachmentFetcher(identifier: identifier, messageId: messageIdentifier)
-        if let estimatedSize = estimatedSize {
+        if let estimatedSize {
             fetcher.receivedProgressBlock = { _, received in
                 let progress = min(Float(received) / estimatedSize, 1)
                 progressHandler?(progress)
@@ -92,11 +92,11 @@ extension GmailService: MessageProvider {
 
         return try await withCheckedThrowingContinuation { continuation in
             fetcher.beginFetch { data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: GmailServiceError.providerError(error))
                 }
 
-                guard let data = data,
+                guard let data,
                       let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                       let attachmentBase64String = dictionary["data"] as? String
                 else {

@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import MailCore
 import GoogleAPIClientForREST_PeopleService
+import MailCore
 
 struct Recipient: RecipientBase {
     let email: String

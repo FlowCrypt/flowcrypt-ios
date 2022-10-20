@@ -14,6 +14,7 @@ protocol ComposeRecipientPopupViewControllerProtocol {
     func removeRecipient(email: String, type: RecipientType)
     func editRecipient(email: String, type: RecipientType)
 }
+
 /**
  * View controller to display recipient popup
  * - User can be redirected here from *ComposeViewController* by tapping on any added recipients
@@ -64,7 +65,7 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
     // swiftlint:disable cyclomatic_complexity
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self
+            guard let self
             else { return ASCellNode() }
 
             let part = self.parts[indexPath.row]

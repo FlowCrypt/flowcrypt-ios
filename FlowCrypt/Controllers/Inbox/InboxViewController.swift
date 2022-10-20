@@ -29,6 +29,7 @@ class InboxViewController: ViewController {
     private var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
     }
+
     private var shouldShowEmptyView: Bool {
         inboxInput.isNotEmpty && (["SPAM", "TRASH"].contains(viewModel.path))
     }
@@ -175,7 +176,7 @@ extension InboxViewController {
 
     private func messagesToLoad() -> Int {
         switch state {
-        case .fetched(.byNumber(let totalNumberOfMessages)):
+        case let .fetched(.byNumber(totalNumberOfMessages)):
             guard let total = totalNumberOfMessages else {
                 return numberOfInboxItemsToLoad
             }
@@ -284,7 +285,7 @@ extension InboxViewController {
         case .fetching:
             break
         case .refresh:
-            if let context = context, context.isFetching() {
+            if let context, context.isFetching() {
                 return
             }
             fetchAndRenderEmails(context)
@@ -325,9 +326,9 @@ extension InboxViewController {
         // This is to prevent inbox initially load 2 pages of emails
         // (willBeginBatchFetchWith called right after initial inbox load and it triggered another page load before)
         tableNode.reloadData(completion: {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 self.shouldBeginFetch = true
-            })
+            }
         })
     }
 
@@ -400,7 +401,7 @@ extension InboxViewController {
                     appContext: appContext,
                     handleAction: { [weak self] action in
                         switch action {
-                        case .update(let identifier), .sent(let identifier), .delete(let identifier):
+                        case let .update(identifier), let .sent(identifier), let .delete(identifier):
                             self?.fetchUpdatedInboxItem(identifier: identifier)
                         }
                     }
@@ -426,7 +427,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         case .empty, .idle, .searchStart, .searching, .searchEmpty, .error:
             return 1
         case .fetched, .refresh, .fetching:
-            if shouldShowEmptyView && !inboxInput.isEmpty {
+            if shouldShowEmptyView, !inboxInput.isEmpty {
                 return inboxInput.count + 1
             }
             return inboxInput.count
@@ -513,7 +514,8 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                         self?.emptyInboxFolder()
                     }
                 )
-            })
+            }
+        )
     }
 
     private func emptyInboxFolder() {
@@ -577,7 +579,7 @@ extension InboxViewController {
             return
         }
         switch state {
-        case .fetched(.byNumber(let total)):
+        case let .fetched(.byNumber(total)):
             let newTotalNumber = (total ?? 0) - 1
             if newTotalNumber == 0 {
                 state = .empty
@@ -616,7 +618,7 @@ extension InboxViewController {
                             guard let self else { return }
 
                             switch action {
-                            case .update(let identifier), .sent(let identifier), .delete(let identifier):
+                            case let .update(identifier), let .sent(identifier), let .delete(identifier):
                                 self.fetchUpdatedInboxItem(identifier: identifier)
                             }
                         },
@@ -645,9 +647,9 @@ extension InboxViewController {
                     input: .init(type: .draft(draftInfo)),
                     handleAction: { [weak self] action in
                         switch action {
-                        case .update(let identifier):
+                        case let .update(identifier):
                             self?.fetchUpdatedInboxItem(identifier: identifier)
-                        case .sent(let identifier), .delete(let identifier):
+                        case let .sent(identifier), let .delete(identifier):
                             self?.deleteInboxItem(identifier: identifier)
                         }
                     }
@@ -705,7 +707,7 @@ extension InboxViewController {
         }
 
         switch action {
-        case .markAsRead(let isRead):
+        case let .markAsRead(isRead):
             updateMessage(isRead: isRead, at: indexToUpdate)
         case .moveToTrash, .permanentlyDelete:
             removeMessage(at: indexToUpdate)

@@ -66,7 +66,7 @@ extension AttesterApi {
         }
         throw AppErr.unexpected(
             "programing error - should have been caught above" +
-            " - unexpected status \(res.status) when looking up pubkey for \(email)"
+                " - unexpected status \(res.status) when looking up pubkey for \(email)"
         )
     }
 

@@ -21,8 +21,8 @@ extension RecipientBase {
 
     var shortName: String {
         name?.components(separatedBy: " ").first ??
-        email.components(separatedBy: "@").first ??
-        "unknown"
+            email.components(separatedBy: "@").first ??
+            "unknown"
     }
 
     var displayName: String {

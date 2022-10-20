@@ -37,7 +37,7 @@ extension ComposeViewController {
 
             node.performBatchUpdates {
                 if deletedSectionsCount > 0 {
-                    let sectionsToDelete = sectionsList.count..<sectionsList.count + deletedSectionsCount
+                    let sectionsToDelete = sectionsList.count ..< sectionsList.count + deletedSectionsCount
                     node.deleteSections(IndexSet(sectionsToDelete), with: .none)
                 }
 

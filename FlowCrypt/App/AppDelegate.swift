@@ -4,8 +4,8 @@
 //
 
 import AppAuth
-import GTMAppAuth
 import Combine
+import GTMAppAuth
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSessionContainer {
@@ -23,12 +23,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSessionC
         // See https://github.com/FlowCrypt/flowcrypt-ios/issues/1373
         guard UIApplication.shared.isProtectedDataAvailable else {
             NotificationCenter
-                 .default
-                 .publisher(for: UIApplication.protectedDataDidBecomeAvailableNotification)
-                 .first()
-                 .sink { _ in
-                     GlobalRouter().proceed()
-                 }.store(in: &waitingForProtectedDataCancellable)
+                .default
+                .publisher(for: UIApplication.protectedDataDidBecomeAvailableNotification)
+                .first()
+                .sink { _ in
+                    GlobalRouter().proceed()
+                }.store(in: &waitingForProtectedDataCancellable)
             return true
         }
         GlobalRouter().proceed()

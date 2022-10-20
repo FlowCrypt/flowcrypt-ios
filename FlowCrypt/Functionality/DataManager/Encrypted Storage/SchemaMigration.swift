@@ -12,7 +12,7 @@ protocol RealmProperty {
     var rawValue: String { get }
 }
 
-struct SchemaMigration {
+enum SchemaMigration {
     struct Properties {}
 }
 

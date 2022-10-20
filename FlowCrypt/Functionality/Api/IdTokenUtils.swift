@@ -11,7 +11,7 @@ import Foundation
 class IdTokenUtils {
     // Get id token from user or user email
     static func getIdToken(user: User? = nil, userEmail: String? = nil) async throws -> String {
-        if let user = user, case .password = user.authType {
+        if let user, case .password = user.authType {
             return try Imap(user: user).imapSess.oAuth2Token
         }
 

@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import RealmSwift
 import FlowCryptCommon
+import RealmSwift
 
 enum ContactsError: Error {
     case keyMissing
@@ -117,7 +117,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
         let keys = try find(with: email)?
             .pubKeys
             .filter { $0.primaryFingerprint == fingerprint }
-        guard let keys = keys else {
+        guard let keys else {
             return
         }
         try storage.write {

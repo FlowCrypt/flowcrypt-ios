@@ -28,7 +28,7 @@ extension SchemaMigration {
             migration.enumerateObjects(ofType: "UserRealmObject") { _, newObject in
                 guard
                     lastError == nil,
-                    let newObject = newObject
+                    let newObject
                 else {
                     if lastError == nil {
                         lastError = AppErr.unexpected("Wrong Realm configuration")
@@ -47,7 +47,7 @@ extension SchemaMigration {
             migration.enumerateObjects(ofType: type) { oldObject, newObject in
                 guard
                     lastError == nil,
-                    let oldObject = oldObject,
+                    let oldObject,
                     newObject == nil
                 else {
                     if lastError == nil {

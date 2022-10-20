@@ -29,12 +29,12 @@ extension Imap: MessageSearchProvider {
 
 extension Imap {
     func fetchUids(folder: String, expr: MCOIMAPSearchExpression) async throws -> MCOIndexSet {
-        return try await execute("searchExpression", { sess, respond in
+        return try await execute("searchExpression") { sess, respond in
             sess.searchExpressionOperation(
                 withFolder: folder,
                 expression: expr
             ).start { error, value in respond(error, value) }
-        })
+        }
     }
 }
 

@@ -6,12 +6,12 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import FlowCryptCommon
+import UIKit
 
 class AlertsFactory {
-    typealias PassPhraseCompletion = ((String) -> Void)
-    typealias CancelCompletion = (() -> Void)
+    typealias PassPhraseCompletion = (String) -> Void
+    typealias CancelCompletion = () -> Void
 
     private var textFieldDelegate: UITextFieldDelegate?
 
@@ -70,7 +70,7 @@ class AlertsFactory {
 }
 
 class SubmitOnPasteTextFieldDelegate: NSObject, UITextFieldDelegate {
-    let onSubmit: ((String) -> Void)
+    let onSubmit: (String) -> Void
 
     init(onSubmit: @escaping ((String) -> Void)) {
         self.onSubmit = onSubmit

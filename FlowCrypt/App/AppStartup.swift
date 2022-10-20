@@ -47,7 +47,7 @@ struct AppStartup {
         let revokedUpdatedFlag = "IS_PUB_KEY_REVOKED_UPDATED"
         let userDefaults = UserDefaults.standard
         if userDefaults.bool(forKey: revokedUpdatedFlag) {
-           return
+            return
         }
         // Added storage access directly because this function logic should be removed in the near future
         let storage = try context.encryptedStorage.storage
@@ -72,7 +72,7 @@ struct AppStartup {
         let revokedUpdatedFlag = "IS_KEY_PAIR_REVOKED_UPDATED"
         let userDefaults = UserDefaults.standard
         if userDefaults.bool(forKey: revokedUpdatedFlag) {
-           return
+            return
         }
         // Added storage access directly because this function logic should be removed in the near future
         let storage = try context.encryptedStorage.storage
@@ -97,13 +97,13 @@ struct AppStartup {
         let lastModifiedUpdatedFlag = "IS_LAST_MODIFIED_FLAG_UPDATED"
         let userDefaults = UserDefaults.standard
         if userDefaults.bool(forKey: lastModifiedUpdatedFlag) {
-           return
+            return
         }
         // Added storage access directly because this function logic should be removed in the near future
         let storage = try context.encryptedStorage.storage
-        let keyPairs = storage.objects(KeypairRealmObject.self).where({
+        let keyPairs = storage.objects(KeypairRealmObject.self).where {
             $0.user.email.equals(context.user.email)
-        }).unique()
+        }.unique()
 
         for keyPair in keyPairs {
             let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: keyPair.public.data())

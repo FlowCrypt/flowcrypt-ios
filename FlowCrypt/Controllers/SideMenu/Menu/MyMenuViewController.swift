@@ -128,7 +128,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
 
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
-            guard let self = self, let section = Sections(rawValue: indexPath.section) else {
+            guard let self, let section = Sections(rawValue: indexPath.section) else {
                 return ASCellNode()
             }
             return self.node(for: section, row: indexPath.row)

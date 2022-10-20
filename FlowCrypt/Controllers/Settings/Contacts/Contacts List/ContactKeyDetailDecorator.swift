@@ -68,7 +68,7 @@ struct ContactKeyDetailDecorator {
     }
 
     private func string(from date: Date?) -> String {
-        guard let date = date else { return "-" }
+        guard let date else { return "-" }
 
         let df = DateFormatter()
         df.dateStyle = .medium

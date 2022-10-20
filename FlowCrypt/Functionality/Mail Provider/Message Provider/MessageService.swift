@@ -34,7 +34,7 @@ extension MessageServiceError {
             return "error_empty_keys_for_ekm".localized
         case .attachmentNotFound:
             return "error_attachment_not_found".localized
-        case .attachmentDecryptFailed(let message):
+        case let .attachmentDecryptFailed(message):
             return message
         }
     }
@@ -200,10 +200,10 @@ final class MessageService {
         let text: String
         let signature: ProcessedMessage.MessageSignature?
 
-        if let firstBlockParseErr = firstBlockParseErr {
+        if let firstBlockParseErr {
             // Swift failed to parse one of the MsgBlock returned from TypeScript Core
             text = "error_internal_parse_block".localized
-            + "\n\n\(firstBlockParseErr.content)"
+                + "\n\n\(firstBlockParseErr.content)"
 
             messageType = .error(.other)
             signature = nil
@@ -216,7 +216,7 @@ final class MessageService {
                 : decryptErrBlock.content
 
             text = "error_decrypt".localized
-            + "\n\(err?.type.rawValue ?? "unknown".localized): \(err?.message ?? "??")\n\n\n\(rawMsg)"
+                + "\n\(err?.type.rawValue ?? "unknown".localized): \(err?.message ?? "??")\n\n\n\(rawMsg)"
             messageType = .error(err?.type ?? .other)
             signature = nil
         } else {

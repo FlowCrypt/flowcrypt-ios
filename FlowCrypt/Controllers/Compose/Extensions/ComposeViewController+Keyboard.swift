@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import FlowCryptUI
+import UIKit
 
 // MARK: - Keyboard
 extension ComposeViewController {
@@ -18,7 +18,7 @@ extension ComposeViewController {
             object: nil,
             queue: .main
         ) { [weak self] notification in
-            guard let self = self else { return }
+            guard let self else { return }
             self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
         }
 
@@ -36,13 +36,15 @@ extension ComposeViewController {
             self,
             selector: #selector(startDraftTimer),
             name: UIApplication.didBecomeActiveNotification,
-            object: nil)
+            object: nil
+        )
 
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(stopDraftTimer),
             name: UIApplication.willResignActiveNotification,
-            object: nil)
+            object: nil
+        )
     }
 
     private func adjustForKeyboard(height: CGFloat) {

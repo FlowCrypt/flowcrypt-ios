@@ -7,8 +7,8 @@
 //
 
 import AsyncDisplayKit
-import FlowCryptUI
 import FlowCryptCommon
+import FlowCryptUI
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
@@ -50,6 +50,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     var currentFolderPath: String {
         inboxItem.folderPath
     }
+
     private let onComposeMessageAction: ((ComposeMessageAction) -> Void)?
     private let onComplete: MessageActionCompletion
 
@@ -216,11 +217,11 @@ extension ThreadDetailsViewController {
         onComposeMessageAction?(action)
 
         switch action {
-        case .update(let identifier):
+        case let .update(identifier):
             updateMessage(identifier: identifier)
-        case .sent(let identifier):
+        case let .sent(identifier):
             handleSentMessage(identifier: identifier)
-        case .delete(let identifier):
+        case let .delete(identifier):
             deleteMessage(identifier: identifier)
         }
     }
@@ -248,7 +249,7 @@ extension ThreadDetailsViewController {
     private func handleSentMessage(identifier: MessageIdentifier) {
         Task {
             if let draftId = identifier.draftId,
-                let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) {
+               let index = input.firstIndex(where: { $0.rawMessage.identifier == draftId }) {
                 input.remove(at: index)
                 node.deleteSections([index + 1], with: .automatic)
             }
@@ -502,7 +503,8 @@ extension ThreadDetailsViewController {
                 completion: { [weak self] _ in
                     self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
                     self?.decryptDrafts()
-                })
+                }
+            )
         } else {
             input[messageIndex].rawMessage = processedMessage.message
             input[messageIndex].processedMessage = processedMessage
@@ -604,7 +606,7 @@ extension ThreadDetailsViewController {
     private func decryptDrafts() {
         Task {
             for (index, data) in input.enumerated() {
-                guard data.rawMessage.isDraft && data.rawMessage.isPgp && data.processedMessage == nil else { continue }
+                guard data.rawMessage.isDraft, data.rawMessage.isPgp, data.processedMessage == nil else { continue }
                 let indexPath = IndexPath(row: 0, section: index + 1)
                 do {
                     let decryptedText = try await messageService.decrypt(
@@ -650,7 +652,7 @@ extension ThreadDetailsViewController {
         switch state {
         case .fetch:
             showSpinner("loading_title".localized, isUserInteractionEnabled: true)
-        case .download(let progress):
+        case let .download(progress):
             updateSpinner(label: "downloading_title".localized, progress: progress)
         case .decrypt:
             updateSpinner(label: "processing_title".localized)
@@ -662,7 +664,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
     private func handle(action: MessageAction, error: Error? = nil) {
         hideSpinner()
 
-        if let error = error {
+        if let error {
             logger.logError("\(action.error ?? "Error: ") \(error)")
             return
         }
@@ -708,7 +710,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
                         messagesIds: inboxItem.messages.map(\.identifier),
                         in: inboxItem.folderPath
                     )
-                case .markAsRead(let isRead):
+                case let .markAsRead(isRead):
                     guard !isRead else { return }
                     Task { // Run mark as unread operation in another thread
                         try await threadOperationsProvider.markThreadAsUnread(
@@ -762,7 +764,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             let messageIndex = indexPath.section - 1
             let message = self.input[messageIndex]
 
-            if !message.rawMessage.isDraft && indexPath.row == 0 {
+            if !message.rawMessage.isDraft, indexPath.row == 0 {
                 return ThreadMessageInfoCellNode(
                     input: .init(threadMessage: message, index: messageIndex),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },

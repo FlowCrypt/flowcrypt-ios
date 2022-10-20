@@ -9,9 +9,9 @@
 import AppAuth
 import Combine
 import FlowCryptCommon
+import GoogleAPIClientForREST_Oauth2
 import GTMAppAuth
 import RealmSwift
-import GoogleAPIClientForREST_Oauth2
 
 protocol UserServiceType {
     func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String?) async throws -> SessionType
@@ -33,11 +33,11 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
             return "google_user_service_error_wrong_account".localizeWithArguments(
                 signedAccount, currentAccount, currentAccount
             )
-        case .contextError(let message):
+        case let .contextError(message):
             return "google_user_service_context_error".localizeWithArguments(message)
-        case .inconsistentState(let message):
+        case let .inconsistentState(message):
             return "google_user_service_error_inconsistent_state".localizeWithArguments(message)
-        case .userNotAllowedAllNeededScopes(let missingScopes, _):
+        case let .userNotAllowedAllNeededScopes(missingScopes, _):
             let scopesLabel = missingScopes.map(\.title).joined(separator: ", ")
             return "google_user_service_error_missing_scopes".localizeWithArguments(scopesLabel)
         }
@@ -144,9 +144,9 @@ extension GoogleUserService: UserServiceType {
                 byPresenting: request,
                 presenting: viewController
             ) { [weak self] authState, authError in
-                guard let self = self else { return }
-                guard let authState = authState else {
-                    if let authError = authError {
+                guard let self else { return }
+                guard let authState else {
+                    if let authError {
                         let error = self.parseSignInError(authError)
                         return continuation.resume(throwing: error)
                     } else {
@@ -214,7 +214,7 @@ extension GoogleUserService: UserServiceType {
         guard let email = authorization.userEmail else {
             throw GoogleUserServiceError.inconsistentState("Missing email")
         }
-        if let userEmail = userEmail, email != userEmail {
+        if let userEmail, email != userEmail {
             throw GoogleUserServiceError.wrongAccount(email, userEmail)
         }
         let missingScopes = checkMissingScopes(authState.scope, from: scopes)
@@ -239,7 +239,7 @@ extension GoogleUserService {
     private func makeAuthorizationRequest(scopes: [GoogleScope], userEmail: String? = nil) -> OIDAuthorizationRequest {
         var additionalParameters = ["include_granted_scopes": "true"]
 
-        if let userEmail = userEmail {
+        if let userEmail {
             additionalParameters["login_hint"] = userEmail
         } else if Bundle.shouldUseMockGmailApi {
             additionalParameters["login_hint"] = GeneralConstants.Mock.userEmail
@@ -282,7 +282,7 @@ extension GoogleUserService {
             }
             authService.authorizer = authorization
             authService.executeQuery(query) { _, data, error in
-                if let error = error {
+                if let error {
                     return continuation.resume(throwing: error)
                 }
                 guard let googleUser = data as? GTLROauth2_Userinfo else {
@@ -304,7 +304,7 @@ extension GoogleUserService {
 // MARK: - Tokens
 extension GoogleUserService {
     func getCachedOrRefreshedIdToken(minExpiryDuration: Double = 0) async throws -> String {
-        guard let idToken = idToken else { throw(IdTokenError.missingToken) }
+        guard let idToken else { throw (IdTokenError.missingToken) }
 
         let decodedToken = try decode(idToken: idToken)
 
@@ -319,7 +319,7 @@ extension GoogleUserService {
     private func decode(idToken: String) throws -> IdToken {
         let components = idToken.components(separatedBy: ".")
 
-        guard components.count == 3 else { throw(IdTokenError.invalidJWTFormat) }
+        guard components.count == 3 else { throw (IdTokenError.invalidJWTFormat) }
 
         var decodedString = components[1]
             .replacingOccurrences(of: "-", with: "+")
@@ -330,7 +330,7 @@ extension GoogleUserService {
         }
 
         guard let decodedData = Data(base64Encoded: decodedString)
-        else { throw(IdTokenError.invalidBase64EncodedData) }
+        else { throw (IdTokenError.invalidBase64EncodedData) }
 
         return try JSONDecoder().decode(IdToken.self, from: decodedData)
     }
@@ -339,7 +339,7 @@ extension GoogleUserService {
         return try await withCheckedThrowingContinuation { continuation in
             authorization?.authState.setNeedsTokenRefresh()
             authorization?.authState.performAction { accessToken, idToken, error in
-                guard let accessToken = accessToken, let idToken = idToken else {
+                guard let accessToken, let idToken else {
                     let tokenError = error ?? AppErr.unexpected("Shouldn't happen because received nil error and nil token")
                     return continuation.resume(throwing: tokenError)
                 }

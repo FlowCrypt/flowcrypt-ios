@@ -153,7 +153,7 @@ final class EKMVcHelper: EKMVcHelperType {
                     return continuation.resume(returning: "")
                 },
                 onCompletion: { [weak self] passPhrase in
-                    guard let self = self else {
+                    guard let self else {
                         return continuation.resume(throwing: AppErr.nilSelf)
                     }
 

@@ -66,7 +66,7 @@ struct ComposeViewDecorator {
     }
 
     func styledTitle(with text: String?) -> NSAttributedString? {
-        guard let text = text else { return nil }
+        guard let text else { return nil }
         return text.attributed(.regular(17))
     }
 
