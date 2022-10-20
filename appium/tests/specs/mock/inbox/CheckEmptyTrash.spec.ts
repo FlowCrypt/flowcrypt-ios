@@ -35,8 +35,9 @@ describe('INBOX: ', () => {
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickTrashButton();
 
-      // First check if mail is displayed in trash screen
-      await MailFolderScreen.checkEmailIsNotDisplayed(testMessageSubject, false);
+      // Check if app not crashes after going back from message screen
+      await MailFolderScreen.clickOnEmailBySubject(testMessageSubject);
+      await EmailScreen.clickBackButton();
       // Empty trash (it would throw error if empty folder button is not present)
       await MailFolderScreen.emptyFolder();
 
