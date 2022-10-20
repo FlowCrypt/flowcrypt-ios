@@ -6,9 +6,9 @@ import FlowCryptCommon
 
 protocol AttesterApiType {
     func lookup(email: String) async throws -> [KeyDetails]
-    func replace(email: String, pubkey: String, idToken: String?) async throws -> String
-    func update(email: String, pubkey: String) async throws -> String
-    func testWelcome(email: String, pubkey: String) async throws
+    func submitPrimaryEmailPubkey(email: String, pubkey: String, idToken: String) async throws -> String
+    func submitPubkeyWithConditionalEmailVerification(email: String, pubkey: String) async throws -> String
+    func testWelcome(email: String, pubkey: String, idToken: String) async throws
 }
 
 /// Public key server run by us that is shared across customers
@@ -48,9 +48,10 @@ final class AttesterApi: AttesterApiType {
 
 extension AttesterApi {
     func lookup(email: String) async throws -> [KeyDetails] {
-        if !(try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email)) {
+        guard try clientConfiguration.canLookupThisRecipientOnAttester(recipient: email) else {
             return []
         }
+
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: pubUrl(email: email),
@@ -71,46 +72,40 @@ extension AttesterApi {
     }
 
     @discardableResult
-    func replace(email: String, pubkey: String, idToken: String?) async throws -> String {
-        let httpMethod: HTTPMethod
-        let headers: [URLHeader]
-        if let value = idToken {
-            httpMethod = .post
-            headers = [URLHeader(value: "Bearer \(value)", httpHeaderField: "Authorization")]
-        } else {
-            httpMethod = .put
-            headers = []
-        }
-        let request = ApiCall.Request(
-            apiName: Constants.apiName,
-            url: pubUrl(email: email),
-            method: httpMethod,
-            body: pubkey.data(),
-            headers: headers
-        )
-        let res = try await ApiCall.call(request)
-        return res.data.toStr()
+    func submitPrimaryEmailPubkey(email: String, pubkey: String, idToken: String) async throws -> String {
+        return try await submit(pubkey: pubkey, for: email, idToken: idToken)
     }
 
     @discardableResult
-    func update(email: String, pubkey: String) async throws -> String {
+    func submitPubkeyWithConditionalEmailVerification(email: String, pubkey: String) async throws -> String {
+        return try await submit(pubkey: pubkey, for: email)
+    }
+
+    private func submit(pubkey: String, for email: String, idToken: String? = nil) async throws -> String {
+        let authHeader = idToken
+            .flatMap { URLHeader(value: "Bearer \($0)", httpHeaderField: "Authorization") }
+
         let request = ApiCall.Request(
             apiName: Constants.apiName,
             url: pubUrl(email: email),
             method: .post,
-            body: pubkey.data()
+            body: pubkey.data(),
+            headers: [authHeader].compactMap { $0 }
         )
         let res = try await ApiCall.call(request)
         return res.data.toStr()
     }
 
-    func testWelcome(email: String, pubkey: String) async throws {
+    func testWelcome(email: String, pubkey: String, idToken: String) async throws {
         let request = ApiCall.Request(
             apiName: Constants.apiName,
-            url: constructUrlBase() + "/test/welcome",
+            url: constructUrlBase() + "/welcome-message",
             method: .post,
             body: try? JSONSerialization.data(withJSONObject: ["email": email, "pubkey": pubkey]),
-            headers: [URLHeader(value: "application/json", httpHeaderField: "Content-Type")]
+            headers: [
+                URLHeader(value: "application/json", httpHeaderField: "Content-Type"),
+                URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")
+            ]
         )
         _ = try await ApiCall.call(request) // will throw on non-200
     }

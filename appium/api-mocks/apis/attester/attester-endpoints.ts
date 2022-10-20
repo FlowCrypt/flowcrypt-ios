@@ -52,7 +52,7 @@ export const getMockAttesterEndpoints = (
         throw new AttesterErr(`Not implemented: ${req.method}`, Status.BAD_REQUEST);
       }
     },
-    '/attester/test/welcome': async ({ body }, req) => {
+    '/attester/welcome-message': async ({ body }, req) => {
       throwErrorIfConfigSaysSo(attesterConfig);
 
       if (!attesterConfig.enableTestWelcome) {

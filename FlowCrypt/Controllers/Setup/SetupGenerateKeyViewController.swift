@@ -84,9 +84,12 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         }
 
         // sending welcome email is not crucial, so we don't handle errors
-        _ = try? await attester.testWelcome(
+        guard let idToken = try? await IdTokenUtils.getIdToken(user: appContext.user) else { return }
+
+        try? await attester.testWelcome(
             email: appContext.user.email,
-            pubkey: encryptedPrv.key.public
+            pubkey: encryptedPrv.key.public,
+            idToken: idToken
         )
     }
 
@@ -108,7 +111,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         publicKey: String
     ) async throws {
         do {
-            _ = try await attester.replace(
+            _ = try await attester.submitPrimaryEmailPubkey(
                 email: user.email,
                 pubkey: publicKey,
                 idToken: try await IdTokenUtils.getIdToken(user: user)
