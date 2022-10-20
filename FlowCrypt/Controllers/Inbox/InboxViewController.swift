@@ -425,9 +425,10 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         switch state {
         case .empty, .idle, .searchStart, .searching, .searchEmpty, .error:
             return 1
-        case .fetched, .refresh:
-            return shouldShowEmptyView ? inboxInput.count + 1 : inboxInput.count
-        case .fetching:
+        case .fetched, .refresh, .fetching:
+            if shouldShowEmptyView && !inboxInput.isEmpty {
+                return inboxInput.count + 1
+            }
             return inboxInput.count
         }
     }
@@ -437,9 +438,9 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        let rowNumber = shouldShowEmptyView ? indexPath.row - 1 : indexPath.row
+        let inboxItemIndex = shouldShowEmptyView ? indexPath.row - 1 : indexPath.row
 
-        guard let inboxItem = inboxInput[safe: rowNumber] else {
+        guard let inboxItem = inboxInput[safe: inboxItemIndex] else {
             return
         }
 
@@ -547,21 +548,20 @@ extension InboxViewController {
 
         // Mark wrapped message/thread(all mails in thread) as read/unread
         inboxInput[index].markAsRead(isRead)
-
-        let animationDuration = 0.3
-        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
-            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
-        }
+        reloadMessage(index: index)
     }
 
     func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int) {
         guard inboxInput.count > index else { return }
 
         inboxInput[index].update(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+        reloadMessage(index: index)
+    }
 
-        let animationDuration = 0.3
+    func reloadMessage(index: Int, animationDuration: Double = 0.3) {
+        let row = shouldShowEmptyView ? index + 1 : index
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
-            self?.tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+            self?.tableNode.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
         }
     }
 
