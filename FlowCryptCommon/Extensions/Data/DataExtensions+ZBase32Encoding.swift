@@ -43,24 +43,10 @@ public extension Data {
 
             encoded.append(firstChar)
             encoded.append(secondChar)
-            if let thirdChar = thirdChar {
-                encoded.append(thirdChar)
-            }
-            if let fourthChar = fourthChar {
-                encoded.append(fourthChar)
-            }
-            if let fifthChar = fifthChar {
-                encoded.append(fifthChar)
-            }
-            if let sixthChar = sixthChar {
-                encoded.append(sixthChar)
-            }
-            if let seventhChar = seventhChar {
-                encoded.append(seventhChar)
-            }
-            if let eightChar = eightChar {
-                encoded.append(eightChar)
-            }
+
+            [thirdChar, fourthChar, fifthChar, sixthChar, seventhChar, eightChar]
+                .compactMap { $0 }
+                .forEach { encoded.append($0) }
         }
 
         return encoded
@@ -76,7 +62,7 @@ public extension Data {
         // First: -----000
         var index = (firstByte & 0b00000111) << 2
 
-        if let secondByte = secondByte {
+        if let secondByte {
             // Second: 00 ------
             index |= (secondByte & 0b11000000) >> 6
         }
@@ -85,7 +71,7 @@ public extension Data {
     }
 
     private func encode(secondByte: UInt8?) -> UInt8? {
-        guard let secondByte = secondByte else {
+        guard let secondByte else {
             return nil
         }
         // Second: --00000-
@@ -94,13 +80,13 @@ public extension Data {
     }
 
     private func encode(secondByte: UInt8?, thirdByte: UInt8?) -> UInt8? {
-        guard let secondByte = secondByte else {
+        guard let secondByte else {
             return nil
         }
         // Second: -------0
         var index = (secondByte & 0b00000001) << 4
 
-        if let thirdByte = thirdByte {
+        if let thirdByte {
             // Third: 0000----
             index |= (thirdByte & 0b11110000) >> 4
         }
@@ -109,13 +95,13 @@ public extension Data {
     }
 
     private func encode(thirdByte: UInt8?, fourthByte: UInt8?) -> UInt8? {
-        guard let thirdByte = thirdByte else {
+        guard let thirdByte else {
             return nil
         }
         // Third:----0000
         var index = (thirdByte & 0b00001111) << 1
 
-        if let fourthByte = fourthByte {
+        if let fourthByte {
             // Fourth: 0-------
             index |= (fourthByte & 0b10000000) >> 7
         }
@@ -124,7 +110,7 @@ public extension Data {
     }
 
     private func encode(fourthByte: UInt8?) -> UInt8? {
-        guard let fourthByte = fourthByte else {
+        guard let fourthByte else {
             return nil
         }
         // Fourth: -00000--
@@ -133,13 +119,13 @@ public extension Data {
     }
 
     private func encode(fourthByte: UInt8?, fifthByte: UInt8?) -> UInt8? {
-        guard let fourthByte = fourthByte else {
+        guard let fourthByte else {
             return nil
         }
         // Fourth: ------00
         var index = (fourthByte & 0b00000011) << 3
 
-        if let fifthByte = fifthByte {
+        if let fifthByte {
             // Fifth: 000-----
             index |= (fifthByte & 0b11100000) >> 5
         }
@@ -148,7 +134,7 @@ public extension Data {
     }
 
     private func encode(fifthByte: UInt8?) -> UInt8? {
-        guard let fifthByte = fifthByte else {
+        guard let fifthByte else {
             return nil
         }
         // // Fifth: ---00000

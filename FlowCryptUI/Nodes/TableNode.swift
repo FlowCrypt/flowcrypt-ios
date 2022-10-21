@@ -41,7 +41,7 @@ public final class TableNode: ASTableNode {
 
 public extension UIViewController {
     var safeAreaWindowInsets: UIEdgeInsets {
-        UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
+        UIApplication.shared.currentWindow?.safeAreaInsets ?? .zero
     }
 }
 

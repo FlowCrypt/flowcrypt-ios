@@ -113,7 +113,7 @@ public struct Logger {
         messageToPrint.append("\(level.label)")
 
         // "ℹ️[App Start]"
-        if let label = self.label {
+        if let label {
             messageToPrint.append("\(label)")
         }
 

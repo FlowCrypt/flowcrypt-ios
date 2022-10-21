@@ -93,6 +93,8 @@ excluded:
 attributes:
   always_on_same_line:
     ["@objc"]
+file_length:
+  warning: 500
 line_length: 140
 function_body_length: 50
 

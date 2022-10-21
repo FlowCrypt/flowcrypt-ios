@@ -2,7 +2,6 @@
 // © 2017-2019 FlowCrypt Limited. All rights reserved.
 //
 
-import ENSwiftSideMenu
 import FlowCryptUI
 import UIKit
 
@@ -90,16 +89,16 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     }
 
     private func updateStatusBar() {
-        UIView.animate(withDuration: 0.3, animations: {
+        UIView.animate(withDuration: 0.3) {
             self.setNeedsStatusBarAppearanceUpdate()
-        }, completion: nil)
+        }
     }
 }
 
 extension SideMenuNavigationController: ENSideMenuDelegate {
     func sideMenuShouldOpenSideMenu() -> Bool {
-        guard let top = topViewController else { return false }
-        return viewControllers.firstIndex(of: top) == 0
+        guard let topViewController else { return false }
+        return viewControllers.firstIndex(of: topViewController) == 0
     }
 
     func sideMenuWillOpen() {

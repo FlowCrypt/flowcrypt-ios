@@ -7,7 +7,6 @@ import FlowCryptCommon
 import IDZSwiftCommonCrypto // for aes
 import JavaScriptCore // for export to js
 import Security // for rng
-import SwiftyRSA // for rsa
 
 @objc protocol CoreHostExports: JSExport {
     // crypto

@@ -3,7 +3,6 @@
 //
 
 import AsyncDisplayKit
-import ENSwiftSideMenu
 import FlowCryptUI
 import UIKit
 

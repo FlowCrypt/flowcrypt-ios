@@ -2,7 +2,7 @@
 all: ui_tests
 
 dependencies:
-	gem install bundler:2.3.15
+	gem install bundler:2.3.24
 	bundle config set path 'vendor/bundle'
 	bundle install
 

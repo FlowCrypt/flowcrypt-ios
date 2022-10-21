@@ -15,7 +15,7 @@ public extension UIColor {
     }
 
     static var textColor: UIColor {
-        UIColor.colorFor(
+        colorFor(
             darkStyle: .white,
             lightStyle: .black
         )
@@ -30,35 +30,35 @@ public extension UIColor {
     }
 
     static var mainTextColor: UIColor {
-        UIColor.colorFor(
+        colorFor(
             darkStyle: .white,
             lightStyle: .black
         )
     }
 
     static var backgroundColor: UIColor {
-        UIColor.colorFor(
+        colorFor(
             darkStyle: UIColor(r: 45, g: 44, b: 46, alpha: 1),
             lightStyle: .white
         )
     }
 
     static var dividerColor: UIColor {
-        UIColor.colorFor(
+        colorFor(
             darkStyle: UIColor(r: 102, g: 102, b: 102, alpha: 1),
             lightStyle: UIColor(r: 255, g: 255, b: 255, alpha: 0.1)
         )
     }
 
     static var mainTextUnreadColor: UIColor {
-        UIColor.colorFor(
+        colorFor(
             darkStyle: .white,
             lightStyle: .black
         )
     }
 
     static var activityIndicatorColor: UIColor {
-        UIColor.colorFor(
+        colorFor(
             darkStyle: .white,
             lightStyle: UIColor(r: 143, g: 142, b: 147, alpha: 1)
         )

@@ -22,7 +22,7 @@ class TestTimer {
     }
 
     var durationMs: Double {
-        if let startTime = startTime, let endTime = endTime {
+        if let startTime, let endTime {
             return (endTime - startTime) * 1000
         }
         return 0

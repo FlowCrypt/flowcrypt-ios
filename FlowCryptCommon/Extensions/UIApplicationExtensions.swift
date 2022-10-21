@@ -10,7 +10,7 @@ import UIKit
 
 public extension UIApplication {
 
-    var keyWindow: UIWindow? {
+    var currentWindow: UIWindow? {
         // Get connected scenes
         UIApplication.shared.connectedScenes
             // Keep only active scenes, onscreen and visible to the user

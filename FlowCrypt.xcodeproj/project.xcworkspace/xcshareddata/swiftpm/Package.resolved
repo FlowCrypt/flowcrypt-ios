@@ -100,6 +100,15 @@
       }
     },
     {
+      "identity" : "texture",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shimastripe/Texture.git",
+      "state" : {
+        "revision" : "ef22942d014ed0f7d0cca9d708e335e06fb1dddb",
+        "version" : "3.1.1"
+      }
+    },
+    {
       "identity" : "toast-swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/scalessec/Toast-Swift",
