@@ -120,7 +120,7 @@
 		5180CB9527357BB0001FC7EF /* WkdApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5180CB9427357BB0001FC7EF /* WkdApi.swift */; };
 		5180CB97273724E9001FC7EF /* ThreadMessageInfoCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5180CB96273724E9001FC7EF /* ThreadMessageInfoCellNode.swift */; };
 		51938DC1274CC291007AD57B /* MessageQuoteType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51938DC0274CC291007AD57B /* MessageQuoteType.swift */; };
-		51A1A11B29069D19007F1188 /* AsyncDisplayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 51A1A11A29069D19007F1188 /* AsyncDisplayKit */; };
+		51A1A1222906B50D007F1188 /* AsyncDisplayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 51A1A1212906B50D007F1188 /* AsyncDisplayKit */; };
 		51B0C774272AB61000124663 /* StringTestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B0C773272AB61000124663 /* StringTestExtension.swift */; };
 		51B4AE51271444580001F33B /* PubKeyRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* PubKeyRealmObject.swift */; };
 		51B4AE5327144E590001F33B /* PubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE5227144E590001F33B /* PubKey.swift */; };
@@ -891,7 +891,7 @@
 				D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */,
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
 				51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */,
-				51A1A11B29069D19007F1188 /* AsyncDisplayKit in Frameworks */,
+				51A1A1222906B50D007F1188 /* AsyncDisplayKit in Frameworks */,
 				515B7C2528119CED0066AB4F /* GMP in Frameworks */,
 				51E1675D270F36A400D27C52 /* Realm in Frameworks */,
 				51C0C1EF271982A1000C9738 /* MailCore in Frameworks */,
@@ -2344,7 +2344,7 @@
 				51C0C1EE271982A1000C9738 /* MailCore */,
 				040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */,
 				515B7C2428119CED0066AB4F /* GMP */,
-				51A1A11A29069D19007F1188 /* AsyncDisplayKit */,
+				51A1A1212906B50D007F1188 /* AsyncDisplayKit */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -2457,8 +2457,8 @@
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */,
-				51A1A11929069D19007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
 				51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */,
+				51A1A1202906B50D007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -3804,20 +3804,20 @@
 				minimumVersion = 6.2.1;
 			};
 		};
-		51A1A11929069D19007F1188 /* XCRemoteSwiftPackageReference "Texture" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/FlowCrypt/Texture";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.1;
-			};
-		};
 		51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/lukepistrol/SwiftLintPlugin";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.0.4;
+			};
+		};
+		51A1A1202906B50D007F1188 /* XCRemoteSwiftPackageReference "Texture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/FlowCrypt/Texture/";
+			requirement = {
+				branch = "feature/spm-support";
+				kind = branch;
 			};
 		};
 		51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */ = {
@@ -3894,15 +3894,15 @@
 			package = 515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */;
 			productName = GMP;
 		};
-		51A1A11A29069D19007F1188 /* AsyncDisplayKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51A1A11929069D19007F1188 /* XCRemoteSwiftPackageReference "Texture" */;
-			productName = AsyncDisplayKit;
-		};
 		51A1A11D2906AFEA007F1188 /* SwiftLint */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */;
 			productName = "plugin:SwiftLint";
+		};
+		51A1A1212906B50D007F1188 /* AsyncDisplayKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51A1A1202906B50D007F1188 /* XCRemoteSwiftPackageReference "Texture" */;
+			productName = AsyncDisplayKit;
 		};
 		51C0C1EE271982A1000C9738 /* MailCore */ = {
 			isa = XCSwiftPackageProductDependency;
