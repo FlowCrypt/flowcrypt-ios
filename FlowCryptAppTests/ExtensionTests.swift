@@ -95,7 +95,7 @@ extension ExtensionTests {
             second: 9
         ).date)
         // Jan 24, 2020
-        let otherYearDate = Date(timeIntervalSince1970: 1579883652)
+        let otherYearDate = Date(timeIntervalSince1970: 1_579_883_652)
 
         XCTAssertTrue(dateFormatter.date(from: DateFormatter().formatDate(sameDayDate)) != nil)
         if Calendar.current.isDateInToday(sameYearDate) {

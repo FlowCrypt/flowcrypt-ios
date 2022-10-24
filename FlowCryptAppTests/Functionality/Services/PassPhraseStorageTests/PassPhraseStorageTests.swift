@@ -41,12 +41,12 @@ class PassPhraseStorageTests: XCTestCase {
         let passPhrase1 = PassPhrase(
             value: "some",
             email: testPassPhraseAccount,
-            fingerprintsOfAssociatedKey: ["11","12"]
+            fingerprintsOfAssociatedKey: ["11", "12"]
         )
         let passPhrase2 = PassPhrase(
             value: "some",
             email: testPassPhraseAccount,
-            fingerprintsOfAssociatedKey: ["21","22"]
+            fingerprintsOfAssociatedKey: ["21", "22"]
         )
 
         encryptedStorage.getPassPhrasesResult = { [passPhrase1] }
@@ -145,7 +145,7 @@ class PassPhraseStorageTests: XCTestCase {
 
         try sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
-        XCTAssertFalse(inMemoryStorage.saveResult != nil )
+        XCTAssertFalse(inMemoryStorage.saveResult != nil)
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }
@@ -161,7 +161,7 @@ class PassPhraseStorageTests: XCTestCase {
         expectation.isInverted = true
 
         // encrypted storage is empty
-        encryptedStorage.getPassPhrasesResult = { [ ] }
+        encryptedStorage.getPassPhrasesResult = { [] }
 
         encryptedStorage.isRemovePassPhraseResult = { _ in
             expectation.fulfill()
@@ -169,7 +169,7 @@ class PassPhraseStorageTests: XCTestCase {
 
         try sut.savePassPhrase(with: passPhraseToSave, storageMethod: .persistent)
 
-        XCTAssertFalse(inMemoryStorage.saveResult != nil )
+        XCTAssertFalse(inMemoryStorage.saveResult != nil)
 
         wait(for: [expectation], timeout: 0.1, enforceOrder: false)
     }

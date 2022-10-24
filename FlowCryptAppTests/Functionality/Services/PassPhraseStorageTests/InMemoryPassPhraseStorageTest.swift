@@ -21,7 +21,7 @@ class InMemoryPassPhraseStorageTest: XCTestCase {
         testPassPhrase = PassPhrase(
             value: "A",
             email: testPassPhraseAccount,
-            fingerprintsOfAssociatedKey: ["11","12"]
+            fingerprintsOfAssociatedKey: ["11", "12"]
         )
         sut = .init(
             passPhraseProvider: passPhraseProvider

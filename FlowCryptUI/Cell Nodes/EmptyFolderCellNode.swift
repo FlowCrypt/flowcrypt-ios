@@ -20,12 +20,14 @@ public final class EmptyFolderCellNode: CellNode {
         textNode.maximumNumberOfLines = 5
         return textNode
     }()
+
     private lazy var trashImageNode: ASImageNode = {
         let imageNode = ASImageNode()
         imageNode.image = UIImage(systemName: "trash")?.tinted(.main)
         imageNode.style.preferredSize = CGSize(width: 25, height: 30)
         return imageNode
     }()
+
     private lazy var emptyButtonNode: ASButtonNode = {
         let buttonNode = ASButtonNode()
         let text = "folder_empty_\(path.lowercased())_button_text".localized

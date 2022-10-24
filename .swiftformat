@@ -1,1 +1,9 @@
+--disable blankLinesAroundMark
+--disable blankLinesAtStartOfScope
+--disable redundantSelf
+--disable redundantReturn
+--disable trailingCommas
+--disable unusedArguments
+--disable wrapMultilineStatementBraces
+
 --exclude appium,Core,fastlane,Pods,vendor

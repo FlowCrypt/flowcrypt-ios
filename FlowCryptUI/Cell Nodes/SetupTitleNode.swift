@@ -30,6 +30,7 @@ public final class SetupTitleNode: CellNode {
             self.accessibilityIdentifier = accessibilityIdentifier
         }
     }
+
     private let input: Input
     private let textNode = ASTextNode2()
     private let selectedNode = ASDisplayNode()

@@ -16,12 +16,12 @@ public protocol RSAMessage {
 }
 
 public extension RSAMessage {
-    
+
     /// Base64-encoded string of the message data
     var base64String: String {
         return data.base64EncodedString()
     }
-    
+
     /// Creates an encrypted message with a base64-encoded string.
     ///
     /// - Parameter base64String: Base64-encoded data of the encrypted message

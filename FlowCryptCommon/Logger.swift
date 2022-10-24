@@ -142,11 +142,11 @@ public extension Logger {
         Logger(config: .default, label: "[\(label)]")
     }
 
-    static func nested<T>(_ type: T.Type) -> Logger {
+    static func nested(_ type: (some Any).Type) -> Logger {
         Logger(config: .default, label: "[\(String(describing: type))]")
     }
 
-    static func nested<T>(in type: T.Type, with label: String) -> Logger {
+    static func nested(in type: (some Any).Type, with label: String) -> Logger {
         var message = "[\(label)]"
         message.append("[\(String(describing: type))]")
         return Logger(config: .default, label: message)
@@ -170,7 +170,7 @@ public extension Logger {
         case setup = "Setup"
     }
 
-    static func nested<T>(in type: T.Type, with logLabel: LogLabels) -> Logger {
+    static func nested(in type: (some Any).Type, with logLabel: LogLabels) -> Logger {
         Self.nested(in: type, with: logLabel.rawValue)
     }
 }
@@ -237,8 +237,8 @@ public extension Logger {
 // By default the print() will print to the console for both release and debug builds.
 /// Wrapping Swift.print() inside DEBUG flag
 public func print(_ object: Any) {
-  // Only allowing in DEBUG mode
-  #if DEBUG
-      Swift.print(object)
-  #endif
+    // Only allowing in DEBUG mode
+    #if DEBUG
+        Swift.print(object)
+    #endif
 }

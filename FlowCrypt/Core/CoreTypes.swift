@@ -8,7 +8,7 @@ struct CoreRes {
     struct Version: Decodable {
         let app_version: String
     }
-    
+
     struct ComposeEmail {
         let mimeEncoded: Data
     }
@@ -41,7 +41,7 @@ struct CoreRes {
     struct GenerateKey: Decodable {
         let key: KeyDetails
     }
-        
+
     struct DecryptFile {
         let decryptSuccess: DecryptSuccess?
         let decryptErr: DecryptErr?
@@ -235,7 +235,7 @@ struct MsgBlock: Decodable {
             let content = String(data: data, encoding: .utf8) ?? "(utf err)"
             return MsgBlock.blockParseErr(with: content)
         }
-        
+
         return block
     }
 }

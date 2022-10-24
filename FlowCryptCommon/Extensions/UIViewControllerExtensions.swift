@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import MBProgressHUD
 import Toast
 import UIKit
-import MBProgressHUD
 
 // MARK: - Toast
 public typealias ShowToastCompletion = (Bool) -> Void
@@ -203,7 +203,7 @@ public extension UIViewController {
         progress: Float? = nil,
         systemImageName: String? = nil
     ) {
-        guard let progress = progress else {
+        guard let progress else {
             showIndeterminateHUD(with: label)
             return
         }

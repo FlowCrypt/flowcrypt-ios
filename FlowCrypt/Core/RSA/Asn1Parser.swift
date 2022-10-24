@@ -10,46 +10,46 @@ import Foundation
 
 /// Simple data scanner that consumes bytes from a raw data and keeps an updated position.
 private class Scanner {
-    
+
     enum ScannerError: Error {
         case outOfBounds
     }
-    
+
     let data: Data
     var index: Int = 0
-    
+
     /// Returns whether there is no more data to consume
     var isComplete: Bool {
         return index >= data.count
     }
-    
+
     /// Creates a scanner with provided data
     ///
     /// - Parameter data: Data to consume
     init(data: Data) {
         self.data = data
     }
-    
+
     /// Consumes data of provided length and returns it
     ///
     /// - Parameter length: length of the data to consume
     /// - Returns: data consumed
     /// - Throws: ScannerError.outOfBounds error if asked to consume too many bytes
     func consume(length: Int) throws -> Data {
-        
+
         guard length > 0 else {
             return Data()
         }
-        
+
         guard index + length <= data.count else {
             throw ScannerError.outOfBounds
         }
-        
-        let subdata = data.subdata(in: index..<index + length)
+
+        let subdata = data.subdata(in: index ..< index + length)
         index += length
         return subdata
     }
-    
+
     /// Consumes a primitive, definite ASN1 length and returns its value.
     ///
     /// See http://luca.ntop.org/Teaching/Appunti/asn1.html,
@@ -62,52 +62,52 @@ private class Scanner {
     /// - Returns: Length that was consumed
     /// - Throws: ScannerError.outOfBounds error if asked to consume too many bytes
     func consumeLength() throws -> Int {
-        
+
         let lengthByte = try consume(length: 1).firstByte
-        
+
         // If the first byte's value is less than 0x80, it directly contains the length
         // so we can return it
         guard lengthByte >= 0x80 else {
             return Int(lengthByte)
         }
-        
+
         // If the first byte's value is more than 0x80, it indicates how many following bytes
         // will describe the length. For instance, 0x85 indicates that 0x85 - 0x80 = 0x05 = 5
         // bytes will describe the length, so we need to read the 5 next bytes and get their integer
         // value to determine the length.
         let nextByteCount = lengthByte - 0x80
         let length = try consume(length: Int(nextByteCount))
-        
+
         return length.integer
     }
 }
 
 private extension Data {
-    
+
     /// Returns the first byte of the current data
     var firstByte: UInt8 {
         var byte: UInt8 = 0
         copyBytes(to: &byte, count: MemoryLayout<UInt8>.size)
         return byte
     }
-    
+
     /// Returns the integer value of the current data.
     /// @warning: this only supports data up to 4 bytes, as we can only extract 32-bit integers.
     var integer: Int {
-        
+
         guard count > 0 else {
             return 0
         }
-        
+
         var int: UInt32 = 0
-        var offset: Int32 = Int32(count - 1)
+        var offset = Int32(count - 1)
         forEach { byte in
             let byte32 = UInt32(byte)
             let shifted = byte32 << (UInt32(offset) * 8)
             int = int | shifted
             offset -= 1
         }
-        
+
         return Int(int)
     }
 }
@@ -116,7 +116,7 @@ private extension Data {
 /// The root node can be any of the supported nodes described in `Node`. If the parser encounters a sequence
 /// it will recursively parse its children.
 enum Asn1Parser {
-    
+
     /// An ASN1 node
     enum Node {
         case sequence(nodes: [Node])
@@ -126,12 +126,12 @@ enum Asn1Parser {
         case bitString(data: Data)
         case octetString(data: Data)
     }
-    
+
     enum ParserError: Error {
         case noType
         case invalidType(value: UInt8)
     }
-    
+
     /// Parses ASN1 data and returns its root node.
     ///
     /// - Parameter data: ASN1 data to parse
@@ -142,7 +142,7 @@ enum Asn1Parser {
         let node = try parseNode(scanner: scanner)
         return node
     }
-    
+
     /// Parses an ASN1 given an existing scanne.
     /// @warning: this will modify the state (ie: position) of the provided scanner.
     ///
@@ -150,9 +150,9 @@ enum Asn1Parser {
     /// - Returns: Parsed node
     /// - Throws: A ParserError if anything goes wrong, or if an unknown node was encountered
     private static func parseNode(scanner: Scanner) throws -> Node {
-        
+
         let firstByte = try scanner.consume(length: 1).firstByte
-        
+
         // Sequence
         if firstByte == 0x30 {
             let length = try scanner.consumeLength()
@@ -160,49 +160,49 @@ enum Asn1Parser {
             let nodes = try parseSequence(data: data)
             return .sequence(nodes: nodes)
         }
-        
+
         // Integer
         if firstByte == 0x02 {
             let length = try scanner.consumeLength()
             let data = try scanner.consume(length: length)
             return .integer(data: data)
         }
-        
+
         // Object identifier
         if firstByte == 0x06 {
             let length = try scanner.consumeLength()
             let data = try scanner.consume(length: length)
             return .objectIdentifier(data: data)
         }
-        
+
         // Null
         if firstByte == 0x05 {
             _ = try scanner.consume(length: 1)
             return .null
         }
-        
+
         // Bit String
         if firstByte == 0x03 {
             let length = try scanner.consumeLength()
-            
+
             // There's an extra byte (0x00) after the bit string length in all the keys I've encountered.
             // I couldn't find a specification that referenced this extra byte, but let's consume it and discard it.
             _ = try scanner.consume(length: 1)
-            
+
             let data = try scanner.consume(length: length - 1)
             return .bitString(data: data)
         }
-        
+
         // Octet String
         if firstByte == 0x04 {
             let length = try scanner.consumeLength()
             let data = try scanner.consume(length: length)
             return .octetString(data: data)
         }
-        
+
         throw ParserError.invalidType(value: firstByte)
     }
-    
+
     /// Parses an ASN1 sequence and returns its child nodes
     ///
     /// - Parameter data: ASN1 data

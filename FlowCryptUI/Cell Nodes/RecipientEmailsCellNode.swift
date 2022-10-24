@@ -32,9 +32,7 @@ public final class RecipientEmailsCellNode: CellNode {
         return textNode
     }()
 
-    lazy var toggleButtonNode: ASButtonNode = {
-        createToggleButton()
-    }()
+    lazy var toggleButtonNode: ASButtonNode = createToggleButton()
 
     var toggleButtonAction: (() -> Void)?
 
@@ -59,6 +57,7 @@ public final class RecipientEmailsCellNode: CellNode {
         node.backgroundColor = .clear
         return node
     }()
+
     private var collectionLayoutHeight: CGFloat
     private var recipients: [Input] = []
     private let type: String

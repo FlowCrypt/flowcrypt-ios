@@ -25,7 +25,8 @@ class CoreTypesTest: XCTestCase {
             atts: [],
             pubKeys: ["public key"],
             signingPrv: nil,
-            password: "123")
+            password: "123"
+        )
 
         let copyBody = SendableMsgBody(
             text: "another message",

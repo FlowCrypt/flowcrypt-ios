@@ -11,7 +11,7 @@ import UIKit
 public protocol ENSideMenuDelegate: AnyObject {
     func sideMenuWillOpen()
     func sideMenuWillClose()
-    func sideMenuShouldOpenSideMenu () -> Bool
+    func sideMenuShouldOpenSideMenu() -> Bool
     func sideMenuDidOpen()
     func sideMenuDidClose()
 }
@@ -25,6 +25,7 @@ public enum ENSideMenuAnimation: Int {
     case none
     case `default`
 }
+
 /**
  The position of the side view on the screen.
 
@@ -40,19 +41,21 @@ public extension UIViewController {
     /**
      Changes current state of side menu view.
      */
-    func toggleSideMenuView () {
+    func toggleSideMenuView() {
         sideMenuController()?.sideMenu?.toggleMenu()
     }
+
     /**
      Hides the side menu view.
      */
-    func hideSideMenuView () {
+    func hideSideMenuView() {
         sideMenuController()?.sideMenu?.hideSideMenu()
     }
+
     /**
      Shows the side menu view.
      */
-    func showSideMenuView () {
+    func showSideMenuView() {
         sideMenuController()?.sideMenu?.showSideMenu()
     }
 
@@ -61,7 +64,7 @@ public extension UIViewController {
 
      :returns: BOOL value
      */
-    func isSideMenuOpen () -> Bool {
+    func isSideMenuOpen() -> Bool {
         let sieMenuOpen = sideMenuController()?.sideMenu?.isMenuOpen
         return sieMenuOpen!
     }
@@ -77,12 +80,13 @@ public extension UIViewController {
             navController.sideMenu?.updateFrame()
         }
     }
+
     /**
      Returns a view controller containing a side menu
 
      :returns: A `UIViewController`responding to `ENSideMenuProtocol` protocol
      */
-    func sideMenuController () -> ENSideMenuProtocol? {
+    func sideMenuController() -> ENSideMenuProtocol? {
         var iteration: UIViewController? = parent
         if iteration == nil {
             return topMostController()
@@ -90,17 +94,17 @@ public extension UIViewController {
         repeat {
             if iteration is ENSideMenuProtocol {
                 return iteration as? ENSideMenuProtocol
-            } else if iteration?.parent != nil && iteration?.parent != iteration {
+            } else if iteration?.parent != nil, iteration?.parent != iteration {
                 iteration = iteration!.parent
             } else {
                 iteration = nil
             }
-        } while (iteration != nil)
+        } while iteration != nil
 
         return iteration as? ENSideMenuProtocol
     }
 
-    internal func topMostController () -> ENSideMenuProtocol? {
+    internal func topMostController() -> ENSideMenuProtocol? {
         var topController = UIApplication.shared.currentWindow?.rootViewController
         if let tabController = topController as? UITabBarController {
             topController = tabController.selectedViewController
@@ -130,6 +134,7 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
             updateFrame()
         }
     }
+
     fileprivate var menuPosition: ENSideMenuPosition = .left
     fileprivate var blurStyle: UIBlurEffect.Style = .light
     ///  A Boolean value indicating whether the bouncing effect is enabled. The default value is TRUE.
@@ -191,6 +196,7 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
             sourceView.addGestureRecognizer(leftSwipeGestureRecognizer)
         }
     }
+
     /**
      Initializes an instance of a `ENSideMenu` object.
 
@@ -212,6 +218,7 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
         menuViewController.view.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         sideMenuContainerView.addSubview(menuViewController.view)
     }
+
     /**
      Updates the frame of the side menu view.
      */
@@ -277,15 +284,15 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
 
             if menuPosition == .left {
                 // Left side menu
-                gravityDirectionX = (shouldOpen) ? 1 : -1
-                pushMagnitude = (shouldOpen) ? 35 : -35
-                boundaryPointX = (shouldOpen) ? menuWidth : -menuWidth - 2
+                gravityDirectionX = shouldOpen ? 1 : -1
+                pushMagnitude = shouldOpen ? 35 : -35
+                boundaryPointX = shouldOpen ? menuWidth : -menuWidth - 2
                 boundaryPointY = 25
             } else {
                 // Right side menu
-                gravityDirectionX = (shouldOpen) ? -1 : 1
-                pushMagnitude = (shouldOpen) ? -35 : 35
-                boundaryPointX = (shouldOpen) ? width - menuWidth : width + menuWidth + 2
+                gravityDirectionX = shouldOpen ? -1 : 1
+                pushMagnitude = shouldOpen ? -35 : 35
+                boundaryPointX = shouldOpen ? width - menuWidth : width + menuWidth + 2
                 boundaryPointY = -25
             }
 
@@ -328,7 +335,8 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
                     } else {
                         strongSelf.delegate?.sideMenuDidClose()
                     }
-                })
+                }
+            )
         }
 
         if shouldOpen {
@@ -391,7 +399,7 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
 
     @objc internal func handleGesture(_ gesture: UISwipeGestureRecognizer) {
         toggleMenu((menuPosition == .right && gesture.direction == .left)
-                    || (menuPosition == .left && gesture.direction == .right))
+            || (menuPosition == .left && gesture.direction == .right))
     }
 
     @objc internal func handlePan(_ recognizer: UIPanGestureRecognizer) {
@@ -429,7 +437,7 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
         }
     }
 
-    fileprivate func updateSideMenuApperanceIfNeeded () {
+    fileprivate func updateSideMenuApperanceIfNeeded() {
         if needUpdateApperance {
             var frame = sideMenuContainerView.frame
             frame.size.width = menuWidth
@@ -443,7 +451,7 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
     /**
      Toggles the state of the side menu.
      */
-    open func toggleMenu () {
+    open func toggleMenu() {
         if isMenuOpen {
             toggleMenu(false)
         } else {
@@ -451,18 +459,20 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
             toggleMenu(true)
         }
     }
+
     /**
      Shows the side menu if the menu is hidden.
      */
-    open func showSideMenu () {
+    open func showSideMenu() {
         if !isMenuOpen {
             toggleMenu(true)
         }
     }
+
     /**
      Hides the side menu if the menu is showed.
      */
-    open func hideSideMenu () {
+    open func hideSideMenu() {
         if isMenuOpen {
             toggleMenu(false)
         }

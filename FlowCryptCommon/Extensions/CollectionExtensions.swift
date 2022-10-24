@@ -26,7 +26,7 @@ public extension MutableCollection {
                 : nil
         }
         set {
-            if indices.contains(index), let newValue = newValue {
+            if indices.contains(index), let newValue {
                 self[index] = newValue
             }
         }
@@ -48,7 +48,7 @@ public extension Array {
     }
 }
 
-public extension Array where Element == String {
+public extension [String] {
     func firstCaseInsensitive(_ stringToCompare: String) -> Element? {
         first(where: { $0.caseInsensitiveCompare(stringToCompare) == .orderedSame })
     }

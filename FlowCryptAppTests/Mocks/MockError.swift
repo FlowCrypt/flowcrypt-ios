@@ -8,5 +8,4 @@
 
 import Foundation
 
-class MockError: Error {
-}
+class MockError: Error {}

@@ -86,11 +86,11 @@ public final class MessageRecipientsNode: ASDisplayNode {
         node.accessibilityIdentifier = identifier
         node.attributedText = [nameString, emailString]
             .compactMap { $0 }
-            .reduce(NSMutableAttributedString(), {
+            .reduce(NSMutableAttributedString()) {
                 if !$0.string.isEmpty { $0.append(separator) }
                 $0.append($1)
                 return $0
-            })
+            }
 
         return node
     }

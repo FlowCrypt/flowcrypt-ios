@@ -9,17 +9,17 @@
 import Foundation
 
 public class ClearMessage: RSAMessage {
-    
+
     /// Data of the message
     public let data: Data
-    
+
     /// Creates a clear message with data.
     ///
     /// - Parameter data: Data of the clear message
     public required init(data: Data) {
         self.data = data
     }
-    
+
     /// Creates a clear message from a string, with the specified encoding.
     ///
     /// - Parameters:
@@ -32,7 +32,7 @@ public class ClearMessage: RSAMessage {
         }
         self.init(data: data)
     }
-    
+
     /// Returns the string representation of the clear message using the specified
     /// string encoding.
     ///
@@ -45,7 +45,7 @@ public class ClearMessage: RSAMessage {
         }
         return str
     }
-    
+
     /// Encrypts a clear message with a public key and returns an encrypted message.
     ///
     /// - Parameters:
@@ -54,9 +54,9 @@ public class ClearMessage: RSAMessage {
     /// - Returns: Encrypted message
     /// - Throws: SwiftyRSAError
     public func encrypted(with key: PublicKey, padding: Padding) throws -> EncryptedMessage {
-        
+
         let blockSize = SecKeyGetBlockSize(key.reference)
-        
+
         var maxChunkSize: Int
         switch padding {
         case []:
@@ -66,31 +66,31 @@ public class ClearMessage: RSAMessage {
         default:
             maxChunkSize = blockSize - 11
         }
-        
+
         var decryptedDataAsArray = [UInt8](repeating: 0, count: data.count)
         (data as NSData).getBytes(&decryptedDataAsArray, length: data.count)
-        
+
         var encryptedDataBytes = [UInt8](repeating: 0, count: 0)
         var idx = 0
         while idx < decryptedDataAsArray.count {
-            
+
             let idxEnd = min(idx + maxChunkSize, decryptedDataAsArray.count)
-            let chunkData = [UInt8](decryptedDataAsArray[idx..<idxEnd])
-            
+            let chunkData = [UInt8](decryptedDataAsArray[idx ..< idxEnd])
+
             var encryptedDataBuffer = [UInt8](repeating: 0, count: blockSize)
             var encryptedDataLength = blockSize
-            
+
             let status = SecKeyEncrypt(key.reference, padding, chunkData, chunkData.count, &encryptedDataBuffer, &encryptedDataLength)
-            
+
             guard status == noErr else {
                 throw SwiftyRSAError.chunkEncryptFailed(index: idx)
             }
-            
+
             encryptedDataBytes += encryptedDataBuffer
-            
+
             idx += maxChunkSize
         }
-        
+
         let encryptedData = Data(bytes: encryptedDataBytes, count: encryptedDataBytes.count)
         return EncryptedMessage(data: encryptedData)
     }

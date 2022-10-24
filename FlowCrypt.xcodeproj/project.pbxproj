@@ -186,11 +186,6 @@
 		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
 		9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+Backup.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
-		9F38619C27A181CE00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619B27A181CE00851419 /* .swiftformat */; };
-		9F38619E27A18A9100851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619D27A18A9100851419 /* .swiftformat */; };
-		9F3861A027A18AA500851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619F27A18AA500851419 /* .swiftformat */; };
-		9F3861A227A18AAF00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A127A18AAF00851419 /* .swiftformat */; };
-		9F3861A427A18ABA00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A327A18ABA00851419 /* .swiftformat */; };
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
 		9F4163B8265ED61C00106194 /* SetupInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */; };
 		9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163E5266520B600106194 /* CommonNodesInputs.swift */; };
@@ -662,11 +657,6 @@
 		9F31AB922329950800CF87EA /* Imap+Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Backup.swift"; sourceTree = "<group>"; };
 		9F31AB9D232BF2A600CF87EA /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UIColorExtensions.swift; path = ../../FlowCrypt/Extensions/UIColorExtensions.swift; sourceTree = "<group>"; };
 		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
-		9F38619B27A181CE00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		9F38619D27A18A9100851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		9F38619F27A18AA500851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		9F3861A127A18AAF00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		9F3861A327A18ABA00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
 		9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelper.swift; sourceTree = "<group>"; };
 		9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelperTest.swift; sourceTree = "<group>"; };
 		9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupInitialViewController.swift; sourceTree = "<group>"; };
@@ -1415,7 +1405,6 @@
 				9F7E902726A1AD280021C07F /* Core */,
 				9F6F3C6326ADFBDB005BD9C6 /* Mocks */,
 				51B0C772272AB5FD00124663 /* Extensions */,
-				9F3861A327A18ABA00851419 /* .swiftformat */,
 			);
 			path = FlowCryptAppTests;
 			sourceTree = "<group>";
@@ -1908,7 +1897,6 @@
 				04B4728A1ECE29D200B8266F /* Models */,
 				2C2B058A27A0809400A406F0 /* Lib */,
 				A3DAD60C22E469E400F2C4CD /* Resources */,
-				9F38619B27A181CE00851419 /* .swiftformat */,
 			);
 			path = FlowCrypt;
 			sourceTree = "<group>";
@@ -1987,7 +1975,6 @@
 				D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */,
 				D28655972424D0BC0066F52E /* Views */,
 				9F65B0B8278346F8005CD19C /* UIConstants.swift */,
-				9F38619D27A18A9100851419 /* .swiftformat */,
 			);
 			path = FlowCryptUI;
 			sourceTree = "<group>";
@@ -2042,7 +2029,6 @@
 				D254AA5F24092A9E0041CAE0 /* Extensions */,
 				9F72E866263ECE2A0039CF81 /* Trace.swift */,
 				9F8220D426336626004B2009 /* Logger.swift */,
-				9F3861A127A18AAF00851419 /* .swiftformat */,
 			);
 			path = FlowCryptCommon;
 			sourceTree = "<group>";
@@ -2166,7 +2152,6 @@
 				D2F6D12924311E5300DB4065 /* Colors.xcassets */,
 				D2A1D3C423FD64AD00D626D6 /* LaunchScreen.storyboard */,
 				D2A1D3C723FD64AD00D626D6 /* Info.plist */,
-				9F38619F27A18AA500851419 /* .swiftformat */,
 			);
 			path = FlowCryptUIApplication;
 			sourceTree = "<group>";
@@ -2480,7 +2465,6 @@
 			files = (
 				9F976569267E18F30058419D /* client_configuraion.json in Resources */,
 				9F976576267E18F90058419D /* client_configuraion_partly_empty.json in Resources */,
-				9F3861A427A18ABA00851419 /* .swiftformat in Resources */,
 				9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */,
 				215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */,
 				21594C9626F1DBA900BE654C /* data.txt in Resources */,
@@ -2498,7 +2482,6 @@
 				9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
-				9F38619C27A181CE00851419 /* .swiftformat in Resources */,
 				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
 				949ED9422303E3B400530579 /* Colors.xcassets in Resources */,
@@ -2509,7 +2492,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F38619E27A18A9100851419 /* .swiftformat in Resources */,
 				D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2518,7 +2500,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F3861A227A18AAF00851419 /* .swiftformat in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2526,7 +2507,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F3861A027A18AA500851419 /* .swiftformat in Resources */,
 				D2F6D12A24311E5300DB4065 /* Colors.xcassets in Resources */,
 				D28325DD24895F5700D311BD /* Colors.xcassets in Resources */,
 				D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */,

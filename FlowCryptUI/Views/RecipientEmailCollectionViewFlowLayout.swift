@@ -14,6 +14,7 @@ public class RecipientEmailCollectionViewFlowLayout: UICollectionViewFlowLayout 
             onHeightChanged?(maxY)
         }
     }
+
     var onHeightChanged: ((CGFloat) -> Void)?
     let minRecipientInputWidth: CGFloat = 80
 

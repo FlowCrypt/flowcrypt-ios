@@ -43,14 +43,14 @@ public extension RecipientEmailsCellNode {
 
             private var stateContext: StateContext {
                 switch self {
-                case .idle(let context),
-                     .selected(let context),
-                     .keyFound(let context),
-                     .keyExpired(let context),
-                     .keyRevoked(let context),
-                     .keyNotFound(let context),
-                     .invalidEmail(let context),
-                     .error(let context, _):
+                case let .idle(context),
+                     let .selected(context),
+                     let .keyFound(context),
+                     let .keyExpired(context),
+                     let .keyRevoked(context),
+                     let .keyNotFound(context),
+                     let .invalidEmail(context),
+                     let .error(context, _):
                     return context
                 }
             }

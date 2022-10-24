@@ -14,31 +14,31 @@ public enum FlowCryptBundleType: String {
     case enterprise = "com.flowcrypt.as.ios.enterprise"
 }
 
-extension Bundle {
+public extension Bundle {
 
-    static var flowCryptBundleType: FlowCryptBundleType {
+    internal static var flowCryptBundleType: FlowCryptBundleType {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier else { return .debug }
         return FlowCryptBundleType(rawValue: bundleIdentifier) ?? .debug
     }
 
-    static func isDebugBundleWithArgument(_ argument: String) -> Bool {
+    internal static func isDebugBundleWithArgument(_ argument: String) -> Bool {
         guard Bundle.flowCryptBundleType == .debug else { return false }
         return CommandLine.arguments.contains(argument)
     }
 
-    public static var shouldUseMockGmailApi: Bool {
+    static var shouldUseMockGmailApi: Bool {
         isDebugBundleWithArgument("--mock-gmail-api")
     }
 
-    public static var shouldUseMockFesApi: Bool {
+    static var shouldUseMockFesApi: Bool {
         isDebugBundleWithArgument("--mock-fes-api")
     }
 
-    public static var shouldUseMockAttesterApi: Bool {
+    static var shouldUseMockAttesterApi: Bool {
         isDebugBundleWithArgument("--mock-attester-api")
     }
 
-    public static var isEnterprise: Bool {
+    static var isEnterprise: Bool {
         if flowCryptBundleType == .enterprise {
             return true // for production
         }

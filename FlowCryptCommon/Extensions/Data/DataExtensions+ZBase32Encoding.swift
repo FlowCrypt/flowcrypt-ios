@@ -60,11 +60,11 @@ public extension Data {
 
     private func encode(firstByte: UInt8, secondByte: UInt8?) -> UInt8 {
         // First: -----000
-        var index = (firstByte & 0b00000111) << 2
+        var index = (firstByte & 0b0000_0111) << 2
 
         if let secondByte {
             // Second: 00 ------
-            index |= (secondByte & 0b11000000) >> 6
+            index |= (secondByte & 0b1100_0000) >> 6
         }
 
         return Constants.alphabet[Int(index)]
@@ -75,7 +75,7 @@ public extension Data {
             return nil
         }
         // Second: --00000-
-        let index = (secondByte & 0b00111110) >> 1
+        let index = (secondByte & 0b0011_1110) >> 1
         return Constants.alphabet[Int(index)]
     }
 
@@ -84,11 +84,11 @@ public extension Data {
             return nil
         }
         // Second: -------0
-        var index = (secondByte & 0b00000001) << 4
+        var index = (secondByte & 0b0000_0001) << 4
 
         if let thirdByte {
             // Third: 0000----
-            index |= (thirdByte & 0b11110000) >> 4
+            index |= (thirdByte & 0b1111_0000) >> 4
         }
 
         return Constants.alphabet[Int(index)]
@@ -99,11 +99,11 @@ public extension Data {
             return nil
         }
         // Third:----0000
-        var index = (thirdByte & 0b00001111) << 1
+        var index = (thirdByte & 0b0000_1111) << 1
 
         if let fourthByte {
             // Fourth: 0-------
-            index |= (fourthByte & 0b10000000) >> 7
+            index |= (fourthByte & 0b1000_0000) >> 7
         }
 
         return Constants.alphabet[Int(index)]
@@ -114,7 +114,7 @@ public extension Data {
             return nil
         }
         // Fourth: -00000--
-        let index = (fourthByte & 0b01111100) >> 2
+        let index = (fourthByte & 0b0111_1100) >> 2
         return Constants.alphabet[Int(index)]
     }
 
@@ -123,11 +123,11 @@ public extension Data {
             return nil
         }
         // Fourth: ------00
-        var index = (fourthByte & 0b00000011) << 3
+        var index = (fourthByte & 0b0000_0011) << 3
 
         if let fifthByte {
             // Fifth: 000-----
-            index |= (fifthByte & 0b11100000) >> 5
+            index |= (fifthByte & 0b1110_0000) >> 5
         }
 
         return Constants.alphabet[Int(index)]
@@ -138,7 +138,7 @@ public extension Data {
             return nil
         }
         // // Fifth: ---00000
-        let index = fifthByte & 0b00011111
+        let index = fifthByte & 0b0001_1111
         return Constants.alphabet[Int(index)]
     }
 }
