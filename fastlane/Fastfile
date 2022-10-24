@@ -11,7 +11,8 @@ platform :ios do
       project: "FlowCrypt.xcodeproj",
       scheme: "Debug FlowCrypt",
       derived_data_path: "/var/tmp/derived_data",
-      build_for_testing: true
+      build_for_testing: true,
+      xcargs: "-skipPackagePluginValidation"
     )
   end
 
@@ -21,7 +22,8 @@ platform :ios do
       project: "FlowCrypt.xcodeproj",
       scheme: "FlowCryptAppTests",
       test_without_building: true,
-      derived_data_path: "/var/tmp/derived_data"
+      derived_data_path: "/var/tmp/derived_data",
+      xcargs: "-skipPackagePluginValidation"
     )
   end
 
