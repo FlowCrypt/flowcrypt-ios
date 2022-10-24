@@ -2329,6 +2329,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				51A1A11E2906AFEA007F1188 /* PBXTargetDependency */,
 				D2CDC3DC24052D0F002B045F /* PBXTargetDependency */,
 				D2CDC3E024052D50002B045F /* PBXTargetDependency */,
 			);
@@ -2457,6 +2458,7 @@
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */,
 				51A1A11929069D19007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
+				51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -2939,6 +2941,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		51A1A11E2906AFEA007F1188 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 51A1A11D2906AFEA007F1188 /* SwiftLint */;
+		};
 		9F2AC5CC267BE99E00F6149B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C132B9AF1EC2DBD800763715 /* FlowCrypt */;
@@ -3806,6 +3812,14 @@
 				minimumVersion = 0.0.1;
 			};
 		};
+		51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lukepistrol/SwiftLintPlugin";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.4;
+			};
+		};
 		51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FlowCrypt/mailcore2";
@@ -3884,6 +3898,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51A1A11929069D19007F1188 /* XCRemoteSwiftPackageReference "Texture" */;
 			productName = AsyncDisplayKit;
+		};
+		51A1A11D2906AFEA007F1188 /* SwiftLint */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */;
+			productName = "plugin:SwiftLint";
 		};
 		51C0C1EE271982A1000C9738 /* MailCore */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -100,6 +100,15 @@
       }
     },
     {
+      "identity" : "swiftlintplugin",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/lukepistrol/SwiftLintPlugin",
+      "state" : {
+        "revision" : "67d09110cc967b9d393a5313b3b21c1b0be59adb",
+        "version" : "0.0.4"
+      }
+    },
+    {
       "identity" : "texture",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/FlowCrypt/Texture",
