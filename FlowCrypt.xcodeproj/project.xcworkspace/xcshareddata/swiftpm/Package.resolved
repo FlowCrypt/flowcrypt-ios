@@ -102,10 +102,10 @@
     {
       "identity" : "texture",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/shimastripe/Texture.git",
+      "location" : "https://github.com/FlowCrypt/Texture",
       "state" : {
-        "revision" : "ef22942d014ed0f7d0cca9d708e335e06fb1dddb",
-        "version" : "3.1.1"
+        "revision" : "fb800b0b5379b94ba0e3ab87d364f68cce05f3d3",
+        "version" : "0.0.1"
       }
     },
     {
