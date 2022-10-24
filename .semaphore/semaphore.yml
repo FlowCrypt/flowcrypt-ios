@@ -24,14 +24,14 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
+          - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            # - rm -rf /var/tmp/derived_data/SourcePackages/artifacts/*
+            - rm -rf /var/tmp/derived_data/SourcePackages/artifacts/*
             - xcversion select 14.0
-            - bundle exec fastlane build
-            - bundle exec fastlane test
+            - fastlane build
+            - fastlane test
       epilogue:
         always:
           commands:
@@ -50,7 +50,7 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies && cache store
+          - checkout && cd ~/git/flowcrypt-ios/
           - sem-version node 16
           - ( cache restore common-npm && npm install && cache store common-npm node_modules )
           - ( cd Core && cache restore core-npm && npm install && cache store core-npm node_modules )
@@ -75,7 +75,7 @@ blocks:
       prologue:
         commands:
           - sudo xcode-select -s /Applications/Xcode-14.app
-          - checkout && cd ~/git/flowcrypt-ios/ && cache restore && make dependencies
+          - checkout && cd ~/git/flowcrypt-ios/
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
           - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
