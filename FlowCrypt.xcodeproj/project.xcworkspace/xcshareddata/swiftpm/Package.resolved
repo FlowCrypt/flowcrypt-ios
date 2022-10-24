@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/FlowCrypt/Texture/",
       "state" : {
-        "branch" : "feature/spm-support",
-        "revision" : "fb800b0b5379b94ba0e3ab87d364f68cce05f3d3"
+        "revision" : "d72805b1af9eb089db5f2bf62bbec4534fdbc8da",
+        "version" : "3.1.0"
       }
     },
     {
