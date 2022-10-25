@@ -150,9 +150,17 @@ class NewMessageScreen extends BaseScreen {
     return $(`~aid-recipients-text-field-${type}`);
   }
 
+  deleteEnteredRecipient = async (recipient: string, type = 'to') => {
+    const textFieldEl = await this.getRecipientsTextField(type);
+    await ElementHelper.waitAndClick(textFieldEl);
+    const keys = Array(recipient.length).fill('\b');
+    await driver.sendKeys(keys);
+  }
+
   setAddRecipient = async (recipient?: string, type = 'to') => {
     if (recipient) {
       await browser.pause(500);
+      await this.showRecipientInputIfNeeded();
       const textFieldEl = await this.getRecipientsTextField(type);
       await ElementHelper.waitElementVisible(textFieldEl);
       await textFieldEl.setValue(recipient);
