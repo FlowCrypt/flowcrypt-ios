@@ -29,7 +29,7 @@
   "scripts": {
     "build": "./tooling/build.sh",
     "postbuild": "npm run deploy",
-    "deploy": "cp build/final/flowcrypt-ios-prod.js ../FlowCrypt/Resources/flowcrypt-ios-prod.js.txt",
+    "deploy": "cp build/final/flowcrypt-ios-prod.js ../FlowCrypt/Resources/generated/flowcrypt-ios-prod.js.txt",
     "pretest": "npm run-script build",
     "test": "npx ava build/ts/test.js --verbose",
     "eslint": "npx eslint --ext ts source",

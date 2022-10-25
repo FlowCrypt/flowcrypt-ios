@@ -18,9 +18,8 @@ sudo xcode-select --install
 curl -sSL https://get.rvm.io | bash -s stable
 rvm install 3.0.2
 rvm --default use 3.0.2
-# install dependencies and pods
+# install dependencies
 make dependencies
-bundle exec pod install
 ```
 
 ## Development
