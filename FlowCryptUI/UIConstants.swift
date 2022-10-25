@@ -6,8 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import UIKit
 import FlowCryptCommon
+import UIKit
 
 public extension UIEdgeInsets {
     static func deviceSpecificTextInsets(top: CGFloat, bottom: CGFloat) -> UIEdgeInsets {

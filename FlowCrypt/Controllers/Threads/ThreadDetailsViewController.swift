@@ -426,11 +426,15 @@ extension ThreadDetailsViewController {
             }
         }()
 
+        openComposeScreen(type: composeType)
+    }
+
+    private func openComposeScreen(type: ComposeMessageInput.InputType) {
         Task {
             do {
                 let composeVC = try await ComposeViewController(
                     appContext: appContext,
-                    input: ComposeMessageInput(type: composeType),
+                    input: ComposeMessageInput(type: type),
                     handleAction: { [weak self] action in
                         self?.handleComposeMessageAction(action)
                     }

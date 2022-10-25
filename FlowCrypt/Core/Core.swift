@@ -11,9 +11,9 @@ enum CoreError: LocalizedError, Equatable {
     case value(String) // wrong value passed into or returned by a function
     var errorDescription: String? {
         switch self {
-        case .exception(let message),
-                .notReady(let message),
-                .value(let message):
+        case let .exception(message),
+             let .notReady(message),
+             let .value(message):
             return message
         }
     }
@@ -86,7 +86,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             data: nil
         )
     }
-    
+
     // MARK: Files
     func decryptFile(encrypted: Data, keys: [Keypair], msgPwd: String?) async throws -> CoreRes.DecryptFile {
         struct DecryptFileRaw: Decodable {
@@ -124,13 +124,13 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             decryptErr: nil
         )
     }
-    
+
     func encrypt(file: Data, name: String, pubKeys: [String]?) async throws -> Data {
         let json: [String: Any?]? = [
             "pubKeys": pubKeys,
             "name": name
         ]
-        
+
         let encrypted = try await call(
             "encryptFile",
             jsonDict: json,
@@ -225,7 +225,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         context = JSContext(virtualMachine: vm)!
         context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
         context!.exceptionHandler = { _, exception in
-            guard let exception = exception else { return }
+            guard let exception else { return }
 
             let line = exception.objectForKeyedSubscript("line").toString()
             let column = exception.objectForKeyedSubscript("column").toString()
@@ -270,7 +270,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             endpoint,
             callbackId,
             String(data: jsonData, encoding: .utf8)!,
-            Array<UInt8>(data), cb_catcher!
+            [UInt8](data), cb_catcher!
         ])
 
         while callbackResults[callbackId] == nil {
@@ -284,7 +284,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             throw CoreError.value("JavaScript callback response not available")
         }
         let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
-        if let error = error {
+        if let error {
             logger.logError("""
             ------ js err -------
             Core \(endpoint): \(error.error.message)

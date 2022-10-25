@@ -44,8 +44,8 @@ public extension String {
 
     func slice(from: String, to: String) -> String? {
         (range(of: from)?.upperBound).flatMap { substringFrom in
-            (range(of: to, range: substringFrom..<endIndex)?.lowerBound).map { substringTo in
-                String(self[substringFrom..<substringTo])
+            (range(of: to, range: substringFrom ..< endIndex)?.lowerBound).map { substringTo in
+                String(self[substringFrom ..< substringTo])
             }
         }
     }
@@ -101,7 +101,7 @@ public extension String {
             options: [.regularExpression]
         ) else { return self }
 
-        return self[startIndex..<range.lowerBound].trimmingCharacters(in: .whitespacesAndNewlines)
+        return self[startIndex ..< range.lowerBound].trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
 

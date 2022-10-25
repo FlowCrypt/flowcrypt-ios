@@ -13,9 +13,9 @@ final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
     var configuration: ClientConfiguration {
         get async throws {
             switch fetchOrganisationalRulesForCurrentUserResult {
-            case .success(let result):
+            case let .success(result):
                 return result
-            case .failure(let error):
+            case let .failure(error):
                 throw error
             }
         }
@@ -30,6 +30,7 @@ final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
     var getSavedOrganisationalRulesForCurrentUserResult: ClientConfiguration {
         ClientConfiguration(raw: clientConfiguration)
     }
+
     func getSaved(for user: String) -> ClientConfiguration {
         getSavedOrganisationalRulesForCurrentUserResult
     }

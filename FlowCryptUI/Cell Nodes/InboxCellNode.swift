@@ -43,11 +43,11 @@ public final class InboxCellNode: CellNode {
     private lazy var badgeNode = ASTextNode()
 
     public init(input: Input) {
-        countNode = input.countText.map({
+        countNode = input.countText.map {
             let node = ASTextNode2()
             node.attributedText = $0
             return node
-        })
+        }
         self.input = input
 
         super.init()
@@ -78,7 +78,7 @@ public final class InboxCellNode: CellNode {
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let emailElement: ASLayoutElement = {
-            guard let countNode = countNode else { return emailNode }
+            guard let countNode else { return emailNode }
             emailNode.style.flexShrink = 1.0
             let spec = ASStackLayoutSpec.horizontal()
             spec.children = [emailNode, countNode]

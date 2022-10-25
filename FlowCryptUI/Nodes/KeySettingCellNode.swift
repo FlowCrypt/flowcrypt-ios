@@ -22,6 +22,7 @@ public final class KeySettingCellNode: CellNode {
             self.date = date
         }
     }
+
     private let titleNode = ASTextNode2()
     private let dateNode = ASTextNode2()
     private let subTitleNode = ASTextNode2()

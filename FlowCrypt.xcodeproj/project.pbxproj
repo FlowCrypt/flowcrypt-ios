@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -95,6 +95,15 @@
 		5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6732716E5EA00C95463 /* LabelCellNode.swift */; };
 		5137CB1427F8E0A900AEF895 /* EnterpriseServerApiHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5137CB1327F8E0A900AEF895 /* EnterpriseServerApiHelper.swift */; };
 		513DC088284F161400FAD5F2 /* EmailKeyManagerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513DC087284F161400FAD5F2 /* EmailKeyManagerApi.swift */; };
+		51433AB82902A6EB00E9D488 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AA82902A6EA00E9D488 /* PublicKey.swift */; };
+		51433ABB2902A6EB00E9D488 /* Asn1Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AAB2902A6EB00E9D488 /* Asn1Parser.swift */; };
+		51433ABC2902A6EB00E9D488 /* SwiftyRSA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AAC2902A6EB00E9D488 /* SwiftyRSA.swift */; };
+		51433ABE2902A6EB00E9D488 /* ClearMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AAE2902A6EB00E9D488 /* ClearMessage.swift */; };
+		51433ABF2902A6EB00E9D488 /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AAF2902A6EB00E9D488 /* Key.swift */; };
+		51433AC02902A6EB00E9D488 /* EncryptedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AB02902A6EB00E9D488 /* EncryptedMessage.swift */; };
+		51433AC12902A6EB00E9D488 /* PrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AB12902A6EB00E9D488 /* PrivateKey.swift */; };
+		51433AC32902A6EB00E9D488 /* RSAMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AB32902A6EB00E9D488 /* RSAMessage.swift */; };
+		51433AC52902A6EB00E9D488 /* SwiftyRSAError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AB62902A6EB00E9D488 /* SwiftyRSAError.swift */; };
 		514C34DB276CE19C00FCAB79 /* ComposeMessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */; };
 		514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */; };
 		514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */; };
@@ -111,6 +120,7 @@
 		5180CB9527357BB0001FC7EF /* WkdApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5180CB9427357BB0001FC7EF /* WkdApi.swift */; };
 		5180CB97273724E9001FC7EF /* ThreadMessageInfoCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5180CB96273724E9001FC7EF /* ThreadMessageInfoCellNode.swift */; };
 		51938DC1274CC291007AD57B /* MessageQuoteType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51938DC0274CC291007AD57B /* MessageQuoteType.swift */; };
+		51A1A12829070CDF007F1188 /* AsyncDisplayKit in Frameworks */ = {isa = PBXBuildFile; productRef = 51A1A12729070CDF007F1188 /* AsyncDisplayKit */; };
 		51B0C774272AB61000124663 /* StringTestExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B0C773272AB61000124663 /* StringTestExtension.swift */; };
 		51B4AE51271444580001F33B /* PubKeyRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE50271444580001F33B /* PubKeyRealmObject.swift */; };
 		51B4AE5327144E590001F33B /* PubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B4AE5227144E590001F33B /* PubKey.swift */; };
@@ -118,6 +128,8 @@
 		51B9EE6F27567B520080B2D5 /* MessageRecipientsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */; };
 		51C0C1EF271982A1000C9738 /* MailCore in Frameworks */ = {isa = PBXBuildFile; productRef = 51C0C1EE271982A1000C9738 /* MailCore */; };
 		51C0C63828D1E42A003C540E /* ComposeViewController+ErrorHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C0C63728D1E42A003C540E /* ComposeViewController+ErrorHandling.swift */; };
+		51C56BE82901867D00610D12 /* ENSideMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C56BE62901867D00610D12 /* ENSideMenu.swift */; };
+		51C56BE92901867D00610D12 /* ENSideMenuNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C56BE72901867D00610D12 /* ENSideMenuNavigationController.swift */; };
 		51CE196728D8AC5300A5B200 /* ComposeMessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CE196628D8AC5300A5B200 /* ComposeMessageAction.swift */; };
 		51DA5BD62721AB07001C4359 /* PubKeyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD52721AB07001C4359 /* PubKeyState.swift */; };
 		51DA5BDA2722C82E001C4359 /* RecipientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51DA5BD92722C82E001C4359 /* RecipientTests.swift */; };
@@ -132,7 +144,6 @@
 		51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675E270F36A400D27C52 /* RealmSwift */; };
 		51EBC5702746A06600178DE8 /* TextWithIconNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */; };
 		51FC336128C236770098313D /* ComposeViewController+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FC336028C236770098313D /* ComposeViewController+Contacts.swift */; };
-		5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */; };
 		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
 		5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
 		5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F436239ECC23001F4607 /* KeySettingsViewController.swift */; };
@@ -159,7 +170,6 @@
 		759739BE2833E986004867CD /* Task+Retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0443C85D27F4A6D700A432AA /* Task+Retry.swift */; };
 		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */; };
-		7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* SessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionService.swift */; };
@@ -176,11 +186,6 @@
 		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
 		9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB922329950800CF87EA /* Imap+Backup.swift */; };
 		9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9F232C071700CF87EA /* GlobalRouter.swift */; };
-		9F38619C27A181CE00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619B27A181CE00851419 /* .swiftformat */; };
-		9F38619E27A18A9100851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619D27A18A9100851419 /* .swiftformat */; };
-		9F3861A027A18AA500851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F38619F27A18AA500851419 /* .swiftformat */; };
-		9F3861A227A18AAF00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A127A18AAF00851419 /* .swiftformat */; };
-		9F3861A427A18ABA00851419 /* .swiftformat in Resources */ = {isa = PBXBuildFile; fileRef = 9F3861A327A18ABA00851419 /* .swiftformat */; };
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
 		9F4163B8265ED61C00106194 /* SetupInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */; };
 		9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163E5266520B600106194 /* CommonNodesInputs.swift */; };
@@ -305,7 +310,6 @@
 		C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9CA1EC2DE6400763715 /* GeneralConstants.swift */; };
 		C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9D81EC30E1D00763715 /* InboxViewController.swift */; };
 		C192421F1EC48B6900C3D251 /* SetupBackupsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C192421E1EC48B6900C3D251 /* SetupBackupsViewController.swift */; };
-		CDE91E546AF2C64C9306EB69 /* Pods_FlowCryptUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3F083C28BC034555B67F7F00 /* Pods_FlowCryptUI.framework */; };
 		D204DBA223FB35700083B9D6 /* FlowCryptUI.h in Headers */ = {isa = PBXBuildFile; fileRef = D204DBA023FB35700083B9D6 /* FlowCryptUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C662520AB1000D4AA9A /* BackupViewController.swift */; };
 		D20D3C6E2520AB3900D4AA9A /* BackupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */; };
@@ -459,7 +463,6 @@
 		0435F35827E499CA008AEEF6 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		0443C85D27F4A6D700A432AA /* Task+Retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Task+Retry.swift"; sourceTree = "<group>"; };
 		04722B44281ABD2C00D0242F /* EKMVcHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EKMVcHelper.swift; sourceTree = "<group>"; };
-		049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.enterprise.xcconfig"; sourceTree = "<group>"; };
 		049E605827FDB6310089EE2A /* ComposeViewController+Attachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Attachment.swift"; sourceTree = "<group>"; };
 		049E605A27FDB6BE0089EE2A /* ComposeViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+TableView.swift"; sourceTree = "<group>"; };
 		049E605C27FDB7D10089EE2A /* ComposeViewController+Nodes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Nodes.swift"; sourceTree = "<group>"; };
@@ -480,8 +483,6 @@
 		04B472931ECE29F600B8266F /* SideMenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SideMenuNavigationController.swift; sourceTree = "<group>"; };
 		04CF208127F5ABE100BC4E3D /* ComposeRecipientPopupNameNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRecipientPopupNameNode.swift; sourceTree = "<group>"; };
 		04DE04DC27E098010055CB86 /* ComposeRecipientCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeRecipientCellNode.swift; sourceTree = "<group>"; };
-		0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.release.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.release.xcconfig"; sourceTree = "<group>"; };
-		1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.enterprise.xcconfig"; sourceTree = "<group>"; };
 		211392A4266511E6009202EC /* PubLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubLookup.swift; sourceTree = "<group>"; };
 		2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DecryptedPrivateKey.swift; sourceTree = "<group>"; };
 		21489B6A267B7BD800BDE4AC /* FilesManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesManagerTests.swift; sourceTree = "<group>"; };
@@ -544,12 +545,6 @@
 		32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "flowcrypt-ios-prod.js.txt"; sourceTree = "<group>"; };
 		32DCAEFF16F5D91A35791730 /* DataExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		32DCAF8424D0185FAA9401A7 /* Imap+send.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Imap+send.swift"; sourceTree = "<group>"; };
-		3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUIApplication.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		3675DB672850A781424D0113 /* Pods-FlowCryptUI.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.debug.xcconfig"; sourceTree = "<group>"; };
-		3B945B2BE6B66D5E6B43AD2E /* Pods-FlowCryptUIApplication.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.debug.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.debug.xcconfig"; sourceTree = "<group>"; };
-		3F083C28BC034555B67F7F00 /* Pods_FlowCryptUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCryptUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FlowCrypt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.release.xcconfig"; sourceTree = "<group>"; };
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
 		5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		510BB63427BE92CC00B1011F /* RecipientBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientBase.swift; sourceTree = "<group>"; };
@@ -565,6 +560,15 @@
 		5133B6732716E5EA00C95463 /* LabelCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCellNode.swift; sourceTree = "<group>"; };
 		5137CB1327F8E0A900AEF895 /* EnterpriseServerApiHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApiHelper.swift; sourceTree = "<group>"; };
 		513DC087284F161400FAD5F2 /* EmailKeyManagerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailKeyManagerApi.swift; sourceTree = "<group>"; };
+		51433AA82902A6EA00E9D488 /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
+		51433AAB2902A6EB00E9D488 /* Asn1Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asn1Parser.swift; sourceTree = "<group>"; };
+		51433AAC2902A6EB00E9D488 /* SwiftyRSA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyRSA.swift; sourceTree = "<group>"; };
+		51433AAE2902A6EB00E9D488 /* ClearMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClearMessage.swift; sourceTree = "<group>"; };
+		51433AAF2902A6EB00E9D488 /* Key.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
+		51433AB02902A6EB00E9D488 /* EncryptedMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EncryptedMessage.swift; sourceTree = "<group>"; };
+		51433AB12902A6EB00E9D488 /* PrivateKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateKey.swift; sourceTree = "<group>"; };
+		51433AB32902A6EB00E9D488 /* RSAMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSAMessage.swift; sourceTree = "<group>"; };
+		51433AB62902A6EB00E9D488 /* SwiftyRSAError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyRSAError.swift; sourceTree = "<group>"; };
 		514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageContext.swift; sourceTree = "<group>"; };
 		514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageRecipient.swift; sourceTree = "<group>"; };
 		514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeMessageService+State.swift"; sourceTree = "<group>"; };
@@ -587,6 +591,8 @@
 		51B7421A27F318D300E702C8 /* XCTestCaseExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestCaseExtension.swift; sourceTree = "<group>"; };
 		51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRecipientsNode.swift; sourceTree = "<group>"; };
 		51C0C63728D1E42A003C540E /* ComposeViewController+ErrorHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+ErrorHandling.swift"; sourceTree = "<group>"; };
+		51C56BE62901867D00610D12 /* ENSideMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENSideMenu.swift; sourceTree = "<group>"; };
+		51C56BE72901867D00610D12 /* ENSideMenuNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ENSideMenuNavigationController.swift; sourceTree = "<group>"; };
 		51CE196628D8AC5300A5B200 /* ComposeMessageAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageAction.swift; sourceTree = "<group>"; };
 		51DA5BD52721AB07001C4359 /* PubKeyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubKeyState.swift; sourceTree = "<group>"; };
 		51DA5BD92722C82E001C4359 /* RecipientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientTests.swift; sourceTree = "<group>"; };
@@ -597,7 +603,6 @@
 		51E4F0B427348E310017DABB /* ErrorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorExtensions.swift; sourceTree = "<group>"; };
 		51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextWithIconNode.swift; sourceTree = "<group>"; };
 		51FC336028C236770098313D /* ComposeViewController+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Contacts.swift"; sourceTree = "<group>"; };
-		55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUIApplication.enterprise.xcconfig"; path = "Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication.enterprise.xcconfig"; sourceTree = "<group>"; };
 		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewDecorator.swift; sourceTree = "<group>"; };
 		5A39F433239EC61C001F4607 /* TitleCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleCellNode.swift; sourceTree = "<group>"; };
@@ -652,11 +657,6 @@
 		9F31AB922329950800CF87EA /* Imap+Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+Backup.swift"; sourceTree = "<group>"; };
 		9F31AB9D232BF2A600CF87EA /* UIColorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UIColorExtensions.swift; path = ../../FlowCrypt/Extensions/UIColorExtensions.swift; sourceTree = "<group>"; };
 		9F31AB9F232C071700CF87EA /* GlobalRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalRouter.swift; sourceTree = "<group>"; };
-		9F38619B27A181CE00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		9F38619D27A18A9100851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		9F38619F27A18AA500851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		9F3861A127A18AAF00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
-		9F3861A327A18ABA00851419 /* .swiftformat */ = {isa = PBXFileReference; lastKnownFileType = text; path = .swiftformat; sourceTree = "<group>"; };
 		9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelper.swift; sourceTree = "<group>"; };
 		9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelperTest.swift; sourceTree = "<group>"; };
 		9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupInitialViewController.swift; sourceTree = "<group>"; };
@@ -784,7 +784,6 @@
 		A3B7C31823F576BA0022D628 /* AppStartup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStartup.swift; sourceTree = "<group>"; };
 		A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCryptCoreTests.swift; sourceTree = "<group>"; };
 		A3DAD60722E4588800F2C4CD /* TestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestData.swift; sourceTree = "<group>"; };
-		BBFB58E712FFB19AEC513D40 /* Pods-FlowCrypt.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCrypt.debug.xcconfig"; path = "Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt.debug.xcconfig"; sourceTree = "<group>"; };
 		C132B9B01EC2DBD800763715 /* FlowCrypt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowCrypt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C132B9B31EC2DBD800763715 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C132B9BA1EC2DBD800763715 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -861,7 +860,6 @@
 		D2FD0F682453245E00259FF0 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* SetupImapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewDecorator.swift; sourceTree = "<group>"; };
-		D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FlowCryptUI.release.xcconfig"; path = "Target Support Files/Pods-FlowCryptUI/Pods-FlowCryptUI.release.xcconfig"; sourceTree = "<group>"; };
 		E26D5E20275AA417007B8802 /* BundleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtensions.swift; sourceTree = "<group>"; };
 		F191F620272511790053833E /* BlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurViewController.swift; sourceTree = "<group>"; };
 		F8678DCB2722143300BB1710 /* GmailService+draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GmailService+draft.swift"; sourceTree = "<group>"; };
@@ -883,11 +881,11 @@
 				D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */,
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
 				51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */,
+				51A1A12829070CDF007F1188 /* AsyncDisplayKit in Frameworks */,
 				515B7C2528119CED0066AB4F /* GMP in Frameworks */,
 				51E1675D270F36A400D27C52 /* Realm in Frameworks */,
 				51C0C1EF271982A1000C9738 /* MailCore in Frameworks */,
 				51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */,
-				5298EA408FEC36021F7558BD /* Pods_FlowCrypt.framework in Frameworks */,
 				040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
@@ -900,7 +898,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D28655982424D1BD0066F52E /* FlowCryptCommon.framework in Frameworks */,
-				CDE91E546AF2C64C9306EB69 /* Pods_FlowCryptUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -919,7 +916,6 @@
 			files = (
 				D28655992424D1EB0066F52E /* FlowCryptCommon.framework in Frameworks */,
 				D286559A2424D1EB0066F52E /* FlowCryptUI.framework in Frameworks */,
-				7F72537A0C44D3CE670F0EFD /* Pods_FlowCryptUIApplication.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1101,26 +1097,11 @@
 			path = Lib;
 			sourceTree = "<group>";
 		};
-		2DC3601602226D74335E18F4 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				BBFB58E712FFB19AEC513D40 /* Pods-FlowCrypt.debug.xcconfig */,
-				1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */,
-				0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */,
-				3675DB672850A781424D0113 /* Pods-FlowCryptUI.debug.xcconfig */,
-				049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */,
-				D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */,
-				3B945B2BE6B66D5E6B43AD2E /* Pods-FlowCryptUIApplication.debug.xcconfig */,
-				55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */,
-				4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		32DCA376D595968F13A3347A /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				D212D36224C1AC1900035991 /* Models */,
+				51433AA52902A6C200E9D488 /* RSA */,
 				32DCAC732B988D9704658812 /* CoreTypes.swift */,
 				32DCA0C3D34A69851A238E87 /* Core.swift */,
 				32DCACB22E895C2500A99350 /* CoreHost.swift */,
@@ -1172,6 +1153,22 @@
 				513DC087284F161400FAD5F2 /* EmailKeyManagerApi.swift */,
 			);
 			path = "Remote Private Key Apis";
+			sourceTree = "<group>";
+		};
+		51433AA52902A6C200E9D488 /* RSA */ = {
+			isa = PBXGroup;
+			children = (
+				51433AAB2902A6EB00E9D488 /* Asn1Parser.swift */,
+				51433AAE2902A6EB00E9D488 /* ClearMessage.swift */,
+				51433AB02902A6EB00E9D488 /* EncryptedMessage.swift */,
+				51433AAF2902A6EB00E9D488 /* Key.swift */,
+				51433AB32902A6EB00E9D488 /* RSAMessage.swift */,
+				51433AB12902A6EB00E9D488 /* PrivateKey.swift */,
+				51433AA82902A6EA00E9D488 /* PublicKey.swift */,
+				51433AAC2902A6EB00E9D488 /* SwiftyRSA.swift */,
+				51433AB62902A6EB00E9D488 /* SwiftyRSAError.swift */,
+			);
+			path = RSA;
 			sourceTree = "<group>";
 		};
 		5161D87D27A488BD00130518 /* Contact Models */ = {
@@ -1408,7 +1405,6 @@
 				9F7E902726A1AD280021C07F /* Core */,
 				9F6F3C6326ADFBDB005BD9C6 /* Mocks */,
 				51B0C772272AB5FD00124663 /* Extensions */,
-				9F3861A327A18ABA00851419 /* .swiftformat */,
 			);
 			path = FlowCryptAppTests;
 			sourceTree = "<group>";
@@ -1863,13 +1859,11 @@
 			children = (
 				D2324CB22471E60300FD1C6F /* .swiftlint.yml */,
 				C132B9B21EC2DBD800763715 /* FlowCrypt */,
-				2DC3601602226D74335E18F4 /* Pods */,
 				D204DB9F23FB35700083B9D6 /* FlowCryptUI */,
 				D2A1D3B823FD64AB00D626D6 /* FlowCryptUIApplication */,
 				D2531F2C23FEEF52007E5198 /* FlowCryptCommon */,
 				9F2AC5C7267BE99E00F6149B /* FlowCryptAppTests */,
 				C132B9B11EC2DBD800763715 /* Products */,
-				CE0C659EE9FC297F6DAC8F59 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1903,7 +1897,6 @@
 				04B4728A1ECE29D200B8266F /* Models */,
 				2C2B058A27A0809400A406F0 /* Lib */,
 				A3DAD60C22E469E400F2C4CD /* Resources */,
-				9F38619B27A181CE00851419 /* .swiftformat */,
 			);
 			path = FlowCrypt;
 			sourceTree = "<group>";
@@ -1972,16 +1965,6 @@
 			path = Setup;
 			sourceTree = "<group>";
 		};
-		CE0C659EE9FC297F6DAC8F59 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				4753E9A27694B4D34C980FFA /* Pods_FlowCrypt.framework */,
-				3F083C28BC034555B67F7F00 /* Pods_FlowCryptUI.framework */,
-				3382C015A576728FA08BA310 /* Pods_FlowCryptUIApplication.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		D204DB9F23FB35700083B9D6 /* FlowCryptUI */ = {
 			isa = PBXGroup;
 			children = (
@@ -1992,7 +1975,6 @@
 				D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */,
 				D28655972424D0BC0066F52E /* Views */,
 				9F65B0B8278346F8005CD19C /* UIConstants.swift */,
-				9F38619D27A18A9100851419 /* .swiftformat */,
 			);
 			path = FlowCryptUI;
 			sourceTree = "<group>";
@@ -2047,7 +2029,6 @@
 				D254AA5F24092A9E0041CAE0 /* Extensions */,
 				9F72E866263ECE2A0039CF81 /* Trace.swift */,
 				9F8220D426336626004B2009 /* Logger.swift */,
-				9F3861A127A18AAF00851419 /* .swiftformat */,
 			);
 			path = FlowCryptCommon;
 			sourceTree = "<group>";
@@ -2103,6 +2084,8 @@
 				D24FAFA32520BF9100BF46C5 /* CheckBoxCircleView.swift */,
 				5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */,
 				040CF0D92809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift */,
+				51C56BE62901867D00610D12 /* ENSideMenu.swift */,
+				51C56BE72901867D00610D12 /* ENSideMenuNavigationController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2169,7 +2152,6 @@
 				D2F6D12924311E5300DB4065 /* Colors.xcassets */,
 				D2A1D3C423FD64AD00D626D6 /* LaunchScreen.storyboard */,
 				D2A1D3C723FD64AD00D626D6 /* Info.plist */,
-				9F38619F27A18AA500851419 /* .swiftformat */,
 			);
 			path = FlowCryptUIApplication;
 			sourceTree = "<group>";
@@ -2324,17 +2306,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */;
 			buildPhases = (
-				85C230714DC341D246864AD0 /* [CP] Check Pods Manifest.lock */,
-				D2324CA92471CED200FD1C6F /* SwiftLint */,
 				C132B9AC1EC2DBD800763715 /* Sources */,
 				C132B9AD1EC2DBD800763715 /* Frameworks */,
 				C132B9AE1EC2DBD800763715 /* Resources */,
 				D2CDC3E124052D50002B045F /* Embed Frameworks */,
-				E531C3B50A9C90454C72F878 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				51A1A11E2906AFEA007F1188 /* PBXTargetDependency */,
 				D2CDC3DC24052D0F002B045F /* PBXTargetDependency */,
 				D2CDC3E024052D50002B045F /* PBXTargetDependency */,
 			);
@@ -2349,6 +2329,7 @@
 				51C0C1EE271982A1000C9738 /* MailCore */,
 				040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */,
 				515B7C2428119CED0066AB4F /* GMP */,
+				51A1A12729070CDF007F1188 /* AsyncDisplayKit */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -2358,7 +2339,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D204DBA623FB35700083B9D6 /* Build configuration list for PBXNativeTarget "FlowCryptUI" */;
 			buildPhases = (
-				7448815F0409698014646718 /* [CP] Check Pods Manifest.lock */,
 				D204DB9923FB35700083B9D6 /* Headers */,
 				D204DB9A23FB35700083B9D6 /* Sources */,
 				D204DB9B23FB35700083B9D6 /* Frameworks */,
@@ -2399,11 +2379,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = D2A1D3C823FD64AD00D626D6 /* Build configuration list for PBXNativeTarget "FlowCryptUIApplication" */;
 			buildPhases = (
-				BF91BAF1F0E74BA172BDA5C0 /* [CP] Check Pods Manifest.lock */,
 				D2A1D3B323FD64AB00D626D6 /* Sources */,
 				D2A1D3B423FD64AB00D626D6 /* Frameworks */,
 				D2A1D3B523FD64AB00D626D6 /* Resources */,
-				05B81508878EB6DE11728435 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2446,7 +2424,7 @@
 				};
 			};
 			buildConfigurationList = C132B9AB1EC2DBD800763715 /* Build configuration list for PBXProject "FlowCrypt" */;
-			compatibilityVersion = "Xcode 13.0";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -2464,6 +2442,8 @@
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */,
+				51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */,
+				51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -2485,7 +2465,6 @@
 			files = (
 				9F976569267E18F30058419D /* client_configuraion.json in Resources */,
 				9F976576267E18F90058419D /* client_configuraion_partly_empty.json in Resources */,
-				9F3861A427A18ABA00851419 /* .swiftformat in Resources */,
 				9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */,
 				215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */,
 				21594C9626F1DBA900BE654C /* data.txt in Resources */,
@@ -2503,7 +2482,6 @@
 				9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
-				9F38619C27A181CE00851419 /* .swiftformat in Resources */,
 				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
 				949ED9422303E3B400530579 /* Colors.xcassets in Resources */,
@@ -2514,7 +2492,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F38619E27A18A9100851419 /* .swiftformat in Resources */,
 				D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2523,7 +2500,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F3861A227A18AAF00851419 /* .swiftformat in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2531,7 +2507,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F3861A027A18AA500851419 /* .swiftformat in Resources */,
 				D2F6D12A24311E5300DB4065 /* Colors.xcassets in Resources */,
 				D28325DD24895F5700D311BD /* Colors.xcassets in Resources */,
 				D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */,
@@ -2540,127 +2515,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		05B81508878EB6DE11728435 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCryptUIApplication/Pods-FlowCryptUIApplication-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7448815F0409698014646718 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlowCryptUI-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		85C230714DC341D246864AD0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlowCrypt-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BF91BAF1F0E74BA172BDA5C0 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-FlowCryptUIApplication-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D2324CA92471CED200FD1C6F /* SwiftLint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = SwiftLint;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/SwiftLint/swiftlint\"\n";
-		};
-		E531C3B50A9C90454C72F878 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-FlowCrypt/Pods-FlowCrypt-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9F2AC5C2267BE99E00F6149B /* Sources */ = {
@@ -2713,10 +2567,12 @@
 				9F4300CC2571045B00791CFB /* InboxViewControllerContainerDecorator.swift in Sources */,
 				9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */,
 				9F883912271F242900669B56 /* ThreadDetailsDecorator.swift in Sources */,
+				51433AC02902A6EB00E9D488 /* EncryptedMessage.swift in Sources */,
 				04A1724A27F2FD2F00B79559 /* GoogleUserService+Contacts.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
 				51B4AE5327144E590001F33B /* PubKey.swift in Sources */,
 				21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */,
+				51433ABF2902A6EB00E9D488 /* Key.swift in Sources */,
 				049E605927FDB6310089EE2A /* ComposeViewController+Attachment.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
 				9F65B0B7277DF2AD005CD19C /* Imap+ThreadOperations.swift in Sources */,
@@ -2778,6 +2634,7 @@
 				2C124DB42728809100A2EFA6 /* ApiCall.swift in Sources */,
 				9F7E8F19269C538E0021C07F /* NavigationChildController.swift in Sources */,
 				9FB22CF025715D960026EE64 /* BackupServiceError.swift in Sources */,
+				51433AB82902A6EB00E9D488 /* PublicKey.swift in Sources */,
 				9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */,
 				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
 				D27B911924EFE79F002DF0A1 /* LocalContactsProvider.swift in Sources */,
@@ -2795,6 +2652,7 @@
 				9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9FF0673325520DE400FCC9E6 /* GmailService+send.swift in Sources */,
+				51433AC52902A6EB00E9D488 /* SwiftyRSAError.swift in Sources */,
 				D20D3C892520B67C00D4AA9A /* BackupOptionsViewController.swift in Sources */,
 				2C2D0B95275FDF6B0052771D /* Version6SchemaMigration.swift in Sources */,
 				21750D7D26C6AFA6007E6A6F /* SetupEKMKeyViewController.swift in Sources */,
@@ -2854,7 +2712,9 @@
 				D212D36024C1AC0D00035991 /* KeyDetails.swift in Sources */,
 				9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */,
 				51DDA24E28044F0700EE13A8 /* CheckMailAuthViewDecorator.swift in Sources */,
+				51433AC12902A6EB00E9D488 /* PrivateKey.swift in Sources */,
 				9FE1B3A02565B0CE00D6D086 /* Message.swift in Sources */,
+				51433ABE2902A6EB00E9D488 /* ClearMessage.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
 				D2F41371243CC76F0066AFB5 /* SessionRealmObject.swift in Sources */,
 				75588F8B285777AB00E595D1 /* SendAsService.swift in Sources */,
@@ -2869,6 +2729,7 @@
 				9F0C3C102316DD5B00299985 /* GoogleUserService.swift in Sources */,
 				D24F4C2223E2359B00C5EEE4 /* BootstrapViewController.swift in Sources */,
 				21750D7F26C6C1E3007E6A6F /* SetupCreatePassphraseAbstractViewController.swift in Sources */,
+				51433ABB2902A6EB00E9D488 /* Asn1Parser.swift in Sources */,
 				9FC7EBAA266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift in Sources */,
 				9FA9C83C264C2D75005A9670 /* MessageService.swift in Sources */,
 				51DA5BD62721AB07001C4359 /* PubKeyState.swift in Sources */,
@@ -2900,6 +2761,7 @@
 				9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */,
 				9FAFD7592713870800321FA4 /* InboxViewController+State.swift in Sources */,
 				32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */,
+				51433ABC2902A6EB00E9D488 /* SwiftyRSA.swift in Sources */,
 				9FC411352595EA94001180A8 /* Imap+Search.swift in Sources */,
 				9FC4114C25961CEA001180A8 /* MailServiceProviderType.swift in Sources */,
 				049E606727FDBAEF0089EE2A /* ComposeViewController+RecipientInput.swift in Sources */,
@@ -2936,6 +2798,7 @@
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				5137CB1427F8E0A900AEF895 /* EnterpriseServerApiHelper.swift in Sources */,
 				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
+				51433AC32902A6EB00E9D488 /* RSAMessage.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
 				9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */,
 			);
@@ -2969,6 +2832,7 @@
 				D24FAFA42520BF9100BF46C5 /* CheckBoxCircleView.swift in Sources */,
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
 				5165ABCC27B526D100CCC379 /* RecipientEmailTextFieldNode.swift in Sources */,
+				51C56BE82901867D00610D12 /* ENSideMenu.swift in Sources */,
 				D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */,
 				511D07E12769FBBA0050417B /* MessageActionCellNode.swift in Sources */,
 				D211CE7B23FC59ED00D1CE38 /* InfoCellNode.swift in Sources */,
@@ -2985,6 +2849,7 @@
 				50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */,
 				D2CDC3D824047066002B045F /* RecipientEmailNode.swift in Sources */,
 				D2717753242568A600BDA9A9 /* NavigationBarItemsView.swift in Sources */,
+				51C56BE92901867D00610D12 /* ENSideMenuNavigationController.swift in Sources */,
 				D211CE7023FC35AC00D1CE38 /* TableNode.swift in Sources */,
 				D26F132724509EB6009175BA /* RecipientEmailsCellNodeInput.swift in Sources */,
 				D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */,
@@ -3056,6 +2921,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		51A1A11E2906AFEA007F1188 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 51A1A11D2906AFEA007F1188 /* SwiftLint */;
+		};
 		9F2AC5CC267BE99E00F6149B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C132B9AF1EC2DBD800763715 /* FlowCrypt */;
@@ -3168,7 +3037,6 @@
 		};
 		9F1C905026F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1F919F817E5651D30BFF9C0B /* Pods-FlowCrypt.enterprise.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Enterprise";
 				BUNDLE_LOADER = "";
@@ -3197,14 +3065,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Alamofire/Alamofire.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD/MBProgressHUD.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Realm/Realm.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/RealmSwift/RealmSwift.framework/Headers\"",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/mailcore2-ios\"",
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
@@ -3231,7 +3091,6 @@
 		};
 		9F1C905226F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 049C4FBB54F5709AE2F2301B /* Pods-FlowCryptUI.enterprise.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
@@ -3271,7 +3130,6 @@
 		};
 		9F1C905326F1F38C0046E7D7 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 55652F68438D6EDFE71EA13C /* Pods-FlowCryptUIApplication.enterprise.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3373,7 +3231,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6DZ6CC3YMY;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -3467,7 +3324,6 @@
 				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -3552,7 +3408,6 @@
 		};
 		C132B9C31EC2DBD800763715 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BBFB58E712FFB19AEC513D40 /* Pods-FlowCrypt.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
 				BUNDLE_LOADER = "";
@@ -3563,7 +3418,6 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6DZ6CC3YMY;
 				ENABLE_BITCODE = NO;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -3582,14 +3436,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Alamofire/Alamofire.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD/MBProgressHUD.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Realm/Realm.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/RealmSwift/RealmSwift.framework/Headers\"",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/mailcore2-ios\"",
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
@@ -3615,7 +3461,6 @@
 		};
 		C132B9C41EC2DBD800763715 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0B1FD1088504F12263991E77 /* Pods-FlowCrypt.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -3642,14 +3487,6 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Alamofire/Alamofire.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD/MBProgressHUD.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/Realm/Realm.framework/Headers\"",
-					"\"${PODS_CONFIGURATION_BUILD_DIR}/RealmSwift/RealmSwift.framework/Headers\"",
-					"\"${PODS_ROOT}/Headers/Public\"",
-					"\"${PODS_ROOT}/Headers/Public/mailcore2-ios\"",
 					"\"$(BUILT_PRODUCTS_DIR)/../../include\"/**",
 				);
 				INFOPLIST_FILE = FlowCrypt/Info.plist;
@@ -3673,7 +3510,6 @@
 		};
 		D204DBA323FB35700083B9D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3675DB672850A781424D0113 /* Pods-FlowCryptUI.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
@@ -3686,7 +3522,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUI/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -3714,7 +3549,6 @@
 		};
 		D204DBA423FB35700083B9D6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D9381A4EE6BAAD97294A7F9A /* Pods-FlowCryptUI.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_MODULES = YES;
@@ -3763,7 +3597,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptCommon/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
@@ -3826,7 +3659,6 @@
 		};
 		D2A1D3C923FD64AD00D626D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B945B2BE6B66D5E6B43AD2E /* Pods-FlowCryptUIApplication.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3834,7 +3666,6 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 6DZ6CC3YMY;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = FlowCryptUIApplication/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -3855,7 +3686,6 @@
 		};
 		D2A1D3CA23FD64AD00D626D6 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4F928D493732294B4E521900 /* Pods-FlowCryptUIApplication.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3954,6 +3784,22 @@
 				minimumVersion = 6.2.1;
 			};
 		};
+		51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lukepistrol/SwiftLintPlugin";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.4;
+			};
+		};
+		51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/FlowCrypt/Texture/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FlowCrypt/mailcore2";
@@ -4027,6 +3873,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */;
 			productName = GMP;
+		};
+		51A1A11D2906AFEA007F1188 /* SwiftLint */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */;
+			productName = "plugin:SwiftLint";
+		};
+		51A1A12729070CDF007F1188 /* AsyncDisplayKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */;
+			productName = AsyncDisplayKit;
 		};
 		51C0C1EE271982A1000C9738 /* MailCore */ = {
 			isa = XCSwiftPackageProductDependency;

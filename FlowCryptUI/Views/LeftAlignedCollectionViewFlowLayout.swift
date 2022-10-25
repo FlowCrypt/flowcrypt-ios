@@ -14,6 +14,7 @@ public class LeftAlignedCollectionViewFlowLayout: UICollectionViewFlowLayout {
             onHeightChanged?(maxY)
         }
     }
+
     var onHeightChanged: ((CGFloat) -> Void)?
 
     override public func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {

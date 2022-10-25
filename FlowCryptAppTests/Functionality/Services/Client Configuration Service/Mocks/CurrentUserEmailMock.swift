@@ -12,6 +12,7 @@ class CurrentUserEmailMock {
     var currentUserEmailCall: () -> (String?) = {
         nil
     }
+
     func currentUserEmail() -> String? {
         currentUserEmailCall()
     }

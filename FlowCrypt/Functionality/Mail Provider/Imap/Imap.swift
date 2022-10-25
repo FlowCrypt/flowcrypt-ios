@@ -14,8 +14,10 @@ final class Imap: MailServiceProvider {
     let messageKindProvider: MessageKindProviderType
     var imapSess: MCOIMAPSession {
         get throws {
-            let imapSeesion = try imapSessionProvider.imapSession()
-            return MCOIMAPSession(session: imapSeesion)
+            let imapSession = try imapSessionProvider.imapSession()
+            let session = MCOIMAPSession(session: imapSession)
+            session.isVoIPEnabled = false
+            return session
         }
     }
 

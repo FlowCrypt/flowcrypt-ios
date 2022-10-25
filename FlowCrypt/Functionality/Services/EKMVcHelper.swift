@@ -104,11 +104,10 @@ final class EKMVcHelper: EKMVcHelperType {
 
     private func removeLocalKeysIfNeeded(from serverKeys: [KeyDetails], localKeys: [Keypair]) throws {
         var keypairsToDelete: [Keypair] = []
-        for localKey in localKeys {
-            // Delete locally saved key if it's removed from server and locally saved key is not revoked key
-            if try !serverKeys.contains(where: { try $0.primaryFingerprint == localKey.primaryFingerprint }), !localKey.isRevoked {
-                keypairsToDelete.append(localKey)
-            }
+
+        for localKey in localKeys where try !serverKeys.contains(where: { try $0.primaryFingerprint == localKey.primaryFingerprint })
+            && !localKey.isRevoked {
+            keypairsToDelete.append(localKey)
         }
         try appContext.encryptedStorage.removeKeypairs(keypairs: keypairsToDelete)
     }

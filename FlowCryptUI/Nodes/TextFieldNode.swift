@@ -28,7 +28,7 @@ final class TextField: UITextField {
 }
 
 public final class TextFieldNode: ASDisplayNode {
-    public typealias ShouldChangeAction = ((UITextField, String) -> (Bool))
+    public typealias ShouldChangeAction = (UITextField, String) -> (Bool)
     public typealias ShouldEndEditingAction = (UITextField) -> (Bool)
     public typealias ShouldReturnAction = (UITextField) -> (Bool)
 
@@ -152,7 +152,7 @@ public final class TextFieldNode: ASDisplayNode {
                 for: .editingChanged
             )
             self.textField.onBackspaceTap = { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.textFieldAction?(.deleteBackward(self.textField))
             }
             self.textField.accessibilityIdentifier = accessibilityIdentifier
@@ -224,10 +224,10 @@ extension TextFieldNode: UITextFieldDelegate {
     }
 }
 
-extension TextFieldNode {
-    public func setPicker(view: UIPickerView?, withToolbar: Bool = true, onDone: (() -> Void)?) {
+public extension TextFieldNode {
+    func setPicker(view: UIPickerView?, withToolbar: Bool = true, onDone: (() -> Void)?) {
         DispatchQueue.main.async {
-            guard let view = view else {
+            guard let view else {
                 self.textField.inputView = nil
                 self.textField.inputAccessoryView = nil
                 return
@@ -240,7 +240,7 @@ extension TextFieldNode {
         }
     }
 
-    public func setToolbar(_ onDone: (() -> Void)?) {
+    func setToolbar(_ onDone: (() -> Void)?) {
         onToolbarDoneAction = onDone
         let toolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 100, height: 40))
         self.textField.sizeToFit()

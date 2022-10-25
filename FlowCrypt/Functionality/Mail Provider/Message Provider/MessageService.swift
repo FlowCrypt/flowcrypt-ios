@@ -207,13 +207,13 @@ final class MessageService {
 
             messageType = .error(.other)
             signature = nil
-        } else if let decryptErrBlock = firstDecryptErrBlock {
+        } else if let firstDecryptErrBlock {
             // message failed to decrypt or process
-            let err = decryptErrBlock.decryptErr?.error
+            let err = firstDecryptErrBlock.decryptErr?.error
             let hideContent = err?.type == .badMdc || err?.type == .noMdc
             let rawMsg = hideContent
                 ? "content_hidden".localized
-                : decryptErrBlock.content
+                : firstDecryptErrBlock.content
 
             text = "error_decrypt".localized
                 + "\n\(err?.type.rawValue ?? "unknown".localized): \(err?.message ?? "??")\n\n\n\(rawMsg)"

@@ -34,7 +34,7 @@ extension String {
     }
 }
 
-public extension Array where Element == Data {
+public extension [Data] {
     var joined: Data {
         reduce(Data(), +)
     }

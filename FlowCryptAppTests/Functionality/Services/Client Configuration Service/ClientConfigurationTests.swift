@@ -14,18 +14,18 @@ class ClientConfigurationTests: XCTestCase {
     func testIsUsingKeyManagerURL() {
         XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: "https://ekm.example.com")).isUsingKeyManager)
 
-        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: nil) ).isKeyManagerUrlValid)
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: nil)).isKeyManagerUrlValid)
     }
 
     func testIsUsingValidKeyManagerURL() {
         // valid url check in
-        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: "") ).isKeyManagerUrlValid)
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: "")).isKeyManagerUrlValid)
 
         XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: "not a url string")).isKeyManagerUrlValid)
     }
 
     func testIsUsingFes() {
-        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(fesUrl: "https://fes.flowcrypt.com") ).isUsingFes)
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(fesUrl: "https://fes.flowcrypt.com")).isUsingFes)
     }
 
     func testMustAutoImportOrAutogenPrvWithKeyManager() {
@@ -120,7 +120,7 @@ class ClientConfigurationTests: XCTestCase {
             ],
             keyManagerUrl: ""
         )).checkUsesEKM()
-        guard case .inconsistentClientConfiguration(let error) = result else {
+        guard case let .inconsistentClientConfiguration(error) = result else {
             return XCTFail()
         }
         XCTAssert(error == .urlNotValid)
@@ -132,7 +132,7 @@ class ClientConfigurationTests: XCTestCase {
             flags: nil,
             keyManagerUrl: "https://ekm.example.com"
         )).checkUsesEKM()
-        guard case .inconsistentClientConfiguration(let error) = result else {
+        guard case let .inconsistentClientConfiguration(error) = result else {
             return XCTFail()
         }
 
@@ -143,7 +143,7 @@ class ClientConfigurationTests: XCTestCase {
             flags: [],
             keyManagerUrl: "https://ekm.example.com"
         )).checkUsesEKM()
-        guard case .inconsistentClientConfiguration(let emptyFlagsError) = result else {
+        guard case let .inconsistentClientConfiguration(emptyFlagsError) = result else {
             return XCTFail()
         }
 
@@ -158,7 +158,7 @@ class ClientConfigurationTests: XCTestCase {
             ],
             keyManagerUrl: "https://ekm.example.com"
         )).checkUsesEKM()
-        guard case .inconsistentClientConfiguration(let wrongFlagError) = result else {
+        guard case let .inconsistentClientConfiguration(wrongFlagError) = result else {
             return XCTFail()
         }
 
@@ -174,7 +174,7 @@ class ClientConfigurationTests: XCTestCase {
             ],
             keyManagerUrl: "https://ekm.example.com"
         )).checkUsesEKM()
-        guard case .inconsistentClientConfiguration(let error) = result else {
+        guard case let .inconsistentClientConfiguration(error) = result else {
             return XCTFail()
         }
 
@@ -190,7 +190,7 @@ class ClientConfigurationTests: XCTestCase {
             ],
             keyManagerUrl: "https://ekm.example.com"
         )).checkUsesEKM()
-        guard case .inconsistentClientConfiguration(let error) = result else {
+        guard case let .inconsistentClientConfiguration(error) = result else {
             return XCTFail()
         }
 

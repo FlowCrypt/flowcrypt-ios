@@ -239,22 +239,13 @@ extension SetupManuallyEnterPassPhraseViewController {
             .filter { existingKey in
                 return fetchedKeys.contains(where: { $0.fingerprints == existingKey.fingerprints })
             }
+
         let newKeysToAdd = fetchedKeys.filter { fetchedKey in
             return !existingKeys.contains(where: { $0.fingerprints == fetchedKey.fingerprints })
         }
 
-        try appContext.encryptedStorage.putKeypairs(
-            keyDetails: newKeysToAdd,
-            passPhrase: passPhrase,
-            source: .imported,
-            for: email
-        )
-        try appContext.encryptedStorage.putKeypairs(
-            keyDetails: keysToUpdate,
-            passPhrase: passPhrase,
-            source: .imported,
-            for: email
-        )
+        try save(keyDetails: newKeysToAdd, passPhrase: passPhrase)
+        try save(keyDetails: keysToUpdate, passPhrase: passPhrase)
 
         if storageMethod == .memory {
             let updatedPassPhrases = keysToUpdate.map {
@@ -310,6 +301,15 @@ extension SetupManuallyEnterPassPhraseViewController {
         showAlert(title: nil, message: msg) { [weak self] in
             self?.moveToMainFlow()
         }
+    }
+
+    private func save(keyDetails: [KeyDetails], passPhrase: String) throws {
+        try appContext.encryptedStorage.putKeypairs(
+            keyDetails: keyDetails,
+            passPhrase: passPhrase,
+            source: .imported,
+            for: email
+        )
     }
 
     private func moveToMainFlow() {

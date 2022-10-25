@@ -46,11 +46,11 @@ extension KeyDetails {
     var pgpUserEmails: [String] {
         users.map { MCOAddress(nonEncodedRFC822String: $0).mailbox }
     }
-    
+
     var pgpUserEmailsLowercased: [String] {
         pgpUserEmails.map { $0.lowercased() }
     }
-    
+
     var isKeyUsable: Bool {
         // revoked keys are not usable
         guard !revoked else { return false }
@@ -59,12 +59,12 @@ extension KeyDetails {
         // keys without uids on them are not usable
         guard users.isNotEmpty else { return false }
         // expired keys are not usable
-        if let expiration = expiration, expiration.toDate().timeIntervalSinceNow < 0 { return false }
+        if let expiration, expiration.toDate().timeIntervalSinceNow < 0 { return false }
         // non-revoked keys, with lastModified and at least one user, that are not expired are usable
         // gross simplification until https://github.com/FlowCrypt/flowcrypt-ios/issues/1546
         return true
     }
-    
+
     func getArmoredPrv() -> String? {
         return `private`
     }
@@ -78,12 +78,12 @@ extension KeyDetails: CustomStringConvertible {
 }
 
 // MARK: - Other
-extension Array where Element == KeyDetails {
+extension [KeyDetails] {
     // concatenated private keys, joined with a newline
     var joinedPrivateKey: String {
         compactMap(\.private).joined(separator: "\n")
     }
-    
+
     func getUniqueByFingerprintByPreferingLatestLastModified() -> [KeyDetails] {
         var uniqueKeyDetails: [KeyDetails] = []
         for keyDetail in self {

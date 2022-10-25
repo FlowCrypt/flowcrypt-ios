@@ -9,8 +9,8 @@
 import XCTest
 
 extension XCTestCase {
-    func assert<T, E: Error & Equatable>(
-        _ expression: @autoclosure () throws -> T,
+    func assert<E: Error & Equatable>(
+        _ expression: @autoclosure () throws -> some Any,
         throws error: E,
         in file: StaticString = #file,
         line: UInt = #line

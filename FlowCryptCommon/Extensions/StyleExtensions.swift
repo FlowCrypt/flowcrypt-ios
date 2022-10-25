@@ -33,7 +33,7 @@ public extension NSAttributedString {
             NSAttributedString.Key.foregroundColor: color
         ]
 
-        if let alignment = alignment {
+        if let alignment {
             let paragraph = NSMutableParagraphStyle()
             paragraph.alignment = alignment
             attributes[NSAttributedString.Key.paragraphStyle] = paragraph

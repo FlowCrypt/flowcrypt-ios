@@ -48,8 +48,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
         do {
             _ = try await sut.configuration
             XCTFail()
-        } catch {
-        }
+        } catch {}
     }
 
     func testFetchOrganisationalRulesForCurrentUser() async throws {

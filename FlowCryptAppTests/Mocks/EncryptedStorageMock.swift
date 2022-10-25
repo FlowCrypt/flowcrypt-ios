@@ -23,36 +23,29 @@ final class EncryptedStorageMock: EncryptedStorageType {
         getAllUsersResult
     }
 
-    func saveActiveUser(with user: FlowCrypt.User) {
-    }
+    func saveActiveUser(with user: FlowCrypt.User) {}
 
     var doesAnyKeypairExistResult = false
     func doesAnyKeypairExist(for email: String) -> Bool {
         doesAnyKeypairExistResult
     }
 
-    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {
-    }
+    func putKeypairs(keyDetails: [KeyDetails], passPhrase: String?, source: KeySource, for email: String) {}
 
     var getKeypairsResult: [Keypair] = []
     func getKeypairs(by email: String) -> [Keypair] {
         getKeypairsResult
     }
 
-    func validate() throws {
-    }
+    func validate() throws {}
 
-    static func removeStorageFile() throws {
-    }
+    static func removeStorageFile() throws {}
 
-    func cleanup() {
-    }
+    func cleanup() {}
 
-    func removeKeypairs(keypairs: [Keypair]) throws {
-    }
+    func removeKeypairs(keypairs: [Keypair]) throws {}
 
-    func deleteAccount(email: String) throws {
-    }
+    func deleteAccount(email: String) throws {}
 }
 
 extension EncryptedStorageMock {

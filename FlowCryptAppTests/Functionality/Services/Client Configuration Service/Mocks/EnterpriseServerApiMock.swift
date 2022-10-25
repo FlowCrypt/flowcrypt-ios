@@ -17,6 +17,7 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getActiveFesUrlCall: (String) -> String? = { _ in
         return nil
     }
+
     func getActiveFesUrl(for email: String) async throws -> String? {
         getActiveFesUrlInvoked = true
         getActiveFesUrlInvokedCount += 1
@@ -28,6 +29,7 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getActiveFesUrlForCurrentUserCall: () throws -> String = {
         throw OrganisationalRulesServiceError.getActiveFesUrlForCurrentUserCall
     }
+
     func getActiveFesUrlForCurrentUser() async throws -> String? {
         getActiveFesUrlForCurrentUserInvoked = true
         getActiveFesUrlForCurrentUserCount += 1
@@ -39,6 +41,7 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getClientConfigurationCall: (String) throws -> RawClientConfiguration = { _ in
         throw OrganisationalRulesServiceError.getClientConfigurationCall
     }
+
     func getClientConfiguration() async throws -> RawClientConfiguration {
         getClientConfigurationInvoked = true
         getClientConfigurationCount += 1
@@ -50,6 +53,7 @@ final class EnterpriseServerApiMock: EnterpriseServerApiType {
     var getClientConfigurationForCurrentUserCall: () throws -> RawClientConfiguration = {
         throw OrganisationalRulesServiceError.getClientConfigurationForCurrentUserCall
     }
+
     func getClientConfigurationForCurrentUser() async throws -> RawClientConfiguration {
         getClientConfigurationForCurrentUserInvoked = true
         getClientConfigurationForCurrentUserCount += 1

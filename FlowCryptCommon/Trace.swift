@@ -18,7 +18,7 @@ public final class Trace {
     }
 
     public func result() -> TimeInterval {
-        guard let startTime = startTime else {
+        guard let startTime else {
             return 0
         }
         let endTime = CACurrentMediaTime()

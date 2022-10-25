@@ -60,7 +60,7 @@ public extension URLSession {
         let isInToleranceStatusCodes = (tolerateStatus?.contains(status) ?? false)
         let isCodeValid = validStatusCode ~= status || isInToleranceStatusCodes
         let isValidResponse = requestError == nil && isCodeValid
-        if let data = data, isValidResponse {
+        if let data, isValidResponse {
             return HttpRes(status: status, data: data)
         } else {
             throw HttpErr(status: status, data: data, error: requestError)

@@ -7,7 +7,6 @@ import FlowCryptCommon
 import IDZSwiftCommonCrypto // for aes
 import JavaScriptCore // for export to js
 import Security // for rng
-import SwiftyRSA // for rsa
 
 @objc protocol CoreHostExports: JSExport {
     // crypto
@@ -49,7 +48,7 @@ final class CoreHost: NSObject, CoreHostExports {
     func decryptAesCfbNoPadding(_ ct: [UInt8], _ key: [UInt8], _ iv: [UInt8]) -> [UInt8] {
         Cryptor(operation: .decrypt, algorithm: .aes, mode: .CFB, padding: .NoPadding, key: key, iv: iv).update(byteArray: ct)!.final()!
     }
-    
+
     // RSA relies on this method, which is slow in OpenPGP.js that uses BN.js
     // primarily added here because of slow decryption, slow signing, slow sig verification
     // particularly noticeable on RSA4096 (signing could originally be 30-90 seconds)
@@ -149,7 +148,7 @@ final class CoreHost: NSObject, CoreHostExports {
     }
 }
 
-extension SecPadding {
+public extension SecPadding {
     // https://developer.apple.com/documentation/security/secpadding/ksecpaddingnone
-    public static let NONE = SecPadding(rawValue: 0)
+    static let NONE = SecPadding(rawValue: 0)
 }

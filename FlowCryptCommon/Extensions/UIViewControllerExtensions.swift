@@ -6,9 +6,9 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import MBProgressHUD
 import Toast
 import UIKit
-import MBProgressHUD
 
 // MARK: - Toast
 public typealias ShowToastCompletion = (Bool) -> Void
@@ -31,7 +31,7 @@ public extension UIViewController {
         shouldHideKeyboard: Bool = true,
         completion: ShowToastCompletion? = nil
     ) {
-        guard let view = UIApplication.shared.keyWindow?.rootViewController?.view else {
+        guard let view = UIApplication.shared.currentWindow?.rootViewController?.view else {
             assertionFailure("Key window hasn't rootViewController")
             return
         }
@@ -155,8 +155,8 @@ public extension UINavigationController {
     func pushViewController(viewController: UIViewController, animated: Bool, completion: @escaping () -> Void) {
         pushViewController(viewController, animated: animated)
 
-        if let coordinator = transitionCoordinator, animated {
-            coordinator.animate(alongsideTransition: nil) { _ in
+        if let transitionCoordinator, animated {
+            transitionCoordinator.animate(alongsideTransition: nil) { _ in
                 completion()
             }
         } else {
@@ -167,8 +167,8 @@ public extension UINavigationController {
     func popViewController(animated: Bool, completion: @escaping () -> Void) {
         popViewController(animated: animated)
 
-        if let coordinator = transitionCoordinator, animated {
-            coordinator.animate(alongsideTransition: nil) { _ in
+        if let transitionCoordinator, animated {
+            transitionCoordinator.animate(alongsideTransition: nil) { _ in
                 completion()
             }
         } else {
@@ -203,7 +203,7 @@ public extension UIViewController {
         progress: Float? = nil,
         systemImageName: String? = nil
     ) {
-        guard let progress = progress else {
+        guard let progress else {
             showIndeterminateHUD(with: label)
             return
         }

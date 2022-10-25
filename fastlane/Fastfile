@@ -5,32 +5,27 @@ default_platform(:ios)
 
 platform :ios do
 
-  before_all do
-    # installed via the semaphore plugin with `fastlane add_plugin semaphore`
-    # setup_semaphore
-    cocoapods(
-      try_repo_update_on_error: true
-    )
-  end
-
   desc "Build for UI tests"
   lane :build do
     scan(
-      workspace: "FlowCrypt.xcworkspace",
+      project: "FlowCrypt.xcodeproj",
       scheme: "Debug FlowCrypt",
-      skip_build: false,
+      device: "iPhone 14",
       derived_data_path: "/var/tmp/derived_data",
-      build_for_testing: true
+      build_for_testing: true,
+      xcargs: "-skipPackagePluginValidation"
     )
   end
 
   desc "Run Swift tests"
   lane :test do
     scan(
-      workspace: "FlowCrypt.xcworkspace",
+      project: "FlowCrypt.xcodeproj",
       scheme: "FlowCryptAppTests",
+      device: "iPhone 14",
       test_without_building: true,
-      derived_data_path: "/var/tmp/derived_data"
+      derived_data_path: "/var/tmp/derived_data",
+      xcargs: "-skipPackagePluginValidation"
     )
   end
 

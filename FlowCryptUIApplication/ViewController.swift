@@ -51,13 +51,14 @@ final class ViewController: TableNodeViewController {
         )
         composeButton.cornerRadius = size.width / 2
     }
+
     // MARK: - Recipient Text Field
 
     enum Constants {
         static let endTypingCharacters = [",", " "]
     }
 
-    var recipients: [RecipientEmailsCellNode.Input] = (1...10).map { _ in
+    var recipients: [RecipientEmailsCellNode.Input] = (1 ... 10).map { _ in
         RecipientEmailsCellNode.Input(email: testAttributedText())
     }
 }
@@ -96,7 +97,7 @@ extension ViewController: ASTableDelegate, ASTableDataSource {
                 .onShouldReturn { [weak self] textField -> Bool in
                     self?.shouldReturn(with: textField) ?? true
                 }
-                .onShouldChangeCharacters { [weak self] (textField, character) -> (Bool) in
+                .onShouldChangeCharacters { [weak self] textField, character -> (Bool) in
                     self?.shouldChange(with: textField, and: character) ?? true
                 }
                 return node
@@ -180,7 +181,7 @@ extension ViewController {
     }
 
     private func handleEndEditingAction(with text: String?) {
-        guard let text = text, !text.isEmpty else { return }
+        guard let text, !text.isEmpty else { return }
         recipients = recipients.map { recipient in
             var recipient = recipient
             recipient.state = .selectedState
@@ -201,7 +202,7 @@ extension ViewController {
         guard textField.text == "" else { return }
 
         let selectedRecipients = recipients
-            .filter { $0.state.isSelected }
+            .filter(\.state.isSelected)
 
         guard selectedRecipients.isEmpty else {
             // remove selected recipients

@@ -17,9 +17,9 @@ public extension UIAlertController {
     @discardableResult
     func popoverPresentation(style: PopoverPresentationStyle) -> UIAlertController {
         switch style {
-        case .centred(let view):
+        case let .centred(view):
             popoverPresentationController?.centredPresentation(in: view)
-        case .sourceView(let view):
+        case let .sourceView(view):
             popoverPresentationController?.sourceView = view
         }
         return self
