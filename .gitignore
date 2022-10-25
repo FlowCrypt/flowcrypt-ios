@@ -51,9 +51,7 @@ appium/package-lock.json
 appium/tmp
 appium/.env
 appium/FlowCrypt.app
+appium/FlowCryptOld.app
 appium/video
-
-BuildTools/.build
-BuildTools/.swiftpm
 
 Scripts/gmp
