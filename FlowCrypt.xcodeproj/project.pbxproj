@@ -74,7 +74,6 @@
 		32DCA1414EEA727B86C337D5 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0C3D34A69851A238E87 /* Core.swift */; };
 		32DCA2BB910FA1B19BA8B328 /* Imap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA377D22F4D67A8FA05EB /* Imap.swift */; };
 		32DCA594BD65DE3AF94569F3 /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */; };
-		32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */; };
 		32DCA860CF726C3BE61E66BF /* BackendApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAC9C0512037018F434A1 /* BackendApi.swift */; };
 		32DCA9C61ABB3234649B374E /* CoreHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCACB22E895C2500A99350 /* CoreHost.swift */; };
 		32DCACF9C6FC4B9330C9B362 /* Imap+send.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAF8424D0185FAA9401A7 /* Imap+send.swift */; };
@@ -142,6 +141,7 @@
 		51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16748270F303100D27C52 /* GoogleSignIn */; };
 		51E1675D270F36A400D27C52 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675C270F36A400D27C52 /* Realm */; };
 		51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675E270F36A400D27C52 /* RealmSwift */; };
+		51E8181D29081D2B00FD428D /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 51E8181C29081D2B00FD428D /* flowcrypt-ios-prod.js.txt */; };
 		51EBC5702746A06600178DE8 /* TextWithIconNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */; };
 		51FC336128C236770098313D /* ComposeViewController+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FC336028C236770098313D /* ComposeViewController+Contacts.swift */; };
 		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
@@ -542,7 +542,6 @@
 		32DCAC732B988D9704658812 /* CoreTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTypes.swift; sourceTree = "<group>"; };
 		32DCAC9C0512037018F434A1 /* BackendApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackendApi.swift; sourceTree = "<group>"; };
 		32DCACB22E895C2500A99350 /* CoreHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreHost.swift; sourceTree = "<group>"; };
-		32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "flowcrypt-ios-prod.js.txt"; sourceTree = "<group>"; };
 		32DCAEFF16F5D91A35791730 /* DataExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		32DCAF8424D0185FAA9401A7 /* Imap+send.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Imap+send.swift"; sourceTree = "<group>"; };
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
@@ -601,6 +600,7 @@
 		51DE2FED2714DA0400916222 /* ContactKeyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyCellNode.swift; sourceTree = "<group>"; };
 		51E1673C270DAFF900D27C52 /* Localizable.stringsdict */ = {isa = PBXFileReference; lastKnownFileType = text.plist.stringsdict; path = Localizable.stringsdict; sourceTree = "<group>"; };
 		51E4F0B427348E310017DABB /* ErrorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorExtensions.swift; sourceTree = "<group>"; };
+		51E8181C29081D2B00FD428D /* flowcrypt-ios-prod.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "flowcrypt-ios-prod.js.txt"; sourceTree = "<group>"; };
 		51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextWithIconNode.swift; sourceTree = "<group>"; };
 		51FC336028C236770098313D /* ComposeViewController+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Contacts.swift"; sourceTree = "<group>"; };
 		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -1206,6 +1206,14 @@
 				51DA5BD92722C82E001C4359 /* RecipientTests.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		51E8181B29081D2B00FD428D /* generated */ = {
+			isa = PBXGroup;
+			children = (
+				51E8181C29081D2B00FD428D /* flowcrypt-ios-prod.js.txt */,
+			);
+			path = generated;
 			sourceTree = "<group>";
 		};
 		5A39F42E239EC32B001F4607 /* Settings */ = {
@@ -1843,9 +1851,9 @@
 		A3DAD60C22E469E400F2C4CD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				51E8181B29081D2B00FD428D /* generated */,
 				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
-				32DCACD323127CD4FEA462FC /* flowcrypt-ios-prod.js.txt */,
 				51E1673C270DAFF900D27C52 /* Localizable.stringsdict */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
 				D269E025240EAD9A000495C3 /* Naming Convention.md */,
@@ -2477,12 +2485,12 @@
 			files = (
 				D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */,
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
+				51E8181D29081D2B00FD428D /* flowcrypt-ios-prod.js.txt in Resources */,
 				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
-				32DCA6A3C9D59DD16B136772 /* flowcrypt-ios-prod.js.txt in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
 				949ED9422303E3B400530579 /* Colors.xcassets in Resources */,
 			);
