@@ -218,13 +218,13 @@ extension GoogleUserService: UserServiceType {
             throw GoogleUserServiceError.wrongAccount(email, userEmail)
         }
         let missingScopes = checkMissingScopes(authState.scope, from: scopes)
-        if missingScopes.isNotEmpty {
+        guard missingScopes.isEmpty else {
             throw GoogleUserServiceError.userNotAllowedAllNeededScopes(
                 missingScopes: missingScopes,
                 email: authorization.userEmail
             )
         }
-        self.saveAuth(state: authState, for: email)
+        saveAuth(state: authState, for: email)
         guard let token = authState.lastTokenResponse?.accessToken else {
             throw GoogleUserServiceError.inconsistentState("Missing token")
         }
@@ -264,11 +264,11 @@ extension GoogleUserService {
 
     private func getAuthorizationForCurrentUser() -> GTMAppAuthFetcherAuthorization? {
         // get active user
-        guard let email = currentUserEmail else {
+        guard let currentUserEmail else {
             return nil
         }
         // get authorization from keychain
-        return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
+        return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + currentUserEmail)
     }
 
     private func fetchGoogleUser(
@@ -353,9 +353,9 @@ extension GoogleUserService {
 // MARK: - OIDAuthStateChangeDelegate
 extension GoogleUserService: OIDAuthStateChangeDelegate {
     func didChange(_ state: OIDAuthState) {
-        guard let email = currentUserEmail else {
+        guard let currentUserEmail else {
             return
         }
-        saveAuth(state: state, for: email)
+        saveAuth(state: state, for: currentUserEmail)
     }
 }

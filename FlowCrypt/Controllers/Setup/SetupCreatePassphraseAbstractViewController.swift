@@ -227,25 +227,7 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
                     )
                 )
             case .passPhrase:
-                return TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
-                    switch action {
-                    case let .didEndEditing(value):
-                        self?.passPhrase = value
-                    case let .didPaste(textField, value):
-                        textField.text = value
-                        self?.handleButtonAction()
-                    default:
-                        break
-                    }
-                }
-                .onShouldReturn { [weak self] _ in
-                    self?.view.endEditing(true)
-                    self?.handleButtonAction()
-                    return true
-                }
-                .then {
-                    $0.becomeFirstResponder()
-                }
+                return self.passPhraseTextFieldNode()
             case .action:
                 let input = ButtonCellNode.Input(
                     title: self.decorator.buttonTitle(for: .setPassPhrase)
@@ -293,6 +275,28 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
             storageMethod = .memory
         default:
             break
+        }
+    }
+
+    private func passPhraseTextFieldNode() -> ASCellNode {
+        TextFieldCellNode(input: .passPhraseTextFieldStyle) { [weak self] action in
+            switch action {
+            case let .didEndEditing(value):
+                self?.passPhrase = value
+            case let .didPaste(textField, value):
+                textField.text = value
+                self?.handleButtonAction()
+            default:
+                break
+            }
+        }
+        .onShouldReturn { [weak self] _ in
+            self?.view.endEditing(true)
+            self?.handleButtonAction()
+            return true
+        }
+        .then {
+            $0.becomeFirstResponder()
         }
     }
 }

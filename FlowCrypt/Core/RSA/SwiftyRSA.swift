@@ -115,7 +115,7 @@ public enum SwiftyRSA {
 
         let keyData = keyData
 
-        guard let tagData = tag.data(using: .utf8) else {
+        guard tag.data(using: .utf8) != nil else {
             throw SwiftyRSAError.tagEncodingFailed
         }
 
