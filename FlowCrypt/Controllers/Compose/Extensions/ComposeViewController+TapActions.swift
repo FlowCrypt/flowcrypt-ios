@@ -25,7 +25,7 @@ extension ComposeViewController {
                     throw MessageValidationError.noPubRecipients
                 }
 
-                try await sendMessage()
+                try await validateAndSendMessage()
             } catch {
                 handle(error: error)
             }

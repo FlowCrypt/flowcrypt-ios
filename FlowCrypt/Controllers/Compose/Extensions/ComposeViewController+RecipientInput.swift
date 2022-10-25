@@ -30,7 +30,7 @@ extension ComposeViewController {
             }
             return false
         } else if Constants.endTypingCharacters.contains(character),
-                  self.showAlertIfTextFieldNotValidEmail(textField: textField) {
+                  showAlertIfTextFieldNotValidEmail(textField: textField) {
             handleEndEditingAction(with: textField.text, for: recipientType)
             nextResponder()
             return false
@@ -165,7 +165,7 @@ extension ComposeViewController {
 
         if var lastRecipient = recipients.popLast() {
             // select last recipient in a list
-            lastRecipient.state = self.decorator.recipientSelectedState
+            lastRecipient.state = decorator.recipientSelectedState
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
 
