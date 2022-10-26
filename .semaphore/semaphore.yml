@@ -24,14 +24,14 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - xcversion list
-          - xcversion simulators
-          - xcrun simctl list
           - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - rm -rf /var/tmp/derived_data/SourcePackages/artifacts/*
+            - xcversion list
+            - xcversion simulators
+            - xcrun simctl list
             - xcversion select 14.0
             - fastlane build
             - fastlane test
