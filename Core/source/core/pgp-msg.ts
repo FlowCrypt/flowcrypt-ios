@@ -298,27 +298,20 @@ export class PgpMsg {
       const publicKeys = await readKeys({ armoredKeys: armoredPubkey });
       encryptionKeys.push(...publicKeys);
     }
-    // Have to keep this "if" here because it doesn't compile if we use
-    // format: armor ? 'armored' : 'binary'
-    if (armor) {
-      return await encrypt({
-        format: 'armored',
-        message,
-        date,
-        encryptionKeys,
-        passwords: pwd ? [pwd] : undefined,
-        signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
-      });
-    } else {
-      return await encrypt({
-        format: 'binary',
-        message,
-        date,
-        encryptionKeys,
-        passwords: pwd ? [pwd] : undefined,
-        signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
-      });
+
+    let encryptOptions = {
+      message,
+      date,
+      encryptionKeys,
+      passwords: pwd ? [pwd] : undefined,
+      signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
+    };
+
+    if (!armor) {
+      encryptOptions = Object.assign(encryptOptions, { format: 'binary' });
     }
+
+    return await encrypt(encryptOptions);
   };
 
   public static extractFcAtts = (decryptedContent: string, blocks: MsgBlock[]) => {
