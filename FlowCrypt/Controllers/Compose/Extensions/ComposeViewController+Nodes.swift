@@ -167,9 +167,10 @@ extension ComposeViewController {
                 }
 
                 // Set cursor position to start of text view
+                let startIndex = textNode.textView.textView.beginningOfDocument
                 textNode.textView.textView.selectedTextRange = textNode.textView.textView.textRange(
-                    from: textNode.textView.textView.beginningOfDocument,
-                    to: textNode.textView.textView.beginningOfDocument
+                    from: startIndex,
+                    to: startIndex
                 )
 
                 if self.input.shouldFocusTextNode {
@@ -252,17 +253,16 @@ extension ComposeViewController {
             }
         )
         .onShouldReturn { [weak self] textField in
-            if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
+            guard let self else { return true }
+
+            let isValid = self.showAlertIfTextFieldNotValidEmail(textField: textField)
+            if isValid {
                 textField.resignFirstResponder()
-                return true
             }
-            return false
+            return isValid
         }
         .onShouldEndEditing { [weak self] textField in
-            if let isValid = self?.showAlertIfTextFieldNotValidEmail(textField: textField), isValid {
-                return true
-            }
-            return false
+            return self?.showAlertIfTextFieldNotValidEmail(textField: textField) ?? true
         }
         .onShouldChangeCharacters { [weak self] textField, character in
             self?.shouldChange(with: textField, and: character, for: type) ?? true
@@ -278,7 +278,10 @@ extension ComposeViewController {
         if let text = textField.text, text.isEmpty || text.isValidEmail {
             return true
         }
-        showAlert(title: "compose_invalid_recipient_title".localized, message: "compose_invalid_recipient_message".localized)
+        showAlert(
+            title: "compose_invalid_recipient_title".localized,
+            message: "compose_invalid_recipient_message".localized
+        )
         return false
     }
 
@@ -296,24 +299,26 @@ extension ComposeViewController {
     }
 
     func noSearchResultsNode() -> ASCellNode {
-        TextCellNode(input: .init(
-            backgroundColor: .clear,
-            title: "compose_no_contacts_found".localized,
-            withSpinner: false,
-            size: .zero,
-            insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
-            itemsAlignment: .start
-        )
+        TextCellNode(input:
+            .init(
+                backgroundColor: .clear,
+                title: "compose_no_contacts_found".localized,
+                withSpinner: false,
+                size: .zero,
+                insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
+                itemsAlignment: .start
+            )
         )
     }
 
     func enableGoogleContactsNode() -> ASCellNode {
-        TextWithIconNode(input: .init(
-            title: "compose_enable_google_contacts_search"
-                .localized
-                .attributed(.regular(16)),
-            image: UIImage(named: "gmail_icn")
-        )
+        TextWithIconNode(input:
+            .init(
+                title: "compose_enable_google_contacts_search"
+                    .localized
+                    .attributed(.regular(16)),
+                image: UIImage(named: "gmail_icn")
+            )
         )
     }
 }

@@ -11,41 +11,68 @@ import UIKit
 
 // MARK: - Message Sending
 extension ComposeViewController {
-    func sendMessage() async throws {
-        view.endEditing(true)
+    func validateAndSendMessage() async throws {
+        guard checkIfAllRecipientsAreValid() else { return }
 
-        navigationItem.rightBarButtonItem?.isEnabled = false
-
-        let spinnerTitle = contextToSend.attachments.isEmpty ? "sending_title" : "encrypting_title"
-        showSpinner(spinnerTitle.localized)
-
-        let selectedRecipients = contextToSend.recipients.filter(\.state.isSelected)
-        for selectedRecipient in selectedRecipients {
-            evaluate(recipient: selectedRecipient)
-        }
+        showSendingSpinner()
+        evaluateSelectedRecipients()
 
         // TODO: - fix for spinner
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
         try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
 
+        let messageIdentifier = try await sendMessage()
+        handleAction?(.sent(messageIdentifier))
+
+        handleSuccessfullySentMessage()
+    }
+
+    private func checkIfAllRecipientsAreValid() -> Bool {
+        view.endEditing(true)
+
+        if let selectedRecipientType,
+           let text = recipientsTextField(type: selectedRecipientType)?.text,
+           !text.isEmpty {
+            return false
+        }
+
+        return true
+    }
+
+    private func showSendingSpinner() {
+        navigationItem.rightBarButtonItem?.isEnabled = false
+
+        let spinnerTitle = contextToSend.attachments.isEmpty ? "sending_title" : "encrypting_title"
+        showSpinner(spinnerTitle.localized)
+    }
+
+    private func evaluateSelectedRecipients() {
+        let selectedRecipients = contextToSend.recipients.filter(\.state.isSelected)
+        for selectedRecipient in selectedRecipients {
+            evaluate(recipient: selectedRecipient)
+        }
+    }
+
+    private func sendMessage() async throws -> MessageIdentifier {
         let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
             input: input,
             contextToSend: contextToSend
         )
+
         UIApplication.shared.isIdleTimerDisabled = true
+
         let identifier = try await composeMessageService.encryptAndSend(
             message: sendableMsg,
             threadId: input.threadId
         )
 
-        let messageIdentifier = MessageIdentifier(
+        UIApplication.shared.isIdleTimerDisabled = false
+
+        return MessageIdentifier(
             draftId: input.type.info?.id,
             threadId: Identifier(stringId: input.threadId),
             messageId: identifier
         )
-        handleAction?(.sent(messageIdentifier))
-
-        handleSuccessfullySentMessage()
     }
 
     private func handleSuccessfullySentMessage() {
