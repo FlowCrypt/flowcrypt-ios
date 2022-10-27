@@ -20,7 +20,7 @@ import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAs
 import { Xss } from './platform/xss';
 import { expect } from 'chai';
 import { Endpoints } from './mobile-interface/endpoints';
-import { decryptKey, PrivateKey, readKey } from 'openpgp';
+import { config, decryptKey, PrivateKey, readKey } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './core/pgp';
 import { PgpKey } from './core/pgp-key';
 import { MsgBlock } from './core/msg-block';
@@ -45,14 +45,18 @@ test.serial('composeEmail and parseKeys with shouldHideArmorMeta', async t => {
     to: [], cc: [], bcc: [], from: '', subject: ''
   };
   await endpoints.setClientConfiguration({ shouldHideArmorMeta: false });
+  expect(config.showComment).eq(true);
+  expect(config.showVersion).eq(true);
   const { data: encryptedMimeMsgWithArmorMeta } = parseResponse(await endpoints.composeEmail(req));
-  const { json: jsonWithMeta } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubKeys[0])]));
   const encryptedMimeStrWithMeta = encryptedMimeMsgWithArmorMeta.toString();
   expect(encryptedMimeStrWithMeta).contains('\nVersion: ');
   expect(encryptedMimeStrWithMeta).contains('Comment: ');
+  const { json: jsonWithMeta } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubKeys[0])]));
   expect(jsonWithMeta.keyDetails[0].public).contains('Version: ');
   expect(jsonWithMeta.keyDetails[0].public).contains('Comment: ');
   await endpoints.setClientConfiguration({ shouldHideArmorMeta: true });
+  expect(config.showComment).eq(false);
+  expect(config.showVersion).eq(false);
   const { data: encryptedMimeMsgWithoutArmorMeta } = parseResponse(await endpoints.composeEmail(req));
   const encryptedMimeStrWithoutMeta = encryptedMimeMsgWithoutArmorMeta.toString();
   expect(encryptedMimeStrWithoutMeta).to.not.contain('\nVersion: ');

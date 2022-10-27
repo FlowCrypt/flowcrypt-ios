@@ -86,6 +86,14 @@ class ClientConfigurationTests: XCTestCase {
         XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: nil)).mustSubmitAttester)
     }
 
+    func testHideArmorMeta() {
+        XCTAssertTrue(ClientConfiguration(raw: RawClientConfiguration(
+            flags: [.hideArmorMeta]
+        )).shouldHideArmorMeta)
+
+        XCTAssertFalse(ClientConfiguration(raw: RawClientConfiguration(flags: [])).shouldHideArmorMeta)
+    }
+
     func testCheckDoesNotUseEKM() {
         // EKM should not be used if keyManagerUrl is nil
         XCTAssert(try ClientConfiguration(raw: RawClientConfiguration(keyManagerUrl: nil)).checkUsesEKM() == .doesNotUseEKM)
