@@ -255,12 +255,14 @@ final class ComposeMessageService {
             _ = try await saveDraftTask.value
         }
 
-        saveDraftTask = Task {
+        saveDraftTask = Task { [weak self] in
+            guard let self else { throw AppErr.nilSelf }
+
             do {
-                let mime = try await self.core.composeEmail(
+                let mime = try await self.composeEmail(
                     msg: message,
                     fmt: shouldEncrypt ? .encryptInline : .plain
-                ).mimeEncoded
+                )
 
                 let threadId = self.messageIdentifier?.threadId?.stringId ?? threadId
 
@@ -291,19 +293,19 @@ final class ComposeMessageService {
             onStateChanged?(.startComposing)
 
             let hasPassword = !message.password.isEmptyOrNil
-            let composedEmail: CoreRes.ComposeEmail
+            let mime: Data
 
             if hasPassword {
-                composedEmail = try await composePasswordMessage(from: message)
+                mime = try await composePasswordMessage(from: message)
             } else {
-                composedEmail = try await core.composeEmail(
+                mime = try await composeEmail(
                     msg: message,
                     fmt: .encryptInline
                 )
             }
 
             let input = MessageGatewayInput(
-                mime: composedEmail.mimeEncoded,
+                mime: mime,
                 threadId: threadId
             )
 
@@ -327,11 +329,15 @@ final class ComposeMessageService {
             throw ComposeMessageError.gatewayError(error)
         }
     }
+
+    private func composeEmail(msg: SendableMsg, fmt: MsgFmt = .plain) async throws -> Data {
+        try await core.composeEmail(msg: msg, fmt: fmt).mimeEncoded
+    }
 }
 
 // MARK: - Message password
 extension ComposeMessageService {
-    private func composePasswordMessage(from message: SendableMsg) async throws -> CoreRes.ComposeEmail {
+    private func composePasswordMessage(from message: SendableMsg) async throws -> Data {
         let messageUrl = try await prepareAndUploadPwdEncryptedMsg(message: message)
         let messageBody = createMessageBodyWithPasswordLink(sender: message.from, url: messageUrl)
 
@@ -344,7 +350,7 @@ extension ComposeMessageService {
             pubKeys: nil
         )
 
-        return try await core.composeEmail(msg: sendableMsg, fmt: .plain)
+        return try await composeEmail(msg: sendableMsg)
     }
 
     private func encryptBodyWithoutAttachments(message: SendableMsg) async throws -> SendableMsg.Attachment {
@@ -395,10 +401,7 @@ extension ComposeMessageService {
             atts: message.atts,
             pubKeys: nil
         )
-        let pgpMimeWithAttachments = try await core.composeEmail(
-            msg: msgWithReplyToken,
-            fmt: .plain
-        ).mimeEncoded
+        let pgpMimeWithAttachments = try await composeEmail(msg: msgWithReplyToken)
 
         let pwdEncryptedWithAttachments = try await core.encrypt(
             data: pgpMimeWithAttachments,

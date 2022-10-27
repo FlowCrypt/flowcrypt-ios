@@ -17,9 +17,11 @@ struct AppStartup {
     }
 
     private let appContext: AppContext
+    private let core: Core
 
-    init(appContext: AppContext) {
+    init(appContext: AppContext, core: Core = .shared) {
         self.appContext = appContext
+        self.core = core
     }
 
     @MainActor
@@ -54,7 +56,7 @@ struct AppStartup {
         let pubKeyObjects = storage.objects(PubKeyRealmObject.self).unique()
 
         for pubKeyObject in pubKeyObjects {
-            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: pubKeyObject.armored.data())
+            let parsedKey = try await core.parseKeys(armoredOrBinary: pubKeyObject.armored.data())
             try storage.write {
                 if let keyDetail = parsedKey.keyDetails.first {
                     pubKeyObject.isRevoked = keyDetail.revoked
@@ -79,7 +81,7 @@ struct AppStartup {
         let keyPairObjects = storage.objects(KeypairRealmObject.self).unique()
 
         for keyPairObject in keyPairObjects {
-            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: keyPairObject.private.data())
+            let parsedKey = try await core.parseKeys(armoredOrBinary: keyPairObject.private.data())
             try storage.write {
                 if let keyDetail = parsedKey.keyDetails.first {
                     keyPairObject.isRevoked = keyDetail.revoked
@@ -106,7 +108,7 @@ struct AppStartup {
         }.unique()
 
         for keyPair in keyPairs {
-            let parsedKey = try await Core.shared.parseKeys(armoredOrBinary: keyPair.public.data())
+            let parsedKey = try await core.parseKeys(armoredOrBinary: keyPair.public.data())
             try storage.write {
                 if let keyDetail = parsedKey.keyDetails.first, let lastModified = keyDetail.lastModified {
                     keyPair.lastModified = lastModified
@@ -121,7 +123,7 @@ struct AppStartup {
 
     private func setupCore() async {
         logger.logInfo("Setup Core")
-        await Core.shared.startIfNotAlreadyRunning()
+        await core.startIfNotAlreadyRunning()
     }
 
     private func setupSession() async throws {
