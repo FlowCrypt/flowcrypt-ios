@@ -49,6 +49,14 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.Version.self)
     }
 
+    func setClientConfiguration(_ config: ClientConfiguration) async throws {
+        _ = try await call(
+            "setClientConfiguration",
+            jsonDict: ["shouldHideArmorMeta": config.shouldHideArmorMeta],
+            data: nil
+        )
+    }
+
     // MARK: Keys
     func parseKeys(armoredOrBinary: Data) async throws -> CoreRes.ParseKeys {
         let r = try await call("parseKeys", jsonDict: [String: String](), data: armoredOrBinary)

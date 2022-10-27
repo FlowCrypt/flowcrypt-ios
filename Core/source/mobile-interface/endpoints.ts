@@ -18,7 +18,7 @@ import { VERSION } from '../core/const';
 import { ValidateInput, readArmoredKeyOrThrow, NodeRequest } from './validate-input';
 import { Xss } from '../platform/xss';
 import { gmailBackupSearchQuery } from '../core/const';
-import { encryptKey, Key, PrivateKey, readKey, readKeys } from 'openpgp';
+import { config, encryptKey, Key, PrivateKey, readKey, readKeys } from 'openpgp';
 
 export class Endpoints {
 
@@ -27,6 +27,13 @@ export class Endpoints {
   public version = async (): Promise<EndpointRes> => {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     return fmtRes({ app_version: VERSION });
+  };
+
+  public setClientConfiguration = async (uncheckedReq: unknown): Promise<EndpointRes> => {
+    const { shouldHideArmorMeta } = ValidateInput.setClientConfiguration(uncheckedReq);
+    config.showVersion = !shouldHideArmorMeta;
+    config.showComment = !shouldHideArmorMeta;
+    return fmtRes({});
   };
 
   public generateKey = async (uncheckedReq: unknown): Promise<EndpointRes> => {

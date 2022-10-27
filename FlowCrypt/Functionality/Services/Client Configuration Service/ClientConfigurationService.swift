@@ -15,6 +15,7 @@ protocol ClientConfigurationServiceType {
 final class ClientConfigurationService: ClientConfigurationServiceType {
     private let server: EnterpriseServerApiType
     private let local: LocalClientConfigurationType
+    private let core: Core
 
     private var didFetch = false
 
@@ -26,10 +27,12 @@ final class ClientConfigurationService: ClientConfigurationServiceType {
 
     init(
         server: EnterpriseServerApiType,
-        local: LocalClientConfigurationType
+        local: LocalClientConfigurationType,
+        core: Core = .shared
     ) {
         self.server = server
         self.local = local
+        self.core = core
     }
 
     private func loadSaved() throws -> ClientConfiguration {
@@ -59,6 +62,7 @@ final class ClientConfigurationService: ClientConfigurationServiceType {
             raw: raw,
             fesUrl: server.fesUrl
         )
+        try await core.setClientConfiguration(ClientConfiguration(raw: raw))
         didFetch = true
     }
 }

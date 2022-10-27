@@ -12,7 +12,7 @@ global.dereq_encoding_japanese = require("encoding-japanese");
 (global as any).iso88592 = require('../../source/lib/iso-8859-2');
 /* eslint-enable */
 
-import * as ava from 'ava';
+import test from 'ava';
 
 // eslint-disable-next-line max-len
 import { allKeypairNames, expectData, expectEmptyJson, expectNoData, getCompatAsset, getHtmlAsset, getKeypairs, JsonDict, parseResponse } from './test/test-utils';
@@ -31,14 +31,39 @@ const textSpecialChars = '> special <tag> & other\n> second line';
 const htmlSpecialChars = Xss.escape(textSpecialChars).replace('\n', '<br />');
 const endpoints = new Endpoints();
 
-ava.default('version', async t => {
+test('version', async t => {
   const { json, data } = parseResponse(await endpoints.version());
   expect(json).to.have.property('app_version');
   expectNoData(data);
   t.pass();
 });
 
-ava.default('generateKey', async t => {
+test.serial('composeEmail and parseKeys with shouldHideArmorMeta', async t => {
+  const { pubKeys } = getKeypairs('rsa1');
+  const req = {
+    pubKeys, format: 'encryptInline', text: '',
+    to: [], cc: [], bcc: [], from: '', subject: ''
+  };
+  await endpoints.setClientConfiguration({ shouldHideArmorMeta: false });
+  const { data: encryptedMimeMsgWithArmorMeta } = parseResponse(await endpoints.composeEmail(req));
+  const { json: jsonWithMeta } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubKeys[0])]));
+  const encryptedMimeStrWithMeta = encryptedMimeMsgWithArmorMeta.toString();
+  expect(encryptedMimeStrWithMeta).contains('\nVersion: ');
+  expect(encryptedMimeStrWithMeta).contains('Comment: ');
+  expect(jsonWithMeta.keyDetails[0].public).contains('Version: ');
+  expect(jsonWithMeta.keyDetails[0].public).contains('Comment: ');
+  await endpoints.setClientConfiguration({ shouldHideArmorMeta: true });
+  const { data: encryptedMimeMsgWithoutArmorMeta } = parseResponse(await endpoints.composeEmail(req));
+  const encryptedMimeStrWithoutMeta = encryptedMimeMsgWithoutArmorMeta.toString();
+  expect(encryptedMimeStrWithoutMeta).to.not.contain('\nVersion: ');
+  expect(encryptedMimeStrWithoutMeta).to.not.contain('Comment: ');
+  const { json: jsonWithoutMeta } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubKeys[0])]));
+  expect(jsonWithoutMeta.keyDetails[0].public).to.not.contain('Version: ');
+  expect(jsonWithoutMeta.keyDetails[0].public).to.not.contain('Comment: ');
+  t.pass();
+});
+
+test('generateKey', async t => {
   const { json, data } = parseResponse(
     await endpoints.generateKey({
       variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd',
@@ -57,7 +82,7 @@ ava.default('generateKey', async t => {
 });
 
 for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && name !== 'revoked')) {
-  ava.default(`encryptMsg -> parseDecryptMsg (${keypairName})`, async t => {
+  test(`encryptMsg -> parseDecryptMsg (${keypairName})`, async t => {
     const content = 'hello\nwrld';
     const { pubKeys, keys } = getKeypairs(keypairName);
     const { data: encryptedMsg, json: encryptJson } =
@@ -73,7 +98,7 @@ for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && n
   });
 }
 
-ava.default(`encryptMsg -> parseDecryptMsg (with password)`, async t => {
+test(`encryptMsg -> parseDecryptMsg (with password)`, async t => {
   const content = 'hello\nwrld';
   const msgPwd = '123';
   const { data: encryptedMsg, json: encryptJson } = parseResponse(
@@ -89,7 +114,7 @@ ava.default(`encryptMsg -> parseDecryptMsg (with password)`, async t => {
   t.pass();
 });
 
-ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
+test('composeEmail format:plain -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { keys } = getKeypairs('rsa1');
   const req = {
@@ -113,7 +138,7 @@ ava.default('composeEmail format:plain -> parseDecryptMsg', async t => {
   t.pass();
 });
 
-ava.default('composeEmail format:plain (reply)', async t => {
+test('composeEmail format:plain (reply)', async t => {
   const req = {
     format: 'plain', text: 'replying', to: ['some@to.com'],
     cc: [], bcc: [], from: 'some@from.com', subject: 'Re: original',
@@ -127,7 +152,7 @@ ava.default('composeEmail format:plain (reply)', async t => {
   t.pass();
 });
 
-ava.default('composeEmail format:plain with attachment', async t => {
+test('composeEmail format:plain with attachment', async t => {
   const content = 'hello\nwrld';
   const req = {
     format: 'plain', text: content, to: ['some@to.com'], cc: ['some@cc.com'], bcc: [],
@@ -147,7 +172,7 @@ ava.default('composeEmail format:plain with attachment', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg unescaped special characters in text (originally text/plain)', async t => {
+test('parseDecryptMsg unescaped special characters in text (originally text/plain)', async t => {
   const mime = `MIME-Version: 1.0
 Date: Fri, 6 Sep 2019 10:48:25 +0000
 Message-ID: <some@mail.gmail.com>
@@ -168,7 +193,7 @@ ${textSpecialChars}`;
   t.pass();
 });
 
-ava.default('parseDecryptMsg unescaped special characters in text (originally text/html)', async t => {
+test('parseDecryptMsg unescaped special characters in text (originally text/html)', async t => {
   const mime = `MIME-Version: 1.0
 Date: Fri, 6 Sep 2019 10:48:25 +0000
 Message-ID: <some@mail.gmail.com>
@@ -189,7 +214,7 @@ ${htmlSpecialChars}`;
   t.pass();
 });
 
-ava.default('parseDecryptMsg unescaped special characters in encrypted pgpmime', async t => {
+test('parseDecryptMsg unescaped special characters in encrypted pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: false },
@@ -202,7 +227,7 @@ ava.default('parseDecryptMsg unescaped special characters in encrypted pgpmime',
   t.pass();
 });
 
-ava.default('parseDecryptMsg unescaped special characters in encrypted text', async t => {
+test('parseDecryptMsg unescaped special characters in encrypted text', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: false },
@@ -212,7 +237,7 @@ ava.default('parseDecryptMsg unescaped special characters in encrypted text', as
   t.pass();
 });
 
-ava.default('parseDecryptMsg - plain inline img', async t => {
+test('parseDecryptMsg - plain inline img', async t => {
   const mime = `MIME-Version: 1.0
 Date: Sat, 10 Aug 2019 10:45:56 +0000
 Message-ID: <CAOWYkBvzHVVsTckiqmCqcz0HFGh8YEG1R_AcR9+cB7tUuYiZtg@mail.gmail.com>
@@ -271,7 +296,7 @@ Ee3KQbcx28SsnZi9LNO/6/wBmhVJ7HDmOd4AAAAASUVORK5CYII=
   t.pass();
 });
 
-ava.default('parseDecryptMsg - signed message preserve newlines', async t => {
+test('parseDecryptMsg - signed message preserve newlines', async t => {
   const mime = `-----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA256
 
@@ -315,7 +340,7 @@ ADjvgywpiGmrwdehioKtS0SrHRvExYx8ory0iLo0cLGERArZ3jycF8F+S2Xp
   t.pass();
 });
 
-ava.default('composeEmail format:encryptInline -> parseDecryptMsg', async t => {
+test('composeEmail format:encryptInline -> parseDecryptMsg', async t => {
   const content = 'hello\nwrld';
   const { pubKeys, keys } = getKeypairs('rsa1');
   const req = {
@@ -336,7 +361,7 @@ ava.default('composeEmail format:encryptInline -> parseDecryptMsg', async t => {
   t.pass();
 });
 
-ava.default('composeEmail format:encryptInline with attachment', async t => {
+test('composeEmail format:encryptInline with attachment', async t => {
   const content = 'hello\nwrld';
   const { pubKeys } = getKeypairs('rsa1');
   const req = {
@@ -360,7 +385,7 @@ ava.default('composeEmail format:encryptInline with attachment', async t => {
 });
 
 for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && name !== 'revoked')) {
-  ava.default(`encryptFile -> decryptFile ${keypairName}`, async t => {
+  test(`encryptFile -> decryptFile ${keypairName}`, async t => {
     const { pubKeys, keys } = getKeypairs(keypairName);
     const name = 'myfile.txt';
     const content = Buffer.from([10, 20, 40, 80, 160, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]);
@@ -376,14 +401,14 @@ for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && n
   });
 }
 
-ava.default('parseDateStr', async t => {
+test('parseDateStr', async t => {
   const { data, json } = parseResponse(await endpoints.parseDateStr({ dateStr: 'Sun, 10 Feb 2019 07:08:20 -0800' }));
   expect(json).to.deep.equal({ timestamp: '1549811300000' });
   expectNoData(data);
   t.pass();
 });
 
-ava.default('gmailBackupSearch', async t => {
+test('gmailBackupSearch', async t => {
   const { data, json } = parseResponse(await endpoints.gmailBackupSearch({ acctEmail: 'test@acct.com' }));
   expect(json).to.deep.equal({
     query: 'from:test@acct.com to:test@acct.com (subject:"Your FlowCrypt Backup" OR subject: ' +
@@ -394,21 +419,21 @@ ava.default('gmailBackupSearch', async t => {
   t.pass();
 });
 
-ava.default('isEmailValid - true', async t => {
+test('isEmailValid - true', async t => {
   const { data, json } = parseResponse(await endpoints.isEmailValid({ email: 'test@acct.com' }));
   expect(json).to.deep.equal({ valid: true });
   expectNoData(data);
   t.pass();
 });
 
-ava.default('isEmailValid - false', async t => {
+test('isEmailValid - false', async t => {
   const { data, json } = parseResponse(await endpoints.isEmailValid({ email: 'testacct.com' }));
   expect(json).to.deep.equal({ valid: false });
   expectNoData(data);
   t.pass();
 });
 
-ava.default('parseKeys', async t => {
+test('parseKeys', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   const expected = {
@@ -469,13 +494,12 @@ ava.default('parseKeys', async t => {
       }
     ]
   };
-  console.log(json);
   expect(json).to.deep.equal(expected);
   expectNoData(data);
   t.pass();
 });
 
-ava.default('parseKeys - expiration and date last updated', async t => {
+test('parseKeys - expiration and date last updated', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('expired');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   const expected = {
@@ -548,7 +572,7 @@ ava.default('parseKeys - expiration and date last updated', async t => {
   t.pass();
 });
 
-ava.default('parseKeys - revoked', async t => {
+test('parseKeys - revoked', async t => {
   const { pubKeys: [pubkey] } = getKeypairs('revoked');
   const { data, json } = parseResponse(await endpoints.parseKeys({}, [Buffer.from(pubkey)]));
   const expected = {
@@ -586,7 +610,7 @@ ava.default('parseKeys - revoked', async t => {
   t.pass();
 });
 
-ava.default('decryptKey', async t => {
+test('decryptKey', async t => {
   const { keys: [key] } = getKeypairs('rsa1');
   const { data, json } =
     parseResponse(await endpoints.decryptKey({ armored: key.private, passphrases: [key.passphrase] }));
@@ -599,7 +623,7 @@ ava.default('decryptKey', async t => {
   t.pass();
 });
 
-ava.default('encryptKey', async t => {
+test('encryptKey', async t => {
   const passphrase = 'this is some pass phrase';
   const { decrypted: [decryptedKey] } = getKeypairs('rsa1');
   const { data, json } = parseResponse(await endpoints.encryptKey({ armored: decryptedKey, passphrase }));
@@ -616,7 +640,7 @@ ava.default('encryptKey', async t => {
   t.pass();
 });
 
-ava.default('decryptKey gpg-dummy', async t => {
+test('decryptKey gpg-dummy', async t => {
   const { keys: [key] } = getKeypairs('gpg-dummy');
   const encryptedKey = await readKey({ armoredKey: key.private });
   /* eslint-disable @typescript-eslint/no-unused-expressions */
@@ -640,7 +664,7 @@ ava.default('decryptKey gpg-dummy', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat direct-encrypted-text', async t => {
+test('parseDecryptMsg compat direct-encrypted-text', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-text')]));
@@ -649,7 +673,7 @@ ava.default('parseDecryptMsg compat direct-encrypted-text', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat direct-encrypted-pgpmime', async t => {
+test('parseDecryptMsg compat direct-encrypted-pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys }, [await getCompatAsset('direct-encrypted-pgpmime')]));
@@ -658,7 +682,7 @@ ava.default('parseDecryptMsg compat direct-encrypted-pgpmime', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-plain', async t => {
+test('parseDecryptMsg compat mime-email-plain', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: true }, [await getCompatAsset('mime-email-plain')]));
@@ -667,7 +691,7 @@ ava.default('parseDecryptMsg compat mime-email-plain', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
+test('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: true },
@@ -691,7 +715,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text', async t => {
+test('parseDecryptMsg compat mime-email-encrypted-inline-text', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: true },
@@ -701,7 +725,7 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text', async t =
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-encrypted-inline-pgpmime', async t => {
+test('parseDecryptMsg compat mime-email-encrypted-inline-pgpmime', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: true },
@@ -711,7 +735,7 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-pgpmime', async 
   t.pass();
 });
 
-ava.default('zxcvbnStrengthBar', async t => {
+test('zxcvbnStrengthBar', async t => {
   const { data, json } =
     parseResponse(await endpoints.zxcvbnStrengthBar({ guesses: 88946283684265, purpose: 'passphrase' }));
   expectNoData(data);
@@ -729,7 +753,7 @@ ava.default('zxcvbnStrengthBar', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-TextEncoder', async t => {
+test('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-TextEncoder', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: true },
@@ -739,7 +763,7 @@ ava.default('parseDecryptMsg compat mime-email-encrypted-inline-text-2 Mime-Text
   t.pass();
 });
 
-ava.default('parseDecryptMsg - decryptErr wrong key when decrypting content', async t => {
+test('parseDecryptMsg - decryptErr wrong key when decrypting content', async t => {
   const { keys } = getKeypairs('rsa2'); // intentional key mismatch
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys },
@@ -780,7 +804,7 @@ ava.default('parseDecryptMsg - decryptErr wrong key when decrypting content', as
   t.pass();
 });
 
-ava.default('decryptFile - decryptErr wrong key when decrypting attachment', async t => {
+test('decryptFile - decryptErr wrong key when decrypting attachment', async t => {
   const jsonReq = { keys: getKeypairs('rsa2').keys }; // intentional key mismatch
   const { json: decryptJson } =
     parseResponse(await endpoints.decryptFile(jsonReq,
@@ -804,7 +828,7 @@ ava.default('decryptFile - decryptErr wrong key when decrypting attachment', asy
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
+test('parseDecryptMsg compat mime-email-plain-html', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: true },
@@ -821,7 +845,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-html', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
+test('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: true },
@@ -915,7 +939,7 @@ ava.default('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
   t.pass();
 });
 
-ava.default('parseDecryptMsg plainAtt', async t => {
+test('parseDecryptMsg plainAtt', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } =
     parseResponse(await endpoints.parseDecryptMsg({ keys, isMime: true },
@@ -940,7 +964,7 @@ ava.default('parseDecryptMsg plainAtt', async t => {
   t.pass();
 });
 
-ava.default('can process dirty html without throwing', async t => {
+test('can process dirty html without throwing', async t => {
   const dirtyBuf = await getHtmlAsset('leak');
   const clean = Xss.htmlSanitizeKeepBasicTags(dirtyBuf.toString());
   expect(clean).to.not.contain('background');
@@ -951,7 +975,7 @@ ava.default('can process dirty html without throwing', async t => {
   t.pass();
 });
 
-ava.default('verify encrypted+signed message by providing it correct public key', async t => {
+test('verify encrypted+signed message by providing it correct public key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
     { keys, isMime: true, verificationPubkeys: pubKeys },
@@ -964,7 +988,7 @@ ava.default('verify encrypted+signed message by providing it correct public key'
   t.pass();
 });
 
-ava.default('verify encrypted+signed message by providing it one wrong and one correct', async t => {
+test('verify encrypted+signed message by providing it one wrong and one correct', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
   const allPubKeys = [];
@@ -981,7 +1005,7 @@ ava.default('verify encrypted+signed message by providing it one wrong and one c
   t.pass();
 });
 
-ava.default('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)',
+test('verify encrypted+signed message by providing it only a wrong public key (fail: cannot verify)',
   async t => {
     const { keys } = getKeypairs('rsa1');
     const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
@@ -996,7 +1020,7 @@ ava.default('verify encrypted+signed message by providing it only a wrong public
     t.pass();
   });
 
-ava.default('verify plain-text signed message by providing it correct key', async t => {
+test('verify plain-text signed message by providing it correct key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(await endpoints.parseDecryptMsg(
     { keys, isMime: true, verificationPubkeys: pubKeys },
@@ -1009,7 +1033,7 @@ ava.default('verify plain-text signed message by providing it correct key', asyn
   t.pass();
 });
 
-ava.default('verify plain-text signed message by providing it both correct and incorrect keys', async t => {
+test('verify plain-text signed message by providing it both correct and incorrect keys', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
   const allPubKeys = [];
@@ -1025,8 +1049,7 @@ ava.default('verify plain-text signed message by providing it both correct and i
   expect(parsedDecryptData.verifyRes.match).equals(true);
   t.pass();
 });
-
-ava.default('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
+test('verify plain-text signed message by providing it wrong key (fail: cannot verify)', async t => {
   const { keys } = getKeypairs('rsa1');
   const { pubKeys: pubKeys2 } = getKeypairs('rsa2');
   const { json: decryptJson, data: decryptData } = parseResponse(
@@ -1041,7 +1064,7 @@ ava.default('verify plain-text signed message by providing it wrong key (fail: c
 });
 
 // eslint-disable-next-line max-len
-ava.default('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
+test('verify plain-text signed message that you edited after signing. This invalidates the signature. With correct key. (fail: signature mismatch)', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isMime: true, verificationPubkeys: pubKeys },
@@ -1055,7 +1078,7 @@ ava.default('verify plain-text signed message that you edited after signing. Thi
   t.pass();
 });
 
-ava.default('verify signed message with detached signature by providing it correct key', async t => {
+test('verify signed message with detached signature by providing it correct key', async t => {
   const { keys, pubKeys } = getKeypairs('rsa1');
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isMime: true, verificationPubkeys: pubKeys },
@@ -1068,7 +1091,7 @@ ava.default('verify signed message with detached signature by providing it corre
   t.pass();
 });
 
-ava.default('decryptErr for not integrity protected message', async t => {
+test('decryptErr for not integrity protected message', async t => {
   const { keys, pubKeys } = getKeypairs('flowcrypt.compatibility');
   const { json: decryptJson, data: decryptData } = parseResponse(
     await endpoints.parseDecryptMsg({ keys, isMime: true, verificationPubkeys: pubKeys },
@@ -1080,7 +1103,7 @@ ava.default('decryptErr for not integrity protected message', async t => {
   t.pass();
 });
 
-ava.default('decrypt bad private key', async t => {
+test('decrypt bad private key', async t => {
   const key = await PgpKey.read(`-----BEGIN PGP PRIVATE KEY BLOCK-----
 Comment: Corrupted encrypted RSA private key
 Comment: Passphrase is 123
@@ -1149,7 +1172,7 @@ j+w8FyoMKOrmOAyFTWjJVyVEruMl2a7QDO/CjaWV4sAUt0LMcRdZdTM=
   t.pass();
 });
 
-ava.default('decrypt bad unencrypted private key', async t => {
+test('decrypt bad unencrypted private key', async t => {
   const unencryptedCorruptedRsaKey = `-----BEGIN PGP PRIVATE KEY BLOCK-----
 Version: FlowCrypt Email Encryption [BUILD_REPLACEABLE_VERSION]
 Comment: Seamlessly send and receive encrypted email

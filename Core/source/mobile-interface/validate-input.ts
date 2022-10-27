@@ -38,6 +38,9 @@ export namespace NodeRequest {
     userIds: { name: string, email: string }[]
   };
 
+  export type setClientConfiguration = {
+    shouldHideArmorMeta: boolean
+  };
   export type composeEmail = ComposeEmailPlain | ComposeEmailEncrypted;
   export type encryptMsg = { pubKeys: string[], msgPwd?: string };
   export type encryptFile = { pubKeys: string[], name: string };
@@ -60,6 +63,13 @@ export namespace NodeRequest {
 /* eslint-enable @typescript-eslint/naming-convention */
 
 export class ValidateInput {
+
+  public static setClientConfiguration = (v: unknown): NodeRequest.setClientConfiguration => {
+    if (isObj(v) && hasProp(v, 'shouldHideArmorMeta', 'boolean?')) {
+      return v as NodeRequest.setClientConfiguration;
+    }
+    throw new Error('Wrong request structure for NodeRequest.setClientConfiguration');
+  };
 
   public static generateKey = (v: unknown): NodeRequest.generateKey => {
     if (isObj(v) && hasProp(v, 'userIds', 'Userid[]') && v.userIds.length
