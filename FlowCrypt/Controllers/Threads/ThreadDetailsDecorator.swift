@@ -57,7 +57,7 @@ extension ProcessedMessage {
         case .plain:
             textColor = .mainTextColor
         }
-        return text.attributed(color: textColor)
+        return String(text.prefix(1_000_000)).attributed(color: textColor)
     }
 }
 

@@ -66,7 +66,7 @@ struct ProcessedMessage {
     }
 
     let message: Message
-    let text: String
+    var text: String
     let type: MessageType
     var attachments: [MessageAttachment]
     var signature: MessageSignature?

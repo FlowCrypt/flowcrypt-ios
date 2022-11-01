@@ -156,4 +156,5 @@ struct Identifier: Equatable, Hashable {
 struct MessageBody: Hashable {
     let text: String
     let html: String?
+    let attachment: MessageAttachment?
 }

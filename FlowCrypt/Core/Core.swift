@@ -33,16 +33,14 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     private typealias CallbackResult = (String, [UInt8])
 
     private var jsEndpointListener: JSValue?
-    private var cb_catcher: JSValue?
-    private var vm = JSVirtualMachine()!
+    private var cbCatcher: JSValue?
+    private var vm = JSVirtualMachine()
     private var context: JSContext?
 
     private var callbackResults: [String: CallbackResult] = [:]
     private var ready = false
 
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
-
-    private init() {}
 
     func version() async throws -> CoreRes.Version {
         let r = try await call("version", jsonDict: nil, data: nil)
@@ -230,9 +228,9 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let trace = Trace(id: "Start in background")
         let jsFile = Bundle(for: Self.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil)!
         let jsFileSrc = try? String(contentsOfFile: jsFile)
-        context = JSContext(virtualMachine: vm)!
+        context = JSContext(virtualMachine: vm)
         context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
-        context!.exceptionHandler = { _, exception in
+        context?.exceptionHandler = { _, exception in
             guard let exception else { return }
 
             let line = exception.objectForKeyedSubscript("line").toString()
@@ -242,10 +240,10 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             let logger = Logger.nested(in: Self.self, with: "Js")
             logger.logWarning("\(exception), \(location)")
         }
-        context!.evaluateScript("const APP_VERSION = 'iOS 0.2';")
-        context!.evaluateScript(jsFileSrc)
-        jsEndpointListener = context!.objectForKeyedSubscript("handleRequestFromHost")
-        cb_catcher = context!.objectForKeyedSubscript("engine_host_cb_value_formatter")
+        context?.evaluateScript("const APP_VERSION = 'iOS 0.2';")
+        context?.evaluateScript(jsFileSrc)
+        jsEndpointListener = context?.objectForKeyedSubscript("handleRequestFromHost")
+        cbCatcher = context?.objectForKeyedSubscript("engine_host_cb_value_formatter")
         ready = true
         logger.logInfo("JsContext took \(trace.finish()) to start")
     }
@@ -262,11 +260,20 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     // MARK: Private calls
     private func call(_ endpoint: String, jsonDict: [String: Any?]?, data: Data?) async throws -> RawRes {
-        return try await call(endpoint, jsonData: try JSONSerialization.data(withJSONObject: jsonDict ?? [String: String]()), data: data ?? Data())
+        let json = jsonDict ?? [String: String]()
+        return try await call(
+            endpoint,
+            jsonData: try JSONSerialization.data(withJSONObject: json),
+            data: data ?? Data()
+        )
     }
 
     private func call(_ endpoint: String, jsonEncodable: Encodable, data: Data) async throws -> RawRes {
-        return try await call(endpoint, jsonData: try jsonEncodable.toJsonData(), data: data)
+        try await call(
+            endpoint,
+            jsonData: try jsonEncodable.toJsonData(),
+            data: data
+        )
     }
 
     private func call(_ endpoint: String, jsonData: Data, data: Data) async throws -> RawRes {
@@ -278,7 +285,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             endpoint,
             callbackId,
             String(data: jsonData, encoding: .utf8)!,
-            [UInt8](data), cb_catcher!
+            [UInt8](data), cbCatcher!
         ])
 
         while callbackResults[callbackId] == nil {

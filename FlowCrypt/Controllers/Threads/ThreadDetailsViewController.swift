@@ -127,9 +127,10 @@ final class ThreadDetailsViewController: TableNodeViewController {
 extension ThreadDetailsViewController {
 
     private func handleExpandTap(at indexPath: IndexPath) {
-        input[indexPath.section - 1].isExpanded.toggle()
+        let index = indexPath.section - 1
+        input[index].isExpanded.toggle()
 
-        if input[indexPath.section - 1].isExpanded {
+        if input[index].isExpanded {
             UIView.animate(
                 withDuration: 0.2,
                 animations: {
@@ -140,7 +141,7 @@ extension ThreadDetailsViewController {
                 completion: { [weak self] _ in
                     guard let self else { return }
 
-                    if let processedMessage = self.input[indexPath.section - 1].processedMessage {
+                    if let processedMessage = self.input[index].processedMessage {
                         self.handle(processedMessage: processedMessage, at: indexPath)
                     } else {
                         self.fetchDecryptAndRenderMsg(at: indexPath)
@@ -231,8 +232,7 @@ extension ThreadDetailsViewController {
             guard let messageId = identifier.messageId else { return }
 
             let processedMessage = try await getAndProcessMessage(
-                identifier: messageId,
-                folder: inboxItem.folderPath
+                identifier: messageId
             )
 
             let section: Int
@@ -257,8 +257,7 @@ extension ThreadDetailsViewController {
             guard let messageId = identifier.messageId else { return }
 
             let processedMessage = try await getAndProcessMessage(
-                identifier: messageId,
-                folder: inboxItem.folderPath
+                identifier: messageId
             )
             let indexPath = IndexPath(row: 0, section: input.count + 1)
             handle(processedMessage: processedMessage, at: indexPath)
@@ -278,12 +277,11 @@ extension ThreadDetailsViewController {
 
     private func getAndProcessMessage(
         identifier: Identifier,
-        folder: String,
         onlyLocalKeys: Bool = false
     ) async throws -> ProcessedMessage {
-        return try await messageService.getAndProcess(
+        try await messageService.getAndProcess(
             identifier: identifier,
-            folder: folder,
+            folder: inboxItem.folderPath,
             onlyLocalKeys: onlyLocalKeys,
             userEmail: appContext.user.email,
             isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
@@ -317,7 +315,8 @@ extension ThreadDetailsViewController {
         defer { node.reloadRows(at: [indexPath], with: .automatic) }
 
         let trace = Trace(id: "Attachment")
-        let section = input[indexPath.section - 1]
+        let sectionIndex = indexPath.section - 1
+        let section = input[sectionIndex]
         let attachmentIndex = indexPath.row - 2
 
         guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
@@ -344,11 +343,11 @@ extension ThreadDetailsViewController {
             )
             logger.logInfo("Got encrypted attachment - \(trace.finish())")
 
-            input[indexPath.section - 1].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
+            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
             return decryptedAttachment
         } else {
             logger.logInfo("Got not encrypted attachment - \(trace.finish())")
-            input[indexPath.section - 1].processedMessage?.attachments[attachmentIndex] = attachment
+            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = attachment
             return attachment
         }
     }
@@ -458,9 +457,26 @@ extension ThreadDetailsViewController {
             do {
                 var processedMessage = try await getAndProcessMessage(
                     identifier: message.identifier,
-                    folder: inboxItem.folderPath,
                     onlyLocalKeys: true
                 )
+
+                if processedMessage.text.isEmpty,
+                   let bodyAttachment = processedMessage.message.body.attachment {
+                    let data = try await messageService.download(
+                        attachment: bodyAttachment,
+                        messageId: processedMessage.message.identifier,
+                        progressHandler: { [weak self] progress in
+                            self?.handleFetchProgress(state: .download(progress))
+                        }
+                    )
+                    handleFetchProgress(state: .decrypt)
+                    let encryptedText = data.toStr()
+                    processedMessage.text = try await messageService.decrypt(
+                        text: encryptedText,
+                        userEmail: appContext.user.email,
+                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    )
+                }
 
                 if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
@@ -641,8 +657,7 @@ extension ThreadDetailsViewController {
         Task {
             do {
                 let processedMessage = try await getAndProcessMessage(
-                    identifier: message.identifier,
-                    folder: inboxItem.folderPath
+                    identifier: message.identifier
                 )
                 handle(processedMessage: processedMessage, at: indexPath)
             } catch {

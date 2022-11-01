@@ -100,21 +100,34 @@ private extension GTLRGmail_Message {
     func parseMessageBody() -> MessageBody {
         let html = body(type: .textHtml)
         let text = body(type: .textPlain) ?? html?.removingHtmlTags() ?? ""
-        return MessageBody(text: text, html: html)
+
+        let bodyAttachment: MessageAttachment?
+        if text.isEmpty, let part = payload?.body, let attachmentId = part.attachmentId {
+            bodyAttachment = MessageAttachment(
+                id: Identifier(stringId: attachmentId),
+                name: "body",
+                estimatedSize: part.size?.intValue,
+                mimeType: "text/plain"
+            )
+        } else {
+            bodyAttachment = nil
+        }
+
+        return MessageBody(text: text, html: html, attachment: bodyAttachment)
     }
 
     func body(type: MessageBodyType) -> String? {
-        guard let base64String = findBase64Body(type: type) else { return nil }
+        guard let base64String = findBase64Body(type: type)?.data else { return nil }
         return GTLRDecodeWebSafeBase64(base64String)?.toStr()
     }
 
-    private func findBase64Body(type: MessageBodyType) -> String? {
-        if let text = textParts.findMessageBody(type: type)?.body?.data {
-            return text
+    private func findBase64Body(type: MessageBodyType) -> GTLRGmail_MessagePartBody? {
+        if let body = textParts.findMessageBody(type: type)?.body {
+            return body
         } else if let multipartBody = textParts.findMultipartBody(),
-                  let text = multipartBody.parts?.findMessageBody(type: type)?.body?.data {
-            return text
-        } else if let body = payload?.body?.data {
+                  let body = multipartBody.parts?.findMessageBody(type: type)?.body {
+            return body
+        } else if let body = payload?.body {
             return body
         }
 
@@ -137,7 +150,7 @@ private extension GTLRGmail_Message {
     }
 }
 
-private extension Array where Iterator.Element == GTLRGmail_MessagePart {
+private extension [GTLRGmail_MessagePart] {
     func findMultipartBody() -> GTLRGmail_MessagePart? {
         let types = [MessageBodyType.multipartMixed, MessageBodyType.multipartAlternative].map(\.rawValue)
         return first(where: {

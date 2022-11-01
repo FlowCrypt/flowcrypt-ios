@@ -151,8 +151,7 @@ final class MessageService {
         isUsingKeyManager: Bool
     ) async throws -> String {
         let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
-        let decrypted = try await decrypt(text: text, keys: keys)
-        return decrypted.text
+        return try await decrypt(text: text, keys: keys).text
     }
 
     func decryptAndProcess(
