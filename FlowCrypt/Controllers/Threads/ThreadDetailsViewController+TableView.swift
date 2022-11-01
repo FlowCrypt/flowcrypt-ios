@@ -97,6 +97,18 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
+    private func dividerNode(indexPath: IndexPath) -> ASCellNode {
+        let height = indexPath.section < input.count ? 1 / UIScreen.main.nativeScale : 0
+        return DividerCellNode(
+            inset: .init(top: 0, left: 8, bottom: 0, right: 8),
+            color: .borderColor,
+            height: height
+        )
+    }
+}
+
+// MARK: - Drafts
+extension ThreadDetailsViewController {
     private func draftNode(messageIndex: Int, isExpanded: Bool) -> ASCellNode {
         let data = input[messageIndex]
 
@@ -150,15 +162,6 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                     self.node.deleteSections([index + 1], with: .automatic)
                 }
             }
-        )
-    }
-
-    private func dividerNode(indexPath: IndexPath) -> ASCellNode {
-        let height = indexPath.section < input.count ? 1 / UIScreen.main.nativeScale : 0
-        return DividerCellNode(
-            inset: .init(top: 0, left: 8, bottom: 0, right: 8),
-            color: .borderColor,
-            height: height
         )
     }
 }

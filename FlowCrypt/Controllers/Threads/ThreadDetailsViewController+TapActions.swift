@@ -6,6 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import FlowCryptCommon
 import FlowCryptUI
 import UIKit
 
@@ -97,8 +98,21 @@ extension ThreadDetailsViewController {
 
         present(alert, animated: true, completion: nil)
     }
+
+    func handleAttachmentTap(at indexPath: IndexPath) {
+        Task {
+            do {
+                let attachment = try await getAttachment(at: indexPath)
+                hideSpinner()
+                show(attachment: attachment)
+            } catch {
+                handleAttachmentDecryptError(error, at: indexPath)
+            }
+        }
+    }
 }
 
+// MARK: - Compsoe
 extension ThreadDetailsViewController {
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
         guard let input = input[safe: indexPath.section - 1],
@@ -195,5 +209,73 @@ extension ThreadDetailsViewController {
         }
         action.accessibilityIdentifier = type.accessibilityIdentifier
         return action
+    }
+}
+
+// MARK: - Attachments
+extension ThreadDetailsViewController {
+    func getAttachment(at indexPath: IndexPath) async throws -> MessageAttachment {
+        defer { node.reloadRows(at: [indexPath], with: .automatic) }
+
+        let trace = Trace(id: "Attachment")
+        let sectionIndex = indexPath.section - 1
+        let section = input[sectionIndex]
+        let attachmentIndex = indexPath.row - 2
+
+        guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
+            throw MessageServiceError.attachmentNotFound
+        }
+
+        if attachment.data == nil {
+            showSpinner()
+            attachment.data = try await messageService.download(
+                attachment: attachment,
+                messageId: section.rawMessage.identifier,
+                progressHandler: { [weak self] progress in
+                    self?.handleFetchProgress(state: .download(progress))
+                }
+            )
+            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = attachment
+        }
+
+        if attachment.isEncrypted {
+            handleFetchProgress(state: .decrypt)
+            let decryptedAttachment = try await messageService.decrypt(
+                attachment: attachment,
+                userEmail: appContext.user.email
+            )
+            logger.logInfo("Got encrypted attachment - \(trace.finish())")
+
+            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
+            return decryptedAttachment
+        } else {
+            logger.logInfo("Got not encrypted attachment - \(trace.finish())")
+            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = attachment
+            return attachment
+        }
+    }
+
+    func show(attachment: MessageAttachment) {
+        navigationController?.pushViewController(
+            AttachmentViewController(file: attachment),
+            animated: true
+        )
+    }
+
+    private func handleAttachmentDecryptError(_ error: Error, at indexPath: IndexPath) {
+        let message = "message_attachment_corrupted_file".localized
+
+        showAlertWithAction(
+            title: "message_attachment_decrypt_error".localized,
+            message: "\n\(error.errorMessage)\n\n\(message)",
+            actionButtonTitle: "download".localized,
+            actionAccessibilityIdentifier: "aid-download-button",
+            onAction: { [weak self] _ in
+                guard let attachment = self?.input[indexPath.section - 1].processedMessage?.attachments[indexPath.row - 2] else {
+                    return
+                }
+                self?.show(attachment: attachment)
+            }
+        )
     }
 }

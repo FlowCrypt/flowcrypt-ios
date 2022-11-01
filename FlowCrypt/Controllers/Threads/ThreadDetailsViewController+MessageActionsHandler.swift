@@ -1,5 +1,5 @@
 //
-//  ThreadDetailsViewController+TapActions.swift
+//  ThreadDetailsViewController+MessageActionsHandler.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 01.11.2022
@@ -9,6 +9,7 @@
 import Foundation
 
 extension ThreadDetailsViewController: MessageActionsHandler {
+
     private func handle(action: MessageAction, error: Error? = nil) {
         hideSpinner()
 

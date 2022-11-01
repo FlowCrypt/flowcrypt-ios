@@ -12,40 +12,26 @@ import FlowCryptUI
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
-    lazy var logger = Logger.nested(Self.self)
     private lazy var alertsFactory = AlertsFactory()
+    lazy var logger = Logger.nested(Self.self)
 
-    class Input {
+    struct Input {
         var rawMessage: Message
-        var isExpanded: Bool
-        var shouldShowRecipientsList: Bool
+        var isExpanded = false
+        var shouldShowRecipientsList = false
         var processedMessage: ProcessedMessage?
-
-        init(
-            message: Message,
-            isExpanded: Bool = false,
-            shouldShowRecipientsList: Bool = false,
-            processedMessage: ProcessedMessage? = nil
-        ) {
-            self.rawMessage = message
-            self.isExpanded = isExpanded
-            self.shouldShowRecipientsList = shouldShowRecipientsList
-            self.processedMessage = processedMessage
-        }
     }
 
+    let messageService: MessageService
+
     let appContext: AppContextWithUser
-    private let draftGateway: DraftGateway?
-    private let messageService: MessageService
     let messageOperationsProvider: MessageOperationsProvider
     let threadOperationsProvider: MessagesThreadOperationsProvider
     var inboxItem: InboxItem
     var input: [ThreadDetailsViewController.Input]
 
     let trashFolderProvider: TrashFolderProviderType
-    var currentFolderPath: String {
-        inboxItem.folderPath
-    }
+    var currentFolderPath: String { inboxItem.folderPath }
 
     let onComposeMessageAction: ((ComposeMessageAction) -> Void)?
     let onComplete: MessageActionCompletion
@@ -55,7 +41,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         messageService: MessageService? = nil,
         inboxItem: InboxItem,
         onComposeMessageAction: ((ComposeMessageAction) -> Void)?,
-        completion: @escaping MessageActionCompletion
+        onComplete: @escaping MessageActionCompletion
     ) async throws {
         self.appContext = appContext
         let clientConfiguration = try await appContext.clientConfigurationService.configuration
@@ -63,10 +49,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage
         )
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.draftGateway = try mailProvider.draftGateway
         self.messageService = try messageService ?? MessageService(
             localContactsProvider: localContactsProvider,
-            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
+            pubLookup: PubLookup(
+                clientConfiguration: clientConfiguration,
+                localContactsProvider: localContactsProvider
+            ),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
             messageProvider: try mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
@@ -82,10 +70,10 @@ final class ThreadDetailsViewController: TableNodeViewController {
         )
         self.inboxItem = inboxItem
         self.onComposeMessageAction = onComposeMessageAction
-        self.onComplete = completion
+        self.onComplete = onComplete
         self.input = inboxItem.messages
             .sorted(by: >)
-            .map { Input(message: $0) }
+            .map { Input(rawMessage: $0) }
 
         super.init(node: TableNode())
     }
@@ -118,9 +106,154 @@ final class ThreadDetailsViewController: TableNodeViewController {
         let indexPath = IndexPath(row: 0, section: indexOfSectionToExpand + 1)
         handleExpandTap(at: indexPath)
     }
-}
 
-extension ThreadDetailsViewController {
+    // MARK: - Message processing
+    func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
+        let rawMessage = input[indexPath.section - 1].rawMessage
+        logger.logInfo("Start loading message")
+
+        handleFetchProgress(state: .fetch)
+
+        Task {
+            do {
+                let fetchedMessage = try await messageService.fetchMessage(
+                    identifier: rawMessage.identifier,
+                    folder: inboxItem.folderPath
+                )
+
+                input[indexPath.section - 1].rawMessage = fetchedMessage
+
+                var processedMessage = try await getAndProcessMessage(
+                    identifier: rawMessage.identifier,
+                    onlyLocalKeys: true,
+                    forceFetch: false
+                )
+
+                if processedMessage.text.isEmpty,
+                   let bodyAttachment = processedMessage.message.body.attachment {
+                    let data = try await messageService.download(
+                        attachment: bodyAttachment,
+                        messageId: processedMessage.message.identifier,
+                        progressHandler: { [weak self] progress in
+                            self?.handleFetchProgress(state: .download(progress))
+                        }
+                    )
+                    handleFetchProgress(state: .decrypt)
+                    let encryptedText = data.toStr()
+                    processedMessage.text = try await messageService.decrypt(
+                        text: encryptedText,
+                        userEmail: appContext.user.email,
+                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    )
+                }
+
+                if case .missingPubkey = processedMessage.signature {
+                    processedMessage.signature = .pending
+                    retryVerifyingSignatureWithRemotelyFetchedKeys(
+                        message: rawMessage,
+                        folder: inboxItem.folderPath,
+                        indexPath: indexPath
+                    )
+                }
+                handle(processedMessage: processedMessage, at: indexPath)
+            } catch {
+                handle(error: error, at: indexPath)
+            }
+        }
+    }
+
+    private func getAndProcessMessage(
+        identifier: Identifier,
+        onlyLocalKeys: Bool = false,
+        forceFetch: Bool = true
+    ) async throws -> ProcessedMessage {
+        let message: Message
+
+        if !forceFetch, let rawMessage = input.first(where: { $0.rawMessage.identifier == identifier })?.rawMessage {
+            message = rawMessage
+        } else {
+            message = try await messageService.fetchMessage(identifier: identifier, folder: inboxItem.folderPath)
+        }
+
+        return try await messageService.process(
+            message: message,
+            onlyLocalKeys: onlyLocalKeys,
+            userEmail: appContext.user.email,
+            isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+        )
+    }
+
+    func handle(processedMessage: ProcessedMessage, at indexPath: IndexPath) {
+        hideSpinner()
+
+        let messageIndex = indexPath.section - 1
+        let isAlreadyProcessed = messageIndex < input.count && input[messageIndex].processedMessage != nil
+        let messageInput = Input(
+            rawMessage: processedMessage.message,
+            isExpanded: true,
+            processedMessage: processedMessage
+        )
+
+        if !isAlreadyProcessed {
+            if messageIndex < input.count {
+                input[messageIndex].rawMessage = messageInput.rawMessage
+                input[messageIndex].processedMessage = messageInput.processedMessage
+                input[messageIndex].isExpanded = messageInput.isExpanded
+            } else {
+                input.append(messageInput)
+            }
+
+            UIView.animate(
+                withDuration: 0.2,
+                animations: {
+                    if indexPath.section < self.node.numberOfSections {
+                        self.node.reloadSections([indexPath.section], with: .automatic)
+                    } else {
+                        self.node.insertSections([indexPath.section], with: .automatic)
+                        if indexPath.section > 0 {
+                            self.node.reloadSections([indexPath.section - 1], with: .automatic)
+                        }
+                    }
+                },
+                completion: { [weak self] _ in
+                    self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
+                    self?.decryptDrafts()
+                }
+            )
+        } else {
+            input[messageIndex].rawMessage = messageInput.rawMessage
+            input[messageIndex].processedMessage = messageInput.processedMessage
+            node.reloadSections([indexPath.section], with: .automatic)
+        }
+    }
+
+    private func decryptDrafts() {
+        Task {
+            for (index, data) in input.enumerated() {
+                guard data.rawMessage.isDraft, data.rawMessage.isPgp, data.processedMessage == nil else { continue }
+                let indexPath = IndexPath(row: 0, section: index + 1)
+                do {
+                    let decryptedText = try await messageService.decrypt(
+                        text: data.rawMessage.body.text,
+                        userEmail: appContext.user.email,
+                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    )
+
+                    let processedMessage = ProcessedMessage(
+                        message: data.rawMessage,
+                        text: decryptedText,
+                        type: .plain,
+                        attachments: []
+                    )
+                    handle(processedMessage: processedMessage, at: indexPath)
+                } catch {
+                    handle(error: error, at: indexPath)
+                }
+            }
+        }
+    }
+
+    // MARK: - Compose message actions
     func handleComposeMessageAction(_ action: ComposeMessageAction) {
         onComposeMessageAction?(action)
 
@@ -178,187 +311,7 @@ extension ThreadDetailsViewController {
         node.deleteSections([index + 1], with: .automatic)
     }
 
-    private func getAndProcessMessage(
-        identifier: Identifier,
-        onlyLocalKeys: Bool = false,
-        forceFetch: Bool = true
-    ) async throws -> ProcessedMessage {
-        let message: Message
-
-        if !forceFetch, let rawMessage = input.first(where: { $0.rawMessage.identifier == identifier })?.rawMessage {
-            message = rawMessage
-        } else {
-            message = try await messageService.fetchMessage(identifier: identifier, folder: inboxItem.folderPath)
-        }
-
-        return try await messageService.process(
-            message: message,
-            onlyLocalKeys: onlyLocalKeys,
-            userEmail: appContext.user.email,
-            isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-        )
-    }
-
-    func handleAttachmentTap(at indexPath: IndexPath) {
-        Task {
-            do {
-                let attachment = try await getAttachment(at: indexPath)
-                hideSpinner()
-                show(attachment: attachment)
-            } catch {
-                handleAttachmentDecryptError(error, at: indexPath)
-            }
-        }
-    }
-
-    private func getAttachment(at indexPath: IndexPath) async throws -> MessageAttachment {
-        defer { node.reloadRows(at: [indexPath], with: .automatic) }
-
-        let trace = Trace(id: "Attachment")
-        let sectionIndex = indexPath.section - 1
-        let section = input[sectionIndex]
-        let attachmentIndex = indexPath.row - 2
-
-        guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
-            throw MessageServiceError.attachmentNotFound
-        }
-
-        if attachment.data == nil {
-            showSpinner()
-            attachment.data = try await messageService.download(
-                attachment: attachment,
-                messageId: section.rawMessage.identifier,
-                progressHandler: { [weak self] progress in
-                    self?.handleFetchProgress(state: .download(progress))
-                }
-            )
-            section.processedMessage?.attachments[attachmentIndex] = attachment
-        }
-
-        if attachment.isEncrypted {
-            handleFetchProgress(state: .decrypt)
-            let decryptedAttachment = try await messageService.decrypt(
-                attachment: attachment,
-                userEmail: appContext.user.email
-            )
-            logger.logInfo("Got encrypted attachment - \(trace.finish())")
-
-            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
-            return decryptedAttachment
-        } else {
-            logger.logInfo("Got not encrypted attachment - \(trace.finish())")
-            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = attachment
-            return attachment
-        }
-    }
-
-    private func show(attachment: MessageAttachment) {
-        navigationController?.pushViewController(
-            AttachmentViewController(file: attachment),
-            animated: true
-        )
-    }
-}
-
-extension ThreadDetailsViewController {
-    func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
-        let rawMessage = input[indexPath.section - 1].rawMessage
-        logger.logInfo("Start loading message")
-
-        handleFetchProgress(state: .fetch)
-
-        Task {
-            do {
-                let fetchedMessage = try await messageService.fetchMessage(
-                    identifier: rawMessage.identifier,
-                    folder: inboxItem.folderPath
-                )
-
-                input[indexPath.section - 1].rawMessage = fetchedMessage
-
-                var processedMessage = try await getAndProcessMessage(
-                    identifier: rawMessage.identifier,
-                    onlyLocalKeys: true,
-                    forceFetch: false
-                )
-
-                if processedMessage.text.isEmpty,
-                   let bodyAttachment = processedMessage.message.body.attachment {
-                    let data = try await messageService.download(
-                        attachment: bodyAttachment,
-                        messageId: processedMessage.message.identifier,
-                        progressHandler: { [weak self] progress in
-                            self?.handleFetchProgress(state: .download(progress))
-                        }
-                    )
-                    handleFetchProgress(state: .decrypt)
-                    let encryptedText = data.toStr()
-                    processedMessage.text = try await messageService.decrypt(
-                        text: encryptedText,
-                        userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                    )
-                }
-
-                if case .missingPubkey = processedMessage.signature {
-                    processedMessage.signature = .pending
-                    retryVerifyingSignatureWithRemotelyFetchedKeys(
-                        message: rawMessage,
-                        folder: inboxItem.folderPath,
-                        indexPath: indexPath
-                    )
-                }
-                handle(processedMessage: processedMessage, at: indexPath)
-            } catch {
-                handle(error: error, at: indexPath)
-            }
-        }
-    }
-
-    func handle(processedMessage: ProcessedMessage, at indexPath: IndexPath) {
-        hideSpinner()
-
-        let messageIndex = indexPath.section - 1
-        let isAlreadyProcessed = messageIndex < input.count && input[messageIndex].processedMessage != nil
-        let messageInput = Input(
-            message: processedMessage.message,
-            isExpanded: true,
-            processedMessage: processedMessage
-        )
-
-        if !isAlreadyProcessed {
-            if messageIndex < input.count {
-                input[messageIndex].rawMessage = messageInput.rawMessage
-                input[messageIndex].processedMessage = messageInput.processedMessage
-                input[messageIndex].isExpanded = messageInput.isExpanded
-            } else {
-                input.append(messageInput)
-            }
-
-            UIView.animate(
-                withDuration: 0.2,
-                animations: {
-                    if indexPath.section < self.node.numberOfSections {
-                        self.node.reloadSections([indexPath.section], with: .automatic)
-                    } else {
-                        self.node.insertSections([indexPath.section], with: .automatic)
-                        if indexPath.section > 0 {
-                            self.node.reloadSections([indexPath.section - 1], with: .automatic)
-                        }
-                    }
-                },
-                completion: { [weak self] _ in
-                    self?.node.scrollToRow(at: indexPath, at: .middle, animated: true)
-                    self?.decryptDrafts()
-                }
-            )
-        } else {
-            input[messageIndex].rawMessage = messageInput.rawMessage
-            input[messageIndex].processedMessage = messageInput.processedMessage
-            node.reloadSections([indexPath.section], with: .automatic)
-        }
-    }
-
+    // MARK: - Error handling
     private func handle(error: Error, at indexPath: IndexPath) {
         logger.logInfo("Error \(error)")
         hideSpinner()
@@ -381,23 +334,6 @@ extension ThreadDetailsViewController {
             }
             navigationController?.popViewController(animated: true)
         }
-    }
-
-    private func handleAttachmentDecryptError(_ error: Error, at indexPath: IndexPath) {
-        let message = "message_attachment_corrupted_file".localized
-
-        showAlertWithAction(
-            title: "message_attachment_decrypt_error".localized,
-            message: "\n\(error.errorMessage)\n\n\(message)",
-            actionButtonTitle: "download".localized,
-            actionAccessibilityIdentifier: "aid-download-button",
-            onAction: { [weak self] _ in
-                guard let attachment = self?.input[indexPath.section - 1].processedMessage?.attachments[indexPath.row - 2] else {
-                    return
-                }
-                self?.show(attachment: attachment)
-            }
-        )
     }
 
     private func handleWrongPassPhrase(_ passPhrase: String? = nil, indexPath: IndexPath) {
@@ -450,32 +386,6 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func decryptDrafts() {
-        Task {
-            for (index, data) in input.enumerated() {
-                guard data.rawMessage.isDraft, data.rawMessage.isPgp, data.processedMessage == nil else { continue }
-                let indexPath = IndexPath(row: 0, section: index + 1)
-                do {
-                    let decryptedText = try await messageService.decrypt(
-                        text: data.rawMessage.body.text,
-                        userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                    )
-
-                    let processedMessage = ProcessedMessage(
-                        message: data.rawMessage,
-                        text: decryptedText,
-                        type: .plain,
-                        attachments: []
-                    )
-                    handle(processedMessage: processedMessage, at: indexPath)
-                } catch {
-                    handle(error: error, at: indexPath)
-                }
-            }
-        }
-    }
-
     private func retryVerifyingSignatureWithRemotelyFetchedKeys(
         message: Message,
         folder: String,
@@ -495,7 +405,7 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func handleFetchProgress(state: MessageFetchState) {
+    func handleFetchProgress(state: MessageFetchState) {
         switch state {
         case .fetch:
             showSpinner("loading_title".localized, isUserInteractionEnabled: true)
@@ -507,6 +417,7 @@ extension ThreadDetailsViewController {
     }
 }
 
+// MARK: - NavigationChildController
 extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         logger.logInfo("Back button. Messages are all read")
