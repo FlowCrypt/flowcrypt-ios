@@ -226,8 +226,13 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         guard !ready else { return }
 
         let trace = Trace(id: "Start in background")
-        let jsFile = Bundle(for: Self.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil)!
-        let jsFileSrc = try? String(contentsOfFile: jsFile)
+
+        guard let jsFile = Bundle(for: Self.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil),
+              let jsFileSrc = try? String(contentsOfFile: jsFile)
+        else { return }
+
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+
         context = JSContext(virtualMachine: vm)
         context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
         context?.exceptionHandler = { _, exception in
@@ -240,7 +245,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             let logger = Logger.nested(in: Self.self, with: "Js")
             logger.logWarning("\(exception), \(location)")
         }
-        context?.evaluateScript("const APP_VERSION = 'iOS 0.2';")
+        context?.evaluateScript("const APP_VERSION = 'iOS \(appVersion)';")
         context?.evaluateScript(jsFileSrc)
         jsEndpointListener = context?.objectForKeyedSubscript("handleRequestFromHost")
         cbCatcher = context?.objectForKeyedSubscript("engine_host_cb_value_formatter")

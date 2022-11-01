@@ -95,7 +95,7 @@ private extension Data {
     /// @warning: this only supports data up to 4 bytes, as we can only extract 32-bit integers.
     var integer: Int {
 
-        guard count > 0 else {
+        guard !isEmpty else {
             return 0
         }
 

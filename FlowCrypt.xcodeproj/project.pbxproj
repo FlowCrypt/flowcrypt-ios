@@ -89,6 +89,9 @@
 		511D07E12769FBBA0050417B /* MessageActionCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessageActionCellNode.swift */; };
 		511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */; };
 		512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */ = {isa = PBXBuildFile; productRef = 512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */; };
+		512C4B9929114F7A00AAE52B /* ThreadDetailsViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512C4B9829114F7A00AAE52B /* ThreadDetailsViewController+TableView.swift */; };
+		512C4B9F291151D800AAE52B /* ThreadDetailsViewController+MessageActionsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512C4B9E291151D800AAE52B /* ThreadDetailsViewController+MessageActionsHandler.swift */; };
+		512C4BA1291152E500AAE52B /* ThreadDetailsViewController+TapActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512C4BA0291152E500AAE52B /* ThreadDetailsViewController+TapActions.swift */; };
 		5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */; };
 		5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */; };
 		5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6732716E5EA00C95463 /* LabelCellNode.swift */; };
@@ -554,6 +557,9 @@
 		511737672851F31700337B9F /* GoogleScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleScope.swift; sourceTree = "<group>"; };
 		511D07E02769FBBA0050417B /* MessageActionCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionCellNode.swift; sourceTree = "<group>"; };
 		511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonWithPaddingNode.swift; sourceTree = "<group>"; };
+		512C4B9829114F7A00AAE52B /* ThreadDetailsViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadDetailsViewController+TableView.swift"; sourceTree = "<group>"; };
+		512C4B9E291151D800AAE52B /* ThreadDetailsViewController+MessageActionsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadDetailsViewController+MessageActionsHandler.swift"; sourceTree = "<group>"; };
+		512C4BA0291152E500AAE52B /* ThreadDetailsViewController+TapActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThreadDetailsViewController+TapActions.swift"; sourceTree = "<group>"; };
 		5133B66F2716320F00C95463 /* ContactKeyDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailViewController.swift; sourceTree = "<group>"; };
 		5133B6712716321F00C95463 /* ContactKeyDetailDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactKeyDetailDecorator.swift; sourceTree = "<group>"; };
 		5133B6732716E5EA00C95463 /* LabelCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCellNode.swift; sourceTree = "<group>"; };
@@ -1147,6 +1153,25 @@
 			path = "Google User Service";
 			sourceTree = "<group>";
 		};
+		512C4B9B291150A500AAE52B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */,
+				9F8839132721EB5000669B56 /* MessageAction.swift */,
+				9F778E7D27162038001D4B21 /* MessageThread.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		512C4B9D291150AE00AAE52B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */,
+				9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		513DC086284F15F600FAD5F2 /* Remote Private Key Apis */ = {
 			isa = PBXGroup;
 			children = (
@@ -1606,12 +1631,12 @@
 		9F778E7F271620AF001D4B21 /* Threads */ = {
 			isa = PBXGroup;
 			children = (
-				9F7E5136267AA51B00CE37C3 /* AlertsFactory.swift */,
-				9F5FAF6C271DCDAE00B8762B /* MessageActionsHandler.swift */,
-				9F8839132721EB5000669B56 /* MessageAction.swift */,
-				9F778E7D27162038001D4B21 /* MessageThread.swift */,
+				512C4B9D291150AE00AAE52B /* Extensions */,
+				512C4B9B291150A500AAE52B /* Models */,
 				9F778E7B27161C06001D4B21 /* ThreadDetailsViewController.swift */,
-				9F883911271F242900669B56 /* ThreadDetailsDecorator.swift */,
+				512C4B9829114F7A00AAE52B /* ThreadDetailsViewController+TableView.swift */,
+				512C4B9E291151D800AAE52B /* ThreadDetailsViewController+MessageActionsHandler.swift */,
+				512C4BA0291152E500AAE52B /* ThreadDetailsViewController+TapActions.swift */,
 			);
 			path = Threads;
 			sourceTree = "<group>";
@@ -2658,6 +2683,7 @@
 				5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */,
 				049E605D27FDB7D10089EE2A /* ComposeViewController+Nodes.swift in Sources */,
 				9F7E5137267AA51B00CE37C3 /* AlertsFactory.swift in Sources */,
+				512C4B9929114F7A00AAE52B /* ThreadDetailsViewController+TableView.swift in Sources */,
 				5A39F437239ECC23001F4607 /* KeySettingsViewController.swift in Sources */,
 				9FF0673325520DE400FCC9E6 /* GmailService+send.swift in Sources */,
 				51433AC52902A6EB00E9D488 /* SwiftyRSAError.swift in Sources */,
@@ -2687,6 +2713,7 @@
 				9F31ABA0232C071700CF87EA /* GlobalRouter.swift in Sources */,
 				9F5C2A92257E94DF00DE9B4B /* Imap+MessageOperations.swift in Sources */,
 				D27B911F24EFE828002DF0A1 /* RecipientWithSortedPubKeys.swift in Sources */,
+				512C4B9F291151D800AAE52B /* ThreadDetailsViewController+MessageActionsHandler.swift in Sources */,
 				32DCA1414EEA727B86C337D5 /* Core.swift in Sources */,
 				2CC50FAF27440B2C0051629A /* Session.swift in Sources */,
 				9FB22CF725715DC50026EE64 /* CreateKeyError.swift in Sources */,
@@ -2780,6 +2807,7 @@
 				D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */,
 				21489B7A267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift in Sources */,
 				5180CB9327357B67001FC7EF /* RawClientConfiguration.swift in Sources */,
+				512C4BA1291152E500AAE52B /* ThreadDetailsViewController+TapActions.swift in Sources */,
 				511737682851F31700337B9F /* GoogleScope.swift in Sources */,
 				5A5C234B23A042520015E705 /* WebViewController.swift in Sources */,
 				601EEE31272B19D200FE445B /* CheckMailAuthViewController.swift in Sources */,

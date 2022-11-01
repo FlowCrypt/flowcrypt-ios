@@ -10,7 +10,7 @@ import FlowCryptCommon
 import XCTest
 
 final class FlowCryptCoreTests: XCTestCase {
-    var core: Core! = .shared
+    var core: Core = .shared
 
     override func setUp() {
         let expectation = XCTestExpectation()
@@ -42,7 +42,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testVersions() async throws {
         let r = try await core.version()
-        XCTAssertEqual(r.app_version, "iOS 0.2")
+        XCTAssertEqual(r.app_version, "iOS 1.1.1")
     }
 
     func testGenerateKey() async throws {

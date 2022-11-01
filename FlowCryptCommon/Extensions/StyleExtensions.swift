@@ -14,10 +14,10 @@ public extension NSAttributedString {
 
         public var font: UIFont {
             switch self {
-            case let .regular(size): return UIFont.systemFont(ofSize: size)
-            case let .medium(size): return UIFont.systemFont(ofSize: size, weight: .medium)
-            case let .bold(size): return UIFont.boldSystemFont(ofSize: size)
-            case let .thin(size): return UIFont.systemFont(ofSize: size, weight: .thin)
+            case let .regular(size): return .systemFont(ofSize: size)
+            case let .medium(size): return .systemFont(ofSize: size, weight: .medium)
+            case let .bold(size): return .boldSystemFont(ofSize: size)
+            case let .thin(size): return .systemFont(ofSize: size, weight: .thin)
             }
         }
     }
@@ -28,15 +28,15 @@ public extension NSAttributedString {
         color: UIColor = .black,
         alignment: NSTextAlignment? = nil
     ) -> NSAttributedString {
-        var attributes = [
-            NSAttributedString.Key.font: style.font,
-            NSAttributedString.Key.foregroundColor: color
+        var attributes: [NSAttributedString.Key: Any] = [
+            .font: style.font,
+            .foregroundColor: color
         ]
 
         if let alignment {
             let paragraph = NSMutableParagraphStyle()
             paragraph.alignment = alignment
-            attributes[NSAttributedString.Key.paragraphStyle] = paragraph
+            attributes[.paragraphStyle] = paragraph
         }
 
         return NSAttributedString(string: string, attributes: attributes)

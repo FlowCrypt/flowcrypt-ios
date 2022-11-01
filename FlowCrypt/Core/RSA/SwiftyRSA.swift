@@ -19,7 +19,7 @@ public enum SwiftyRSA {
             return !line.hasPrefix("-----BEGIN") && !line.hasPrefix("-----END")
         }
 
-        guard lines.count != 0 else {
+        guard !lines.isEmpty else {
             throw SwiftyRSAError.pemDoesNotContainKey
         }
 

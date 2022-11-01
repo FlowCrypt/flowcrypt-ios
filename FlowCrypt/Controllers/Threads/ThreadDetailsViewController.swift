@@ -12,7 +12,7 @@ import FlowCryptUI
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
-    private lazy var logger = Logger.nested(Self.self)
+    lazy var logger = Logger.nested(Self.self)
     private lazy var alertsFactory = AlertsFactory()
 
     class Input {
@@ -34,25 +34,21 @@ final class ThreadDetailsViewController: TableNodeViewController {
         }
     }
 
-    private enum Parts: Int, CaseIterable {
-        case thread, message, divider
-    }
-
-    private let appContext: AppContextWithUser
+    let appContext: AppContextWithUser
     private let draftGateway: DraftGateway?
     private let messageService: MessageService
-    private let messageOperationsProvider: MessageOperationsProvider
-    private let threadOperationsProvider: MessagesThreadOperationsProvider
-    private var inboxItem: InboxItem
-    private var input: [ThreadDetailsViewController.Input]
+    let messageOperationsProvider: MessageOperationsProvider
+    let threadOperationsProvider: MessagesThreadOperationsProvider
+    var inboxItem: InboxItem
+    var input: [ThreadDetailsViewController.Input]
 
     let trashFolderProvider: TrashFolderProviderType
     var currentFolderPath: String {
         inboxItem.folderPath
     }
 
-    private let onComposeMessageAction: ((ComposeMessageAction) -> Void)?
-    private let onComplete: MessageActionCompletion
+    let onComposeMessageAction: ((ComposeMessageAction) -> Void)?
+    let onComplete: MessageActionCompletion
 
     init(
         appContext: AppContextWithUser,
@@ -125,96 +121,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 }
 
 extension ThreadDetailsViewController {
-
-    private func handleExpandTap(at indexPath: IndexPath) {
-        let index = indexPath.section - 1
-        input[index].isExpanded.toggle()
-
-        if input[index].isExpanded {
-            UIView.animate(
-                withDuration: 0.2,
-                animations: {
-                    if let threadNode = self.node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode {
-                        threadNode.expandNode.view.alpha = 0
-                    }
-                },
-                completion: { [weak self] _ in
-                    guard let self else { return }
-
-                    if let processedMessage = self.input[index].processedMessage {
-                        self.handle(processedMessage: processedMessage, at: indexPath)
-                    } else {
-                        self.fetchDecryptAndRenderMsg(at: indexPath)
-                    }
-                }
-            )
-        } else {
-            UIView.animate(withDuration: 0.3) {
-                self.node.reloadSections([indexPath.section], with: .automatic)
-            }
-        }
-    }
-
-    private func handleRecipientsTap(at indexPath: IndexPath) {
-        input[indexPath.section - 1].shouldShowRecipientsList.toggle()
-
-        UIView.animate(withDuration: 0.3) {
-            self.node.reloadSections([indexPath.section], with: .automatic)
-        }
-    }
-
-    private func handleReplyTap(at indexPath: IndexPath) {
-        composeNewMessage(at: indexPath, quoteType: .reply)
-    }
-
-    private func handleDraftTap(at indexPath: IndexPath) {
-        Task {
-            do {
-                let draft = input[indexPath.section - 1]
-
-                let draftInfo = ComposeMessageInput.MessageQuoteInfo(
-                    message: draft.rawMessage,
-                    processed: draft.processedMessage
-                )
-
-                let controller = try await ComposeViewController(
-                    appContext: appContext,
-                    input: .init(type: .draft(draftInfo)),
-                    handleAction: { [weak self] action in
-                        self?.handleComposeMessageAction(action)
-                    }
-                )
-                navigationController?.pushViewController(controller, animated: true)
-            } catch {
-                showAlert(message: error.errorMessage)
-            }
-        }
-    }
-
-    private func handleMenuTap(at indexPath: IndexPath) {
-        let alert = UIAlertController(
-            title: nil,
-            message: nil,
-            preferredStyle: .actionSheet
-        )
-
-        if let view = node.nodeForRow(at: indexPath) as? ThreadMessageInfoCellNode {
-            alert.popoverPresentation(style: .sourceView(view.menuNode.view))
-        } else {
-            alert.popoverPresentation(style: .centred(view))
-        }
-
-        let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel)
-        cancelAction.accessibilityIdentifier = "aid-cancel-button"
-
-        alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .replyAll))
-        alert.addAction(createComposeNewMessageAlertAction(at: indexPath, type: .forward))
-        alert.addAction(cancelAction)
-
-        present(alert, animated: true, completion: nil)
-    }
-
-    private func handleComposeMessageAction(_ action: ComposeMessageAction) {
+    func handleComposeMessageAction(_ action: ComposeMessageAction) {
         onComposeMessageAction?(action)
 
         switch action {
@@ -231,9 +138,7 @@ extension ThreadDetailsViewController {
         Task {
             guard let messageId = identifier.messageId else { return }
 
-            let processedMessage = try await getAndProcessMessage(
-                identifier: messageId
-            )
+            let processedMessage = try await getAndProcessMessage(identifier: messageId)
 
             let section: Int
             if let index = input.firstIndex(where: { $0.rawMessage.identifier == identifier.draftMessageId }) {
@@ -256,9 +161,7 @@ extension ThreadDetailsViewController {
 
             guard let messageId = identifier.messageId else { return }
 
-            let processedMessage = try await getAndProcessMessage(
-                identifier: messageId
-            )
+            let processedMessage = try await getAndProcessMessage(identifier: messageId)
             let indexPath = IndexPath(row: 0, section: input.count + 1)
             handle(processedMessage: processedMessage, at: indexPath)
         }
@@ -277,29 +180,26 @@ extension ThreadDetailsViewController {
 
     private func getAndProcessMessage(
         identifier: Identifier,
-        onlyLocalKeys: Bool = false
+        onlyLocalKeys: Bool = false,
+        forceFetch: Bool = true
     ) async throws -> ProcessedMessage {
-        try await messageService.getAndProcess(
-            identifier: identifier,
-            folder: inboxItem.folderPath,
+        let message: Message
+
+        if !forceFetch, let rawMessage = input.first(where: { $0.rawMessage.identifier == identifier })?.rawMessage {
+            message = rawMessage
+        } else {
+            message = try await messageService.fetchMessage(identifier: identifier, folder: inboxItem.folderPath)
+        }
+
+        return try await messageService.process(
+            message: message,
             onlyLocalKeys: onlyLocalKeys,
             userEmail: appContext.user.email,
             isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
         )
     }
 
-    private func createComposeNewMessageAlertAction(at indexPath: IndexPath, type: MessageQuoteType) -> UIAlertAction {
-        let action = UIAlertAction(
-            title: type.actionLabel,
-            style: .default
-        ) { [weak self] _ in
-            self?.composeNewMessage(at: indexPath, quoteType: type)
-        }
-        action.accessibilityIdentifier = type.accessibilityIdentifier
-        return action
-    }
-
-    private func handleAttachmentTap(at indexPath: IndexPath) {
+    func handleAttachmentTap(at indexPath: IndexPath) {
         Task {
             do {
                 let attachment = try await getAttachment(at: indexPath)
@@ -358,106 +258,28 @@ extension ThreadDetailsViewController {
             animated: true
         )
     }
-
-    private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
-        guard let input = input[safe: indexPath.section - 1],
-              let processedMessage = input.processedMessage
-        else { return }
-
-        let sender = [input.rawMessage.sender].compactMap { $0 }
-        let replyRecipient: [Recipient] = {
-            if input.rawMessage.replyTo.isNotEmpty {
-                return input.rawMessage.replyTo
-            }
-            // When sender is logged in user, then use `to` as reply recipient
-            if sender.contains(where: { $0.email == appContext.user.email }) {
-                return input.rawMessage.to
-            }
-            return sender
-        }()
-
-        let ccRecipients = quoteType == .replyAll ? input.rawMessage.cc : []
-        let recipients: [Recipient] = {
-            switch quoteType {
-            case .reply:
-                return replyRecipient
-            case .replyAll:
-                let allRecipients = (input.rawMessage.to + replyRecipient).unique()
-                let filteredRecipients = allRecipients.filter { $0.email != appContext.user.email }
-                return filteredRecipients.isEmpty ? sender : filteredRecipients
-            case .forward:
-                return []
-            }
-        }()
-
-        let attachments = quoteType == .forward
-            ? input.processedMessage?.attachments ?? []
-            : []
-
-        let subject = input.rawMessage.subject ?? "(no subject)"
-        let threadId = quoteType == .forward ? nil : input.rawMessage.threadId
-        let replyToMsgId = quoteType == .forward ? nil : input.rawMessage.rfc822MsgId
-
-        let replyInfo = ComposeMessageInput.MessageQuoteInfo(
-            id: nil,
-            recipients: recipients,
-            ccRecipients: ccRecipients,
-            bccRecipients: [],
-            sender: input.rawMessage.sender,
-            subject: [quoteType.subjectPrefix, subject].joined(),
-            sentDate: input.rawMessage.date,
-            text: processedMessage.text,
-            threadId: threadId,
-            replyToMsgId: replyToMsgId,
-            inReplyTo: input.rawMessage.inReplyTo,
-            rfc822MsgId: input.rawMessage.rfc822MsgId,
-            draftId: nil,
-            shouldEncrypt: input.rawMessage.isPgp,
-            attachments: attachments
-        )
-
-        let composeType: ComposeMessageInput.InputType = {
-            switch quoteType {
-            case .reply, .replyAll:
-                return .reply(replyInfo)
-            case .forward:
-                return .forward(replyInfo)
-            }
-        }()
-
-        openComposeScreen(type: composeType)
-    }
-
-    private func openComposeScreen(type: ComposeMessageInput.InputType) {
-        Task {
-            do {
-                let composeVC = try await ComposeViewController(
-                    appContext: appContext,
-                    input: ComposeMessageInput(type: type),
-                    handleAction: { [weak self] action in
-                        self?.handleComposeMessageAction(action)
-                    }
-                )
-                navigationController?.pushViewController(composeVC, animated: true)
-            } catch {
-                showAlert(message: error.errorMessage)
-            }
-        }
-    }
 }
 
 extension ThreadDetailsViewController {
-    private func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
-        let message = input[indexPath.section - 1].rawMessage
+    func fetchDecryptAndRenderMsg(at indexPath: IndexPath) {
+        let rawMessage = input[indexPath.section - 1].rawMessage
         logger.logInfo("Start loading message")
 
         handleFetchProgress(state: .fetch)
 
         Task {
             do {
+                let fetchedMessage = try await messageService.fetchMessage(
+                    identifier: rawMessage.identifier,
+                    folder: inboxItem.folderPath
+                )
+
+                input[indexPath.section - 1].rawMessage = fetchedMessage
+
                 var processedMessage = try await getAndProcessMessage(
-                    identifier: message.identifier,
-                    onlyLocalKeys: true
+                    identifier: rawMessage.identifier,
+                    onlyLocalKeys: true,
+                    forceFetch: false
                 )
 
                 if processedMessage.text.isEmpty,
@@ -481,7 +303,7 @@ extension ThreadDetailsViewController {
                 if case .missingPubkey = processedMessage.signature {
                     processedMessage.signature = .pending
                     retryVerifyingSignatureWithRemotelyFetchedKeys(
-                        message: message,
+                        message: rawMessage,
                         folder: inboxItem.folderPath,
                         indexPath: indexPath
                     )
@@ -493,19 +315,24 @@ extension ThreadDetailsViewController {
         }
     }
 
-    private func handle(processedMessage: ProcessedMessage, at indexPath: IndexPath) {
+    func handle(processedMessage: ProcessedMessage, at indexPath: IndexPath) {
         hideSpinner()
 
         let messageIndex = indexPath.section - 1
         let isAlreadyProcessed = messageIndex < input.count && input[messageIndex].processedMessage != nil
+        let messageInput = Input(
+            message: processedMessage.message,
+            isExpanded: true,
+            processedMessage: processedMessage
+        )
 
         if !isAlreadyProcessed {
             if messageIndex < input.count {
-                input[messageIndex].rawMessage = processedMessage.message
-                input[messageIndex].processedMessage = processedMessage
-                input[messageIndex].isExpanded = true
+                input[messageIndex].rawMessage = messageInput.rawMessage
+                input[messageIndex].processedMessage = messageInput.processedMessage
+                input[messageIndex].isExpanded = messageInput.isExpanded
             } else {
-                input.append(Input(message: processedMessage.message, isExpanded: true, processedMessage: processedMessage))
+                input.append(messageInput)
             }
 
             UIView.animate(
@@ -526,8 +353,8 @@ extension ThreadDetailsViewController {
                 }
             )
         } else {
-            input[messageIndex].rawMessage = processedMessage.message
-            input[messageIndex].processedMessage = processedMessage
+            input[messageIndex].rawMessage = messageInput.rawMessage
+            input[messageIndex].processedMessage = messageInput.processedMessage
             node.reloadSections([indexPath.section], with: .automatic)
         }
     }
@@ -546,11 +373,11 @@ extension ThreadDetailsViewController {
                 // reproduce: 1) load inbox 2) move msg to trash on another email client 3) open trashed message in inbox
                 showToast("message_not_found_in_folder".localized + inboxItem.folderPath)
             } else {
-                showRetryAlert(message: error.errorMessage, onRetry: { [weak self] _ in
-                    self?.fetchDecryptAndRenderMsg(at: indexPath)
-                }, onCancel: { [weak self] _ in
-                    self?.navigationController?.popViewController(animated: true)
-                })
+                showRetryAlert(
+                    message: error.errorMessage,
+                    onRetry: { [weak self] _ in self?.fetchDecryptAndRenderMsg(at: indexPath) },
+                    onCancel: { [weak self] _ in self?.navigationController?.popViewController(animated: true) }
+                )
             }
             navigationController?.popViewController(animated: true)
         }
@@ -657,7 +484,8 @@ extension ThreadDetailsViewController {
         Task {
             do {
                 let processedMessage = try await getAndProcessMessage(
-                    identifier: message.identifier
+                    identifier: message.identifier,
+                    forceFetch: false
                 )
                 handle(processedMessage: processedMessage, at: indexPath)
             } catch {
@@ -676,229 +504,6 @@ extension ThreadDetailsViewController {
         case .decrypt:
             updateSpinner(label: "processing_title".localized)
         }
-    }
-}
-
-extension ThreadDetailsViewController: MessageActionsHandler {
-    private func handle(action: MessageAction, error: Error? = nil) {
-        hideSpinner()
-
-        if let error {
-            logger.logError("\(action.error ?? "Error: ") \(error)")
-            return
-        }
-
-        onComplete(action, inboxItem)
-        navigationController?.popViewController(animated: true)
-    }
-
-    func permanentlyDelete() {
-        logger.logInfo("permanently delete")
-        perform(action: .permanentlyDelete)
-    }
-
-    func moveToTrash(with trashPath: String) {
-        logger.logInfo("move to trash \(trashPath)")
-        perform(action: .moveToTrash)
-    }
-
-    func handleArchiveTap() {
-        perform(action: .archive)
-    }
-
-    func handleMoveToInboxTap() {
-        perform(action: .moveToInbox)
-    }
-
-    func handleMarkUnreadTap() {
-        let messages = input.filter(\.isExpanded).map(\.rawMessage)
-
-        guard messages.isNotEmpty else { return }
-
-        perform(action: .markAsRead(false))
-    }
-
-    func perform(action: MessageAction) {
-        Task {
-            do {
-                showSpinner()
-
-                switch action {
-                case .archive:
-                    try await threadOperationsProvider.archive(
-                        messagesIds: inboxItem.messages.map(\.identifier),
-                        in: inboxItem.folderPath
-                    )
-                case let .markAsRead(isRead):
-                    guard !isRead else { return }
-                    Task { // Run mark as unread operation in another thread
-                        try await threadOperationsProvider.markThreadAsUnread(
-                            id: inboxItem.threadId,
-                            folder: inboxItem.folderPath
-                        )
-                    }
-                case .moveToTrash:
-                    try await threadOperationsProvider.moveThreadToTrash(id: inboxItem.threadId, labels: inboxItem.labels)
-                case .moveToInbox:
-                    try await threadOperationsProvider.moveThreadToInbox(id: inboxItem.threadId)
-                case .permanentlyDelete:
-                    try await threadOperationsProvider.delete(id: inboxItem.threadId)
-                }
-
-                handle(action: action)
-            } catch {
-                handle(action: action, error: error)
-            }
-        }
-    }
-}
-
-extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
-    func numberOfSections(in tableNode: ASTableNode) -> Int {
-        input.count + 1
-    }
-
-    func tableNode(_ tableNode: ASTableNode, numberOfRowsInSection section: Int) -> Int {
-        guard section > 0, input[section - 1].isExpanded,
-              !input[section - 1].rawMessage.isDraft
-        else { return 2 }
-
-        let attachmentsCount = input[section - 1].processedMessage?.attachments.count ?? 0
-        return Parts.allCases.count + attachmentsCount
-    }
-
-    func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
-        return { [weak self] in
-            guard let self else { return ASCellNode() }
-
-            guard indexPath.section > 0 else {
-                if indexPath.row == 0 {
-                    let subject = self.inboxItem.subject ?? "no subject"
-                    return MessageSubjectNode(subject.attributed(.medium(18)))
-                } else {
-                    return self.dividerNode(indexPath: indexPath)
-                }
-            }
-
-            let messageIndex = indexPath.section - 1
-            let message = self.input[messageIndex]
-
-            if !message.rawMessage.isDraft, indexPath.row == 0 {
-                return ThreadMessageInfoCellNode(
-                    input: .init(threadMessage: message, index: messageIndex),
-                    onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
-                    onMenuTap: { [weak self] _ in self?.handleMenuTap(at: indexPath) },
-                    onRecipientsTap: { [weak self] _ in self?.handleRecipientsTap(at: indexPath) }
-                )
-            }
-
-            if message.rawMessage.isDraft {
-                if indexPath.row == 0 {
-                    return self.draftNode(messageIndex: messageIndex, isExpanded: message.isExpanded)
-                } else {
-                    return self.dividerNode(indexPath: indexPath)
-                }
-            }
-
-            guard message.isExpanded, let processedMessage = message.processedMessage
-            else { return self.dividerNode(indexPath: indexPath) }
-
-            guard indexPath.row > 1 else {
-                return MessageTextSubjectNode(processedMessage.attributedMessage, index: messageIndex)
-            }
-
-            let attachmentIndex = indexPath.row - 2
-            if let attachment = processedMessage.attachments[safe: attachmentIndex] {
-                return AttachmentNode(
-                    input: .init(
-                        msgAttachment: attachment,
-                        index: attachmentIndex
-                    )
-                )
-            } else {
-                return self.dividerNode(indexPath: indexPath)
-            }
-        }
-    }
-
-    func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        switch tableNode.nodeForRow(at: indexPath) {
-        case is ThreadMessageInfoCellNode:
-            handleExpandTap(at: indexPath)
-        case is AttachmentNode:
-            handleAttachmentTap(at: indexPath)
-        default:
-            guard let message = input[safe: indexPath.section - 1],
-                  message.rawMessage.isDraft
-            else { return }
-
-            handleDraftTap(at: indexPath)
-        }
-    }
-
-    private func draftNode(messageIndex: Int, isExpanded: Bool) -> ASCellNode {
-        let data = input[messageIndex]
-
-        let body: String
-        if let processedMessage = data.processedMessage {
-            body = processedMessage.text
-        } else if data.rawMessage.isPgp {
-            body = "Waiting for pass phrase to open draft..."
-        } else {
-            body = data.rawMessage.body.text
-        }
-
-        return LabelCellNode(
-            input: .init(
-                title: "draft".localized.attributed(color: .systemRed),
-                text: body.removingMailThreadQuote().attributed(color: .secondaryLabel),
-                accessibilityIdentifier: "aid-draft-body-\(messageIndex)",
-                labelAccessibilityIdentifier: "aid-draft-label-\(messageIndex)",
-                buttonAccessibilityIdentifier: "aid-draft-delete-button-\(messageIndex)",
-                actionButtonImageName: "trash",
-                action: { [weak self] in
-                    self?.deleteDraft(id: data.rawMessage.identifier)
-                }
-            )
-        )
-    }
-
-    private func deleteDraft(id: Identifier) {
-        showAlertWithAction(
-            title: "draft_delete_confirmation".localized,
-            message: nil,
-            actionButtonTitle: "delete".localized,
-            actionStyle: .destructive,
-            onAction: { [weak self] _ in
-                guard let self else { return }
-
-                Task {
-                    try await self.messageOperationsProvider.deleteMessage(
-                        id: id,
-                        from: nil
-                    )
-
-                    let messageIdentifier = MessageIdentifier(
-                        threadId: Identifier(stringId: self.inboxItem.threadId)
-                    )
-                    self.onComposeMessageAction?(.delete(messageIdentifier))
-
-                    guard let index = self.input.firstIndex(where: { $0.rawMessage.identifier == id }) else { return }
-
-                    self.input.remove(at: index)
-                    self.node.deleteSections([index + 1], with: .automatic)
-                }
-            }
-        )
-    }
-
-    private func dividerNode(indexPath: IndexPath) -> ASCellNode {
-        let height = indexPath.section < input.count ? 1 / UIScreen.main.nativeScale : 0
-        return DividerCellNode(
-            inset: .init(top: 0, left: 8, bottom: 0, right: 8),
-            color: .borderColor,
-            height: height
-        )
     }
 }
 
