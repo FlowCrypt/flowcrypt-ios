@@ -228,29 +228,52 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
 
     private func decryptDrafts() {
-        Task {
-            for (index, data) in input.enumerated() {
-                guard data.rawMessage.isDraft, data.rawMessage.isPgp, data.processedMessage == nil else { continue }
-                let indexPath = IndexPath(row: 0, section: index + 1)
-                do {
-                    let decryptedText = try await messageService.decrypt(
-                        text: data.rawMessage.body.text,
-                        userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                    )
+        for index in input.indices {
+            guard input[index].rawMessage.isDraft else { continue }
 
-                    let processedMessage = ProcessedMessage(
-                        message: data.rawMessage,
-                        text: decryptedText,
-                        type: .plain,
-                        attachments: []
-                    )
-                    handle(processedMessage: processedMessage, at: indexPath)
-                } catch {
-                    handle(error: error, at: indexPath)
+            processDraft(at: index)
+        }
+    }
+
+    private func processDraft(at index: Int) {
+        let indexPath = IndexPath(row: 0, section: index + 1)
+
+        Task {
+            do {
+                if input[index].rawMessage.body.text.isEmpty {
+                    try await fetchDraft(at: index)
                 }
+
+                let data = input[index]
+
+                guard data.rawMessage.isPgp, data.processedMessage == nil else { return }
+
+                let decryptedText = try await messageService.decrypt(
+                    text: data.rawMessage.body.text,
+                    userEmail: appContext.user.email,
+                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                )
+
+                let processedMessage = ProcessedMessage(
+                    message: data.rawMessage,
+                    text: decryptedText,
+                    type: .plain,
+                    attachments: []
+                )
+                handle(processedMessage: processedMessage, at: indexPath)
+            } catch {
+                handle(error: error, at: indexPath)
             }
         }
+    }
+
+    private func fetchDraft(at index: Int) async throws {
+        let id = input[index].rawMessage.identifier
+        let message = try await messageService.fetchMessage(
+            identifier: id,
+            folder: inboxItem.folderPath
+        )
+        input[index].rawMessage = message
     }
 
     // MARK: - Compose message actions
