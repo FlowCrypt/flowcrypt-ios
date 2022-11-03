@@ -80,14 +80,18 @@ extension ComposeViewController {
         }
 
         Task {
-            let message = try await messageService.fetchMessage(identifier: id, folder: "")
-            let text = message.body.text
+            do {
+                let message = try await messageService.fetchMessage(identifier: id, folder: "")
+                let text = message.body.text
 
-            if text.isPgp {
-                await decodeDraft(text: text)
-            } else {
-                contextToSend.message = text
-                didFinishSetup = true
+                if text.isPgp {
+                    await decodeDraft(text: text)
+                } else {
+                    contextToSend.message = text
+                    didFinishSetup = true
+                }
+            } catch {
+                handle(error: error)
             }
         }
     }

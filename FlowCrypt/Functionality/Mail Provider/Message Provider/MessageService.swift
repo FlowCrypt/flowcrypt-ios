@@ -184,9 +184,6 @@ final class MessageService {
             verificationPubKeys: verificationPubKeys
         )
 
-        print("decrypt")
-        print(decrypted.text)
-
         return try await process(
             message: message,
             with: decrypted
