@@ -228,9 +228,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
 
     private func decryptDrafts() {
-        for index in input.indices {
-            guard input[index].rawMessage.isDraft else { continue }
-
+        for index in input.indices where input[index].rawMessage.isDraft {
             processDraft(at: index)
         }
     }
