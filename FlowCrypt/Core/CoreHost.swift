@@ -23,12 +23,11 @@ import Security // for rng
     func log(_ message: String)
 }
 
-var timers = [String: Timer]()
-
 final class CoreHost: NSObject, CoreHostExports {
     // todo - things to look at for optimisation:
     //  -> a) reading rsa4096 prv key (just openpgp.key.readArmored(...)) takes 70ms. It should take about 10 ms. Could dearmor it in swift, return bytes
     //  -> b) produceHashedIteratedS2k below takes 300ms for two keys, could be 100ms or so
+    private var timers = [String: Timer]()
 
     // brings total decryption time from 200->30ms (rsa2048), 3900->420ms (rsa4096)
     func decryptRsaNoPadding(_ rsaPrvDerBase64: String, _ encryptedBase64: String) -> String {
@@ -99,7 +98,7 @@ final class CoreHost: NSObject, CoreHostExports {
 
     func clearTimeout(_ id: String) {
         DispatchQueue.main.async { // use consistent queue for modifications
-            let timer = timers.removeValue(forKey: id)
+            let timer = self.timers.removeValue(forKey: id)
             timer?.invalidate()
         }
     }
@@ -109,7 +108,7 @@ final class CoreHost: NSObject, CoreHostExports {
         let uuid = NSUUID().uuidString
         DispatchQueue.main.async { // queue all in the same executable queue, JS calls are getting lost if the queue is not specified
             let timer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.callJsCb), userInfo: cb, repeats: false)
-            timers[uuid] = timer // use consistent queue for modifications of timers
+            self.timers[uuid] = timer // use consistent queue for modifications of timers
         }
         return uuid
     }

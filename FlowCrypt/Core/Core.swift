@@ -4,6 +4,7 @@
 
 import FlowCryptCommon
 import JavaScriptCore
+import WebKit
 
 enum CoreError: LocalizedError, Equatable {
     case exception(String) // core threw exception
@@ -34,7 +35,6 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     private var jsEndpointListener: JSValue?
     private var cbCatcher: JSValue?
-    private var vm = JSVirtualMachine()
     private var context: JSContext?
 
     private var callbackResults: [String: CallbackResult] = [:]
@@ -42,6 +42,63 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
 
+    private struct RawRes {
+        let json: Data
+        let data: Data
+    }
+
+    private struct GmailBackupSearchResponse: Decodable {
+        let query: String
+    }
+
+    // MARK: - Setup
+    func startIfNotAlreadyRunning() {
+        guard !ready, let jsFileSrc = getCoreJsFile() else { return }
+
+        let trace = Trace(id: "Start in background")
+
+        context = createContext(jsFileSrc: jsFileSrc)
+        jsEndpointListener = context?.objectForKeyedSubscript("handleRequestFromHost")
+        cbCatcher = context?.objectForKeyedSubscript("engine_host_cb_value_formatter")
+        ready = true
+        logger.logInfo("JsContext took \(trace.finish()) to start")
+        let logFunction: @convention(block) (String) -> Void = { string in
+            print("JS_Console:", string)
+        }
+        if let console = context?.objectForKeyedSubscript("console") {
+            console.setObject(logFunction, forKeyedSubscript: "log")
+        }
+    }
+
+    private func getCoreJsFile() -> String? {
+        guard let jsFile = Bundle(for: Self.self).path(
+            forResource: "flowcrypt-ios-prod.js.txt",
+            ofType: nil
+        ) else { return nil }
+        return try? String(contentsOfFile: jsFile)
+    }
+
+    private func createContext(jsFileSrc: String) -> JSContext? {
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+
+        let context = JSContext()
+        context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
+        context?.exceptionHandler = { _, exception in
+            guard let exception else { return }
+
+            let line = exception.objectForKeyedSubscript("line").toString()
+            let column = exception.objectForKeyedSubscript("column").toString()
+            let location = [line, column].compactMap { $0 }.joined(separator: ":")
+
+            let logger = Logger.nested(in: Self.self, with: "Js")
+            logger.logWarning("\(exception), \(location)")
+        }
+        context?.evaluateScript("const APP_VERSION = 'iOS \(appVersion)';")
+        context?.evaluateScript(jsFileSrc)
+        return context
+    }
+
+    // MARK: - Config
     func version() async throws -> CoreRes.Version {
         let r = try await call("version", jsonDict: nil, data: nil)
         return try r.json.decodeJson(as: CoreRes.Version.self)
@@ -222,37 +279,6 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
-    func startIfNotAlreadyRunning() async {
-        guard !ready else { return }
-
-        let trace = Trace(id: "Start in background")
-
-        guard let jsFile = Bundle(for: Self.self).path(forResource: "flowcrypt-ios-prod.js.txt", ofType: nil),
-              let jsFileSrc = try? String(contentsOfFile: jsFile)
-        else { return }
-
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
-
-        context = JSContext(virtualMachine: vm)
-        context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
-        context?.exceptionHandler = { _, exception in
-            guard let exception else { return }
-
-            let line = exception.objectForKeyedSubscript("line").toString()
-            let column = exception.objectForKeyedSubscript("column").toString()
-            let location = [line, column].compactMap { $0 }.joined(separator: ":")
-
-            let logger = Logger.nested(in: Self.self, with: "Js")
-            logger.logWarning("\(exception), \(location)")
-        }
-        context?.evaluateScript("const APP_VERSION = 'iOS \(appVersion)';")
-        context?.evaluateScript(jsFileSrc)
-        jsEndpointListener = context?.objectForKeyedSubscript("handleRequestFromHost")
-        cbCatcher = context?.objectForKeyedSubscript("engine_host_cb_value_formatter")
-        ready = true
-        logger.logInfo("JsContext took \(trace.finish()) to start")
-    }
-
     func gmailBackupSearch(for email: String) async throws -> String {
         let response = try await call("gmailBackupSearch", jsonDict: ["acctEmail": email], data: nil)
         let result = try response.json.decodeJson(as: GmailBackupSearchResponse.self)
@@ -283,10 +309,10 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     private func call(_ endpoint: String, jsonData: Data, data: Data) async throws -> RawRes {
         guard ready else {
-            throw CoreError.exception("Core is not ready yet. Most likeyly startIfNotAlreadyRunning wasn't called first")
+            throw CoreError.exception("Core is not ready yet. Most likely startIfNotAlreadyRunning wasn't called first")
         }
         let callbackId = NSUUID().uuidString
-        jsEndpointListener!.call(withArguments: [
+        jsEndpointListener?.call(withArguments: [
             endpoint,
             callbackId,
             String(data: jsonData, encoding: .utf8)!,
@@ -315,13 +341,4 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         }
         return RawRes(json: resJsonData, data: Data(result.1))
     }
-}
-
-private struct RawRes {
-    let json: Data
-    let data: Data
-}
-
-private struct GmailBackupSearchResponse: Decodable {
-    let query: String
 }

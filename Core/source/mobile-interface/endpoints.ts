@@ -265,7 +265,18 @@ export class Endpoints {
     const { contentBlock, text } = fmtContentBlock(msgContentBlocks);
     blocks.unshift(contentBlock);
     // data represent one JSON-stringified block per line. This is so that it can be read as a stream later
-    return fmtRes({ text, replyType, subject }, Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
+    const blocksData = Buf.fromUtfStr(blocks.map(b => {
+      return JSON.stringify(b, (key, value) => {
+        // 'content' is used only for error messages on iOS
+        // sending empty string for large messages improves decrypt performance
+        if (key === 'content' && value.length > 100000) {
+          return '';
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+        return value;
+      });
+    }).join('\n'));
+    return fmtRes({ text, replyType, subject }, blocksData);
   };
 
   public decryptFile = async (uncheckedReq: unknown, data: Buffers, verificationPubkeys?: string[]):
