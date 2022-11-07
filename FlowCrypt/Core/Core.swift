@@ -8,12 +8,11 @@ import WebKit
 
 enum CoreError: LocalizedError, Equatable {
     case exception(String) // core threw exception
-    case notReady(String) // core not initialized
     case value(String) // wrong value passed into or returned by a function
+
     var errorDescription: String? {
         switch self {
         case let .exception(message),
-             let .notReady(message),
              let .value(message):
             return message
         }
@@ -28,19 +27,21 @@ protocol KeyParser {
     func parseKeys(armoredOrBinary: Data) async throws -> CoreRes.ParseKeys
 }
 
-actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
+class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     static let shared = Core()
 
     private typealias CallbackResult = (String, [UInt8])
 
-    private var jsEndpointListener: JSValue?
-    private var cbCatcher: JSValue?
-    private var context: JSContext?
-
-    private var callbackResults: [String: CallbackResult] = [:]
-    private var ready = false
+    private lazy var webView: WKWebView = {
+        let userController = WKUserContentController()
+        userController.add(webMessageHandler, name: "coreHost")
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController = userController
+        return WKWebView(frame: .zero, configuration: configuration)
+    }()
 
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
+    private let webMessageHandler = WebMessageHandler()
 
     private struct RawRes {
         let json: Data
@@ -51,22 +52,18 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let query: String
     }
 
+    init() {
+        setupWebView()
+    }
+
     // MARK: - Setup
-    func startIfNotAlreadyRunning() {
-        guard !ready, let jsFileSrc = getCoreJsFile() else { return }
+    func setupWebView() {
+        guard let jsFileSrc = getCoreJsFile() else { return }
 
-        let trace = Trace(id: "Start in background")
-
-        context = createContext(jsFileSrc: jsFileSrc)
-        jsEndpointListener = context?.objectForKeyedSubscript("handleRequestFromHost")
-        cbCatcher = context?.objectForKeyedSubscript("engine_host_cb_value_formatter")
-        ready = true
-        logger.logInfo("JsContext took \(trace.finish()) to start")
-        let logFunction: @convention(block) (String) -> Void = { string in
-            print("JS_Console:", string)
-        }
-        if let console = context?.objectForKeyedSubscript("console") {
-            console.setObject(logFunction, forKeyedSubscript: "log")
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { data, error in
+            // TODO: handler errros
+            print("web view setup")
         }
     }
 
@@ -78,75 +75,49 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try? String(contentsOfFile: jsFile)
     }
 
-    private func createContext(jsFileSrc: String) -> JSContext? {
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
-
-        let context = JSContext()
-        context?.setObject(CoreHost(), forKeyedSubscript: "coreHost" as (NSCopying & NSObjectProtocol))
-        context?.exceptionHandler = { _, exception in
-            guard let exception else { return }
-
-            let line = exception.objectForKeyedSubscript("line").toString()
-            let column = exception.objectForKeyedSubscript("column").toString()
-            let location = [line, column].compactMap { $0 }.joined(separator: ":")
-
-            let logger = Logger.nested(in: Self.self, with: "Js")
-            logger.logWarning("\(exception), \(location)")
-        }
-        context?.evaluateScript("const APP_VERSION = 'iOS \(appVersion)';")
-        context?.evaluateScript(jsFileSrc)
-        return context
-    }
-
     // MARK: - Config
     func version() async throws -> CoreRes.Version {
-        let r = try await call("version", jsonDict: nil, data: nil)
+        let r = try await call("version")
         return try r.json.decodeJson(as: CoreRes.Version.self)
     }
 
     func setClientConfiguration(_ config: ClientConfiguration) async throws {
-        _ = try await call(
+        try await call(
             "setClientConfiguration",
-            jsonDict: ["shouldHideArmorMeta": config.shouldHideArmorMeta],
-            data: nil
+            params: ["shouldHideArmorMeta": config.shouldHideArmorMeta]
         )
     }
 
     // MARK: Keys
     func parseKeys(armoredOrBinary: Data) async throws -> CoreRes.ParseKeys {
-        let r = try await call("parseKeys", jsonDict: [String: String](), data: armoredOrBinary)
+        let r = try await call("parseKeys", data: armoredOrBinary)
         return try r.json.decodeJson(as: CoreRes.ParseKeys.self)
     }
 
     func decryptKey(armoredPrv: String, passphrase: String) async throws -> CoreRes.DecryptKey {
-        let r = try await call("decryptKey", jsonDict: ["armored": armoredPrv, "passphrases": [passphrase]], data: nil)
+        let r = try await call("decryptKey", params: ["armored": armoredPrv, "passphrases": [passphrase]])
         return try r.json.decodeJson(as: CoreRes.DecryptKey.self)
     }
 
     func encryptKey(armoredPrv: String, passphrase: String) async throws -> CoreRes.EncryptKey {
-        let r = try await call("encryptKey", jsonDict: ["armored": armoredPrv, "passphrase": passphrase], data: nil)
+        let r = try await call("encryptKey", params: ["armored": armoredPrv, "passphrase": passphrase])
         return try r.json.decodeJson(as: CoreRes.EncryptKey.self)
     }
 
     func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) async throws -> CoreRes.GenerateKey {
-        let request: [String: Any] = [
+        let params: [String: Any] = [
             "passphrase": passphrase,
             "variant": String(variant.rawValue),
             "userIds": try userIds.map { try $0.toJsonEncodedDict() }
         ]
-        let r = try await call("generateKey", jsonDict: request, data: nil)
+        let r = try await call("generateKey", params: params)
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)
     }
 
     func verifyKey(armoredPrv: String) async throws {
-        let jsonDict: [String: Any?] = [
-            "armored": armoredPrv
-        ]
-
-        _ = try await call(
+        try await call(
             "verifyKey",
-            jsonDict: jsonDict,
-            data: nil
+            params: ["armored": armoredPrv]
         )
     }
 
@@ -161,7 +132,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             }
         }
 
-        let decrypted = try await call("decryptFile", jsonDict: [
+        let decrypted = try await call("decryptFile", params: [
             "keys": keys.map(\.prvKeyInfoJsonDictForCore),
             "msgPwd": msgPwd
         ], data: encrypted)
@@ -189,33 +160,20 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     func encrypt(file: Data, name: String, pubKeys: [String]?) async throws -> Data {
-        let json: [String: Any?]? = [
-            "pubKeys": pubKeys,
-            "name": name
-        ]
-
-        let encrypted = try await call(
+        try await call(
             "encryptFile",
-            jsonDict: json,
+            params: ["pubKeys": pubKeys, "name": name],
             data: file
-        )
-        return encrypted.data
+        ).data
     }
 
     // MARK: - Messages
     func encrypt(data: Data, pubKeys: [String]?, password: String?) async throws -> Data {
-        let jsonDict: [String: Any?] = [
-            "pubKeys": pubKeys,
-            "msgPwd": password
-        ]
-
-        let encryptedMessage = try await call(
+        try await call(
             "encryptMsg",
-            jsonDict: jsonDict,
+            params: ["pubKeys": pubKeys, "msgPwd": password],
             data: data
-        )
-
-        return encryptedMessage.data
+        ).data
     }
 
     func parseDecryptMsg(
@@ -229,7 +187,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             let replyType: ReplyType
             let text: String
         }
-        let json: [String: Any?]? = [
+        let params: [String: Any?] = [
             "keys": keys.map(\.prvKeyInfoJsonDictForCore),
             "isMime": isMime,
             "msgPwd": msgPwd,
@@ -238,7 +196,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
         let parsed = try await call(
             "parseDecryptMsg",
-            jsonDict: json,
+            params: params,
             data: encrypted
         )
 
@@ -256,7 +214,7 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     func composeEmail(msg: SendableMsg, fmt: MsgFmt) async throws -> CoreRes.ComposeEmail {
-        let r = try await call("composeEmail", jsonDict: [
+        let r = try await call("composeEmail", params: [
             "text": msg.text,
             "html": msg.html,
             "to": msg.to,
@@ -270,75 +228,58 @@ actor Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             "format": fmt.rawValue,
             "pubKeys": fmt == .plain ? nil : msg.pubKeys,
             "signingPrv": msg.signingPrv.ifNotNil(\.prvKeyInfoJsonDictForCore)
-        ], data: nil)
+        ])
         return CoreRes.ComposeEmail(mimeEncoded: r.data)
     }
 
     func zxcvbnStrengthBar(passPhrase: String) async throws -> CoreRes.ZxcvbnStrengthBar {
-        let r = try await call("zxcvbnStrengthBar", jsonDict: ["value": passPhrase, "purpose": "passphrase"], data: nil)
+        let r = try await call(
+            "zxcvbnStrengthBar",
+            params: ["value": passPhrase, "purpose": "passphrase"]
+        )
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
     func gmailBackupSearch(for email: String) async throws -> String {
-        let response = try await call("gmailBackupSearch", jsonDict: ["acctEmail": email], data: nil)
+        let response = try await call("gmailBackupSearch", params: ["acctEmail": email])
         let result = try response.json.decodeJson(as: GmailBackupSearchResponse.self)
         return result.query
     }
 
-    func handleCallbackResult(callbackId: String, json: String, data: [UInt8]) {
-        callbackResults[callbackId] = (json, data)
-    }
-
     // MARK: Private calls
-    private func call(_ endpoint: String, jsonDict: [String: Any?]?, data: Data?) async throws -> RawRes {
-        let json = jsonDict ?? [String: String]()
-        return try await call(
-            endpoint,
-            jsonData: try JSONSerialization.data(withJSONObject: json),
-            data: data ?? Data()
+    @discardableResult
+    private func call(_ endpoint: String, params: [String: Any?] = [:], data: Data = Data()) async throws -> RawRes {
+        let paramsData = try JSONSerialization.data(withJSONObject: params).toStr()
+        let uInt8Data = [UInt8](data)
+
+        let response = try await webView.callAsyncJavaScript(
+            "return handleRequestFromHost(\"\(endpoint)\", \(paramsData), \(uInt8Data))",
+            arguments: [:],
+            contentWorld: .page
         )
-    }
 
-    private func call(_ endpoint: String, jsonEncodable: Encodable, data: Data) async throws -> RawRes {
-        try await call(
-            endpoint,
-            jsonData: try jsonEncodable.toJsonData(),
-            data: data
-        )
-    }
-
-    private func call(_ endpoint: String, jsonData: Data, data: Data) async throws -> RawRes {
-        guard ready else {
-            throw CoreError.exception("Core is not ready yet. Most likely startIfNotAlreadyRunning wasn't called first")
-        }
-        let callbackId = NSUUID().uuidString
-        jsEndpointListener?.call(withArguments: [
-            endpoint,
-            callbackId,
-            String(data: jsonData, encoding: .utf8)!,
-            [UInt8](data), cbCatcher!
-        ])
-
-        while callbackResults[callbackId] == nil {
-            try await Task.sleep(nanoseconds: 1_000_000) // 1ms
-        }
-
-        guard
-            let result = callbackResults.removeValue(forKey: callbackId),
-            let resJsonData = result.0.data(using: .utf8)
+        guard let response = response as? [String: Any],
+              let uintdata = response["data"] as? [String: UInt8]
         else {
             throw CoreError.value("JavaScript callback response not available")
         }
-        let error = try? resJsonData.decodeJson(as: CoreRes.Error.self)
-        if let error {
-            logger.logError("""
-            ------ js err -------
-            Core \(endpoint): \(error.error.message)
-            \(error.error.stack ?? "no stack")
-            ------- end js err -----
-            """)
-            throw CoreError.exception(error.error.message + "\n" + (error.error.stack ?? "no stack"))
+
+        var responseJson: Data?
+        if let resJson = response["json"] as? [String: Any] {
+            responseJson = try JSONSerialization.data(withJSONObject: resJson, options: .prettyPrinted)
         }
-        return RawRes(json: resJsonData, data: Data(result.1))
+
+        let indices = uintdata.keys.compactMap(Int.init).sorted()
+        let array = indices.compactMap { uintdata["\($0)"] }
+        let responseData = Data(array)
+
+        return RawRes(json: responseJson ?? Data(), data: responseData)
+    }
+}
+
+class WebMessageHandler: NSObject, WKScriptMessageHandler {
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        print("GOT MESSAGE")
+        print(message.body)
     }
 }

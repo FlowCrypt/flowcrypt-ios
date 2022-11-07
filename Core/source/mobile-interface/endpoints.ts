@@ -177,7 +177,7 @@ export class Endpoints {
             });
           }
         } else {
-          decryptRes.message = undefined;
+          delete decryptRes.message;
           sequentialProcessedBlocks.push({
             type: 'decryptErr',
             content: decryptRes.error.type === DecryptErrTypes.noMdc
@@ -276,7 +276,9 @@ export class Endpoints {
         return value;
       });
     }).join('\n'));
-    return fmtRes({ text, replyType, subject }, blocksData);
+    const json = { text, replyType };
+    if (subject) { Object.assign(json, { subject }); }
+    return fmtRes(json, blocksData);
   };
 
   public decryptFile = async (uncheckedReq: unknown, data: Buffers, verificationPubkeys?: string[]):
@@ -288,8 +290,8 @@ export class Endpoints {
       msgPwd, verificationPubkeys
     });
     if (!decryptRes.success) {
-      decryptRes.message = undefined;
-      decryptRes.content = undefined;
+      delete decryptRes.message;
+      delete decryptRes.content;
       return fmtRes({ decryptErr: decryptRes });
     }
     return fmtRes({ decryptSuccess: { name: decryptRes.filename || '' } }, decryptRes.content);

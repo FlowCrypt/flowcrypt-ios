@@ -18,8 +18,8 @@ const bareEntrypointSrc = fs
 // final (node, bare, dev)
 const finalBareSrc = `
 let global = {};
-let _log = (x) => coreHost.log(String(x));
-const console = { log: _log, error: _log, info: _log, warn: _log };
+// let _log = (x) => window.webkit.messageHandlers.coreHost.log(String(x));
+// const console = { log: _log, error: _log, info: _log, warn: _log };
 try {
   ${fs.readFileSync(path.beginIos).toString()}
   ${fs.readFileSync(path.nativeCrypto).toString()}

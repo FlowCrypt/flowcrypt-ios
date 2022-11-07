@@ -10,16 +10,7 @@ import FlowCryptCommon
 import XCTest
 
 final class FlowCryptCoreTests: XCTestCase {
-    var core: Core = .shared
-
-    override func setUp() {
-        let expectation = XCTestExpectation()
-        Task {
-            await core.startIfNotAlreadyRunning()
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 20)
-    }
+    let core: Core = .shared
 
     private func testPerformance(maxDuration: Double, repeats: Int = 5, testBlock: () async throws -> Void) async {
         var durations: [Double] = []

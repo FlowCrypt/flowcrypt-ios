@@ -11,7 +11,7 @@ import { Xss } from '../platform/xss';
 import { VerifyRes } from '../core/pgp-msg';
 
 export type Buffers = (Buf | Uint8Array)[];
-export type EndpointRes = { json: string, data: Buf | Uint8Array };
+export type EndpointRes = { json: Record<string, unknown>, data: Buf | Uint8Array };
 
 export const isContentBlock = (t: MsgBlockType) => {
   return t === 'plainText' || t === 'decryptedText' || t === 'plainHtml'
@@ -174,7 +174,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
   return {
-    json: JSON.stringify(response),
+    json: response,
     data: data || new Uint8Array(0)
   };
 };

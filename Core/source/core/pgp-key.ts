@@ -65,13 +65,13 @@ type KeyDetails$ids = {
 export interface KeyDetails {
   private?: string;
   public: string;
-  isFullyEncrypted: boolean | undefined;
-  isFullyDecrypted: boolean | undefined;
+  isFullyEncrypted?: boolean;
+  isFullyDecrypted?: boolean;
   ids: KeyDetails$ids[];
   users: string[];
   created: number;
-  lastModified: number | undefined; // date of last signature, or undefined if never had valid signature
-  expiration: number | undefined; // number of millis of expiration or undefined if never expires
+  lastModified?: number; // date of last signature, or undefined if never had valid signature
+  expiration?: number; // number of millis of expiration or undefined if never expires
   revoked: boolean;
   algo: { // same as openpgp.js Key.AlgorithmInfo
     algorithm: string;
@@ -350,14 +350,11 @@ export class PgpKey {
     const algoInfo = k.keyPacket.getAlgorithmInfo();
     const algo = {
       algorithm: algoInfo.algorithm,
-      bits: algoInfo.bits,
-      curve: algoInfo.curve,
       algorithmId: enums.publicKey[algoInfo.algorithm]
     };
+    if (algoInfo.bits) { Object.assign(algo, { bits: algoInfo.bits }); }
+    if (algoInfo.curve) { Object.assign(algo, { curve: algoInfo.curve }); }
     const created = k.keyPacket.created.getTime() / 1000;
-    // meanwhile use our backported function
-    const exp = await getKeyExpirationTimeForCapabilities(k, 'encrypt');
-    const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
     const lastModified = await PgpKey.lastSig(k) / 1000;
     const ids: KeyDetails$ids[] = [];
     for (const key of keys) {
@@ -370,19 +367,31 @@ export class PgpKey {
         }
       }
     }
-    return {
-      private: k.isPrivate() ? k.armor() : undefined,
-      isFullyDecrypted: k.isPrivate() ? isFullyDecrypted(k) : undefined,
-      isFullyEncrypted: k.isPrivate() ? isFullyEncrypted(k) : undefined,
+    const keyDetails = {
       public: k.toPublic().armor(),
       users: k.getUserIDs(),
       ids,
       algo,
       created,
-      expiration,
       lastModified,
       revoked: k.revocationSignatures.length > 0
     };
+
+    // meanwhile use our backported function
+    const exp = await getKeyExpirationTimeForCapabilities(k, 'encrypt');
+    if (exp && exp !== Infinity) {
+      Object.assign(keyDetails, { expiration: (exp as Date).getTime() / 1000 });
+    }
+
+    if (k.isPrivate()) {
+      Object.assign(keyDetails, {
+        private: k.armor(),
+        isFullyDecrypted: isFullyDecrypted(k),
+        isFullyEncrypted: isFullyEncrypted(k)
+      });
+    }
+
+    return keyDetails;
   };
 
   /**

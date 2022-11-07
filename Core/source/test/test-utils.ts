@@ -17,7 +17,7 @@ export type JsonDict = { [k: string]: any };
 type TestKey = { pubKey: string, private: string, decrypted: string, passphrase: string, longid: string };
 
 export const parseResponse = (response: EndpointRes) => {
-  return { json: JSON.parse(response.json), data: response.data };
+  return { json: response.json, data: response.data };
 };
 
 export const httpGet = async (url: string): Promise<Buf> => {

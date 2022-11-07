@@ -33,7 +33,6 @@ struct AppStartup {
             window.makeKeyAndVisible()
 
             do {
-                await setupCore()
                 try await setupSession()
                 try await chooseView(for: window)
             } catch {
@@ -119,11 +118,6 @@ struct AppStartup {
         }
 
         userDefaults.set(true, forKey: lastModifiedUpdatedFlag)
-    }
-
-    private func setupCore() async {
-        logger.logInfo("Setup Core")
-        await core.startIfNotAlreadyRunning()
     }
 
     private func setupSession() async throws {

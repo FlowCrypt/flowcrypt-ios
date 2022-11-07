@@ -148,7 +148,7 @@ export class Mime {
   };
 
   public static decode = async (mimeMsg: Uint8Array): Promise<MimeContent> => {
-    let mimeContent: MimeContent = {
+    const mimeContent: MimeContent = {
       atts: [], headers: {}, subject: undefined, text: undefined, html: undefined,
       signature: undefined, from: undefined, to: [], cc: [], bcc: []
     };
@@ -191,7 +191,7 @@ export class Mime {
             }
             const headers = Mime.headerGetAddress(mimeContent, ['from', 'to', 'cc', 'bcc']);
             mimeContent.subject = String(mimeContent.subject || mimeContent.headers.subject || '');
-            mimeContent = Object.assign(mimeContent, headers);
+            Object.assign(mimeContent, headers);
             resolve(mimeContent);
           } catch (e) {
             reject(e);

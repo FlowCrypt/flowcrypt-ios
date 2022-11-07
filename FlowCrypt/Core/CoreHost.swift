@@ -16,10 +16,6 @@ import Security // for rng
     func modPow(_ base: String, _ exponent: String, _ modulo: String) -> String
     func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8]
 
-    func setTimeout(_ callback: JSValue, _ ms: Double) -> String
-    func clearTimeout(_ identifier: String)
-
-    func handleCallback(_ endpointKey: String, _ string: String, _ data: [UInt8])
     func log(_ message: String)
 }
 
@@ -27,7 +23,6 @@ final class CoreHost: NSObject, CoreHostExports {
     // todo - things to look at for optimisation:
     //  -> a) reading rsa4096 prv key (just openpgp.key.readArmored(...)) takes 70ms. It should take about 10 ms. Could dearmor it in swift, return bytes
     //  -> b) produceHashedIteratedS2k below takes 300ms for two keys, could be 100ms or so
-    private var timers = [String: Timer]()
 
     // brings total decryption time from 200->30ms (rsa2048), 3900->420ms (rsa4096)
     func decryptRsaNoPadding(_ rsaPrvDerBase64: String, _ encryptedBase64: String) -> String {
@@ -96,37 +91,8 @@ final class CoreHost: NSObject, CoreHostExports {
         return nil // is checked for in JavaScript
     }
 
-    func clearTimeout(_ id: String) {
-        DispatchQueue.main.async { // use consistent queue for modifications
-            let timer = self.timers.removeValue(forKey: id)
-            timer?.invalidate()
-        }
-    }
-
-    func setTimeout(_ cb: JSValue, _ ms: Double) -> String {
-        let interval = ms / 1000.0
-        let uuid = NSUUID().uuidString
-        DispatchQueue.main.async { // queue all in the same executable queue, JS calls are getting lost if the queue is not specified
-            let timer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.callJsCb), userInfo: cb, repeats: false)
-            self.timers[uuid] = timer // use consistent queue for modifications of timers
-        }
-        return uuid
-    }
-
-    func handleCallback(_ callbackId: String, _ string: String, _ data: [UInt8]) {
-        Task {
-            await Core.shared.handleCallbackResult(callbackId: callbackId, json: string, data: data)
-        }
-    }
-
     func log(_ message: String) {
         Logger.logDebug(message)
-    }
-
-    @objc func callJsCb(_ timer: Timer) {
-        let callback = (timer.userInfo as! JSValue)
-        callback.call(withArguments: nil)
-        // todo - remove from timers by uuid, could cause possible memory leak
     }
 
     func getHashAlgo(name: String) throws -> HashAlgo {

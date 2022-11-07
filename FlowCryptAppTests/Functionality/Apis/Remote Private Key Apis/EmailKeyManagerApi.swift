@@ -10,16 +10,7 @@
 import XCTest
 
 final class EmailKeyManagerApiTests: XCTestCase {
-    let core: Core! = .shared
-
-    override func setUp() {
-        let expectation = XCTestExpectation()
-        Task {
-            await core.startIfNotAlreadyRunning()
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 20)
-    }
+    let core: Core = .shared
 
     func testValidKeyParsing() async throws {
         let service = EmailKeyManagerApi(clientConfiguration: .init(raw: .empty))

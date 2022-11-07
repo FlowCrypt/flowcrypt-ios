@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "d4289da23e978f37c344ea6a386e5546e2466294",
-        "version" : "2.1.0"
+        "revision" : "b32617f389716af5082df5f6efa89135c87578a8",
+        "version" : "2.2.0"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa",
       "state" : {
-        "revision" : "dc1672b3011eb992ce95db4feec83cd897626a16",
-        "version" : "10.32.1"
+        "revision" : "1f5d97d7c3d4d9696a423542b0819b245fcc3339",
+        "version" : "10.32.2"
       }
     },
     {
