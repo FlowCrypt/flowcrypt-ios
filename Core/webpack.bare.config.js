@@ -5,11 +5,9 @@ const path = require('path');
 
 /* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
-  target: 'web',
-  mode: 'none',
+  mode: 'production',
   entry: {
     'entrypoint-bare': './build/ts/entrypoint-bare.js',
-    'bare-asn1': './node_modules/asn1.js/lib/asn1.js',
     'web-stream-tools': './node_modules/@openpgp/web-stream-tools/lib/streams.js'
   },
   output: {
@@ -24,7 +22,7 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       dereq_sanitize_html: 'sanitize-html',
-      dereq_encoding_japanese: 'encoding-japanese',
+      dereq_encoding_japanese: 'encoding-japanese'
     }),
   ],
   externals: {

@@ -64,7 +64,7 @@ fs.writeFileSync(
 
 const replace = (libSrc, regex, replacement) => {
   if (!regex.test(libSrc)) {
-    throw new Error(`Could not find ${regex} in openpgp.js`)
+    throw new Error(`Could not find ${regex} in ${libSrc}`)
   }
   return libSrc.replace(regex, replacement);
 }
@@ -83,17 +83,6 @@ let entrypointBareSrc = fs.readFileSync(`${bundleRawDir}/entrypoint-bare.js`).to
 //   `return Uint8Array.from(window.webkit.messageHandlers.coreHost.decryptAesCfbNoPadding(ct, key, iv));`
 // );
 
-let asn1BareSrc = fs.readFileSync(`${bundleRawDir}/bare-asn1.js`).toString();
-asn1BareSrc = replace(
-  asn1BareSrc,
-  /const asn1 =/gi, 'global.dereq_asn1 ='
-);
-asn1BareSrc = replace(
-  asn1BareSrc,
-  /asn1\./gi, 'global.dereq_asn1.'
-);
-
 fs.writeFileSync(`${bundleDir}/entrypoint-bare-bundle.js`, `
-  ${asn1BareSrc};
   ${entrypointBareSrc};
 `);

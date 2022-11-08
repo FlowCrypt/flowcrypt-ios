@@ -416,12 +416,12 @@ final class FlowCryptCoreTests: XCTestCase {
         }
 
         // Test verify key
-        await testPerformance(maxDuration: 500) {
+        await testPerformance(maxDuration: 100) {
             try await core.verifyKey(armoredPrv: TestData.k3rsa4096.private)
         }
 
         // Test encrypt message
-        await testPerformance(maxDuration: 500) {
+        await testPerformance(maxDuration: 100) {
             _ = try await core.encrypt(
                 data: "Test email message".data(),
                 pubKeys: [TestData.k3rsa4096.public],
@@ -435,7 +435,7 @@ final class FlowCryptCoreTests: XCTestCase {
             pubKeys: [TestData.k3rsa4096.public],
             password: nil
         )
-        await testPerformance(maxDuration: 500) {
+        await testPerformance(maxDuration: 100) {
             _ = try await core.parseDecryptMsg(
                 encrypted: encrypted,
                 keys: [TestData.k3rsa4096],
