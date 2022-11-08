@@ -1,10 +1,8 @@
 const fs = require('fs');
 
 const path = {
-  nativeCrypto: 'source/assets/native-crypto.js',
   bareDepsBundle: 'build/bundles/bare-deps-bundle.js',
   bareEntrypointBundle: 'build/bundles/entrypoint-bare-bundle.js',
-  finalDev: 'build/final/flowcrypt-android-dev.js',
   finalIos: 'build/final/flowcrypt-ios-prod.js',
 };
 
@@ -17,9 +15,11 @@ const bareEntrypointSrc = fs
 // final (node, bare, dev)
 const finalBareSrc = `
 let global = {};
-// let _log = (x) => window.webkit.messageHandlers.coreHost.log(String(x));
-// const console = { log: _log, error: _log, info: _log, warn: _log };
+let _log = (x) => window.webkit.messageHandlers.coreHost.postMessage({ name: "log", message: String(x)});
+const console = { log: _log, error: _log, info: _log, warn: _log };
+console.log('test it');
 try {
+  const module = {};
   ${bareDepsSrc}
   /* entrypoint-bare starts here */
   ${bareEntrypointSrc}

@@ -34,14 +34,14 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     private lazy var webView: WKWebView = {
         let userController = WKUserContentController()
-        userController.add(webMessageHandler, name: "coreHost")
+        userController.add(coreMessageHandler, name: "coreHost")
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = userController
         return WKWebView(frame: .zero, configuration: configuration)
     }()
 
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
-    private let webMessageHandler = WebMessageHandler()
+    private let coreMessageHandler = CoreMessageHandler()
 
     private struct RawRes {
         let json: Data
@@ -61,10 +61,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         guard let jsFileSrc = getCoreJsFile() else { return }
 
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
-        webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { data, error in
-            // TODO: handle errors
-            print("web view setup")
-        }
+        webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
     }
 
     private func getCoreJsFile() -> String? {
@@ -287,9 +284,16 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 }
 
-class WebMessageHandler: NSObject, WKScriptMessageHandler {
+class CoreMessageHandler: NSObject, WKScriptMessageHandler {
+    private lazy var logger = Logger.nested("Core")
+
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print("GOT MESSAGE")
-        print(message.body)
+        guard let messageDict = message.body as? [String: Any],
+              let messageName = messageDict["name"] as? String
+        else { return }
+
+        if messageName == "log", let logMessage = messageDict["message"] as? String {
+            logger.logDebug(logMessage)
+        }
     }
 }
