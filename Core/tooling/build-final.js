@@ -17,7 +17,6 @@ const finalBareSrc = `
 let global = {};
 let _log = (x) => window.webkit.messageHandlers.coreHost.postMessage({ name: "log", message: String(x)});
 const console = { log: _log, error: _log, info: _log, warn: _log };
-console.log('test it');
 try {
   const module = {};
   ${bareDepsSrc}
