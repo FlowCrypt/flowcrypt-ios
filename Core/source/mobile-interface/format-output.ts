@@ -188,18 +188,10 @@ export const fmtErr = (e: Error): EndpointRes => {
   });
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const printReplayTestDefinition = (endpoint: string, request: {}, data: Buf) => {
-  console.log(`
-ava.test.only('replaying', async t => {
-  const reqData = Buf.fromBase64Str('${Buf.fromUint8(data).toBase64Str()}');
-  console.log('replay ${endpoint}: ', ${JSON.stringify(request)},
-    '-------- begin req data ---------', reqData.toString(), '--------- end req data ---------');
-  const { data, json } = parseResponse(await endpoints.${endpoint}(${JSON.stringify(request)},
-    [Buffer.from(reqData)]));
-  console.log('response: ', json, '\n\n\n-------- begin res data ---------',
-    Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
-  t.pass();
-});
-  `);
+export const removeUndefinedValues = (object: object) => {
+  for (const objectKey in object) {
+    if (object[objectKey as keyof object] === undefined) {
+      delete object[objectKey as keyof object];
+    }
+  }
 };

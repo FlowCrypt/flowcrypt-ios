@@ -355,6 +355,9 @@ export class PgpKey {
     if (algoInfo.bits) { Object.assign(algo, { bits: algoInfo.bits }); }
     if (algoInfo.curve) { Object.assign(algo, { curve: algoInfo.curve }); }
     const created = k.keyPacket.created.getTime() / 1000;
+    // meanwhile use our backported function
+    const exp = await getKeyExpirationTimeForCapabilities(k, 'encrypt');
+    const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
     const lastModified = await PgpKey.lastSig(k) / 1000;
     const ids: KeyDetails$ids[] = [];
     for (const key of keys) {
@@ -373,15 +376,10 @@ export class PgpKey {
       ids,
       algo,
       created,
+      expiration,
       lastModified,
       revoked: k.revocationSignatures.length > 0
     };
-
-    // meanwhile use our backported function
-    const exp = await getKeyExpirationTimeForCapabilities(k, 'encrypt');
-    if (exp && exp !== Infinity) {
-      Object.assign(keyDetails, { expiration: (exp as Date).getTime() / 1000 });
-    }
 
     if (k.isPrivate()) {
       Object.assign(keyDetails, {

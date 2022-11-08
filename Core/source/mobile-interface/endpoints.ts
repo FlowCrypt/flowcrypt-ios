@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { Buffers, EndpointRes, fmtContentBlock, fmtRes, isContentBlock } from './format-output';
+import { Buffers, EndpointRes, fmtContentBlock, fmtRes, isContentBlock, removeUndefinedValues } from './format-output';
 import { DecryptErrTypes, PgpMsg } from '../core/pgp-msg';
 import { KeyDetails, PgpKey } from '../core/pgp-key';
 import { Mime, RichHeaders, SendableMsgBody } from '../core/mime';
@@ -343,12 +343,18 @@ export class Endpoints {
         const { keys } = await PgpKey.parse(block.content.toString());
         keyDetails.push(...keys);
       }
+      for (const keyDetail of keyDetails) {
+        removeUndefinedValues(keyDetail);
+      }
       return fmtRes({ format: 'armored', keyDetails });
     }
     // binary
     const openPgpKeys = await readKeys({ binaryKeys: allData });
     for (const openPgpKey of openPgpKeys) {
       keyDetails.push(await PgpKey.details(openPgpKey));
+    }
+    for (const keyDetail of keyDetails) {
+      removeUndefinedValues(keyDetail);
     }
     return fmtRes({ format: 'binary', keyDetails });
   };
