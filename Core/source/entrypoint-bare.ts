@@ -15,7 +15,6 @@ global.handleRequestFromHost = async (endpointName: string, request: string, dat
     if (!handler) {
       return fmtErr(new Error(`Unknown endpoint: ${endpointName}`));
     } else {
-      // (window as any).webkit.messageHandlers.coreHost.postMessage('start handler');
       return handler(request, [data])
         .then(res => res)
         .catch(err => fmtErr(err as Error));

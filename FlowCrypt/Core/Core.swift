@@ -62,7 +62,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
         webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { data, error in
-            // TODO: handler errros
+            // TODO: handle errors
             print("web view setup")
         }
     }
@@ -267,6 +267,16 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         var responseJson: Data?
         if let resJson = response["json"] as? [String: Any] {
             responseJson = try JSONSerialization.data(withJSONObject: resJson, options: .prettyPrinted)
+            if let error = try? responseJson?.decodeJson(as: CoreRes.Error.self) {
+                let errorStack = error.error.stack ?? "no stack"
+                logger.logError("""
+                ------ js err -------
+                Core \(endpoint): \(error.error.message)
+                \(errorStack)
+                ------- end js err -----
+                """)
+                throw CoreError.exception(error.error.message + "\n" + errorStack)
+            }
         }
 
         let indices = uintdata.keys.compactMap(Int.init).sorted()
