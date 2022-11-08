@@ -421,7 +421,7 @@ final class FlowCryptCoreTests: XCTestCase {
         }
 
         // Test encrypt message
-        await testPerformance(maxDuration: 100) {
+        await testPerformance(maxDuration: 120) {
             _ = try await core.encrypt(
                 data: "Test email message".data(),
                 pubKeys: [TestData.k3rsa4096.public],
