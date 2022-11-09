@@ -272,7 +272,7 @@ export class Endpoints {
         if (key === 'content' && value.length > 100000) {
           return '';
         }
-        return `${value}`;
+        return value as unknown;
       });
     }).join('\n'));
     const json = { text, replyType };

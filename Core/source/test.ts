@@ -24,7 +24,7 @@ import { expect } from 'chai';
 import { Endpoints } from './mobile-interface/endpoints';
 import { config, decryptKey, PrivateKey, readKey } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './core/pgp';
-import { PgpKey } from './core/pgp-key';
+import { KeyDetails, PgpKey } from './core/pgp-key';
 import { MsgBlock } from './core/msg-block';
 
 const text = 'some\n汉\ntxt';
@@ -54,8 +54,9 @@ test.serial('composeEmail and parseKeys with shouldHideArmorMeta', async t => {
   expect(encryptedMimeStrWithMeta).contains('\nVersion: ');
   expect(encryptedMimeStrWithMeta).contains('Comment: ');
   const { json: jsonWithMeta } = await endpoints.parseKeys({}, [Buffer.from(pubKeys[0])]);
-  expect((jsonWithMeta as any).keyDetails[0].public).contains('Version: ');
-  expect((jsonWithMeta as any).keyDetails[0].public).contains('Comment: ');
+  const firstPubKey = (jsonWithMeta as { keyDetails: KeyDetails[] }).keyDetails[0].public;
+  expect(firstPubKey).contains('Version: ');
+  expect(firstPubKey).contains('Comment: ');
   await endpoints.setClientConfiguration({ shouldHideArmorMeta: true });
   expect(config.showComment).eq(false);
   expect(config.showVersion).eq(false);
@@ -64,8 +65,9 @@ test.serial('composeEmail and parseKeys with shouldHideArmorMeta', async t => {
   expect(encryptedMimeStrWithoutMeta).to.not.contain('\nVersion: ');
   expect(encryptedMimeStrWithoutMeta).to.not.contain('Comment: ');
   const { json: jsonWithoutMeta } = await endpoints.parseKeys({}, [Buffer.from(pubKeys[0])]);
-  expect((jsonWithoutMeta as any).keyDetails[0].public).to.not.contain('Version: ');
-  expect((jsonWithoutMeta as any).keyDetails[0].public).to.not.contain('Comment: ');
+  const firstPubKeyWithoutMeta = (jsonWithoutMeta as { keyDetails: KeyDetails[] }).keyDetails[0].public;
+  expect(firstPubKeyWithoutMeta).to.not.contain('Version: ');
+  expect(firstPubKeyWithoutMeta).to.not.contain('Comment: ');
   t.pass();
 });
 
@@ -74,14 +76,14 @@ test('generateKey', async t => {
     variant: 'curve25519', passphrase: 'riruekfhydekdmdbsyd',
     userIds: [{ email: 'a@b.com', name: 'Him' }]
   });
-  expect((json.key as any).private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
-  expect((json.key as any).public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
-  const key = await readKey({ armoredKey: (json.key as any).private });
+  expect((json.key as { private: string }).private).to.contain('-----BEGIN PGP PRIVATE KEY BLOCK-----');
+  expect((json.key as { public: string }).public).to.contain('-----BEGIN PGP PUBLIC KEY BLOCK-----');
+  const key = await readKey({ armoredKey: (json.key as { private: string }).private });
   /* eslint-disable @typescript-eslint/no-unused-expressions */
   expect(isFullyEncrypted(key)).to.be.true;
   expect(isFullyDecrypted(key)).to.be.false;
   /* eslint-enable @typescript-eslint/no-unused-expressions */
-  expect((json.key as any).algo).to.deep.equal({ algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 });
+  expect((json.key as { algo: string }).algo).to.deep.equal({ algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 });
   expectNoData(data);
   t.pass();
 });
