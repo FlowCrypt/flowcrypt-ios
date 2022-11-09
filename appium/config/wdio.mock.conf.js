@@ -21,6 +21,9 @@ config.suites = {
   ],
   setup: [
     './tests/specs/mock/setup/*.spec.ts'
+  ],
+  drafts: [
+    './tests/specs/mock/composeEmail/CheckDraftsFunctionality.spec.ts'
   ]
 };
 

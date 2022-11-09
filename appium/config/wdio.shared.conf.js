@@ -1,5 +1,5 @@
 const { join } = require('path');
-// const video = require('wdio-video-reporter');
+const video = require('wdio-video-reporter');
 
 process.on('unhandledRejection', (reason, promise) => {
   // without this, after lib update to v7, whole test suite may pass even if no tests ran successfully
@@ -31,12 +31,10 @@ exports.config = {
         return `wdio-${options.cid}.xml`
       }
     }],
-    // [video, {
-    //   saveAllVideos: false,       // If true, also saves videos for successful test cases
-    //   videoSlowdownMultiplier: 3, // Higher to get slower videos, lower for faster videos [Value 1-100]
-    //   videoRenderTimeout: 10,      // Max seconds to wait for a video to finish rendering
-    //   outputDir: './video',
-    // }]
+    [video, {
+      saveAllVideos: false,       // If true, also saves videos for successful test cases
+      outputDir: './video',
+    }]
   ],
   services: [
     ['appium', {
