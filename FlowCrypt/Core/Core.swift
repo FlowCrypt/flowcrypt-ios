@@ -60,7 +60,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     func setupWebView() {
         guard let jsFileSrc = getCoreJsFile() else { return }
 
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
         webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
     }
 
