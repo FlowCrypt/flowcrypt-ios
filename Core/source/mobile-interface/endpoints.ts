@@ -2,7 +2,7 @@
 
 'use strict';
 
-import { Buffers, EndpointRes, fmtContentBlock, fmtRes, isContentBlock } from './format-output';
+import { Buffers, EndpointRes, fmtContentBlock, fmtRes, isContentBlock, removeUndefinedValues } from './format-output';
 import { DecryptErrTypes, PgpMsg } from '../core/pgp-msg';
 import { KeyDetails, PgpKey } from '../core/pgp-key';
 import { Mime, RichHeaders, SendableMsgBody } from '../core/mime';
@@ -177,7 +177,7 @@ export class Endpoints {
             });
           }
         } else {
-          decryptRes.message = undefined;
+          delete decryptRes.message;
           sequentialProcessedBlocks.push({
             type: 'decryptErr',
             content: decryptRes.error.type === DecryptErrTypes.noMdc
@@ -265,7 +265,19 @@ export class Endpoints {
     const { contentBlock, text } = fmtContentBlock(msgContentBlocks);
     blocks.unshift(contentBlock);
     // data represent one JSON-stringified block per line. This is so that it can be read as a stream later
-    return fmtRes({ text, replyType, subject }, Buf.fromUtfStr(blocks.map(b => JSON.stringify(b)).join('\n')));
+    const blocksData = Buf.fromUtfStr(blocks.map(b => {
+      return JSON.stringify(b, (key, value) => {
+        // 'content' is used only for error messages on iOS
+        // sending empty string for large messages improves decrypt performance
+        if (key === 'content' && value.length > 100000) {
+          return '';
+        }
+        return value as unknown;
+      });
+    }).join('\n'));
+    const json = { text, replyType };
+    if (subject) { Object.assign(json, { subject }); }
+    return fmtRes(json, blocksData);
   };
 
   public decryptFile = async (uncheckedReq: unknown, data: Buffers, verificationPubkeys?: string[]):
@@ -277,8 +289,8 @@ export class Endpoints {
       msgPwd, verificationPubkeys
     });
     if (!decryptRes.success) {
-      decryptRes.message = undefined;
-      decryptRes.content = undefined;
+      delete decryptRes.message;
+      delete decryptRes.content;
       return fmtRes({ decryptErr: decryptRes });
     }
     return fmtRes({ decryptSuccess: { name: decryptRes.filename || '' } }, decryptRes.content);
@@ -330,12 +342,18 @@ export class Endpoints {
         const { keys } = await PgpKey.parse(block.content.toString());
         keyDetails.push(...keys);
       }
+      for (const keyDetail of keyDetails) {
+        removeUndefinedValues(keyDetail);
+      }
       return fmtRes({ format: 'armored', keyDetails });
     }
     // binary
     const openPgpKeys = await readKeys({ binaryKeys: allData });
     for (const openPgpKey of openPgpKeys) {
       keyDetails.push(await PgpKey.details(openPgpKey));
+    }
+    for (const keyDetail of keyDetails) {
+      removeUndefinedValues(keyDetail);
     }
     return fmtRes({ format: 'binary', keyDetails });
   };

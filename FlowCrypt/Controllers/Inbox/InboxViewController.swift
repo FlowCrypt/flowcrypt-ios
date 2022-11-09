@@ -622,7 +622,7 @@ extension InboxViewController {
                                 self.fetchUpdatedInboxItem(identifier: identifier)
                             }
                         },
-                        completion: { [weak self] action, message in
+                        onComplete: { [weak self] action, message in
                             self?.handleMessageOperation(message: message, action: action)
                         }
                     )

@@ -19,6 +19,8 @@ struct AppStartup {
     private let appContext: AppContext
     private let core: Core
 
+    private let userDefaults = UserDefaults.standard
+
     init(appContext: AppContext, core: Core = .shared) {
         self.appContext = appContext
         self.core = core
@@ -33,7 +35,6 @@ struct AppStartup {
             window.makeKeyAndVisible()
 
             do {
-                await setupCore()
                 try await setupSession()
                 try await chooseView(for: window)
             } catch {
@@ -47,7 +48,6 @@ struct AppStartup {
     @MainActor
     private func checkAndUpdateIsRevoked(context: AppContextWithUser) async throws {
         let revokedUpdatedFlag = "IS_PUB_KEY_REVOKED_UPDATED"
-        let userDefaults = UserDefaults.standard
         if userDefaults.bool(forKey: revokedUpdatedFlag) {
             return
         }
@@ -72,7 +72,7 @@ struct AppStartup {
     @MainActor
     private func checkAndUpdateKeyPairIsRevoked(context: AppContextWithUser) async throws {
         let revokedUpdatedFlag = "IS_KEY_PAIR_REVOKED_UPDATED"
-        let userDefaults = UserDefaults.standard
+
         if userDefaults.bool(forKey: revokedUpdatedFlag) {
             return
         }
@@ -97,7 +97,7 @@ struct AppStartup {
     @MainActor
     private func checkAndUpdateLastModified(context: AppContextWithUser) async throws {
         let lastModifiedUpdatedFlag = "IS_LAST_MODIFIED_FLAG_UPDATED"
-        let userDefaults = UserDefaults.standard
+
         if userDefaults.bool(forKey: lastModifiedUpdatedFlag) {
             return
         }
@@ -119,11 +119,6 @@ struct AppStartup {
         }
 
         userDefaults.set(true, forKey: lastModifiedUpdatedFlag)
-    }
-
-    private func setupCore() async {
-        logger.logInfo("Setup Core")
-        await core.startIfNotAlreadyRunning()
     }
 
     private func setupSession() async throws {

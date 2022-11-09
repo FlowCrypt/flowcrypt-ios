@@ -11,7 +11,7 @@ import { Xss } from '../platform/xss';
 import { VerifyRes } from '../core/pgp-msg';
 
 export type Buffers = (Buf | Uint8Array)[];
-export type EndpointRes = { json: string, data: Buf | Uint8Array };
+export type EndpointRes = { json: Record<string, unknown>, data: Buf | Uint8Array };
 
 export const isContentBlock = (t: MsgBlockType) => {
   return t === 'plainText' || t === 'decryptedText' || t === 'plainHtml'
@@ -81,8 +81,8 @@ const fillInlineHtmlImgs = (htmlContent: string, inlineImgsByCid: { [cid: string
 };
 
 export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: MsgBlock, text: string } => {
-  let msgContentAsHtml = '';
-  let msgContentAsText = '';
+  const msgContentAsHtml: string[] = [];
+  const msgContentAsText: string[] = [];
   const contentBlocks = allContentBlocks.filter(b => !Mime.isPlainImgAtt(b));
   const imgsAtTheBottom: MsgBlock[] = [];
   const inlineImgsByCid: { [cid: string]: MsgBlock } = {};
@@ -111,25 +111,25 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
       }
     }
     if (block.type === 'decryptedText') {
-      msgContentAsHtml += fmtMsgContentBlockAsHtml(Str.asEscapedHtml(block.content.toString()), 'green');
-      msgContentAsText += block.content.toString() + '\n';
+      msgContentAsHtml.push(fmtMsgContentBlockAsHtml(Str.asEscapedHtml(block.content.toString()), 'green'));
+      msgContentAsText.push(block.content.toString() + '\n');
     } else if (block.type === 'decryptedHtml') {
       // todo - add support for inline imgs? when included using cid
-      msgContentAsHtml += fmtMsgContentBlockAsHtml(stripHtmlRootTags(block.content.toString()), 'green');
-      msgContentAsText += Xss.htmlUnescape(Xss.htmlSanitizeAndStripAllTags(block.content.toString(), '\n') + '\n');
+      msgContentAsHtml.push(fmtMsgContentBlockAsHtml(stripHtmlRootTags(block.content.toString()), 'green'));
+      msgContentAsText.push(Xss.htmlUnescape(Xss.htmlSanitizeAndStripAllTags(block.content.toString(), '\n') + '\n'));
     } else if (block.type === 'plainText') {
-      msgContentAsHtml += fmtMsgContentBlockAsHtml(Str.asEscapedHtml(block.content.toString()), 'plain');
-      msgContentAsText += block.content.toString() + '\n';
+      msgContentAsHtml.push(fmtMsgContentBlockAsHtml(Str.asEscapedHtml(block.content.toString()), 'plain'));
+      msgContentAsText.push(block.content.toString() + '\n');
     } else if (block.type === 'plainHtml') {
       const dirtyHtmlWithImgs = fillInlineHtmlImgs(stripHtmlRootTags(block.content.toString()), inlineImgsByCid);
-      msgContentAsHtml += fmtMsgContentBlockAsHtml(dirtyHtmlWithImgs, 'plain');
-      msgContentAsText += Xss.htmlUnescape(Xss.htmlSanitizeAndStripAllTags(dirtyHtmlWithImgs, '\n') + '\n');
+      msgContentAsHtml.push(fmtMsgContentBlockAsHtml(dirtyHtmlWithImgs, 'plain'));
+      msgContentAsText.push(Xss.htmlUnescape(Xss.htmlSanitizeAndStripAllTags(dirtyHtmlWithImgs, '\n') + '\n'));
     } else if (block.type === 'verifiedMsg') {
-      msgContentAsHtml += fmtMsgContentBlockAsHtml(block.content.toString(), 'gray');
-      msgContentAsText += Xss.htmlSanitizeAndStripAllTags(block.content.toString(), '\n') + '\n';
+      msgContentAsHtml.push(fmtMsgContentBlockAsHtml(block.content.toString(), 'gray'));
+      msgContentAsText.push(Xss.htmlSanitizeAndStripAllTags(block.content.toString(), '\n') + '\n');
     } else {
-      msgContentAsHtml += fmtMsgContentBlockAsHtml(block.content.toString(), 'plain');
-      msgContentAsText += block.content.toString() + '\n';
+      msgContentAsHtml.push(fmtMsgContentBlockAsHtml(block.content.toString(), 'plain'));
+      msgContentAsText.push(block.content.toString() + '\n');
     }
   }
 
@@ -149,32 +149,32 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     // actually contains base64 encoded data, not Uint8Array as the type claims
     const inlineImgTag = `<img src="data:${inlineImg.attMeta?.type};` +
       `base64,${inlineImg.attMeta?.data}" alt="${Xss.escape(alt)} " />`;
-    msgContentAsHtml += fmtMsgContentBlockAsHtml(inlineImgTag, 'plain');
-    msgContentAsText += `[image: ${alt}]\n`;
+    msgContentAsHtml.push(fmtMsgContentBlockAsHtml(inlineImgTag, 'plain'));
+    msgContentAsText.push(`[image: ${alt}]\n`);
   }
 
-  msgContentAsHtml = `
-  <!DOCTYPE html><html>
-    <head>
-      <meta name="viewport" content="width=device-width" />
-      <style>
-        body { word-wrap: break-word; word-break: break-word; hyphens: auto; margin-left: 0px; padding-left: 0px; }
-        body img { display: inline !important; height: auto !important; max-width: 95% !important; }
-        body pre { white-space: pre-wrap !important; }
-        body > div.MsgBlock > table { zoom: 75% } /* table layouts tend to overflow - eg emails from fb */
-      </style>
-    </head>
-    <body>${msgContentAsHtml}</body>
-  </html>`;
-  const contentBlock = MsgBlock.fromContent('plainHtml', msgContentAsHtml);
+  const contentBlock = MsgBlock.fromContent('plainHtml', `
+    <!DOCTYPE html><html>
+      <head>
+        <meta name="viewport" content="width=device-width" />
+        <style>
+          body { word-wrap: break-word; word-break: break-word; hyphens: auto; margin-left: 0px; padding-left: 0px; }
+          body img { display: inline !important; height: auto !important; max-width: 95% !important; }
+          body pre { white-space: pre-wrap !important; }
+          body > div.MsgBlock > table { zoom: 75% } /* table layouts tend to overflow - eg emails from fb */
+        </style>
+      </head>
+      <body>${msgContentAsHtml.join('')}</body>
+    </html>`
+  );
   contentBlock.verifyRes = verifyRes;
-  return { contentBlock, text: msgContentAsText.trim() };
+  return { contentBlock, text: msgContentAsText.join('').trim() };
 };
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
   return {
-    json: JSON.stringify(response),
+    json: response,
     data: data || new Uint8Array(0)
   };
 };
@@ -188,18 +188,10 @@ export const fmtErr = (e: Error): EndpointRes => {
   });
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const printReplayTestDefinition = (endpoint: string, request: {}, data: Buf) => {
-  console.log(`
-ava.test.only('replaying', async t => {
-  const reqData = Buf.fromBase64Str('${Buf.fromUint8(data).toBase64Str()}');
-  console.log('replay ${endpoint}: ', ${JSON.stringify(request)},
-    '-------- begin req data ---------', reqData.toString(), '--------- end req data ---------');
-  const { data, json } = parseResponse(await endpoints.${endpoint}(${JSON.stringify(request)},
-    [Buffer.from(reqData)]));
-  console.log('response: ', json, '\n\n\n-------- begin res data ---------',
-    Buf.fromUint8(data).toString(), '--------- end res data ---------\n\n\n');
-  t.pass();
-});
-  `);
+export const removeUndefinedValues = (object: object) => {
+  for (const objectKey in object) {
+    if (object[objectKey as keyof object] === undefined) {
+      delete object[objectKey as keyof object];
+    }
+  }
 };

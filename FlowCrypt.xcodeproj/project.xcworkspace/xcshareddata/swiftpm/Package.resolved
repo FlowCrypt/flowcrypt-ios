@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "d4289da23e978f37c344ea6a386e5546e2466294",
-        "version" : "2.1.0"
+        "revision" : "5ccda3981422a84186387dbb763ba739178b529c",
+        "version" : "2.3.0"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa",
       "state" : {
-        "revision" : "dc1672b3011eb992ce95db4feec83cd897626a16",
-        "version" : "10.32.1"
+        "revision" : "1f5d97d7c3d4d9696a423542b0819b245fcc3339",
+        "version" : "10.32.2"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lukepistrol/SwiftLintPlugin",
       "state" : {
-        "revision" : "67d09110cc967b9d393a5313b3b21c1b0be59adb",
-        "version" : "0.0.4"
+        "revision" : "db8dc515d0ba1bbcafc0fcbb6515035427c1ad95",
+        "version" : "0.1.0"
       }
     },
     {

@@ -10,16 +10,7 @@ import FlowCryptCommon
 import XCTest
 
 final class FlowCryptCoreTests: XCTestCase {
-    var core: Core! = .shared
-
-    override func setUp() {
-        let expectation = XCTestExpectation()
-        Task {
-            await core.startIfNotAlreadyRunning()
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 20)
-    }
+    let core: Core = .shared
 
     private func testPerformance(maxDuration: Double, repeats: Int = 5, testBlock: () async throws -> Void) async {
         var durations: [Double] = []
@@ -42,7 +33,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testVersions() async throws {
         let r = try await core.version()
-        XCTAssertEqual(r.app_version, "iOS 0.2")
+        XCTAssertEqual(r.app_version, "iOS 1.1.1")
     }
 
     func testGenerateKey() async throws {
@@ -425,12 +416,12 @@ final class FlowCryptCoreTests: XCTestCase {
         }
 
         // Test verify key
-        await testPerformance(maxDuration: 50) {
+        await testPerformance(maxDuration: 100) {
             try await core.verifyKey(armoredPrv: TestData.k3rsa4096.private)
         }
 
         // Test encrypt message
-        await testPerformance(maxDuration: 50) {
+        await testPerformance(maxDuration: 120) {
             _ = try await core.encrypt(
                 data: "Test email message".data(),
                 pubKeys: [TestData.k3rsa4096.public],
@@ -444,7 +435,7 @@ final class FlowCryptCoreTests: XCTestCase {
             pubKeys: [TestData.k3rsa4096.public],
             password: nil
         )
-        await testPerformance(maxDuration: 50) {
+        await testPerformance(maxDuration: 100) {
             _ = try await core.parseDecryptMsg(
                 encrypted: encrypted,
                 keys: [TestData.k3rsa4096],

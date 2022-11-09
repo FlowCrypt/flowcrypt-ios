@@ -63,7 +63,7 @@ extension Message {
             size: Int(imapMessage.size),
             labels: labels,
             attachmentIds: [],
-            body: MessageBody(text: "", html: nil) // TODO: implement body parsing
+            body: MessageBody(text: "", html: nil, attachment: nil) // TODO: implement body parsing
         )
     }
 }

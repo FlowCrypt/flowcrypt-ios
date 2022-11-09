@@ -62,38 +62,27 @@ fs.writeFileSync(
   `\n(function(){\n// begin emailjs\n${emailjsNodeDep}\n// end emailjs\n})();\n`
 );
 
-const replace = (libSrc, regex, replacement) => {
-  if (!regex.test(libSrc)) {
-    throw new Error(`Could not find ${regex} in openpgp.js`)
-  }
-  return libSrc.replace(regex, replacement);
-}
+// const replace = (libSrc, regex, replacement) => {
+//   if (!regex.test(libSrc)) {
+//     throw new Error(`Could not find ${regex} in ${libSrc}`)
+//   }
+//   return libSrc.replace(regex, replacement);
+// }
 
 // update openpgp code to use some native functionality
 let entrypointBareSrc = fs.readFileSync(`${bundleRawDir}/entrypoint-bare.js`).toString();
 
-entrypointBareSrc = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
-  entrypointBareSrc,
-  /toHash = new Uint8Array\(prefixlen \+ count\);/,
-  `const algo = enums.read(enums.hash, this.algorithm); return Uint8Array.from(coreHost.produceHashedIteratedS2k(algo, new Uint8Array(), this.salt, passphrase, count));`
-);
-entrypointBareSrc = replace( // bare - aes decrypt on host
-  entrypointBareSrc,
-  /return AES_CFB\.decrypt\(ct, key, iv\);/,
-  `return Uint8Array.from(coreHost.decryptAesCfbNoPadding(ct, key, iv));`
-);
-
-let asn1BareSrc = fs.readFileSync(`${bundleRawDir}/bare-asn1.js`).toString();
-asn1BareSrc = replace(
-  asn1BareSrc,
-  /const asn1 =/gi, 'global.dereq_asn1 ='
-);
-asn1BareSrc = replace(
-  asn1BareSrc,
-  /asn1\./gi, 'global.dereq_asn1.'
-);
+// entrypointBareSrc = replace( // bare - produce s2k (decrypt key) on host (because JS sha256 implementation is too slow)
+//   entrypointBareSrc,
+//   /toHash = new Uint8Array\(prefixlen \+ count\);/,
+//   `const algo = enums.read(enums.hash, this.algorithm); return Uint8Array.from(window.webkit.messageHandlers.coreHost.produceHashedIteratedS2k(algo, new Uint8Array(), this.salt, passphrase, count));`
+// );
+// entrypointBareSrc = replace( // bare - aes decrypt on host
+//   entrypointBareSrc,
+//   /return AES_CFB\.decrypt\(ct, key, iv\);/,
+//   `return Uint8Array.from(window.webkit.messageHandlers.coreHost.decryptAesCfbNoPadding(ct, key, iv));`
+// );
 
 fs.writeFileSync(`${bundleDir}/entrypoint-bare-bundle.js`, `
-  ${asn1BareSrc};
   ${entrypointBareSrc};
 `);

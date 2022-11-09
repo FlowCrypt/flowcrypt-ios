@@ -7,7 +7,6 @@ import * as https from 'https';
 import * as fs from 'fs';
 import { config, expect } from 'chai';
 import { Buf } from '../core/buf';
-import { EndpointRes } from '../mobile-interface/format-output';
 import { MsgBlock } from 'source/core/msg-block';
 config.truncateThreshold = 0;
 
@@ -15,10 +14,6 @@ export type AvaContext = ava.ExecutionContext<unknown>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type JsonDict = { [k: string]: any };
 type TestKey = { pubKey: string, private: string, decrypted: string, passphrase: string, longid: string };
-
-export const parseResponse = (response: EndpointRes) => {
-  return { json: JSON.parse(response.json), data: response.data };
-};
 
 export const httpGet = async (url: string): Promise<Buf> => {
   return await new Promise((resolve, reject) => {

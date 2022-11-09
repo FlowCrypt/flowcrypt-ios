@@ -16,14 +16,8 @@ import Security // for rng
     func modPow(_ base: String, _ exponent: String, _ modulo: String) -> String
     func produceHashedIteratedS2k(_ algo: String, _ prefix: [UInt8], _ salt: [UInt8], _ passphrase: [UInt8], _ count: Int) -> [UInt8]
 
-    func setTimeout(_ callback: JSValue, _ ms: Double) -> String
-    func clearTimeout(_ identifier: String)
-
-    func handleCallback(_ endpointKey: String, _ string: String, _ data: [UInt8])
     func log(_ message: String)
 }
-
-var timers = [String: Timer]()
 
 final class CoreHost: NSObject, CoreHostExports {
     // todo - things to look at for optimisation:
@@ -97,37 +91,8 @@ final class CoreHost: NSObject, CoreHostExports {
         return nil // is checked for in JavaScript
     }
 
-    func clearTimeout(_ id: String) {
-        DispatchQueue.main.async { // use consistent queue for modifications
-            let timer = timers.removeValue(forKey: id)
-            timer?.invalidate()
-        }
-    }
-
-    func setTimeout(_ cb: JSValue, _ ms: Double) -> String {
-        let interval = ms / 1000.0
-        let uuid = NSUUID().uuidString
-        DispatchQueue.main.async { // queue all in the same executable queue, JS calls are getting lost if the queue is not specified
-            let timer = Timer.scheduledTimer(timeInterval: interval, target: self, selector: #selector(self.callJsCb), userInfo: cb, repeats: false)
-            timers[uuid] = timer // use consistent queue for modifications of timers
-        }
-        return uuid
-    }
-
-    func handleCallback(_ callbackId: String, _ string: String, _ data: [UInt8]) {
-        Task {
-            await Core.shared.handleCallbackResult(callbackId: callbackId, json: string, data: data)
-        }
-    }
-
     func log(_ message: String) {
         Logger.logDebug(message)
-    }
-
-    @objc func callJsCb(_ timer: Timer) {
-        let callback = (timer.userInfo as! JSValue)
-        callback.call(withArguments: nil)
-        // todo - remove from timers by uuid, could cause possible memory leak
     }
 
     func getHashAlgo(name: String) throws -> HashAlgo {

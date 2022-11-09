@@ -30,8 +30,8 @@ extension ThreadMessageInfoCellNode.Input {
             : .main
 
         self.init(
-            encryptionBadge: makeEncryptionBadge(threadMessage),
-            signatureBadge: makeSignatureBadge(threadMessage),
+            encryptionBadge: Self.makeEncryptionBadge(threadMessage),
+            signatureBadge: Self.makeSignatureBadge(threadMessage),
             sender: .text(from: sender, style: style, color: .label),
             recipientLabel: .text(from: recipientLabel, style: style, color: .secondaryLabel),
             recipients: threadMessage.rawMessage.to.map(\.rawString),
@@ -44,10 +44,54 @@ extension ThreadMessageInfoCellNode.Input {
             index: index
         )
     }
+
+    private static func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input? {
+        guard let type = input.processedMessage?.type else { return nil }
+
+        let icon: String
+        let text: String
+        let color: UIColor
+
+        switch type {
+        case .error:
+            icon = "lock.open"
+            text = "message_decrypt_error".localized
+            color = .errorColor
+        case .encrypted:
+            icon = "lock"
+            text = "message_encrypted".localized
+            color = .main
+        default:
+            icon = "lock.open"
+            text = "message_not_encrypted".localized
+            color = .errorColor
+        }
+
+        return BadgeNode.Input(
+            icon: icon,
+            text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
+            color: color,
+            textAccessibilityIdentifier: "aid-encryption-badge"
+        )
+    }
+
+    private static func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input? {
+        guard let signature = input.processedMessage?.signature else {
+            return nil
+        }
+
+        return BadgeNode.Input(
+            icon: signature.icon,
+            text: NSAttributedString.text(from: signature.message, style: .regular(12), color: .white),
+            color: signature.color,
+            textAccessibilityIdentifier: "aid-signature-badge"
+        )
+    }
 }
 
 extension ProcessedMessage {
     var attributedMessage: NSAttributedString {
+        let maxLength = 1_000_000
         let textColor: UIColor
         switch type {
         case .encrypted:
@@ -57,7 +101,7 @@ extension ProcessedMessage {
         case .plain:
             textColor = .mainTextColor
         }
-        return text.attributed(color: textColor)
+        return String(text.prefix(maxLength)).attributed(color: textColor)
     }
 }
 
@@ -72,47 +116,4 @@ extension AttachmentNode.Input {
             isEncrypted: msgAttachment.isEncrypted
         )
     }
-}
-
-private func makeEncryptionBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input? {
-    guard let type = input.processedMessage?.type else { return nil }
-
-    let icon: String
-    let text: String
-    let color: UIColor
-
-    switch type {
-    case .error:
-        icon = "lock.open"
-        text = "message_decrypt_error".localized
-        color = .errorColor
-    case .encrypted:
-        icon = "lock"
-        text = "message_encrypted".localized
-        color = .main
-    default:
-        icon = "lock.open"
-        text = "message_not_encrypted".localized
-        color = .errorColor
-    }
-
-    return BadgeNode.Input(
-        icon: icon,
-        text: NSAttributedString.text(from: text, style: .regular(12), color: .white),
-        color: color,
-        textAccessibilityIdentifier: "aid-encryption-badge"
-    )
-}
-
-private func makeSignatureBadge(_ input: ThreadDetailsViewController.Input) -> BadgeNode.Input? {
-    guard let signature = input.processedMessage?.signature else {
-        return nil
-    }
-
-    return BadgeNode.Input(
-        icon: signature.icon,
-        text: NSAttributedString.text(from: signature.message, style: .regular(12), color: .white),
-        color: signature.color,
-        textAccessibilityIdentifier: "aid-signature-badge"
-    )
 }

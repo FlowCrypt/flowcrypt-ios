@@ -1,11 +1,8 @@
 const fs = require('fs');
 
 const path = {
-  beginIos: 'source/assets/flowcrypt-ios-begin.js',
-  nativeCrypto: 'source/assets/native-crypto.js',
   bareDepsBundle: 'build/bundles/bare-deps-bundle.js',
   bareEntrypointBundle: 'build/bundles/entrypoint-bare-bundle.js',
-  finalDev: 'build/final/flowcrypt-android-dev.js',
   finalIos: 'build/final/flowcrypt-ios-prod.js',
 };
 
@@ -13,16 +10,15 @@ const path = {
 const bareDepsSrc = fs.readFileSync(path.bareDepsBundle).toString();
 const bareEntrypointSrc = fs
   .readFileSync(path.bareEntrypointBundle).toString()
-  .replace("'[BUILD_REPLACEABLE_VERSION]'", 'APP_VERSION');
+  .replace("\"[BUILD_REPLACEABLE_VERSION]\"", 'APP_VERSION');
 
 // final (node, bare, dev)
 const finalBareSrc = `
 let global = {};
-let _log = (x) => coreHost.log(String(x));
+let _log = (x) => window.webkit.messageHandlers.coreHost.postMessage({ name: "log", message: String(x)});
 const console = { log: _log, error: _log, info: _log, warn: _log };
 try {
-  ${fs.readFileSync(path.beginIos).toString()}
-  ${fs.readFileSync(path.nativeCrypto).toString()}
+  const module = {};
   ${bareDepsSrc}
   /* entrypoint-bare starts here */
   ${bareEntrypointSrc}

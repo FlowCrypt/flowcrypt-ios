@@ -299,7 +299,7 @@ export class PgpMsg {
       encryptionKeys.push(...publicKeys);
     }
 
-    let encryptOptions = {
+    const encryptOptions = {
       message,
       date,
       encryptionKeys,
@@ -308,7 +308,7 @@ export class PgpMsg {
     };
 
     if (!armor) {
-      encryptOptions = Object.assign(encryptOptions, { format: 'binary' });
+      Object.assign(encryptOptions, { format: 'binary' });
     }
 
     return await encrypt(encryptOptions);

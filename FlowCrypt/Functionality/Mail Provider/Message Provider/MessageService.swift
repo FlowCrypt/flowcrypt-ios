@@ -86,18 +86,19 @@ final class MessageService {
     }
 
     // MARK: - Message processing
-    func getAndProcess(
-        identifier: Identifier,
-        folder: String,
+    func fetchMessage(identifier: Identifier, folder: String) async throws -> Message {
+        return try await messageProvider.fetchMessage(
+            id: identifier,
+            folder: folder
+        )
+    }
+
+    func process(
+        message: Message,
         onlyLocalKeys: Bool,
         userEmail: String,
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
-        let message = try await messageProvider.fetchMessage(
-            id: identifier,
-            folder: folder
-        )
-
         guard message.isPgp else {
             return ProcessedMessage(message: message)
         }
@@ -151,8 +152,7 @@ final class MessageService {
         isUsingKeyManager: Bool
     ) async throws -> String {
         let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
-        let decrypted = try await decrypt(text: text, keys: keys)
-        return decrypted.text
+        return try await decrypt(text: text, keys: keys).text
     }
 
     func decryptAndProcess(

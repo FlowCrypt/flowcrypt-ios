@@ -106,34 +106,35 @@ export class Buf extends Uint8Array {
   public toUtfStr = (mode: 'strict' | 'inform' | 'ignore' = 'inform'): string => { // tom
     const length = this.length;
     let bytesLeftInChar = 0;
-    let utf8string = '';
     let binaryChar = '';
+    const stringArray = new Array<string>(length);
     for (let i = 0; i < length; i++) {
       if (this[i] < 128) {
         if (bytesLeftInChar) {
           // utf-8 continuation byte missing, assuming the last character was an 8-bit ASCII character
-          utf8string += String.fromCharCode(this[i - 1]);
+          stringArray[i] = String.fromCharCode(this[i - 1]);
         }
         bytesLeftInChar = 0;
         binaryChar = '';
-        utf8string += String.fromCharCode(this[i]);
+        stringArray[i] = String.fromCharCode(this[i]);
       } else {
         if (!bytesLeftInChar) { // beginning of new multi-byte character
-          if (this[i] >= 128 && this[i] < 192) { // 10xx xxxx
-            utf8string += String.fromCharCode(this[i]); // extended 8-bit ASCII compatibility, european ASCII characters
-          } else if (this[i] >= 192 && this[i] < 224) { // 110x xxxx
+          if (this[i] < 192) { // 10xx xxxx
+            // extended 8-bit ASCII compatibility, european ASCII characters
+            stringArray[i] = String.fromCharCode(this[i]);
+          } else if (this[i] < 224) { // 110x xxxx
             bytesLeftInChar = 1;
             binaryChar = this[i].toString(2).substring(3);
-          } else if (this[i] >= 224 && this[i] < 240) { // 1110 xxxx
+          } else if (this[i] < 240) { // 1110 xxxx
             bytesLeftInChar = 2;
             binaryChar = this[i].toString(2).substring(4);
-          } else if (this[i] >= 240 && this[i] < 248) { // 1111 0xxx
+          } else if (this[i] < 248) { // 1111 0xxx
             bytesLeftInChar = 3;
             binaryChar = this[i].toString(2).substring(5);
-          } else if (this[i] >= 248 && this[i] < 252) { // 1111 10xx
+          } else if (this[i] < 252) { // 1111 10xx
             bytesLeftInChar = 4;
             binaryChar = this[i].toString(2).substring(6);
-          } else if (this[i] >= 252 && this[i] < 254) { // 1111 110x
+          } else if (this[i] < 254) { // 1111 110x
             bytesLeftInChar = 5;
             binaryChar = this[i].toString(2).substring(7);
           } else {
@@ -150,12 +151,12 @@ export class Buf extends Uint8Array {
           bytesLeftInChar--;
         }
         if (binaryChar && !bytesLeftInChar) {
-          utf8string += String.fromCharCode(parseInt(binaryChar, 2));
+          stringArray[i] = String.fromCharCode(parseInt(binaryChar, 2));
           binaryChar = '';
         }
       }
     }
-    return utf8string;
+    return stringArray.join('');
   };
 
   public toRawBytesStr = (): string => {

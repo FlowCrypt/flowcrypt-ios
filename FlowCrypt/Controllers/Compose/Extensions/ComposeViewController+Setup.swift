@@ -60,21 +60,39 @@ extension ComposeViewController {
             return
         }
 
-        if case .draft = input.type {
-            composeMessageService.fetchMessageIdentifier(info: info)
-        }
-
         contextToSend.subject = info.subject
         addRecipients(from: info)
 
-        if input.isPgp {
-            decodeDraft(from: info)
+        if case .draft = input.type {
+            processDraft(info: info)
         } else {
-            if case .draft = input.type {
-                contextToSend.message = input.text
-            }
             reload(sections: Section.recipientsSections)
             didFinishSetup = true
+        }
+    }
+
+    private func processDraft(info: ComposeMessageInput.MessageQuoteInfo) {
+        composeMessageService.fetchMessageIdentifier(info: info)
+
+        guard let id = info.id else {
+            didFinishSetup = true
+            return
+        }
+
+        Task {
+            do {
+                let message = try await messageService.fetchMessage(identifier: id, folder: "")
+                let text = message.body.text
+
+                if text.isPgp {
+                    await decodeDraft(text: text)
+                } else {
+                    contextToSend.message = text
+                    didFinishSetup = true
+                }
+            } catch {
+                handle(error: error)
+            }
         }
     }
 
@@ -98,24 +116,21 @@ extension ComposeViewController {
         }
     }
 
-    private func decodeDraft(from info: ComposeMessageInput.MessageQuoteInfo) {
-        Task {
-            do {
-                let decrypted = try await messageService.decrypt(
-                    text: info.text,
-                    userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
-                )
-                contextToSend.message = decrypted
-                didFinishSetup = true
-                reload(sections: Section.recipientsSections + [.compose])
-            } catch {
-                if case let .missingPassPhrase(keyPair) = error as? MessageServiceError, let keyPair {
-                    requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
-                    return
-                } else {
-                    handle(error: error)
-                }
+    private func decodeDraft(text: String) async {
+        do {
+            let decrypted = try await messageService.decrypt(
+                text: text,
+                userEmail: appContext.user.email,
+                isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+            )
+            contextToSend.message = decrypted
+            didFinishSetup = true
+            reload(sections: Section.recipientsSections + [.compose])
+        } catch {
+            if case let .missingPassPhrase(keyPair) = error as? MessageServiceError, let keyPair {
+                requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
+            } else {
+                handle(error: error)
             }
         }
     }

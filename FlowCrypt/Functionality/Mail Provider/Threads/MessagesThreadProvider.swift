@@ -59,11 +59,11 @@ extension GmailService: MessagesThreadProvider {
     }
 
     func fetchThread(identifier: String, path: String) async throws -> MessageThread {
+        let query = GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
+        query.format = kGTLRGmailFormatMetadata
         return try await Task.retrying {
             try await withCheckedThrowingContinuation { continuation in
-                self.gmailService.executeQuery(
-                    GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
-                ) { _, data, error in
+                self.gmailService.executeQuery(query) { _, data, error in
                     if let error {
                         return continuation.resume(throwing: GmailServiceError.providerError(error))
                     }
@@ -79,6 +79,7 @@ extension GmailService: MessagesThreadProvider {
                         snippet: gmailThread.snippet,
                         messages: messages
                     )
+
                     return continuation.resume(returning: thread)
                 }
             }
