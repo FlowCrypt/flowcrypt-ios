@@ -272,8 +272,7 @@ export class Endpoints {
         if (key === 'content' && value.length > 100000) {
           return '';
         }
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-        return value;
+        return `${value}`;
       });
     }).join('\n'));
     const json = { text, replyType };

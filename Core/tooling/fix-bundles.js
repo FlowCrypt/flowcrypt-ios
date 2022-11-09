@@ -62,12 +62,12 @@ fs.writeFileSync(
   `\n(function(){\n// begin emailjs\n${emailjsNodeDep}\n// end emailjs\n})();\n`
 );
 
-const replace = (libSrc, regex, replacement) => {
-  if (!regex.test(libSrc)) {
-    throw new Error(`Could not find ${regex} in ${libSrc}`)
-  }
-  return libSrc.replace(regex, replacement);
-}
+// const replace = (libSrc, regex, replacement) => {
+//   if (!regex.test(libSrc)) {
+//     throw new Error(`Could not find ${regex} in ${libSrc}`)
+//   }
+//   return libSrc.replace(regex, replacement);
+// }
 
 // update openpgp code to use some native functionality
 let entrypointBareSrc = fs.readFileSync(`${bundleRawDir}/entrypoint-bare.js`).toString();
