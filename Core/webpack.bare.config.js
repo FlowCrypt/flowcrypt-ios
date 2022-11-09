@@ -22,7 +22,7 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       dereq_sanitize_html: 'sanitize-html',
-      dereq_encoding_japanese: 'encoding-japanese'
+      dereq_encoding_japanese: 'encoding-japanese',
     }),
   ],
   externals: {

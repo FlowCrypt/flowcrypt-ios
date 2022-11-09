@@ -52,7 +52,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let query: String
     }
 
-    init() {
+    private init() {
         setupWebView()
     }
 
@@ -247,16 +247,16 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     @discardableResult
     private func call(_ endpoint: String, params: [String: Any?] = [:], data: Data = Data()) async throws -> RawRes {
         let paramsData = try JSONSerialization.data(withJSONObject: params).toStr()
-        let uInt8Data = [UInt8](data)
+        let requestData = [UInt8](data)
 
         let response = try await webView.callAsyncJavaScript(
-            "return handleRequestFromHost(\"\(endpoint)\", \(paramsData), \(uInt8Data))",
+            "return handleRequestFromHost(\"\(endpoint)\", \(paramsData), \(requestData))",
             arguments: [:],
             contentWorld: .page
         )
 
         guard let response = response as? [String: Any],
-              let uintdata = response["data"] as? [String: UInt8]
+              let uInt8Data = response["data"] as? [String: UInt8]
         else {
             throw CoreError.value("JavaScript callback response not available")
         }
@@ -276,8 +276,8 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             }
         }
 
-        let indices = uintdata.keys.compactMap(Int.init).sorted()
-        let array = indices.compactMap { uintdata["\($0)"] }
+        let indices = uInt8Data.keys.compactMap(Int.init).sorted()
+        let array = indices.compactMap { uInt8Data["\($0)"] }
         let responseData = Data(array)
 
         return RawRes(json: responseJson ?? Data(), data: responseData)
