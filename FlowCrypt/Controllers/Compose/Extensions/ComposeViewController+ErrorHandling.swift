@@ -84,10 +84,10 @@ extension ComposeViewController {
 
     private func showPlainMessageAlert() {
         showAlertWithAction(
-            title: "Message encryption",
-            message: "\nOne of your recipients doesn't have encryption set up.\n\nPlease add message password or message will be sent unencrypted.",
-            cancelButtonTitle: "Add message password",
-            actionButtonTitle: "Send unencrypted",
+            title: "compose_message_encryption".localized,
+            message: "compose_plain_message_alert".localized,
+            cancelButtonTitle: "compose_add_message_password".localized,
+            actionButtonTitle: "compose_send_unencrypted".localized,
             onAction: { [weak self] _ in self?.handleSendTap(shouldSendPlainMessage: true) },
             onCancel: { [weak self] _ in self?.setMessagePassword() }
         )

@@ -121,6 +121,10 @@
 "compose_password_weak" = "Password didn't comply with company policy, which requires at least:\n\n- one uppercase\n- one lowercase\n- one number\n- one special character eg &/#\"-'_%-@,;:!*()\n- 8 characters length\n\nPlease update the password and re-send.";
 "compose_password_passphrase_error" = "Please do not use your private key pass phrase as a password for this message.\n\nYou should come up with some other unique password that you can share with recipient.";
 "compose_password_subject_error" = "Please do not include the password in the email subject. Sharing password over email undermines password based encryption.\n\nYou can ask the recipient to also install FlowCrypt, messages between FlowCrypt users don't need a password.";
+"compose_message_encryption" = "Message Encryption";
+"compose_plain_message_alert" = "\nOne or more of your recipients don't have encryption set up.\n\nPlease add a message password, or message will be sent unencrypted.";
+"compose_add_message_password" = "Add message password";
+"compose_send_unencrypted" = "Send unencrypted";
 "compose_sign_passphrase_required" = "Passphrase is required for message signing.";
 "compose_sign_passphrase_no_match" = "This pass phrase did not match your signing private key.";
 "compose_sign_no_keys" = "Cannot sign message: none of your %@ account keys can be used for sending address %@";
