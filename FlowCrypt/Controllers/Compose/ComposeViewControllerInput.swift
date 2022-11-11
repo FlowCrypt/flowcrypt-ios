@@ -68,10 +68,11 @@ struct ComposeMessageInput: Equatable {
 }
 
 extension ComposeMessageInput {
-    var successfullySentToast: String {
+    func successfullySentToast(isEncrypted: Bool) -> String {
         switch type {
         case .idle, .draft:
-            return "compose_encrypted_sent".localized
+            let label = isEncrypted ? "compose_encrypted_sent" : "compose_message_sent"
+            return label.localized
         case .forward:
             return "compose_forward_successful".localized
         case .reply:

@@ -97,15 +97,16 @@ final class ComposeMessageService {
     }
 
     // MARK: - Validation
-    func validateAndProduceSendableMsg(
+    func createSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        isDraft: Bool = false,
+        shouldValidate: Bool = false,
+        shouldSign: Bool = true,
         withPubKeys: Bool = true
     ) async throws -> SendableMsg {
         let subject = contextToSend.subject ?? ""
 
-        if !isDraft {
+        if shouldValidate {
             onStateChanged?(.validatingMessage)
 
             guard contextToSend.recipients.isNotEmpty else {
@@ -147,13 +148,13 @@ final class ComposeMessageService {
             senderEmail: contextToSend.sender,
             recipients: contextToSend.recipients,
             hasMessagePassword: contextToSend.hasMessagePassword,
-            shouldValidate: !isDraft
+            shouldValidate: shouldValidate
         ) : []
 
-        let sendableAttachments: [SendableMsg.Attachment] = isDraft
-            ? []
-            : contextToSend.attachments.map(\.sendableMsgAttachment)
-        let signingPrv = isDraft ? nil : try await prepareSigningKey(senderEmail: contextToSend.sender)
+        let sendableAttachments: [SendableMsg.Attachment] = shouldValidate
+            ? contextToSend.attachments.map(\.sendableMsgAttachment)
+            : []
+        let signingPrv = shouldSign ? try await prepareSigningKey(senderEmail: contextToSend.sender) : nil
 
         return SendableMsg(
             text: contextToSend.message ?? "",
@@ -322,7 +323,7 @@ final class ComposeMessageService {
                 try await draftGateway?.deleteDraft(with: draftId)
             }
 
-            onStateChanged?(.messageSent)
+            onStateChanged?(.messageSent(!isPlain))
 
             return identifier
         } catch {

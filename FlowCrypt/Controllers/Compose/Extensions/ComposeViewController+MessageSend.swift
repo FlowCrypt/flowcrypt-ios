@@ -28,7 +28,7 @@ extension ComposeViewController {
         let messageIdentifier = try await sendMessage(isPlain: shouldSendPlainMessage)
         handleAction?(.sent(messageIdentifier))
 
-        handleSuccessfullySentMessage()
+        handleSuccessfullySentMessage(isEncrypted: !shouldSendPlainMessage)
     }
 
     private func checkIfAllRecipientsAreValid() -> Bool {
@@ -58,9 +58,11 @@ extension ComposeViewController {
     }
 
     private func sendMessage(isPlain: Bool) async throws -> MessageIdentifier {
-        let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
+        let sendableMsg = try await composeMessageService.createSendableMsg(
             input: input,
-            contextToSend: contextToSend
+            contextToSend: contextToSend,
+            shouldSign: !isPlain,
+            withPubKeys: !isPlain
         )
 
         UIApplication.shared.isIdleTimerDisabled = true
@@ -80,8 +82,8 @@ extension ComposeViewController {
         )
     }
 
-    private func handleSuccessfullySentMessage() {
-        showToast(input.successfullySentToast)
+    private func handleSuccessfullySentMessage(isEncrypted: Bool) {
+        showToast(input.successfullySentToast(isEncrypted: isEncrypted))
         navigationController?.popViewController(animated: true)
     }
 }
