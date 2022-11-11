@@ -288,7 +288,7 @@ final class ComposeMessageService {
     }
 
     // MARK: - Encrypt and Send
-    func encryptAndSend(message: SendableMsg, threadId: String?) async throws -> Identifier {
+    func composeAndSend(message: SendableMsg, threadId: String?, isPlain: Bool) async throws -> Identifier {
         do {
             onStateChanged?(.startComposing)
 
@@ -300,7 +300,7 @@ final class ComposeMessageService {
             } else {
                 mime = try await composeEmail(
                     msg: message,
-                    fmt: .encryptInline
+                    fmt: isPlain ? .plain : .encryptInline
                 )
             }
 

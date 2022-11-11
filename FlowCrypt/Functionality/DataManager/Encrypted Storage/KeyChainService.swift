@@ -7,13 +7,14 @@
 //
 
 import FlowCryptCommon
+import IDZSwiftCommonCrypto
 import Security
 import UIKit
 
 /// keychain is used to generate and retrieve encryption key which is used to encrypt local DB
 /// it does not contain any actual data or keys other than the db encryption key
 /// index of the keychain entry is dynamic (set up once per app installation), set in user defaults
-actor KeyChainService {
+class KeyChainService {
 
     private let logger = Logger.nested("KeyChain")
     private let keyByteLen = 64
@@ -69,7 +70,7 @@ actor KeyChainService {
     @MainActor private func generateAndSaveStorageEncryptionKey() throws -> Data {
         logger.logInfo("generate storage encryption key")
 
-        guard let randomBytes = CoreHost().getSecureRandomByteNumberArray(keyByteLen) else {
+        guard let randomBytes = getSecureRandomByteNumberArray(keyByteLen) else {
             throw AppErr.general("KeyChainService getSecureRandomByteNumberArray bytes are nil")
         }
 
@@ -120,5 +121,13 @@ actor KeyChainService {
         }
 
         return validKey
+    }
+
+    private func getSecureRandomByteNumberArray(_ byteCount: Int) -> [UInt8]? {
+        // https://developer.apple.com/documentation/security/1399291-secrandomcopybytes
+        var bytes = [UInt8](repeating: 0, count: byteCount)
+        let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+        guard status == errSecSuccess else { return nil }
+        return bytes
     }
 }

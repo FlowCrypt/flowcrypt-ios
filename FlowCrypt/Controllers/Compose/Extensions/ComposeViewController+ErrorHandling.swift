@@ -68,7 +68,7 @@ extension ComposeViewController {
             if self.isMessagePasswordSupported {
                 switch error {
                 case MessageValidationError.noPubRecipients:
-                    self.setMessagePassword()
+                    self.showPlainMessageAlert()
                 case MessageValidationError.notUniquePassword,
                      MessageValidationError.subjectContainsPassword,
                      MessageValidationError.weakPassword:
@@ -80,6 +80,17 @@ extension ComposeViewController {
                 self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
             }
         }
+    }
+
+    private func showPlainMessageAlert() {
+        showAlertWithAction(
+            title: "Message encryption",
+            message: "\nOne of your recipients doesn't have encryption set up.\n\nPlease add message password or message will be sent unencrypted.",
+            cancelButtonTitle: "Add message password",
+            actionButtonTitle: "Send unencrypted",
+            onAction: { [weak self] _ in self?.handleSendTap(shouldSendPlainMessage: true) },
+            onCancel: { [weak self] _ in self?.setMessagePassword() }
+        )
     }
 
     private func reEnableSendButton() {
