@@ -175,8 +175,8 @@ class NewMessageScreen extends BaseScreen {
   };
 
   setComposeSecurityMessage = async (message: string) => {
-    await browser.pause(500);
     await ElementHelper.waitClickAndType(await this.composeSecurityMessage, message);
+    await browser.pause(500);
   };
 
   filledSubject = async (subject: string) => {
