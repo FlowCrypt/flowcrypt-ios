@@ -229,7 +229,7 @@ final class MessageService {
         }
 
         let attachments: [MessageAttachment]
-        if message.raw != nil {
+        if message.raw != nil || message.attachments.isEmpty {
             attachments = decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
         } else {
             attachments = message.attachments
