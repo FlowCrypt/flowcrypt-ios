@@ -561,9 +561,12 @@ extension InboxViewController {
     }
 
     func reloadMessage(index: Int, animationDuration: Double = 0.3) {
-        let row = shouldShowEmptyView ? index + 1 : index
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) { [weak self] in
-            self?.tableNode.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
+            guard let self else { return }
+            self.tableNode.reloadRows(
+                at: [self.indexPathForMessage(at: index)],
+                with: .automatic
+            )
         }
     }
 
@@ -588,7 +591,10 @@ extension InboxViewController {
                 state = .fetched(.byNumber(total: newTotalNumber))
                 do {
                     try ObjcException.catch {
-                        self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+                        self.tableNode.deleteRows(
+                            at: [self.indexPathForMessage(at: index)],
+                            with: .left
+                        )
                     }
                 } catch {
                     showAlert(message: "Failed to remove message at \(index) in fetched state: \(error)")
@@ -597,7 +603,10 @@ extension InboxViewController {
         default:
             do {
                 try ObjcException.catch {
-                    self.tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .left)
+                    self.tableNode.deleteRows(
+                        at: [self.indexPathForMessage(at: index)],
+                        with: .left
+                    )
                 }
             } catch {
                 showAlert(message: "Failed to remove message at \(index) in \(state): \(error)")
@@ -678,12 +687,12 @@ extension InboxViewController {
 
             guard let index = inboxInput.firstIndex(with: identifier) else {
                 inboxInput.insert(inboxItem, at: 0)
-                tableNode.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                tableNode.insertRows(at: [indexPathForMessage(at: 0)], with: .automatic)
                 return
             }
 
             inboxInput[index] = inboxItem
-            tableNode.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+            tableNode.reloadRows(at: [indexPathForMessage(at: index)], with: .automatic)
         }
     }
 
@@ -696,11 +705,16 @@ extension InboxViewController {
             state = .empty
             tableNode.reloadData()
         } else {
-            tableNode.deleteRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+            tableNode.deleteRows(at: [indexPathForMessage(at: index)], with: .automatic)
         }
     }
 
     // MARK: Operation
+    private func indexPathForMessage(at index: Int) -> IndexPath {
+        let row = shouldShowEmptyView ? index + 1 : index
+        return IndexPath(row: row, section: 0)
+    }
+
     private func handleMessageOperation(message: InboxItem, action: MessageAction) {
         guard let indexToUpdate = getUpdatedIndex(for: message) else {
             return

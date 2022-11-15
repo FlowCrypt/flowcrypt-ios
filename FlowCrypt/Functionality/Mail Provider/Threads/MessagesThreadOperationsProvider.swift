@@ -39,8 +39,7 @@ extension GmailService: MessagesThreadOperationsProvider {
     }
 
     func moveThreadToTrash(id: String?, labels: Set<MessageLabel>) async throws {
-        let labelsToRemove = [MessageLabel.inbox, MessageLabel.sent].filter { labels.contains($0) }
-        try await update(id: id, labelsToAdd: [.trash], labelsToRemove: labelsToRemove)
+        try await update(id: id, labelsToAdd: [.trash])
     }
 
     func moveThreadToInbox(id: String?) async throws {

@@ -298,9 +298,7 @@ class EmailScreen extends BaseScreen {
   }
 
   checkDraft = async (text: string, index: number) => {
-    await browser.pause(500);
-    const draftBodyEl = await this.draftBody(index);
-    expect(await draftBodyEl.getValue()).toEqual(text);
+    await ElementHelper.waitForText(await this.draftBody(index), text);
   }
 
   openDraft = async (index: number) => {
