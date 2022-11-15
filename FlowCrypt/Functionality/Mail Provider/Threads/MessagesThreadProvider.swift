@@ -60,7 +60,7 @@ extension GmailService: MessagesThreadProvider {
 
     func fetchThread(identifier: String, path: String) async throws -> MessageThread {
         let query = GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
-        // query.format = kGTLRGmailFormatMetadata
+        query.format = kGTLRGmailFormatMetadata
         return try await Task.retrying {
             try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(query) { _, data, error in

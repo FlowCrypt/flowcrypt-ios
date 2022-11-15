@@ -84,9 +84,9 @@ blocks:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
             - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
       jobs:
-        - name: Run Mock inbox tests
-          commands:
-            - npm run-script test.mock.inbox
+        # - name: Run Mock inbox tests
+        #   commands:
+        #     - npm run-script test.mock.inbox
         - name: Run Mock compose tests
           commands:
             - npm run-script test.mock.compose
