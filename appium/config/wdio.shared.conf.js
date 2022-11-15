@@ -33,7 +33,7 @@ exports.config = {
     }],
     // [video, {
     //   saveAllVideos: false,       // If true, also saves videos for successful test cases
-    //   outputDir: './video',
+    //   outputDir: './tmp/video',
     // }]
   ],
   services: [

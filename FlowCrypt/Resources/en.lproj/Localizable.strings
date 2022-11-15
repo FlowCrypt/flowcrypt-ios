@@ -365,7 +365,7 @@
 "gmail_service_message_encode_error_message" = "Wrong message encoding provided";
 "gmail_service_missing_message_payload_error_message" = "Missing message payload";
 "gmail_service_missing_message_info_error_message" = "Missing message info: %@";
-"gmail_service_provider_error_error_message" = "Gmail provider error: %@";
+"gmail_service_provider_error_error_message" = "Gmail provider error:\n%@";
 "gmail_service_invalid_grant_error_message" = "Access to %@ account was revoked.\n\nPlease reconnect the app to Gmail";
 "gmail_service_pagination_error" = "Pagination %@ is not supported for this provider";
 "gmail_service_missing_back_query_error_message" = "Missing backup query: %@";

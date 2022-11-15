@@ -15,6 +15,7 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
         if let error {
             logger.logError("\(action.error ?? "Error: ") \(error)")
+            showAlert(message: error.errorMessage)
             return
         }
 
