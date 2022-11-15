@@ -13,7 +13,7 @@ type GmailMsg$header = { name: string, value: string };
 type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
 type GmailMsg$payload$part = { partId?: string, body?: GmailMsg$payload$body, filename?: string, mimeType?: string, headers?: GmailMsg$header[], parts?: GmailMsg$payload$part[] };
 type GmailMsg$payload = { partId?: string, filename?: string, parts?: GmailMsg$payload$part[], headers?: GmailMsg$header[], mimeType?: string, body?: GmailMsg$payload$body };
-type GmailMsg$labelId = 'INBOX' | 'UNREAD' | 'CATEGORY_PERSONAL' | 'IMPORTANT' | 'SENT' | 'CATEGORY_UPDATES' | 'DRAFT';
+type GmailMsg$labelId = 'INBOX' | 'UNREAD' | 'CATEGORY_PERSONAL' | 'IMPORTANT' | 'SENT' | 'CATEGORY_UPDATES' | 'DRAFT' | 'TRASH';
 type GmailThread = { historyId: string; id: string; snippet: string; };
 type Label = { id: string, name: string, messageListVisibility: 'show' | 'hide', labelListVisibility: 'labelShow' | 'labelHide', type: 'system' };
 type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[], contacts: MockUser[], aliases: MockUserAlias[] };
@@ -389,14 +389,28 @@ export class GoogleData {
     const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
     const threads: GmailThread[] = [];
 
-    for (const thread of this.getMessagesAndDrafts().
-      filter(m => labelIds.length ? (m.labelIds || []).some(l => labelIds.includes(l)) : true).
+    const filteredThreads = this.getMessagesAndDrafts().
+      filter(m => {
+        if (labelIds.length) {
+          const messageLabels = m.labelIds || [];
+          if (messageLabels.includes('TRASH')) {
+            return labelIds.includes('TRASH');
+          } else {
+            return messageLabels.some(l => labelIds.includes(l));
+          }
+        } else {
+          return true;
+        }
+      }).
       filter(m => subject ? GoogleData.msgSubject(m).toLowerCase().includes(subject) : true).
-      map(m => ({ historyId: m.historyId, id: m.threadId!, snippet: `MOCK SNIPPET: ${GoogleData.msgSubject(m)}` }))) {
+      map(m => ({ historyId: m.historyId, id: m.threadId!, snippet: `MOCK SNIPPET: ${GoogleData.msgSubject(m)}` }))
+
+    for (const thread of filteredThreads) {
       if (thread.id && !threads.map(t => t.id).includes(thread.id)) {
         threads.push(thread);
       }
     }
+
     return threads;
   };
 

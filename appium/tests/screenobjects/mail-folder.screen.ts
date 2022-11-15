@@ -123,9 +123,13 @@ class MailFolderScreen extends BaseScreen {
   };
 
   checkEmailCount = async (expectedCount: number) => {
+    expect(await this.getEmailCount()).toEqual(expectedCount);
+  };
+
+  getEmailCount = async () => {
     await ElementHelper.waitElementInvisible(await this.idleNode);
     await browser.pause(1000);
-    expect(await this.inboxList.length).toEqual(expectedCount);
+    return await this.inboxList.length;
   };
 
   scrollUpToFirstEmail = async () => {
