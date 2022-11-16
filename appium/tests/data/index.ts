@@ -60,6 +60,9 @@ export const CommonData = {
     attachmentName: 'simple.txt',
     attachmentText: 'It\'s a text attachment'
   },
+  richTextMessageWithEmptyBody: {
+    subject: 'rich text message with empty body and attachment',
+  },
   archivedThread: {
     subject: 'Archived thread'
   },

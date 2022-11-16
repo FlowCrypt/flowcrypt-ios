@@ -89,6 +89,7 @@ extension ComposeViewController {
                 } else {
                     contextToSend.message = text
                     didFinishSetup = true
+                    reload(sections: [.compose])
                 }
             } catch {
                 handle(error: error)

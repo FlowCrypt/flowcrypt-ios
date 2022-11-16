@@ -392,6 +392,7 @@ class NewMessageScreen extends BaseScreen {
 
   confirmDelete = async () => {
     await ElementHelper.waitAndClick(await this.confirmDeletingButton);
+    await browser.pause(500);
   }
 
   clickToggleRecipientsButton = async () => {
