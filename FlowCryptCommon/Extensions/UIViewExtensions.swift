@@ -64,12 +64,4 @@ public extension UITextField {
         leftView = UIView(frame: CGRect(x: 0, y: 0, width: left, height: frame.size.height))
         leftViewMode = .always
     }
-
-    func setTextInsets(_ insets: UIEdgeInsets) {
-        leftView = UIView(frame: CGRect(x: 0, y: 0, width: insets.left, height: frame.size.height))
-        leftViewMode = .always
-
-        rightView = UIView(frame: CGRect(x: 0, y: 0, width: insets.right, height: frame.size.height))
-        rightViewMode = .always
-    }
 }

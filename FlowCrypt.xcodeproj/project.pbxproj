@@ -342,7 +342,7 @@
 		D24FAFAB2520BFAE00BF46C5 /* CheckBoxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24FAFAA2520BFAE00BF46C5 /* CheckBoxNode.swift */; };
 		D2531F2F23FEEF52007E5198 /* FlowCryptCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = D2531F2D23FEEF52007E5198 /* FlowCryptCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D2531F3423FEEF5F007E5198 /* StyleExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD3923438D3700A7371A /* StyleExtensions.swift */; };
-		D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* CommonExtensions.swift */; };
+		D2531F3723FFF043007E5198 /* UIEdgeInsetsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C2723194E8500299985 /* UIEdgeInsetsExtensions.swift */; };
 		D2531F3D24000E37007E5198 /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA63656CB3323C26BC084 /* UIViewExtensions.swift */; };
 		D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA0E63F2F0473D0A8EDB0 /* StringExtensions.swift */; };
 		D2531F462402C62D007E5198 /* CollectionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2531F452402C62D007E5198 /* CollectionExtensions.swift */; };
@@ -386,7 +386,6 @@
 		D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1797652368EE50002BF770 /* SetupTitleNode.swift */; };
 		D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8277952373732000E19C07 /* UIImageExtensions.swift */; };
-		D2CDC3CE2402CDB4002B045F /* DispatchTimeExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCABF1508B0C08DEDE2059 /* DispatchTimeExtensions.swift */; };
 		D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCAEFF16F5D91A35791730 /* DataExtensions.swift */; };
 		D2CDC3D42402D50A002B045F /* CodableExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */; };
 		D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */; };
@@ -540,7 +539,6 @@
 		32DCA7E0AFE19FACB0F233ED /* URLSessionExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSessionExtensions.swift; sourceTree = "<group>"; };
 		32DCA9701B2D5052225A0414 /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		32DCAAE9F459F48178CAF8F5 /* ComposeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeViewController.swift; sourceTree = "<group>"; };
-		32DCABF1508B0C08DEDE2059 /* DispatchTimeExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchTimeExtensions.swift; sourceTree = "<group>"; };
 		32DCAC088C8BFFFAF08853AC /* AttesterApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttesterApi.swift; sourceTree = "<group>"; };
 		32DCAC732B988D9704658812 /* CoreTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreTypes.swift; sourceTree = "<group>"; };
 		32DCAC9C0512037018F434A1 /* BackendApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackendApi.swift; sourceTree = "<group>"; };
@@ -645,7 +643,7 @@
 		9F0C3C132316E69300299985 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		9F0C3C19231819C500299985 /* MessageKindProviderType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageKindProviderType.swift; sourceTree = "<group>"; };
 		9F0C3C2523194E0A00299985 /* FolderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderViewModel.swift; sourceTree = "<group>"; };
-		9F0C3C2723194E8500299985 /* CommonExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonExtensions.swift; sourceTree = "<group>"; };
+		9F0C3C2723194E8500299985 /* UIEdgeInsetsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIEdgeInsetsExtensions.swift; sourceTree = "<group>"; };
 		9F1797652368EE50002BF770 /* SetupTitleNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupTitleNode.swift; sourceTree = "<group>"; };
 		9F1797692368EE90002BF770 /* ButtonCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonCellNode.swift; sourceTree = "<group>"; };
 		9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupViewDecorator.swift; sourceTree = "<group>"; };
@@ -2074,9 +2072,7 @@
 				21C7DEFB26669A3700C44800 /* CalendarExtensions.swift */,
 				32DCA38E87F2B7196E0E1F1F /* CodableExtensions.swift */,
 				D2531F452402C62D007E5198 /* CollectionExtensions.swift */,
-				9F0C3C2723194E8500299985 /* CommonExtensions.swift */,
 				9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */,
-				32DCABF1508B0C08DEDE2059 /* DispatchTimeExtensions.swift */,
 				51E4F0B427348E310017DABB /* ErrorExtensions.swift */,
 				A37A1CF523C6254F001CF774 /* IntExtensions.swift */,
 				9F716304234FC7200031645E /* LocalizationExtensions.swift */,
@@ -2087,6 +2083,7 @@
 				518389C92726D8F700131B2C /* UIApplicationExtensions.swift */,
 				9F31AB9D232BF2A600CF87EA /* UIColorExtensions.swift */,
 				9FD505262785C2CD00FAA82F /* UIDeviceExtensions.swift */,
+				9F0C3C2723194E8500299985 /* UIEdgeInsetsExtensions.swift */,
 				9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */,
 				32DCA63656CB3323C26BC084 /* UIViewExtensions.swift */,
 				9F8277952373732000E19C07 /* UIImageExtensions.swift */,
@@ -2913,7 +2910,6 @@
 				D2531F462402C62D007E5198 /* CollectionExtensions.swift in Sources */,
 				D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */,
 				D2531F3F24000E57007E5198 /* StringExtensions.swift in Sources */,
-				D2CDC3CE2402CDB4002B045F /* DispatchTimeExtensions.swift in Sources */,
 				9F44971626430710003A9FE9 /* Trace.swift in Sources */,
 				9F67998D277B3E4D00AFE5BE /* (null) in Sources */,
 				9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */,
@@ -2939,7 +2935,7 @@
 				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
 				750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */,
 				D2531F3D24000E37007E5198 /* UIViewExtensions.swift in Sources */,
-				D2531F3723FFF043007E5198 /* CommonExtensions.swift in Sources */,
+				D2531F3723FFF043007E5198 /* UIEdgeInsetsExtensions.swift in Sources */,
 				D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */,
 				759739BE2833E986004867CD /* Task+Retry.swift in Sources */,
 			);

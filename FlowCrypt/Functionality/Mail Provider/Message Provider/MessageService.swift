@@ -285,7 +285,7 @@ final class MessageService {
             id: attachment.id,
             name: decryptSuccess.name,
             estimatedSize: attachment.estimatedSize,
-            mimeType: attachment.mimeType,
+            mimeType: decryptSuccess.name.mimeType,
             data: decryptSuccess.data
         )
     }

@@ -104,7 +104,12 @@ extension ThreadDetailsViewController {
             do {
                 let attachment = try await getAttachment(at: indexPath)
                 hideSpinner()
-                show(attachment: attachment)
+
+                if attachment.supportsPreview {
+                    show(attachment: attachment)
+                } else {
+                    await attachmentManager.download(attachment)
+                }
             } catch {
                 handleAttachmentDecryptError(error, at: indexPath)
             }

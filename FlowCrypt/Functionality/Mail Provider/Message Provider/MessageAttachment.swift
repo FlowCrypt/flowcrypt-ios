@@ -62,6 +62,26 @@ extension MessageAttachment {
 
 extension MessageAttachment {
     var sendableMsgAttachment: SendableMsg.Attachment {
-        SendableMsg.Attachment(name: name, type: type, base64: data?.base64EncodedString() ?? "")
+        .init(name: name, type: type, base64: data?.base64EncodedString() ?? "")
+    }
+
+    var supportsPreview: Bool {
+        mimeTypesWithPreview.contains(type)
     }
 }
+
+private let mimeTypesWithPreview = [
+    "application/excel", "application/vnd.ms-excel", "application/mspowerpoint", "application/vnd.ms-powerpoint",
+    "application/powerpoint", "application/msword", "application/vnd.ms-word",
+    "application/json", "application/pdf", "application/rtf",
+    "application/vnd.apple.keynote", "application/vnd.apple.numbers", "application/vnd.apple.pages",
+    "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/x-sh", "application/x-javascript", "application/xhtml+xml", "application/xml",
+    "audio/aac", "audio/m4a", "audio/midi", "audio/mpeg", "audio/mpeg3", "audio/ogg", "audio/x-midi", "audio/wav", "audio/webm",
+    "image/gif", "image/jpeg", "image/pjpeg", "image/png", "image/svg+xml", "image/tiff", "image/webp",
+    "text/css", "text/csv", "text/html", "text/javascript", "text/plain", "text/xml",
+    "video/avi", "video/mp4", "video/mpeg", "video/msvideo", "video/ogg", "video/quicktime", "video/webm", "video/x-msvideo"
+]
