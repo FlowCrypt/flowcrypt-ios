@@ -156,7 +156,13 @@ class EmailScreen extends BaseScreen {
   checkEmailText = async (text: string, index = 0) => {
     const messageEl = await $(`~aid-message-${index}`);
     await ElementHelper.waitElementVisible(messageEl);
-    expect(await messageEl.getValue()).toContain(text)
+    const messageElValue = await messageEl.getValue();
+    if (text.length > 0) {
+      expect(messageElValue).toContain(text);
+    } else {
+      expect(messageElValue).toBeNull();
+    }
+
   }
 
   checkOpenedEmail = async (email: string, subject: string, text: string) => {

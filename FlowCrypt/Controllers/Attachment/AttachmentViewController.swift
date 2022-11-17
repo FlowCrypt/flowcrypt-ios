@@ -54,7 +54,7 @@ final class AttachmentViewController: UIViewController {
     private lazy var errorLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.text = "no_preview_avalable".localized
+        label.text = "no_preview_available".localized
         label.isHidden = true
         label.textColor = .textColor
         label.font = .systemFont(ofSize: 12)

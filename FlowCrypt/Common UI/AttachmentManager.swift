@@ -39,12 +39,11 @@ final class AttachmentManager: NSObject {
     private func openDocumentsController(from url: URL) {
         let documentController = UIDocumentPickerViewController(forExporting: [url])
         documentController.delegate = self
-        present(documentController, animated: true, completion: nil)
+        controller?.present(documentController, animated: true, completion: nil)
     }
 }
 
 extension AttachmentManager: AttachmentManagerType {
-
     func download(_ file: FileType) async {
         do {
             let url = try filesManager.save(file: file)
@@ -57,20 +56,10 @@ extension AttachmentManager: AttachmentManagerType {
     }
 }
 
-// MARK: - FilesManagerPresenter
-
-extension AttachmentManager: FilesManagerPresenter {
-    func present(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?) {
-        controller?.present(viewControllerToPresent, animated: flag, completion: completion)
-    }
-}
-
 // MARK: - UIDocumentPickerDelegate
-
 extension AttachmentManager: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        guard let savedUrl = urls.first,
-              let sharedDocumentUrl = savedUrl.sharedDocumentURL else {
+        guard let sharedDocumentUrl = urls.first?.sharedDocumentURL else {
             return
         }
         showFileSharedAlert(with: sharedDocumentUrl)

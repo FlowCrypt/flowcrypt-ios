@@ -96,6 +96,11 @@ export const CommonData = {
     attachmentName: 'simple.txt',
     encryptedAttachmentName: 'simple.txt.pgp'
   },
+  encryptedEmailWithAttachmentWithoutPreview: {
+    sender: 'flowcrypt.compatibility@gmail.com',
+    subject: 'message with kdbx file',
+    attachmentName: 'newDb.kdbx'
+  },
   emailWithMultipleRecipientsWithCC: {
     sender: 'ioan@flowcrypt.com',
     senderName: 'Ioan at FlowCrypt',

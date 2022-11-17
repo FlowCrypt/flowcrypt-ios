@@ -24,6 +24,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     let messageService: MessageService
 
+    private let filesManager: FilesManagerType
+    lazy var attachmentManager = AttachmentManager(
+        controller: self,
+        filesManager: filesManager
+    )
+
     let appContext: AppContextWithUser
     let messageOperationsProvider: MessageOperationsProvider
     let threadOperationsProvider: MessagesThreadOperationsProvider
@@ -40,6 +46,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         appContext: AppContextWithUser,
         messageService: MessageService? = nil,
         inboxItem: InboxItem,
+        filesManager: FilesManagerType = FilesManager(),
         onComposeMessageAction: ((ComposeMessageAction) -> Void)?,
         onComplete: @escaping MessageActionCompletion
     ) async throws {
@@ -68,6 +75,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 remoteFoldersProvider: try mailProvider.remoteFoldersProvider
             )
         )
+        self.filesManager = filesManager
         self.inboxItem = inboxItem
         self.onComposeMessageAction = onComposeMessageAction
         self.onComplete = onComplete
