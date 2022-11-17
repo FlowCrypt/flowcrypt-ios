@@ -21,6 +21,7 @@ describe('COMPOSE EMAIL: ', () => {
     const emailWeakPassword = CommonData.recipientWithoutPublicKey.weakPassword;
     const emailPassword = CommonData.recipientWithoutPublicKey.password;
 
+    const plainMessageModal = CommonData.recipientWithoutPublicKey.plainMessageModal;
     const passwordModalMessage = CommonData.recipientWithoutPublicKey.modalMessage;
     const emptyPasswordMessage = CommonData.recipientWithoutPublicKey.emptyPasswordMessage;
     const subjectPasswordErrorMessage = CommonData.recipientWithoutPublicKey.subjectPasswordErrorMessage;
@@ -49,6 +50,9 @@ describe('COMPOSE EMAIL: ', () => {
         message: emailText
       });
       await NewMessageScreen.clickSendButton();
+      await BaseScreen.checkModalMessage(plainMessageModal);
+      await NewMessageScreen.clickCancelButton();
+
       await BaseScreen.checkModalMessage(passwordModalMessage);
       await NewMessageScreen.clickCancelButton();
       await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);
@@ -57,6 +61,8 @@ describe('COMPOSE EMAIL: ', () => {
 
       await NewMessageScreen.setAddRecipient(recipient);
       await NewMessageScreen.clickSendButton();
+      await BaseScreen.checkModalMessage(plainMessageModal);
+      await NewMessageScreen.clickCancelButton();
       await BaseScreen.checkModalMessage(passwordModalMessage);
       await NewMessageScreen.clickCancelButton();
       await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);

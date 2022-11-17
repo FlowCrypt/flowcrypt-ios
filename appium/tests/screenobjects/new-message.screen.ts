@@ -16,10 +16,11 @@ const SELECTORS = {
   DELETE_ATTACHMENT_BUTTON: '~aid-attachment-delete-button-0',
   RETURN_BUTTON: '~Return',
   SET_PASSWORD_BUTTON: '~Set',
-  CANCEL_BUTTON: '~Cancel',
+  CANCEL_BUTTON: '~aid-cancel-button',
   BACK_BUTTON: '~aid-back-button',
   DELETE_BUTTON: '~aid-compose-delete',
   SEND_BUTTON: '~aid-compose-send',
+  SEND_PLAIN_MESSAGE_BUTTON: 'aid-compose-send-plain',
   CONFIRM_DELETING: '~Delete',
   MESSAGE_PASSPHRASE_TEXTFIELD: '~aid-message-passphrase-textfield',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
@@ -92,6 +93,10 @@ class NewMessageScreen extends BaseScreen {
 
   get sendButton() {
     return $(SELECTORS.SEND_BUTTON);
+  }
+
+  get sendPlainMessageButton() {
+    return $(SELECTORS.SEND_PLAIN_MESSAGE_BUTTON);
   }
 
   get confirmDeletingButton() {
@@ -388,6 +393,10 @@ class NewMessageScreen extends BaseScreen {
 
   clickSendButton = async () => {
     await ElementHelper.waitAndClick(await this.sendButton);
+  }
+
+  clickSendPlainMessageButton = async () => {
+    await ElementHelper.waitAndClick(await this.sendPlainMessageButton);
   }
 
   confirmDelete = async () => {

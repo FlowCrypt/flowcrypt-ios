@@ -100,7 +100,7 @@ final class ComposeMessageService {
     func createSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
-        shouldValidate: Bool = false,
+        shouldValidate: Bool = true,
         shouldSign: Bool = true,
         withPubKeys: Bool = true
     ) async throws -> SendableMsg {

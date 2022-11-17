@@ -88,6 +88,7 @@ extension ComposeViewController {
             message: "compose_plain_message_alert".localized,
             cancelButtonTitle: "compose_add_message_password".localized,
             actionButtonTitle: "compose_send_unencrypted".localized,
+            actionAccessibilityIdentifier: "aid-compose-send-plain",
             onAction: { [weak self] _ in self?.handleSendTap(shouldSendPlainMessage: true) },
             onCancel: { [weak self] _ in self?.setMessagePassword() }
         )
