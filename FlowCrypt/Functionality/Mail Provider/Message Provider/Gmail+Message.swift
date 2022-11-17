@@ -118,7 +118,10 @@ extension GmailService: MessageProvider {
         return gmailService.fetcherService.fetcher(with: request)
     }
 
-    private func createAttachmentQuery(identifier: String, messageId: String) -> GTLRGmailQuery_UsersMessagesAttachmentsGet {
+    private func createAttachmentQuery(
+        identifier: String,
+        messageId: String
+    ) -> GTLRGmailQuery_UsersMessagesAttachmentsGet {
         .query(
             withUserId: .me,
             messageId: messageId,
