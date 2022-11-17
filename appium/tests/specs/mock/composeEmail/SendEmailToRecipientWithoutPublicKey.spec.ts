@@ -17,6 +17,7 @@ describe('COMPOSE EMAIL: ', () => {
 
   it('sending message to user without public key produces password modal', async () => {
 
+    const sender = CommonData.account.email;
     const recipient = CommonData.recipientWithoutPublicKey.email;
     const emailSubject = CommonData.recipientWithoutPublicKey.subject;
     const emailText = CommonData.simpleEmail.message;
@@ -93,7 +94,7 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.checkSentScreen();
       await MailFolderScreen.clickOnEmailBySubject(emailSubject);
 
-      await EmailScreen.checkOpenedEmail(recipient, emailSubject, emailText);
+      await EmailScreen.checkOpenedEmail(sender, emailSubject, emailText);
       await EmailScreen.checkEncryptionBadge('not encrypted');
     });
   });
