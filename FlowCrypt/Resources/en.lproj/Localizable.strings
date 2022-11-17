@@ -401,7 +401,7 @@
 "invalid_storage_failed_to_initialize" = "Failed to initialize storage. Please restart your device. If it doesn't help, please reinstall application";
 
 // Attachments details
-"no_preview_avalable" = "No preview available";
+"no_preview_available" = "No preview available";
 
 // ImapError
 "imap_error_no_session" = "Session isn't established";

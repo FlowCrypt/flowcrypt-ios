@@ -20,19 +20,23 @@ describe('INBOX: ', () => {
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
     const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
-    const attachmentNameWithoutExtension = attachmentName.substring(0, attachmentName.lastIndexOf('.')) || attachmentName;
+    const attachmentNameWithoutExtension = attachmentName.substring(0, attachmentName.lastIndexOf('.'));
     const encryptedAttachmentName = CommonData.encryptedEmailWithAttachment.encryptedAttachmentName;
+
+    const messageWithoutPreviewSender = CommonData.encryptedEmailWithAttachmentWithoutPreview.sender;
+    const messageWithoutPreviewSubject = CommonData.encryptedEmailWithAttachmentWithoutPreview.subject;
+    const attachmentWithoutPreviewName = CommonData.encryptedEmailWithAttachmentWithoutPreview.attachmentName;
+    const attachmentWithoutPreviewNameWithoutExtension = attachmentWithoutPreviewName.substring(0, attachmentWithoutPreviewName.lastIndexOf('.'));
 
     const wrongPassPhrase = 'wrong';
     const correctPassPhrase = CommonData.account.passPhrase;
     const processArgs = CommonData.mockProcessArgs;
 
     const mockApi = new MockApi();
-
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      messages: ['Message with cc and multiple recipients and text attachment'],
+      messages: ['Message with cc and multiple recipients and text attachment', 'message with kdbx file'],
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
@@ -87,6 +91,17 @@ describe('INBOX: ', () => {
 
       await AttachmentScreen.clickSaveButton();
       await AttachmentScreen.checkDownloadPopUp(attachmentNameWithoutExtension);
+      await AttachmentScreen.clickSystemBackButton();
+      await AttachmentScreen.clickCancelButton();
+      await AttachmentScreen.clickBackButton();
+      await EmailScreen.clickBackButton();
+
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickOnEmailBySubject(messageWithoutPreviewSubject);
+      await EmailScreen.checkOpenedEmail(messageWithoutPreviewSender, messageWithoutPreviewSubject, '');
+      await EmailScreen.checkAttachment(attachmentWithoutPreviewName);
+      await EmailScreen.clickOnAttachmentCell();
+      await AttachmentScreen.checkDownloadPopUp(attachmentWithoutPreviewNameWithoutExtension);
     });
   });
 });
