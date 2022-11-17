@@ -2,7 +2,9 @@ import {
   SplashScreen,
   SetupKeyScreen,
   MailFolderScreen,
-  NewMessageScreen
+  NewMessageScreen,
+  MenuBarScreen,
+  EmailScreen
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -79,6 +81,20 @@ describe('COMPOSE EMAIL: ', () => {
 
       await NewMessageScreen.setMessagePassword(emailPassword);
       await NewMessageScreen.checkPasswordCell(addedPasswordMessage);
+      await NewMessageScreen.clickBackButton();
+
+      await MailFolderScreen.clickCreateEmail();
+      await NewMessageScreen.composeEmail(recipient, emailSubject, emailText);
+      await NewMessageScreen.clickSendButton();
+      await NewMessageScreen.clickSendPlainMessageButton();
+
+      await MenuBarScreen.clickMenuBtn();
+      await MenuBarScreen.clickSentButton();
+      await MailFolderScreen.checkSentScreen();
+      await MailFolderScreen.clickOnEmailBySubject(emailSubject);
+
+      await EmailScreen.checkOpenedEmail(recipient, emailSubject, emailText);
+      await EmailScreen.checkEncryptionBadge('not encrypted');
     });
   });
 });

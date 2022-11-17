@@ -20,7 +20,7 @@ const SELECTORS = {
   BACK_BUTTON: '~aid-back-button',
   DELETE_BUTTON: '~aid-compose-delete',
   SEND_BUTTON: '~aid-compose-send',
-  SEND_PLAIN_MESSAGE_BUTTON: 'aid-compose-send-plain',
+  SEND_PLAIN_MESSAGE_BUTTON: '~aid-compose-send-plain',
   CONFIRM_DELETING: '~Delete',
   MESSAGE_PASSPHRASE_TEXTFIELD: '~aid-message-passphrase-textfield',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
