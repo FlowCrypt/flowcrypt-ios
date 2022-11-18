@@ -158,3 +158,9 @@ struct MessageBody: Hashable {
     let html: String?
     let attachment: MessageAttachment?
 }
+
+extension MessageBody {
+    var hasNoContent: Bool {
+        text.isEmpty && attachment == nil
+    }
+}
