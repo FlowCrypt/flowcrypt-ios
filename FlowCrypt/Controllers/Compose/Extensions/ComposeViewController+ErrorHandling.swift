@@ -68,7 +68,11 @@ extension ComposeViewController {
             if self.isMessagePasswordSupported {
                 switch error {
                 case MessageValidationError.noPubRecipients:
-                    self.showPlainMessageAlert()
+                    if Bundle.isEnterprise {
+                        self.setMessagePassword()
+                    } else {
+                        self.showPlainMessageAlert()
+                    }
                 case MessageValidationError.notUniquePassword,
                      MessageValidationError.subjectContainsPassword,
                      MessageValidationError.weakPassword:

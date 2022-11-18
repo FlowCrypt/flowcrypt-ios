@@ -12,6 +12,7 @@ import BaseScreen from '../../../screenobjects/base.screen';
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
+import AppiumHelper from 'tests/helpers/AppiumHelper';
 
 describe('COMPOSE EMAIL: ', () => {
 
@@ -30,6 +31,8 @@ describe('COMPOSE EMAIL: ', () => {
     const subjectPasswordErrorMessage = CommonData.recipientWithoutPublicKey.subjectPasswordErrorMessage;
     const addedPasswordMessage = CommonData.recipientWithoutPublicKey.addedPasswordMessage;
 
+    const enterpriseProcessArgs = [...CommonData.mockProcessArgs, ...['--enterprise']];
+
     const mockApi = new MockApi();
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
@@ -45,6 +48,7 @@ describe('COMPOSE EMAIL: ', () => {
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
 
+      // check if app shows modal for choosing between plain and password-protected message
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.composeEmail(recipient, emailSubject, emailText);
       await NewMessageScreen.checkFilledComposeEmailInfo({
@@ -70,6 +74,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.clickCancelButton();
       await NewMessageScreen.checkPasswordCell(emptyPasswordMessage);
 
+      // check message password validation
       await NewMessageScreen.clickPasswordCell();
       await NewMessageScreen.setMessagePassword(emailSubject);
       await NewMessageScreen.clickSendButton();
@@ -96,6 +101,20 @@ describe('COMPOSE EMAIL: ', () => {
 
       await EmailScreen.checkOpenedEmail(sender, emailSubject, emailText);
       await EmailScreen.checkEncryptionBadge('not encrypted');
+
+      // check if enterprise doesn't allow to send non-encrypted message
+      await AppiumHelper.restartApp(enterpriseProcessArgs);
+
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickCreateEmail();
+      await NewMessageScreen.composeEmail(recipient, emailSubject, emailText);
+      await NewMessageScreen.checkFilledComposeEmailInfo({
+        recipients: [recipient],
+        subject: emailSubject,
+        message: emailText
+      });
+      await NewMessageScreen.clickSendButton();
+      await BaseScreen.checkModalMessage(passwordModalMessage);
     });
   });
 });
