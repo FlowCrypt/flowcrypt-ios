@@ -65,25 +65,36 @@ extension ComposeViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
             guard let self else { return }
 
-            if self.isMessagePasswordSupported {
-                switch error {
-                case MessageValidationError.noPubRecipients:
-                    if Bundle.isEnterprise {
-                        self.setMessagePassword()
-                    } else {
-                        self.showPlainMessageAlert()
-                    }
-                case MessageValidationError.notUniquePassword,
-                     MessageValidationError.subjectContainsPassword,
-                     MessageValidationError.weakPassword:
-                    self.showAlert(message: error.errorMessage)
-                default:
-                    self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+            switch error {
+            case MessageValidationError.noPubRecipients:
+                guard self.isMessagePasswordSupported else {
+                    self.showPlainMessageConfirmationAlert()
+                    return
                 }
-            } else {
+
+                if Bundle.isEnterprise {
+                    self.setMessagePassword()
+                } else {
+                    self.showPlainMessageAlert()
+                }
+            case MessageValidationError.notUniquePassword,
+                 MessageValidationError.subjectContainsPassword,
+                 MessageValidationError.weakPassword:
+                self.showAlert(message: error.errorMessage)
+            default:
                 self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
             }
         }
+    }
+
+    private func showPlainMessageConfirmationAlert() {
+        showAlertWithAction(
+            title: "compose_message_encryption".localized,
+            message: "compose_plain_message_confirmation".localized,
+            actionButtonTitle: "compose_send_unencrypted".localized,
+            actionAccessibilityIdentifier: "aid-compose-send-plain",
+            onAction: { [weak self] _ in self?.handleSendTap(shouldSendPlainMessage: true) }
+        )
     }
 
     private func showPlainMessageAlert() {
