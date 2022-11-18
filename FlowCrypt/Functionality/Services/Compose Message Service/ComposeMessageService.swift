@@ -127,7 +127,10 @@ final class ComposeMessageService {
                 throw MessageValidationError.emptySubject
             }
 
-            guard let text = contextToSend.message, text.hasContent else {
+            let hasText = contextToSend.message?.hasContent ?? false
+            let hasAttachments = !contextToSend.attachments.isEmpty
+
+            guard hasText || hasAttachments else {
                 throw MessageValidationError.emptyMessage
             }
 
