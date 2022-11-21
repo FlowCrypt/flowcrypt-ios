@@ -71,8 +71,9 @@ struct EnterpriseServerApiHelper {
 
     private func isExpectedFesServiceResponse(responseData: Data) -> Bool {
         // "try?" because unsure what server is running there, want to test without failing
-        guard let responseDictionary = try? responseData.toDict() else { return false }
-        guard let service = responseDictionary["service"] as? String else { return false }
+        guard let responseDictionary = try? responseData.toDict(),
+              let service = responseDictionary["service"] as? String
+        else { return false }
         return service == "enterprise-server"
     }
 
@@ -82,9 +83,10 @@ struct EnterpriseServerApiHelper {
         }
         // on consumer release, FES is called opportunistically - if it's there, it will be used
         // guards first - don't tolerate unknown / other errors. Only interested in network errors.
-        guard let apiError = error as? ApiError else { return false }
-        guard let nsError = apiError.internalError as NSError? else { return false }
-        guard Constants.getToleratedNSErrorCodes.contains(nsError.code) else { return false }
+        guard let apiError = error as? ApiError,
+              let nsError = apiError.internalError as NSError?,
+              Constants.getToleratedNSErrorCodes.contains(nsError.code)
+        else { return false }
         // when calling FES, we got some sort of network error. Could be FES down or internet down.
         if await doesTheInternetWork() {
             // we got network error from FES, but internet works. We are on consumer release.

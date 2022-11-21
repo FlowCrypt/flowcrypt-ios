@@ -11,8 +11,12 @@ import UIKit
 
 // MARK: - Message Sending
 extension ComposeViewController {
-    func validateAndSendMessage() async throws {
+    func validateAndSendMessage(shouldSendPlainMessage: Bool = false) async throws {
         guard checkIfAllRecipientsAreValid() else { return }
+
+        guard shouldSendPlainMessage || contextToSend.hasMessagePasswordIfNeeded else {
+            throw MessageValidationError.noPubRecipients
+        }
 
         showSendingSpinner()
         evaluateSelectedRecipients()
@@ -21,10 +25,10 @@ extension ComposeViewController {
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
         try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
 
-        let messageIdentifier = try await sendMessage()
+        let messageIdentifier = try await sendMessage(isPlain: shouldSendPlainMessage)
         handleAction?(.sent(messageIdentifier))
 
-        handleSuccessfullySentMessage()
+        handleSuccessfullySentMessage(isEncrypted: !shouldSendPlainMessage)
     }
 
     private func checkIfAllRecipientsAreValid() -> Bool {
@@ -53,17 +57,20 @@ extension ComposeViewController {
         }
     }
 
-    private func sendMessage() async throws -> MessageIdentifier {
-        let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
+    private func sendMessage(isPlain: Bool) async throws -> MessageIdentifier {
+        let sendableMsg = try await composeMessageService.createSendableMsg(
             input: input,
-            contextToSend: contextToSend
+            contextToSend: contextToSend,
+            shouldSign: !isPlain,
+            withPubKeys: !isPlain
         )
 
         UIApplication.shared.isIdleTimerDisabled = true
 
-        let identifier = try await composeMessageService.encryptAndSend(
+        let identifier = try await composeMessageService.composeAndSend(
             message: sendableMsg,
-            threadId: input.threadId
+            threadId: input.threadId,
+            isPlain: isPlain
         )
 
         UIApplication.shared.isIdleTimerDisabled = false
@@ -75,8 +82,8 @@ extension ComposeViewController {
         )
     }
 
-    private func handleSuccessfullySentMessage() {
-        showToast(input.successfullySentToast)
+    private func handleSuccessfullySentMessage(isEncrypted: Bool) {
+        showToast(input.successfullySentToast(isEncrypted: isEncrypted))
         navigationController?.popViewController(animated: true)
     }
 }

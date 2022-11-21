@@ -190,6 +190,7 @@ export const CommonData = {
     weakPassword: '123aaBBc',
     password: 'abcABC1*',
     modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)\n\nPassword should include: - one uppercase - one lowercase - one number - one special character eg &/#"-'_%-@,;:!*() - min 8 characters length`,
+    plainMessageModal: 'Message Encryption\n One or more of your recipients don\'t have encryption set up.\n\nPlease add a message password, or message will be sent unencrypted.',
     emptyPasswordMessage: 'Tap to add password for recipients who don\'t have encryption set up.',
     addedPasswordMessage: 'Web portal password added',
     weakPasswordMessage: 'Error\nPassword didn\'t comply with company policy, which requires at least:\n\n- one uppercase - one lowercase - one number - one special character eg &/#"-\'_%-@,;:!*() - 8 characters length\n\nPlease update the password and re-send.',

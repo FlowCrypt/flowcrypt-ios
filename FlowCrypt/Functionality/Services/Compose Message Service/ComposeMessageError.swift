@@ -52,7 +52,7 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     }
 }
 
-enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
+enum ComposeMessageError: Error, CustomStringConvertible {
     case validationError(MessageValidationError)
     case passPhraseRequired
     case passPhraseNoMatch
@@ -75,9 +75,5 @@ enum ComposeMessageError: Error, CustomStringConvertible, Equatable {
         default:
             return errorMessage
         }
-    }
-
-    static func == (lhs: ComposeMessageError, rhs: ComposeMessageError) -> Bool {
-        lhs.description == rhs.description
     }
 }

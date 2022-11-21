@@ -16,16 +16,12 @@ extension ComposeViewController {
         openAttachmentsInputSourcesSheet()
     }
 
-    func handleSendTap() {
+    func handleSendTap(shouldSendPlainMessage: Bool = false) {
         stopDraftTimer(withSave: false)
 
         Task {
             do {
-                guard contextToSend.hasMessagePasswordIfNeeded else {
-                    throw MessageValidationError.noPubRecipients
-                }
-
-                try await validateAndSendMessage()
+                try await validateAndSendMessage(shouldSendPlainMessage: shouldSendPlainMessage)
             } catch {
                 handle(error: error)
             }
