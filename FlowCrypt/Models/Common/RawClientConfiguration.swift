@@ -23,6 +23,10 @@ enum ClientConfigurationFlag: String, Codable {
     case forbidStoringPassphrase = "FORBID_STORING_PASS_PHRASE"
 
     case unknown
+
+    init(from decoder: Decoder) throws {
+        self = try ClientConfigurationFlag(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
+    }
 }
 
 struct RawClientConfiguration: Codable, Equatable {
