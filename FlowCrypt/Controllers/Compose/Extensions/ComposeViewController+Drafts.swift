@@ -58,10 +58,11 @@ extension ComposeViewController {
                 let shouldEncrypt = draft.input.type.info?.shouldEncrypt == true ||
                     contextToSend.hasRecipientsWithActivePubKey
 
-                let sendableMsg = try await composeMessageService.validateAndProduceSendableMsg(
+                let sendableMsg = try await composeMessageService.createSendableMsg(
                     input: draft.input,
                     contextToSend: draft.contextToSend,
-                    isDraft: true,
+                    shouldValidate: false,
+                    shouldSign: false,
                     withPubKeys: shouldEncrypt
                 )
 

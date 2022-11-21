@@ -14,7 +14,7 @@ extension ComposeMessageService {
         case validatingMessage
         case startComposing
         case progressChanged(Float)
-        case messageSent
+        case messageSent(Bool)
 
         var message: String? {
             switch self {
@@ -26,8 +26,9 @@ extension ComposeMessageService {
                 return "encrypting_title".localized
             case .progressChanged:
                 return "compose_uploading".localized
-            case .messageSent:
-                return "compose_message_sent".localized
+            case let .messageSent(isEncrypted):
+                let label = isEncrypted ? "compose_encrypted_message_sent" : "compose_message_sent"
+                return label.localized
             }
         }
 

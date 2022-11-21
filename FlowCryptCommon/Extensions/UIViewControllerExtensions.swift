@@ -179,7 +179,7 @@ public extension UINavigationController {
 
 // MARK: - MBProgressHUD
 public extension UIViewController {
-    var currentProgressHUD: MBProgressHUD {
+    private var currentProgressHUD: MBProgressHUD {
         MBProgressHUD.forView(view) ?? MBProgressHUD.showAdded(to: view, animated: true)
     }
 

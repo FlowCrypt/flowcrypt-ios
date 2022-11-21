@@ -216,6 +216,7 @@ extension ComposeViewController {
         let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel) { [weak self] _ in
             return continuation.resume(returning: self?.contextToSend.messagePassword)
         }
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
         alert.addAction(cancelAction)
 
         let setAction = UIAlertAction(title: "set".localized, style: .default) { _ in
