@@ -24,7 +24,6 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - sudo xcode-select -s /Applications/Xcode-14.app
           - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
@@ -50,7 +49,7 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/
-          - sem-version node 16
+          - sem-version node 18
           - ( cache restore common-npm && npm install && cache store common-npm node_modules )
           - ( cd Core && cache restore core-npm && npm install && cache store core-npm node_modules )
           - ( cd appium && cache restore appium-npm && npm install && cache store appium-npm node_modules )
@@ -73,10 +72,9 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - sudo xcode-select -s /Applications/Xcode-14.app
           - checkout && cd ~/git/flowcrypt-ios/
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
-          - sem-version node 16 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
+          - sem-version node 18 && cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
       epilogue:

@@ -32,7 +32,12 @@ struct PassPhrase: Codable, Hashable, Equatable {
     }
 
     func withUpdatedDate() -> PassPhrase {
-        PassPhrase(value: self.value, email: self.email, fingerprintsOfAssociatedKey: self.fingerprintsOfAssociatedKey, date: Date())
+        .init(
+            value: self.value,
+            email: self.email,
+            fingerprintsOfAssociatedKey: self.fingerprintsOfAssociatedKey,
+            date: Date()
+        )
     }
 
     // We still need == operator here because we use `withUpdatedDate` to set `date` field to up-to-date

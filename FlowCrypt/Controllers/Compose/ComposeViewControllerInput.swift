@@ -9,7 +9,7 @@
 import Foundation
 
 struct ComposeMessageInput: Equatable {
-    static let empty = ComposeMessageInput(type: .idle)
+    static let empty = Self(type: .idle)
 
     struct MessageQuoteInfo: Equatable {
         let id: Identifier?

@@ -149,7 +149,7 @@ struct Identifier: Equatable, Hashable {
     }
 
     static var random: Identifier {
-        Identifier(stringId: UUID().uuidString, intId: nil)
+        .init(stringId: UUID().uuidString, intId: nil)
     }
 }
 

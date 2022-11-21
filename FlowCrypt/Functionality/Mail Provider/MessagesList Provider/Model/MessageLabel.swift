@@ -80,12 +80,6 @@ extension MessageLabel {
     }
 }
 
-struct ImapMessageFlags: OptionSet {
-    let rawValue: Int
-
-    static let test = ImapMessageFlags(rawValue: 0 << 0)
-}
-
 // MARK: - GMAIL
 extension MessageLabel {
     init(gmailLabel: String) {
