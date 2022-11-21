@@ -24,7 +24,8 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          # - xcode-select --install
+          - xcode-select --install
+          - xcode-select -p
           - sudo xcode-select -s /Library/Developer/CommandLineTools
           - checkout && cd ~/git/flowcrypt-ios/
       jobs:
