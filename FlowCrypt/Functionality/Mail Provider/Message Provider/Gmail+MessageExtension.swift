@@ -29,7 +29,11 @@ extension Message {
         let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []
         let labels: [MessageLabel] = gmailMessage.labelIds?.map(MessageLabel.init) ?? []
         let body = gmailMessage.parseMessageBody()
-        let attachments = gmailMessage.parseAttachments()
+        var attachments = gmailMessage.parseAttachments()
+
+        if body.hasNoContent, let bodyPartAttachment = gmailMessage.parseBodyPartAttachment() {
+            attachments.append(bodyPartAttachment)
+        }
 
         var sender: Recipient?
         var subject: String?
@@ -149,6 +153,19 @@ private extension GTLRGmail_Message {
                 data: body.data?.data()
             )
         }
+    }
+
+    func parseBodyPartAttachment() -> MessageAttachment? {
+        guard let body = payload?.parts?.first(where: { $0.mimeType == "text/plain" })?.body,
+              let attachmentId = body.attachmentId
+        else { return nil }
+
+        return MessageAttachment(
+            id: Identifier(stringId: attachmentId),
+            name: "encrypted.asc",
+            estimatedSize: body.size?.intValue,
+            mimeType: "text/plain"
+        )
     }
 }
 

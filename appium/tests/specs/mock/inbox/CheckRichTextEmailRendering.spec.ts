@@ -19,13 +19,14 @@ describe('INBOX: ', () => {
     const attachmentText = CommonData.richTextMessage.attachmentText;
 
     const messageWithEmptyBodySubject = CommonData.richTextMessageWithEmptyBody.subject;
+    const messageWithLargeAttachmentSubject = CommonData.richTextMessageWithLargeAttachment.subject;
 
     const mockApi = new MockApi();
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      messages: [subject, messageWithEmptyBodySubject] as GoogleMockMessage[],
+      messages: [subject, messageWithEmptyBodySubject, messageWithLargeAttachmentSubject] as GoogleMockMessage[],
     });
 
     await mockApi.withMockedApis(async () => {
@@ -45,6 +46,16 @@ describe('INBOX: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickOnEmailBySubject(messageWithEmptyBodySubject);
       await EmailScreen.checkOpenedEmail(sender, messageWithEmptyBodySubject, '');
+      await EmailScreen.checkAttachment(attachmentName);
+      await EmailScreen.clickOnAttachmentCell();
+      await EmailScreen.checkAttachmentTextView(attachmentText);
+
+      await EmailScreen.clickBackButton();
+      await EmailScreen.clickBackButton();
+
+      await MailFolderScreen.checkInboxScreen();
+      await MailFolderScreen.clickOnEmailBySubject(messageWithLargeAttachmentSubject);
+      await EmailScreen.checkOpenedEmail(sender, messageWithLargeAttachmentSubject, message);
       await EmailScreen.checkAttachment(attachmentName);
       await EmailScreen.clickOnAttachmentCell();
       await EmailScreen.checkAttachmentTextView(attachmentText);

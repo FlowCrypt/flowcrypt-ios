@@ -35,7 +35,7 @@ public extension CGFloat {
             UIDevice.isIpad ? 24 : 8
         }
 
-        public static var textSide: CGFloat {
+        static var textSide: CGFloat {
             UIDevice.isIpad ? 24 : 16
         }
     }

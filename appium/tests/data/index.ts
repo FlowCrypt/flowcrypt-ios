@@ -63,6 +63,9 @@ export const CommonData = {
   richTextMessageWithEmptyBody: {
     subject: 'rich text message with empty body and attachment',
   },
+  richTextMessageWithLargeAttachment: {
+    subject: 'mime message with large attachment'
+  },
   archivedThread: {
     subject: 'Archived thread'
   },

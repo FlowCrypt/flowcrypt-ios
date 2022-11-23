@@ -16,7 +16,9 @@ describe('COMPOSE EMAIL: ', () => {
 
     const recipient = MockUserList.dmitry;
     const recipientWithoutPubKeys = MockUserList.demo;
+    const sender = CommonData.sender.name;
     const subject = CommonData.simpleEmail.subject;
+    const message = CommonData.simpleEmail.message;
     const draftSubject1 = CommonData.draft.subject1;
     const draftSubject2 = CommonData.draft.subject2;
     const draftText1 = CommonData.draft.text1;
@@ -41,18 +43,21 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.clickOnEmailBySubject(subject);
 
       // compose draft as reply to existing thread
+      await EmailScreen.checkOpenedEmail(sender, subject, message);
       await EmailScreen.clickReplyButton();
       await NewMessageScreen.checkMessageFieldFocus();
       await NewMessageScreen.addMessageText(draftText1);
       await NewMessageScreen.clickBackButton();
 
       // compose another draft
+      await EmailScreen.checkOpenedEmail(sender, subject, message);
       await EmailScreen.clickReplyButton();
       await NewMessageScreen.checkMessageFieldFocus();
       await NewMessageScreen.addMessageText(draftText2);
       await NewMessageScreen.clickBackButton();
 
       // check if drafts are added to thread messages
+      await EmailScreen.checkOpenedEmail(sender, subject, message);
       await EmailScreen.checkDraft(draftText1, 1);
       await EmailScreen.checkDraft(draftText2, 2);
 
@@ -62,6 +67,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.setComposeSecurityMessage(updatedDraftText);
       await NewMessageScreen.clickBackButton();
 
+      await EmailScreen.checkOpenedEmail(sender, subject, message);
       await EmailScreen.checkDraft(updatedDraftText, 1);
       await EmailScreen.checkDraft(draftText2, 2);
 
@@ -69,18 +75,21 @@ describe('COMPOSE EMAIL: ', () => {
       await EmailScreen.deleteDraft(1);
       await EmailScreen.clickBackButton();
 
+      await MailFolderScreen.checkInboxScreen();
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickDraftsButton();
       await MailFolderScreen.checkDraftsScreen();
 
       // delete draft from compose screen
       await MailFolderScreen.clickOnEmailBySubject(subject);
+      await EmailScreen.checkOpenedEmail(sender, subject, message);
       await EmailScreen.checkDraft(draftText2, 1);
       await EmailScreen.openDraft(1);
 
       await NewMessageScreen.clickDeleteButton();
       await NewMessageScreen.confirmDelete();
 
+      await EmailScreen.checkOpenedEmail(sender, subject, message);
       await EmailScreen.clickBackButton();
       await MailFolderScreen.checkDraftsScreen();
       await MailFolderScreen.checkIfFolderIsEmpty();
