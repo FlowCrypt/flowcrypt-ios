@@ -73,11 +73,12 @@ public final class MessageTextSubjectNode: CellNode {
         messageNode.style.flexGrow = 1.0
 
         if input.quote != nil {
-            toggleQuoteButtonNode.style.spacingBefore = 20
+            toggleQuoteButtonNode.style.spacingBefore = 8
             quoteNode.style.flexGrow = 1.0
 
             let stack = ASStackLayoutSpec.vertical()
             stack.alignItems = .start
+            stack.spacing = 12
 
             if shouldShowQuote {
                 stack.children = [messageNode, toggleQuoteButtonNode, quoteNode]

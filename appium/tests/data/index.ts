@@ -31,13 +31,9 @@ export const CommonData = {
     sender: 'dmitry@flowcrypt.com',
     senderName: 'Dmitry at FlowCrypt',
     firstThreadMessage: 'first message',
-    secondThreadMessage: 'Second thread rendering message\n' +
-      '\n' +
-      'On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
-      ' > first message',
-    thirdThreadMessage: 'Third thread rendering message\n' +
-      '\n' +
-      'On 2022-02-07 at 06:56, e2e.enterprise.test@flowcrypt.com wrote:\n' +
+    secondThreadMessage: 'Second thread rendering message',
+    thirdThreadMessage: 'Third thread rendering message',
+    thirdThreadMessageQuote: 'On 2022-02-07 at 06:56, e2e.enterprise.test@flowcrypt.com wrote:\n' +
       '> Second thread rendering message\n' +
       '>\n' +
       '> On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
