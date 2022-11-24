@@ -263,8 +263,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 let processedMessage = ProcessedMessage(
                     message: data.rawMessage,
                     text: decryptedText,
-                    type: .plain,
-                    attachments: []
+                    type: .plain
                 )
                 handle(processedMessage: processedMessage, at: indexPath)
             } catch {
