@@ -56,6 +56,16 @@ class ElementHelper {
     await element.click();
   }
 
+  static deleteText = async (element: WebdriverIO.Element) => {
+    if ((await element.getValue()) == '') { return }
+
+    await element.click();
+
+    const selectAllButton = await $('~Select All');
+    await ElementHelper.waitAndClick(selectAllButton);
+    await driver.sendKeys(['\b']); // backspace
+  }
+
   static async waitAndPasteString(element: WebdriverIO.Element, text: string) {
     const base64Encoded = Buffer.from(text).toString('base64');
     await driver.setClipboard(base64Encoded);
