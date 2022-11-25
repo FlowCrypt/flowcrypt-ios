@@ -59,7 +59,7 @@ class ElementHelper {
   static deleteText = async (element: WebdriverIO.Element) => {
     if ((await element.getValue()) == '') { return }
 
-    await element.click();
+    await element.doubleClick();
 
     const selectAllButton = await $('~Select All');
     await ElementHelper.waitAndClick(selectAllButton);
