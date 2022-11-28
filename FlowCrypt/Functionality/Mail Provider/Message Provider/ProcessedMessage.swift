@@ -135,6 +135,10 @@ extension ProcessedMessage {
         return (message, quote)
     }
 
+    var fullText: String {
+        [text, quote].compactMap { $0 }.joined(separator: "\n")
+    }
+
     var attributedMessage: NSAttributedString {
         String(text.prefix(maxLength)).attributed(color: type.textColor)
     }

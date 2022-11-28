@@ -132,8 +132,16 @@ extension ComposeViewController {
     }
 
     func setupTextNode() {
+        let attributedString = decorator.styledMessage(with: contextToSend.message ?? "")
         let styledQuote = decorator.styledQuote(with: input)
-        let height = max(decorator.frame(for: styledQuote).height, 40)
+
+        let mutableString = NSMutableAttributedString(attributedString: attributedString)
+        if input.isQuote, !mutableString.string.contains(styledQuote.string) {
+            mutableString.append(styledQuote)
+        }
+
+        let height = max(decorator.frame(for: mutableString).height, 40)
+
         composeTextNode = TextViewCellNode(
             decorator.styledTextViewInput(
                 with: height,
@@ -151,16 +159,7 @@ extension ComposeViewController {
                 self.ensureCursorVisible(textView: textView)
             }
         }
-        .then {
-            let message = contextToSend.message ?? ""
-            let attributedString = decorator.styledMessage(with: message)
-            let mutableString = NSMutableAttributedString(attributedString: attributedString)
-            let textNode = $0
-
-            if input.isQuote, !mutableString.string.contains(styledQuote.string) {
-                mutableString.append(styledQuote)
-            }
-
+        .then { textNode in
             DispatchQueue.main.async {
                 if !mutableString.string.isEmpty {
                     textNode.textView.attributedText = mutableString
