@@ -60,10 +60,12 @@ class ElementHelper {
     const elValue = await element.getValue();
     if (elValue === null || elValue === '') { return }
 
-    await element.doubleClick();
+    await this.waitAndClick(element);
+    await this.waitAndClick(element);
 
     const selectAllButton = await $('~Select All');
-    await ElementHelper.waitAndClick(selectAllButton);
+    await this.waitAndClick(selectAllButton);
+
     await driver.sendKeys(['\b']); // backspace
   }
 
