@@ -72,6 +72,8 @@ public final class MessageTextSubjectNode: CellNode {
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         messageNode.style.flexGrow = 1.0
 
+        let specChild: ASLayoutElement
+
         if input.quote != nil {
             toggleQuoteButtonNode.style.spacingBefore = 8
             quoteNode.style.flexGrow = 1.0
@@ -86,16 +88,15 @@ public final class MessageTextSubjectNode: CellNode {
                 stack.children = [messageNode, toggleQuoteButtonNode]
             }
 
-            return ASInsetLayoutSpec(
-                insets: insets,
-                child: stack
-            )
+            specChild = stack
         } else {
-            return ASInsetLayoutSpec(
-                insets: insets,
-                child: messageNode
-            )
+            specChild = messageNode
         }
+
+        return ASInsetLayoutSpec(
+            insets: insets,
+            child: specChild
+        )
     }
 
     @objc private func onToggleQuoteButtonTap() {

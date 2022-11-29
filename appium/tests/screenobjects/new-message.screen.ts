@@ -182,7 +182,7 @@ class NewMessageScreen extends BaseScreen {
   setComposeSecurityMessage = async (message: string) => {
     await browser.pause(500);
     const el = await this.composeSecurityMessage;
-    await ElementHelper.deleteText(el);
+    await ElementHelper.clearInput(el);
     await ElementHelper.waitClickAndType(el, message);
   };
 

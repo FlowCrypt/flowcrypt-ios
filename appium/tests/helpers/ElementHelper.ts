@@ -58,7 +58,7 @@ class ElementHelper {
 
   static deleteText = async (element: WebdriverIO.Element) => {
     const elValue = await element.getValue();
-    if (elValue === null || elValue === '') { return }
+    if (!elValue) { return }
 
     await this.waitAndClick(element);
     await this.waitAndClick(element);
