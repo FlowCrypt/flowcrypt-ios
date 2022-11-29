@@ -127,8 +127,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let parsed = try await call("parseAttachmentType", params: [
             "atts": atts.map { $0.toDict(msgId: msgId) }
         ])
-        let response = try parsed.json.decodeJson(as: AttachmentTreatAsResponse.self)
-        return response.atts
+        return try parsed.json.decodeJson(as: AttachmentTreatAsResponse.self).atts
     }
 
     func decryptFile(encrypted: Data, keys: [Keypair], msgPwd: String?) async throws -> CoreRes.DecryptFile {

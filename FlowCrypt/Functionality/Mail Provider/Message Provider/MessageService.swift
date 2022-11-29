@@ -99,6 +99,9 @@ final class MessageService {
         userEmail: String,
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
+        var message = message
+        try await parseAttachmentTypes(message: &message)
+
         guard message.isPgp else {
             return ProcessedMessage(message: message)
         }
@@ -169,7 +172,6 @@ final class MessageService {
         )
 
         var message = message
-        try await parseAttachmentTypes(message: &message)
         if message.hasSignatureAttachment || message.hasEncryptedMsgAttachment {
             // raw data is needed for verification of detached signature
             // and decrypting pgp/mime attachment

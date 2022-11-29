@@ -804,6 +804,25 @@ test('parseDecryptMsg - decryptErr wrong key when decrypting content', async t =
   t.pass();
 });
 
+test('parseAttachmentType', async t => {
+  const jsonReq = {
+    atts: [
+      { id: '1', msgId: '1', name: 'encrypted.asc', length: 400 },
+      { id: '2', msgId: '1', type: 'application/pgp-signature', name: 'signature', length: 300 },
+      { id: '3', msgId: '2', name: 'image.jpg.pgp', length: 900 }
+    ]
+  };
+  const { json: decryptJson } = await endpoints.parseAttachmentType(jsonReq);
+  expect(decryptJson).to.deep.equal({
+    atts: [
+      { id: '1', treatAs: 'encryptedMsg' },
+      { id: '2', treatAs: 'signature' },
+      { id: '3', treatAs: 'encryptedFile' },
+    ]
+  });
+  t.pass();
+});
+
 test('decryptFile - decryptErr wrong key when decrypting attachment', async t => {
   const jsonReq = { keys: getKeypairs('rsa2').keys }; // intentional key mismatch
   const { json: decryptJson } =
