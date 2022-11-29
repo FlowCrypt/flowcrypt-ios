@@ -282,11 +282,10 @@ export class Endpoints {
 
   public parseAttachmentType = async (uncheckedReq: unknown): Promise<EndpointRes> => {
     const { atts } = ValidateInput.parseAttachmentType(uncheckedReq);
-    const parsedAtts = atts
-      .map(({ id, msgId, type, name, length }) => {
-        const att = new Att({ name, length, id, msgId, type });
-        return { id: att.id, treatAs: att.treatAs() };
-      });
+    const parsedAtts = atts.map(attData => {
+      const att = new Att(attData);
+      return { id: att.id, treatAs: att.treatAs() };
+    });
     return fmtRes({ atts: parsedAtts });
   };
 
