@@ -110,12 +110,10 @@ extension Message: Equatable, Comparable {
 }
 
 extension Message {
-    static func parseRecipients(_ string: String?) -> [Recipient] {
-        string?.components(separatedBy: ", ").map(Recipient.init) ?? []
+    var allRecipients: [Recipient] {
+        [to, cc, bcc].flatMap { $0 }
     }
-}
 
-extension Message {
     mutating func markAsRead(_ isRead: Bool) {
         if isRead {
             update(labelsToRemove: [.unread, .none])
@@ -124,8 +122,8 @@ extension Message {
         }
     }
 
-    var allRecipients: [Recipient] {
-        [to, cc, bcc].flatMap { $0 }
+    static func parseRecipients(_ string: String?) -> [Recipient] {
+        string?.components(separatedBy: ", ").map(Recipient.init) ?? []
     }
 }
 

@@ -90,6 +90,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.confirmDelete();
 
       await EmailScreen.checkOpenedEmail(sender, subject, message);
+      await browser.pause(500);
       await EmailScreen.clickBackButton();
       await MailFolderScreen.checkDraftsScreen();
       await MailFolderScreen.checkIfFolderIsEmpty();

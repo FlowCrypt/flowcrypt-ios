@@ -65,7 +65,13 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             else { return self.dividerNode(indexPath: indexPath) }
 
             guard indexPath.row > 1 else {
-                return MessageTextSubjectNode(processedMessage.attributedMessage, index: messageIndex)
+                return MessageTextSubjectNode(
+                    input: .init(
+                        message: processedMessage.attributedMessage,
+                        quote: processedMessage.attributedQuote,
+                        index: messageIndex
+                    )
+                )
             }
 
             let attachmentIndex = indexPath.row - 2

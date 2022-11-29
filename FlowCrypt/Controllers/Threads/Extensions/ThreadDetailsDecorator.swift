@@ -89,22 +89,6 @@ extension ThreadMessageInfoCellNode.Input {
     }
 }
 
-extension ProcessedMessage {
-    var attributedMessage: NSAttributedString {
-        let maxLength = 1_000_000
-        let textColor: UIColor
-        switch type {
-        case .encrypted:
-            textColor = .main
-        case .error:
-            textColor = .errorColor
-        case .plain:
-            textColor = .mainTextColor
-        }
-        return String(text.prefix(maxLength)).attributed(color: textColor)
-    }
-}
-
 extension AttachmentNode.Input {
     init(msgAttachment: MessageAttachment, index: Int) {
         self.init(
