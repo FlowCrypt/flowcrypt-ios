@@ -1,7 +1,6 @@
 import BaseScreen from './base.screen';
 import { CommonData } from "../data";
 import ElementHelper from "../helpers/ElementHelper";
-import moment from "moment";
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -188,11 +187,32 @@ class EmailScreen extends BaseScreen {
     }
   }
 
+  messageQuote = async (index: number) => {
+    return $(`~aid-message-${index}-quote`);
+  }
+
+  clickToggleQuoteButton = async (index: number) => {
+    const element = await $(`~aid-message-${index}-quote-toggle`);
+    if (await element.isDisplayed()) {
+      await ElementHelper.waitAndClick(element);
+    }
+  }
+
+  checkQuoteIsHidden = async (index: number) => {
+    await ElementHelper.waitElementInvisible(await this.messageQuote(index));
+  }
+
+  checkQuote = async (index: number, quote: string) => {
+    const quoteElement = await this.messageQuote(index);
+    await ElementHelper.waitElementVisible(quoteElement);
+    const quoteElementValue = await quoteElement.getValue();
+    expect(quoteElementValue).toContain(quote);
+  }
+
   checkDate = async (date: string, index: number) => {
     const element = await $(`~aid-date-${index}`);
     await ElementHelper.waitElementVisible(element);
-    const convertedDate = moment(await element.getValue()).utcOffset(0).format('MMM DD');
-    expect(convertedDate).toEqual(date)
+    expect(await element.getValue()).toEqual(date)
   }
 
   clickBackButton = async () => {

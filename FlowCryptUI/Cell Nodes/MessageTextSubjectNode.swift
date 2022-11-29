@@ -9,26 +9,98 @@
 import AsyncDisplayKit
 
 public final class MessageTextSubjectNode: CellNode {
-    private let textNode = ASEditableTextNode()
+    public struct Input {
+        let message: NSAttributedString?
+        let quote: NSAttributedString?
+        let index: Int
 
-    public init(_ text: NSAttributedString?, index: Int) {
+        public init(message: NSAttributedString?, quote: NSAttributedString?, index: Int) {
+            self.message = message
+            self.quote = quote
+            self.index = index
+        }
+    }
+
+    private let input: MessageTextSubjectNode.Input
+
+    private let messageNode = ASEditableTextNode()
+    private let quoteNode = ASEditableTextNode()
+
+    private let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 8, bottom: 8)
+
+    private var shouldShowQuote = false
+
+    private lazy var toggleQuoteButtonNode: ASButtonNode = {
+        let configuration = UIImage.SymbolConfiguration(pointSize: 16, weight: .ultraLight)
+        let image = UIImage(systemName: "ellipsis", withConfiguration: configuration)
+        let button = ASButtonNode()
+        button.cornerRadius = 4
+        button.borderColor = UIColor.main.cgColor
+        button.borderWidth = 1
+        button.accessibilityIdentifier = "aid-message-\(input.index)-quote-toggle"
+        button.setImage(image, for: .normal)
+        button.contentEdgeInsets = .side(4)
+        button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.main)
+        button.addTarget(self, action: #selector(onToggleQuoteButtonTap), forControlEvents: .touchUpInside)
+        return button
+    }()
+
+    public init(input: MessageTextSubjectNode.Input) {
+        self.input = input
+
         super.init()
-        textNode.attributedText = text
-        textNode.isAccessibilityElement = true
-        textNode.accessibilityIdentifier = "aid-message-\(index)"
-        textNode.accessibilityValue = text?.string
+
+        setupTextNode(messageNode, text: input.message, accessibilityIdentifier: "aid-message-\(input.index)")
+
+        if let quote = input.quote {
+            setupTextNode(quoteNode, text: quote, accessibilityIdentifier: "aid-message-\(input.index)-quote")
+        }
+    }
+
+    private func setupTextNode(_ node: ASEditableTextNode, text: NSAttributedString?, accessibilityIdentifier: String) {
+        node.attributedText = text
+        node.isAccessibilityElement = true
+        node.accessibilityIdentifier = accessibilityIdentifier
+        node.accessibilityValue = text?.string
 
         DispatchQueue.main.async {
-            self.textNode.textView.isSelectable = true
-            self.textNode.textView.isEditable = false
+            node.textView.isSelectable = true
+            node.textView.isEditable = false
         }
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        textNode.style.flexGrow = 1.0
+        messageNode.style.flexGrow = 1.0
+
+        let specChild: ASLayoutElement
+
+        if input.quote != nil {
+            toggleQuoteButtonNode.style.spacingBefore = 8
+            quoteNode.style.flexGrow = 1.0
+
+            let stack = ASStackLayoutSpec.vertical()
+            stack.alignItems = .start
+            stack.spacing = 12
+
+            if shouldShowQuote {
+                stack.children = [messageNode, toggleQuoteButtonNode, quoteNode]
+            } else {
+                stack.children = [messageNode, toggleQuoteButtonNode]
+            }
+
+            specChild = stack
+        } else {
+            specChild = messageNode
+        }
+
         return ASInsetLayoutSpec(
-            insets: .deviceSpecificTextInsets(top: 8, bottom: 8),
-            child: textNode
+            insets: insets,
+            child: specChild
         )
+    }
+
+    @objc private func onToggleQuoteButtonTap() {
+        shouldShowQuote.toggle()
+        setNeedsLayout()
     }
 }
