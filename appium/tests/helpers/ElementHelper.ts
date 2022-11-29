@@ -56,7 +56,7 @@ class ElementHelper {
     await element.click();
   }
 
-  static deleteText = async (element: WebdriverIO.Element) => {
+  static clearInput = async (element: WebdriverIO.Element) => {
     const elValue = await element.getValue();
     if (!elValue) { return }
 
