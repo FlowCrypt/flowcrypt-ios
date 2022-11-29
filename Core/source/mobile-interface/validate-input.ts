@@ -9,7 +9,9 @@ type Obj = { [k: string]: any };
 
 export namespace NodeRequest {
   type PrvKeyInfo = { private: string; longid: string, passphrase: string | undefined };
-  type Attachment = { name: string; type: string; base64: string };
+  type Attachment = { id: string, msgId: string, type?: string, name: string, length?: number };
+  type ComposeAttachment = { name: string; type: string; base64: string };
+
   interface ComposeEmailBase {
     text: string,
     html?: string,
@@ -20,7 +22,7 @@ export namespace NodeRequest {
     subject: string,
     replyToMsgId?: string,
     inReplyTo?: string,
-    atts?: Attachment[]
+    atts?: ComposeAttachment[]
   }
 
   export interface ComposeEmailPlain extends ComposeEmailBase { format: 'plain' }
@@ -47,8 +49,8 @@ export namespace NodeRequest {
   export type parseDecryptMsg = {
     keys: PrvKeyInfo[], msgPwd?: string, isMime?: boolean, verificationPubkeys?: string[]
   };
+  export type parseAttachmentType = { atts: Attachment[] };
   export type decryptFile = { keys: PrvKeyInfo[], msgPwd?: string };
-  export type parseDateStr = { dateStr: string };
   export type zxcvbnStrengthBar = {
     guesses: number, purpose: 'passphrase', value: undefined
   } | {
@@ -93,7 +95,7 @@ export class ValidateInput {
       throw new Error('Wrong request structure for NodeRequest.composeEmail, ' +
         'need: text,from,subject,to,cc,bcc,atts (can use empty arr for cc/bcc, and can skip atts)');
     }
-    if (!hasProp(v, 'atts', 'Attachment[]?')) {
+    if (!hasProp(v, 'atts', 'ComposeAttachment[]?')) {
       throw new Error('Wrong atts structure for NodeRequest.composeEmail, need: {name, type, base64}');
     }
     if (hasProp(v, 'pubKeys', 'string[]') && hasProp(v, 'signingPrv', 'PrvKeyInfo?')
@@ -122,18 +124,18 @@ export class ValidateInput {
     throw new Error('Wrong request structure for NodeRequest.encryptFile');
   };
 
+  public static parseAttachmentType = (v: unknown): NodeRequest.parseAttachmentType => {
+    if (isObj(v) && hasProp(v, 'atts', 'Attachment[]')) {
+      return v as NodeRequest.parseAttachmentType;
+    }
+    throw new Error('Wrong request structure for NodeRequest.parseAttachmentType');
+  };
+
   public static decryptFile = (v: unknown): NodeRequest.decryptFile => {
     if (isObj(v) && hasProp(v, 'keys', 'PrvKeyInfo[]') && hasProp(v, 'msgPwd', 'string?')) {
       return v as NodeRequest.decryptFile;
     }
     throw new Error('Wrong request structure for NodeRequest.decryptFile');
-  };
-
-  public static parseDateStr = (v: unknown): NodeRequest.parseDateStr => {
-    if (isObj(v) && hasProp(v, 'dateStr', 'string')) {
-      return v as NodeRequest.parseDateStr;
-    }
-    throw new Error('Wrong request structure for NodeRequest.dateStrParse');
   };
 
   public static zxcvbnStrengthBar = (v: unknown): NodeRequest.zxcvbnStrengthBar => {
@@ -191,7 +193,7 @@ const hasProp = (
   v: Obj,
   name: string,
   type: 'string[]' | 'string[]?' | 'object' | 'string' | 'number' | 'string?' | 'boolean?' | 'PrvKeyInfo?'
-    | 'PrvKeyInfo[]' | 'Userid[]' | 'Attachment[]?'): boolean => {
+    | 'PrvKeyInfo[]' | 'Userid[]' | 'ComposeAttachment[]?' | 'Attachment[]'): boolean => {
   if (!isObj(v)) {
     return false;
   }
@@ -210,10 +212,13 @@ const hasProp = (
     return typeof value === 'string' || typeof value === 'undefined';
   }
   /* eslint-disable */
-  if (type === 'Attachment[]?') {
+  if (type === 'ComposeAttachment[]?') {
     return typeof value === 'undefined' ||
       (Array.isArray(value) && value.filter((x: any) => hasProp(x, 'name', 'string')
         && hasProp(x, 'type', 'string') && hasProp(x, 'base64', 'string')).length === value.length);
+  }
+  if (type === 'Attachment[]') {
+    return Array.isArray(value) && value.filter((x: any) => hasProp(x, 'id', 'string') && hasProp(x, 'msgId', 'string') && hasProp(x, 'name', 'string') && hasProp(x, 'type', 'string?')).length === value.length;
   }
   if (type === 'string[]') {
     return Array.isArray(value) && value.filter((x: any) => typeof x === 'string').length === value.length;

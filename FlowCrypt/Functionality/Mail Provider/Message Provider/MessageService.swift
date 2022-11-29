@@ -169,7 +169,8 @@ final class MessageService {
         )
 
         var message = message
-        if message.hasSignatureAttachment || message.hasRichTextAttachment {
+        try await parseAttachmentTypes(message: &message)
+        if message.hasSignatureAttachment || message.hasEncryptedMsgAttachment {
             // raw data is needed for verification of detached signature
             // and decrypting pgp/mime attachment
             message.raw = try await messageProvider.fetchRawMessage(id: message.identifier)
@@ -188,6 +189,21 @@ final class MessageService {
             message: message,
             with: decrypted
         )
+    }
+
+    private func parseAttachmentTypes(message: inout Message) async throws {
+        guard !message.attachments.isEmpty else { return }
+
+        let attachmentsTreatAs = try await core.parseAttachmentType(
+            msgId: message.identifier,
+            atts: message.attachments
+        )
+
+        for attachment in attachmentsTreatAs {
+            guard let index = message.attachments.firstIndex(where: { $0.id == Identifier(stringId: attachment.id) })
+            else { continue }
+            message.attachments[index].treatAs = attachment.treatAs
+        }
     }
 
     private func process(

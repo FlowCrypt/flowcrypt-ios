@@ -409,13 +409,6 @@ for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && n
   });
 }
 
-test('parseDateStr', async t => {
-  const { data, json } = await endpoints.parseDateStr({ dateStr: 'Sun, 10 Feb 2019 07:08:20 -0800' });
-  expect(json).to.deep.equal({ timestamp: '1549811300000' });
-  expectNoData(data);
-  t.pass();
-});
-
 test('gmailBackupSearch', async t => {
   const { data, json } = await endpoints.gmailBackupSearch({ acctEmail: 'test@acct.com' });
   expect(json).to.deep.equal({

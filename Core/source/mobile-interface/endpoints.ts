@@ -280,6 +280,16 @@ export class Endpoints {
     return fmtRes(json, blocksData);
   };
 
+  public parseAttachmentType = async (uncheckedReq: unknown): Promise<EndpointRes> => {
+    const { atts } = ValidateInput.parseAttachmentType(uncheckedReq);
+    const parsedAtts = (atts as Att[])
+      .map(att => ({
+        id: att.id,
+        treatAs: att.treatAs()
+      }));
+    return fmtRes({ atts: parsedAtts });
+  };
+
   public decryptFile = async (uncheckedReq: unknown, data: Buffers, verificationPubkeys?: string[]):
     Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd } = ValidateInput.decryptFile(uncheckedReq);
@@ -294,11 +304,6 @@ export class Endpoints {
       return fmtRes({ decryptErr: decryptRes });
     }
     return fmtRes({ decryptSuccess: { name: decryptRes.filename || '' } }, decryptRes.content);
-  };
-
-  public parseDateStr = async (uncheckedReq: unknown): Promise<EndpointRes> => {
-    const { dateStr } = ValidateInput.parseDateStr(uncheckedReq);
-    return fmtRes({ timestamp: String(Date.parse(dateStr) || -1) });
   };
 
   public zxcvbnStrengthBar = async (uncheckedReq: unknown): Promise<EndpointRes> => {

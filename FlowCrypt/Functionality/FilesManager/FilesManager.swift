@@ -13,6 +13,7 @@ protocol FileType {
     var estimatedSize: Int? { get }
     var mimeType: String? { get }
 
+    var treatAs: String? { get set }
     var data: Data? { get set }
 }
 
@@ -24,7 +25,7 @@ extension FileType {
 
     var type: String { mimeType ?? name.mimeType }
     var isEncrypted: Bool {
-        name.hasSuffix(".pgp") || name.hasSuffix(".asc")
+        treatAs == "encryptedFile" || name.hasSuffix(".pgp") || name.hasSuffix(".asc")
     }
 }
 

@@ -89,6 +89,11 @@ struct CoreRes {
         let word: WordDetails
         let time: String
     }
+
+    struct AttachmentTreatAs: Decodable {
+        let id: String
+        let treatAs: String
+    }
 }
 
 enum ReplyType: String, Decodable {

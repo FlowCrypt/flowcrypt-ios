@@ -12,8 +12,6 @@ export type AttachmentMeta = {
   contentDescription?: string,
 };
 
-export type FcAttachmentLinkData = { name: string, type: string, size: number };
-
 export class Attachment {
 
   public static readonly webmailNamePattern = /^(((cryptup|flowcrypt)-backup-[a-z0-9]+\.(key|asc))|(.+\.pgp)|(.+\.gpg)|(.+\.asc)|(noname)|(message)|(PGPMIME version identification)|())$/m;
