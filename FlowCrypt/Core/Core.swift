@@ -52,6 +52,10 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let query: String
     }
 
+    private struct AttachmentTreatAsResponse: Decodable {
+        let atts: [CoreRes.AttachmentTreatAs]
+    }
+
     private init() {
         setupWebView()
     }
@@ -119,6 +123,13 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     // MARK: Files
+    func parseAttachmentType(msgId: Identifier, atts: [MessageAttachment]) async throws -> [CoreRes.AttachmentTreatAs] {
+        let parsed = try await call("parseAttachmentType", params: [
+            "atts": atts.map { $0.toDict(msgId: msgId) }
+        ])
+        return try parsed.json.decodeJson(as: AttachmentTreatAsResponse.self).atts
+    }
+
     func decryptFile(encrypted: Data, keys: [Keypair], msgPwd: String?) async throws -> CoreRes.DecryptFile {
         struct DecryptFileRaw: Decodable {
             let decryptSuccess: DecryptSuccess?

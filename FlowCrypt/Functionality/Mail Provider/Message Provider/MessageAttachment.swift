@@ -15,6 +15,7 @@ struct MessageAttachment: Equatable, Hashable, FileType {
     let estimatedSize: Int?
     let mimeType: String?
 
+    var treatAs: String?
     var data: Data?
 }
 
@@ -67,6 +68,14 @@ extension MessageAttachment {
 
     var supportsPreview: Bool {
         mimeTypesWithPreview.contains(type)
+    }
+
+    func toDict(msgId: Identifier) -> [String: Any?] {
+        ["id": id.stringId,
+         "msgId": msgId.stringId,
+         "type": mimeType,
+         "name": name,
+         "length": estimatedSize]
     }
 }
 
