@@ -25,7 +25,7 @@
     "@types/node": "^18.0.6",
     "@types/request": "^2.48.8",
     "@wdio/allure-reporter": "^8.0.0",
-    "@wdio/appium-service": "^7.16.14",
+    "@wdio/appium-service": "^8.0.0",
     "@wdio/cli": "^7.27.0",
     "@wdio/jasmine-framework": "^7.16.14",
     "@wdio/junit-reporter": "^7.16.15",
