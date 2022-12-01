@@ -28,7 +28,6 @@
   },
   "include": [
     "./tests/**/*.ts",
-    "./api-mocks/mock.ts",
-    "./api-mocks/self-test.ts"
+    "./api-mocks/**/*.ts",
   ]
 }

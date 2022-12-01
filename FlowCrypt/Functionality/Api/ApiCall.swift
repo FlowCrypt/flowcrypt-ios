@@ -46,12 +46,11 @@ extension ApiCall {
         urlRequest.timeoutInterval = request.timeout
 
         do {
-            let result = try await URLSession.shared.call(
+            return try await URLSession.shared.call(
                 urlRequest,
                 tolerateStatus: request.tolerateStatus,
                 delegate: request.delegate
             )
-            return result
         } catch {
             guard let httpError = error as? HttpErr else {
                 throw error

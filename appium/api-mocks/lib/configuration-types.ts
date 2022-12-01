@@ -46,7 +46,10 @@ export type GoogleMockAccount = {
   messages?: GoogleMockMessage[]
 }
 
-export type WkdConfig = {};
+export type WkdConfig = {
+  servedPubkeys?: Dict<string>,
+  returnError?: { code: number, message: string },
+};
 
 export type EkmConfig = {
   returnKeys?: string[]

@@ -2,7 +2,6 @@
 
 import { IncomingMessage } from 'http';
 import { HttpErr, Status } from './api';
-import * as request from 'request';
 
 export const isGet = (r: IncomingMessage) => r.method === 'GET' || r.method === 'HEAD';
 export const isPost = (r: IncomingMessage) => r.method === 'POST';
@@ -24,22 +23,10 @@ export const throwIfNotGetMethod = (req: IncomingMessage) => {
 
 export const lousyRandom = () => Math.random().toString(36).substring(2);
 
-
-
-
-
 export class RequestsError extends Error {
   public reason: unknown;
   constructor(reason: unknown) {
     super();
     this.reason = reason;
   }
-}
-
-export class Requests {
-  public static get = (
-    options: (request.UriOptions & request.CoreOptions) | (request.UrlOptions & request.CoreOptions)
-  ): Promise<request.Response> => new Promise((resolve, reject) => {
-    request.get(options, (e, resp) => e ? reject(new RequestsError(e)) : resolve(resp));
-  });
 }
