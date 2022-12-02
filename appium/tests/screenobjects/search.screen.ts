@@ -1,6 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
-import TouchHelper from 'tests/helpers/TouchHelper';
+import TouchHelper from '../helpers/TouchHelper';
 
 const SELECTORS = {
   BACK_BUTTON: '~aid-back-button',
@@ -14,7 +14,7 @@ class SearchScreen extends BaseScreen {
   }
 
   get backButton() {
-    return $(SELECTORS.BACK_BUTTON)
+    return $(SELECTORS.BACK_BUTTON);
   }
 
   get searchField() {

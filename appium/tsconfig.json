@@ -1,4 +1,9 @@
 {
+  "ts-node": {
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  },
   "compilerOptions": {
     "outDir": "./.tsbuild/",
     "lib": [
@@ -8,8 +13,10 @@
     "target": "ES2021",
     "types": [
       "node",
-      "webdriverio/async",
-      "@wdio/jasmine-framework"
+      "@wdio/globals/types",
+      "@wdio/jasmine-framework",
+      "@wdio/junit-reporter",
+      "@wdio/appium-service"
     ],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -26,8 +33,9 @@
     "strict": true,
     "baseUrl": "."
   },
-  "include": [
-    "./tests/**/*.ts",
-    "./api-mocks/**/*.ts",
-  ]
+  // "include": [
+  //   "./api-mocks/**/*.ts",
+  //   "./config/*.ts",
+  //   "./tests/**/*.ts",
+  // ]
 }

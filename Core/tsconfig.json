@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2021",
+    "target": "es2022",
     "module": "commonjs",
     "lib": [
-      "es2021",
+      "es2022",
       "dom"
     ],
     "forceConsistentCasingInFileNames": true,

@@ -1,4 +1,5 @@
-const { join } = require('path');
+import { join } from 'path';
+import type { Options } from '@wdio/types';
 // const video = require('wdio-video-reporter');
 
 process.on('unhandledRejection', (reason, promise) => {
@@ -7,17 +8,18 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-exports.config = {
-
+export const config: Options.Testrunner = {
+  autoCompileOpts: {
+    tsNodeOpts: {
+      project: './tsconfig.json'
+    }
+  },
   runner: 'local',
   framework: 'jasmine',
   jasmineOpts: {
     defaultTimeoutInterval: 600000,
-    requires: ['tsconfig-paths/register']
   },
-  sync: true,
   logLevel: 'error',
-  deprecationWarnings: true,
   bail: 0,
   waitforTimeout: 15000,
   connectionRetryTimeout: 400000,
@@ -36,6 +38,7 @@ exports.config = {
     //   outputDir: './tmp/video',
     // }]
   ],
+  capabilities: [],
   services: [
     ['appium', {
       command: './node_modules/.bin/appium',
@@ -46,11 +49,11 @@ exports.config = {
   specFileRetries: 1,
   specFileRetriesDeferred: false,
 
-  afterTest: function (test, context, { error, result, duration, passed, retries }) {
+  afterTest: function ({ error }) {
     if (error) {
       const timestampNow = new Date().getTime().toString();
       const path = join(process.cwd(), './tmp');
-      driver.saveScreenshot(`${path}/${timestampNow}.png`);
+      void driver.saveScreenshot(`${path}/${timestampNow}.png`);
       console.log("Screenshot of failed test was saved to " + path)
     }
   }

@@ -46,7 +46,6 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.deleteAddedRecipient(1);
       await NewMessageScreen.deleteAddedRecipient(0);
 
-
       mockApi.attesterConfig = {
         returnError: {
           code: 400,
