@@ -7,7 +7,7 @@
     "test.live.all": "wdio ./config/wdio.live.conf.ts --suite all",
     "test.live": "wdio ./config/wdio.live.conf.ts --suite all --jasmineOpts.grep",
     "test.mock.all": "wdio ./config/wdio.mock.conf.ts --suite all",
-    "test.mock": "./node_modules/.bin/wdio ./config/wdio.mock.conf.ts --suite all --jasmineOpts.grep",
+    "test.mock": "wdio ./config/wdio.mock.conf.ts --suite all --jasmineOpts.grep",
     "test.mock.inbox": "wdio ./config/wdio.mock.conf.ts --suite inbox",
     "test.mock.compose": "wdio ./config/wdio.mock.conf.ts --suite compose",
     "test.mock.settings": "wdio ./config/wdio.mock.conf.ts --suite settings",

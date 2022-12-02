@@ -1,5 +1,6 @@
 {
   "ts-node": {
+    "transpileOnly": true,
     "require": [
       "tsconfig-paths/register"
     ]
@@ -7,10 +8,10 @@
   "compilerOptions": {
     "outDir": "./.tsbuild/",
     "lib": [
-      "ES2021"
+      "ES2022"
     ],
     "module": "commonjs",
-    "target": "ES2021",
+    "target": "ES2022",
     "types": [
       "node",
       "@wdio/globals/types",
@@ -31,6 +32,7 @@
     "sourceMap": false,
     "checkJs": false,
     "strict": true,
+    "skipLibCheck": true,
     "baseUrl": "."
   },
   // "include": [
