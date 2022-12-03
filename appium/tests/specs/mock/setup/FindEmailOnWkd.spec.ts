@@ -5,7 +5,6 @@ import {
 import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
 import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
 import NewMessageScreen from "../../../screenobjects/new-message.screen";
-import { CommonData } from 'tests/data';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
@@ -29,7 +28,7 @@ describe('SETUP: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.setAddRecipient(recipient);
-      await NewMessageScreen.checkAddedRecipientColor(CommonData.validMockUser.name, 0, 'green');
+      await NewMessageScreen.checkAddedRecipientColor(MockUserList.dmitry.name, 0, 'green');
     });
   });
 });
