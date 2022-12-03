@@ -33,7 +33,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testVersions() async throws {
         let r = try await core.version()
-        XCTAssertEqual(r.app_version, "iOS 1.1.1")
+        XCTAssertEqual(r.app_version, "iOS 1.2.0")
     }
 
     func testGenerateKey() async throws {
