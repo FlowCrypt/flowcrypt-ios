@@ -1,7 +1,5 @@
 import { join } from 'path';
 import { config } from './wdio.shared.conf';
-// import pathWdioConfig from 'path';
-// require('dotenv').config({ path: pathWdioConfig.resolve(__dirname, '../.env') });
 
 config.suites = {
   all: [
