@@ -14,15 +14,15 @@ protocol SendAsServiceType {
 
 final class SendAsService: SendAsServiceType {
     private let localSendAsProvider: LocalSendAsProviderType
-    private let remoteSendAsProvider: RemoteSendAsProviderType
+    private let remoteSendAsApiClient: RemoteSendAsApiClient
 
     init(
         encryptedStorage: EncryptedStorageType,
         localSendAsProvider: LocalSendAsProviderType? = nil,
-        remoteSendAsProvider: RemoteSendAsProviderType
+        remoteSendAsApiClient: RemoteSendAsApiClient
     ) {
         self.localSendAsProvider = localSendAsProvider ?? LocalSendAsProvider(encryptedStorage: encryptedStorage)
-        self.remoteSendAsProvider = remoteSendAsProvider
+        self.remoteSendAsApiClient = remoteSendAsApiClient
     }
 
     func fetchList(isForceReload: Bool, for user: User) async throws -> [SendAsModel] {
@@ -38,7 +38,7 @@ final class SendAsService: SendAsServiceType {
 
     @discardableResult
     private func getAndSaveList(for user: User) async throws -> [SendAsModel] {
-        let fetchedList = try await self.remoteSendAsProvider.fetchSendAsList()
+        let fetchedList = try await remoteSendAsApiClient.fetchSendAsList()
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async {
                 do {

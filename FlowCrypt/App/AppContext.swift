@@ -115,7 +115,7 @@ class AppContext {
     func getFoldersService() throws -> FoldersService {
         return FoldersService(
             encryptedStorage: encryptedStorage,
-            remoteFoldersProvider: try getRequiredMailProvider().remoteFoldersProvider
+            remoteFoldersApiClient: try getRequiredMailProvider().remoteFoldersApiClient
         )
     }
 
@@ -123,7 +123,7 @@ class AppContext {
     func getSendAsService() throws -> SendAsService {
         return SendAsService(
             encryptedStorage: encryptedStorage,
-            remoteSendAsProvider: try getRequiredMailProvider().remoteSendAsProvider
+            remoteSendAsApiClient: try getRequiredMailProvider().remoteSendAsApiClient
         )
     }
 }

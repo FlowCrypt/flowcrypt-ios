@@ -8,7 +8,7 @@
 
 import GoogleAPIClientForREST_Gmail
 
-extension GmailService: RemoteFoldersProviderType {
+extension GmailService: RemoteFoldersApiClient {
     enum Constants {
         static let allMailFolder = Folder(
             path: "",
@@ -22,14 +22,14 @@ extension GmailService: RemoteFoldersProviderType {
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error {
-                    let gmailError = GmailServiceError.convert(from: error as NSError)
+                    let gmailError = GmailApiError.convert(from: error as NSError)
                     return continuation.resume(throwing: gmailError)
                 }
                 guard let listLabels = data as? GTLRGmail_ListLabelsResponse else {
                     return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListLabelsResponse"))
                 }
                 guard let labels = listLabels.labels else {
-                    return continuation.resume(throwing: GmailServiceError.failedToParseData(data))
+                    return continuation.resume(throwing: GmailApiError.failedToParseData(data))
                 }
                 let folders = labels
                     .compactMap { [weak self] label -> GTLRGmail_Label? in

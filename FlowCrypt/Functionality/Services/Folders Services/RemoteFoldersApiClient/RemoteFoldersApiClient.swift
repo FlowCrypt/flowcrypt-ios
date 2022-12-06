@@ -1,5 +1,5 @@
 //
-//  RemoteFoldersProvider.swift
+//  RemoteFoldersApiClient.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 06/09/2020.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol RemoteFoldersProviderType {
+protocol RemoteFoldersApiClient {
     func fetchFolders() async throws -> [Folder]
 }

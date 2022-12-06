@@ -13,24 +13,24 @@ class InboxViewControllerFactory {
     static func make(appContext: AppContextWithUser, viewModel: InboxViewModel) throws -> InboxViewController {
         switch appContext.authType {
         case .oAuthGmail:
-            // Inject threads provider - Gmail API
-            let threadsProvider = try appContext.getRequiredMailProvider().messagesThreadProvider
+            // Inject threads api client - Gmail API
+            let threadsApiClient = try appContext.getRequiredMailProvider().messagesThreadApiClient
 
             return try InboxViewController(
                 appContext: appContext,
                 viewModel: viewModel,
                 numberOfInboxItemsToLoad: 20, // else timeouts happen
-                provider: InboxMessageThreadsProvider(provider: threadsProvider)
+                apiClient: InboxMessageThreadsProvider(apiClient: threadsApiClient)
             )
         case .password:
             // Inject message list provider - IMAP
-            let provider = InboxMessageListProvider(provider: try appContext.getRequiredMailProvider().messageListProvider)
+            let apiClient = InboxMessageListProvider(apiClient: try appContext.getRequiredMailProvider().messagesListApiClient)
 
             return try InboxViewController(
                 appContext: appContext,
                 viewModel: viewModel,
                 numberOfInboxItemsToLoad: 50, // safe to load 50, single call on IMAP
-                provider: provider
+                apiClient: apiClient
             )
         }
     }

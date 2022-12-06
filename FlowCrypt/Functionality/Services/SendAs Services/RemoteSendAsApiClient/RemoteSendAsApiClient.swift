@@ -1,5 +1,5 @@
 //
-//  RemoteSendAsProviderType.swift
+//  RemoteSendAsApiClient.swift
 //  FlowCrypt
 //
 //  Created by Ioan Moldovan on 06/13/22
@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol RemoteSendAsProviderType {
+protocol RemoteSendAsApiClient {
     func fetchSendAsList() async throws -> [SendAsModel]
 }

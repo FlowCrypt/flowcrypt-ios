@@ -32,7 +32,7 @@ class GmailServiceTest: XCTestCase {
         do {
             _ = try await sut.searchBackups(for: "james.bond@gmail.com")
         } catch {
-            switch error as? GmailServiceError {
+            switch error as? GmailApiError {
             case let .missingBackupQuery(underliningError):
                 XCTAssertTrue(underliningError is MockError)
             default:

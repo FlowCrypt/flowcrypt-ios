@@ -1,5 +1,5 @@
 //
-//  MessagesListProvider.swift
+//  MessagesListApiClient.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 17.11.2020.
@@ -32,7 +32,7 @@ enum MessagesListPagination {
     case byNextPage(token: String?)
 }
 
-protocol MessagesListProvider {
+protocol MessagesListApiClient {
     func fetchMessage(id: Identifier, folder: String) async throws -> Message
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext
 }

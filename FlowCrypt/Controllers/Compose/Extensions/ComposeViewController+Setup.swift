@@ -128,7 +128,7 @@ extension ComposeViewController {
             didFinishSetup = true
             reload(sections: Section.recipientsSections + [.compose])
         } catch {
-            if case let .missingPassPhrase(keyPair) = error as? MessageServiceError, let keyPair {
+            if case let .missingPassPhrase(keyPair) = error as? MessageHelperError, let keyPair {
                 requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
             } else {
                 handle(error: error)

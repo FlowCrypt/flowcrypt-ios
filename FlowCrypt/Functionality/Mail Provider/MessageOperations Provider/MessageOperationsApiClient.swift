@@ -1,5 +1,5 @@
 //
-//  MessageOperationsProvider.swift
+//  MessageOperationsApiClient.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 07.12.2020.
@@ -8,7 +8,7 @@
 
 import FlowCryptCommon
 
-protocol MessageOperationsProvider {
+protocol MessageOperationsApiClient {
     func moveMessageToTrash(id: Identifier, trashPath: String?, from folder: String) async throws
     func deleteMessage(id: Identifier, from folderPath: String?) async throws
     func moveMessageToInbox(id: Identifier, folderPath: String) async throws

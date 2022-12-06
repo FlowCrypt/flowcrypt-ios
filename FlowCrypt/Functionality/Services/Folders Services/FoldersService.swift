@@ -20,16 +20,16 @@ final class FoldersService: FoldersServiceType {
     // TODO: - Ticket? - consider rework with CacheService for trash path instead
     private let trashPathStorage: LocalStorageType
     private let localFoldersProvider: LocalFoldersProviderType
-    private let remoteFoldersProvider: RemoteFoldersProviderType
+    private let remoteFoldersApiClient: RemoteFoldersApiClient
 
     init(
         encryptedStorage: EncryptedStorageType,
         localFoldersProvider: LocalFoldersProviderType? = nil,
-        remoteFoldersProvider: RemoteFoldersProviderType,
+        remoteFoldersApiClient: RemoteFoldersApiClient,
         trashPathStorage: LocalStorageType = LocalStorage()
     ) {
         self.localFoldersProvider = localFoldersProvider ?? LocalFoldersProvider(encryptedStorage: encryptedStorage)
-        self.remoteFoldersProvider = remoteFoldersProvider
+        self.remoteFoldersApiClient = remoteFoldersApiClient
         self.trashPathStorage = trashPathStorage
     }
 
@@ -47,7 +47,7 @@ final class FoldersService: FoldersServiceType {
     @discardableResult
     private func getAndSaveFolders(for user: User) async throws -> [FolderViewModel] {
         // fetch all folders
-        let fetchedFolders = try await self.remoteFoldersProvider.fetchFolders()
+        let fetchedFolders = try await remoteFoldersApiClient.fetchFolders()
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async {
                 do {

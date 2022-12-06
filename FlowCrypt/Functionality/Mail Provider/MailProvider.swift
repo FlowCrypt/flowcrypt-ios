@@ -35,21 +35,21 @@ final class MailProvider {
         }
     }
 
-    var remoteFoldersProvider: RemoteFoldersProviderType {
+    var remoteFoldersApiClient: RemoteFoldersApiClient {
         get throws {
-            try resolveService(of: RemoteFoldersProviderType.self)
+            try resolveService(of: RemoteFoldersApiClient.self)
         }
     }
 
-    var remoteSendAsProvider: RemoteSendAsProviderType {
+    var remoteSendAsApiClient: RemoteSendAsApiClient {
         get throws {
-            try resolveService(of: RemoteSendAsProviderType.self)
+            try resolveService(of: RemoteSendAsApiClient.self)
         }
     }
 
-    var messageListProvider: MessagesListProvider {
+    var messagesListApiClient: MessagesListApiClient {
         get throws {
-            try resolveService(of: MessagesListProvider.self)
+            try resolveService(of: MessagesListApiClient.self)
         }
     }
 
@@ -59,9 +59,9 @@ final class MailProvider {
         }
     }
 
-    var messageOperationsProvider: MessageOperationsProvider {
+    var messageOperationsApiClient: MessageOperationsApiClient {
         get throws {
-            try resolveService(of: MessageOperationsProvider.self)
+            try resolveService(of: MessageOperationsApiClient.self)
         }
     }
 
@@ -89,15 +89,15 @@ final class MailProvider {
         }
     }
 
-    var messagesThreadProvider: MessagesThreadProvider {
+    var messagesThreadApiClient: MessagesThreadApiClient {
         get throws {
-            try resolveService(of: MessagesThreadProvider.self)
+            try resolveService(of: MessagesThreadApiClient.self)
         }
     }
 
-    var threadOperationsProvider: MessagesThreadOperationsProvider {
+    var threadOperationsApiClient: MessagesThreadOperationsApiClient {
         get throws {
-            try resolveService(of: MessagesThreadOperationsProvider.self)
+            try resolveService(of: MessagesThreadOperationsApiClient.self)
         }
     }
 

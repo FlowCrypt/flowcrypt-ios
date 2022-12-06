@@ -22,7 +22,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         var processedMessage: ProcessedMessage?
     }
 
-    let messageService: MessageService
+    let messageService: MessageHelper
 
     private let filesManager: FilesManagerType
     lazy var attachmentManager = AttachmentManager(
@@ -31,8 +31,8 @@ final class ThreadDetailsViewController: TableNodeViewController {
     )
 
     let appContext: AppContextWithUser
-    let messageOperationsProvider: MessageOperationsProvider
-    let threadOperationsProvider: MessagesThreadOperationsProvider
+    let messageOperationsApiClient: MessageOperationsApiClient
+    let threadOperationsApiClient: MessagesThreadOperationsApiClient
     var inboxItem: InboxItem
     var input: [ThreadDetailsViewController.Input]
 
@@ -44,7 +44,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     init(
         appContext: AppContextWithUser,
-        messageService: MessageService? = nil,
+        messageService: MessageHelper? = nil,
         inboxItem: InboxItem,
         filesManager: FilesManagerType = FilesManager(),
         onComposeMessageAction: ((ComposeMessageAction) -> Void)?,
@@ -56,7 +56,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage
         )
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.messageService = try messageService ?? MessageService(
+        self.messageService = try messageService ?? MessageHelper(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(
                 clientConfiguration: clientConfiguration,
@@ -66,13 +66,13 @@ final class ThreadDetailsViewController: TableNodeViewController {
             messageProvider: try mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
-        self.threadOperationsProvider = try mailProvider.threadOperationsProvider
-        self.messageOperationsProvider = try mailProvider.messageOperationsProvider
+        self.threadOperationsApiClient = try mailProvider.threadOperationsApiClient
+        self.messageOperationsApiClient = try mailProvider.messageOperationsApiClient
         self.trashFolderProvider = TrashFolderProvider(
             user: appContext.user,
             foldersService: FoldersService(
                 encryptedStorage: appContext.encryptedStorage,
-                remoteFoldersProvider: try mailProvider.remoteFoldersProvider
+                remoteFoldersApiClient: try mailProvider.remoteFoldersApiClient
             )
         )
         self.filesManager = filesManager
@@ -102,7 +102,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     private func expandThreadMessageAndMarkAsRead() {
         Task {
-            try await threadOperationsProvider.mark(
+            try await threadOperationsApiClient.mark(
                 messagesIds: inboxItem.messages.map(\.identifier),
                 asRead: true,
                 in: inboxItem.folderPath
@@ -344,7 +344,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         logger.logInfo("Error \(error)")
         hideSpinner()
 
-        switch error as? MessageServiceError {
+        switch error as? MessageHelperError {
         case .missingPassPhrase:
             handleWrongPassPhrase(indexPath: indexPath)
         default:

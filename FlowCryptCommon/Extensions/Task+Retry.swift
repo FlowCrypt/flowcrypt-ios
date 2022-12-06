@@ -6,7 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-enum GmailServiceError: Error {
+enum GmailApiError: Error {
     /// Invalid auth grant
     case invalidGrant(Error)
 }
@@ -25,7 +25,7 @@ public extension Task where Failure == Error {
                     return try await operation()
                 } catch {
                     switch error {
-                    case GmailServiceError.invalidGrant:
+                    case GmailApiError.invalidGrant:
                         // valid grant is needed before retry
                         throw error
                     default:

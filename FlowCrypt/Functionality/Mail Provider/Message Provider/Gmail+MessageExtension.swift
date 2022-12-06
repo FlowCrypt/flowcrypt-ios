@@ -11,19 +11,19 @@ import GoogleAPIClientForREST_Gmail
 extension Message {
     init(gmailMessage: GTLRGmail_Message) throws {
         guard let payload = gmailMessage.payload else {
-            throw GmailServiceError.missingMessagePayload
+            throw GmailApiError.missingMessagePayload
         }
 
         guard let messageHeaders = payload.headers else {
-            throw GmailServiceError.missingMessageInfo("headers")
+            throw GmailApiError.missingMessageInfo("headers")
         }
 
         guard let internalDate = gmailMessage.internalDate as? Double else {
-            throw GmailServiceError.missingMessageInfo("date")
+            throw GmailApiError.missingMessageInfo("date")
         }
 
         guard let identifier = gmailMessage.identifier else {
-            throw GmailServiceError.missingMessageInfo("id")
+            throw GmailApiError.missingMessageInfo("id")
         }
 
         let attachmentsIds = payload.parts?.compactMap { $0.body?.attachmentId } ?? []

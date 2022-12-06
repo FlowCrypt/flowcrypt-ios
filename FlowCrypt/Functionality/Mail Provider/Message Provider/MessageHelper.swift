@@ -1,5 +1,5 @@
 //
-//  MessageService.swift
+//  MessageHelper.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 12.05.2021.
@@ -14,8 +14,8 @@ enum MessageFetchState {
     case fetch, download(Float), decrypt
 }
 
-// MARK: - MessageServiceError
-enum MessageServiceError: Error, CustomStringConvertible {
+// MARK: - MessageHelperError
+enum MessageHelperError: Error, CustomStringConvertible {
     case missingPassPhrase(Keypair?)
     case emptyKeys
     case emptyKeysForEKM
@@ -23,7 +23,7 @@ enum MessageServiceError: Error, CustomStringConvertible {
     case attachmentDecryptFailed(String)
 }
 
-extension MessageServiceError {
+extension MessageHelperError {
     var description: String {
         switch self {
         case .missingPassPhrase:
@@ -41,7 +41,7 @@ extension MessageServiceError {
 }
 
 // MARK: - MessageService
-final class MessageService {
+final class MessageHelper {
 
     private let messageProvider: MessageProvider
     private let keyMethods: KeyMethodsType
@@ -65,7 +65,7 @@ final class MessageService {
         self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.messageProvider = messageProvider
         self.core = core
-        self.logger = Logger.nested(in: Self.self, with: "MessageService")
+        self.logger = Logger.nested(in: Self.self, with: "MessageHelper")
         self.keyMethods = keyMethods
         self.localContactsProvider = localContactsProvider
         self.pubLookup = pubLookup
@@ -74,7 +74,7 @@ final class MessageService {
     func checkAndPotentiallySaveEnteredPassPhrase(_ passPhrase: String, userEmail: String) async throws -> Bool {
         let keys = try await keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
         guard keys.isNotEmpty else {
-            throw MessageServiceError.emptyKeys
+            throw MessageHelperError.emptyKeys
         }
         let keysWithoutPassPhrases = keys.filter { $0.passphrase == nil }
         let matchingKeys = try await keyMethods.filterByPassPhraseMatch(
@@ -119,9 +119,9 @@ final class MessageService {
 
         guard keys.isNotEmpty else {
             if isUsingKeyManager {
-                throw MessageServiceError.emptyKeysForEKM
+                throw MessageHelperError.emptyKeysForEKM
             }
-            throw MessageServiceError.emptyKeys
+            throw MessageHelperError.emptyKeys
         }
 
         return keys
@@ -143,7 +143,7 @@ final class MessageService {
 
         guard !hasMsgBlockThatNeedsPassPhrase(decrypted) else {
             let keyPair = keys.first(where: { $0.passphrase == nil })
-            throw MessageServiceError.missingPassPhrase(keyPair)
+            throw MessageHelperError.missingPassPhrase(keyPair)
         }
 
         return decrypted
@@ -292,7 +292,7 @@ final class MessageService {
         let decrypted = try await core.decryptFile(encrypted: data, keys: keys, msgPwd: nil)
 
         if let decryptErr = decrypted.decryptErr {
-            throw MessageServiceError.attachmentDecryptFailed(decryptErr.error.message)
+            throw MessageHelperError.attachmentDecryptFailed(decryptErr.error.message)
         }
 
         guard let decryptSuccess = decrypted.decryptSuccess else {
@@ -310,7 +310,7 @@ final class MessageService {
 }
 
 // MARK: - Message verification
-extension MessageService {
+extension MessageHelper {
     private func fetchVerificationPubKeys(for sender: Recipient?, onlyLocal: Bool) async throws -> [String] {
         guard let sender else { return [] }
 

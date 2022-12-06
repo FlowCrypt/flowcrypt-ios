@@ -1,5 +1,5 @@
 //
-//  MessagesThreadOperationsProvider.swift
+//  MessagesThreadOperationsApiClient.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 25.10.2021
@@ -8,7 +8,7 @@
 
 import GoogleAPIClientForREST_Gmail
 
-protocol MessagesThreadOperationsProvider {
+protocol MessagesThreadOperationsApiClient {
     func delete(id: String?) async throws
     func moveThreadToTrash(id: String?, labels: Set<MessageLabel>) async throws
     func moveThreadToInbox(id: String?) async throws
@@ -17,11 +17,11 @@ protocol MessagesThreadOperationsProvider {
     func archive(messagesIds: [Identifier], in folder: String) async throws
 }
 
-extension GmailService: MessagesThreadOperationsProvider {
+extension GmailService: MessagesThreadOperationsApiClient {
     func delete(id: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let id else {
-                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
+                return continuation.resume(throwing: GmailApiError.missingMessageInfo("id"))
             }
 
             let query = GTLRGmailQuery_UsersThreadsDelete.query(
@@ -31,7 +31,7 @@ extension GmailService: MessagesThreadOperationsProvider {
 
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
                 return continuation.resume()
             }
@@ -80,7 +80,7 @@ extension GmailService: MessagesThreadOperationsProvider {
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let id else {
-                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
+                return continuation.resume(throwing: GmailApiError.missingMessageInfo("id"))
             }
 
             let request = GTLRGmail_ModifyThreadRequest()
@@ -95,7 +95,7 @@ extension GmailService: MessagesThreadOperationsProvider {
 
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
                 return continuation.resume()
             }

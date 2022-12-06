@@ -46,7 +46,7 @@ final class ComposeViewController: TableNodeViewController {
     let composeMessageService: ComposeMessageService
     var decorator: ComposeViewDecorator
     let localContactsProvider: LocalContactsProviderType
-    let messageService: MessageService
+    let messageService: MessageHelper
     let pubLookup: PubLookupType
     let googleUserService: GoogleUserServiceType
     let filesManager: FilesManagerType
@@ -98,7 +98,7 @@ final class ComposeViewController: TableNodeViewController {
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
         composeMessageService: ComposeMessageService? = nil,
-        messageService: MessageService? = nil,
+        messageService: MessageHelper? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods(),
@@ -139,7 +139,7 @@ final class ComposeViewController: TableNodeViewController {
         self.clientConfiguration = clientConfiguration
 
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.messageService = try messageService ?? MessageService(
+        self.messageService = try messageService ?? MessageHelper(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,

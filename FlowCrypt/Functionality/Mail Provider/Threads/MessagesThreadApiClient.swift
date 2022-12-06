@@ -1,5 +1,5 @@
 //
-//  MessagesThreadProvider.swift
+//  MessagesThreadApiClient.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 25.10.2021
@@ -9,12 +9,12 @@
 import FlowCryptCommon
 import GoogleAPIClientForREST_Gmail
 
-protocol MessagesThreadProvider {
+protocol MessagesThreadApiClient {
     func fetchThread(identifier: String, path: String) async throws -> MessageThread
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext
 }
 
-extension GmailService: MessagesThreadProvider {
+extension GmailService: MessagesThreadApiClient {
     func fetchThreads(using context: FetchMessageContext) async throws -> MessageThreadContext {
         let threadsList = try await getThreadsList(using: context)
         let identifiers = threadsList.threads?.compactMap(\.identifier) ?? []
@@ -45,7 +45,7 @@ extension GmailService: MessagesThreadProvider {
             try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(query) { _, data, error in
                     if let error {
-                        let gmailError = GmailServiceError.convert(from: error as NSError)
+                        let gmailError = GmailApiError.convert(from: error as NSError)
                         return continuation.resume(throwing: gmailError)
                     }
 
@@ -65,7 +65,7 @@ extension GmailService: MessagesThreadProvider {
             try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(query) { _, data, error in
                     if let error {
-                        return continuation.resume(throwing: GmailServiceError.providerError(error))
+                        return continuation.resume(throwing: GmailApiError.providerError(error))
                     }
 
                     guard let gmailThread = data as? GTLRGmail_Thread else {
@@ -91,7 +91,7 @@ extension GmailService: MessagesThreadProvider {
 
         if let pagination = context.pagination {
             guard case let .byNextPage(token) = pagination else {
-                throw GmailServiceError.paginationError(pagination)
+                throw GmailApiError.paginationError(pagination)
             }
             query.pageToken = token
         }

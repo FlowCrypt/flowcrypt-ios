@@ -10,7 +10,7 @@ import FlowCryptCommon
 import MailCore
 
 // MARK: - RemoteFoldersProviderType
-extension Imap: RemoteFoldersProviderType {
+extension Imap: RemoteFoldersApiClient {
     func fetchFolders() async throws -> [Folder] {
         try await execute("fetchFolders") { sess, respond in
             sess.fetchAllFoldersOperation()

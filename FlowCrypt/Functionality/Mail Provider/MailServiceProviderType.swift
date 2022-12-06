@@ -9,27 +9,26 @@
 import GoogleAPIClientForREST_Gmail
 
 enum MailServiceProviderType {
-    case gmail
-    case imap
+    case gmail, imap
 }
 
 // MARK: - MailServiceProvider
 // Provider should conform to MailServiceProvider protocol to support all app functionality
 // MessageSender - sending messages
-// RemoteFoldersProviderType - fetching folders
-// MessagesListProvider - fetching list of messages
+// RemoteFoldersApiClient - fetching folders
+// MessagesListApiClient - fetching list of messages
 // MessageProvider - show message
-// MessageOperationsProvider - delete, read, etc messages
+// MessageOperationsApiClient - delete, read, etc messages
 // MessageSearchProvider - search messages in folder
 // BackupProvider - Search for backups
 
 // MARK: Optionally
-// MessagesThreadProvider - Fetch user threads
+// MessagesThreadApiClient - Fetch user threads
 
 protocol MailServiceProvider: MessageGateway,
-    RemoteFoldersProviderType,
+    RemoteFoldersApiClient,
     MessageProvider,
-    MessageOperationsProvider,
+    MessageOperationsApiClient,
     MessageSearchProvider,
     BackupProvider,
     UsersMailSessionProvider {

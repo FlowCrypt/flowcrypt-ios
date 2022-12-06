@@ -36,7 +36,7 @@ extension GmailService: BackupProvider {
             logger.logVerbose("downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
             return data
         } catch {
-            throw GmailServiceError.missingBackupQuery(error)
+            throw GmailApiError.missingBackupQuery(error)
         }
     }
 
@@ -49,13 +49,13 @@ extension GmailService: BackupProvider {
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
                 guard let attachmentPart = data as? GTLRGmail_MessagePartBody else {
-                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("findAttachment data"))
+                    return continuation.resume(throwing: GmailApiError.missingMessageInfo("findAttachment data"))
                 }
                 guard let data = GTLRDecodeBase64(attachmentPart.data) else {
-                    return continuation.resume(throwing: GmailServiceError.messageEncode)
+                    return continuation.resume(throwing: GmailApiError.messageEncode)
                 }
                 return continuation.resume(returning: data)
             }

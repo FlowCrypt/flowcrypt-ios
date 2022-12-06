@@ -8,20 +8,20 @@
 
 import GoogleAPIClientForREST_Gmail
 
-extension GmailService: RemoteSendAsProviderType {
+extension GmailService: RemoteSendAsApiClient {
     func fetchSendAsList() async throws -> [SendAsModel] {
         let query = GTLRGmailQuery_UsersSettingsSendAsList.query(withUserId: .me)
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error {
-                    let gmailError = GmailServiceError.convert(from: error as NSError)
+                    let gmailError = GmailApiError.convert(from: error as NSError)
                     return continuation.resume(throwing: gmailError)
                 }
                 guard let sendAsListResponse = data as? GTLRGmail_ListSendAsResponse else {
                     return continuation.resume(throwing: AppErr.cast("GTLRGmail_ListSendAsResponse"))
                 }
                 guard let sendAsList = sendAsListResponse.sendAs else {
-                    return continuation.resume(throwing: GmailServiceError.failedToParseData(data))
+                    return continuation.resume(throwing: GmailApiError.failedToParseData(data))
                 }
                 let list = sendAsList.compactMap(SendAsModel.init)
 

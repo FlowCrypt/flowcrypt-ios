@@ -1,5 +1,5 @@
 //
-//  GmailServiceError.swift
+//  GmailApiError.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 27.11.2020.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum GmailServiceError: Error {
+enum GmailApiError: Error {
     /// Gmail API response parsing
     case failedToParseData(Any?)
     /// Can't get GTLREncodeBase64 data
@@ -27,7 +27,7 @@ enum GmailServiceError: Error {
     case invalidGrant(Error)
 }
 
-extension GmailServiceError: LocalizedError {
+extension GmailApiError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .failedToParseData:
@@ -50,8 +50,8 @@ extension GmailServiceError: LocalizedError {
     }
 }
 
-extension GmailServiceError {
-    static func convert(from error: NSError) -> GmailServiceError {
+extension GmailApiError {
+    static func convert(from error: NSError) -> GmailApiError {
         switch error.code {
         case -10: // invalid_grant error code
             return .invalidGrant(error)

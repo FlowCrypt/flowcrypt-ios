@@ -15,7 +15,7 @@ extension GmailService: DraftGateway {
         return try await withCheckedThrowingContinuation { continuation in
             gmailService.executeQuery(query) { _, data, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
 
                 guard let gmailDraft = data as? GTLRGmail_Draft else {
@@ -38,7 +38,7 @@ extension GmailService: DraftGateway {
         return try await withCheckedThrowingContinuation { continuation in
             gmailService.executeQuery(query) { _, data, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
 
                 guard let list = data as? GTLRGmail_ListDraftsResponse else {
@@ -58,7 +58,7 @@ extension GmailService: DraftGateway {
     func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageIdentifier {
         try await withCheckedThrowingContinuation { continuation in
             guard let raw = GTLREncodeBase64(input.mime) else {
-                return continuation.resume(throwing: GmailServiceError.messageEncode)
+                return continuation.resume(throwing: GmailApiError.messageEncode)
             }
 
             let draftQuery = createQueryForDraftAction(
@@ -69,12 +69,12 @@ extension GmailService: DraftGateway {
 
             gmailService.executeQuery(draftQuery) { _, object, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 } else if let gmailDraft = object as? GTLRGmail_Draft {
                     let draft = MessageIdentifier(gmailDraft: gmailDraft)
                     return continuation.resume(returning: draft)
                 } else {
-                    return continuation.resume(throwing: GmailServiceError.failedToParseData(nil))
+                    return continuation.resume(throwing: GmailApiError.failedToParseData(nil))
                 }
             }
         }
@@ -86,7 +86,7 @@ extension GmailService: DraftGateway {
             let query = GTLRGmailQuery_UsersDraftsDelete.query(withUserId: .me, identifier: id)
             gmailService.executeQuery(query) { _, _, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
                 return continuation.resume()
             }

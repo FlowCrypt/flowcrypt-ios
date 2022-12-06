@@ -228,7 +228,7 @@ extension ThreadDetailsViewController {
         let attachmentIndex = indexPath.row - 2
 
         guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
-            throw MessageServiceError.attachmentNotFound
+            throw MessageHelperError.attachmentNotFound
         }
 
         if attachment.data == nil {

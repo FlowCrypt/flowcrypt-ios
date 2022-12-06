@@ -9,7 +9,7 @@
 import Foundation
 
 // TODO: - Rework in scope of https://github.com/FlowCrypt/flowcrypt-ios/issues/1260
-extension Imap: MessagesThreadOperationsProvider {
+extension Imap: MessagesThreadOperationsApiClient {
     private var error: Error { AppErr.general("Doesn't support yet") }
 
     func delete(id: String?) async throws {

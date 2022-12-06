@@ -8,7 +8,7 @@
 
 import GoogleAPIClientForREST_Gmail
 
-extension GmailService: MessageOperationsProvider {
+extension GmailService: MessageOperationsApiClient {
     func markAsUnread(id: Identifier, folder: String) async throws {
         try await updateMessage(id: id, labelsToAdd: [.unread])
     }
@@ -28,7 +28,7 @@ extension GmailService: MessageOperationsProvider {
     func deleteMessage(id: Identifier, from folderPath: String?) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = id.stringId else {
-                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
+                return continuation.resume(throwing: GmailApiError.missingMessageInfo("id"))
             }
 
             let query = GTLRGmailQuery_UsersMessagesDelete.query(
@@ -38,7 +38,7 @@ extension GmailService: MessageOperationsProvider {
 
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
                 return continuation.resume()
             }
@@ -75,7 +75,7 @@ extension GmailService: MessageOperationsProvider {
 
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
                 return continuation.resume()
             }
@@ -106,7 +106,7 @@ extension GmailService: MessageOperationsProvider {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
                 return continuation.resume()
             }
@@ -120,7 +120,7 @@ extension GmailService: MessageOperationsProvider {
     ) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             guard let identifier = id.stringId else {
-                return continuation.resume(throwing: GmailServiceError.missingMessageInfo("id"))
+                return continuation.resume(throwing: GmailApiError.missingMessageInfo("id"))
             }
             let request = GTLRGmail_ModifyMessageRequest()
             request.addLabelIds = labelsToAdd.map(\.value)
@@ -133,7 +133,7 @@ extension GmailService: MessageOperationsProvider {
 
             self.gmailService.executeQuery(query) { _, _, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
                 return continuation.resume()
             }

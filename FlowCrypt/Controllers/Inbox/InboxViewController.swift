@@ -16,13 +16,13 @@ class InboxViewController: ViewController {
     let tableNode: ASTableNode
 
     private let decorator: InboxViewDecorator
-    private let messageOperationsProvider: MessageOperationsProvider
+    private let messageOperationsApiClient: MessageOperationsApiClient
     private let refreshControl = UIRefreshControl()
     private lazy var composeButton = ComposeButtonNode { [weak self] in
         self?.btnComposeTap()
     }
 
-    private let inboxDataProvider: InboxDataProvider
+    private let inboxDataApiClient: InboxDataApiClient
     private let viewModel: InboxViewModel
     private var inboxInput: [InboxItem] = []
     var state: InboxViewController.State = .idle
@@ -48,17 +48,17 @@ class InboxViewController: ViewController {
         appContext: AppContextWithUser,
         viewModel: InboxViewModel,
         numberOfInboxItemsToLoad: Int = 50,
-        provider: InboxDataProvider,
+        apiClient: InboxDataApiClient,
         decorator: InboxViewDecorator = InboxViewDecorator(),
         isSearch: Bool = false
     ) throws {
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
-        self.inboxDataProvider = provider
+        self.inboxDataApiClient = apiClient
 
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.messageOperationsProvider = try mailProvider.messageOperationsProvider
+        self.messageOperationsApiClient = try mailProvider.messageOperationsApiClient
         self.decorator = decorator
         self.tableNode = TableNode()
         self.isSearch = isSearch
@@ -208,7 +208,7 @@ extension InboxViewController {
                     state = .fetching
                 }
 
-                let context = try await inboxDataProvider.fetchInboxItems(
+                let context = try await inboxDataApiClient.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: isSearch ? nil : viewModel.path, // pass nil in search screen to search for all folders
                         count: numberOfInboxItemsToLoad,
@@ -235,7 +235,7 @@ extension InboxViewController {
                 let pagination = try currentMessagesListPagination(from: inboxInput.count)
                 state = .fetching
 
-                let context = try await inboxDataProvider.fetchInboxItems(
+                let context = try await inboxDataApiClient.fetchInboxItems(
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
@@ -351,7 +351,7 @@ extension InboxViewController {
         refreshControl.endRefreshing()
 
         switch error {
-        case GmailServiceError.invalidGrant:
+        case GmailApiError.invalidGrant:
             appContext.globalRouter.renderMissingPermissionsView(appContext: appContext)
         default:
             let appError = AppErr(error)
@@ -378,7 +378,7 @@ extension InboxViewController {
             let viewController = try SearchViewController(
                 appContext: appContext,
                 viewModel: viewModel,
-                provider: inboxDataProvider,
+                apiClient: inboxDataApiClient,
                 isSearch: true
             )
             navigationController?.pushViewController(viewController, animated: false)
@@ -522,7 +522,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         Task {
             do {
                 showSpinner()
-                try await self.messageOperationsProvider.emptyFolder(path: viewModel.path)
+                try await self.messageOperationsApiClient.emptyFolder(path: viewModel.path)
                 self.state = .empty
                 self.inboxInput = []
                 await tableNode.reloadData()
@@ -677,7 +677,7 @@ extension InboxViewController {
         }
 
         Task {
-            guard let inboxItem = try await inboxDataProvider.fetchInboxItem(
+            guard let inboxItem = try await inboxDataApiClient.fetchInboxItem(
                 identifier: identifier,
                 path: path
             ), !inboxItem.messages(with: path).isEmpty else {
