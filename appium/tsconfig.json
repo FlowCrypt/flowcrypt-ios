@@ -35,9 +35,9 @@
     "skipLibCheck": true,
     "baseUrl": "."
   },
-  // "include": [
-  //   "./api-mocks/**/*.ts",
-  //   "./config/*.ts",
-  //   "./tests/**/*.ts",
-  // ]
+  "include": [
+    "./api-mocks/**/*.ts",
+    "./config/*.ts",
+    "./tests/**/*.ts",
+  ]
 }
