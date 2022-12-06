@@ -1,5 +1,5 @@
 //
-//  BackupProvider.swift
+//  BackupApiClient.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 26.12.2020.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-protocol BackupProvider {
+protocol BackupApiClient {
     func searchBackups(for email: String) async throws -> Data
 }

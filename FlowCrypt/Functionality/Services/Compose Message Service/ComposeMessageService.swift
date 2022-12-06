@@ -32,7 +32,7 @@ final class ComposeMessageService {
     private let keyMethods: KeyMethodsType
     private let localContactsProvider: LocalContactsProviderType
     private let core: CoreComposeMessageType & KeyParser
-    private let draftGateway: DraftGateway?
+    private let draftsApiClient: DraftsApiClient?
     private lazy var logger = Logger.nested(Self.self)
 
     private var saveDraftTask: Task<MessageIdentifier?, Error>?
@@ -49,13 +49,13 @@ final class ComposeMessageService {
     init(
         appContext: AppContextWithUser,
         keyMethods: KeyMethodsType,
-        draftGateway: DraftGateway? = nil,
+        draftsApiClient: DraftsApiClient? = nil,
         core: CoreComposeMessageType & KeyParser = Core.shared,
         localContactsProvider: LocalContactsProviderType? = nil
     ) {
         self.appContext = appContext
         self.keyMethods = keyMethods
-        self.draftGateway = draftGateway
+        self.draftsApiClient = draftsApiClient
         self.core = core
         self.localContactsProvider = localContactsProvider ?? LocalContactsProvider(encryptedStorage: appContext.encryptedStorage)
     }
@@ -246,10 +246,10 @@ final class ComposeMessageService {
     func fetchMessageIdentifier(info: ComposeMessageInput.MessageQuoteInfo) {
         Task {
             if let draftId = info.draftId {
-                messageIdentifier = try await draftGateway?.fetchDraft(id: draftId)
+                messageIdentifier = try await draftsApiClient?.fetchDraft(id: draftId)
             } else if let messageId = info.rfc822MsgId {
                 let identifier = Identifier(stringId: messageId)
-                messageIdentifier = try await draftGateway?.fetchDraftIdentifier(for: identifier)
+                messageIdentifier = try await draftsApiClient?.fetchDraftIdentifier(for: identifier)
             }
         }
     }
@@ -270,7 +270,7 @@ final class ComposeMessageService {
 
                 let threadId = self.messageIdentifier?.threadId?.stringId ?? threadId
 
-                return try await self.draftGateway?.saveDraft(
+                return try await self.draftsApiClient?.saveDraft(
                     input: MessageGatewayInput(
                         mime: mime,
                         threadId: threadId
@@ -288,7 +288,7 @@ final class ComposeMessageService {
 
     func deleteDraft() async throws {
         guard let draftId = messageIdentifier?.draftId else { return }
-        try await draftGateway?.deleteDraft(with: draftId)
+        try await draftsApiClient?.deleteDraft(with: draftId)
     }
 
     // MARK: - Encrypt and Send
@@ -323,7 +323,7 @@ final class ComposeMessageService {
 
             // cleaning any draft saved/created/fetched during editing
             if let draftId = messageIdentifier?.draftId {
-                try await draftGateway?.deleteDraft(with: draftId)
+                try await draftsApiClient?.deleteDraft(with: draftId)
             }
 
             onStateChanged?(.messageSent(!isPlain))

@@ -8,7 +8,7 @@
 
 import GoogleAPIClientForREST_Gmail
 
-extension GmailService: DraftGateway {
+extension GmailService: DraftsApiClient {
     func fetchDraft(id: Identifier) async throws -> MessageIdentifier? {
         guard let identifier = id.stringId else { return nil }
         let query = GTLRGmailQuery_UsersDraftsGet.query(withUserId: .me, identifier: identifier)

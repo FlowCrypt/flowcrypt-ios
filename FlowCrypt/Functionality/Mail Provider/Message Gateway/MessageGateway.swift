@@ -17,7 +17,7 @@ protocol MessageGateway {
     func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws -> Identifier
 }
 
-protocol DraftGateway {
+protocol DraftsApiClient {
     func fetchDraft(id: Identifier) async throws -> MessageIdentifier?
     func fetchDraftIdentifier(for messageId: Identifier) async throws -> MessageIdentifier?
     func saveDraft(input: MessageGatewayInput, draftId: Identifier?) async throws -> MessageIdentifier

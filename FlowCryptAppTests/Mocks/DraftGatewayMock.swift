@@ -7,9 +7,8 @@
 //
 
 @testable import FlowCrypt
-import GoogleAPIClientForREST_Gmail
 
-class DraftGatewayMock: DraftGateway {
+class DraftsApiClientMock: DraftsApiClient {
     func fetchDraft(id: Identifier) async throws -> MessageIdentifier? {
         return nil
     }

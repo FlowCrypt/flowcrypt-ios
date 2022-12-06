@@ -9,16 +9,16 @@
 import UIKit
 
 final class BackupService {
-    let backupProvider: BackupProvider
+    let backupApiClient: BackupApiClient
     let core: Core
     let messageGateway: MessageGateway
 
     init(
-        backupProvider: BackupProvider,
+        backupApiClient: BackupApiClient,
         core: Core = .shared,
         messageGateway: MessageGateway
     ) {
-        self.backupProvider = backupProvider
+        self.backupApiClient = backupApiClient
         self.core = core
         self.messageGateway = messageGateway
     }
@@ -27,7 +27,7 @@ final class BackupService {
 // MARK: - BackupServiceType
 extension BackupService: BackupServiceType {
     func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
-        let backupData = try await self.backupProvider.searchBackups(for: userId.email)
+        let backupData = try await backupApiClient.searchBackups(for: userId.email)
         do {
             let parsed = try await core.parseKeys(armoredOrBinary: backupData)
             let keys = parsed.keyDetails.filter { $0.private != nil }
@@ -90,7 +90,7 @@ extension BackupService: BackupServiceType {
 // MARK: - Helpers
 private extension String {
     var withoutSpecialCharacters: String {
-        self.replacingOccurrences(
+        replacingOccurrences(
             of: "[^a-z0-9]",
             with: "",
             options: .regularExpression

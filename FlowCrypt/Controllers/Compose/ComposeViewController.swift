@@ -117,7 +117,7 @@ final class ComposeViewController: TableNodeViewController {
             appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate,
             shouldRunWarmupQuery: true
         )
-        let draftGateway = try appContext.getRequiredMailProvider().draftGateway
+        let draftsApiClient = try appContext.getRequiredMailProvider().draftsApiClient
 
         if let composeMessageService {
             self.composeMessageService = composeMessageService
@@ -125,7 +125,7 @@ final class ComposeViewController: TableNodeViewController {
             self.composeMessageService = ComposeMessageService(
                 appContext: appContext,
                 keyMethods: keyMethods,
-                draftGateway: draftGateway
+                draftsApiClient: draftsApiClient
             )
         }
 

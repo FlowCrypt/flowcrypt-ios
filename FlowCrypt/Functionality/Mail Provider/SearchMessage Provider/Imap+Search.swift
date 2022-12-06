@@ -8,22 +8,22 @@
 
 import MailCore
 
-// MARK: - MessageSearchProvider
-extension Imap: MessageSearchProvider {
+// MARK: - MessageSearchApiClient
+extension Imap: MessageSearchApiClient {
     func searchExpression(using searchContext: MessageSearchContext) async throws -> [Message] {
         let possibleExpressions = searchContext.searchDestinations.map {
-            $0.searchExpresion(searchContext.expression)
+            $0.searchExpression(searchContext.expression)
         }
-        let searchExpressions = self.helper.createSearchExpressions(
+        let searchExpressions = helper.createSearchExpressions(
             from: possibleExpressions
         )
         guard let expression = searchExpressions else {
             return []
         }
-        let kind = self.messageKindProvider.imapMessagesRequestKind
+        let kind = messageKindProvider.imapMessagesRequestKind
         let path = searchContext.folderPath ?? "INBOX"
-        let indexes = try await self.fetchUids(folder: path, expr: expression)
-        return try await self.fetchMessagesByUIDOperation(for: path, kind: kind, set: indexes).map(Message.init)
+        let indexes = try await fetchUids(folder: path, expr: expression)
+        return try await fetchMessagesByUIDOperation(for: path, kind: kind, set: indexes).map(Message.init)
     }
 }
 
@@ -40,7 +40,7 @@ extension Imap {
 
 // MARK: - Convenience
 extension MessageSearchDestinations {
-    var searchExpresion: (String) -> (MCOIMAPSearchExpression) {
+    var searchExpression: (String) -> (MCOIMAPSearchExpression) {
         return { expression in
             switch self {
             case .subject: return MCOIMAPSearchExpression.searchSubject(expression)

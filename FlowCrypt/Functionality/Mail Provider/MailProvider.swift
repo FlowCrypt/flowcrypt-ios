@@ -6,8 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import GoogleAPIClientForREST_Gmail
-import UIKit
+import Foundation
 
 // TODO: - Instead of get properties use some DI mechanism
 // to reuse already initialised services
@@ -65,15 +64,15 @@ final class MailProvider {
         }
     }
 
-    var messageSearchProvider: MessageSearchProvider {
+    var messageSearchApiClient: MessageSearchApiClient {
         get throws {
-            try resolveService(of: MessageSearchProvider.self)
+            try resolveService(of: MessageSearchApiClient.self)
         }
     }
 
-    var backupProvider: BackupProvider {
+    var backupApiClient: BackupApiClient {
         get throws {
-            try resolveService(of: BackupProvider.self)
+            try resolveService(of: BackupApiClient.self)
         }
     }
 
@@ -83,9 +82,9 @@ final class MailProvider {
         }
     }
 
-    var draftGateway: DraftGateway? {
+    var draftsApiClient: DraftsApiClient? {
         get throws {
-            resolveOptionalService(of: DraftGateway.self)
+            resolveOptionalService(of: DraftsApiClient.self)
         }
     }
 

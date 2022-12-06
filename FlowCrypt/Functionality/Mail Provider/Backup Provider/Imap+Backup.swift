@@ -20,7 +20,7 @@ enum BackupError: Error {
     case missingAttributes
 }
 
-extension Imap: BackupProvider {
+extension Imap: BackupApiClient {
     func searchBackups(for email: String) async throws -> Data {
         var folderPaths = (try await fetchFolders()).map(\.path)
 

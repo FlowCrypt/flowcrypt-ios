@@ -1,5 +1,5 @@
 //
-//  MessageSearchProvider.swift
+//  MessageSearchApiClient.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 25.12.2020.
@@ -32,6 +32,6 @@ struct MessageSearchContext {
     }
 }
 
-protocol MessageSearchProvider {
+protocol MessageSearchApiClient {
     func searchExpression(using context: MessageSearchContext) async throws -> [Message]
 }

@@ -106,7 +106,7 @@ class AppContext {
     func getBackupService() throws -> BackupService {
         let mailProvider = try getRequiredMailProvider()
         return BackupService(
-            backupProvider: try mailProvider.backupProvider,
+            backupApiClient: try mailProvider.backupApiClient,
             messageGateway: try mailProvider.messageGateway
         )
     }

@@ -8,7 +8,7 @@
 
 import GoogleAPIClientForREST_Gmail
 
-extension GmailService: BackupProvider {
+extension GmailService: BackupApiClient {
     func searchBackups(for email: String) async throws -> Data {
         do {
             logger.logVerbose("will begin searching for backups")
