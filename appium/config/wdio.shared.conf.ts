@@ -8,6 +8,10 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
+process.on('SIGINT', () => {
+  process.exit(1);
+});
+
 export const config: Options.Testrunner = {
   autoCompileOpts: {
     tsNodeOpts: {

@@ -13,12 +13,13 @@ describe('SETUP: ', () => {
   it('can find email on wkd', async () => {
     const mockApi = new MockApi();
     const recipient = MockUserList.dmitry.email;
+    const recipientPrefix = recipient.split('@')[0];
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.wkdConfig = {
       servedPubkeys: {
-        [recipient.split('@')[0]]: MockUserList.dmitry.pub!,
+        [recipientPrefix]: MockUserList.dmitry.pub!,
       }
     }
 
