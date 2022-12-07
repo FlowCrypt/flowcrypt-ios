@@ -40,7 +40,7 @@ extension MessageHelperError {
     }
 }
 
-// MARK: - MessageService
+// MARK: - MessageHelper
 final class MessageHelper {
 
     private let messageProvider: MessageProvider

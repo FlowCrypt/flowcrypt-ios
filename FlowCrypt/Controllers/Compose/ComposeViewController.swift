@@ -43,10 +43,10 @@ final class ComposeViewController: TableNodeViewController {
     var userTappedOutSideRecipientsArea = false
     var shouldShowEmailRecipientsLabel = false
     let appContext: AppContextWithUser
-    let composeMessageService: ComposeMessageService
+    let composeMessageHelper: ComposeMessageHelper
     var decorator: ComposeViewDecorator
     let localContactsProvider: LocalContactsProviderType
-    let messageService: MessageHelper
+    let messageHelper: MessageHelper
     let pubLookup: PubLookupType
     let googleUserService: GoogleUserServiceType
     let filesManager: FilesManagerType
@@ -97,8 +97,8 @@ final class ComposeViewController: TableNodeViewController {
         appContext: AppContextWithUser,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
-        composeMessageService: ComposeMessageService? = nil,
-        messageService: MessageHelper? = nil,
+        composeMessageHelper: ComposeMessageHelper? = nil,
+        messageHelper: MessageHelper? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods(),
@@ -119,10 +119,10 @@ final class ComposeViewController: TableNodeViewController {
         )
         let draftsApiClient = try appContext.getRequiredMailProvider().draftsApiClient
 
-        if let composeMessageService {
-            self.composeMessageService = composeMessageService
+        if let composeMessageHelper {
+            self.composeMessageHelper = composeMessageHelper
         } else {
-            self.composeMessageService = ComposeMessageService(
+            self.composeMessageHelper = ComposeMessageHelper(
                 appContext: appContext,
                 keyMethods: keyMethods,
                 draftsApiClient: draftsApiClient
@@ -139,7 +139,7 @@ final class ComposeViewController: TableNodeViewController {
         self.clientConfiguration = clientConfiguration
 
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.messageService = try messageService ?? MessageHelper(
+        self.messageHelper = try messageHelper ?? MessageHelper(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
@@ -147,7 +147,7 @@ final class ComposeViewController: TableNodeViewController {
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
 
-        self.sendAsList = try await appContext.getSendAsService()
+        self.sendAsList = try await appContext.getSendAsProvider()
             .fetchList(isForceReload: false, for: appContext.user)
             .filter { $0.verificationStatus == .accepted || $0.isDefault }
 
@@ -226,14 +226,14 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private func observeComposeUpdates() {
-        composeMessageService.onStateChanged { [weak self] state in
+        composeMessageHelper.onStateChanged { [weak self] state in
             DispatchQueue.main.async {
                 self?.updateSpinner(with: state)
             }
         }
     }
 
-    private func updateSpinner(with state: ComposeMessageService.State) {
+    private func updateSpinner(with state: ComposeMessageHelper.State) {
         switch state {
         case let .progressChanged(progress):
             if progress < 1 {

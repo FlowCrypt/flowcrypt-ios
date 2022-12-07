@@ -1,5 +1,5 @@
 //
-//  ComposeMessageService+State.swift
+//  ComposeMessageHelper+State.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 17/12/21
@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension ComposeMessageService {
+extension ComposeMessageHelper {
     enum State {
         case idle
         case validatingMessage

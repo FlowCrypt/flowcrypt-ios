@@ -8,11 +8,11 @@
 
 import FlowCryptCommon
 
-protocol ClientConfigurationServiceType {
+protocol ClientConfigurationProviderType {
     var configuration: ClientConfiguration { get async throws }
 }
 
-final class ClientConfigurationService: ClientConfigurationServiceType {
+final class ClientConfigurationProvider: ClientConfigurationProviderType {
     private let server: EnterpriseServerApiType
     private let local: LocalClientConfigurationType
     private let core: Core

@@ -38,7 +38,7 @@
 		2133D51826A1E45400CC686F /* DecryptedPrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2133D51726A1E45300CC686F /* DecryptedPrivateKey.swift */; };
 		21489B78267CB42400BDE4AC /* LocalClientConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B77267CB42400BDE4AC /* LocalClientConfiguration.swift */; };
 		21489B7A267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B79267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift */; };
-		21489B80267CC39E00BDE4AC /* ClientConfigurationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7F267CC39E00BDE4AC /* ClientConfigurationService.swift */; };
+		21489B80267CC39E00BDE4AC /* ClientConfigurationProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21489B7F267CC39E00BDE4AC /* ClientConfigurationProvider.swift */; };
 		214A023A26A3029700C24066 /* EmailKeyManagerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 214A023926A3029700C24066 /* EmailKeyManagerApi.swift */; };
 		215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */ = {isa = PBXBuildFile; fileRef = 215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */; };
 		2155E9EF26E3628C008FB033 /* Refreshable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2155E9EE26E3628C008FB033 /* Refreshable.swift */; };
@@ -107,7 +107,7 @@
 		51433AC52902A6EB00E9D488 /* SwiftyRSAError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51433AB62902A6EB00E9D488 /* SwiftyRSAError.swift */; };
 		514C34DB276CE19C00FCAB79 /* ComposeMessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */; };
 		514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */; };
-		514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */; };
+		514C34DF276CE20700FCAB79 /* ComposeMessageHelper+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageHelper+State.swift */; };
 		5152F196277E5AED00BE8A5B /* MessageUploadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */; };
 		51592FB528D9B03600FE9ACC /* MessageIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51592FB428D9B03600FE9ACC /* MessageIdentifier.swift */; };
 		515B7C2528119CED0066AB4F /* GMP in Frameworks */ = {isa = PBXBuildFile; productRef = 515B7C2428119CED0066AB4F /* GMP */; };
@@ -162,7 +162,7 @@
 		606FE33A2745AA2E009DA039 /* AttachmentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 606FE3392745AA2E009DA039 /* AttachmentViewController.swift */; };
 		750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750A6C3C28244A780048E1CC /* OptionalExtensions.swift */; };
 		7536E72D285B00EA00A50043 /* RecipientFromCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */; };
-		75588F8B285777AB00E595D1 /* SendAsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F83285777AB00E595D1 /* SendAsService.swift */; };
+		75588F8B285777AB00E595D1 /* SendAsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F83285777AB00E595D1 /* SendAsProvider.swift */; };
 		75588F8C285777AB00E595D1 /* SendAsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F85285777AB00E595D1 /* SendAsModel.swift */; };
 		75588F8D285777AB00E595D1 /* RemoteSendAsApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F87285777AB00E595D1 /* RemoteSendAsApiClient.swift */; };
 		75588F8F285777AB00E595D1 /* GmailService+SendAs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75588F89285777AB00E595D1 /* GmailService+SendAs.swift */; };
@@ -220,7 +220,7 @@
 		9F67998D277B3E4D00AFE5BE /* (null) in Sources */ = {isa = PBXBuildFile; };
 		9F6EE1552597399D0059BA51 /* BackupApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE1542597399D0059BA51 /* BackupApiClient.swift */; };
 		9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */; };
-		9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */; };
+		9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageHelper.swift */; };
 		9F6F3BEF26ADF5DE005BD9C6 /* ComposeMessageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3BED26ADF5DE005BD9C6 /* ComposeMessageError.swift */; };
 		9F6F3C3C26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C3B26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift */; };
 		9F6F3C6A26ADFBEB005BD9C6 /* MessageGatewayMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6F3C6926ADFBEB005BD9C6 /* MessageGatewayMock.swift */; };
@@ -332,7 +332,7 @@
 		D21574B724376852006B094F /* ConnectionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21574B624376852006B094F /* ConnectionType.swift */; };
 		D227C0E3250538100070F805 /* LocalFoldersProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E2250538100070F805 /* LocalFoldersProvider.swift */; };
 		D227C0E6250538780070F805 /* RemoteFoldersApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E5250538780070F805 /* RemoteFoldersApiClient.swift */; };
-		D227C0E8250538A90070F805 /* FoldersService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E7250538A90070F805 /* FoldersService.swift */; };
+		D227C0E8250538A90070F805 /* FoldersManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D227C0E7250538A90070F805 /* FoldersManager.swift */; };
 		D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = D2324CB22471E60300FD1C6F /* .swiftlint.yml */; };
 		D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4453C3236B96F9005D7D05 /* DividerCellNode.swift */; };
 		D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24ABA5F23FDB26C002EE9DD /* Helpers.swift */; };
@@ -490,7 +490,7 @@
 		21489B6D267B7D5000BDE4AC /* FileMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMock.swift; sourceTree = "<group>"; };
 		21489B77267CB42400BDE4AC /* LocalClientConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalClientConfiguration.swift; sourceTree = "<group>"; };
 		21489B79267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationRealmObject.swift; sourceTree = "<group>"; };
-		21489B7F267CC39E00BDE4AC /* ClientConfigurationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationService.swift; sourceTree = "<group>"; };
+		21489B7F267CC39E00BDE4AC /* ClientConfigurationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientConfigurationProvider.swift; sourceTree = "<group>"; };
 		214A023926A3029700C24066 /* EmailKeyManagerApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailKeyManagerApi.swift; sourceTree = "<group>"; };
 		215002A22690B1DD00980DDD /* client_configuraion_with_unknown_flag.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = client_configuraion_with_unknown_flag.json; sourceTree = "<group>"; };
 		2155E9EE26E3628C008FB033 /* Refreshable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Refreshable.swift; sourceTree = "<group>"; };
@@ -572,7 +572,7 @@
 		51433AB62902A6EB00E9D488 /* SwiftyRSAError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyRSAError.swift; sourceTree = "<group>"; };
 		514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageContext.swift; sourceTree = "<group>"; };
 		514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeMessageRecipient.swift; sourceTree = "<group>"; };
-		514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeMessageService+State.swift"; sourceTree = "<group>"; };
+		514C34DE276CE20700FCAB79 /* ComposeMessageHelper+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeMessageHelper+State.swift"; sourceTree = "<group>"; };
 		5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageUploadDetails.swift; sourceTree = "<group>"; };
 		51592FB428D9B03600FE9ACC /* MessageIdentifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageIdentifier.swift; sourceTree = "<group>"; };
 		5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailTextFieldNode.swift; sourceTree = "<group>"; };
@@ -625,7 +625,7 @@
 		606FE3392745AA2E009DA039 /* AttachmentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentViewController.swift; sourceTree = "<group>"; };
 		750A6C3C28244A780048E1CC /* OptionalExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalExtensions.swift; sourceTree = "<group>"; };
 		7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientFromCellNode.swift; sourceTree = "<group>"; };
-		75588F83285777AB00E595D1 /* SendAsService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendAsService.swift; sourceTree = "<group>"; };
+		75588F83285777AB00E595D1 /* SendAsProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendAsProvider.swift; sourceTree = "<group>"; };
 		75588F85285777AB00E595D1 /* SendAsModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SendAsModel.swift; sourceTree = "<group>"; };
 		75588F87285777AB00E595D1 /* RemoteSendAsApiClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteSendAsApiClient.swift; sourceTree = "<group>"; };
 		75588F89285777AB00E595D1 /* GmailService+SendAs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "GmailService+SendAs.swift"; sourceTree = "<group>"; };
@@ -700,7 +700,7 @@
 		9F696294236091F4003712E1 /* SignInDescriptionNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInDescriptionNode.swift; sourceTree = "<group>"; };
 		9F6EE1542597399D0059BA51 /* BackupApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupApiClient.swift; sourceTree = "<group>"; };
 		9F6EE17A2598F9FA0059BA51 /* Gmail+Backup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+Backup.swift"; sourceTree = "<group>"; };
-		9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeMessageService.swift; sourceTree = "<group>"; };
+		9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeMessageHelper.swift; sourceTree = "<group>"; };
 		9F6F3BED26ADF5DE005BD9C6 /* ComposeMessageError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ComposeMessageError.swift; sourceTree = "<group>"; };
 		9F6F3C3B26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreComposeMessageMock.swift; sourceTree = "<group>"; };
 		9F6F3C6926ADFBEB005BD9C6 /* MessageGatewayMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageGatewayMock.swift; sourceTree = "<group>"; };
@@ -808,7 +808,7 @@
 		D21574B624376852006B094F /* ConnectionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionType.swift; sourceTree = "<group>"; };
 		D227C0E2250538100070F805 /* LocalFoldersProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalFoldersProvider.swift; sourceTree = "<group>"; };
 		D227C0E5250538780070F805 /* RemoteFoldersApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteFoldersApiClient.swift; sourceTree = "<group>"; };
-		D227C0E7250538A90070F805 /* FoldersService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersService.swift; sourceTree = "<group>"; };
+		D227C0E7250538A90070F805 /* FoldersManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoldersManager.swift; sourceTree = "<group>"; };
 		D2324CB22471E60300FD1C6F /* .swiftlint.yml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		D24ABA5F23FDB26C002EE9DD /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailsCellNode.swift; sourceTree = "<group>"; };
@@ -990,14 +990,14 @@
 			path = FilesManager;
 			sourceTree = "<group>";
 		};
-		21489B81267CC3BC00BDE4AC /* Client Configuration Service */ = {
+		21489B81267CC3BC00BDE4AC /* Client Configuration Provider */ = {
 			isa = PBXGroup;
 			children = (
 				21EA3B15265647C400691848 /* ClientConfiguration.swift */,
-				21489B7F267CC39E00BDE4AC /* ClientConfigurationService.swift */,
+				21489B7F267CC39E00BDE4AC /* ClientConfigurationProvider.swift */,
 				21489B77267CB42400BDE4AC /* LocalClientConfiguration.swift */,
 			);
-			path = "Client Configuration Service";
+			path = "Client Configuration Provider";
 			sourceTree = "<group>";
 		};
 		215897E6267A551300423694 /* FilesManager */ = {
@@ -1324,7 +1324,7 @@
 		75588F82285777AB00E595D1 /* SendAs Services */ = {
 			isa = PBXGroup;
 			children = (
-				75588F83285777AB00E595D1 /* SendAsService.swift */,
+				75588F83285777AB00E595D1 /* SendAsProvider.swift */,
 				75588F84285777AB00E595D1 /* Models */,
 				75588F86285777AB00E595D1 /* RemoteSendAsApiClient */,
 				75588F8A285777AB00E595D1 /* LocalSendAsProvider.swift */,
@@ -1375,13 +1375,13 @@
 			children = (
 				75588F82285777AB00E595D1 /* SendAs Services */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
-				21489B81267CC3BC00BDE4AC /* Client Configuration Service */,
-				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */,
-				D227C0E4250538190070F805 /* Folders Services */,
+				21489B81267CC3BC00BDE4AC /* Client Configuration Provider */,
+				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Helper */,
+				D227C0E4250538190070F805 /* Folders Manager */,
 				511737662851F30400337B9F /* Google User Service */,
 				04722B44281ABD2C00D0242F /* EKMVcHelper.swift */,
-				9FB22CFD25715DDF0026EE64 /* Local Private Key Services */,
-				D27B911724EFE787002DF0A1 /* Local Contacts Service */,
+				9FB22CFD25715DDF0026EE64 /* Local Private Key Storage */,
+				D27B911724EFE787002DF0A1 /* Local Contacts Provider */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1598,16 +1598,16 @@
 			path = "Backup Provider";
 			sourceTree = "<group>";
 		};
-		9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Service */ = {
+		9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Helper */ = {
 			isa = PBXGroup;
 			children = (
-				9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageService.swift */,
-				514C34DE276CE20700FCAB79 /* ComposeMessageService+State.swift */,
+				9F6F3BEC26ADF5DE005BD9C6 /* ComposeMessageHelper.swift */,
+				514C34DE276CE20700FCAB79 /* ComposeMessageHelper+State.swift */,
 				514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */,
 				9F6F3BED26ADF5DE005BD9C6 /* ComposeMessageError.swift */,
 				514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */,
 			);
-			path = "Compose Message Service";
+			path = "Compose Message Helper";
 			sourceTree = "<group>";
 		};
 		9F6F3C6326ADFBDB005BD9C6 /* Mocks */ = {
@@ -1692,14 +1692,14 @@
 			path = "Message Provider";
 			sourceTree = "<group>";
 		};
-		9FB22CFD25715DDF0026EE64 /* Local Private Key Services */ = {
+		9FB22CFD25715DDF0026EE64 /* Local Private Key Storage */ = {
 			isa = PBXGroup;
 			children = (
 				9F79228726696B0200DA3D80 /* CombinedPassPhraseStorage.swift */,
 				9FC7EBA9266EBD3700F3BF5D /* InMemoryPassPhraseStorage.swift */,
 				D2891AC124C59EFA008918E3 /* KeyAndPassPhraseStorage.swift */,
 			);
-			path = "Local Private Key Services";
+			path = "Local Private Key Storage";
 			sourceTree = "<group>";
 		};
 		9FBEAE5B25D41C22009E98D4 /* UsersMailSession Provider */ = {
@@ -2028,16 +2028,16 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		D227C0E4250538190070F805 /* Folders Services */ = {
+		D227C0E4250538190070F805 /* Folders Manager */ = {
 			isa = PBXGroup;
 			children = (
-				D227C0E7250538A90070F805 /* FoldersService.swift */,
+				D227C0E7250538A90070F805 /* FoldersManager.swift */,
 				D227C0E2250538100070F805 /* LocalFoldersProvider.swift */,
 				9F53CB742555E1C500C0157A /* RemoteFoldersApiClient */,
 				D29A0005240C14EB00C1387D /* Models */,
 				9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */,
 			);
-			path = "Folders Services";
+			path = "Folders Manager";
 			sourceTree = "<group>";
 		};
 		D24ABA6123FDB275002EE9DD /* Resources */ = {
@@ -2094,12 +2094,12 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		D27B911724EFE787002DF0A1 /* Local Contacts Service */ = {
+		D27B911724EFE787002DF0A1 /* Local Contacts Provider */ = {
 			isa = PBXGroup;
 			children = (
 				D27B911824EFE79F002DF0A1 /* LocalContactsProvider.swift */,
 			);
-			path = "Local Contacts Service";
+			path = "Local Contacts Provider";
 			sourceTree = "<group>";
 		};
 		D28655972424D0BC0066F52E /* Views */ = {
@@ -2613,7 +2613,7 @@
 				C132B9D91EC30E1D00763715 /* InboxViewController.swift in Sources */,
 				75588F9228577BFA00E595D1 /* SendAsRealmObject.swift in Sources */,
 				9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */,
-				9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageService.swift in Sources */,
+				9F6F3BEE26ADF5DE005BD9C6 /* ComposeMessageHelper.swift in Sources */,
 				5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
@@ -2633,19 +2633,19 @@
 				51938DC1274CC291007AD57B /* MessageQuoteType.swift in Sources */,
 				5152F196277E5AED00BE8A5B /* MessageUploadDetails.swift in Sources */,
 				9F41FA2F253B7624003B970D /* BackupSelectKeyDecorator.swift in Sources */,
-				D227C0E8250538A90070F805 /* FoldersService.swift in Sources */,
+				D227C0E8250538A90070F805 /* FoldersManager.swift in Sources */,
 				5ADEDCB623A426E300EC495E /* KeyDetailViewController.swift in Sources */,
 				D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */,
 				9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */,
 				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
 				2CC50FB12744167A0051629A /* Folder.swift in Sources */,
-				514C34DF276CE20700FCAB79 /* ComposeMessageService+State.swift in Sources */,
+				514C34DF276CE20700FCAB79 /* ComposeMessageHelper+State.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserRealmObject.swift in Sources */,
 				51CE196728D8AC5300A5B200 /* ComposeMessageAction.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
 				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
-				21489B80267CC39E00BDE4AC /* ClientConfigurationService.swift in Sources */,
+				21489B80267CC39E00BDE4AC /* ClientConfigurationProvider.swift in Sources */,
 				D28655932423B4EE0066F52E /* MyMenuViewDecorator.swift in Sources */,
 				04B4728D1ECE29D200B8266F /* KeypairRealmObject.swift in Sources */,
 				F191F621272511790053833E /* BlurViewController.swift in Sources */,
@@ -2746,7 +2746,7 @@
 				51433ABE2902A6EB00E9D488 /* ClearMessage.swift in Sources */,
 				D27177492424D73000BDA9A9 /* InboxViewDecorator.swift in Sources */,
 				D2F41371243CC76F0066AFB5 /* SessionRealmObject.swift in Sources */,
-				75588F8B285777AB00E595D1 /* SendAsService.swift in Sources */,
+				75588F8B285777AB00E595D1 /* SendAsProvider.swift in Sources */,
 				049E606127FDB9370089EE2A /* ComposeViewController+Setup.swift in Sources */,
 				9F9362192573D10E0009912F /* Imap+Message.swift in Sources */,
 				9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */,

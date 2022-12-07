@@ -112,16 +112,16 @@ class AppContext {
     }
 
     @MainActor
-    func getFoldersService() throws -> FoldersService {
-        return FoldersService(
+    func getFoldersManager() throws -> FoldersManager {
+        return FoldersManager(
             encryptedStorage: encryptedStorage,
             remoteFoldersApiClient: try getRequiredMailProvider().remoteFoldersApiClient
         )
     }
 
     @MainActor
-    func getSendAsService() throws -> SendAsService {
-        return SendAsService(
+    func getSendAsProvider() throws -> SendAsProvider {
+        return SendAsProvider(
             encryptedStorage: encryptedStorage,
             remoteSendAsApiClient: try getRequiredMailProvider().remoteSendAsApiClient
         )
@@ -134,7 +134,7 @@ class AppContextWithUser: AppContext {
     let userId: UserId
 
     let enterpriseServer: EnterpriseServerApiType
-    let clientConfigurationService: ClientConfigurationServiceType
+    let clientConfigurationService: ClientConfigurationProviderType
 
     init(
         encryptedStorage: EncryptedStorageType,
@@ -150,7 +150,7 @@ class AppContextWithUser: AppContext {
         self.user = user
         self.userId = UserId(email: user.email, name: user.name)
         self.enterpriseServer = try EnterpriseServerApi(email: user.email)
-        self.clientConfigurationService = ClientConfigurationService(
+        self.clientConfigurationService = ClientConfigurationProvider(
             server: enterpriseServer,
             local: LocalClientConfiguration(
                 encryptedStorage: encryptedStorage

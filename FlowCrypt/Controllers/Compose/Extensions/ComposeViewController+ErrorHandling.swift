@@ -20,7 +20,7 @@ extension ComposeViewController {
 
                 Task {
                     do {
-                        let matched = try await self.composeMessageService.handlePassPhraseEntry(
+                        let matched = try await self.composeMessageHelper.handlePassPhraseEntry(
                             passPhrase,
                             for: signingKey
                         )

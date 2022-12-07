@@ -1,5 +1,5 @@
 //
-//  ComposeMessageService.swift
+//  ComposeMessageHelper.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23.07.2021.
@@ -26,7 +26,7 @@ struct ComposedDraft: Equatable {
     let contextToSend: ComposeMessageContext
 }
 
-final class ComposeMessageService {
+final class ComposeMessageHelper {
 
     private let appContext: AppContextWithUser
     private let keyMethods: KeyMethodsType
@@ -340,7 +340,7 @@ final class ComposeMessageService {
 }
 
 // MARK: - Message password
-extension ComposeMessageService {
+extension ComposeMessageHelper {
     private func composePasswordMessage(from message: SendableMsg) async throws -> Data {
         let messageUrl = try await prepareAndUploadPwdEncryptedMsg(message: message)
         let messageBody = createMessageBodyWithPasswordLink(sender: message.from, url: messageUrl)

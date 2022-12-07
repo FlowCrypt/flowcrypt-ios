@@ -1,5 +1,5 @@
 //
-//  SendAsService.swift
+//  SendAsProvider.swift
 //  FlowCrypt
 //
 //  Created by Ioan Moldovan on 06/13/22.
@@ -8,11 +8,11 @@
 
 import FlowCryptCommon
 
-protocol SendAsServiceType {
+protocol SendAsProviderType {
     func fetchList(isForceReload: Bool, for user: User) async throws -> [SendAsModel]
 }
 
-final class SendAsService: SendAsServiceType {
+final class SendAsProvider: SendAsProviderType {
     private let localSendAsProvider: LocalSendAsProviderType
     private let remoteSendAsApiClient: RemoteSendAsApiClient
 

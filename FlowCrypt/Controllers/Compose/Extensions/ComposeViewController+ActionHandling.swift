@@ -230,7 +230,7 @@ extension ComposeViewController {
 
     @objc private func messagePasswordTextFieldDidChange(_ sender: UITextField) {
         let password = sender.text ?? ""
-        let isPasswordStrong = composeMessageService.isMessagePasswordStrong(pwd: password)
+        let isPasswordStrong = composeMessageHelper.isMessagePasswordStrong(pwd: password)
         messagePasswordAlertController?.actions[1].isEnabled = isPasswordStrong
     }
 }

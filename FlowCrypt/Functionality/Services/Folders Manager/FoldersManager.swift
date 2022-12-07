@@ -1,5 +1,5 @@
 //
-//  FoldersService.swift
+//  FoldersManager.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 06/09/2020.
@@ -12,11 +12,11 @@ protocol TrashFolderProviderType {
     var trashFolderPath: String? { get async throws }
 }
 
-protocol FoldersServiceType {
+protocol FoldersManagerType {
     func fetchFolders(isForceReload: Bool, for user: User) async throws -> [FolderViewModel]
 }
 
-final class FoldersService: FoldersServiceType {
+final class FoldersManager: FoldersManagerType {
     // TODO: - Ticket? - consider rework with CacheService for trash path instead
     private let trashPathStorage: LocalStorageType
     private let localFoldersProvider: LocalFoldersProviderType

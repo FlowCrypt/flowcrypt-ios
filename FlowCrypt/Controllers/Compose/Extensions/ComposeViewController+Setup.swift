@@ -72,7 +72,7 @@ extension ComposeViewController {
     }
 
     private func processDraft(info: ComposeMessageInput.MessageQuoteInfo) {
-        composeMessageService.fetchMessageIdentifier(info: info)
+        composeMessageHelper.fetchMessageIdentifier(info: info)
 
         guard let id = info.id else {
             didFinishSetup = true
@@ -81,7 +81,7 @@ extension ComposeViewController {
 
         Task {
             do {
-                let message = try await messageService.fetchMessage(identifier: id, folder: "")
+                let message = try await messageHelper.fetchMessage(identifier: id, folder: "")
                 let text = message.body.text
 
                 if text.isPgp {
@@ -119,7 +119,7 @@ extension ComposeViewController {
 
     private func decodeDraft(text: String) async {
         do {
-            let decrypted = try await messageService.decrypt(
+            let decrypted = try await messageHelper.decrypt(
                 text: text,
                 userEmail: appContext.user.email,
                 isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
@@ -182,7 +182,7 @@ extension ComposeViewController: NavigationChildController {
     }
 
     private func handleUpdateAction() {
-        guard var messageIdentifier = composeMessageService.messageIdentifier else { return }
+        guard var messageIdentifier = composeMessageHelper.messageIdentifier else { return }
         messageIdentifier.draftMessageId = input.type.info?.id
         handleAction?(.update(messageIdentifier))
     }

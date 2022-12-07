@@ -15,8 +15,7 @@ protocol KeyMethodsType {
 }
 
 enum KeyUsage {
-    case encryption
-    case signing
+    case encryption, signing
 }
 
 final class KeyMethods: KeyMethodsType {
