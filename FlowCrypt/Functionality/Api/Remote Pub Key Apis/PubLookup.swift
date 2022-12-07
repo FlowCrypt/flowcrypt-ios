@@ -77,12 +77,12 @@ class PubLookup: PubLookupType {
             throw attesterError
         }
         // Attester keys are less preferred because they come from less trustworthy source
-        //   (the FlowCrypt server)
+        // (the FlowCrypt server)
         return try RecipientWithSortedPubKeys(recipient, keyDetails: attesterResult.keys)
     }
 
     func fetchRemoteUpdateLocal(with recipient: Recipient) async throws {
-        let remoteRecipient = try await self.lookup(recipient: recipient)
+        let remoteRecipient = try await lookup(recipient: recipient)
         try localContactsProvider.updateKeys(for: remoteRecipient)
     }
 }

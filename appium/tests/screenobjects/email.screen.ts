@@ -316,7 +316,7 @@ class EmailScreen extends BaseScreen {
     const el = await this.attachmentTextView;
     await ElementHelper.waitElementVisible(el);
     const text = await el.getText();
-    expect(text.includes(value)).toBeTrue();
+    expect(text.includes(value)).toBeTruthy();
   }
 
   draftBody = async (index: number) => {

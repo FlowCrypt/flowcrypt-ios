@@ -104,10 +104,7 @@ class WkdApi: WkdApiType {
             Logger.nested("WKDURLsService").logInfo("Loaded WKD url \(urls.pubKeys) and will try to extract Public Keys")
         }
 
-        if pubKeyResponse.status == 404 {
-            return InternalResult(hasPolicy: true, keys: nil, method: urls.method)
-        }
-
-        return InternalResult(hasPolicy: true, keys: pubKeyResponse.data, method: urls.method)
+        let keys = pubKeyResponse.status == 404 ? nil : pubKeyResponse.data
+        return InternalResult(hasPolicy: true, keys: keys, method: urls.method)
     }
 }
