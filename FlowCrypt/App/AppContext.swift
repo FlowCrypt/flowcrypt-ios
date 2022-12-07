@@ -103,9 +103,9 @@ class AppContext {
     }
 
     @MainActor
-    func getBackupService() throws -> BackupService {
+    func getBackupsManager() throws -> BackupsManager {
         let mailProvider = try getRequiredMailProvider()
-        return BackupService(
+        return BackupsManager(
             backupApiClient: try mailProvider.backupApiClient,
             messageGateway: try mailProvider.messageGateway
         )
@@ -134,7 +134,7 @@ class AppContextWithUser: AppContext {
     let userId: UserId
 
     let enterpriseServer: EnterpriseServerApiType
-    let clientConfigurationService: ClientConfigurationProviderType
+    let clientConfigurationProvider: ClientConfigurationProviderType
 
     init(
         encryptedStorage: EncryptedStorageType,
@@ -150,7 +150,7 @@ class AppContextWithUser: AppContext {
         self.user = user
         self.userId = UserId(email: user.email, name: user.name)
         self.enterpriseServer = try EnterpriseServerApi(email: user.email)
-        self.clientConfigurationService = ClientConfigurationProvider(
+        self.clientConfigurationProvider = ClientConfigurationProvider(
             server: enterpriseServer,
             local: LocalClientConfiguration(
                 encryptedStorage: encryptedStorage
@@ -158,7 +158,7 @@ class AppContextWithUser: AppContext {
         )
 
         var combinedPassPhraseStorageWithConfiguration = combinedPassPhraseStorage
-        combinedPassPhraseStorageWithConfiguration.clientConfiguration = try await clientConfigurationService.configuration
+        combinedPassPhraseStorageWithConfiguration.clientConfiguration = try await clientConfigurationProvider.configuration
         super.init(
             encryptedStorage: encryptedStorage,
             session: session,

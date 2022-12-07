@@ -27,7 +27,7 @@ final class EKMVcHelper: EKMVcHelperType {
     func refreshKeysFromEKMIfNeeded(in viewController: UIViewController) {
         Task {
             do {
-                let configuration = try await appContext.clientConfigurationService.configuration
+                let configuration = try await appContext.clientConfigurationProvider.configuration
                 guard try configuration.checkUsesEKM() == .usesEKM else {
                     return
                 }

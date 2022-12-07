@@ -30,7 +30,7 @@ final class KeySettingsViewController: TableNodeViewController {
     ) async throws {
         self.appContext = appContext
         self.decorator = decorator
-        self.isUsingKeyManager = try await appContext.clientConfigurationService.configuration.isUsingKeyManager
+        self.isUsingKeyManager = try await appContext.clientConfigurationProvider.configuration.isUsingKeyManager
         self.keyMethods = keyMethods
         super.init(node: TableNode())
     }

@@ -122,7 +122,7 @@ extension ComposeViewController {
             let decrypted = try await messageHelper.decrypt(
                 text: text,
                 userEmail: appContext.user.email,
-                isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
             )
             contextToSend.message = decrypted
             didFinishSetup = true

@@ -107,7 +107,7 @@ final class ComposeViewController: TableNodeViewController {
         self.appContext = appContext
         self.input = input
         self.decorator = decorator
-        let clientConfiguration = try await appContext.clientConfigurationService.configuration
+        let clientConfiguration = try await appContext.clientConfigurationProvider.configuration
 
         self.localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
@@ -141,7 +141,10 @@ final class ComposeViewController: TableNodeViewController {
         let mailProvider = try appContext.getRequiredMailProvider()
         self.messageHelper = try messageHelper ?? MessageHelper(
             localContactsProvider: localContactsProvider,
-            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
+            pubLookup: PubLookup(
+                clientConfiguration: clientConfiguration,
+                localContactsProvider: localContactsProvider
+            ),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
             messageProvider: try mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage

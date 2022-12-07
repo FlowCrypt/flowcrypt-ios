@@ -51,7 +51,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         onComplete: @escaping MessageActionCompletion
     ) async throws {
         self.appContext = appContext
-        let clientConfiguration = try await appContext.clientConfigurationService.configuration
+        let clientConfiguration = try await appContext.clientConfigurationProvider.configuration
         let localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
@@ -151,7 +151,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
                     processedMessage.text = try await messageHelper.decrypt(
                         text: encryptedText,
                         userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                        isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                     )
                 }
 
@@ -190,7 +190,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             message: message,
             onlyLocalKeys: onlyLocalKeys,
             userEmail: appContext.user.email,
-            isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+            isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
         )
     }
 
@@ -260,7 +260,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 let decryptedText = try await messageHelper.decrypt(
                     text: data.rawMessage.body.text,
                     userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                 )
 
                 let processedMessage = ProcessedMessage(
@@ -404,7 +404,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
                         message: message,
                         onlyLocalKeys: false,
                         userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                        isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                     )
 
                     handle(processedMessage: processedMessage, at: indexPath)

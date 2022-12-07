@@ -33,9 +33,9 @@ extension CreateKeyError: CustomStringConvertible {
             We recommend to use 5-6 unrelated words as your Pass Phrase.
             """
         case .missingUserEmail:
-            return "backupServiceError_email".localized
+            return "backupManagerError_email".localized
         case .missingUserName:
-            return "backupServiceError_name".localized
+            return "backupManagerError_name".localized
         case .doesntMatch:
             return "pass_phrase_match_error".localized
         case let .submitKey(error):

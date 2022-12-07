@@ -25,7 +25,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) async throws {
         self.attester = AttesterApi(
-            clientConfiguration: try await appContext.clientConfigurationService.configuration
+            clientConfiguration: try await appContext.clientConfigurationProvider.configuration
         )
         super.init(
             appContext: appContext,
@@ -68,7 +68,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         )
 
         try await submitKeyToAttester(user: appContext.user, publicKey: encryptedPrv.key.public)
-        try await appContext.getBackupService().backupToInbox(keys: [encryptedPrv.key], for: appContext.userId)
+        try await appContext.getBackupsManager().backupToInbox(keys: [encryptedPrv.key], for: appContext.userId)
         try putKeypairsInEncryptedStorage(encryptedPrv: encryptedPrv, storageMethod: storageMethod, passPhrase: passPhrase)
 
         if storageMethod == .memory {

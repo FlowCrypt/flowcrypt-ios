@@ -191,7 +191,7 @@
 		9F3EF32523B15C1400FA0CEF /* ImapHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F3EF32423B15C1400FA0CEF /* ImapHelper.swift */; };
 		9F4163B8265ED61C00106194 /* SetupInitialViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */; };
 		9F4163E6266520B600106194 /* CommonNodesInputs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4163E5266520B600106194 /* CommonNodesInputs.swift */; };
-		9F416428266575DC00106194 /* BackupServiceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F416427266575DC00106194 /* BackupServiceType.swift */; };
+		9F416428266575DC00106194 /* BackupsManagerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F416427266575DC00106194 /* BackupsManagerType.swift */; };
 		9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA27253B75F4003B970D /* BackupSelectKeyViewController.swift */; };
 		9F41FA2F253B7624003B970D /* BackupSelectKeyDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */; };
 		9F4300CC2571045B00791CFB /* InboxViewControllerContainerDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4300CB2571045B00791CFB /* InboxViewControllerContainerDecorator.swift */; };
@@ -268,7 +268,7 @@
 		9FAFD75B2713880400321FA4 /* InboxViewController+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD75A2713880300321FA4 /* InboxViewController+Factory.swift */; };
 		9FAFD75D2714A06400321FA4 /* InboxProviders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAFD75C2714A06300321FA4 /* InboxProviders.swift */; };
 		9FB22CDD25715CF50026EE64 /* GmailApiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CDC25715CF50026EE64 /* GmailApiError.swift */; };
-		9FB22CF025715D960026EE64 /* BackupServiceError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CEF25715D960026EE64 /* BackupServiceError.swift */; };
+		9FB22CF025715D960026EE64 /* BackupsManagerError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CEF25715D960026EE64 /* BackupsManagerError.swift */; };
 		9FB22CF725715DC50026EE64 /* CreateKeyError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB22CF625715DC50026EE64 /* CreateKeyError.swift */; };
 		9FBD69EB27775086002FC602 /* UIColorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB9D232BF2A600CF87EA /* UIColorExtensions.swift */; };
 		9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 518389C92726D8F700131B2C /* UIApplicationExtensions.swift */; };
@@ -315,7 +315,7 @@
 		D204DBA223FB35700083B9D6 /* FlowCryptUI.h in Headers */ = {isa = PBXBuildFile; fileRef = D204DBA023FB35700083B9D6 /* FlowCryptUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D20D3C672520AB1000D4AA9A /* BackupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C662520AB1000D4AA9A /* BackupViewController.swift */; };
 		D20D3C6E2520AB3900D4AA9A /* BackupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */; };
-		D20D3C752520AB9A00D4AA9A /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C742520AB9A00D4AA9A /* BackupService.swift */; };
+		D20D3C752520AB9A00D4AA9A /* BackupsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C742520AB9A00D4AA9A /* BackupsManager.swift */; };
 		D20D3C7C2520ABC600D4AA9A /* BackupCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C7B2520ABC600D4AA9A /* BackupCellNode.swift */; };
 		D20D3C892520B67C00D4AA9A /* BackupOptionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C882520B67C00D4AA9A /* BackupOptionsViewController.swift */; };
 		D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20D3C8F2520B68A00D4AA9A /* BackupOptionsViewDecorator.swift */; };
@@ -663,7 +663,7 @@
 		9F3EF32923B15C9500FA0CEF /* ImapHelperTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapHelperTest.swift; sourceTree = "<group>"; };
 		9F4163B7265ED61C00106194 /* SetupInitialViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupInitialViewController.swift; sourceTree = "<group>"; };
 		9F4163E5266520B600106194 /* CommonNodesInputs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonNodesInputs.swift; sourceTree = "<group>"; };
-		9F416427266575DC00106194 /* BackupServiceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceType.swift; sourceTree = "<group>"; };
+		9F416427266575DC00106194 /* BackupsManagerType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsManagerType.swift; sourceTree = "<group>"; };
 		9F41FA27253B75F4003B970D /* BackupSelectKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSelectKeyViewController.swift; sourceTree = "<group>"; };
 		9F41FA2E253B7624003B970D /* BackupSelectKeyDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupSelectKeyDecorator.swift; sourceTree = "<group>"; };
 		9F4300CB2571045B00791CFB /* InboxViewControllerContainerDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerContainerDecorator.swift; sourceTree = "<group>"; };
@@ -747,7 +747,7 @@
 		9FAFD75A2713880300321FA4 /* InboxViewController+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InboxViewController+Factory.swift"; sourceTree = "<group>"; };
 		9FAFD75C2714A06300321FA4 /* InboxProviders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxProviders.swift; sourceTree = "<group>"; };
 		9FB22CDC25715CF50026EE64 /* GmailApiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GmailApiError.swift; sourceTree = "<group>"; };
-		9FB22CEF25715D960026EE64 /* BackupServiceError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceError.swift; sourceTree = "<group>"; };
+		9FB22CEF25715D960026EE64 /* BackupsManagerError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsManagerError.swift; sourceTree = "<group>"; };
 		9FB22CF625715DC50026EE64 /* CreateKeyError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateKeyError.swift; sourceTree = "<group>"; };
 		9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserMailSessionProvider.swift; sourceTree = "<group>"; };
 		9FC411202595EA12001180A8 /* MessageSearchApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSearchApiClient.swift; sourceTree = "<group>"; };
@@ -799,7 +799,7 @@
 		D204DBA123FB35700083B9D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D20D3C662520AB1000D4AA9A /* BackupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupViewController.swift; sourceTree = "<group>"; };
 		D20D3C6D2520AB3900D4AA9A /* BackupViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupViewDecorator.swift; sourceTree = "<group>"; };
-		D20D3C742520AB9A00D4AA9A /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupService.swift; sourceTree = "<group>"; };
+		D20D3C742520AB9A00D4AA9A /* BackupsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupsManager.swift; sourceTree = "<group>"; };
 		D20D3C7B2520ABC600D4AA9A /* BackupCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupCellNode.swift; sourceTree = "<group>"; };
 		D20D3C882520B67C00D4AA9A /* BackupOptionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOptionsViewController.swift; sourceTree = "<group>"; };
 		D20D3C8F2520B68A00D4AA9A /* BackupOptionsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOptionsViewDecorator.swift; sourceTree = "<group>"; };
@@ -1321,7 +1321,7 @@
 			path = Attachment;
 			sourceTree = "<group>";
 		};
-		75588F82285777AB00E595D1 /* SendAs Services */ = {
+		75588F82285777AB00E595D1 /* SendAs Provider */ = {
 			isa = PBXGroup;
 			children = (
 				75588F83285777AB00E595D1 /* SendAsProvider.swift */,
@@ -1329,7 +1329,7 @@
 				75588F86285777AB00E595D1 /* RemoteSendAsApiClient */,
 				75588F8A285777AB00E595D1 /* LocalSendAsProvider.swift */,
 			);
-			path = "SendAs Services";
+			path = "SendAs Provider";
 			sourceTree = "<group>";
 		};
 		75588F84285777AB00E595D1 /* Models */ = {
@@ -1373,7 +1373,7 @@
 		9F0C3C1F23191F2000299985 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				75588F82285777AB00E595D1 /* SendAs Services */,
+				75588F82285777AB00E595D1 /* SendAs Provider */,
 				9F41FA1C25372C2D003B970D /* Backup Services */,
 				21489B81267CC3BC00BDE4AC /* Client Configuration Provider */,
 				9F6F3BEB26ADF5DE005BD9C6 /* Compose Message Helper */,
@@ -1484,9 +1484,9 @@
 		9F41FA1C25372C2D003B970D /* Backup Services */ = {
 			isa = PBXGroup;
 			children = (
-				D20D3C742520AB9A00D4AA9A /* BackupService.swift */,
-				9FB22CEF25715D960026EE64 /* BackupServiceError.swift */,
-				9F416427266575DC00106194 /* BackupServiceType.swift */,
+				D20D3C742520AB9A00D4AA9A /* BackupsManager.swift */,
+				9FB22CEF25715D960026EE64 /* BackupsManagerError.swift */,
+				9F416427266575DC00106194 /* BackupsManagerType.swift */,
 			);
 			path = "Backup Services";
 			sourceTree = "<group>";
@@ -2617,7 +2617,7 @@
 				5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */,
 				C132B9CB1EC2DE6400763715 /* GeneralConstants.swift in Sources */,
 				5ADEDCBE23A4363700EC495E /* KeyDetailInfoViewController.swift in Sources */,
-				D20D3C752520AB9A00D4AA9A /* BackupService.swift in Sources */,
+				D20D3C752520AB9A00D4AA9A /* BackupsManager.swift in Sources */,
 				514C34DB276CE19C00FCAB79 /* ComposeMessageContext.swift in Sources */,
 				049E607427FDBDBE0089EE2A /* ComposeViewController+TapActions.swift in Sources */,
 				C192421F1EC48B6900C3D251 /* SetupBackupsViewController.swift in Sources */,
@@ -2660,7 +2660,7 @@
 				2C60AB0C272564D40040D7F2 /* InvalidStorageViewController.swift in Sources */,
 				2C124DB42728809100A2EFA6 /* ApiCall.swift in Sources */,
 				9F7E8F19269C538E0021C07F /* NavigationChildController.swift in Sources */,
-				9FB22CF025715D960026EE64 /* BackupServiceError.swift in Sources */,
+				9FB22CF025715D960026EE64 /* BackupsManagerError.swift in Sources */,
 				51433AB82902A6EB00E9D488 /* PublicKey.swift in Sources */,
 				9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */,
 				D212D36424C1AC4800035991 /* KeyId.swift in Sources */,
@@ -2672,7 +2672,7 @@
 				9FB22CDD25715CF50026EE64 /* GmailApiError.swift in Sources */,
 				51114DB6280EB699006C252A /* gmp-interface.m in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
-				9F416428266575DC00106194 /* BackupServiceType.swift in Sources */,
+				9F416428266575DC00106194 /* BackupsManagerType.swift in Sources */,
 				2CC12C3F273571B80021DDDF /* AttachmentManager.swift in Sources */,
 				5133B6702716320F00C95463 /* ContactKeyDetailViewController.swift in Sources */,
 				049E605D27FDB7D10089EE2A /* ComposeViewController+Nodes.swift in Sources */,

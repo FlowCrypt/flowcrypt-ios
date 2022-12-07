@@ -8,7 +8,7 @@
 
 import MailCore
 
-protocol SessionCredentialsProvider {
+protocol SessionCredentialsProviderType {
     func getImapCredentials(for email: String) -> MailSettingsCredentials?
     func getSmtpCredentials(for email: String) -> MailSettingsCredentials?
     func imapFor(connection: ConnectionType, email: String?) -> Result<MailSettingsCredentials, SessionCredentialsError>
@@ -19,7 +19,7 @@ enum SessionCredentialsError: Error {
     case notFound(Int)
 }
 
-struct SessionCredentialsService: SessionCredentialsProvider {
+struct SessionCredentialsProvider: SessionCredentialsProviderType {
 
     let manager = MCOMailProvidersManager.shared()
         .then {

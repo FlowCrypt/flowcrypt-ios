@@ -54,7 +54,7 @@ final class SettingsViewController: TableNodeViewController {
     ) async throws {
         self.appContext = appContext
         self.decorator = decorator
-        self.clientConfiguration = try await appContext.clientConfigurationService.configuration
+        self.clientConfiguration = try await appContext.clientConfigurationProvider.configuration
         self.rows = SettingsMenuItem.filtered(with: clientConfiguration)
         super.init(node: TableNode())
     }

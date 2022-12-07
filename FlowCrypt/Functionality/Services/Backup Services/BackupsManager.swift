@@ -1,5 +1,5 @@
 //
-//  BackupService.swift
+//  BackupsManager.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23/09/2020.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-final class BackupService {
+final class BackupsManager {
     let backupApiClient: BackupApiClient
     let core: Core
     let messageGateway: MessageGateway
@@ -24,8 +24,8 @@ final class BackupService {
     }
 }
 
-// MARK: - BackupServiceType
-extension BackupService: BackupServiceType {
+// MARK: - BackupsManagerType
+extension BackupsManager: BackupsManagerType {
     func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails] {
         let backupData = try await backupApiClient.searchBackups(for: userId.email)
         do {
@@ -33,7 +33,7 @@ extension BackupService: BackupServiceType {
             let keys = parsed.keyDetails.filter { $0.private != nil }
             return keys
         } catch {
-            throw BackupServiceError.parse
+            throw BackupsManagerError.parse
         }
     }
 
@@ -42,7 +42,7 @@ extension BackupService: BackupServiceType {
         let isFullyEncryptedKeys = keys.map(\.isFullyDecrypted).contains(false)
 
         guard isFullyEncryptedKeys else {
-            throw BackupServiceError.keyIsNotFullyEncrypted
+            throw BackupsManagerError.keyIsNotFullyEncrypted
         }
 
         let privateKeyContext = keys

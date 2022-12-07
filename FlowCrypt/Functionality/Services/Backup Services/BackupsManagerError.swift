@@ -1,5 +1,5 @@
 //
-//  BackupServiceError.swift
+//  BackupsManagerError.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 27.11.2020.
@@ -8,18 +8,18 @@
 
 import Foundation
 
-enum BackupServiceError: Error {
+enum BackupsManagerError: Error {
     case parse
     case keyIsNotFullyEncrypted
 }
 
-extension BackupServiceError: CustomStringConvertible {
+extension BackupsManagerError: CustomStringConvertible {
     var description: String {
         switch self {
         case .parse:
-            return "backupServiceError_parse".localized
+            return "backupManagerError_parse".localized
         case .keyIsNotFullyEncrypted:
-            return "backupServiceError_notEncrypted".localized
+            return "backupManagerError_notEncrypted".localized
         }
     }
 }

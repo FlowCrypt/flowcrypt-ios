@@ -1,5 +1,5 @@
 //
-//  BackupServiceType.swift
+//  BackupsManagerType.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 31.05.2021.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol BackupServiceType {
+protocol BackupsManagerType {
     /// get all existed backups
     func fetchBackupsFromInbox(for userId: UserId) async throws -> [KeyDetails]
     /// backup keys to user inbox

@@ -74,10 +74,8 @@ extension BackupViewController {
     private func fetchBackups() {
         Task {
             do {
-                let keys = try await appContext.getBackupService().fetchBackupsFromInbox(for: appContext.userId)
-                state = keys.isEmpty
-                    ? .noBackups
-                    : .backups(keys)
+                let keys = try await appContext.getBackupsManager().fetchBackupsFromInbox(for: appContext.userId)
+                state = keys.isEmpty ? .noBackups : .backups(keys)
             } catch {
                 showAlert(message: error.errorMessage)
             }
