@@ -1,15 +1,23 @@
 {
+  "ts-node": {
+    "transpileOnly": true,
+    "require": [
+      "tsconfig-paths/register"
+    ]
+  },
   "compilerOptions": {
     "outDir": "./.tsbuild/",
     "lib": [
-      "ES2021"
+      "ES2022"
     ],
     "module": "commonjs",
-    "target": "ES2021",
+    "target": "ES2022",
     "types": [
       "node",
-      "webdriverio/async",
-      "@wdio/jasmine-framework"
+      "@wdio/globals/types",
+      "@wdio/jasmine-framework",
+      "@wdio/junit-reporter",
+      "@wdio/appium-service"
     ],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -24,11 +32,12 @@
     "sourceMap": false,
     "checkJs": false,
     "strict": true,
+    "skipLibCheck": true,
     "baseUrl": "."
   },
   "include": [
+    "./api-mocks/**/*.ts",
+    "./config/*.ts",
     "./tests/**/*.ts",
-    "./api-mocks/mock.ts",
-    "./api-mocks/self-test.ts"
   ]
 }

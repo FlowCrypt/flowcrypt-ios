@@ -1,6 +1,6 @@
 import BaseScreen from './base.screen';
 import ElementHelper from "../helpers/ElementHelper";
-import TouchHelper from 'tests/helpers/TouchHelper';
+import TouchHelper from '../helpers/TouchHelper';
 import moment from 'moment'
 
 const SELECTORS = {

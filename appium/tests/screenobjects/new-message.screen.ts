@@ -226,7 +226,7 @@ class NewMessageScreen extends BaseScreen {
     const messageEl = await this.composeSecurityMessage;
     await ElementHelper.waitElementVisible(messageEl);
     const text = await messageEl.getText();
-    expect(text.includes(emailInfo.message)).toBeTrue();
+    expect(text.includes(emailInfo.message)).toBeTruthy();
 
     const element = await this.filledSubject(emailInfo.subject);
     await element.waitForDisplayed();

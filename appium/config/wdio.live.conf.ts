@@ -1,11 +1,9 @@
-const { join } = require('path');
-const { config } = require('./wdio.shared.conf');
-const pathWdioConfig = require('path');
-require('dotenv').config({ path: pathWdioConfig.resolve(__dirname, '../.env') });
+import { join } from 'path';
+import { config } from './wdio.shared.conf';
 
 config.suites = {
   all: [
-    './tests/specs/live/**/*.spec.ts'
+    '../tests/specs/live/**/*.spec.ts'
   ]
 };
 
