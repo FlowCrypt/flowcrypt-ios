@@ -15,7 +15,7 @@ extension ComposeViewController {
     func searchEmail(with query: String) {
         Task {
             do {
-                let cloudRecipients = try await googleUserService.searchContacts(query: query)
+                let cloudRecipients = try await contactsProvider.searchContacts(query: query)
                 let localRecipients = try localContactsProvider.searchRecipients(query: query)
 
                 let recipients = (cloudRecipients + localRecipients).unique().sorted()

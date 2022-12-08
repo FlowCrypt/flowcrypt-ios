@@ -12,7 +12,6 @@ enum MailServiceProviderType {
 
 // MARK: - MailServiceProvider
 // Provider should conform to MailServiceProvider protocol to support all app functionality
-// MessageSender - sending messages
 // RemoteFoldersApiClient - fetching folders
 // MessagesListApiClient - fetching list of messages
 // MessageProvider - show message

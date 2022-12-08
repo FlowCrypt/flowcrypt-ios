@@ -43,34 +43,10 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
     }
 }
 
-struct IdToken: Codable {
-    let exp: Int
-}
-
-extension IdToken {
-    var expiryDuration: Double {
-        Date(timeIntervalSince1970: Double(exp)).timeIntervalSinceNow
-    }
-}
-
-enum IdTokenError: Error, CustomStringConvertible {
-    case missingToken, invalidJWTFormat, invalidBase64EncodedData
-
-    var description: String {
-        switch self {
-        case .missingToken:
-            return "id_token_missing_error_description".localized
-        case .invalidJWTFormat, .invalidBase64EncodedData:
-            return "id_token_invalid_error_description".localized
-        }
-    }
-}
-
-protocol GoogleUserServiceType {
+protocol GoogleAuthManagerType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
-    func renewSession() async throws
     var isContactsScopeEnabled: Bool { get }
-    func searchContacts(query: String) async throws -> [Recipient]
+    func renewSession() async throws
 }
 
 // this is here so that we don't have to include AppDelegate in test target
@@ -79,7 +55,7 @@ protocol AppDelegateGoogleSessionContainer {
 }
 
 // todo - should be refactored to not require currentUserEmail
-final class GoogleUserService: NSObject, GoogleUserServiceType {
+final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
 
     @available(*, deprecated, message: "This variable will be removed in the near future.")
     let currentUserEmail: String?
@@ -87,16 +63,11 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
 
     init(
         currentUserEmail: String?,
-        appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil,
-        shouldRunWarmupQuery: Bool = false
+        appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil
     ) {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
         self.currentUserEmail = currentUserEmail
         super.init()
-
-        if shouldRunWarmupQuery {
-            self.runWarmupQuery()
-        }
     }
 
     private enum Constants {
@@ -113,11 +84,18 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
         tokenResponse?.idToken
     }
 
+    var isContactsScopeEnabled: Bool {
+        guard let currentScopeString = authorization?.authState.scope else { return false }
+        let currentScope = currentScopeString.split(separator: " ").map(String.init)
+        let contactsScope = GeneralConstants.Gmail.contactsScope.map(\.value)
+        return contactsScope.allSatisfy(currentScope.contains)
+    }
+
     var authorization: GTMAppAuthFetcherAuthorization? {
         getAuthorizationForCurrentUser()
     }
 
-    var authorizationConfiguration: OIDServiceConfiguration {
+    private var authorizationConfiguration: OIDServiceConfiguration {
         if Bundle.shouldUseMockGmailApi {
             return OIDServiceConfiguration(
                 authorizationEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)/o/oauth2/auth")!,
@@ -129,7 +107,7 @@ final class GoogleUserService: NSObject, GoogleUserServiceType {
     }
 }
 
-extension GoogleUserService: UserServiceType {
+extension GoogleAuthManager: UserServiceType {
 
     func renewSession() async throws {
         // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
@@ -233,7 +211,7 @@ extension GoogleUserService: UserServiceType {
 }
 
 // MARK: - Convenience
-extension GoogleUserService {
+extension GoogleAuthManager {
 
     private func makeAuthorizationRequest(scopes: [GoogleScope], userEmail: String? = nil) -> OIDAuthorizationRequest {
         var additionalParameters = ["include_granted_scopes": "true"]
@@ -301,7 +279,7 @@ extension GoogleUserService {
 }
 
 // MARK: - Tokens
-extension GoogleUserService {
+extension GoogleAuthManager {
     func getCachedOrRefreshedIdToken(minExpiryDuration: Double = 0) async throws -> String {
         guard let idToken else { throw (IdTokenError.missingToken) }
 
@@ -350,7 +328,7 @@ extension GoogleUserService {
 }
 
 // MARK: - OIDAuthStateChangeDelegate
-extension GoogleUserService: OIDAuthStateChangeDelegate {
+extension GoogleAuthManager: OIDAuthStateChangeDelegate {
     func didChange(_ state: OIDAuthState) {
         guard let currentUserEmail else {
             return

@@ -39,7 +39,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case let (.searchEmails(emails), .searchResults):
             return emails.isNotEmpty ? emails.count + 1 : 2
         case (.searchEmails, .contacts):
-            return googleUserService.isContactsScopeEnabled ? 0 : 2
+            return googleAuthManager.isContactsScopeEnabled ? 0 : 2
         default:
             return 0
         }

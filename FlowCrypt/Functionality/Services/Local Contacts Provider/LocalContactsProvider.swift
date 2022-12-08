@@ -117,9 +117,9 @@ extension LocalContactsProvider: LocalContactsProviderType {
         let keys = try find(with: email)?
             .pubKeys
             .filter { $0.primaryFingerprint == fingerprint }
-        guard let keys else {
-            return
-        }
+
+        guard let keys, !keys.isEmpty else { return }
+
         try storage.write {
             for key in keys {
                 storage.delete(key)

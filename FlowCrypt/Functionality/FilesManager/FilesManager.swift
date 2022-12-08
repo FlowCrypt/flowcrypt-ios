@@ -43,7 +43,7 @@ protocol FilesManagerType {
 }
 
 final class FilesManager {
-    private let documentsDirectoryURL: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+    private let documentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
 }
 
 extension FilesManager: FilesManagerType {

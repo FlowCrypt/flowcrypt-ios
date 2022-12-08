@@ -15,7 +15,7 @@ class IdTokenUtils {
             return try Imap(user: user).imapSess.oAuth2Token
         }
 
-        let googleService = GoogleUserService(
+        let googleService = GoogleAuthManager(
             currentUserEmail: userEmail ?? user?.email,
             appDelegateGoogleSessionContainer: nil
         )

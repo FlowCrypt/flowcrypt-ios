@@ -48,7 +48,8 @@ final class ComposeViewController: TableNodeViewController {
     let localContactsProvider: LocalContactsProviderType
     let messageHelper: MessageHelper
     let pubLookup: PubLookupType
-    let googleUserService: GoogleUserServiceType
+    let googleAuthManager: GoogleAuthManagerType
+    let contactsProvider: ContactsProviderType
     let filesManager: FilesManagerType
     let photosManager: PhotosManagerType
     let router: GlobalRouterType
@@ -112,11 +113,12 @@ final class ComposeViewController: TableNodeViewController {
         self.localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
-        self.googleUserService = GoogleUserService(
+        self.googleAuthManager = GoogleAuthManager(
             currentUserEmail: appContext.user.email,
-            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate,
-            shouldRunWarmupQuery: true
+            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
         )
+        self.contactsProvider = GoogleContactsProvider(authorization: self.googleAuthManager.authorization)
+
         let draftsApiClient = try appContext.getRequiredMailProvider().draftsApiClient
 
         if let composeMessageHelper {

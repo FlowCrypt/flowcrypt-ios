@@ -1,13 +1,14 @@
 //
-//  GoogleUserService+Contacts.swift
+//  ContactsProvider.swift
 //  FlowCrypt
 //
-//  Created by Ioan Moldovan on 3/29/22
+//  Created by Roma Sosnovsky on 07.12.2022
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
 import FlowCryptCommon
 import GoogleAPIClientForREST_PeopleService
+import GTMAppAuth
 
 enum ContactsProviderError: Error {
     /// People API response parsing
@@ -16,16 +17,14 @@ enum ContactsProviderError: Error {
     case providerError(Error)
 }
 
-extension GoogleUserService {
+class GoogleContactsProvider: ContactsProviderType {
+    private var authorization: GTMAppAuthFetcherAuthorization?
+
     private var peopleService: GTLRPeopleServiceService {
         let service = GTLRPeopleServiceService()
 
         if Bundle.shouldUseMockGmailApi {
             service.rootURLString = GeneralConstants.Mock.backendUrl + "/"
-        }
-
-        if authorization == nil {
-            logger.logWarning("authorization for current user is nil")
         }
 
         service.authorizer = authorization
@@ -57,24 +56,20 @@ extension GoogleUserService {
         }
     }
 
-    var isContactsScopeEnabled: Bool {
-        guard let currentScopeString = authorization?.authState.scope else { return false }
-        let currentScope = currentScopeString.split(separator: " ").map(String.init)
-        let contactsScope = GeneralConstants.Gmail.contactsScope.map(\.value)
-        return contactsScope.allSatisfy(currentScope.contains)
+    init(authorization: GTMAppAuthFetcherAuthorization?) {
+        self.authorization = authorization
+
+        // Warmup query for google contacts cache
+        runWarmupQuery()
     }
 
     func runWarmupQuery() {
         Task {
-            // Warmup query for google contacts cache
             _ = await searchContacts(query: "")
         }
     }
-}
 
-extension GoogleUserService {
     func searchContacts(query: String) async -> [Recipient] {
-        guard isContactsScopeEnabled else { return [] }
         let contacts = await searchUserContacts(query: query, type: .contacts)
         let otherContacts = await searchUserContacts(query: query, type: .other)
         let allRecipients = (contacts + otherContacts)
@@ -83,9 +78,7 @@ extension GoogleUserService {
             .sorted()
         return allRecipients
     }
-}
 
-extension GoogleUserService {
     private func searchUserContacts(query: String, type: QueryType) async -> [Recipient] {
         let query = type.query(searchString: query)
 

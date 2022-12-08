@@ -44,7 +44,7 @@ final class SessionService {
     private let localStorage: LocalStorageType
 
     private let imap: Imap
-    private let googleService: GoogleUserService
+    private let googleService: GoogleAuthManager
 
     private lazy var logger = Logger.nested(Self.self)
 
@@ -53,7 +53,7 @@ final class SessionService {
         inMemoryPassPhraseStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
         localStorage: LocalStorageType = LocalStorage(),
         imap: Imap? = nil,
-        googleService: GoogleUserService
+        googleService: GoogleAuthManager
     ) throws {
         self.googleService = googleService
         // todo - the following User.empty may be wrong - unsure, untested

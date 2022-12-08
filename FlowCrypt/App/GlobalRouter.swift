@@ -93,7 +93,7 @@ extension GlobalRouter: GlobalRouterType {
             case let .gmailLogin(viewController):
                 viewController.showSpinner()
 
-                let googleService = GoogleUserService(
+                let googleService = GoogleAuthManager(
                     currentUserEmail: email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
@@ -135,7 +135,7 @@ extension GlobalRouter: GlobalRouterType {
         switch route {
         case let .gmailLogin(viewController):
             do {
-                let googleService = GoogleUserService(
+                let googleService = GoogleAuthManager(
                     currentUserEmail: appContext.user.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
