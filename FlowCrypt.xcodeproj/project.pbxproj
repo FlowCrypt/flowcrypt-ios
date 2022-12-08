@@ -203,7 +203,7 @@
 		9F53CB872555E7F300C0157A /* Imap+Other.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F53CB862555E7F300C0157A /* Imap+Other.swift */; };
 		9F56BD2C23438A8500A7371A /* Imap+messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F56BD2B23438A8500A7371A /* Imap+messages.swift */; };
 		9F589F0D238C7A9B007FD759 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F0C238C7A9B007FD759 /* LocalStorage.swift */; };
-		9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F14238C8249007FD759 /* KeyChainService.swift */; };
+		9F589F15238C8249007FD759 /* StorageEncryptionKeyProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F589F14238C8249007FD759 /* StorageEncryptionKeyProvider.swift */; };
 		9F5C2A77257D705100DE9B4B /* MessageLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A76257D705100DE9B4B /* MessageLabel.swift */; };
 		9F5C2A7E257E64D500DE9B4B /* MessageOperationsApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A7D257E64D500DE9B4B /* MessageOperationsApiClient.swift */; };
 		9F5C2A8B257E6C4900DE9B4B /* ImapError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */; };
@@ -684,7 +684,7 @@
 		9F56BD3723438C7000A7371A /* DateFormattingExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormattingExtensions.swift; sourceTree = "<group>"; };
 		9F56BD3923438D3700A7371A /* StyleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StyleExtensions.swift; sourceTree = "<group>"; };
 		9F589F0C238C7A9B007FD759 /* LocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
-		9F589F14238C8249007FD759 /* KeyChainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyChainService.swift; sourceTree = "<group>"; };
+		9F589F14238C8249007FD759 /* StorageEncryptionKeyProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageEncryptionKeyProvider.swift; sourceTree = "<group>"; };
 		9F5C2A76257D705100DE9B4B /* MessageLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLabel.swift; sourceTree = "<group>"; };
 		9F5C2A7D257E64D500DE9B4B /* MessageOperationsApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageOperationsApiClient.swift; sourceTree = "<group>"; };
 		9F5C2A8A257E6C4900DE9B4B /* ImapError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImapError.swift; sourceTree = "<group>"; };
@@ -1551,7 +1551,7 @@
 			isa = PBXGroup;
 			children = (
 				9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */,
-				9F589F14238C8249007FD759 /* KeyChainService.swift */,
+				9F589F14238C8249007FD759 /* StorageEncryptionKeyProvider.swift */,
 				2CB1BF2027611138008E1898 /* SchemaMigration.swift */,
 				2C08F6BD273FA7B900EE1610 /* Version5SchemaMigration.swift */,
 				2C2D0B94275FDF6B0052771D /* Version6SchemaMigration.swift */,
@@ -2642,7 +2642,7 @@
 				D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */,
 				9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */,
-				9F589F15238C8249007FD759 /* KeyChainService.swift in Sources */,
+				9F589F15238C8249007FD759 /* StorageEncryptionKeyProvider.swift in Sources */,
 				2CC50FB12744167A0051629A /* Folder.swift in Sources */,
 				514C34DF276CE20700FCAB79 /* ComposeMessageHelper+State.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserRealmObject.swift in Sources */,

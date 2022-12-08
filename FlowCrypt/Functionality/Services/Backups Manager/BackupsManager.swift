@@ -9,9 +9,9 @@
 import UIKit
 
 final class BackupsManager {
-    let backupApiClient: BackupApiClient
-    let core: Core
-    let messageGateway: MessageGateway
+    private let backupApiClient: BackupApiClient
+    private let core: Core
+    private let messageGateway: MessageGateway
 
     init(
         backupApiClient: BackupApiClient,

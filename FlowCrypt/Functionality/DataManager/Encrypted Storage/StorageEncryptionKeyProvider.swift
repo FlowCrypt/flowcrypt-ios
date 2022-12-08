@@ -1,5 +1,5 @@
 //
-//  KeyChainService.swift
+//  StorageEncryptionKeyProvider.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 25.11.2019
@@ -14,7 +14,7 @@ import UIKit
 /// keychain is used to generate and retrieve encryption key which is used to encrypt local DB
 /// it does not contain any actual data or keys other than the db encryption key
 /// index of the keychain entry is dynamic (set up once per app installation), set in user defaults
-class KeyChainService {
+struct StorageEncryptionKeyProvider {
 
     private let logger = Logger.nested("KeyChain")
     private let keyByteLen = 64
@@ -52,7 +52,7 @@ class KeyChainService {
         guard let encryptionKey = try fetchEncryptionKey(property: storageKey) else {
             if try EncryptedStorage.doesStorageFileExist {
                 throw AppErr.general(
-                    "KeyChainService: got legacy dynamic prefix from user defaults but could not find entry in key chain based on it"
+                    "StorageEncryptionKeyProvider: got legacy dynamic prefix from user defaults but could not find entry in key chain based on it"
                 )
             }
             return nil
@@ -71,7 +71,7 @@ class KeyChainService {
         logger.logInfo("generate storage encryption key")
 
         guard let randomBytes = getSecureRandomByteNumberArray(keyByteLen) else {
-            throw AppErr.general("KeyChainService getSecureRandomByteNumberArray bytes are nil")
+            throw AppErr.general("StorageEncryptionKeyProvider getSecureRandomByteNumberArray bytes are nil")
         }
 
         let keyData = Data(randomBytes)
@@ -88,7 +88,7 @@ class KeyChainService {
         ]
         let addOsStatus = SecItemAdd(query as CFDictionary, nil)
         guard addOsStatus == noErr else {
-            throw AppErr.general("KeyChainService SecItemAdd osStatus = \(addOsStatus), expected 'noErr'")
+            throw AppErr.general("StorageEncryptionKeyProvider SecItemAdd osStatus = \(addOsStatus), expected 'noErr'")
         }
     }
 
@@ -109,15 +109,15 @@ class KeyChainService {
         }
 
         guard findOsStatus == noErr else {
-            throw AppErr.general("KeyChainService SecItemCopyMatching status = \(findOsStatus), expected 'noErr'")
+            throw AppErr.general("StorageEncryptionKeyProvider SecItemCopyMatching status = \(findOsStatus), expected 'noErr'")
         }
 
         guard let validKey = keyFromKeychain as? Data else {
-            throw AppErr.general("KeyChainService keyFromKeychain not usable as Data. Is nil?: \(keyFromKeychain == nil)")
+            throw AppErr.general("StorageEncryptionKeyProvider keyFromKeychain not usable as Data. Is nil?: \(keyFromKeychain == nil)")
         }
 
         guard validKey.count == keyByteLen else {
-            throw AppErr.general("KeyChainService validKey.count != \(keyByteLen), instead is \(validKey.count)")
+            throw AppErr.general("StorageEncryptionKeyProvider validKey.count != \(keyByteLen), instead is \(validKey.count)")
         }
 
         return validKey
