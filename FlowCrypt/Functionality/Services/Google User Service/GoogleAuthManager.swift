@@ -45,7 +45,6 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
 
 protocol GoogleAuthManagerType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
-    var isContactsScopeEnabled: Bool { get }
     func renewSession() async throws
 }
 
@@ -82,13 +81,6 @@ final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
 
     private var idToken: String? {
         tokenResponse?.idToken
-    }
-
-    var isContactsScopeEnabled: Bool {
-        guard let currentScopeString = authorization?.authState.scope else { return false }
-        let currentScope = currentScopeString.split(separator: " ").map(String.init)
-        let contactsScope = GeneralConstants.Gmail.contactsScope.map(\.value)
-        return contactsScope.allSatisfy(currentScope.contains)
     }
 
     var authorization: GTMAppAuthFetcherAuthorization? {

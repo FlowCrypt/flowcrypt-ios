@@ -49,7 +49,7 @@ final class ComposeViewController: TableNodeViewController {
     let messageHelper: MessageHelper
     let pubLookup: PubLookupType
     let googleAuthManager: GoogleAuthManagerType
-    let contactsProvider: ContactsProviderType
+    var contactsProvider: ContactsProviderType
     let filesManager: FilesManagerType
     let photosManager: PhotosManagerType
     let router: GlobalRouterType

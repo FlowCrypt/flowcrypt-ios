@@ -18,9 +18,21 @@ enum ContactsProviderError: Error {
 }
 
 class GoogleContactsProvider: ContactsProviderType {
-    private var authorization: GTMAppAuthFetcherAuthorization?
+    var authorization: GTMAppAuthFetcherAuthorization? {
+        didSet {
+            guard isContactsScopeEnabled else { return }
+            runWarmupQuery()
+        }
+    }
 
-    private var peopleService: GTLRPeopleServiceService {
+    var isContactsScopeEnabled: Bool {
+        guard let currentScopeString = authorization?.authState.scope else { return false }
+        let currentScope = currentScopeString.split(separator: " ").map(String.init)
+        let contactsScope = GeneralConstants.Gmail.contactsScope.map(\.value)
+        return contactsScope.allSatisfy(currentScope.contains)
+    }
+
+    private lazy var peopleService: GTLRPeopleServiceService = {
         let service = GTLRPeopleServiceService()
 
         if Bundle.shouldUseMockGmailApi {
@@ -29,7 +41,7 @@ class GoogleContactsProvider: ContactsProviderType {
 
         service.authorizer = authorization
         return service
-    }
+    }()
 
     private enum QueryType {
         case contacts, other
@@ -58,18 +70,17 @@ class GoogleContactsProvider: ContactsProviderType {
 
     init(authorization: GTMAppAuthFetcherAuthorization?) {
         self.authorization = authorization
-
-        // Warmup query for google contacts cache
-        runWarmupQuery()
     }
 
     func runWarmupQuery() {
         Task {
+            // Warmup query for google contacts cache
             _ = await searchContacts(query: "")
         }
     }
 
     func searchContacts(query: String) async -> [Recipient] {
+        guard isContactsScopeEnabled else { return [] }
         let contacts = await searchUserContacts(query: query, type: .contacts)
         let otherContacts = await searchUserContacts(query: query, type: .other)
         let allRecipients = (contacts + otherContacts)

@@ -13,15 +13,15 @@ import XCTest
 class GmailServiceTest: XCTestCase {
 
     var sut: GmailService!
-    var userService: GoogleUserServiceMock!
+    var authManager: GoogleAuthManagerMock!
     var backupSearchQueryProvider: GmailBackupSearchQueryProviderMock!
 
     override func setUp() {
-        userService = GoogleUserServiceMock()
+        authManager = GoogleAuthManagerMock()
         backupSearchQueryProvider = GmailBackupSearchQueryProviderMock()
         sut = GmailService(
             currentUserEmail: "user@example.test",
-            gmailUserService: userService,
+            googleAuthManager: authManager,
             backupSearchQueryProvider: backupSearchQueryProvider
         )
     }
@@ -43,7 +43,7 @@ class GmailServiceTest: XCTestCase {
 }
 
 // MARK: - Mock
-class GoogleUserServiceMock: GoogleUserServiceType {
+class GoogleAuthManagerMock: GoogleAuthManagerType {
     var authorization: GTMAppAuthFetcherAuthorization?
     func renewSession() async throws {
         try await Task.sleep(nanoseconds: 1_000_000_000)
