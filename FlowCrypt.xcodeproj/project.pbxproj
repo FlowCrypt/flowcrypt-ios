@@ -176,7 +176,7 @@
 		75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
-		9F003D6D25EA8F3200EB38C0 /* SessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionService.swift */; };
+		9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */; };
 		9F0C3C142316E69300299985 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C132316E69300299985 /* User.swift */; };
 		9F0C3C1A231819C500299985 /* MessageKindProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C19231819C500299985 /* MessageKindProviderType.swift */; };
@@ -638,7 +638,7 @@
 		75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
-		9F003D6C25EA8F3200EB38C0 /* SessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionService.swift; sourceTree = "<group>"; };
+		9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
 		9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAuthManager.swift; sourceTree = "<group>"; };
 		9F0C3C132316E69300299985 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
@@ -2150,7 +2150,7 @@
 			children = (
 				9F589F1A238C85B0007FD759 /* Encrypted Storage */,
 				9F589F19238C82A1007FD759 /* Local Storage */,
-				9F003D6C25EA8F3200EB38C0 /* SessionService.swift */,
+				9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */,
 			);
 			path = DataManager;
 			sourceTree = "<group>";
@@ -2767,7 +2767,7 @@
 				9FA9C83C264C2D75005A9670 /* MessageHelper.swift in Sources */,
 				51DA5BD62721AB07001C4359 /* PubKeyState.swift in Sources */,
 				D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */,
-				9F003D6D25EA8F3200EB38C0 /* SessionService.swift in Sources */,
+				9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */,
 				75588F8D285777AB00E595D1 /* RemoteSendAsApiClient.swift in Sources */,
 				5180CB9527357BB0001FC7EF /* WkdApi.swift in Sources */,
 				9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */,

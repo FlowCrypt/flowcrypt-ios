@@ -31,14 +31,14 @@ enum SessionType: CustomStringConvertible {
     }
 }
 
-protocol SessionServiceType {
+protocol SessionManagerType {
     func startSessionFor(session: SessionType) throws
     func switchActiveSessionFor(user: User) throws -> SessionType?
     func startActiveSessionForNextUser() throws -> SessionType?
     func cleanup() throws
 }
 
-final class SessionService {
+final class SessionManager {
     private let encryptedStorage: EncryptedStorageType
     private let inMemoryPassPhraseStorage: PassPhraseStorageType
     private let localStorage: LocalStorageType
@@ -65,7 +65,7 @@ final class SessionService {
     }
 }
 
-extension SessionService: SessionServiceType {
+extension SessionManager: SessionManagerType {
     /// start session for a user, this method will log out current user if user was saved, save and start session for a new user
     func startSessionFor(session: SessionType) throws {
         switch session {

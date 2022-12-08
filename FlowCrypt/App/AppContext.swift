@@ -14,21 +14,21 @@ class AppContext {
     let encryptedStorage: EncryptedStorageType
     let session: SessionType?
     // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
-    let userAccountService: SessionServiceType
+    let sessionManager: SessionManagerType
     let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
     let combinedPassPhraseStorage: CombinedPassPhraseStorageType
 
     init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
-        userAccountService: SessionServiceType,
+        sessionManager: SessionManagerType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType
     ) {
         self.encryptedStorage = encryptedStorage
         self.session = session
-        self.userAccountService = userAccountService
+        self.sessionManager = sessionManager
         self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
         self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.globalRouter = globalRouter
@@ -54,7 +54,7 @@ class AppContext {
         return AppContext(
             encryptedStorage: encryptedStorage,
             session: sessionType,
-            userAccountService: try SessionService(
+            sessionManager: try SessionManager(
                 encryptedStorage: encryptedStorage,
                 googleAuthManager: GoogleAuthManager(
                     currentUserEmail: try encryptedStorage.activeUser?.email,
@@ -71,7 +71,7 @@ class AppContext {
         return try await AppContextWithUser(
             encryptedStorage: encryptedStorage,
             session: session,
-            userAccountService: userAccountService,
+            sessionManager: sessionManager,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorage,
             globalRouter: globalRouter,
@@ -139,7 +139,7 @@ class AppContextWithUser: AppContext {
     init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
-        userAccountService: SessionServiceType,
+        sessionManager: SessionManagerType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType,
@@ -162,7 +162,7 @@ class AppContextWithUser: AppContext {
         super.init(
             encryptedStorage: encryptedStorage,
             session: session,
-            userAccountService: userAccountService,
+            sessionManager: sessionManager,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorageWithConfiguration,
             globalRouter: globalRouter
