@@ -44,7 +44,7 @@ final class SessionService {
     private let localStorage: LocalStorageType
 
     private let imap: Imap
-    private let googleService: GoogleAuthManager
+    private let googleAuthManager: GoogleAuthManager
 
     private lazy var logger = Logger.nested(Self.self)
 
@@ -53,9 +53,9 @@ final class SessionService {
         inMemoryPassPhraseStorage: PassPhraseStorageType = InMemoryPassPhraseStorage(),
         localStorage: LocalStorageType = LocalStorage(),
         imap: Imap? = nil,
-        googleService: GoogleAuthManager
+        googleAuthManager: GoogleAuthManager
     ) throws {
-        self.googleService = googleService
+        self.googleAuthManager = googleAuthManager
         // todo - the following User.empty may be wrong - unsure, untested
         // maybe should instead get user
         self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
@@ -134,7 +134,7 @@ extension SessionService: SessionServiceType {
         logger.logInfo("Logging out user \(user.email)")
         switch user.authType {
         case .oAuthGmail:
-            googleService.signOut(user: user.email)
+            googleAuthManager.signOut(user: user.email)
         case .password:
             try imap.disconnect()
         default:

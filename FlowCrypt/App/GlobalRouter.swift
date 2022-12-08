@@ -93,11 +93,11 @@ extension GlobalRouter: GlobalRouterType {
             case let .gmailLogin(viewController):
                 viewController.showSpinner()
 
-                let googleService = GoogleAuthManager(
+                let googleAuthManager = GoogleAuthManager(
                     currentUserEmail: email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
-                let session = try await googleService.signIn(
+                let session = try await googleAuthManager.signIn(
                     in: viewController,
                     scopes: GeneralConstants.Gmail.mailScope,
                     userEmail: email
@@ -135,11 +135,11 @@ extension GlobalRouter: GlobalRouterType {
         switch route {
         case let .gmailLogin(viewController):
             do {
-                let googleService = GoogleAuthManager(
+                let googleAuthManager = GoogleAuthManager(
                     currentUserEmail: appContext.user.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
-                let session = try await googleService.signIn(
+                let session = try await googleAuthManager.signIn(
                     in: viewController,
                     scopes: GeneralConstants.Gmail.contactsScope,
                     userEmail: appContext.user.email
@@ -167,7 +167,7 @@ extension GlobalRouter: GlobalRouterType {
     // MARK: - Error Handling
     @MainActor
     private func handleSignInError(error: Error, appContext: AppContext) {
-        if let gmailUserError = error as? GoogleUserServiceError {
+        if let gmailUserError = error as? GoogleAuthManagerError {
             logger.logInfo("Gmail login failed with error: \(gmailUserError.errorMessage)")
 
             switch gmailUserError {

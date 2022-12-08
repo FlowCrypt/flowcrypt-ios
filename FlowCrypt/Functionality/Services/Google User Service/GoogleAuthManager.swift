@@ -12,12 +12,7 @@ import GoogleAPIClientForREST_Oauth2
 import GTMAppAuth
 import RealmSwift
 
-protocol UserServiceType {
-    func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String?) async throws -> SessionType
-    func renewSession() async throws
-}
-
-enum GoogleUserServiceError: Error, CustomStringConvertible {
+enum GoogleAuthManagerError: Error, CustomStringConvertible {
     case cancelledAuthorization
     case wrongAccount(String, String)
     case contextError(String)
@@ -45,7 +40,6 @@ enum GoogleUserServiceError: Error, CustomStringConvertible {
 
 protocol GoogleAuthManagerType {
     var authorization: GTMAppAuthFetcherAuthorization? { get }
-    func renewSession() async throws
 }
 
 // this is here so that we don't have to include AppDelegate in test target
@@ -99,11 +93,7 @@ final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
     }
 }
 
-extension GoogleAuthManager: UserServiceType {
-
-    func renewSession() async throws {
-        // GTMAppAuth should renew session via OIDAuthStateChangeDelegate
-    }
+extension GoogleAuthManager {
 
     @MainActor
     func signIn(in viewController: UIViewController, scopes: [GoogleScope], userEmail: String? = nil) async throws -> SessionType {
@@ -155,7 +145,7 @@ extension GoogleAuthManager: UserServiceType {
         else {
             switch nsError.code {
             case -4: // login cancelled
-                return GoogleUserServiceError.cancelledAuthorization
+                return GoogleAuthManagerError.cancelledAuthorization
             default:
                 return error
             }
@@ -163,11 +153,11 @@ extension GoogleAuthManager: UserServiceType {
 
         switch underlyingError.code {
         case 1:
-            return GoogleUserServiceError.cancelledAuthorization
+            return GoogleAuthManagerError.cancelledAuthorization
         case 2:
-            return GoogleUserServiceError.contextError("A context wasn’t provided.")
+            return GoogleAuthManagerError.contextError("A context wasn’t provided.")
         case 3:
-            return GoogleUserServiceError.contextError("The context was invalid.")
+            return GoogleAuthManagerError.contextError("The context was invalid.")
         default:
             return error
         }
@@ -181,21 +171,21 @@ extension GoogleAuthManager: UserServiceType {
         let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
 
         guard let email = authorization.userEmail else {
-            throw GoogleUserServiceError.inconsistentState("Missing email")
+            throw GoogleAuthManagerError.inconsistentState("Missing email")
         }
         if let userEmail, email != userEmail {
-            throw GoogleUserServiceError.wrongAccount(email, userEmail)
+            throw GoogleAuthManagerError.wrongAccount(email, userEmail)
         }
         let missingScopes = checkMissingScopes(authState.scope, from: scopes)
         guard missingScopes.isEmpty else {
-            throw GoogleUserServiceError.userNotAllowedAllNeededScopes(
+            throw GoogleAuthManagerError.userNotAllowedAllNeededScopes(
                 missingScopes: missingScopes,
                 email: authorization.userEmail
             )
         }
         saveAuth(state: authState, for: email)
         guard let token = authState.lastTokenResponse?.accessToken else {
-            throw GoogleUserServiceError.inconsistentState("Missing token")
+            throw GoogleAuthManagerError.inconsistentState("Missing token")
         }
         let user = try await self.fetchGoogleUser(with: authorization)
         return SessionType.google(email, name: user.name ?? "", token: token)
