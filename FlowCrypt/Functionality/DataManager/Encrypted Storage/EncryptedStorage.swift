@@ -93,8 +93,8 @@ final class EncryptedStorage: EncryptedStorageType {
     }
 
     init() async throws {
-        let keyChainService = KeyChainService()
-        self.storageEncryptionKey = try await keyChainService.storageEncryptionKey
+        let keyProvider = StorageEncryptionKeyProvider()
+        self.storageEncryptionKey = try await keyProvider.storageEncryptionKey
     }
 
     private func getConfiguration() throws -> Realm.Configuration {

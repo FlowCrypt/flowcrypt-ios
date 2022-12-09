@@ -6,12 +6,11 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import GoogleAPIClientForREST_Gmail
-
-extension GmailService: MessageSearchProvider {
+extension GmailService: MessageSearchApiClient {
     func searchExpression(using context: MessageSearchContext) async throws -> [Message] {
-        let context = try await self.fetchMessages(using: FetchMessageContext(searchContext: context))
-        return context.messages
+        try await fetchMessages(
+            using: FetchMessageContext(searchContext: context)
+        ).messages
     }
 }
 

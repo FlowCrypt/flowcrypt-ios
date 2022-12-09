@@ -228,12 +228,12 @@ extension ThreadDetailsViewController {
         let attachmentIndex = indexPath.row - 2
 
         guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
-            throw MessageServiceError.attachmentNotFound
+            throw MessageHelperError.attachmentNotFound
         }
 
         if attachment.data == nil {
             showSpinner()
-            attachment.data = try await messageService.download(
+            attachment.data = try await messageHelper.download(
                 attachment: attachment,
                 messageId: section.rawMessage.identifier,
                 progressHandler: { [weak self] progress in
@@ -245,7 +245,7 @@ extension ThreadDetailsViewController {
 
         if attachment.isEncrypted {
             handleFetchProgress(state: .decrypt)
-            let decryptedAttachment = try await messageService.decrypt(
+            let decryptedAttachment = try await messageHelper.decrypt(
                 attachment: attachment,
                 userEmail: appContext.user.email
             )

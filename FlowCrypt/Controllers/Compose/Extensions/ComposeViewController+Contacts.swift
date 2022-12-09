@@ -18,6 +18,7 @@ extension ComposeViewController {
                     for: .gmailLogin(self),
                     appContext: appContext
                 )
+                contactsProvider.authorization = googleAuthManager.authorization
                 shouldEvaluateRecipientInput = true
                 reload(sections: [.contacts])
             } catch {
@@ -28,7 +29,7 @@ extension ComposeViewController {
     }
 
     private func handleContactsPermissionError(_ error: Error) {
-        guard let gmailUserError = error as? GoogleUserServiceError,
+        guard let gmailUserError = error as? GoogleAuthManagerError,
               case let .userNotAllowedAllNeededScopes(missingScopes, _) = gmailUserError
         else { return }
 

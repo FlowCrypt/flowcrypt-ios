@@ -22,7 +22,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         var processedMessage: ProcessedMessage?
     }
 
-    let messageService: MessageService
+    let messageHelper: MessageHelper
 
     private let filesManager: FilesManagerType
     lazy var attachmentManager = AttachmentManager(
@@ -31,8 +31,8 @@ final class ThreadDetailsViewController: TableNodeViewController {
     )
 
     let appContext: AppContextWithUser
-    let messageOperationsProvider: MessageOperationsProvider
-    let threadOperationsProvider: MessagesThreadOperationsProvider
+    let messageOperationsApiClient: MessageOperationsApiClient
+    let threadOperationsApiClient: MessagesThreadOperationsApiClient
     var inboxItem: InboxItem
     var input: [ThreadDetailsViewController.Input]
 
@@ -44,19 +44,19 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     init(
         appContext: AppContextWithUser,
-        messageService: MessageService? = nil,
+        messageHelper: MessageHelper? = nil,
         inboxItem: InboxItem,
         filesManager: FilesManagerType = FilesManager(),
         onComposeMessageAction: ((ComposeMessageAction) -> Void)?,
         onComplete: @escaping MessageActionCompletion
     ) async throws {
         self.appContext = appContext
-        let clientConfiguration = try await appContext.clientConfigurationService.configuration
+        let clientConfiguration = try await appContext.clientConfigurationProvider.configuration
         let localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.messageService = try messageService ?? MessageService(
+        self.messageHelper = try messageHelper ?? MessageHelper(
             localContactsProvider: localContactsProvider,
             pubLookup: PubLookup(
                 clientConfiguration: clientConfiguration,
@@ -66,13 +66,13 @@ final class ThreadDetailsViewController: TableNodeViewController {
             messageProvider: try mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
-        self.threadOperationsProvider = try mailProvider.threadOperationsProvider
-        self.messageOperationsProvider = try mailProvider.messageOperationsProvider
+        self.threadOperationsApiClient = try mailProvider.threadOperationsApiClient
+        self.messageOperationsApiClient = try mailProvider.messageOperationsApiClient
         self.trashFolderProvider = TrashFolderProvider(
             user: appContext.user,
-            foldersService: FoldersService(
+            foldersManager: FoldersManager(
                 encryptedStorage: appContext.encryptedStorage,
-                remoteFoldersProvider: try mailProvider.remoteFoldersProvider
+                remoteFoldersApiClient: try mailProvider.remoteFoldersApiClient
             )
         )
         self.filesManager = filesManager
@@ -102,7 +102,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     private func expandThreadMessageAndMarkAsRead() {
         Task {
-            try await threadOperationsProvider.mark(
+            try await threadOperationsApiClient.mark(
                 messagesIds: inboxItem.messages.map(\.identifier),
                 asRead: true,
                 in: inboxItem.folderPath
@@ -124,7 +124,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
         Task {
             do {
-                let fetchedMessage = try await messageService.fetchMessage(
+                let fetchedMessage = try await messageHelper.fetchMessage(
                     identifier: rawMessage.identifier,
                     folder: inboxItem.folderPath
                 )
@@ -139,7 +139,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
                 if processedMessage.text.isEmpty,
                    let bodyAttachment = processedMessage.message.body.attachment {
-                    let data = try await messageService.download(
+                    let data = try await messageHelper.download(
                         attachment: bodyAttachment,
                         messageId: processedMessage.message.identifier,
                         progressHandler: { [weak self] progress in
@@ -148,10 +148,10 @@ final class ThreadDetailsViewController: TableNodeViewController {
                     )
                     handleFetchProgress(state: .decrypt)
                     let encryptedText = data.toStr()
-                    processedMessage.text = try await messageService.decrypt(
+                    processedMessage.text = try await messageHelper.decrypt(
                         text: encryptedText,
                         userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                        isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                     )
                 }
 
@@ -180,14 +180,17 @@ final class ThreadDetailsViewController: TableNodeViewController {
         if !forceFetch, let rawMessage = input.first(where: { $0.rawMessage.identifier == identifier })?.rawMessage {
             message = rawMessage
         } else {
-            message = try await messageService.fetchMessage(identifier: identifier, folder: inboxItem.folderPath)
+            message = try await messageHelper.fetchMessage(
+                identifier: identifier,
+                folder: inboxItem.folderPath
+            )
         }
 
-        return try await messageService.process(
+        return try await messageHelper.process(
             message: message,
             onlyLocalKeys: onlyLocalKeys,
             userEmail: appContext.user.email,
-            isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+            isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
         )
     }
 
@@ -254,10 +257,10 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
                 guard data.rawMessage.isPgp, data.processedMessage == nil else { return }
 
-                let decryptedText = try await messageService.decrypt(
+                let decryptedText = try await messageHelper.decrypt(
                     text: data.rawMessage.body.text,
                     userEmail: appContext.user.email,
-                    isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                    isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                 )
 
                 let processedMessage = ProcessedMessage(
@@ -274,7 +277,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
     private func fetchDraft(at index: Int) async throws {
         let id = input[index].rawMessage.identifier
-        let message = try await messageService.fetchMessage(
+        let message = try await messageHelper.fetchMessage(
             identifier: id,
             folder: inboxItem.folderPath
         )
@@ -344,7 +347,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
         logger.logInfo("Error \(error)")
         hideSpinner()
 
-        switch error as? MessageServiceError {
+        switch error as? MessageHelperError {
         case .missingPassPhrase:
             handleWrongPassPhrase(indexPath: indexPath)
         default:
@@ -389,7 +392,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
         Task {
             do {
-                let matched = try await messageService.checkAndPotentiallySaveEnteredPassPhrase(
+                let matched = try await messageHelper.checkAndPotentiallySaveEnteredPassPhrase(
                     passPhrase,
                     userEmail: appContext.user.email
                 )
@@ -397,11 +400,11 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 if matched {
                     let message = input[indexPath.section - 1].rawMessage
 
-                    let processedMessage = try await messageService.decryptAndProcess(
+                    let processedMessage = try await messageHelper.decryptAndProcess(
                         message: message,
                         onlyLocalKeys: false,
                         userEmail: appContext.user.email,
-                        isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                        isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                     )
 
                     handle(processedMessage: processedMessage, at: indexPath)

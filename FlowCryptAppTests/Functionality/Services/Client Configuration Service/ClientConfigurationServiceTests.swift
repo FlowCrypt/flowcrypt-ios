@@ -11,7 +11,7 @@ import XCTest
 
 final class ClientConfigurationServiceTests: XCTestCase {
 
-    var sut: ClientConfigurationService!
+    var sut: ClientConfigurationProvider!
     var enterpriseServerApi: EnterpriseServerApiMock!
     var localClientConfigurationProvider: LocalClientConfigurationMock!
     var isCurrentUserExistMock: CurrentUserEmailMock!
@@ -23,7 +23,7 @@ final class ClientConfigurationServiceTests: XCTestCase {
         localClientConfigurationProvider = LocalClientConfigurationMock()
         isCurrentUserExistMock = CurrentUserEmailMock()
 
-        sut = ClientConfigurationService(
+        sut = ClientConfigurationProvider(
             server: enterpriseServerApi,
             local: localClientConfigurationProvider
         )

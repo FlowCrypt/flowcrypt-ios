@@ -15,7 +15,7 @@ extension ComposeViewController {
     func searchEmail(with query: String) {
         Task {
             do {
-                let cloudRecipients = try await googleUserService.searchContacts(query: query)
+                let cloudRecipients = try await contactsProvider.searchContacts(query: query)
                 let localRecipients = try localContactsProvider.searchRecipients(query: query)
 
                 let recipients = (cloudRecipients + localRecipients).unique().sorted()
@@ -230,7 +230,7 @@ extension ComposeViewController {
 
     @objc private func messagePasswordTextFieldDidChange(_ sender: UITextField) {
         let password = sender.text ?? ""
-        let isPasswordStrong = composeMessageService.isMessagePasswordStrong(pwd: password)
+        let isPasswordStrong = composeMessageHelper.isMessagePasswordStrong(pwd: password)
         messagePasswordAlertController?.actions[1].isEnabled = isPasswordStrong
     }
 }

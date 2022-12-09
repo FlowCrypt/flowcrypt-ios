@@ -6,8 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import GoogleAPIClientForREST_Gmail
-import UIKit
+import Foundation
 
 // TODO: - Instead of get properties use some DI mechanism
 // to reuse already initialised services
@@ -35,21 +34,21 @@ final class MailProvider {
         }
     }
 
-    var remoteFoldersProvider: RemoteFoldersProviderType {
+    var remoteFoldersApiClient: RemoteFoldersApiClient {
         get throws {
-            try resolveService(of: RemoteFoldersProviderType.self)
+            try resolveService(of: RemoteFoldersApiClient.self)
         }
     }
 
-    var remoteSendAsProvider: RemoteSendAsProviderType {
+    var remoteSendAsApiClient: RemoteSendAsApiClient {
         get throws {
-            try resolveService(of: RemoteSendAsProviderType.self)
+            try resolveService(of: RemoteSendAsApiClient.self)
         }
     }
 
-    var messageListProvider: MessagesListProvider {
+    var messagesListApiClient: MessagesListApiClient {
         get throws {
-            try resolveService(of: MessagesListProvider.self)
+            try resolveService(of: MessagesListApiClient.self)
         }
     }
 
@@ -59,21 +58,21 @@ final class MailProvider {
         }
     }
 
-    var messageOperationsProvider: MessageOperationsProvider {
+    var messageOperationsApiClient: MessageOperationsApiClient {
         get throws {
-            try resolveService(of: MessageOperationsProvider.self)
+            try resolveService(of: MessageOperationsApiClient.self)
         }
     }
 
-    var messageSearchProvider: MessageSearchProvider {
+    var messageSearchApiClient: MessageSearchApiClient {
         get throws {
-            try resolveService(of: MessageSearchProvider.self)
+            try resolveService(of: MessageSearchApiClient.self)
         }
     }
 
-    var backupProvider: BackupProvider {
+    var backupApiClient: BackupApiClient {
         get throws {
-            try resolveService(of: BackupProvider.self)
+            try resolveService(of: BackupApiClient.self)
         }
     }
 
@@ -83,21 +82,21 @@ final class MailProvider {
         }
     }
 
-    var draftGateway: DraftGateway? {
+    var draftsApiClient: DraftsApiClient? {
         get throws {
-            resolveOptionalService(of: DraftGateway.self)
+            resolveOptionalService(of: DraftsApiClient.self)
         }
     }
 
-    var messagesThreadProvider: MessagesThreadProvider {
+    var messagesThreadApiClient: MessagesThreadApiClient {
         get throws {
-            try resolveService(of: MessagesThreadProvider.self)
+            try resolveService(of: MessagesThreadApiClient.self)
         }
     }
 
-    var threadOperationsProvider: MessagesThreadOperationsProvider {
+    var threadOperationsApiClient: MessagesThreadOperationsApiClient {
         get throws {
-            try resolveService(of: MessagesThreadOperationsProvider.self)
+            try resolveService(of: MessagesThreadOperationsApiClient.self)
         }
     }
 
@@ -138,7 +137,7 @@ private enum MailServiceProviderFactory {
             Imap(user: user),
             GmailService(
                 currentUserEmail: user.email,
-                gmailUserService: GoogleUserService(
+                googleAuthManager: GoogleAuthManager(
                     currentUserEmail: user.email,
                     appDelegateGoogleSessionContainer: delegate
                 )

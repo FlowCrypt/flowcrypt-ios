@@ -30,8 +30,8 @@ final class InboxViewContainerController: TableNodeViewController {
     }
 
     private let appContext: AppContextWithUser
-    private let foldersService: FoldersServiceType
-    private let sendAsService: SendAsServiceType
+    private let foldersManager: FoldersManagerType
+    private let sendAsProvider: SendAsProviderType
     private let decorator: InboxViewControllerContainerDecorator
     private let ekmVcHelper: EKMVcHelper
 
@@ -41,12 +41,12 @@ final class InboxViewContainerController: TableNodeViewController {
 
     init(
         appContext: AppContextWithUser,
-        foldersService: FoldersServiceType? = nil,
+        foldersManager: FoldersManagerType? = nil,
         decorator: InboxViewControllerContainerDecorator = InboxViewControllerContainerDecorator()
     ) throws {
         self.appContext = appContext
-        self.foldersService = try foldersService ?? appContext.getFoldersService()
-        self.sendAsService = try appContext.getSendAsService()
+        self.foldersManager = try foldersManager ?? appContext.getFoldersManager()
+        self.sendAsProvider = try appContext.getSendAsProvider()
         self.decorator = decorator
         self.ekmVcHelper = EKMVcHelper(appContext: appContext)
 
@@ -68,14 +68,14 @@ final class InboxViewContainerController: TableNodeViewController {
 
     private func fetchSendAsList() {
         Task {
-            try await sendAsService.fetchList(isForceReload: true, for: appContext.user)
+            try await sendAsProvider.fetchList(isForceReload: true, for: appContext.user)
         }
     }
 
     private func fetchInboxFolder() {
         Task {
             do {
-                let folders = try await foldersService.fetchFolders(isForceReload: true, for: appContext.user)
+                let folders = try await foldersManager.fetchFolders(isForceReload: true, for: appContext.user)
                 self.handleFetched(folders: folders)
             } catch {
                 self.state = .error(error)
@@ -128,7 +128,7 @@ final class InboxViewContainerController: TableNodeViewController {
 
     private func handle(error: Error) {
         switch error {
-        case GmailServiceError.invalidGrant:
+        case GmailApiError.invalidGrant:
             appContext.globalRouter.renderMissingPermissionsView(appContext: appContext)
         default:
             showAlert(

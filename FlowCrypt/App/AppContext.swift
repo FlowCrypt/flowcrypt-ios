@@ -14,21 +14,21 @@ class AppContext {
     let encryptedStorage: EncryptedStorageType
     let session: SessionType?
     // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
-    let userAccountService: SessionServiceType
+    let sessionManager: SessionManagerType
     let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
     let combinedPassPhraseStorage: CombinedPassPhraseStorageType
 
     init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
-        userAccountService: SessionServiceType,
+        sessionManager: SessionManagerType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType
     ) {
         self.encryptedStorage = encryptedStorage
         self.session = session
-        self.userAccountService = userAccountService
+        self.sessionManager = sessionManager
         self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
         self.combinedPassPhraseStorage = combinedPassPhraseStorage
         self.globalRouter = globalRouter
@@ -54,9 +54,9 @@ class AppContext {
         return AppContext(
             encryptedStorage: encryptedStorage,
             session: sessionType,
-            userAccountService: try SessionService(
+            sessionManager: try SessionManager(
                 encryptedStorage: encryptedStorage,
-                googleService: GoogleUserService(
+                googleAuthManager: GoogleAuthManager(
                     currentUserEmail: try encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
@@ -71,7 +71,7 @@ class AppContext {
         return try await AppContextWithUser(
             encryptedStorage: encryptedStorage,
             session: session,
-            userAccountService: userAccountService,
+            sessionManager: sessionManager,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorage,
             globalRouter: globalRouter,
@@ -103,27 +103,27 @@ class AppContext {
     }
 
     @MainActor
-    func getBackupService() throws -> BackupService {
+    func getBackupsManager() throws -> BackupsManager {
         let mailProvider = try getRequiredMailProvider()
-        return BackupService(
-            backupProvider: try mailProvider.backupProvider,
+        return BackupsManager(
+            backupApiClient: try mailProvider.backupApiClient,
             messageGateway: try mailProvider.messageGateway
         )
     }
 
     @MainActor
-    func getFoldersService() throws -> FoldersService {
-        return FoldersService(
+    func getFoldersManager() throws -> FoldersManager {
+        return FoldersManager(
             encryptedStorage: encryptedStorage,
-            remoteFoldersProvider: try getRequiredMailProvider().remoteFoldersProvider
+            remoteFoldersApiClient: try getRequiredMailProvider().remoteFoldersApiClient
         )
     }
 
     @MainActor
-    func getSendAsService() throws -> SendAsService {
-        return SendAsService(
+    func getSendAsProvider() throws -> SendAsProvider {
+        return SendAsProvider(
             encryptedStorage: encryptedStorage,
-            remoteSendAsProvider: try getRequiredMailProvider().remoteSendAsProvider
+            remoteSendAsApiClient: try getRequiredMailProvider().remoteSendAsApiClient
         )
     }
 }
@@ -134,12 +134,12 @@ class AppContextWithUser: AppContext {
     let userId: UserId
 
     let enterpriseServer: EnterpriseServerApiType
-    let clientConfigurationService: ClientConfigurationServiceType
+    let clientConfigurationProvider: ClientConfigurationProviderType
 
     init(
         encryptedStorage: EncryptedStorageType,
         session: SessionType?,
-        userAccountService: SessionServiceType,
+        sessionManager: SessionManagerType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType,
@@ -150,7 +150,7 @@ class AppContextWithUser: AppContext {
         self.user = user
         self.userId = UserId(email: user.email, name: user.name)
         self.enterpriseServer = try EnterpriseServerApi(email: user.email)
-        self.clientConfigurationService = ClientConfigurationService(
+        self.clientConfigurationProvider = ClientConfigurationProvider(
             server: enterpriseServer,
             local: LocalClientConfiguration(
                 encryptedStorage: encryptedStorage
@@ -158,11 +158,11 @@ class AppContextWithUser: AppContext {
         )
 
         var combinedPassPhraseStorageWithConfiguration = combinedPassPhraseStorage
-        combinedPassPhraseStorageWithConfiguration.clientConfiguration = try await clientConfigurationService.configuration
+        combinedPassPhraseStorageWithConfiguration.clientConfiguration = try await clientConfigurationProvider.configuration
         super.init(
             encryptedStorage: encryptedStorage,
             session: session,
-            userAccountService: userAccountService,
+            sessionManager: sessionManager,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorageWithConfiguration,
             globalRouter: globalRouter

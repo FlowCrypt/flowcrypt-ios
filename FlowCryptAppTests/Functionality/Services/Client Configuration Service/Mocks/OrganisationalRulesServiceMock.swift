@@ -8,7 +8,7 @@
 
 @testable import FlowCrypt
 
-final class OrganisationalRulesServiceMock: ClientConfigurationServiceType {
+final class OrganisationalRulesServiceMock: ClientConfigurationProviderType {
     var fetchOrganisationalRulesForCurrentUserResult: Result<ClientConfiguration, Error> = .failure(MockError())
     var configuration: ClientConfiguration {
         get async throws {

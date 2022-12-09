@@ -72,7 +72,7 @@ extension ComposeViewController {
     }
 
     private func processDraft(info: ComposeMessageInput.MessageQuoteInfo) {
-        composeMessageService.fetchMessageIdentifier(info: info)
+        composeMessageHelper.fetchMessageIdentifier(info: info)
 
         guard let id = info.id else {
             didFinishSetup = true
@@ -81,7 +81,7 @@ extension ComposeViewController {
 
         Task {
             do {
-                let message = try await messageService.fetchMessage(identifier: id, folder: "")
+                let message = try await messageHelper.fetchMessage(identifier: id, folder: "")
                 let text = message.body.text
 
                 if text.isPgp {
@@ -119,16 +119,16 @@ extension ComposeViewController {
 
     private func decodeDraft(text: String) async {
         do {
-            let decrypted = try await messageService.decrypt(
+            let decrypted = try await messageHelper.decrypt(
                 text: text,
                 userEmail: appContext.user.email,
-                isUsingKeyManager: appContext.clientConfigurationService.configuration.isUsingKeyManager
+                isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
             )
             contextToSend.message = decrypted
             didFinishSetup = true
             reload(sections: Section.recipientsSections + [.compose])
         } catch {
-            if case let .missingPassPhrase(keyPair) = error as? MessageServiceError, let keyPair {
+            if case let .missingPassPhrase(keyPair) = error as? MessageHelperError, let keyPair {
                 requestMissingPassPhraseWithModal(for: keyPair, isDraft: true)
             } else {
                 handle(error: error)
@@ -182,7 +182,7 @@ extension ComposeViewController: NavigationChildController {
     }
 
     private func handleUpdateAction() {
-        guard var messageIdentifier = composeMessageService.messageIdentifier else { return }
+        guard var messageIdentifier = composeMessageHelper.messageIdentifier else { return }
         messageIdentifier.draftMessageId = input.type.info?.id
         handleAction?(.update(messageIdentifier))
     }

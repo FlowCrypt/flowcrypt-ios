@@ -43,12 +43,13 @@ final class ComposeViewController: TableNodeViewController {
     var userTappedOutSideRecipientsArea = false
     var shouldShowEmailRecipientsLabel = false
     let appContext: AppContextWithUser
-    let composeMessageService: ComposeMessageService
+    let composeMessageHelper: ComposeMessageHelper
     var decorator: ComposeViewDecorator
     let localContactsProvider: LocalContactsProviderType
-    let messageService: MessageService
+    let messageHelper: MessageHelper
     let pubLookup: PubLookupType
-    let googleUserService: GoogleUserServiceType
+    let googleAuthManager: GoogleAuthManagerType
+    var contactsProvider: ContactsProviderType
     let filesManager: FilesManagerType
     let photosManager: PhotosManagerType
     let router: GlobalRouterType
@@ -97,8 +98,8 @@ final class ComposeViewController: TableNodeViewController {
         appContext: AppContextWithUser,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
         input: ComposeMessageInput = .empty,
-        composeMessageService: ComposeMessageService? = nil,
-        messageService: MessageService? = nil,
+        composeMessageHelper: ComposeMessageHelper? = nil,
+        messageHelper: MessageHelper? = nil,
         filesManager: FilesManagerType = FilesManager(),
         photosManager: PhotosManagerType = PhotosManager(),
         keyMethods: KeyMethodsType = KeyMethods(),
@@ -107,25 +108,26 @@ final class ComposeViewController: TableNodeViewController {
         self.appContext = appContext
         self.input = input
         self.decorator = decorator
-        let clientConfiguration = try await appContext.clientConfigurationService.configuration
+        let clientConfiguration = try await appContext.clientConfigurationProvider.configuration
 
         self.localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
-        self.googleUserService = GoogleUserService(
+        self.googleAuthManager = GoogleAuthManager(
             currentUserEmail: appContext.user.email,
-            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate,
-            shouldRunWarmupQuery: true
+            appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
         )
-        let draftGateway = try appContext.getRequiredMailProvider().draftGateway
+        self.contactsProvider = GoogleContactsProvider(authorization: self.googleAuthManager.authorization)
 
-        if let composeMessageService {
-            self.composeMessageService = composeMessageService
+        let draftsApiClient = try appContext.getRequiredMailProvider().draftsApiClient
+
+        if let composeMessageHelper {
+            self.composeMessageHelper = composeMessageHelper
         } else {
-            self.composeMessageService = ComposeMessageService(
+            self.composeMessageHelper = ComposeMessageHelper(
                 appContext: appContext,
                 keyMethods: keyMethods,
-                draftGateway: draftGateway
+                draftsApiClient: draftsApiClient
             )
         }
 
@@ -139,15 +141,18 @@ final class ComposeViewController: TableNodeViewController {
         self.clientConfiguration = clientConfiguration
 
         let mailProvider = try appContext.getRequiredMailProvider()
-        self.messageService = try messageService ?? MessageService(
+        self.messageHelper = try messageHelper ?? MessageHelper(
             localContactsProvider: localContactsProvider,
-            pubLookup: PubLookup(clientConfiguration: clientConfiguration, localContactsProvider: localContactsProvider),
+            pubLookup: PubLookup(
+                clientConfiguration: clientConfiguration,
+                localContactsProvider: localContactsProvider
+            ),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
             messageProvider: try mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
 
-        self.sendAsList = try await appContext.getSendAsService()
+        self.sendAsList = try await appContext.getSendAsProvider()
             .fetchList(isForceReload: false, for: appContext.user)
             .filter { $0.verificationStatus == .accepted || $0.isDefault }
 
@@ -226,14 +231,14 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     private func observeComposeUpdates() {
-        composeMessageService.onStateChanged { [weak self] state in
+        composeMessageHelper.onStateChanged { [weak self] state in
             DispatchQueue.main.async {
                 self?.updateSpinner(with: state)
             }
         }
     }
 
-    private func updateSpinner(with state: ComposeMessageService.State) {
+    private func updateSpinner(with state: ComposeMessageHelper.State) {
         switch state {
         case let .progressChanged(progress):
             if progress < 1 {

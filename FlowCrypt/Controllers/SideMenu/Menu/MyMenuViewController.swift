@@ -37,7 +37,7 @@ final class MyMenuViewController: ViewController {
     }
 
     private let appContext: AppContextWithUser
-    private let foldersService: FoldersServiceType
+    private let foldersManager: FoldersManagerType
     private let decorator: MyMenuViewDecorator
 
     private var folders: [FolderViewModel] = []
@@ -70,7 +70,7 @@ final class MyMenuViewController: ViewController {
         tableNode: ASTableNode = TableNode()
     ) throws {
         self.appContext = appContext
-        self.foldersService = try appContext.getFoldersService()
+        self.foldersManager = try appContext.getFoldersManager()
         self.decorator = decorator
         self.tableNode = tableNode
         super.init(node: ASDisplayNode())
@@ -171,7 +171,7 @@ extension MyMenuViewController {
         showSpinner()
         Task {
             do {
-                let folders = try await foldersService.fetchFolders(isForceReload: false, for: appContext.user)
+                let folders = try await foldersManager.fetchFolders(isForceReload: false, for: appContext.user)
                 handleNewFolders(with: folders)
             } catch {
                 handleError(with: error)

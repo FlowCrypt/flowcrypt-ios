@@ -152,7 +152,7 @@ extension ThreadDetailsViewController {
                 guard let self else { return }
 
                 Task {
-                    try await self.messageOperationsProvider.deleteMessage(
+                    try await self.messageOperationsApiClient.deleteMessage(
                         id: id,
                         from: nil
                     )

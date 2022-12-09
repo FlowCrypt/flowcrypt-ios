@@ -8,10 +8,10 @@
 
 import MailCore
 
-extension Imap: MessagesListProvider {
+extension Imap: MessagesListApiClient {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
         guard case let .byNumber(from) = context.pagination else {
-            throw GmailServiceError.paginationError(context.pagination)
+            throw GmailApiError.paginationError(context.pagination)
         }
         guard let folderPath = context.folderPath else {
             throw ImapError.folderRequired

@@ -8,7 +8,7 @@
 
 import MailCore
 
-extension Imap: MessageOperationsProvider {
+extension Imap: MessageOperationsApiClient {
 
     func markAsUnread(id: Identifier, folder: String) async throws {
         guard let identifier = id.intId else {

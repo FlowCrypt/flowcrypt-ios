@@ -93,20 +93,20 @@ extension GlobalRouter: GlobalRouterType {
             case let .gmailLogin(viewController):
                 viewController.showSpinner()
 
-                let googleService = GoogleUserService(
+                let googleAuthManager = GoogleAuthManager(
                     currentUserEmail: email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
-                let session = try await googleService.signIn(
+                let session = try await googleAuthManager.signIn(
                     in: viewController,
                     scopes: GeneralConstants.Gmail.mailScope,
                     userEmail: email
                 )
-                try appContext.userAccountService.startSessionFor(session: session)
+                try appContext.sessionManager.startSessionFor(session: session)
                 viewController.hideSpinner()
                 try await proceed(with: appContext, session: session)
             case let .other(session):
-                try appContext.userAccountService.startSessionFor(session: session)
+                try appContext.sessionManager.startSessionFor(session: session)
                 try await proceed(with: appContext, session: session)
             }
         } catch {
@@ -119,12 +119,12 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     func signOut(appContext: AppContext) async throws {
-        if let session = try appContext.userAccountService.startActiveSessionForNextUser() {
+        if let session = try appContext.sessionManager.startActiveSessionForNextUser() {
             logger.logInfo("Start session for another email user \(session)")
             try await proceed(with: appContext, session: session)
         } else {
             logger.logInfo("Sign out")
-            try appContext.userAccountService.cleanup()
+            try appContext.sessionManager.cleanup()
             proceed()
         }
     }
@@ -135,16 +135,16 @@ extension GlobalRouter: GlobalRouterType {
         switch route {
         case let .gmailLogin(viewController):
             do {
-                let googleService = GoogleUserService(
+                let googleAuthManager = GoogleAuthManager(
                     currentUserEmail: appContext.user.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
-                let session = try await googleService.signIn(
+                let session = try await googleAuthManager.signIn(
                     in: viewController,
                     scopes: GeneralConstants.Gmail.contactsScope,
                     userEmail: appContext.user.email
                 )
-                try appContext.userAccountService.startSessionFor(session: session)
+                try appContext.sessionManager.startSessionFor(session: session)
                 // todo? - no need to update context itself with new session?
             } catch {
                 logger.logInfo("Contacts scope failed with error \(error.errorMessage)")
@@ -157,7 +157,7 @@ extension GlobalRouter: GlobalRouterType {
 
     func switchActive(user: User, appContext: AppContext) async throws {
         logger.logInfo("Switching active user \(user)")
-        guard let session = try appContext.userAccountService.switchActiveSessionFor(user: user) else {
+        guard let session = try appContext.sessionManager.switchActiveSessionFor(user: user) else {
             logger.logWarning("Can't switch active user with \(user.email)")
             return
         }
@@ -167,7 +167,7 @@ extension GlobalRouter: GlobalRouterType {
     // MARK: - Error Handling
     @MainActor
     private func handleSignInError(error: Error, appContext: AppContext) {
-        if let gmailUserError = error as? GoogleUserServiceError {
+        if let gmailUserError = error as? GoogleAuthManagerError {
             logger.logInfo("Gmail login failed with error: \(gmailUserError.errorMessage)")
 
             switch gmailUserError {

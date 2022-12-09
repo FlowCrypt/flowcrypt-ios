@@ -105,10 +105,10 @@
 "KeypairError_parsing_error" = "Could not parse keys from storage. Please reinstall the app.";
 "KeypairError_expected_public_got_private" = "Could not import private key. Please try to relogin.";
 
-"backupServiceError_parse" = "Key can't be parsed";
-"backupServiceError_email" = "Missing user email";
-"backupServiceError_name" = "Missing user name";
-"backupServiceError_notEncrypted" = "Private Key must be fully encrypted before backing up";
+"backupManagerError_parse" = "Key can't be parsed";
+"backupManagerError_email" = "Missing user email";
+"backupManagerError_name" = "Missing user name";
+"backupManagerError_notEncrypted" = "Private Key must be fully encrypted before backing up";
 "pass_phrase_match_error" = "Pass phrases don't match";
 
 // Compose

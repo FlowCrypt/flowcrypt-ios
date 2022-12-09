@@ -45,10 +45,10 @@ extension ComposeViewController {
 
         Task {
             do {
-                try await composeMessageService.deleteDraft()
+                try await composeMessageHelper.deleteDraft()
 
-                if let messageIdentifier = composeMessageService.messageIdentifier {
-                    composeMessageService.messageIdentifier = nil
+                if let messageIdentifier = composeMessageHelper.messageIdentifier {
+                    composeMessageHelper.messageIdentifier = nil
                     handleAction?(.delete(messageIdentifier))
                 }
 

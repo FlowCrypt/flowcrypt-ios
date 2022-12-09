@@ -12,7 +12,7 @@ extension GmailService: MessageGateway {
     func sendMail(input: MessageGatewayInput, progressHandler: ((Float) -> Void)?) async throws -> Identifier {
         try await withCheckedThrowingContinuation { continuation in
             guard let raw = GTLREncodeBase64(input.mime) else {
-                return continuation.resume(throwing: GmailServiceError.messageEncode)
+                return continuation.resume(throwing: GmailApiError.messageEncode)
             }
 
             self.progressHandler = progressHandler
@@ -31,7 +31,7 @@ extension GmailService: MessageGateway {
                 self?.progressHandler = nil
 
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
 
                 guard let gmailMessage = data as? GTLRGmail_Message else {

@@ -57,7 +57,7 @@ extension AppErr {
             self = alreadyAppError
             return
         }
-        if let gmailError = error as? GmailServiceError {
+        if let gmailError = error as? GmailApiError {
             self = .general(gmailError.localizedDescription)
             return
         }

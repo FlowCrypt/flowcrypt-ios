@@ -26,14 +26,14 @@ final class SetupImapViewController: TableNodeViewController {
 
     private let appContext: AppContext
     private let decorator: SetupImapViewDecorator
-    private let sessionCredentials: SessionCredentialsProvider
+    private let sessionCredentials: SessionCredentialsProviderType
     private let imap: Imap
     private var user = User.empty
 
     init(
         appContext: AppContext,
         decorator: SetupImapViewDecorator = SetupImapViewDecorator(),
-        sessionCredentials: SessionCredentialsProvider = SessionCredentialsService(),
+        sessionCredentials: SessionCredentialsProviderType = SessionCredentialsProvider(),
         imap: Imap = Imap(user: User.empty)
     ) {
         self.appContext = appContext

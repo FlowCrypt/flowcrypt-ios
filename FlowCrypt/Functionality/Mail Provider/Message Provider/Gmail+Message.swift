@@ -16,14 +16,14 @@ extension GmailService: MessageProvider {
         folder: String
     ) async throws -> Message {
         guard let identifier = id.stringId else {
-            throw GmailServiceError.missingMessageInfo("id")
+            throw GmailApiError.missingMessageInfo("id")
         }
 
         let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatFull)
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
 
                 guard let gmailMessage = data as? GTLRGmail_Message else {
@@ -42,14 +42,14 @@ extension GmailService: MessageProvider {
 
     func fetchRawMessage(id: Identifier) async throws -> String {
         guard let identifier = id.stringId else {
-            throw GmailServiceError.missingMessageInfo("id")
+            throw GmailApiError.missingMessageInfo("id")
         }
 
         let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatRaw)
         return try await withCheckedThrowingContinuation { continuation in
             self.gmailService.executeQuery(query) { _, data, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
 
                 guard let gmailMessage = data as? GTLRGmail_Message else {
@@ -57,11 +57,11 @@ extension GmailService: MessageProvider {
                 }
 
                 guard let raw = gmailMessage.raw else {
-                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("raw"))
+                    return continuation.resume(throwing: GmailApiError.missingMessageInfo("raw"))
                 }
 
                 guard let decoded = GTLRDecodeWebSafeBase64(raw)?.toStr() else {
-                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
+                    return continuation.resume(throwing: GmailApiError.missingMessageInfo("data"))
                 }
 
                 return continuation.resume(returning: decoded)
@@ -76,10 +76,10 @@ extension GmailService: MessageProvider {
         progressHandler: ((Float) -> Void)?
     ) async throws -> Data {
         guard let identifier = id.stringId else {
-            throw GmailServiceError.missingMessageInfo("id")
+            throw GmailApiError.missingMessageInfo("id")
         }
         guard let messageIdentifier = messageId.stringId else {
-            throw GmailServiceError.missingMessageInfo("id")
+            throw GmailApiError.missingMessageInfo("id")
         }
 
         let fetcher = createAttachmentFetcher(identifier: identifier, messageId: messageIdentifier)
@@ -93,18 +93,18 @@ extension GmailService: MessageProvider {
         return try await withCheckedThrowingContinuation { continuation in
             fetcher.beginFetch { data, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
 
                 guard let data,
                       let dictionary = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                       let attachmentBase64String = dictionary["data"] as? String
                 else {
-                    return continuation.resume(throwing: GmailServiceError.missingMessageInfo("data"))
+                    return continuation.resume(throwing: GmailApiError.missingMessageInfo("data"))
                 }
 
                 guard let attachmentData = GTLRDecodeWebSafeBase64(attachmentBase64String) else {
-                    return continuation.resume(throwing: GmailServiceError.messageEncode)
+                    return continuation.resume(throwing: GmailApiError.messageEncode)
                 }
 
                 return continuation.resume(returning: attachmentData)

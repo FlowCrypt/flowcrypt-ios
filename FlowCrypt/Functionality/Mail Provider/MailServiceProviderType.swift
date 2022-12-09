@@ -6,32 +6,28 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import GoogleAPIClientForREST_Gmail
-
 enum MailServiceProviderType {
-    case gmail
-    case imap
+    case gmail, imap
 }
 
 // MARK: - MailServiceProvider
 // Provider should conform to MailServiceProvider protocol to support all app functionality
-// MessageSender - sending messages
-// RemoteFoldersProviderType - fetching folders
-// MessagesListProvider - fetching list of messages
+// RemoteFoldersApiClient - fetching folders
+// MessagesListApiClient - fetching list of messages
 // MessageProvider - show message
-// MessageOperationsProvider - delete, read, etc messages
-// MessageSearchProvider - search messages in folder
-// BackupProvider - Search for backups
+// MessageOperationsApiClient - delete, read, etc messages
+// MessageSearchApiClient - search messages in folder
+// BackupApiClient - Search for backups
 
 // MARK: Optionally
-// MessagesThreadProvider - Fetch user threads
+// MessagesThreadApiClient - Fetch user threads
 
 protocol MailServiceProvider: MessageGateway,
-    RemoteFoldersProviderType,
+    RemoteFoldersApiClient,
     MessageProvider,
-    MessageOperationsProvider,
-    MessageSearchProvider,
-    BackupProvider,
+    MessageOperationsApiClient,
+    MessageSearchApiClient,
+    BackupApiClient,
     UsersMailSessionProvider {
 
     var mailServiceProviderType: MailServiceProviderType { get }

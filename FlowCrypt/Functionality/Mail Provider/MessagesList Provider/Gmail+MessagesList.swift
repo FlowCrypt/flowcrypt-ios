@@ -11,7 +11,7 @@ import FlowCryptCommon
 import GoogleAPIClientForREST_Gmail
 
 // TODO: - https://github.com/FlowCrypt/flowcrypt-ios/issues/669 Remove in scope of the ticket
-extension GmailService: MessagesListProvider {
+extension GmailService: MessagesListApiClient {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
         return try await withThrowingTaskGroup(of: Message.self) { [weak self] taskGroup in
             let list = try await fetchMessagesList(using: context)
@@ -45,7 +45,7 @@ extension GmailService {
 
         if let pagination = context.pagination {
             guard case let .byNextPage(token) = pagination else {
-                throw GmailServiceError.paginationError(pagination)
+                throw GmailApiError.paginationError(pagination)
             }
             query.pageToken = token
         }
@@ -63,7 +63,7 @@ extension GmailService {
         return try await withCheckedThrowingContinuation { continuation in
             gmailService.executeQuery(query) { _, data, error in
                 if let error {
-                    return continuation.resume(throwing: GmailServiceError.providerError(error))
+                    return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
 
                 guard let messageList = data as? GTLRGmail_ListMessagesResponse else {

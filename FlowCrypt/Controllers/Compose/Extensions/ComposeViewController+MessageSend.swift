@@ -58,7 +58,7 @@ extension ComposeViewController {
     }
 
     private func sendMessage(isPlain: Bool) async throws -> MessageIdentifier {
-        let sendableMsg = try await composeMessageService.createSendableMsg(
+        let sendableMsg = try await composeMessageHelper.createSendableMsg(
             input: input,
             contextToSend: contextToSend,
             shouldSign: !isPlain,
@@ -67,7 +67,7 @@ extension ComposeViewController {
 
         UIApplication.shared.isIdleTimerDisabled = true
 
-        let identifier = try await composeMessageService.composeAndSend(
+        let identifier = try await composeMessageHelper.composeAndSend(
             message: sendableMsg,
             threadId: input.threadId,
             isPlain: isPlain

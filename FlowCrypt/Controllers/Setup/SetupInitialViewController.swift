@@ -65,7 +65,7 @@ final class SetupInitialViewController: TableNodeViewController {
     ) async throws {
         self.appContext = appContext
         self.decorator = decorator
-        let clientConfiguration = try await appContext.clientConfigurationService.configuration
+        let clientConfiguration = try await appContext.clientConfigurationProvider.configuration
         self.emailKeyManagerApi = emailKeyManagerApi ?? EmailKeyManagerApi(clientConfiguration: clientConfiguration)
         self.clientConfiguration = clientConfiguration
         super.init(node: TableNode())
@@ -118,7 +118,7 @@ extension SetupInitialViewController {
 
         Task {
             do {
-                let keys = try await appContext.getBackupService().fetchBackupsFromInbox(for: appContext.userId)
+                let keys = try await appContext.getBackupsManager().fetchBackupsFromInbox(for: appContext.userId)
                 proceedToSetupWith(keys: keys)
             } catch {
                 handle(error: error)

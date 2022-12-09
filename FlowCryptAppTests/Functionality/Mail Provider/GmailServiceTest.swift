@@ -13,15 +13,15 @@ import XCTest
 class GmailServiceTest: XCTestCase {
 
     var sut: GmailService!
-    var userService: GoogleUserServiceMock!
+    var authManager: GoogleAuthManagerMock!
     var backupSearchQueryProvider: GmailBackupSearchQueryProviderMock!
 
     override func setUp() {
-        userService = GoogleUserServiceMock()
+        authManager = GoogleAuthManagerMock()
         backupSearchQueryProvider = GmailBackupSearchQueryProviderMock()
         sut = GmailService(
             currentUserEmail: "user@example.test",
-            gmailUserService: userService,
+            googleAuthManager: authManager,
             backupSearchQueryProvider: backupSearchQueryProvider
         )
     }
@@ -32,7 +32,7 @@ class GmailServiceTest: XCTestCase {
         do {
             _ = try await sut.searchBackups(for: "james.bond@gmail.com")
         } catch {
-            switch error as? GmailServiceError {
+            switch error as? GmailApiError {
             case let .missingBackupQuery(underliningError):
                 XCTAssertTrue(underliningError is MockError)
             default:
@@ -43,11 +43,8 @@ class GmailServiceTest: XCTestCase {
 }
 
 // MARK: - Mock
-class GoogleUserServiceMock: GoogleUserServiceType {
+class GoogleAuthManagerMock: GoogleAuthManagerType {
     var authorization: GTMAppAuthFetcherAuthorization?
-    func renewSession() async throws {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-    }
 
     var isContactsScopeEnabled = true
     func searchContacts(query: String) async throws -> [Recipient] {

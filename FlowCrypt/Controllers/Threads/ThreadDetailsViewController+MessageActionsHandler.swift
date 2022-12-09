@@ -56,24 +56,24 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
                 switch action {
                 case .archive:
-                    try await threadOperationsProvider.archive(
+                    try await threadOperationsApiClient.archive(
                         messagesIds: inboxItem.messages.map(\.identifier),
                         in: inboxItem.folderPath
                     )
                 case let .markAsRead(isRead):
                     guard !isRead else { return }
                     Task { // Run mark as unread operation in another thread
-                        try await threadOperationsProvider.markThreadAsUnread(
+                        try await threadOperationsApiClient.markThreadAsUnread(
                             id: inboxItem.threadId,
                             folder: inboxItem.folderPath
                         )
                     }
                 case .moveToTrash:
-                    try await threadOperationsProvider.moveThreadToTrash(id: inboxItem.threadId, labels: inboxItem.labels)
+                    try await threadOperationsApiClient.moveThreadToTrash(id: inboxItem.threadId, labels: inboxItem.labels)
                 case .moveToInbox:
-                    try await threadOperationsProvider.moveThreadToInbox(id: inboxItem.threadId)
+                    try await threadOperationsApiClient.moveThreadToInbox(id: inboxItem.threadId)
                 case .permanentlyDelete:
-                    try await threadOperationsProvider.delete(id: inboxItem.threadId)
+                    try await threadOperationsApiClient.delete(id: inboxItem.threadId)
                 }
 
                 handle(action: action)
