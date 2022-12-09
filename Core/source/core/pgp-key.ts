@@ -284,7 +284,7 @@ export class PgpKey {
     return longids;
   };
 
-  public static usable = async (armored: string) => { // is pubkey usable for encrytion?
+  public static usable = async (armored: string) => { // is pubkey usable for encryption?
     const fingerprint = await PgpKey.fingerprint(armored);
     if (!fingerprint) {
       return false;

@@ -209,7 +209,7 @@ final class ComposeMessageHelper {
                 for: recipient.email,
                 shouldUpdateLastUsed: true
             ).joined(separator: "\n")
-            let parsed = try await self.core.parseKeys(armoredOrBinary: armoredPubkeys.data())
+            let parsed = try await core.parseKeys(armoredOrBinary: armoredPubkeys.data())
             recipientsWithKeys.append(
                 try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
             )
