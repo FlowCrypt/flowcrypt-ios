@@ -9,7 +9,6 @@ import { Catch } from '../../../platform/catch';
 import { PgpArmor, PreparedForDecrypt } from './pgp-armor';
 import { opgp } from './openpgpjs-custom';
 import { KeyCache } from '../../../platform/key-cache';
-import { ContactStore } from '../../../platform/store/contact-store';
 import { SmimeKey, SmimeMsg } from '../smime/smime-key';
 import { OpenPGPKey } from './openpgp-key';
 
@@ -149,7 +148,7 @@ export class MsgUtil {
   }
 
   public static verify = async (msg: OpenpgpMsgOrCleartext, pubs: OpenPGP.key.Key[], contact?: Contact): Promise<VerifyRes> => {
-    const verifyRes: VerifyRes = { contact, match: null }; // tslint:disable-line:no-null-keyword
+    const verifyRes: VerifyRes = { contact, match: null };
     try {
       // this is here to ensure execution order when 1) verify, 2) read data, 3) processing signatures
       // Else it will hang trying to read a stream: https://github.com/openpgpjs/openpgpjs/issues/916#issuecomment-510620625
@@ -175,7 +174,7 @@ export class MsgUtil {
         }
       }
     } catch (verifyErr) {
-      verifyRes.match = null; // tslint:disable-line:no-null-keyword
+      verifyRes.match = null;
       if (verifyErr instanceof Error && verifyErr.message === 'Can only verify message with one literal data packet.') {
         verifyRes.error = 'FlowCrypt is not equipped to verify this message';
         verifyRes.isErrFatal = true; // don't try to re-fetch the message from API
@@ -230,6 +229,7 @@ export class MsgUtil {
         const decrypted = SmimeKey.decryptMessage(prepared.message, keys.prvForDecryptDecrypted[0].decrypted);
         return { success: true, content: new Buf(decrypted), isEncrypted };
       }
+      // cleartext and PKCS#7 are gone by this line
       const packets = (prepared.message as OpenPGP.message.Message).packets;
       const isSymEncrypted = packets.filter(p => p.tag === opgp.enums.packet.symEncryptedSessionKey).length > 0;
       const isPubEncrypted = packets.filter(p => p.tag === opgp.enums.packet.publicKeyEncryptedSessionKey).length > 0;
@@ -289,15 +289,6 @@ export class MsgUtil {
 
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {
     keys.signedBy = Value.arr.unique(msg.getSigningKeyIds ? msg.getSigningKeyIds().map(kid => OpenPGPKey.bytesToLongid(kid.bytes)) : []);
-    if (keys.signedBy.length && typeof ContactStore.get === 'function') {
-      const verificationContacts = await ContactStore.get(undefined, keys.signedBy);
-      keys.verificationContacts = verificationContacts.filter(contact => contact && contact.pubkey) as Contact[];
-      keys.forVerification = [];
-      for (const contact of keys.verificationContacts) {
-        const { keys: keysForVerification } = await opgp.key.readArmored(KeyUtil.armor(contact.pubkey!));
-        keys.forVerification.push(...keysForVerification);
-      }
-    }
   }
 
   private static getSortedKeys = async (kiWithPp: ExtendedKeyInfo[], msg: OpenpgpMsgOrCleartext): Promise<SortedKeysForDecrypt> => {
