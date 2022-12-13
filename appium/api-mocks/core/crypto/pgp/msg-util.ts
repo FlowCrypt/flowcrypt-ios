@@ -9,6 +9,7 @@ import { Catch } from '../../../platform/catch';
 import { PgpArmor, PreparedForDecrypt } from './pgp-armor';
 import { opgp } from './openpgpjs-custom';
 import { KeyCache } from '../../../platform/key-cache';
+import { ContactStore } from '../../../platform/store/contact-store';
 import { SmimeKey, SmimeMsg } from '../smime/smime-key';
 import { OpenPGPKey } from './openpgp-key';
 
@@ -25,7 +26,7 @@ export namespace PgpMsgMethod {
   export namespace Arg {
     export type Encrypt = { pubkeys: Key[], signingPrv?: Key, pwd?: string, data: Uint8Array, filename?: string, armor: boolean, date?: Date };
     export type Type = { data: Uint8Array | string };
-    export type Decrypt = { kisWithPp: ExtendedKeyInfo[], encryptedData: Uint8Array, msgPwd?: string };
+    export type Decrypt = { kisWithPp: ExtendedKeyInfo[], encryptedData: Uint8Array, msgPwd?: string, verificationPubs: string[] };
     export type DiagnosePubkeys = { armoredPubs: string[], message: Uint8Array };
     export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array };
   }
@@ -201,7 +202,7 @@ export class MsgUtil {
     return await MsgUtil.verify(message, keys.forVerification, keys.verificationContacts[0]);
   }
 
-  public static decryptMessage: PgpMsgMethod.Decrypt = async ({ kisWithPp, encryptedData, msgPwd }) => {
+  public static decryptMessage: PgpMsgMethod.Decrypt = async ({ kisWithPp, encryptedData, msgPwd, verificationPubs }) => {
     const longids: DecryptError$longids = { message: [], matching: [], chosen: [], needPassphrase: [] };
     let prepared: PreparedForDecrypt;
     try {
@@ -209,18 +210,23 @@ export class MsgUtil {
     } catch (formatErr) {
       return { success: false, error: { type: DecryptErrTypes.format, message: String(formatErr) }, longids };
     }
+    // there are 3 types of messages possible at this point
+    // 1. PKCS#7 if isPkcs7 is true
+    // 2. OpenPGP cleartext message if isCleartext is true
+    // 3. Other types of OpenPGP message
+    // Hence isCleartext and isPkcs7 are mutually exclusive
+    if (prepared.isCleartext) {
+      const signature = await OpenPGPKey.verify(prepared.message, await ContactStore.getPubkeyInfos(undefined, verificationPubs));
+      const content = signature.content || Buf.fromUtfStr('no content');
+      signature.content = undefined; // no need to duplicate data
+      return { success: true, content, isEncrypted: false, signature };
+    }
+    const isEncrypted = true;
     const keys = prepared.isPkcs7 ? await MsgUtil.getSmimeKeys(kisWithPp, prepared.message) : await MsgUtil.getSortedKeys(kisWithPp, prepared.message);
     longids.message = keys.encryptedFor;
     longids.matching = keys.prvForDecrypt.map(ki => ki.longid);
     longids.chosen = keys.prvForDecryptDecrypted.map(decrypted => decrypted.ki.longid);
     longids.needPassphrase = keys.prvForDecryptWithoutPassphrases.map(ki => ki.longid);
-    const isEncrypted = !prepared.isCleartext;
-    if (!isEncrypted && !prepared.isPkcs7) {
-      const signature = await MsgUtil.verify(prepared.message, keys.forVerification, keys.verificationContacts[0]);
-      const content = signature.content || Buf.fromUtfStr('no content');
-      signature.content = undefined; // no need to duplicate data
-      return { success: true, content, isEncrypted, signature };
-    }
     if (!keys.prvForDecryptDecrypted.length && (!msgPwd || prepared.isPkcs7)) {
       return { success: false, error: { type: DecryptErrTypes.needPassphrase, message: 'Missing pass phrase' }, longids, isEncrypted };
     }
@@ -230,7 +236,8 @@ export class MsgUtil {
         return { success: true, content: new Buf(decrypted), isEncrypted };
       }
       // cleartext and PKCS#7 are gone by this line
-      const packets = (prepared.message as OpenPGP.message.Message).packets;
+      const msg = prepared.message as OpenPGP.message.Message;
+      const packets = msg.packets;
       const isSymEncrypted = packets.filter(p => p.tag === opgp.enums.packet.symEncryptedSessionKey).length > 0;
       const isPubEncrypted = packets.filter(p => p.tag === opgp.enums.packet.publicKeyEncryptedSessionKey).length > 0;
       if (isSymEncrypted && !isPubEncrypted && !msgPwd) {
@@ -238,14 +245,13 @@ export class MsgUtil {
       }
       const passwords = msgPwd ? [msgPwd] : undefined;
       const privateKeys = keys.prvForDecryptDecrypted.map(decrypted => decrypted.decrypted);
-      const decrypted = await OpenPGPKey.decryptMessage(prepared.message as OpenPGP.message.Message, privateKeys, passwords);
-      await MsgUtil.cryptoMsgGetSignedBy(decrypted, keys); // we can only figure out who signed the msg once it's decrypted
-      const signature = keys.signedBy.length ? await MsgUtil.verify(decrypted, keys.forVerification, keys.verificationContacts[0]) : undefined;
+      const decrypted = await OpenPGPKey.decryptMessage(msg, privateKeys, passwords);
+      const signature = await OpenPGPKey.verify(decrypted, await ContactStore.getPubkeyInfos(undefined, verificationPubs));
       const content = signature?.content || new Buf(await opgp.stream.readToEnd(decrypted.getLiteralData()!));
       if (signature?.content) {
         signature.content = undefined; // already passed as "content" on the response object, don't need it duplicated
       }
-      if (!prepared.isCleartext && (prepared.message as OpenPGP.message.Message).packets.filterByTag(opgp.enums.packet.symmetricallyEncrypted).length) {
+      if (msg.packets.filterByTag(opgp.enums.packet.symmetricallyEncrypted).length) {
         const noMdc = 'Security threat!\n\nMessage is missing integrity checks (MDC). ' +
           ' The sender should update their outdated software.\n\nDisplay the message at your own risk.';
         return { success: false, content, error: { type: DecryptErrTypes.noMdc, message: noMdc }, longids, isEncrypted };
@@ -254,7 +260,7 @@ export class MsgUtil {
     } catch (e) {
       return { success: false, error: MsgUtil.cryptoMsgDecryptCategorizeErr(e, msgPwd), longids, isEncrypted };
     }
-  }
+  };
 
   public static encryptMessage: PgpMsgMethod.Encrypt = async ({ pubkeys, signingPrv, pwd, data, filename, armor, date }) => {
     const keyTypes = new Set(pubkeys.map(k => k.type));
@@ -289,6 +295,15 @@ export class MsgUtil {
 
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {
     keys.signedBy = Value.arr.unique(msg.getSigningKeyIds ? msg.getSigningKeyIds().map(kid => OpenPGPKey.bytesToLongid(kid.bytes)) : []);
+    if (keys.signedBy.length && typeof ContactStore.get === 'function') {
+      const verificationContacts = await ContactStore.get(undefined, keys.signedBy);
+      keys.verificationContacts = verificationContacts.filter(contact => contact && contact.pubkey) as Contact[];
+      keys.forVerification = [];
+      for (const contact of keys.verificationContacts) {
+        const { keys: keysForVerification } = await opgp.key.readArmored(KeyUtil.armor(contact.pubkey!));
+        keys.forVerification.push(...keysForVerification);
+      }
+    }
   }
 
   private static getSortedKeys = async (kiWithPp: ExtendedKeyInfo[], msg: OpenpgpMsgOrCleartext): Promise<SortedKeysForDecrypt> => {
@@ -398,7 +413,7 @@ export class MsgUtil {
     return msgKeyIds.filter(kid => OpenPGPKey.isPacketDecrypted(prv, kid)).length === msgKeyIds.length; // test if all needed key packets are decrypted
   }
 
-  private static cryptoMsgDecryptCategorizeErr = (decryptErr: any, msgPwd?: string): DecryptError$error => {
+  private static cryptoMsgDecryptCategorizeErr = (decryptErr: Error, msgPwd?: string): DecryptError$error => {
     const e = String(decryptErr).replace('Error: ', '').replace('Error decrypting message: ', '');
     const keyMismatchErrStrings = ['Cannot read property \'isDecrypted\' of null', 'privateKeyPacket is null',
       'TypeprivateKeyPacket is null', 'Session key decryption failed.', 'Invalid session key for decryption.'];

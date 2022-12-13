@@ -68,9 +68,14 @@ export interface KeyInfo {
   emails?: string[]; // todo - used to be missing - but migration was supposed to add it? setting back to optional for now
 }
 
+export type KeyFamily = 'openpgp' | 'x509';
+
 export interface KeyIdentity {
   id: string, // a fingerprint of the primary key in OpenPGP, and similarly a fingerprint of the actual cryptographic key (eg RSA fingerprint) in S/MIME
-  type: 'openpgp' | 'x509'
+  type: KeyFamily
+}
+
+export interface KeyInfoWithIdentity extends KeyInfo, KeyIdentity {
 }
 
 export interface TypedKeyInfo extends KeyInfo, KeyIdentity {
