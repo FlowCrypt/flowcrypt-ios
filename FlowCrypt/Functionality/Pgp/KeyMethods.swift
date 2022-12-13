@@ -51,10 +51,15 @@ final class KeyMethods: KeyMethodsType {
     func chooseSenderKeys(for type: KeyUsage, keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
         let senderEmail = senderEmail.lowercased()
         let parsed = try await parseKeys(armored: keys.map(type == .encryption ? \.public : \.private))
+
         guard parsed.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
-        let usable = parsed.filter(\.usableForEncryption).filter(\.isNotExpired)
+
+        let usable = parsed.filter {
+            type == .encryption ? $0.usableForEncryption : $0.usableForSigning
+        }.filter(\.isNotExpired)
+
         guard usable.isNotEmpty else {
             throw MessageValidationError.noUsableAccountKeys
         }

@@ -34,6 +34,7 @@ class KeyMethodsTest: XCTestCase {
                 isFullyDecrypted: false,
                 isFullyEncrypted: false,
                 usableForEncryption: true,
+                usableForSigning: true,
                 ids: [
                     KeyId(longid: "longid", fingerprint: "fingerprint")
                 ],
@@ -50,6 +51,7 @@ class KeyMethodsTest: XCTestCase {
                 isFullyDecrypted: false,
                 isFullyEncrypted: false,
                 usableForEncryption: true,
+                usableForSigning: true,
                 ids: [
                     KeyId(longid: "longid 2", fingerprint: "fingerprint 2")
                 ],
@@ -78,6 +80,7 @@ extension KeyMethodsTest {
             isFullyDecrypted: false,
             isFullyEncrypted: false,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [
                 KeyId(longid: "longid", fingerprint: "fingerprint")
             ],
@@ -94,6 +97,7 @@ extension KeyMethodsTest {
             isFullyDecrypted: false,
             isFullyEncrypted: false,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [
                 KeyId(longid: "longid2", fingerprint: "fingerprint2")
             ],

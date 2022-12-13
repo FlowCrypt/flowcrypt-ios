@@ -20,6 +20,7 @@ struct KeyDetails: ArmoredPrvWithIdentity, Decodable {
     let isFullyDecrypted: Bool? // only if this is prv
     let isFullyEncrypted: Bool? // only if this is prv
     let usableForEncryption: Bool
+    let usableForSigning: Bool
     let ids: [KeyId]
     let created: Int
     let lastModified: Int?

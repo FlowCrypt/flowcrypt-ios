@@ -25,6 +25,7 @@ export interface PrvKeyInfo {
 }
 
 export type KeyAlgo = 'curve25519' | 'rsa2048' | 'rsa4096';
+type KeyUsage = 'sign' | 'encrypt';
 
 export interface KeyInfo extends PrvKeyInfo {
   public: string;
@@ -52,6 +53,7 @@ export interface KeyDetails {
   expiration?: number; // number of millis of expiration or undefined if never expires
   revoked: boolean;
   usableForEncryption: boolean;
+  usableForSigning: boolean;
   algo: { // same as openpgp.js Key.AlgorithmInfo
     algorithm: string;
     algorithmId: number;
@@ -229,7 +231,7 @@ export class PgpKey {
     return longids;
   };
 
-  public static usable = async (armored: string) => { // is pubkey usable for encryption?
+  public static usable = async (armored: string, type: KeyUsage) => {
     const fingerprint = await PgpKey.fingerprint(armored);
     if (!fingerprint) {
       return false;
@@ -238,10 +240,10 @@ export class PgpKey {
     if (!pubkey) {
       return false;
     }
-    if (await Catch.undefinedOnException(pubkey.getEncryptionKey())) {
+    if (await PgpKey.keyIsUsable(pubkey, type)) {
       return true; // good key - cannot be expired
     }
-    return await PgpKey.usableButExpired(pubkey);
+    return await PgpKey.usableButExpired(pubkey, type);
   };
 
   public static expired = async (key: Key): Promise<boolean> => {
@@ -258,11 +260,11 @@ export class PgpKey {
     throw new Error(`Got unexpected value for expiration: ${exp}`); // exp must be either null, Infinity or a Date
   };
 
-  public static usableButExpired = async (key: Key): Promise<boolean> => {
+  public static usableButExpired = async (key: Key, type: KeyUsage): Promise<boolean> => {
     if (!key) {
       return false;
     }
-    if (await Catch.undefinedOnException(key.getEncryptionKey())) {
+    if (await PgpKey.keyIsUsable(key, type)) {
       return false; // good key - cannot be expired
     }
     const oneSecondBeforeExpiration = await PgpKey.dateBeforeExpiration(key);
@@ -270,7 +272,7 @@ export class PgpKey {
       return false; // key does not expire
     }
     // try to see if the key was usable just before expiration
-    return Boolean(await Catch.undefinedOnException(key.getEncryptionKey(undefined, oneSecondBeforeExpiration)));
+    return PgpKey.keyIsUsable(key, type, oneSecondBeforeExpiration);
   };
 
   public static dateBeforeExpiration = async (key: Key | string): Promise<Date | undefined> => {
@@ -318,7 +320,6 @@ export class PgpKey {
     }
 
     const armoredPublic = k.toPublic().armor();
-    const usableForEncryption = await PgpKey.usable(armoredPublic);
 
     const keyDetails = {
       public: armoredPublic,
@@ -329,7 +330,8 @@ export class PgpKey {
       expiration,
       lastModified,
       revoked: k.revocationSignatures.length > 0,
-      usableForEncryption
+      usableForEncryption: await PgpKey.usable(armoredPublic, 'encrypt'),
+      usableForSigning: await PgpKey.usable(armoredPublic, 'sign')
     };
 
     if (k.isPrivate()) {
@@ -394,5 +396,11 @@ export class PgpKey {
         revocationCertificate: await readToEnd(certificate as MaybeStream<string>)
       };
     }
+  };
+
+  private static keyIsUsable = async (k: Key, type: KeyUsage, date?: Date | null): Promise<boolean> => {
+    return Boolean(await Catch.undefinedOnException(
+      type === 'encrypt' ? k.getEncryptionKey(undefined, date) : k.getSigningKey(undefined, date)
+    ));
   };
 }

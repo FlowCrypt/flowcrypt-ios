@@ -62,6 +62,7 @@ class CoreTypesTest: XCTestCase {
             isFullyDecrypted: false,
             isFullyEncrypted: false,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [
                 KeyId(
                     longid: "longid",
@@ -81,6 +82,7 @@ class CoreTypesTest: XCTestCase {
             isFullyDecrypted: false,
             isFullyEncrypted: false,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [
                 KeyId(
                     longid: "longid2",

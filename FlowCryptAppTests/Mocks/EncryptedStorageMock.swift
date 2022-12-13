@@ -56,6 +56,7 @@ extension EncryptedStorageMock {
             isFullyDecrypted: false,
             isFullyEncrypted: false,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [KeyId(longid: String.random(length: 40),
                         fingerprint: String.random(length: 40))],
             created: 1,

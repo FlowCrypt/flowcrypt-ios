@@ -20,6 +20,7 @@ class KeyDetailsTests: XCTestCase {
             isFullyDecrypted: true,
             isFullyEncrypted: true,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [
                 KeyId(longid: "longId", fingerprint: "fingerprint")
             ],
@@ -44,6 +45,7 @@ class KeyDetailsTests: XCTestCase {
             isFullyDecrypted: true,
             isFullyEncrypted: false,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [
                 KeyId(longid: "longId", fingerprint: "fingerprint")
             ],
@@ -68,6 +70,7 @@ class KeyDetailsTests: XCTestCase {
             isFullyDecrypted: true,
             isFullyEncrypted: true,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [],
             created: 1_231_244,
             lastModified: nil,
@@ -90,6 +93,7 @@ class KeyDetailsTests: XCTestCase {
             isFullyDecrypted: false,
             isFullyEncrypted: true,
             usableForEncryption: true,
+            usableForSigning: true,
             ids: [
                 KeyId(longid: "l1", fingerprint: "f1"),
                 KeyId(longid: "l2", fingerprint: "f2"),
