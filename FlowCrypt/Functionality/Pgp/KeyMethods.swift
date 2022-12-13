@@ -54,7 +54,7 @@ final class KeyMethods: KeyMethodsType {
         guard parsed.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
-        let usable = parsed.filter(\.isKeyUsable)
+        let usable = parsed.filter(\.usableForEncryption).filter(\.isNotExpired)
         guard usable.isNotEmpty else {
             throw MessageValidationError.noUsableAccountKeys
         }

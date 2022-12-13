@@ -55,6 +55,7 @@ extension EncryptedStorageMock {
             private: nil,
             isFullyDecrypted: false,
             isFullyEncrypted: false,
+            usableForEncryption: true,
             ids: [KeyId(longid: String.random(length: 40),
                         fingerprint: String.random(length: 40))],
             created: 1,

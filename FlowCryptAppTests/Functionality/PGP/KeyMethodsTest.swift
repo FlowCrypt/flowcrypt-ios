@@ -33,6 +33,7 @@ class KeyMethodsTest: XCTestCase {
                 private: nil,
                 isFullyDecrypted: false,
                 isFullyEncrypted: false,
+                usableForEncryption: true,
                 ids: [
                     KeyId(longid: "longid", fingerprint: "fingerprint")
                 ],
@@ -48,6 +49,7 @@ class KeyMethodsTest: XCTestCase {
                 private: nil,
                 isFullyDecrypted: false,
                 isFullyEncrypted: false,
+                usableForEncryption: true,
                 ids: [
                     KeyId(longid: "longid 2", fingerprint: "fingerprint 2")
                 ],
@@ -75,6 +77,7 @@ extension KeyMethodsTest {
             private: "private 1",
             isFullyDecrypted: false,
             isFullyEncrypted: false,
+            usableForEncryption: true,
             ids: [
                 KeyId(longid: "longid", fingerprint: "fingerprint")
             ],
@@ -90,6 +93,7 @@ extension KeyMethodsTest {
             private: "private 2",
             isFullyDecrypted: false,
             isFullyEncrypted: false,
+            usableForEncryption: true,
             ids: [
                 KeyId(longid: "longid2", fingerprint: "fingerprint2")
             ],

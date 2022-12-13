@@ -61,6 +61,7 @@ class CoreTypesTest: XCTestCase {
             private: "private1",
             isFullyDecrypted: false,
             isFullyEncrypted: false,
+            usableForEncryption: true,
             ids: [
                 KeyId(
                     longid: "longid",
@@ -79,6 +80,7 @@ class CoreTypesTest: XCTestCase {
             private: "private2",
             isFullyDecrypted: false,
             isFullyEncrypted: false,
+            usableForEncryption: true,
             ids: [
                 KeyId(
                     longid: "longid2",

@@ -16,9 +16,10 @@ protocol ArmoredPrvWithIdentity {
 
 struct KeyDetails: ArmoredPrvWithIdentity, Decodable {
     let `public`: String
-    let `private`: String? // ony if this is prv
+    let `private`: String? // only if this is prv
     let isFullyDecrypted: Bool? // only if this is prv
     let isFullyEncrypted: Bool? // only if this is prv
+    let usableForEncryption: Bool
     let ids: [KeyId]
     let created: Int
     let lastModified: Int?
@@ -51,18 +52,9 @@ extension KeyDetails {
         pgpUserEmails.map { $0.lowercased() }
     }
 
-    var isKeyUsable: Bool {
-        // revoked keys are not usable
-        guard !revoked else { return false }
-        // keys without lastModified don't have valid signatures on them - not usable
-        guard lastModified != nil else { return false }
-        // keys without uids on them are not usable
-        guard users.isNotEmpty else { return false }
-        // expired keys are not usable
-        if let expiration, expiration.toDate().timeIntervalSinceNow < 0 { return false }
-        // non-revoked keys, with lastModified and at least one user, that are not expired are usable
-        // gross simplification until https://github.com/FlowCrypt/flowcrypt-ios/issues/1546
-        return true
+    var isNotExpired: Bool {
+        guard let expiration else { return true }
+        return expiration.toDate().timeIntervalSinceNow > 0
     }
 
     func getArmoredPrv() -> String? {
