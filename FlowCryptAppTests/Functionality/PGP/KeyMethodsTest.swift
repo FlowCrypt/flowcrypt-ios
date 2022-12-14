@@ -10,9 +10,10 @@
 import XCTest
 
 class KeyMethodsTest: XCTestCase {
+    private let core: Core = .shared
 
-    var sut: KeyMethods!
-    var passPhrase = "Some long phrase"
+    private var sut: KeyMethods!
+    private var passPhrase = "Some long phrase"
 
     override func setUp() {
         sut = KeyMethods()
@@ -70,43 +71,4 @@ class KeyMethodsTest: XCTestCase {
             XCTAssertEqual(error as? KeypairError, KeypairError.expectedPrivateGotPublic)
         }
     }
-}
-
-extension KeyMethodsTest {
-    var validKeys: [KeyDetails] { [
-        KeyDetails(
-            public: "Public part",
-            private: "private 1",
-            isFullyDecrypted: false,
-            isFullyEncrypted: false,
-            usableForEncryption: true,
-            usableForSigning: true,
-            ids: [
-                KeyId(longid: "longid", fingerprint: "fingerprint")
-            ],
-            created: 1,
-            lastModified: nil,
-            expiration: nil,
-            users: [],
-            algo: nil,
-            revoked: false
-        ),
-        KeyDetails(
-            public: "Public part2",
-            private: "private 2",
-            isFullyDecrypted: false,
-            isFullyEncrypted: false,
-            usableForEncryption: true,
-            usableForSigning: true,
-            ids: [
-                KeyId(longid: "longid2", fingerprint: "fingerprint2")
-            ],
-            created: 1,
-            lastModified: nil,
-            expiration: nil,
-            users: [],
-            algo: nil,
-            revoked: false
-        )
-    ] }
 }
