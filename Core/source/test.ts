@@ -491,7 +491,9 @@ test('parseKeys', async t => {
         },
         "created": 1543592161,
         "lastModified": 1543592161,
-        "revoked": false
+        "revoked": false,
+        "usableForEncryption": true,
+        "usableForSigning": true
       }
     ]
   };
@@ -564,7 +566,9 @@ test('parseKeys - expiration and date last updated', async t => {
         "created": 1594847701,
         "expiration": 1594847702,
         "lastModified": 1594847701,
-        "revoked": false
+        "revoked": false,
+        "usableForEncryption": true,
+        "usableForSigning": true
       }
     ]
   };
@@ -602,7 +606,9 @@ test.serial('parseKeys - revoked', async t => {
         algo: { algorithm: "eddsa", curve: "ed25519", algorithmId: 22 },
         created: 1634664782,
         lastModified: 1634664811,
-        revoked: true
+        revoked: true,
+        usableForEncryption: false,
+        usableForSigning: false
       }
     ]
   };
@@ -949,7 +955,9 @@ test('parseDecryptMsg compat mime-email-plain-with-pubkey', async t => {
         "algo": { "algorithm": "rsaEncryptSign", "bits": 2047, "algorithmId": 1 },
         "created": 1543592161,
         "lastModified": 1543592161,
-        "revoked": false
+        "revoked": false,
+        "usableForEncryption": true,
+        "usableForSigning": true
       }
     },
   ];
