@@ -188,6 +188,8 @@ extension KeypairRealmObject {
                 private: "private",
                 isFullyDecrypted: true,
                 isFullyEncrypted: true,
+                usableForEncryption: true,
+                usableForSigning: true,
                 ids: [
                     KeyId(longid: "longid", fingerprint: "fingerprint")
                 ],

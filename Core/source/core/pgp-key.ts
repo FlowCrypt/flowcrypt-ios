@@ -2,9 +2,7 @@
 
 'use strict';
 
-import { Buf } from './buf';
 import { Catch } from '../platform/catch';
-import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
@@ -18,26 +16,6 @@ import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 import { Str } from './common';
 
-/* eslint-disable @typescript-eslint/naming-convention */
-export type Contact = {
-  email: string;
-  name: string | null;
-  pubkey: string | null;
-  has_pgp: 0 | 1;
-  searchable: string[];
-  client: string | null;
-  fingerprint: string | null;
-  longid: string | null;
-  longids: string[];
-  keywords: string | null;
-  pending_lookup: number;
-  last_use: number | null;
-  pubkey_last_sig: number | null;
-  pubkey_last_check: number | null;
-  expiresOn: number | null;
-};
-/* eslint-enable @typescript-eslint/naming-convention */
-
 export interface PrvKeyInfo {
   private: string;
   longid: string;
@@ -47,6 +25,7 @@ export interface PrvKeyInfo {
 }
 
 export type KeyAlgo = 'curve25519' | 'rsa2048' | 'rsa4096';
+type KeyUsage = 'sign' | 'encrypt';
 
 export interface KeyInfo extends PrvKeyInfo {
   public: string;
@@ -73,6 +52,8 @@ export interface KeyDetails {
   lastModified?: number; // date of last signature, or undefined if never had valid signature
   expiration?: number; // number of millis of expiration or undefined if never expires
   revoked: boolean;
+  usableForEncryption: boolean;
+  usableForSigning: boolean;
   algo: { // same as openpgp.js Key.AlgorithmInfo
     algorithm: string;
     algorithmId: number;
@@ -112,35 +93,6 @@ export class PgpKey {
       Store.armoredKeyCacheSet(armoredKey, key);
     }
     return key;
-  };
-
-  /**
-   * Read many keys, could be armored or binary, in single armor or separately,
-   * useful for importing keychains of various formats
-   */
-  public static readMany = async (fileData: Buf): Promise<{ keys: Key[], errs: Error[] }> => {
-    const allKeys: Key[] = [];
-    const allErrs: Error[] = [];
-    const { blocks } = MsgBlockParser.detectBlocks(fileData.toUtfStr());
-    const armoredPublicKeyBlocks = blocks.filter(block => block.type === 'publicKey' || block.type === 'privateKey');
-    const pushKeysAndErrs = async (content: string | Buf, type: 'readArmored' | 'read') => {
-      try {
-        const keys = type === 'readArmored'
-          ? await readKeys({ armoredKeys: content.toString() })
-          : await readKeys({ binaryKeys: (typeof content === 'string' ? Buf.fromUtfStr(content) : content) });
-        allKeys.push(...keys);
-      } catch (e) {
-        allErrs.push(e instanceof Error ? e : new Error(String(e)));
-      }
-    };
-    if (armoredPublicKeyBlocks.length) {
-      for (const block of blocks) {
-        await pushKeysAndErrs(block.content, 'readArmored');
-      }
-    } else {
-      await pushKeysAndErrs(fileData, 'read');
-    }
-    return { keys: allKeys, errs: allErrs };
   };
 
   public static isPacketPrivate = (packet: AllowedKeyPackets): packet is PrvPacket => {
@@ -229,31 +181,26 @@ export class PgpKey {
     }
   };
 
-  public static fingerprint = async (key: Key | string, formatting: "default" | "spaced" = 'default'):
-    Promise<string | undefined> => {
+  public static fingerprint = async (key: Key | string): Promise<string | undefined> => {
     if (!key) {
       return undefined;
-    } else if (key instanceof Key) {
-      if (!key.keyPacket.getFingerprintBytes()) {
-        return undefined;
-      }
+    } else if (typeof (key) === 'string') {
       try {
-        const fp = key.keyPacket.getFingerprint().toUpperCase();
-        if (formatting === 'spaced') {
-          return fp.replace(/(.{4})/g, '$1 ').trim();
-        }
-        return fp;
-      } catch (e) {
-        console.error(e);
-        return undefined;
-      }
-    } else {
-      try {
-        return await PgpKey.fingerprint(await PgpKey.read(key), formatting);
+        return await PgpKey.fingerprint(await PgpKey.read(key));
       } catch (e) {
         if (e instanceof Error && e.message === 'openpgp is not defined') {
           Catch.reportErr(e);
         }
+        console.error(e);
+        return undefined;
+      }
+    } else {
+      if (!key.keyPacket.getFingerprintBytes()) {
+        return undefined;
+      }
+      try {
+        return key.keyPacket.getFingerprint().toUpperCase();
+      } catch (e) {
         console.error(e);
         return undefined;
       }
@@ -284,7 +231,7 @@ export class PgpKey {
     return longids;
   };
 
-  public static usable = async (armored: string) => { // is pubkey usable for encrytion?
+  public static usable = async (armored: string, type: KeyUsage) => {
     const fingerprint = await PgpKey.fingerprint(armored);
     if (!fingerprint) {
       return false;
@@ -293,10 +240,10 @@ export class PgpKey {
     if (!pubkey) {
       return false;
     }
-    if (await pubkey.getEncryptionKey()) {
+    if (await PgpKey.keyIsUsable(pubkey, type)) {
       return true; // good key - cannot be expired
     }
-    return await PgpKey.usableButExpired(pubkey);
+    return await PgpKey.usableButExpired(pubkey, type);
   };
 
   public static expired = async (key: Key): Promise<boolean> => {
@@ -313,11 +260,11 @@ export class PgpKey {
     throw new Error(`Got unexpected value for expiration: ${exp}`); // exp must be either null, Infinity or a Date
   };
 
-  public static usableButExpired = async (key: Key): Promise<boolean> => {
+  public static usableButExpired = async (key: Key, type: KeyUsage): Promise<boolean> => {
     if (!key) {
       return false;
     }
-    if (await key.getEncryptionKey()) {
+    if (await PgpKey.keyIsUsable(key, type)) {
       return false; // good key - cannot be expired
     }
     const oneSecondBeforeExpiration = await PgpKey.dateBeforeExpiration(key);
@@ -325,7 +272,7 @@ export class PgpKey {
       return false; // key does not expire
     }
     // try to see if the key was usable just before expiration
-    return Boolean(await key.getEncryptionKey(undefined, oneSecondBeforeExpiration));
+    return PgpKey.keyIsUsable(key, type, oneSecondBeforeExpiration);
   };
 
   public static dateBeforeExpiration = async (key: Key | string): Promise<Date | undefined> => {
@@ -359,6 +306,7 @@ export class PgpKey {
     const exp = await getKeyExpirationTimeForCapabilities(k, 'encrypt');
     const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
     const lastModified = await PgpKey.lastSig(k) / 1000;
+
     const ids: KeyDetails$ids[] = [];
     for (const key of keys) {
       const fingerprint = key.getFingerprint().toUpperCase();
@@ -370,15 +318,20 @@ export class PgpKey {
         }
       }
     }
+
+    const armoredPublic = k.toPublic().armor();
+
     const keyDetails = {
-      public: k.toPublic().armor(),
+      public: armoredPublic,
       users: k.getUserIDs(),
       ids,
       algo,
       created,
       expiration,
       lastModified,
-      revoked: k.revocationSignatures.length > 0
+      revoked: k.revocationSignatures.length > 0,
+      usableForEncryption: await PgpKey.usable(armoredPublic, 'encrypt'),
+      usableForSigning: await PgpKey.usable(armoredPublic, 'sign')
     };
 
     if (k.isPrivate()) {
@@ -443,5 +396,11 @@ export class PgpKey {
         revocationCertificate: await readToEnd(certificate as MaybeStream<string>)
       };
     }
+  };
+
+  private static keyIsUsable = async (k: Key, type: KeyUsage, date?: Date | null): Promise<boolean> => {
+    return Boolean(await Catch.undefinedOnException(
+      type === 'encrypt' ? k.getEncryptionKey(undefined, date) : k.getSigningKey(undefined, date)
+    ));
   };
 }

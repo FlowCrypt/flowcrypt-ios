@@ -12,4 +12,12 @@ export class Catch {
     console.error(name, details); // core reports are not so interesting as of 2018
   };
 
+  public static undefinedOnException = async <T>(p: Promise<T>): Promise<T | undefined> => {
+    try {
+      return await p;
+    } catch (e) {
+      return undefined;
+    }
+  };
+
 }

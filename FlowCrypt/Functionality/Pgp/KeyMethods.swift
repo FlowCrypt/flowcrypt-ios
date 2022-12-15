@@ -49,15 +49,27 @@ final class KeyMethods: KeyMethodsType {
     }
 
     func chooseSenderKeys(for type: KeyUsage, keys: [Keypair], senderEmail: String) async throws -> [Keypair] {
-        let senderEmail = senderEmail.lowercased()
-        let parsed = try await parseKeys(armored: keys.map(type == .encryption ? \.public : \.private))
+        let armored = try keys.map(type == .encryption ? \.public : \.private)
+        let parsed = try await parseKeys(armored: armored)
+
         guard parsed.isNotEmpty else {
             throw KeypairError.noAccountKeysAvailable
         }
-        let usable = parsed.filter(\.isKeyUsable)
-        guard usable.isNotEmpty else {
-            throw MessageValidationError.noUsableAccountKeys
+
+        let usable = parsed.filter(\.isNotExpired).filter {
+            type == .encryption ? $0.usableForEncryption : $0.usableForSigning
         }
+
+        let senderEmail = senderEmail.lowercased()
+
+        guard usable.isNotEmpty else {
+            if type == .encryption {
+                throw MessageValidationError.noUsableAccountKeys
+            } else {
+                throw ComposeMessageError.noKeysFoundForSign(keys.count, senderEmail)
+            }
+        }
+
         if let byPrimaryUid = try filter(keys, usable, ({ $0.pgpUserEmailsLowercased.first == senderEmail })) {
             return byPrimaryUid // if any keys match by primary uid, use them
         }
