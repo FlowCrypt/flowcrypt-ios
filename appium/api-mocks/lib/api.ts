@@ -74,7 +74,7 @@ export class Api<REQ, RES> {
         if (e instanceof Error && e.message.toLowerCase().includes('intentional error')) {
           // don't log this, intentional error
         } else {
-          console.error('url:%s:%s', request.method, request.url, e);
+          console.error('url:%s:%s', request.method, request.url?.replace(/\n|\r/g, ""), e);
         }
       }
 
