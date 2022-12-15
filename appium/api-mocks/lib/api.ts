@@ -4,7 +4,6 @@ import * as https from 'https';
 import * as http from 'http';
 import { readFileSync } from 'fs';
 import { oauth } from './oauth';
-import { Xss } from 'api-mocks/platform/xss';
 
 export type HandlersDefinition = Handlers<{ query: { [k: string]: string; }; body?: unknown; }, unknown>;
 
@@ -75,7 +74,7 @@ export class Api<REQ, RES> {
         if (e instanceof Error && e.message.toLowerCase().includes('intentional error')) {
           // don't log this, intentional error
         } else {
-          console.error(Xss.escape(`url:${request.method}:${request.url}`), e);
+          console.error('url:%s:%s', request.method, request.url, e);
         }
       }
 
