@@ -125,7 +125,7 @@ export const getMockGoogleEndpoints = (
         const id = parseResourceId(req.url!);
         const data = await GoogleData.withInitializedData(acct, googleConfig);
         data.deleteMessages([id]);
-        return {}
+        return {};
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
@@ -192,7 +192,7 @@ export const getMockGoogleEndpoints = (
               labelIds: ['DRAFT'],
               threadId: draft.threadId
             }
-          }
+          };
         }
       } else if (isGet(req)) {
         const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
@@ -236,7 +236,7 @@ export const getMockGoogleEndpoints = (
             labelIds: ['DRAFT'],
             threadId: draft.threadId
           }
-        }
+        };
       } else if (isDelete(req)) {
         const id = parseResourceId(req.url!);
         const data = (await GoogleData.withInitializedData(acct, googleConfig));

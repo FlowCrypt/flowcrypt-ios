@@ -37,7 +37,7 @@ describe('UPDATE: ', () => {
     //remove current app version
     await driver.removeApp(bundleId);
     //reset keychain
-    await driver.execute('mobile: clearKeychains')
+    await driver.execute('mobile: clearKeychains');
     //install old version
     await driver.installApp(oldAppPath);
     //run old app

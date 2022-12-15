@@ -40,7 +40,7 @@ describe('SETUP: ', () => {
           flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN", "FORBID_STORING_PASS_PHRASE", "HIDE_ARMOR_META"],
           key_manager_url: CommonData.keyManagerURL.mockServer,
         }
-      }
+      };
       await AppiumHelper.restartApp(processArgs);
 
       // check if public key doesn't show armor meta

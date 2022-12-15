@@ -187,25 +187,21 @@
       data.text = data.text.join(" ");
       data.address = data.address.join(" ");
 
-      if (!data.address && isGroup) {
-        return [];
-      } else {
-        address = {
-          address: data.address || data.text || "",
-          name: data.text || data.address || ""
-        };
+      address = {
+        address: data.address || data.text || "",
+        name: data.text || data.address || ""
+      };
 
-        if (address.address === address.name) {
-          if ((address.address || "").match(/@/)) {
-            address.name = "";
-          } else {
-            address.address = "";
-          }
-
+      if (address.address === address.name) {
+        if ((address.address || "").match(/@/)) {
+          address.name = "";
+        } else {
+          address.address = "";
         }
 
-        addresses.push(address);
       }
+
+      addresses.push(address);
     }
 
     return addresses;

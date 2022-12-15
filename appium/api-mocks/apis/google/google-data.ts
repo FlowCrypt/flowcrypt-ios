@@ -72,7 +72,7 @@ export class GmailMsg {
         { name: "Content-Type", value: `${contentTypeHeader.value}; boundary="${contentTypeHeader.params.boundary}"` },
         { name: "Message-Id", value: messageIdHeader },
         { name: "Mime-Version", value: mimeVersionHeader }
-      ]
+      ];
 
       if (toHeader) {
         headers.push({ name: 'To', value: toHeader.text });
@@ -236,7 +236,7 @@ export class GoogleData {
         if (isValidMsg) {
           const raw = json.raw.raw;
 
-          if (!raw || existingMessages.includes(json.raw.id)) { continue }
+          if (!raw || existingMessages.includes(json.raw.id)) { continue; }
 
           const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
           const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, payload: json.full.payload, mimeMsg: mimeMsg, threadId: json.full.threadId });
