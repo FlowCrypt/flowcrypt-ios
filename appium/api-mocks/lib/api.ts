@@ -20,7 +20,7 @@ export enum Status {
 }
 
 export type RequestHandler<REQ, RES> = (parsedReqBody: REQ, req: http.IncomingMessage) => Promise<RES>;
-export type Handlers<REQ, RES> = { [request: string]: RequestHandler<REQ, RES> };
+export type Handlers<REQ, RES> = Map<string, RequestHandler<REQ, RES>>;
 
 export class Api<REQ, RES> {
 
@@ -121,7 +121,7 @@ export class Api<REQ, RES> {
   }
 
   private getHandlers = (): Handlers<REQ, RES> => {
-    let allHandlers: Handlers<REQ, RES> = {};
+    let allHandlers: Handlers<REQ, RES> = new Map();
     for (const handlerGetter of this.handlerGetters) {
       allHandlers = { ...allHandlers, ...handlerGetter() }
     }
@@ -157,19 +157,23 @@ export class Api<REQ, RES> {
       throw new Error('no url');
     }
     const handlers = this.getHandlers();
-    if (handlers[req.url]) { // direct handler name match
-      return handlers[req.url];
+
+    if (handlers.has(req.url)) {// direct handler name match
+      return handlers.get(req.url);
     }
+
     const url = req.url.split('?')[0];
-    if (handlers[url]) { // direct handler name match - ignoring query
-      return handlers[url];
+    if (handlers.has(url)) { // direct handler name match - ignoring query
+      return handlers.get(url);
     }
+
     // handler match where definition url ends with "/?" - incomplete path definition
     for (const handlerPathDefinition of Object.keys(handlers).filter(def => /\/\?$/.test(def))) {
       if (req.url.startsWith(handlerPathDefinition.replace(/\?$/, ''))) {
-        return handlers[handlerPathDefinition];
+        return handlers.get(handlerPathDefinition);
       }
     }
+
     return undefined;
   }
 
@@ -287,15 +291,15 @@ export class Api<REQ, RES> {
     return await new Promise(resolve => setTimeout(resolve, seconds * 1000));
   }
 
-  private parseUrlQuery = (url: string): { [k: string]: string } => {
+  private parseUrlQuery = (url: string): Map<string, string> => {
     const queryIndex = url.indexOf('?');
     const queryStr = !queryIndex ? url : url.substring(queryIndex + 1);
     const valuePairs = queryStr.split('&');
-    const params: { [k: string]: string } = {};
+    const params = new Map<string, string>();
     for (const valuePair of valuePairs) {
       if (valuePair) {
         const equalSignSeparatedParts = valuePair.split('=');
-        params[equalSignSeparatedParts.shift()!] = decodeURIComponent(equalSignSeparatedParts.join('='));
+        params.set(equalSignSeparatedParts.shift()!, decodeURIComponent(equalSignSeparatedParts.join('=')));
       }
     }
     return params;

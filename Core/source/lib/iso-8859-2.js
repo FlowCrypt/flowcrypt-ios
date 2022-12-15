@@ -17,8 +17,6 @@
 
   /*--------------------------------------------------------------------------*/
 
-  var object = {};
-  var hasOwnProperty = object.hasOwnProperty;
   var stringFromCharCode = String.fromCharCode;
 
   const INDEX_BY_CODE_POINT = new Map([
