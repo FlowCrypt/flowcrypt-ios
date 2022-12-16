@@ -30,7 +30,7 @@ import { MsgBlock } from './core/msg-block';
 const text = 'some\n汉\ntxt';
 const htmlContent = text.replace(/\n/g, '<br />');
 const textSpecialChars = '> special <tag> & other\n> second line';
-const htmlSpecialChars = Xss.escape(textSpecialChars).replace('\n', '<br />');
+const htmlSpecialChars = Xss.escape(textSpecialChars).replace(/\n/g, '<br />');
 const endpoints = new Endpoints();
 
 test('version', async t => {

@@ -74,7 +74,7 @@ export class Api<REQ, RES> {
         if (e instanceof Error && e.message.toLowerCase().includes('intentional error')) {
           // don't log this, intentional error
         } else {
-          console.error(`url:${request.method}:${request.url}`, e);
+          console.error('url:%s:%s', request.method, request.url?.replace(/\n|\r/g, ""), e);
         }
       }
 
@@ -157,16 +157,16 @@ export class Api<REQ, RES> {
       throw new Error('no url');
     }
     const handlers = this.getHandlers();
-    if (handlers[req.url]) { // direct handler name match
+    if (req.url in handlers) { // direct handler name match
       return handlers[req.url];
     }
     const url = req.url.split('?')[0];
-    if (handlers[url]) { // direct handler name match - ignoring query
+    if (url in handlers) { // direct handler name match - ignoring query
       return handlers[url];
     }
     // handler match where definition url ends with "/?" - incomplete path definition
     for (const handlerPathDefinition of Object.keys(handlers).filter(def => /\/\?$/.test(def))) {
-      if (req.url.startsWith(handlerPathDefinition.replace(/\?$/, ''))) {
+      if (req.url.startsWith(handlerPathDefinition.replace(/\?$/, '')) && handlerPathDefinition in handlers) {
         return handlers[handlerPathDefinition];
       }
     }
@@ -291,14 +291,14 @@ export class Api<REQ, RES> {
     const queryIndex = url.indexOf('?');
     const queryStr = !queryIndex ? url : url.substring(queryIndex + 1);
     const valuePairs = queryStr.split('&');
-    const params: { [k: string]: string } = {};
+    const params = new Map<string, string>();
     for (const valuePair of valuePairs) {
       if (valuePair) {
         const equalSignSeparatedParts = valuePair.split('=');
-        params[equalSignSeparatedParts.shift()!] = decodeURIComponent(equalSignSeparatedParts.join('='));
+        params.set(equalSignSeparatedParts.shift()!, decodeURIComponent(equalSignSeparatedParts.join('=')));
       }
     }
-    return params;
+    return Object.fromEntries(params);
   }
 
 }

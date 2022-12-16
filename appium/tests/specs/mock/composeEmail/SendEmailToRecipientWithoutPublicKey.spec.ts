@@ -41,7 +41,7 @@ describe('COMPOSE EMAIL: ', () => {
       servedPubkeys: {
         [MockUserList.e2e.email]: MockUserList.e2e.pub!
       }
-    }
+    };
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

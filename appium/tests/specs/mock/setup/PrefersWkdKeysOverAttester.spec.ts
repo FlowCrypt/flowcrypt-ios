@@ -38,7 +38,7 @@ describe('SETUP: ', () => {
         servedPubkeys: {
           [recipientPrefix]: recipient.pubOther!,
         }
-      }
+      };
 
       await AppiumHelper.restartApp(processArgs);
       await MailFolderScreen.checkInboxScreen();

@@ -90,37 +90,34 @@
    * @return {Object} Address object
    */
   addressparser._handleAddress = function (tokens) {
-    var token,
-      isGroup = false,
-      state = "text",
-      address,
-      addresses = [],
-      data = {
-        address: [],
-        comment: [],
-        group: [],
-        text: []
-      },
-      i, len;
+    var isGroup = false;
+    var state = 'text';
+    var address = void 0;
+    var addresses = [];
+    var data = {
+      address: [],
+      comment: [],
+      group: [],
+      text: []
 
-    // Filter out <addresses>, (comments) and regular text
-    for (i = 0, len = tokens.length; i < len; i++) {
-      token = tokens[i];
+      // Filter out <addresses>, (comments) and regular text
+    }; for (var i = 0, len = tokens.length; i < len; i++) {
+      var token = tokens[i];
 
-      if (token.type === "operator") {
+      if (token.type === 'operator') {
         switch (token.value) {
-          case "<":
-            state = "address";
+          case '<':
+            state = 'address';
             break;
-          case "(":
-            state = "comment";
+          case '(':
+            state = 'comment';
             break;
-          case ":":
-            state = "group";
+          case ':':
+            state = 'group';
             isGroup = true;
             break;
           default:
-            state = "text";
+            state = 'text';
         }
       } else {
         if (token.value) {
@@ -137,25 +134,25 @@
 
     if (isGroup) {
       // http://tools.ietf.org/html/rfc2822#appendix-A.1.3
-      data.text = data.text.join(" ");
+      data.text = data.text.join(' ');
       addresses.push({
-        name: data.text || (address && address.name),
-        group: data.group.length ? addressparser.parse(data.group.join(",")) : []
+        name: data.text || address && address.name,
+        group: data.group.length ? parse(data.group.join(',')) : []
       });
     } else {
       // If no address was found, try to detect one from regular text
       if (!data.address.length && data.text.length) {
-        for (i = data.text.length - 1; i >= 0; i--) {
-          if (data.text[i].match(/^[^@\s]+@[^@\s]+$/)) {
-            data.address = data.text.splice(i, 1);
+        for (var _i = data.text.length - 1; _i >= 0; _i--) {
+          if (data.text[_i].match(/^[^@\s]+@[^@\s]+$/)) {
+            data.address = data.text.splice(_i, 1);
             break;
           }
         }
 
-        var _regexHandler = function (address) {
+        var _regexHandler = function _regexHandler(address) {
           if (!data.address.length) {
             data.address = [address.trim()];
-            return " ";
+            return ' ';
           } else {
             return address;
           }
@@ -163,8 +160,8 @@
 
         // still no address
         if (!data.address.length) {
-          for (i = data.text.length - 1; i >= 0; i--) {
-            data.text[i] = data.text[i].replace(/\s*\b[^@\s]+@[^@\s]+\b\s*/, _regexHandler).trim();
+          for (var _i2 = data.text.length - 1; _i2 >= 0; _i2--) {
+            data.text[_i2] = data.text[_i2].replace(/\s*\b[^@\s]+@[^@\s]+\b\s*/, _regexHandler).trim();
             if (data.address.length) {
               break;
             }
@@ -178,34 +175,33 @@
         data.comment = [];
       }
 
-      // Keep only the first address occurence, push others to regular text
+      // Keep only the last address occurence, push others to regular text
       if (data.address.length > 1) {
-        data.text = data.text.concat(data.address.splice(1));
+        var _address = data.address.pop();
+        data.text = data.text.concat(data.address.map(function (fakeAddress) {
+          return '<' + fakeAddress + '>';
+        }));
+        data.address = [_address];
       }
 
       // Join values with spaces
-      data.text = data.text.join(" ");
-      data.address = data.address.join(" ");
+      data.text = data.text.join(' ');
+      data.address = data.address.join(' ');
 
-      if (!data.address && isGroup) {
-        return [];
-      } else {
-        address = {
-          address: data.address || data.text || "",
-          name: data.text || data.address || ""
-        };
+      address = {
+        address: data.address || data.text || '',
+        name: data.text || data.address || ''
+      };
 
-        if (address.address === address.name) {
-          if ((address.address || "").match(/@/)) {
-            address.name = "";
-          } else {
-            address.address = "";
-          }
-
+      if (address.address === address.name) {
+        if ((address.address || '').match(/@/)) {
+          address.name = '';
+        } else {
+          address.address = '';
         }
-
-        addresses.push(address);
       }
+
+      addresses.push(address);
     }
 
     return addresses;

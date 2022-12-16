@@ -36,7 +36,7 @@ describe('SETUP: ', () => {
       // stage 2 - keys get auto-updated
       mockApi.ekmConfig = {
         returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
-      }
+      };
       await AppiumHelper.restartApp(processArgs);
       await BaseScreen.checkToastMessage(CommonData.refreshingKeysFromEkm.updatedSuccessfully);
       await KeysScreen.openScreenFromSideMenu();

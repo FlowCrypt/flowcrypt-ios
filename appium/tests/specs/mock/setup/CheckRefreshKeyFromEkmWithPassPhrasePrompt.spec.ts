@@ -24,7 +24,7 @@ describe('SETUP: ', () => {
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = {
       returnKeys: [ekmKeySamples.key0.prv]
-    }
+    };
 
     await mockApi.withMockedApis(async () => {
       // stage 1 - setup
@@ -36,7 +36,7 @@ describe('SETUP: ', () => {
       // stage 2 - prompt appears / wrong pass phrase rejected / cancel
       mockApi.ekmConfig = {
         returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
-      }
+      };
       await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
       await RefreshKeyScreen.fillPassPhrase('wrong passphrase');
@@ -59,7 +59,7 @@ describe('SETUP: ', () => {
       // stage 4 - modified key gets updated
       mockApi.ekmConfig = {
         returnKeys: [ekmKeySamples.key0Updated.prv, ekmKeySamples.key1.prv]
-      }
+      };
       await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
       await RefreshKeyScreen.fillPassPhrase(passPhrase);
@@ -71,7 +71,7 @@ describe('SETUP: ', () => {
       // stage 5 - older version of key does not get updated
       mockApi.ekmConfig = {
         returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
-      }
+      };
       await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmKeySamples.key0Updated, ekmKeySamples.key1]);
