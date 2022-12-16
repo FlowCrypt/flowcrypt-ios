@@ -295,7 +295,9 @@ export class Api<REQ, RES> {
     for (const valuePair of valuePairs) {
       if (valuePair) {
         const equalSignSeparatedParts = valuePair.split('=');
-        params[equalSignSeparatedParts.shift()!] = decodeURIComponent(equalSignSeparatedParts.join('='));
+        const key = decodeURIComponent(equalSignSeparatedParts.shift()!);
+        const value = decodeURIComponent(equalSignSeparatedParts.join('='));
+        params[key] = value;
       }
     }
     return params;
