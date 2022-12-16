@@ -20,7 +20,7 @@ export enum Status {
 }
 
 export type RequestHandler<REQ, RES> = (parsedReqBody: REQ, req: http.IncomingMessage) => Promise<RES>;
-export type Handlers<REQ, RES> = Map<string, RequestHandler<REQ, RES>>;
+export type Handlers<REQ, RES> = { [request: string]: RequestHandler<REQ, RES> };
 
 export class Api<REQ, RES> {
 
@@ -121,7 +121,7 @@ export class Api<REQ, RES> {
   }
 
   private getHandlers = (): Handlers<REQ, RES> => {
-    let allHandlers: Handlers<REQ, RES> = new Map();
+    let allHandlers: Handlers<REQ, RES> = {};
     for (const handlerGetter of this.handlerGetters) {
       allHandlers = { ...allHandlers, ...handlerGetter() }
     }
@@ -157,23 +157,19 @@ export class Api<REQ, RES> {
       throw new Error('no url');
     }
     const handlers = this.getHandlers();
-
-    if (handlers.has(req.url)) {// direct handler name match
-      return handlers.get(req.url);
+    if (req.url in handlers) { // direct handler name match
+      return handlers[req.url];
     }
-
     const url = req.url.split('?')[0];
-    if (handlers.has(url)) { // direct handler name match - ignoring query
-      return handlers.get(url);
+    if (url in handlers) { // direct handler name match - ignoring query
+      return handlers[url];
     }
-
     // handler match where definition url ends with "/?" - incomplete path definition
     for (const handlerPathDefinition of Object.keys(handlers).filter(def => /\/\?$/.test(def))) {
-      if (req.url.startsWith(handlerPathDefinition.replace(/\?$/, ''))) {
-        return handlers.get(handlerPathDefinition);
+      if (req.url.startsWith(handlerPathDefinition.replace(/\?$/, '')) && handlerPathDefinition in handlers) {
+        return handlers[handlerPathDefinition];
       }
     }
-
     return undefined;
   }
 

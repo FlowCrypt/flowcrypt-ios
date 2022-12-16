@@ -67,7 +67,7 @@ export const getMockGoogleEndpoints = (
           }
         }
       })
-      return { results: results };
+      return { results };
     },
     '/v1/otherContacts:search': async (_, req) => {
       if (!isGet(req)) {
