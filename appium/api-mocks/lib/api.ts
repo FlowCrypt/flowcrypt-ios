@@ -287,15 +287,15 @@ export class Api<REQ, RES> {
     return await new Promise(resolve => setTimeout(resolve, seconds * 1000));
   }
 
-  private parseUrlQuery = (url: string): Map<string, string> => {
+  private parseUrlQuery = (url: string): { [k: string]: string } => {
     const queryIndex = url.indexOf('?');
     const queryStr = !queryIndex ? url : url.substring(queryIndex + 1);
     const valuePairs = queryStr.split('&');
-    const params = new Map<string, string>();
+    const params: { [k: string]: string } = {};
     for (const valuePair of valuePairs) {
       if (valuePair) {
         const equalSignSeparatedParts = valuePair.split('=');
-        params.set(equalSignSeparatedParts.shift()!, decodeURIComponent(equalSignSeparatedParts.join('=')));
+        params[equalSignSeparatedParts.shift()!] = decodeURIComponent(equalSignSeparatedParts.join('='));
       }
     }
     return params;
