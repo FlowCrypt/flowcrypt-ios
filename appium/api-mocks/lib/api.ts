@@ -291,16 +291,14 @@ export class Api<REQ, RES> {
     const queryIndex = url.indexOf('?');
     const queryStr = !queryIndex ? url : url.substring(queryIndex + 1);
     const valuePairs = queryStr.split('&');
-    const params: { [k: string]: string } = {};
+    const params = new Map<string, string>();
     for (const valuePair of valuePairs) {
       if (valuePair) {
         const equalSignSeparatedParts = valuePair.split('=');
-        const key = decodeURIComponent(equalSignSeparatedParts.shift()!);
-        const value = decodeURIComponent(equalSignSeparatedParts.join('='));
-        params[key] = value;
+        params.set(equalSignSeparatedParts.shift()!, decodeURIComponent(equalSignSeparatedParts.join('=')));
       }
     }
-    return params;
+    return Object.fromEntries(params);
   }
 
 }
