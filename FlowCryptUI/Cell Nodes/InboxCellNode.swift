@@ -72,7 +72,7 @@ public final class InboxCellNode: CellNode {
         emailNode.maximumNumberOfLines = 1
         dateNode.maximumNumberOfLines = 1
         emailNode.truncationMode = .byTruncatingTail
-        separatorNode.backgroundColor = .lightGray
+        separatorNode.backgroundColor = .separator
         accessibilityIdentifier = "aid-inbox-item"
     }
 
@@ -87,11 +87,11 @@ public final class InboxCellNode: CellNode {
         }()
 
         let nameLocationStack = ASStackLayoutSpec.vertical()
-        nameLocationStack.spacing = 6
+        nameLocationStack.spacing = 4
         nameLocationStack.style.flexShrink = 1.0
         nameLocationStack.style.flexGrow = 1.0
         separatorNode.style.flexGrow = 1.0
-        separatorNode.style.preferredSize.height = 1.0
+        separatorNode.style.preferredSize.height = 0.5
 
         if input.badgeText != nil {
             messageNode.style.flexShrink = 1.0
@@ -115,9 +115,9 @@ public final class InboxCellNode: CellNode {
 
         let finalSpec = ASStackLayoutSpec.vertical()
         finalSpec.children = [headerStackSpec, separatorNode]
-        finalSpec.spacing = 8
+        finalSpec.spacing = 10
         return ASInsetLayoutSpec(
-            insets: .deviceSpecificTextInsets(top: 8, bottom: 8),
+            insets: .deviceSpecificTextInsets(top: 12, bottom: 0),
             child: finalSpec
         )
     }

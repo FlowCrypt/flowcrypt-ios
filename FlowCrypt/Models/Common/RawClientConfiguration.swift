@@ -25,7 +25,7 @@ enum ClientConfigurationFlag: String, Codable {
     case unknown
 
     init(from decoder: Decoder) throws {
-        self = try ClientConfigurationFlag(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
+        self = try Self(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .unknown
     }
 }
 

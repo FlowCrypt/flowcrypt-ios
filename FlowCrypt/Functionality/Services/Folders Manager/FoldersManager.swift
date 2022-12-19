@@ -44,7 +44,6 @@ final class FoldersManager: FoldersManagerType {
         return localFolders
     }
 
-    @discardableResult
     private func getAndSaveFolders(for user: User) async throws -> [FolderViewModel] {
         // fetch all folders
         let fetchedFolders = try await remoteFoldersApiClient.fetchFolders()

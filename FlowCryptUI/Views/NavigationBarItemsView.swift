@@ -42,7 +42,7 @@ public final class NavigationBarItemsView: UIBarButtonItem {
         super.init()
 
         let buttons = input.enumerated()
-            .map { value -> UIButton in
+            .map { value in
                 UIButton(type: .system).then {
                     $0.tag = value.offset
                     $0.frame.size = Constants.buttonSize

@@ -46,36 +46,14 @@ extension ThreadDetailsViewController: MessageActionsHandler {
 
         guard messages.isNotEmpty else { return }
 
-        perform(action: .markAsRead(false))
+        perform(action: .markAsUnread)
     }
 
     func perform(action: MessageAction) {
         Task {
             do {
                 showSpinner()
-
-                switch action {
-                case .archive:
-                    try await threadOperationsApiClient.archive(
-                        messagesIds: inboxItem.messages.map(\.identifier),
-                        in: inboxItem.folderPath
-                    )
-                case let .markAsRead(isRead):
-                    guard !isRead else { return }
-                    Task { // Run mark as unread operation in another thread
-                        try await threadOperationsApiClient.markThreadAsUnread(
-                            id: inboxItem.threadId,
-                            folder: inboxItem.folderPath
-                        )
-                    }
-                case .moveToTrash:
-                    try await threadOperationsApiClient.moveThreadToTrash(id: inboxItem.threadId, labels: inboxItem.labels)
-                case .moveToInbox:
-                    try await threadOperationsApiClient.moveThreadToInbox(id: inboxItem.threadId)
-                case .permanentlyDelete:
-                    try await threadOperationsApiClient.delete(id: inboxItem.threadId)
-                }
-
+                try await messageActionsHelper.perform(action: action, with: inboxItem)
                 handle(action: action)
             } catch {
                 handle(action: action, error: error)

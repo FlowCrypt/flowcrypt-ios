@@ -10,8 +10,6 @@
 import Foundation
 import Security
 
-public typealias Padding = SecPadding
-
 public enum SwiftyRSA {
 
     static func base64String(pemEncoded pemString: String) throws -> String {

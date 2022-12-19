@@ -23,6 +23,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
 
     let messageHelper: MessageHelper
+    let messageActionsHelper: MessageActionsHelper
 
     private let filesManager: FilesManagerType
     lazy var attachmentManager = AttachmentManager(
@@ -67,6 +68,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
         self.threadOperationsApiClient = try mailProvider.threadOperationsApiClient
+        self.messageActionsHelper = MessageActionsHelper(threadOperationsApiClient: self.threadOperationsApiClient)
         self.messageOperationsApiClient = try mailProvider.messageOperationsApiClient
         self.trashFolderProvider = TrashFolderProvider(
             user: appContext.user,
@@ -453,7 +455,7 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         logger.logInfo("Back button. Messages are all read")
         onComplete(
-            .markAsRead(true),
+            .markAsRead,
             inboxItem
         )
         navigationController?.popViewController(animated: true)

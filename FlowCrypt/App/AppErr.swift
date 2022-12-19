@@ -29,7 +29,7 @@ enum AppErr: Error, CustomStringConvertible {
         case .wrongMailProvider: return "error_wrong_mail_provider".localized
         case let .general(message), let .user(message), let .unexpected(message):
             return message
-        default: return "" // TODO: - provide description for error if needed
+        default: return errorMessage
         }
     }
 }
