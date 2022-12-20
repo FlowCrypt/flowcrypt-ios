@@ -10,28 +10,30 @@ import UIKit
 
 class InboxViewControllerFactory {
     @MainActor
-    static func make(appContext: AppContextWithUser, viewModel: InboxViewModel) throws -> InboxViewController {
+    static func make(appContext: AppContextWithUser, viewModel: InboxViewModel) async throws -> InboxViewController {
+        let apiClient: InboxDataApiClient
+        let numberOfInboxItemsToLoad: Int
+
         switch appContext.authType {
         case .oAuthGmail:
             // Inject threads api client - Gmail API
-            let threadsApiClient = try appContext.getRequiredMailProvider().messagesThreadApiClient
-
-            return try InboxViewController(
-                appContext: appContext,
-                viewModel: viewModel,
-                numberOfInboxItemsToLoad: 20, // else timeouts happen
-                apiClient: InboxMessageThreadsProvider(apiClient: threadsApiClient)
+            apiClient = InboxMessageThreadsProvider(
+                apiClient: try appContext.getRequiredMailProvider().messagesThreadApiClient
             )
+            numberOfInboxItemsToLoad = 20 // else timeouts happen
         case .password:
             // Inject message list provider - IMAP
-            let apiClient = InboxMessageListProvider(apiClient: try appContext.getRequiredMailProvider().messagesListApiClient)
-
-            return try InboxViewController(
-                appContext: appContext,
-                viewModel: viewModel,
-                numberOfInboxItemsToLoad: 50, // safe to load 50, single call on IMAP
-                apiClient: apiClient
+            apiClient = InboxMessageListProvider(
+                apiClient: try appContext.getRequiredMailProvider().messagesListApiClient
             )
+            numberOfInboxItemsToLoad = 50 // safe to load 50, single call on IMAP
         }
+
+        return try await InboxViewController(
+            appContext: appContext,
+            viewModel: viewModel,
+            numberOfInboxItemsToLoad: numberOfInboxItemsToLoad,
+            apiClient: apiClient
+        )
     }
 }

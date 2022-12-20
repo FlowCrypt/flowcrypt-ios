@@ -105,23 +105,25 @@ final class InboxViewContainerController: TableNodeViewController {
         case let .error(error):
             handle(error: error)
         case let .loadedFolders(folders):
-            do {
-                let folder = folders
-                    .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
+            Task {
+                do {
+                    let folder = folders
+                        .first(where: { $0.path.caseInsensitiveCompare(inbox) == .orderedSame })
 
-                guard let inbox = folder else {
-                    state = .error(InboxViewControllerContainerError.internalError)
-                    return
+                    guard let inbox = folder else {
+                        state = .error(InboxViewControllerContainerError.internalError)
+                        return
+                    }
+                    let input = InboxViewModel(inbox)
+                    let inboxViewController = try await InboxViewControllerFactory.make(
+                        appContext: appContext,
+                        viewModel: input
+                    )
+                    navigationController?.setViewControllers([inboxViewController], animated: false)
+                    ekmVcHelper.refreshKeysFromEKMIfNeeded(in: inboxViewController)
+                } catch {
+                    showAlert(message: error.errorMessage)
                 }
-                let input = InboxViewModel(inbox)
-                let inboxViewController = try InboxViewControllerFactory.make(
-                    appContext: appContext,
-                    viewModel: input
-                )
-                navigationController?.setViewControllers([inboxViewController], animated: false)
-                ekmVcHelper.refreshKeysFromEKMIfNeeded(in: inboxViewController)
-            } catch {
-                showAlert(message: error.errorMessage)
             }
         }
     }

@@ -39,6 +39,15 @@ enum MessageAction: String, Equatable {
         }
     }
 
+    var actionStyle: UIContextualAction.Style {
+        switch self {
+        case .moveToTrash, .permanentlyDelete:
+            return .destructive
+        case .moveToInbox, .archive, .markAsRead, .markAsUnread:
+            return .normal
+        }
+    }
+
     var accessibilityIdentifier: String {
         switch self {
         case .moveToTrash, .permanentlyDelete:

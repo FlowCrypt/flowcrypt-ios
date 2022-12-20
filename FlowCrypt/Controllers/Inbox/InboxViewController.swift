@@ -38,7 +38,7 @@ class InboxViewController: ViewController {
 
     var path: String { viewModel.path }
 
-    // Search related varaibles
+    // Search related variables
     private var isSearch = false
     private var shouldBeginFetch = true
     var searchedExpression = ""
@@ -53,7 +53,7 @@ class InboxViewController: ViewController {
         apiClient: InboxDataApiClient,
         decorator: InboxViewDecorator = InboxViewDecorator(),
         isSearch: Bool = false
-    ) throws {
+    ) async throws {
         self.appContext = appContext
         self.viewModel = viewModel
         self.numberOfInboxItemsToLoad = numberOfInboxItemsToLoad
@@ -62,7 +62,9 @@ class InboxViewController: ViewController {
         let mailProvider = try appContext.getRequiredMailProvider()
         self.messageOperationsApiClient = try mailProvider.messageOperationsApiClient
         self.threadOperationsApiClient = try mailProvider.threadOperationsApiClient
-        self.messageActionsHelper = MessageActionsHelper(threadOperationsApiClient: threadOperationsApiClient)
+        self.messageActionsHelper = try await MessageActionsHelper(
+            appContext: appContext
+        )
         self.decorator = decorator
         self.tableNode = TableNode()
         self.isSearch = isSearch
@@ -378,16 +380,18 @@ extension InboxViewController {
     }
 
     private func handleSearchTap() {
-        do {
-            let viewController = try SearchViewController(
-                appContext: appContext,
-                viewModel: viewModel,
-                apiClient: inboxDataApiClient,
-                isSearch: true
-            )
-            navigationController?.pushViewController(viewController, animated: false)
-        } catch {
-            showAlert(message: error.errorMessage)
+        Task {
+            do {
+                let viewController = try await SearchViewController(
+                    appContext: appContext,
+                    viewModel: viewModel,
+                    apiClient: inboxDataApiClient,
+                    isSearch: true
+                )
+                navigationController?.pushViewController(viewController, animated: false)
+            } catch {
+                showAlert(message: error.errorMessage)
+            }
         }
     }
 

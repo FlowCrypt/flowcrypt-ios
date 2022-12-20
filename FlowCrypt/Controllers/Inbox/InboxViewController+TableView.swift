@@ -27,14 +27,10 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
     }
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
-        let inboxItemIndex = shouldShowEmptyView ? indexPath.row - 1 : indexPath.row
-
-        guard let inboxItem = inboxInput[safe: inboxItemIndex] else {
+        tableNode.deselectRow(at: indexPath, animated: true)
+        guard let inboxItem = inboxItem(at: indexPath) else {
             return
         }
-
-        tableNode.deselectRow(at: indexPath, animated: true)
-
         open(inboxItem: inboxItem, path: viewModel.path)
     }
 
@@ -62,17 +58,15 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                 node.accessibilityIdentifier = "aid-inbox-idle-node"
                 return node
             case .fetched, .refresh:
-                var rowNumber = indexPath.row
-                if self.shouldShowEmptyView {
-                    if indexPath.row == 0 {
-                        return self.emptyFolderNode()
-                    }
-                    rowNumber -= 1
+                if self.shouldShowEmptyView, indexPath.row == 0 {
+                    return self.emptyFolderNode()
                 }
-                guard let input = self.inboxInput[safe: rowNumber] else {
+
+                guard let inboxItem = self.inboxItem(at: indexPath) else {
                     return TextCellNode.loading
                 }
-                return InboxCellNode(input: .init(input))
+
+                return InboxCellNode(input: .init(inboxItem))
                     .then { $0.backgroundColor = .backgroundColor }
             case .fetching:
                 guard let input = self.inboxInput[safe: indexPath.row] else {
@@ -125,12 +119,14 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         _ tableView: UITableView,
         leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
-        let action = UIContextualAction(style: .normal, title: "Archive") { [weak self] _, _, completion in
-            self?.perform(action: .archive, at: indexPath)
-            completion(true)
+        guard let inboxItem = inboxItem(at: indexPath), !inboxItem.isDraft else {
+            return nil
         }
-        action.backgroundColor = .main
-        action.image = UIImage(systemName: "tray.and.arrow.down")
+
+        let action = tableSwipeAction(
+            for: inboxItem.isInbox ? .archive : .moveToInbox,
+            indexPath: indexPath
+        )
         return UISwipeActionsConfiguration(actions: [action])
     }
 
@@ -138,16 +134,18 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         _ tableView: UITableView,
         trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
     ) -> UISwipeActionsConfiguration? {
-        let action = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
-            self?.perform(action: .moveToTrash, at: indexPath)
-            completion(true)
+        guard let inboxItem = inboxItem(at: indexPath) else {
+            return nil
         }
-        action.image = UIImage(systemName: "trash")
+        let action = tableSwipeAction(
+            for: inboxItem.isTrash ? .permanentlyDelete : .moveToTrash,
+            indexPath: indexPath
+        )
         return UISwipeActionsConfiguration(actions: [action])
     }
 
     private func tableSwipeAction(for action: MessageAction, indexPath: IndexPath) -> UIContextualAction {
-        let swipeAction = UIContextualAction(style: .normal, title: nil) { [weak self] _, _, completion in
+        let swipeAction = UIContextualAction(style: action.actionStyle, title: nil) { [weak self] _, _, completion in
             self?.perform(action: action, at: indexPath)
             completion(true)
         }
@@ -336,6 +334,11 @@ extension InboxViewController {
     private func indexPathForMessage(at index: Int) -> IndexPath {
         let row = shouldShowEmptyView ? index + 1 : index
         return IndexPath(row: row, section: 0)
+    }
+
+    private func inboxItem(at indexPath: IndexPath) -> InboxItem? {
+        let index = shouldShowEmptyView ? indexPath.row - 1 : indexPath.row
+        return inboxInput[safe: index]
     }
 
     func perform(action: MessageAction, at indexPath: IndexPath) {

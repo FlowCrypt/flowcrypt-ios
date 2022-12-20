@@ -9,10 +9,21 @@
 import Foundation
 
 struct MessageActionsHelper {
+    private let trashFolderProvider: TrashFolderProviderType
     private let threadOperationsApiClient: MessagesThreadOperationsApiClient
 
-    init(threadOperationsApiClient: MessagesThreadOperationsApiClient) {
-        self.threadOperationsApiClient = threadOperationsApiClient
+    var trashFolderPath: String? {
+        get async throws {
+            try await trashFolderProvider.trashFolderPath
+        }
+    }
+
+    init(appContext: AppContextWithUser) async throws {
+        self.trashFolderProvider = await TrashFolderProvider(
+            user: appContext.user,
+            foldersManager: try appContext.getFoldersManager()
+        )
+        self.threadOperationsApiClient = try await appContext.getRequiredMailProvider().threadOperationsApiClient
     }
 
     func perform(action: MessageAction, with inboxItem: InboxItem) async throws {

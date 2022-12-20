@@ -13,7 +13,7 @@ import UIKit
 @MainActor
 protocol MessageActionsHandler: AnyObject {
     var currentFolderPath: String { get }
-    var trashFolderProvider: TrashFolderProviderType { get }
+    var trashFolderPath: String? { get async throws }
 
     func handleTrashTap()
     func handleInfoTap()
@@ -33,7 +33,7 @@ extension MessageActionsHandler where Self: UIViewController {
     func setupNavigationBar(inboxItem: InboxItem) {
         Task {
             do {
-                let path = try await trashFolderProvider.trashFolderPath
+                let path = try await trashFolderPath
                 setupNavigationBarItems(inboxItem: inboxItem, trashFolderPath: path)
             } catch {
                 // todo - handle?
@@ -101,7 +101,7 @@ extension MessageActionsHandler where Self: UIViewController {
     func handleTrashTap() {
         Task {
             do {
-                guard let trashPath = try await trashFolderProvider.trashFolderPath else {
+                guard let trashPath = try await trashFolderPath else {
                     return
                 }
 
