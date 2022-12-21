@@ -24,7 +24,7 @@ const SELECTORS = {
   UNREAD_BUTTON: '~aid-unread-button',
   DOWNLOAD_BUTTON: '~aid-download-button',
   CANCEL_BUTTON: '~aid-cancel-button',
-  CONFIRM_DELETING: '~Delete',
+  CONFIRM_DELETING: '~aid-confirm-button',
   SENDER_EMAIL: '~aid-message-sender-label',
   ENCRYPTION_BADGE: '~aid-encryption-badge',
   SIGNATURE_BADGE: '~aid-signature-badge',
