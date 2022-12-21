@@ -6,7 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 struct MessageActionsHelper {
     private let trashFolderProvider: TrashFolderProviderType
@@ -26,7 +26,9 @@ struct MessageActionsHelper {
         self.threadOperationsApiClient = try await appContext.getRequiredMailProvider().threadOperationsApiClient
     }
 
-    func perform(action: MessageAction, with inboxItem: InboxItem) async throws {
+    @MainActor
+    func perform(action: MessageAction, with inboxItem: InboxItem, viewController: UIViewController) async throws {
+        viewController.showSpinner()
         switch action {
         case .archive:
             try await threadOperationsApiClient.archive(
@@ -50,7 +52,27 @@ struct MessageActionsHelper {
         case .moveToInbox:
             try await threadOperationsApiClient.moveThreadToInbox(id: inboxItem.threadId)
         case .permanentlyDelete:
-            try await threadOperationsApiClient.delete(id: inboxItem.threadId)
+            try await withCheckedThrowingContinuation { continuation in
+                viewController.showAlertWithAction(
+                    title: "message_permanently_delete_title".localized,
+                    message: "message_permanently_delete".localized,
+                    actionButtonTitle: "delete".localized,
+                    actionStyle: .destructive,
+                    onAction: { _ in
+                        Task {
+                            do {
+                                try await self.threadOperationsApiClient.delete(id: inboxItem.threadId)
+                                continuation.resume()
+                            } catch {
+                                continuation.resume(throwing: error)
+                            }
+                        }
+                    },
+                    onCancel: { _ in
+                        continuation.resume(throwing: AppErr.silentAbort)
+                    }
+                )
+            }
         }
     }
 }

@@ -52,9 +52,14 @@ extension ThreadDetailsViewController: MessageActionsHandler {
     func perform(action: MessageAction) {
         Task {
             do {
-                showSpinner()
-                try await messageActionsHelper.perform(action: action, with: inboxItem)
+                try await messageActionsHelper.perform(
+                    action: action,
+                    with: inboxItem,
+                    viewController: self
+                )
                 handle(action: action)
+            } catch AppErr.silentAbort { // don't show any alert
+                return
             } catch {
                 handle(action: action, error: error)
             }

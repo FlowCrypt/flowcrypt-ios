@@ -342,15 +342,18 @@ extension InboxViewController {
     }
 
     func perform(action: MessageAction, at indexPath: IndexPath) {
-        let inboxIndex = shouldShowEmptyView ? indexPath.row - 1 : indexPath.row
-        guard let inboxItem = inboxInput[safe: inboxIndex] else {
-            return
-        }
+        guard let inboxItem = inboxItem(at: indexPath) else { return }
+
         Task {
             do {
-                showSpinner()
-                try await messageActionsHelper.perform(action: action, with: inboxItem)
+                try await messageActionsHelper.perform(
+                    action: action,
+                    with: inboxItem,
+                    viewController: self
+                )
                 handleOperation(inboxItem: inboxItem, action: action)
+            } catch AppErr.silentAbort { // don't show any alert
+                return
             } catch {
                 handleOperation(inboxItem: inboxItem, action: action, error: error)
             }

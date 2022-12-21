@@ -105,28 +105,14 @@ extension MessageActionsHandler where Self: UIViewController {
                     return
                 }
 
-                deleteMessage(trashPath: trashPath)
+                if currentFolderPath.caseInsensitiveCompare(trashPath) != .orderedSame {
+                    moveToTrash(with: trashPath)
+                } else {
+                    permanentlyDelete()
+                }
             } catch {
                 showToast(error.errorMessage)
             }
         }
-    }
-
-    private func deleteMessage(trashPath: String) {
-        guard currentFolderPath.caseInsensitiveCompare(trashPath) != .orderedSame else {
-            showAlertWithAction(
-                title: "message_permanently_delete_title".localized,
-                message: "message_permanently_delete".localized,
-                actionButtonTitle: "delete".localized,
-                actionStyle: .destructive,
-                onAction: { [weak self] _ in
-                    self?.permanentlyDelete()
-                }
-            )
-
-            return
-        }
-
-        moveToTrash(with: trashPath)
     }
 }
