@@ -93,6 +93,7 @@ describe('COMPOSE EMAIL: ', () => {
       await browser.pause(500);
       await EmailScreen.clickBackButton();
       await MailFolderScreen.checkDraftsScreen();
+      await MailFolderScreen.refreshMailList();
       await MailFolderScreen.checkIfFolderIsEmpty();
 
       // compose 2 new drafts and then delete them both
@@ -118,6 +119,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.confirmDelete();
 
       await MailFolderScreen.checkDraftsScreen();
+      await MailFolderScreen.refreshMailList();
       await MailFolderScreen.checkIfFolderIsEmpty();
 
       // compose draft, send it and check if sent message added to 'sent' folder
@@ -128,6 +130,7 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.clickOnEmailBySubject(draftSubject1);
       await NewMessageScreen.clickSendButton();
       await MailFolderScreen.checkDraftsScreen();
+      await MailFolderScreen.refreshMailList();
       await MailFolderScreen.checkIfFolderIsEmpty();
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickSentButton();
