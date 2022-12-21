@@ -22,9 +22,9 @@ enum MessageAction: String, Equatable {
         case .archive:
             return "tray.and.arrow.down"
         case .markAsUnread:
-            return "envelope.open"
-        case .markAsRead:
             return "envelope"
+        case .markAsRead:
+            return "envelope.open"
         }
     }
 
