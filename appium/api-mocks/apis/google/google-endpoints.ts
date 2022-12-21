@@ -240,6 +240,7 @@ export const getMockGoogleEndpoints = (
       } else if (isDelete(req)) {
         const id = parseResourceId(req.url!);
         const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        await browser.pause(2000); // wait some time because autosave and delete mock draft api requests might be interfering
         data.deleteDraft(id);
         return {};
       }
