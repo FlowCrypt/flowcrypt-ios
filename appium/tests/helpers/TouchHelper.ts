@@ -119,5 +119,37 @@ class TouchHelper {
     }
     throw new Error(`Element ${JSON.stringify(element.selector)} not displayed after scroll`);
   }
+
+  static swipeElement = async (element: WebdriverIO.Element, side: 'leading' | 'trailing') => {
+    const location = await element.getLocation();
+    const size = await element.getSize();
+
+    const midX = location.x + size.width / 2;
+    const midY = location.y + size.height / 2;
+
+    const targetX = side === 'leading' ? midX + 100 : midX - 100;
+
+    await driver.touchPerform([
+      { action: 'press', options: { x: midX, y: midY } },
+      { action: 'wait', options: { ms: 100 } },
+      { action: 'moveTo', options: { x: targetX, y: midY } },
+      { action: 'release', options: {} },
+    ]);
+  }
+
+  static tapSwipeAction = async (element: WebdriverIO.Element, side: 'leading' | 'trailing') => {
+    const window = await driver.getWindowSize();
+    const location = await element.getLocation();
+    const size = await element.getSize();
+
+    const x = side === 'leading' ? 0 : window.width - 50;
+    const y = location.y + size.height / 2;
+
+    await driver.touchPerform([
+      { action: 'press', options: { x, y } },
+      { action: 'wait', options: { ms: 100 } },
+      { action: 'release', options: {} },
+    ]);
+  }
 }
 export default TouchHelper;
