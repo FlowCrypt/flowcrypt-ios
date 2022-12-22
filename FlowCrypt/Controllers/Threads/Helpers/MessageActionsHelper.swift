@@ -60,6 +60,8 @@ struct MessageActionsHelper {
                     actionStyle: .destructive,
                     onAction: { _ in
                         Task {
+                            viewController.showSpinner()
+
                             do {
                                 try await self.threadOperationsApiClient.delete(id: inboxItem.threadId)
                                 continuation.resume()
