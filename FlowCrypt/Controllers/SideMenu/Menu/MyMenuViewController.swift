@@ -283,19 +283,24 @@ extension MyMenuViewController {
     private func handleFolderTap(with folder: FolderViewModel) {
         switch folder.itemType {
         case .folder:
-            do {
-                let input = InboxViewModel(folder)
-                let viewController = try InboxViewControllerFactory.make(appContext: appContext, viewModel: input)
+            Task {
+                do {
+                    let input = InboxViewModel(folder)
+                    let viewController = try await InboxViewControllerFactory.make(
+                        appContext: appContext,
+                        viewModel: input
+                    )
 
-                if let topController = topController(controllerType: InboxViewController.self),
-                   topController.path == folder.path {
-                    sideMenuController()?.sideMenu?.hideSideMenu()
-                    viewController.startRefreshing()
-                    return
+                    if let topController = topController(controllerType: InboxViewController.self),
+                       topController.path == folder.path {
+                        sideMenuController()?.sideMenu?.hideSideMenu()
+                        viewController.startRefreshing()
+                        return
+                    }
+                    sideMenuController()?.setContentViewController(viewController)
+                } catch {
+                    showAlert(message: error.errorMessage)
                 }
-                sideMenuController()?.setContentViewController(viewController)
-            } catch {
-                showAlert(message: error.errorMessage)
             }
         case .settings:
             if topController(controllerType: SettingsViewController.self) != nil {
@@ -304,7 +309,9 @@ extension MyMenuViewController {
             }
             Task {
                 do {
-                    sideMenuController()?.setContentViewController(try await SettingsViewController(appContext: appContext))
+                    sideMenuController()?.setContentViewController(
+                        try await SettingsViewController(appContext: appContext)
+                    )
                 } catch {
                     showAlert(message: error.errorMessage)
                 }

@@ -21,10 +21,10 @@ const SELECTORS = {
   ARCHIVE_BUTTON: '~aid-archive-button',
   MOVE_TO_INBOX_BUTTON: '~aid-move-to-inbox-button',
   DELETE_BUTTON: '~aid-delete-button',
-  READ_BUTTON: '~aid-read-button',
+  UNREAD_BUTTON: '~aid-unread-button',
   DOWNLOAD_BUTTON: '~aid-download-button',
   CANCEL_BUTTON: '~aid-cancel-button',
-  CONFIRM_DELETING: '~Delete',
+  CONFIRM_DELETING: '~aid-confirm-button',
   SENDER_EMAIL: '~aid-message-sender-label',
   ENCRYPTION_BADGE: '~aid-encryption-badge',
   SIGNATURE_BADGE: '~aid-signature-badge',
@@ -109,8 +109,8 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.DELETE_BUTTON)
   }
 
-  get readButton() {
-    return $(SELECTORS.READ_BUTTON);
+  get unreadButton() {
+    return $(SELECTORS.UNREAD_BUTTON);
   }
 
   get confirmDeletingButton() {
@@ -284,14 +284,14 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.helpButton);
     await ElementHelper.waitElementVisible(await this.archiveButton);
     await ElementHelper.waitElementVisible(await this.deleteButton);
-    await ElementHelper.waitElementVisible(await this.readButton);
+    await ElementHelper.waitElementVisible(await this.unreadButton);
   }
 
   checkArchivedEmailActions = async () => {
     await ElementHelper.waitElementVisible(await this.helpButton);
     await ElementHelper.waitElementVisible(await this.moveToInboxButton);
     await ElementHelper.waitElementVisible(await this.deleteButton);
-    await ElementHelper.waitElementVisible(await this.readButton);
+    await ElementHelper.waitElementVisible(await this.unreadButton);
   }
 
   checkRecipientsButton = async (value: string) => {

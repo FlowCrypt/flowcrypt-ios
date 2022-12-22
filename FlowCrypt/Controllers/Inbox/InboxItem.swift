@@ -42,6 +42,10 @@ extension InboxItem {
         labels.contains(.inbox)
     }
 
+    var isTrash: Bool {
+        labels.contains(.trash)
+    }
+
     var isDraft: Bool {
         messages.count == 1 && labels.contains(.draft)
     }

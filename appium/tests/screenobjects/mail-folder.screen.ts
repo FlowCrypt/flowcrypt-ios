@@ -78,6 +78,10 @@ class MailFolderScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.helpBtn);
   }
 
+  checkEmailIsDisplayed = async (subject: string) => {
+    await this.checkEmailIsNotDisplayed(subject, false);
+  }
+
   checkEmailIsNotDisplayed = async (subject: string, reverse = true) => {
     await (await $(`~${subject}`)).waitForDisplayed({ reverse });
   }
@@ -121,6 +125,13 @@ class MailFolderScreen extends BaseScreen {
     const elem = $(`~${subject}`);
     await TouchHelper.scrollDownToElement(await elem);
   };
+
+  tapSwipeAction = async (subject: string, side: 'leading' | 'trailing') => {
+    const el = await $(`~${subject}`);
+    await ElementHelper.waitElementVisible(el);
+    await TouchHelper.swipeElement(el, side);
+    await TouchHelper.tapSwipeAction(el, side);
+  }
 
   checkEmailCount = async (expectedCount: number) => {
     expect(await this.getEmailCount()).toEqual(expectedCount);

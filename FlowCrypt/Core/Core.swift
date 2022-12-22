@@ -308,3 +308,15 @@ class CoreMessageHandler: NSObject, WKScriptMessageHandler {
         }
     }
 }
+
+private extension Encodable {
+    func toJsonEncodedDict() throws -> [String: Any] {
+        let data = try self.toJsonData()
+
+        guard let dictionary = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+            throw AppErr.general("Could not produce JSON encoded dictionary")
+        }
+
+        return dictionary
+    }
+}

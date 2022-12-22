@@ -102,7 +102,6 @@ class ElementHelper {
     }, {
       timeout: timeout,
       timeoutMsg: `expected text within ${timeout}ms to be "${value}" but got last value "${await element.getValue()}"`
-
     });
   }
 

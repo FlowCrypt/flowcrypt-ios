@@ -23,6 +23,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     }
 
     let messageHelper: MessageHelper
+    let messageActionsHelper: MessageActionsHelper
 
     private let filesManager: FilesManagerType
     lazy var attachmentManager = AttachmentManager(
@@ -36,7 +37,12 @@ final class ThreadDetailsViewController: TableNodeViewController {
     var inboxItem: InboxItem
     var input: [ThreadDetailsViewController.Input]
 
-    let trashFolderProvider: TrashFolderProviderType
+    var trashFolderPath: String? {
+        get async throws {
+            try await messageActionsHelper.trashFolderPath
+        }
+    }
+
     var currentFolderPath: String { inboxItem.folderPath }
 
     let onComposeMessageAction: ((ComposeMessageAction) -> Void)?
@@ -67,14 +73,10 @@ final class ThreadDetailsViewController: TableNodeViewController {
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
         self.threadOperationsApiClient = try mailProvider.threadOperationsApiClient
-        self.messageOperationsApiClient = try mailProvider.messageOperationsApiClient
-        self.trashFolderProvider = TrashFolderProvider(
-            user: appContext.user,
-            foldersManager: FoldersManager(
-                encryptedStorage: appContext.encryptedStorage,
-                remoteFoldersApiClient: try mailProvider.remoteFoldersApiClient
-            )
+        self.messageActionsHelper = try await MessageActionsHelper(
+            appContext: appContext
         )
+        self.messageOperationsApiClient = try mailProvider.messageOperationsApiClient
         self.filesManager = filesManager
         self.inboxItem = inboxItem
         self.onComposeMessageAction = onComposeMessageAction
@@ -453,7 +455,7 @@ extension ThreadDetailsViewController: NavigationChildController {
     func handleBackButtonTap() {
         logger.logInfo("Back button. Messages are all read")
         onComplete(
-            .markAsRead(true),
+            .markAsRead,
             inboxItem
         )
         navigationController?.popViewController(animated: true)
