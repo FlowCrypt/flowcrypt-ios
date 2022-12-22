@@ -87,7 +87,7 @@ public extension UIViewController {
         message: String?,
         cancelButtonTitle: String = "cancel".localized,
         actionButtonTitle: String,
-        actionAccessibilityIdentifier: String? = nil,
+        actionAccessibilityIdentifier: String? = "aid-confirm-button",
         actionStyle: UIAlertAction.Style = .default,
         onAction: ((UIAlertAction) -> Void)?,
         onCancel: ((UIAlertAction) -> Void)? = nil
@@ -140,7 +140,6 @@ public extension UIViewController {
             title: "warning".localized,
             message: message,
             actionButtonTitle: "confirm".localized,
-            actionAccessibilityIdentifier: "aid-confirm-button",
             onAction: onConfirm
         )
     }

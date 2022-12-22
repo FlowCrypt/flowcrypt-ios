@@ -57,7 +57,6 @@ struct MessageActionsHelper {
                     title: "message_permanently_delete_title".localized,
                     message: "message_permanently_delete".localized,
                     actionButtonTitle: "delete".localized,
-                    actionAccessibilityIdentifier: "aid-confirm-button",
                     actionStyle: .destructive,
                     onAction: { _ in
                         Task {

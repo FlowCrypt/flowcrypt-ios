@@ -21,7 +21,7 @@ const SELECTORS = {
   DELETE_BUTTON: '~aid-compose-delete',
   SEND_BUTTON: '~aid-compose-send',
   SEND_PLAIN_MESSAGE_BUTTON: '~aid-compose-send-plain',
-  CONFIRM_DELETING: '~Delete',
+  CONFIRM_DELETING: '~aid-confirm-button',
   MESSAGE_PASSPHRASE_TEXTFIELD: '~aid-message-passphrase-textfield',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
