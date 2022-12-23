@@ -161,6 +161,7 @@ extension ComposeViewController {
         }
         .then { textNode in
             DispatchQueue.main.async {
+                textNode.textView.scrollEnabled = false
                 if !mutableString.string.isEmpty {
                     textNode.textView.attributedText = mutableString
                 }
