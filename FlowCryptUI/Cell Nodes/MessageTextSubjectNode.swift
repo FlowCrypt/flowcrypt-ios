@@ -66,6 +66,7 @@ public final class MessageTextSubjectNode: CellNode {
         DispatchQueue.main.async {
             node.textView.isSelectable = true
             node.textView.isEditable = false
+            node.textView.dataDetectorTypes = .all
         }
     }
 
