@@ -30,7 +30,7 @@ class GmailService: MailServiceProvider {
             self?.progressHandler?(progress)
         }
 
-        guard let authorization = googleAuthManager.authorizationFor(email: currentUserEmail) else {
+        guard let authorization = googleAuthManager.authorization(for: currentUserEmail) else {
             logger.logWarning("authorization for current user is nil")
             return service
         }

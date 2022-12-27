@@ -39,7 +39,7 @@ enum GoogleAuthManagerError: Error, CustomStringConvertible {
 }
 
 protocol GoogleAuthManagerType {
-    func authorizationFor(email: String?) -> GTMAppAuthFetcherAuthorization?
+    func authorization(for email: String?) -> GTMAppAuthFetcherAuthorization?
 }
 
 // this is here so that we don't have to include AppDelegate in test target
@@ -65,11 +65,11 @@ final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
 
     lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
-    private func idTokenFor(email: String?) -> String? {
-        return authorizationFor(email: email)?.authState.lastTokenResponse?.idToken
+    private func idToken(for email: String?) -> String? {
+        return authorization(for: email)?.authState.lastTokenResponse?.idToken
     }
 
-    func authorizationFor(email: String?) -> GTMAppAuthFetcherAuthorization? {
+    func authorization(for email: String?) -> GTMAppAuthFetcherAuthorization? {
         guard let email else {
             return nil
         }
@@ -251,7 +251,7 @@ extension GoogleAuthManager {
 // MARK: - Tokens
 extension GoogleAuthManager {
     func getCachedOrRefreshedIdToken(minExpiryDuration: Double = 0, email: String?) async throws -> String {
-        guard let idToken = idTokenFor(email: email) else { throw (IdTokenError.missingToken) }
+        guard let idToken = idToken(for: email) else { throw (IdTokenError.missingToken) }
 
         let decodedToken = try decode(idToken: idToken)
 
@@ -284,7 +284,7 @@ extension GoogleAuthManager {
 
     private func performTokenRefresh(email: String?) async throws -> (accessToken: String, idToken: String) {
         return try await withCheckedThrowingContinuation { continuation in
-            let authorization = authorizationFor(email: email)
+            let authorization = authorization(for: email)
             authorization?.authState.setNeedsTokenRefresh()
             authorization?.authState.performAction { accessToken, idToken, error in
                 guard let accessToken, let idToken else {

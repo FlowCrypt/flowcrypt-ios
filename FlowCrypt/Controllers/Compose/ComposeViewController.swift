@@ -116,7 +116,7 @@ final class ComposeViewController: TableNodeViewController {
         self.googleAuthManager = GoogleAuthManager(
             appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
         )
-        self.contactsProvider = GoogleContactsProvider(authorization: self.googleAuthManager.authorizationFor(email: appContext.user.email))
+        self.contactsProvider = GoogleContactsProvider(authorization: self.googleAuthManager.authorization(for: appContext.user.email))
 
         let draftsApiClient = try appContext.getRequiredMailProvider().draftsApiClient
 

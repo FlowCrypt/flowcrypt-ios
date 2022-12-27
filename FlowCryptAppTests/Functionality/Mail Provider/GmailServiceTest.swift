@@ -44,7 +44,7 @@ class GmailServiceTest: XCTestCase {
 
 // MARK: - Mock
 class GoogleAuthManagerMock: GoogleAuthManagerType {
-    func authorizationFor(email: String?) -> GTMAppAuthFetcherAuthorization? {
+    func authorization(for email: String?) -> GTMAppAuthFetcherAuthorization? {
         return nil
     }
 
