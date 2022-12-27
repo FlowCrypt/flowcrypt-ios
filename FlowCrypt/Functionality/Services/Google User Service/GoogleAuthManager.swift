@@ -64,10 +64,6 @@ final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
     }
 
     lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
-//
-//    private var tokenResponse: OIDTokenResponse? {
-//        authorization?.authState.lastTokenResponse
-//    }
 
     private func idTokenFor(email: String?) -> String? {
         return authorizationFor(email: email)?.authState.lastTokenResponse?.idToken
@@ -302,7 +298,7 @@ extension GoogleAuthManager {
     }
 }
 
-// MARK: - OIDAuthStateChangeDelegatec
+// MARK: - OIDAuthStateChangeDelegate
 extension GoogleAuthManager: OIDAuthStateChangeDelegate {
     func didChange(_ state: OIDAuthState) {
         guard let currentUserEmail else {
