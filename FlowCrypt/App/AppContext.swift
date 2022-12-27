@@ -57,7 +57,6 @@ class AppContext {
             sessionManager: try SessionManager(
                 encryptedStorage: encryptedStorage,
                 googleAuthManager: GoogleAuthManager(
-                    currentUserEmail: try encryptedStorage.activeUser?.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
             ),

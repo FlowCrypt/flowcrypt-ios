@@ -11,6 +11,7 @@ import GoogleAPIClientForREST_Gmail
 
 class GmailService: MailServiceProvider {
 
+    let currentUserEmail: String
     let mailServiceProviderType = MailServiceProviderType.gmail
     let googleAuthManager: GoogleAuthManagerType
     let backupSearchQueryProvider: GmailBackupSearchQueryProviderType
@@ -23,16 +24,18 @@ class GmailService: MailServiceProvider {
             service.rootURLString = GeneralConstants.Mock.backendUrl + "/"
         }
 
-        if googleAuthManager.authorization == nil {
-            logger.logWarning("authorization for current user is nil")
-        }
-
         service.uploadProgressBlock = { [weak self] _, uploaded, total in
             guard total > 0 else { return }
             let progress = Float(uploaded) / Float(total)
             self?.progressHandler?(progress)
         }
-        service.authorizer = googleAuthManager.authorization
+
+        guard let authorization = googleAuthManager.authorizationFor(email: currentUserEmail) else {
+            logger.logWarning("authorization for current user is nil")
+            return service
+        }
+
+        service.authorizer = authorization
         return service
     }
 
@@ -43,6 +46,7 @@ class GmailService: MailServiceProvider {
         googleAuthManager: GoogleAuthManagerType,
         backupSearchQueryProvider: GmailBackupSearchQueryProviderType = GmailBackupSearchQueryProvider()
     ) {
+        self.currentUserEmail = currentUserEmail
         self.googleAuthManager = googleAuthManager
         self.backupSearchQueryProvider = backupSearchQueryProvider
     }

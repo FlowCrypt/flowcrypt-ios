@@ -114,10 +114,9 @@ final class ComposeViewController: TableNodeViewController {
             encryptedStorage: appContext.encryptedStorage
         )
         self.googleAuthManager = GoogleAuthManager(
-            currentUserEmail: appContext.user.email,
             appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
         )
-        self.contactsProvider = GoogleContactsProvider(authorization: self.googleAuthManager.authorization)
+        self.contactsProvider = GoogleContactsProvider(authorization: self.googleAuthManager.authorizationFor(email: appContext.user.email))
 
         let draftsApiClient = try appContext.getRequiredMailProvider().draftsApiClient
 

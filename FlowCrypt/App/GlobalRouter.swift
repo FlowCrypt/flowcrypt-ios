@@ -94,7 +94,6 @@ extension GlobalRouter: GlobalRouterType {
                 viewController.showSpinner()
 
                 let googleAuthManager = GoogleAuthManager(
-                    currentUserEmail: email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
                 let session = try await googleAuthManager.signIn(
@@ -136,7 +135,6 @@ extension GlobalRouter: GlobalRouterType {
         case let .gmailLogin(viewController):
             do {
                 let googleAuthManager = GoogleAuthManager(
-                    currentUserEmail: appContext.user.email,
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
                 )
                 let session = try await googleAuthManager.signIn(

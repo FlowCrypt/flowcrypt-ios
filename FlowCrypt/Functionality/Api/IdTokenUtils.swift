@@ -16,10 +16,9 @@ class IdTokenUtils {
         }
 
         let googleAuthManager = GoogleAuthManager(
-            currentUserEmail: userEmail ?? user?.email,
             appDelegateGoogleSessionContainer: nil
         )
 
-        return try await googleAuthManager.getCachedOrRefreshedIdToken()
+        return try await googleAuthManager.getCachedOrRefreshedIdToken(email: userEmail)
     }
 }

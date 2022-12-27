@@ -18,7 +18,7 @@ extension ComposeViewController {
                     for: .gmailLogin(self),
                     appContext: appContext
                 )
-                contactsProvider.authorization = googleAuthManager.authorization
+                contactsProvider.authorization = googleAuthManager.authorizationFor(email: appContext.user.email)
                 shouldEvaluateRecipientInput = true
                 reload(sections: [.contacts])
             } catch {

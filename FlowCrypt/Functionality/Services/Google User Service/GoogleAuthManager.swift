@@ -39,7 +39,7 @@ enum GoogleAuthManagerError: Error, CustomStringConvertible {
 }
 
 protocol GoogleAuthManagerType {
-    var authorization: GTMAppAuthFetcherAuthorization? { get }
+    func authorizationFor(email: String?) -> GTMAppAuthFetcherAuthorization?
 }
 
 // this is here so that we don't have to include AppDelegate in test target
@@ -47,19 +47,15 @@ protocol AppDelegateGoogleSessionContainer {
     var googleAuthSession: OIDExternalUserAgentSession? { get set }
 }
 
-// todo - should be refactored to not require currentUserEmail
 final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
 
-    @available(*, deprecated, message: "This variable will be removed in the near future.")
-    let currentUserEmail: String?
+    var currentUserEmail: String?
     var appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer?
 
     init(
-        currentUserEmail: String?,
         appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer? = nil
     ) {
         self.appDelegateGoogleSessionContainer = appDelegateGoogleSessionContainer
-        self.currentUserEmail = currentUserEmail
         super.init()
     }
 
@@ -68,17 +64,21 @@ final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
     }
 
     lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
+//
+//    private var tokenResponse: OIDTokenResponse? {
+//        authorization?.authState.lastTokenResponse
+//    }
 
-    private var tokenResponse: OIDTokenResponse? {
-        authorization?.authState.lastTokenResponse
+    private func idTokenFor(email: String?) -> String? {
+        return authorizationFor(email: email)?.authState.lastTokenResponse?.idToken
     }
 
-    private var idToken: String? {
-        tokenResponse?.idToken
-    }
-
-    var authorization: GTMAppAuthFetcherAuthorization? {
-        getAuthorizationForCurrentUser()
+    func authorizationFor(email: String?) -> GTMAppAuthFetcherAuthorization? {
+        guard let email else {
+            return nil
+        }
+        // get authorization from keychain
+        return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
     }
 
     private var authorizationConfiguration: OIDServiceConfiguration {
@@ -216,18 +216,10 @@ extension GoogleAuthManager {
 
     // save auth session to keychain
     private func saveAuth(state: OIDAuthState, for email: String) {
+        currentUserEmail = email // Save email variable so that OIDAuthStateChangeDelegate can access
         state.stateChangeDelegate = self
         let authorization = GTMAppAuthFetcherAuthorization(authState: state)
         GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.index + email)
-    }
-
-    private func getAuthorizationForCurrentUser() -> GTMAppAuthFetcherAuthorization? {
-        // get active user
-        guard let currentUserEmail else {
-            return nil
-        }
-        // get authorization from keychain
-        return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + currentUserEmail)
     }
 
     private func fetchGoogleUser(
@@ -262,13 +254,13 @@ extension GoogleAuthManager {
 
 // MARK: - Tokens
 extension GoogleAuthManager {
-    func getCachedOrRefreshedIdToken(minExpiryDuration: Double = 0) async throws -> String {
-        guard let idToken else { throw (IdTokenError.missingToken) }
+    func getCachedOrRefreshedIdToken(minExpiryDuration: Double = 0, email: String?) async throws -> String {
+        guard let idToken = idTokenFor(email: email) else { throw (IdTokenError.missingToken) }
 
         let decodedToken = try decode(idToken: idToken)
 
         guard decodedToken.expiryDuration > minExpiryDuration else {
-            let (_, updatedToken) = try await performTokenRefresh()
+            let (_, updatedToken) = try await performTokenRefresh(email: email)
             return updatedToken
         }
 
@@ -294,8 +286,9 @@ extension GoogleAuthManager {
         return try JSONDecoder().decode(IdToken.self, from: decodedData)
     }
 
-    private func performTokenRefresh() async throws -> (accessToken: String, idToken: String) {
+    private func performTokenRefresh(email: String?) async throws -> (accessToken: String, idToken: String) {
         return try await withCheckedThrowingContinuation { continuation in
+            let authorization = authorizationFor(email: email)
             authorization?.authState.setNeedsTokenRefresh()
             authorization?.authState.performAction { accessToken, idToken, error in
                 guard let accessToken, let idToken else {
@@ -309,7 +302,7 @@ extension GoogleAuthManager {
     }
 }
 
-// MARK: - OIDAuthStateChangeDelegate
+// MARK: - OIDAuthStateChangeDelegatec
 extension GoogleAuthManager: OIDAuthStateChangeDelegate {
     func didChange(_ state: OIDAuthState) {
         guard let currentUserEmail else {
