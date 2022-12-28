@@ -36,7 +36,7 @@ protocol SessionManagerType {
     func switchActiveSessionFor(user: User) throws -> SessionType?
     func startActiveSessionForNextUser() throws -> SessionType?
     func cleanup() throws
-    var currentSession: SessionType? { get }
+    var currentSession: SessionType? { get throws }
 }
 
 final class SessionManager {
@@ -49,7 +49,19 @@ final class SessionManager {
 
     private lazy var logger = Logger.nested(Self.self)
 
-    var currentSession: SessionType?
+    var currentSession: SessionType? {
+        get throws {
+            guard let user = try encryptedStorage.activeUser, let authType = user.authType else {
+                return nil
+            }
+            switch authType {
+            case let .oAuthGmail(token):
+                return .google(user.email, name: user.name, token: token)
+            case .password:
+                return .session(user)
+            }
+        }
+    }
 
     init(
         encryptedStorage: EncryptedStorageType,
@@ -63,14 +75,6 @@ final class SessionManager {
         // maybe should instead get user
         self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
-        if let user = try encryptedStorage.activeUser, let authType = user.authType {
-            switch authType {
-            case let .oAuthGmail(token):
-                currentSession = .google(user.email, name: user.name, token: token)
-            case .password:
-                currentSession = .session(user)
-            }
-        }
         self.localStorage = localStorage
         self.inMemoryPassPhraseStorage = inMemoryPassPhraseStorage
     }
