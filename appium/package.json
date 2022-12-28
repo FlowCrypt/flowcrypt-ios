@@ -24,7 +24,7 @@
     "@types/mailparser": "^3.4.0",
     "@types/node": "^18.11.18",
     "@wdio/allure-reporter": "^8.0.0",
-    "@wdio/appium-service": "^8.0.9",
+    "@wdio/appium-service": "^8.0.14",
     "@wdio/cli": "^8.0.0",
     "@wdio/jasmine-framework": "^8.0.9",
     "@wdio/junit-reporter": "^8.0.13",
