@@ -49,7 +49,7 @@ extension GlobalRouter: GlobalRouterType {
             do {
                 let appContext = try await AppContext.setup(globalRouter: self)
                 try appContext.encryptedStorage.validate()
-                try proceed(with: appContext)
+                proceed(with: appContext)
             } catch {
                 renderInvalidStorageView(error: error)
             }
@@ -57,9 +57,9 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func proceed(with appContext: AppContext) throws {
-        logger.logInfo("proceed for session: \(try appContext.sessionManager.currentSession?.description ?? "nil")")
-        try AppStartup(appContext: appContext).initializeApp(window: keyWindow)
+    private func proceed(with appContext: AppContext) {
+        logger.logInfo("proceed for session: \(appContext.sessionManager.currentSession?.description ?? "nil")")
+        AppStartup(appContext: appContext).initializeApp(window: keyWindow)
     }
 
     @MainActor
@@ -82,7 +82,7 @@ extension GlobalRouter: GlobalRouterType {
         }
 
         let appContextWithUser = try await appContext.with(session: session, authType: authType, user: user)
-        try AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
+        AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
     }
 
     // MARK: - User Login
