@@ -49,7 +49,9 @@ extension GlobalRouter: GlobalRouterType {
             do {
                 let appContext = try await AppContext.setup(globalRouter: self)
                 try appContext.encryptedStorage.validate()
-                proceed(with: appContext)
+                logger.logInfo("proceed for session: \(appContext.sessionManager.currentSession?.description ?? "nil")")
+                AppStartup(appContext: appContext).initializeApp(window: keyWindow)
+                try await proceed(with: appContext)
             } catch {
                 renderInvalidStorageView(error: error)
             }
@@ -57,19 +59,14 @@ extension GlobalRouter: GlobalRouterType {
     }
 
     @MainActor
-    private func proceed(with appContext: AppContext) {
-        logger.logInfo("proceed for session: \(appContext.sessionManager.currentSession?.description ?? "nil")")
-        AppStartup(appContext: appContext).initializeApp(window: keyWindow)
-    }
-
-    @MainActor
-    private func proceed(with appContext: AppContext, session: SessionType) async throws {
-        logger.logInfo("proceed for session: \(session.description)")
+    private func proceed(with appContext: AppContext) async throws {
+        let sessionDescription = appContext.sessionManager.currentSession?.description ?? ""
+        logger.logInfo("proceed for session: \(sessionDescription)")
         guard
             let user = try appContext.encryptedStorage.activeUser,
             let authType = user.authType
         else {
-            let message = "Wrong application state. User not found for session \(session.description)"
+            let message = "Wrong application state. User not found for session \(sessionDescription)"
             logger.logError(message)
 
             keyWindow.rootViewController?.showAlert(
@@ -81,7 +78,7 @@ extension GlobalRouter: GlobalRouterType {
             return
         }
 
-        let appContextWithUser = try await appContext.with(session: session, authType: authType, user: user)
+        let appContextWithUser = try await appContext.with(authType: authType, user: user)
         AppStartup(appContext: appContextWithUser).initializeApp(window: keyWindow)
     }
 
@@ -104,10 +101,10 @@ extension GlobalRouter: GlobalRouterType {
                 )
                 try appContext.sessionManager.startSessionFor(session: session)
                 viewController.hideSpinner()
-                try await proceed(with: appContext, session: session)
+                try await proceed(with: appContext)
             case let .other(session):
                 try appContext.sessionManager.startSessionFor(session: session)
-                try await proceed(with: appContext, session: session)
+                try await proceed(with: appContext)
             }
         } catch {
             if case let .gmailLogin(viewController) = route {
@@ -121,7 +118,7 @@ extension GlobalRouter: GlobalRouterType {
     func signOut(appContext: AppContext) async throws {
         if let session = try appContext.sessionManager.startActiveSessionForNextUser() {
             logger.logInfo("Start session for another email user \(session)")
-            try await proceed(with: appContext, session: session)
+            try await proceed(with: appContext)
         } else {
             logger.logInfo("Sign out")
             try appContext.sessionManager.cleanup()
@@ -157,11 +154,11 @@ extension GlobalRouter: GlobalRouterType {
 
     func switchActive(user: User, appContext: AppContext) async throws {
         logger.logInfo("Switching active user \(user)")
-        guard let session = try appContext.sessionManager.switchActiveSessionFor(user: user) else {
+        guard try appContext.sessionManager.switchActiveSessionFor(user: user) != nil else {
             logger.logWarning("Can't switch active user with \(user.email)")
             return
         }
-        try await proceed(with: appContext, session: session)
+        try await proceed(with: appContext)
     }
 
     // MARK: - Error Handling

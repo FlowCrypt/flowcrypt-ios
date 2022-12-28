@@ -63,14 +63,6 @@ final class SessionManager {
         // maybe should instead get user
         self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
-        if let user = try encryptedStorage.activeUser, let authType = user.authType {
-            switch authType {
-            case let .oAuthGmail(token):
-                currentSession = .google(user.email, name: user.name, token: token)
-            case .password:
-                currentSession = .session(user)
-            }
-        }
         self.localStorage = localStorage
         self.inMemoryPassPhraseStorage = inMemoryPassPhraseStorage
     }
@@ -79,6 +71,7 @@ final class SessionManager {
 extension SessionManager: SessionManagerType {
     /// start session for a user, this method will log out current user if user was saved, save and start session for a new user
     func startSessionFor(session: SessionType) throws {
+        currentSession = session
         switch session {
         case let .google(email, name, token):
             let user = User.googleUser(

@@ -53,7 +53,7 @@ class AppContext {
         )
     }
 
-    func with(session: SessionType?, authType: AuthType, user: User) async throws -> AppContextWithUser {
+    func with(authType: AuthType, user: User) async throws -> AppContextWithUser {
         return try await AppContextWithUser(
             encryptedStorage: encryptedStorage,
             sessionManager: sessionManager,

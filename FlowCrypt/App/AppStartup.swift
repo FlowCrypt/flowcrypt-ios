@@ -186,7 +186,7 @@ struct AppStartup {
             return
         }
 
-        let contextWithUser = try await appContext.with(session: session, authType: authType, user: user)
+        let contextWithUser = try await appContext.with(authType: authType, user: user)
         callback(contextWithUser)
     }
 }
