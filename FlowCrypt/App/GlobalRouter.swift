@@ -51,7 +51,6 @@ extension GlobalRouter: GlobalRouterType {
                 try appContext.encryptedStorage.validate()
                 logger.logInfo("proceed for session: \(appContext.sessionManager.currentSession?.description ?? "nil")")
                 AppStartup(appContext: appContext).initializeApp(window: keyWindow)
-                try await proceed(with: appContext)
             } catch {
                 renderInvalidStorageView(error: error)
             }
