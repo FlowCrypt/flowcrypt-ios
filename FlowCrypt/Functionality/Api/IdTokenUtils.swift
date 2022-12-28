@@ -15,11 +15,8 @@ class IdTokenUtils {
             return try Imap(user: user).imapSess.oAuth2Token
         }
 
-        let googleAuthManager = GoogleAuthManager(
-            currentUserEmail: userEmail ?? user?.email,
-            appDelegateGoogleSessionContainer: nil
-        )
+        let googleAuthManager = GoogleAuthManager()
 
-        return try await googleAuthManager.getCachedOrRefreshedIdToken()
+        return try await googleAuthManager.getCachedOrRefreshedIdToken(email: userEmail ?? user?.email)
     }
 }

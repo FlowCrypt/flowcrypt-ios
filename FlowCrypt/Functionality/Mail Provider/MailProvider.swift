@@ -138,7 +138,6 @@ private enum MailServiceProviderFactory {
             GmailService(
                 currentUserEmail: user.email,
                 googleAuthManager: GoogleAuthManager(
-                    currentUserEmail: user.email,
                     appDelegateGoogleSessionContainer: delegate
                 )
             )

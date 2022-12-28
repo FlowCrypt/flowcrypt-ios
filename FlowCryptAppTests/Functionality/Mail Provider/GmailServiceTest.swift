@@ -44,7 +44,9 @@ class GmailServiceTest: XCTestCase {
 
 // MARK: - Mock
 class GoogleAuthManagerMock: GoogleAuthManagerType {
-    var authorization: GTMAppAuthFetcherAuthorization?
+    func authorization(for email: String?) -> GTMAppAuthFetcherAuthorization? {
+        return nil
+    }
 
     var isContactsScopeEnabled = true
     func searchContacts(query: String) async throws -> [Recipient] {

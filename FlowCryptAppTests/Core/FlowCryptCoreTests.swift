@@ -405,7 +405,7 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testRsaPerformance() async throws {
         // Test decrypt key
-        await testPerformance(maxDuration: 200) {
+        await testPerformance(maxDuration: 500) {
             _ = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.private, passphrase: TestData.k3rsa4096.passphrase!)
         }
 
