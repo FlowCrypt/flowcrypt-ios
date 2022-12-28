@@ -49,7 +49,6 @@ protocol AppDelegateGoogleSessionContainer {
 
 final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
 
-    var currentUserEmail: String?
     var appDelegateGoogleSessionContainer: AppDelegateGoogleSessionContainer?
 
     init(
@@ -212,7 +211,6 @@ extension GoogleAuthManager {
 
     // save auth session to keychain
     private func saveAuth(state: OIDAuthState, for email: String) {
-        currentUserEmail = email // Save email variable so that OIDAuthStateChangeDelegate can access
         state.stateChangeDelegate = self
         let authorization = GTMAppAuthFetcherAuthorization(authState: state)
         GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.index + email)
@@ -301,9 +299,10 @@ extension GoogleAuthManager {
 // MARK: - OIDAuthStateChangeDelegate
 extension GoogleAuthManager: OIDAuthStateChangeDelegate {
     func didChange(_ state: OIDAuthState) {
-        guard let currentUserEmail else {
+        let authorization = GTMAppAuthFetcherAuthorization(authState: state)
+        guard let email = authorization.userEmail else {
             return
         }
-        saveAuth(state: state, for: currentUserEmail)
+        saveAuth(state: state, for: email)
     }
 }
