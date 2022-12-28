@@ -27,8 +27,8 @@ struct AppStartup {
     }
 
     @MainActor
-    func initializeApp(window: UIWindow) throws {
-        logger.logInfo("Initialize application with session \(try appContext.sessionManager.currentSession.debugDescription)")
+    func initializeApp(window: UIWindow) {
+        logger.logInfo("Initialize application with session \(appContext.sessionManager.currentSession.debugDescription)")
 
         Task {
             window.rootViewController = BootstrapViewController()
@@ -99,7 +99,7 @@ struct AppStartup {
         if try appContext.encryptedStorage.doesAnyKeypairExist(for: activeUser.email) {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
-        } else if let session = try appContext.sessionManager.currentSession, let userId = try makeUserIdForSetup(session: session) {
+        } else if let session = appContext.sessionManager.currentSession, let userId = try makeUserIdForSetup(session: session) {
             logger.logInfo("User with session \(session) -> setupFlow")
             return .setupFlow(userId)
         } else {
@@ -150,11 +150,7 @@ struct AppStartup {
             title: "retry_title".localized,
             style: .default
         ) { _ in
-            do {
-                try self.initializeApp(window: window)
-            } catch {
-                Logger.logError("Initialization failed due to \(error.errorMessage)")
-            }
+            self.initializeApp(window: window)
         }
         let logout = UIAlertAction(
             title: "log_out".localized,
@@ -175,7 +171,7 @@ struct AppStartup {
 
     @MainActor
     private func startWithUserContext(appContext: AppContext, window: UIWindow, callback: (AppContextWithUser) -> Void) async throws {
-        let session = try appContext.sessionManager.currentSession
+        let session = appContext.sessionManager.currentSession
 
         guard
             let user = try appContext.encryptedStorage.activeUser,
