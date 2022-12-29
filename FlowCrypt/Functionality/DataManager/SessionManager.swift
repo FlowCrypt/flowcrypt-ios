@@ -63,6 +63,9 @@ final class SessionManager {
         // maybe should instead get user
         self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
+        if let user = try encryptedStorage.activeUser {
+            currentSession = user.session
+        }
         self.localStorage = localStorage
         self.inMemoryPassPhraseStorage = inMemoryPassPhraseStorage
     }
@@ -118,20 +121,12 @@ extension SessionManager: SessionManagerType {
     private func switchActiveSession(for user: User) throws -> SessionType? {
         logger.logInfo("Try to switch session for \(user.email)")
 
-        let sessionType: SessionType
-        switch user.authType {
-        case let .oAuthGmail(token):
-            sessionType = .google(user.email, name: user.name, token: token)
-        case .password:
-            sessionType = .session(user)
-        case .none:
-            logger.logWarning("authType is not defined in switchActiveSession")
+        guard let session = user.session else {
             return nil
         }
 
-        try startSessionFor(session: sessionType)
-
-        return sessionType
+        try startSessionFor(session: session)
+        return session
     }
 
     private func logOut(user: User) throws {

@@ -24,6 +24,18 @@ struct User: Codable, Equatable {
     var password: String? {
         imap?.password
     }
+
+    var session: SessionType? {
+        switch authType {
+        case let .oAuthGmail(token):
+            return .google(email, name: name, token: token)
+        case .password:
+            return .session(self)
+        case .none:
+            print("authType is not defined in switchActiveSession")
+            return nil
+        }
+    }
 }
 
 extension User {
