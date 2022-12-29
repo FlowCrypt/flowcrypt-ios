@@ -26,6 +26,28 @@ open class TableNodeViewController: ASDKViewController<TableNode> {
         super.viewDidLoad()
         Logger.nested(Self.self).logDebug("View did load")
     }
+
+    // MARK: - Keyboard
+    public func observeKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(adjustForKeyboard),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(adjustForKeyboard),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+
+    @objc open func adjustForKeyboard(notification: Notification) {
+        let height = self.keyboardHeight(from: notification)
+        let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
+        node.contentInset = insets
+    }
 }
 
 public extension UINavigationItem {

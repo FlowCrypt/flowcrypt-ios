@@ -73,6 +73,11 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         navigationController?.navigationItem.leftBarButtonItem = nil
     }
 
+    @objc override func adjustForKeyboard(notification: Notification) {
+        super.adjustForKeyboard(notification: notification)
+        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
+    }
+
     func setupAccount(with passphrase: String) {
         fatalError("This method has to be overriden")
     }
@@ -93,37 +98,6 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
                 showAlert(message: error.localizedDescription)
             }
         }
-    }
-}
-
-// MARK: - UI
-
-extension SetupCreatePassphraseAbstractViewController {
-    // TODO: - Ticket? - Unify this logic for all controllers
-    // swiftlint:disable discarded_notification_center_observer
-    private func observeKeyboardNotifications() {
-        NotificationCenter.default.addObserver(
-            forName: UIResponder.keyboardWillShowNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] notification in
-            guard let self else { return }
-            self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: UIResponder.keyboardWillHideNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.adjustForKeyboard(height: 0)
-        }
-    }
-
-    private func adjustForKeyboard(height: CGFloat) {
-        let insets = UIEdgeInsets(top: 0, left: 0, bottom: height + 5, right: 0)
-        node.contentInset = insets
-        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
     }
 }
 

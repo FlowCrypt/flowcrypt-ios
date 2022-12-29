@@ -83,38 +83,13 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         node.contentInset.top = view.safeAreaInsets.top
     }
 
+    @objc override func adjustForKeyboard(notification: Notification) {
+        super.adjustForKeyboard(notification: notification)
+        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
-    }
-}
-
-// MARK: - Keyboard
-
-extension SetupManuallyEnterPassPhraseViewController {
-    // swiftlint:disable discarded_notification_center_observer
-    /// Observation should be removed in a place where subscription is
-    private func observeKeyboardNotifications() {
-        NotificationCenter.default.addObserver(
-            forName: UIResponder.keyboardWillShowNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] notification in
-            guard let self else { return }
-            self.adjustForKeyboard(height: self.keyboardHeight(from: notification))
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: UIResponder.keyboardWillHideNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            self?.adjustForKeyboard(height: 0)
-        }
-    }
-
-    private func adjustForKeyboard(height: CGFloat) {
-        node.contentInset = UIEdgeInsets(top: node.contentInset.top, left: 0, bottom: height + 10, right: 0)
-        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
     }
 }
 
