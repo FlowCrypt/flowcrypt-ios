@@ -255,6 +255,18 @@ final class ComposeViewController: TableNodeViewController {
             hideSpinner()
         }
     }
+
+    @objc override func adjustForKeyboard(notification: Notification) {
+        let height = self.keyboardHeight(from: notification)
+        node.contentInset.bottom = height + 8
+
+        guard let textView = node.visibleNodes.compactMap({ $0 as? TextViewCellNode }).first?.textView.textView,
+              let selectedRange = textView.selectedTextRange
+        else { return }
+
+        let rect = textView.caretRect(for: selectedRange.start)
+        node.view.scrollRectToVisible(rect, animated: true)
+    }
 }
 
 extension ComposeViewController: FilesManagerPresenter {}
