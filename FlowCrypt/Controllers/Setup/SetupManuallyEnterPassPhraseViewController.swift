@@ -83,6 +83,11 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
         node.contentInset.top = view.safeAreaInsets.top
     }
 
+    @objc override func adjustForKeyboard(notification: Notification) {
+        super.adjustForKeyboard(notification: notification)
+        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
