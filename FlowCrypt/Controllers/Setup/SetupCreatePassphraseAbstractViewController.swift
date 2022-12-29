@@ -73,6 +73,11 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         navigationController?.navigationItem.leftBarButtonItem = nil
     }
 
+    @objc override func adjustForKeyboard(notification: Notification) {
+        super.adjustForKeyboard(notification: notification)
+        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
+    }
+
     func setupAccount(with passphrase: String) {
         fatalError("This method has to be overriden")
     }

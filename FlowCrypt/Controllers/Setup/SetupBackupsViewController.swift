@@ -68,6 +68,11 @@ final class SetupBackupsViewController: TableNodeViewController, PassPhraseSavea
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
     }
+
+    @objc override func adjustForKeyboard(notification: Notification) {
+        super.adjustForKeyboard(notification: notification)
+        node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
+    }
 }
 
 // MARK: - Setup
