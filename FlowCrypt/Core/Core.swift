@@ -260,38 +260,47 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let paramsData = try JSONSerialization.data(withJSONObject: params).toStr()
         let requestData = [UInt8](data)
 
-        let response = try await webView.callAsyncJavaScript(
-            "return handleRequestFromHost(\"\(endpoint)\", \(paramsData), \(requestData))",
-            arguments: [:],
-            contentWorld: .page
-        )
-
-        guard let response = response as? [String: Any],
-              let uInt8Data = response["data"] as? [String: UInt8]
-        else {
-            throw CoreError.value("JavaScript callback response not available")
-        }
-
-        var responseJson: Data?
-        if let resJson = response["json"] as? [String: Any] {
-            responseJson = try JSONSerialization.data(withJSONObject: resJson, options: .prettyPrinted)
-            if let error = try? responseJson?.decodeJson(as: CoreRes.Error.self) {
-                let errorStack = error.error.stack ?? "no stack"
-                logger.logError("""
-                ------ js err -------
-                Core \(endpoint): \(error.error.message)
-                \(errorStack)
-                ------- end js err -----
-                """)
-                throw CoreError.exception(error.error.message + "\n" + errorStack)
+        do {
+            let response = try await webView.callAsyncJavaScript(
+                "return handleRequestFromHost(\"\(endpoint)\", \(paramsData), \(requestData))",
+                arguments: [:],
+                contentWorld: .page
+            )
+            guard let response = response as? [String: Any],
+                  let uInt8Data = response["data"] as? [String: UInt8]
+            else {
+                throw CoreError.value("JavaScript callback response not available")
             }
+
+            var responseJson: Data?
+            if let resJson = response["json"] as? [String: Any] {
+                responseJson = try JSONSerialization.data(withJSONObject: resJson, options: .prettyPrinted)
+                if let error = try? responseJson?.decodeJson(as: CoreRes.Error.self) {
+                    let errorStack = error.error.stack ?? "no stack"
+                    logger.logError("""
+                    ------ js err -------
+                    Core \(endpoint): \(error.error.message)
+                    \(errorStack)
+                    ------- end js err -----
+                    """)
+                    throw CoreError.exception(error.error.message + "\n" + errorStack)
+                }
+            }
+
+            let indices = uInt8Data.keys.compactMap(Int.init).sorted()
+            let array = indices.compactMap { uInt8Data["\($0)"] }
+            let responseData = Data(array)
+
+            return RawRes(json: responseJson ?? Data(), data: responseData)
+        } catch {
+            if error._domain == "WKErrorDomain", error._code == 4 {
+                // Core js code injected using evaluateJavaScript result is removed when app is in background for long time
+                // Need to setup again. https://github.com/FlowCrypt/flowcrypt-ios/issues/2013
+                setupWebView()
+                return try await call(endpoint, params: params, data: data)
+            }
+            throw error
         }
-
-        let indices = uInt8Data.keys.compactMap(Int.init).sorted()
-        let array = indices.compactMap { uInt8Data["\($0)"] }
-        let responseData = Data(array)
-
-        return RawRes(json: responseJson ?? Data(), data: responseData)
     }
 }
 
