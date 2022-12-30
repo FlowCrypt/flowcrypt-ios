@@ -28,7 +28,7 @@ struct AppStartup {
 
     @MainActor
     func initializeApp(window: UIWindow) {
-        logger.logInfo("Initialize application with session \(appContext.session.debugDescription)")
+        logger.logInfo("Initialize application with session \(appContext.sessionManager.currentSession.debugDescription)")
 
         Task {
             window.rootViewController = BootstrapViewController()
@@ -99,7 +99,7 @@ struct AppStartup {
         if try appContext.encryptedStorage.doesAnyKeypairExist(for: activeUser.email) {
             logger.logInfo("Setup finished -> mainFlow")
             return .mainFlow
-        } else if let session = appContext.session, let userId = try makeUserIdForSetup(session: session) {
+        } else if let session = appContext.sessionManager.currentSession, let userId = try makeUserIdForSetup(session: session) {
             logger.logInfo("User with session \(session) -> setupFlow")
             return .setupFlow(userId)
         } else {
@@ -171,13 +171,13 @@ struct AppStartup {
 
     @MainActor
     private func startWithUserContext(appContext: AppContext, window: UIWindow, callback: (AppContextWithUser) -> Void) async throws {
-        let session = appContext.session
+        let session = appContext.sessionManager.currentSession
 
         guard
             let user = try appContext.encryptedStorage.activeUser,
             let authType = user.authType
         else {
-            let sessionName = appContext.session?.description ?? "nil"
+            let sessionName = session?.description ?? "nil"
             let message = "error_wrong_app_state".localizeWithArguments(sessionName)
 
             logger.logError(message)
@@ -186,7 +186,7 @@ struct AppStartup {
             return
         }
 
-        let contextWithUser = try await appContext.with(session: session, authType: authType, user: user)
+        let contextWithUser = try await appContext.with(authType: authType, user: user)
         callback(contextWithUser)
     }
 }

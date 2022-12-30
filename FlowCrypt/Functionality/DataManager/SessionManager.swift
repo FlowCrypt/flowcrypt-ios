@@ -36,6 +36,7 @@ protocol SessionManagerType {
     func switchActiveSessionFor(user: User) throws -> SessionType?
     func startActiveSessionForNextUser() throws -> SessionType?
     func cleanup() throws
+    var currentSession: SessionType? { get }
 }
 
 final class SessionManager {
@@ -47,6 +48,8 @@ final class SessionManager {
     private let googleAuthManager: GoogleAuthManager
 
     private lazy var logger = Logger.nested(Self.self)
+
+    var currentSession: SessionType?
 
     init(
         encryptedStorage: EncryptedStorageType,
@@ -60,6 +63,7 @@ final class SessionManager {
         // maybe should instead get user
         self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
+        currentSession = try encryptedStorage.activeUser?.session
         self.localStorage = localStorage
         self.inMemoryPassPhraseStorage = inMemoryPassPhraseStorage
     }
@@ -68,6 +72,7 @@ final class SessionManager {
 extension SessionManager: SessionManagerType {
     /// start session for a user, this method will log out current user if user was saved, save and start session for a new user
     func startSessionFor(session: SessionType) throws {
+        currentSession = session
         switch session {
         case let .google(email, name, token):
             let user = User.googleUser(
@@ -114,20 +119,12 @@ extension SessionManager: SessionManagerType {
     private func switchActiveSession(for user: User) throws -> SessionType? {
         logger.logInfo("Try to switch session for \(user.email)")
 
-        let sessionType: SessionType
-        switch user.authType {
-        case let .oAuthGmail(token):
-            sessionType = .google(user.email, name: user.name, token: token)
-        case .password:
-            sessionType = .session(user)
-        case .none:
-            logger.logWarning("authType is not defined in switchActiveSession")
+        guard let session = user.session else {
             return nil
         }
 
-        try startSessionFor(session: sessionType)
-
-        return sessionType
+        try startSessionFor(session: session)
+        return session
     }
 
     private func logOut(user: User) throws {

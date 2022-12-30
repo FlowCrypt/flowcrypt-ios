@@ -12,22 +12,18 @@ class AppContext {
 
     let globalRouter: GlobalRouterType
     let encryptedStorage: EncryptedStorageType
-    let session: SessionType?
-    // todo - session service should have maybe `.currentSession` on it, then we don't have to have `session` above?
     let sessionManager: SessionManagerType
     let keyAndPassPhraseStorage: KeyAndPassPhraseStorageType
     let combinedPassPhraseStorage: CombinedPassPhraseStorageType
 
     init(
         encryptedStorage: EncryptedStorageType,
-        session: SessionType?,
         sessionManager: SessionManagerType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         combinedPassPhraseStorage: CombinedPassPhraseStorageType,
         globalRouter: GlobalRouterType
     ) {
         self.encryptedStorage = encryptedStorage
-        self.session = session
         self.sessionManager = sessionManager
         self.keyAndPassPhraseStorage = keyAndPassPhraseStorage
         self.combinedPassPhraseStorage = combinedPassPhraseStorage
@@ -42,18 +38,8 @@ class AppContext {
             encryptedStorage: encryptedStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorage
         )
-        var sessionType: SessionType?
-        if let user = try encryptedStorage.activeUser, let authType = user.authType {
-            switch authType {
-            case let .oAuthGmail(token):
-                sessionType = .google(user.email, name: user.name, token: token)
-            case .password:
-                sessionType = .session(user)
-            }
-        }
         return AppContext(
             encryptedStorage: encryptedStorage,
-            session: sessionType,
             sessionManager: try SessionManager(
                 encryptedStorage: encryptedStorage,
                 googleAuthManager: GoogleAuthManager(
@@ -66,10 +52,9 @@ class AppContext {
         )
     }
 
-    func with(session: SessionType?, authType: AuthType, user: User) async throws -> AppContextWithUser {
+    func with(authType: AuthType, user: User) async throws -> AppContextWithUser {
         return try await AppContextWithUser(
             encryptedStorage: encryptedStorage,
-            session: session,
             sessionManager: sessionManager,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorage,
@@ -137,7 +122,6 @@ class AppContextWithUser: AppContext {
 
     init(
         encryptedStorage: EncryptedStorageType,
-        session: SessionType?,
         sessionManager: SessionManagerType,
         keyAndPassPhraseStorage: KeyAndPassPhraseStorageType,
         combinedPassPhraseStorage: CombinedPassPhraseStorageType,
@@ -160,7 +144,6 @@ class AppContextWithUser: AppContext {
         combinedPassPhraseStorageWithConfiguration.clientConfiguration = try await clientConfigurationProvider.configuration
         super.init(
             encryptedStorage: encryptedStorage,
-            session: session,
             sessionManager: sessionManager,
             keyAndPassPhraseStorage: keyAndPassPhraseStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorageWithConfiguration,
