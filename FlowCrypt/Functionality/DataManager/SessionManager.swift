@@ -63,9 +63,7 @@ final class SessionManager {
         // maybe should instead get user
         self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
-        if let user = try encryptedStorage.activeUser {
-            currentSession = user.session
-        }
+        currentSession = try encryptedStorage.activeUser?.session
         self.localStorage = localStorage
         self.inMemoryPassPhraseStorage = inMemoryPassPhraseStorage
     }

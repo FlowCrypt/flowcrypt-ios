@@ -32,7 +32,6 @@ struct User: Codable, Equatable {
         case .password:
             return .session(self)
         case .none:
-            print("authType is not defined in switchActiveSession")
             return nil
         }
     }
