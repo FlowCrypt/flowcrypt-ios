@@ -293,7 +293,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
             return RawRes(json: responseJson ?? Data(), data: responseData)
         } catch {
-            if error._domain == "WKErrorDomain", error._code == 4 {
+            if error._domain == "WKErrorDomain" {
                 // Core js code injected using evaluateJavaScript result is removed when app is in background for long time
                 // Need to setup again. https://github.com/FlowCrypt/flowcrypt-ios/issues/2013
                 setupWebView()
