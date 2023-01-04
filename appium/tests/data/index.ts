@@ -38,9 +38,9 @@ export const CommonData = {
       '>\n' +
       '> On 04.02.2022 at 11:12 dmitry@flowcrypt.com wrote:\n' +
       '>  > first message',
-    firstDate: 'Feb 04',
-    secondDate: 'Feb 07',
-    thirdDate: 'Feb 08',
+    firstDate: 'Feb 04, 2022',
+    secondDate: 'Feb 07, 2022',
+    thirdDate: 'Feb 08, 2022',
   },
   draft: {
     subject1: 'Draft subject',
