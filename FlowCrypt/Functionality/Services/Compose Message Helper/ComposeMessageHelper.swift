@@ -254,7 +254,7 @@ final class ComposeMessageHelper {
         }
     }
 
-    func saveDraft(message: SendableMsg, threadId: String?, shouldEncrypt: Bool) async throws {
+    func saveDraft(message: SendableMsg, threadId: String?, shouldEncrypt: Bool, forceCreate: Bool = false) async throws {
         if let saveDraftTask {
             _ = try await saveDraftTask.value
         }
@@ -268,16 +268,17 @@ final class ComposeMessageHelper {
                     fmt: shouldEncrypt ? .encryptInline : .plain
                 )
 
-                let threadId = self.messageIdentifier?.threadId?.stringId ?? threadId
+                let threadId = forceCreate ? nil : (self.messageIdentifier?.threadId?.stringId ?? threadId)
 
                 return try await self.draftsApiClient?.saveDraft(
                     input: MessageGatewayInput(
                         mime: mime,
                         threadId: threadId
                     ),
-                    draftId: self.messageIdentifier?.draftId
+                    draftId: forceCreate ? nil : self.messageIdentifier?.draftId
                 )
             } catch {
+                saveDraftTask = nil
                 throw ComposeMessageError.gatewayError(error)
             }
         }

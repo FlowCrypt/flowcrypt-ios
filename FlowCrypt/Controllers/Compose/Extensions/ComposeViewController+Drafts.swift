@@ -45,7 +45,7 @@ extension ComposeViewController {
         return newDraft != existingDraft ? newDraft : nil
     }
 
-    func saveDraftIfNeeded(handler: ((DraftSaveState) -> Void)? = nil) {
+    func saveDraftIfNeeded(handler: ((DraftSaveState) -> Void)? = nil, forceCreate: Bool = false) {
         guard let draft = createDraft() else {
             handler?(.cancelled)
             return
@@ -69,12 +69,18 @@ extension ComposeViewController {
                 try await composeMessageHelper.saveDraft(
                     message: sendableMsg,
                     threadId: draft.input.threadId,
-                    shouldEncrypt: shouldEncrypt
+                    shouldEncrypt: shouldEncrypt,
+                    forceCreate: forceCreate
                 )
 
                 composedLatestDraft = draft
                 handler?(.success(sendableMsg))
             } catch {
+                if error.errorMessage.contains("Requested entity was not found.") {
+                    // When draft entity was not found on gmail server, then create new draft
+                    saveDraftIfNeeded(handler: handler, forceCreate: true)
+                    return
+                }
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
