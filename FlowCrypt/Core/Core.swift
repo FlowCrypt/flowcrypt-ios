@@ -32,13 +32,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     private typealias CallbackResult = (String, [UInt8])
 
-    private lazy var webView: WKWebView = {
-        let userController = WKUserContentController()
-        userController.add(coreMessageHandler, name: "coreHost")
-        let configuration = WKWebViewConfiguration()
-        configuration.userContentController = userController
-        return WKWebView(frame: .zero, configuration: configuration)
-    }()
+    private var webView: WKWebView!
 
     private lazy var logger = Logger.nested(in: Self.self, with: "Js")
     private let coreMessageHandler = CoreMessageHandler()
@@ -62,8 +56,13 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     // MARK: - Setup
     func setupWebView() {
-        guard let jsFileSrc = getCoreJsFile() else { return }
+        let userController = WKUserContentController()
+        userController.add(coreMessageHandler, name: "coreHost")
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController = userController
+        webView = WKWebView(frame: .zero, configuration: configuration)
 
+        guard let jsFileSrc = getCoreJsFile() else { return }
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
         webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
     }
