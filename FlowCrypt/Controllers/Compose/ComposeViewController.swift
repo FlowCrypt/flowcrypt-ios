@@ -40,6 +40,7 @@ final class ComposeViewController: TableNodeViewController {
     }
 
     var shouldDisplaySearchResult = false
+    var draftSaveRetryCount = 0
     var userTappedOutSideRecipientsArea = false
     var shouldShowEmailRecipientsLabel = false
     let appContext: AppContextWithUser

@@ -6,6 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+let MAX_DRAFT_RETRY_ON_ERROR_COUNT = 10
+
 // MARK: - Drafts
 extension ComposeViewController {
     @objc func startDraftTimer(withFire: Bool = false) {
@@ -51,6 +53,10 @@ extension ComposeViewController {
             return
         }
 
+        guard draftSaveRetryCount < MAX_DRAFT_RETRY_ON_ERROR_COUNT else {
+            return
+        }
+
         handler?(.saving(draft))
 
         Task {
@@ -74,6 +80,7 @@ extension ComposeViewController {
                 )
 
                 composedLatestDraft = draft
+                draftSaveRetryCount = 0
                 handler?(.success(sendableMsg))
             } catch {
                 if error.errorMessage.contains("Requested entity was not found.") {
@@ -84,6 +91,7 @@ extension ComposeViewController {
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
+                    draftSaveRetryCount += 1
                     showToast("draft_error".localizeWithArguments(error.errorMessage), position: .top)
                 }
                 handler?(.error(error))
