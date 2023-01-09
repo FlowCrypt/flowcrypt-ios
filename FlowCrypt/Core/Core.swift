@@ -56,15 +56,17 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     // MARK: - Setup
     func setupWebView() {
-        let userController = WKUserContentController()
-        userController.add(coreMessageHandler, name: "coreHost")
-        let configuration = WKWebViewConfiguration()
-        configuration.userContentController = userController
-        webView = WKWebView(frame: .zero, configuration: configuration)
+        DispatchQueue.main.async {
+            let userController = WKUserContentController()
+            userController.add(self.coreMessageHandler, name: "coreHost")
+            let configuration = WKWebViewConfiguration()
+            configuration.userContentController = userController
+            self.webView = WKWebView(frame: .zero, configuration: configuration)
 
-        guard let jsFileSrc = getCoreJsFile() else { return }
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
-        webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
+            guard let jsFileSrc = self.getCoreJsFile() else { return }
+            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
+            self.webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
+        }
     }
 
     private func getCoreJsFile() -> String? {
