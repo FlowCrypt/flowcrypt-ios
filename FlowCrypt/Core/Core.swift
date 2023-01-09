@@ -50,10 +50,8 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let atts: [CoreRes.AttachmentTreatAs]
     }
 
-    private init() {
-        Task {
-            await setupWebView()
-        }
+    private init() async {
+        await setupWebView()
     }
 
     // MARK: - Setup
@@ -299,10 +297,8 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             if error._domain == "WKErrorDomain", retryAttempt < 3 {
                 // Core js code injected using evaluateJavaScript result is removed when app is in background for long time
                 // Need to setup again. https://github.com/FlowCrypt/flowcrypt-ios/issues/2013
-                Task {
-                    await setupWebView()
-                    return try await call(endpoint, params: params, data: data, retryAttempt: retryAttempt + 1)
-                }
+                await setupWebView()
+                return try await call(endpoint, params: params, data: data, retryAttempt: retryAttempt + 1)
             }
             throw error
         }
