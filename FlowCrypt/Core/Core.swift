@@ -51,22 +51,23 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     private init() {
-        setupWebView()
+        Task {
+            await setupWebView()
+        }
     }
 
     // MARK: - Setup
+    @MainActor
     func setupWebView() {
-        DispatchQueue.main.async {
-            let userController = WKUserContentController()
-            userController.add(self.coreMessageHandler, name: "coreHost")
-            let configuration = WKWebViewConfiguration()
-            configuration.userContentController = userController
-            self.webView = WKWebView(frame: .zero, configuration: configuration)
+        let userController = WKUserContentController()
+        userController.add(self.coreMessageHandler, name: "coreHost")
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController = userController
+        self.webView = WKWebView(frame: .zero, configuration: configuration)
 
-            guard let jsFileSrc = self.getCoreJsFile() else { return }
-            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
-            self.webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
-        }
+        guard let jsFileSrc = self.getCoreJsFile() else { return }
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
+        self.webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
     }
 
     private func getCoreJsFile() -> String? {
@@ -298,8 +299,10 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             if error._domain == "WKErrorDomain", retryAttempt < 3 {
                 // Core js code injected using evaluateJavaScript result is removed when app is in background for long time
                 // Need to setup again. https://github.com/FlowCrypt/flowcrypt-ios/issues/2013
-                setupWebView()
-                return try await call(endpoint, params: params, data: data, retryAttempt: retryAttempt + 1)
+                Task {
+                    await setupWebView()
+                    return try await call(endpoint, params: params, data: data, retryAttempt: retryAttempt + 1)
+                }
             }
             throw error
         }
