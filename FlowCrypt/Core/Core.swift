@@ -257,7 +257,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     // MARK: Private calls
     @discardableResult
-    private func call(_ endpoint: String, params: [String: Any?] = [:], data: Data = Data()) async throws -> RawRes {
+    private func call(_ endpoint: String, params: [String: Any?] = [:], data: Data = Data(), retryAttempt: Int = 0) async throws -> RawRes {
         let paramsData = try JSONSerialization.data(withJSONObject: params).toStr()
         let requestData = [UInt8](data)
 
@@ -294,11 +294,12 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
             return RawRes(json: responseJson ?? Data(), data: responseData)
         } catch {
-            if error._domain == "WKErrorDomain" {
+            // Re-setup the webview only when the retry attempt is less than 3 to avoid entering an infinite loop
+            if error._domain == "WKErrorDomain", retryAttempt < 3 {
                 // Core js code injected using evaluateJavaScript result is removed when app is in background for long time
                 // Need to setup again. https://github.com/FlowCrypt/flowcrypt-ios/issues/2013
                 setupWebView()
-                return try await call(endpoint, params: params, data: data)
+                return try await call(endpoint, params: params, data: data, retryAttempt: retryAttempt + 1)
             }
             throw error
         }
