@@ -48,6 +48,12 @@ extension ComposeViewController {
     }
 
     func saveDraftIfNeeded(handler: ((DraftSaveState) -> Void)? = nil, forceCreate: Bool = false) {
+        if draftSaveRetryCount > 1, !shouldSaveCurrentDraft {
+            // shouldSaveCurrentDraft is used for exponential backoff.
+            // the first request failure retries after 5 seconds, the next retry is retried after 10 seconds...
+            shouldSaveCurrentDraft = true
+            return
+        }
         guard let draft = createDraft() else {
             handler?(.cancelled)
             return
@@ -88,6 +94,7 @@ extension ComposeViewController {
                     saveDraftIfNeeded(handler: handler, forceCreate: true)
                     return
                 }
+                shouldSaveCurrentDraft = false
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
