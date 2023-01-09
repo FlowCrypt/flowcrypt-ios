@@ -50,8 +50,10 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let atts: [CoreRes.AttachmentTreatAs]
     }
 
-    private init() async {
-        await setupWebView()
+    private init() {
+        Task {
+            await setupWebView()
+        }
     }
 
     // MARK: - Setup
