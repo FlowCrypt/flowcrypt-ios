@@ -13,7 +13,7 @@
     "module": "commonjs",
     "target": "ES2022",
     "types": [
-      "node",
+      "node", "jest",
       "@wdio/globals/types",
       "@wdio/jasmine-framework",
       "@wdio/junit-reporter",
