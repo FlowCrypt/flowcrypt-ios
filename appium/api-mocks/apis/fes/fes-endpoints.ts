@@ -48,7 +48,7 @@ export const getMockFesEndpoints = (
       throwIfNotGetMethod(req);
       return {
         "vendor": "Mock",
-        "service": "enterprise-server",
+        "service": "external-service",
         "orgId": "standardsubdomainfes.test",
         "version": "MOCK",
         "apiVersion": 'v1',
