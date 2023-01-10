@@ -99,7 +99,12 @@ extension ComposeViewController {
                     // no need to save or notify user if validation error
                     // for other errors show toast
                     draftSaveRetryCount += 1
-                    showToast("draft_error".localizeWithArguments(error.errorMessage), position: .top)
+                    showToast(
+                        "draft_error".localizeWithArguments(error.errorMessage),
+                        position: .top,
+                        view: self.navigationController?.navigationBar,
+                        maxHeightPercentage: 1.0
+                    )
                 }
                 handler?(.error(error))
             }

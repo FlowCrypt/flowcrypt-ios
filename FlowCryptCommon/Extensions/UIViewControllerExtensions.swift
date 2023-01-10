@@ -29,9 +29,11 @@ public extension UIViewController {
         duration: TimeInterval = 3.0,
         position: ToastPosition = .bottom,
         shouldHideKeyboard: Bool = true,
-        completion: ShowToastCompletion? = nil
+        completion: ShowToastCompletion? = nil,
+        view: UIView? = nil,
+        maxHeightPercentage: CGFloat? = nil
     ) {
-        guard let view = UIApplication.shared.currentWindow?.rootViewController?.view else {
+        guard let view = view ?? UIApplication.shared.currentWindow?.rootViewController?.view else {
             assertionFailure("Key window hasn't rootViewController")
             return
         }
@@ -39,6 +41,10 @@ public extension UIViewController {
 
         if shouldHideKeyboard {
             view.endEditing(true)
+        }
+
+        if let maxHeightPercentage {
+            ToastManager.shared.style.maxHeightPercentage = maxHeightPercentage
         }
 
         view.makeToast(
