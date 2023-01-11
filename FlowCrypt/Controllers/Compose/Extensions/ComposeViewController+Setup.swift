@@ -81,6 +81,7 @@ extension ComposeViewController {
 
         Task {
             do {
+                showSpinner()
                 let message = try await messageHelper.fetchMessage(identifier: id, folder: "")
                 let text = message.body.text
 
@@ -91,7 +92,9 @@ extension ComposeViewController {
                     didFinishSetup = true
                     reload(sections: [.compose])
                 }
+                hideSpinner()
             } catch {
+                hideSpinner()
                 handle(error: error)
             }
         }
