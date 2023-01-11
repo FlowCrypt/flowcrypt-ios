@@ -13,7 +13,7 @@ blocks:
   - name: Build + Swift Unit Test
     dependencies: []
     run:
-      when: 'change_in(''/'', {exclude: [''/Core/package.json'', ''/Core/package-lock.json'']})'
+      when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json']})"
     execution_time_limit:
       minutes: 115
     task:
@@ -38,7 +38,7 @@ blocks:
   - name: TypeScript tests
     dependencies: []
     run:
-      when: 'change_in(''/'', {exclude: [''/appium/package.json'', ''/appium/package-lock.json'']})'
+      when: "change_in('/', {exclude: ['/appium/package.json', '/appium/package-lock.json']})"
     execution_time_limit:
       minutes: 45
     task:
@@ -105,7 +105,7 @@ blocks:
       secrets:
         - name: flowcrypt-ios-ci-secrets
     run:
-      when: 'change_in(''/'', {exclude: [''/Core/package.json'', ''/Core/package-lock.json'']})'
+      when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json']})"
 after_pipeline:
   task:
     jobs:
