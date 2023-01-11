@@ -74,7 +74,8 @@ struct EnterpriseServerApiHelper {
         guard let responseDictionary = try? responseData.toDict(),
               let service = responseDictionary["service"] as? String
         else { return false }
-        return service == "enterprise-server"
+        let allowedServices = ["enterprise-server", "external-service"]
+        return allowedServices.contains(service)
     }
 
     private func shouldTolerateWhenCallingOpportunistically(_ error: Error) async -> Bool {
