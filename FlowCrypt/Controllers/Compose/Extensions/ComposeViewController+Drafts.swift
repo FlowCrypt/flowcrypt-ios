@@ -6,6 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+let MAX_DRAFT_RETRY_ON_ERROR_COUNT = 10
+
 // MARK: - Drafts
 extension ComposeViewController {
     @objc func startDraftTimer(withFire: Bool = false) {
@@ -45,9 +47,19 @@ extension ComposeViewController {
         return newDraft != existingDraft ? newDraft : nil
     }
 
-    func saveDraftIfNeeded(handler: ((DraftSaveState) -> Void)? = nil) {
+    func saveDraftIfNeeded(handler: ((DraftSaveState) -> Void)? = nil, forceCreate: Bool = false) {
+        if draftSaveRetryCount > 1, !shouldSaveCurrentDraft {
+            // shouldSaveCurrentDraft is used for exponential backoff.
+            // the first request failure retries after 5 seconds, the next retry is retried after 10 seconds...
+            shouldSaveCurrentDraft = true
+            return
+        }
         guard let draft = createDraft() else {
             handler?(.cancelled)
+            return
+        }
+
+        guard draftSaveRetryCount < MAX_DRAFT_RETRY_ON_ERROR_COUNT else {
             return
         }
 
@@ -69,16 +81,30 @@ extension ComposeViewController {
                 try await composeMessageHelper.saveDraft(
                     message: sendableMsg,
                     threadId: draft.input.threadId,
-                    shouldEncrypt: shouldEncrypt
+                    shouldEncrypt: shouldEncrypt,
+                    forceCreate: forceCreate
                 )
 
                 composedLatestDraft = draft
+                draftSaveRetryCount = 0
                 handler?(.success(sendableMsg))
             } catch {
+                if error.errorMessage.contains("Requested entity was not found.") {
+                    // When draft entity was not found on gmail server, then create new draft
+                    saveDraftIfNeeded(handler: handler, forceCreate: true)
+                    return
+                }
+                shouldSaveCurrentDraft = false
                 if !(error is MessageValidationError) {
                     // no need to save or notify user if validation error
                     // for other errors show toast
-                    showToast("draft_error".localizeWithArguments(error.errorMessage), position: .top)
+                    draftSaveRetryCount += 1
+                    showToast(
+                        "draft_error".localizeWithArguments(error.errorMessage),
+                        position: .top,
+                        view: self.navigationController?.navigationBar,
+                        maxHeightPercentage: 1.0
+                    )
                 }
                 handler?(.error(error))
             }
