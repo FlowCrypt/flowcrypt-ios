@@ -21,7 +21,7 @@ describe('INBOX: ', () => {
     const ccName = CommonData.encryptedEmailWithAttachment.cc;
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
-    const encryptedAttachmentName = CommonData.encryptedEmailWithAttachment.encryptedAttachmentName;
+    const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
 
     const replySubject = `Re: ${emailSubject}`;
     const forwardSubject = `Fwd: ${emailSubject}`;
@@ -76,10 +76,10 @@ describe('INBOX: ', () => {
       await EmailScreen.clickMenuButton();
       await EmailScreen.clickForwardButton();
       await NewMessageScreen.checkFilledComposeEmailInfo({
+        attachmentName,
         recipients: [],
         subject: forwardSubject,
-        message: quoteText,
-        attachmentName: encryptedAttachmentName
+        message: quoteText
       });
       await NewMessageScreen.deleteAttachment();
     });
