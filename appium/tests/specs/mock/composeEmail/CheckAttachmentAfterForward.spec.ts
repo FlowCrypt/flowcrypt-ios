@@ -11,7 +11,7 @@ describe('COMPOSE EMAIL: ', () => {
 
   it('check attachment after forward', async () => {
     const mockApi = new MockApi();
-    const subject = 'Test attachment after forward';
+    const subject = 'email with text attachment';
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
@@ -28,9 +28,8 @@ describe('COMPOSE EMAIL: ', () => {
       // check recipient text field focus for forward message
       await EmailScreen.clickMenuButton();
       await EmailScreen.clickForwardButton();
-      await EmailScreen.checkAttachment('test.txt');
+      await EmailScreen.checkAttachment('image.png');
       await EmailScreen.clickOnAttachmentCell();
-      await EmailScreen.checkAttachmentTextView('Test attachment after forward');
     });
   });
 });

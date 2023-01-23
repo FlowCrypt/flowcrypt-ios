@@ -125,6 +125,33 @@ extension ThreadDetailsViewController {
 
 // MARK: - Compsoe
 extension ThreadDetailsViewController {
+    private func fetchAndDecrypt(attachment: MessageAttachment, messageId: Identifier) async throws -> MessageAttachment {
+        let trace = Trace(id: "Attachment")
+        var updatedAttachment = attachment
+        if attachment.data == nil {
+            showSpinner()
+            updatedAttachment.data = try await messageHelper.download(
+                attachment: attachment,
+                messageId: messageId,
+                progressHandler: { [weak self] progress in
+                    self?.handleFetchProgress(state: .download(progress))
+                }
+            )
+        }
+
+        if updatedAttachment.isEncrypted {
+            handleFetchProgress(state: .decrypt)
+            updatedAttachment = try await messageHelper.decrypt(
+                attachment: updatedAttachment,
+                userEmail: appContext.user.email
+            )
+            logger.logInfo("Got encrypted attachment - \(trace.finish())")
+        } else {
+            logger.logInfo("Got not encrypted attachment - \(trace.finish())")
+        }
+        return updatedAttachment
+    }
+
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) async throws {
         guard let input = input[safe: indexPath.section - 1],
               let processedMessage = input.processedMessage
@@ -159,27 +186,7 @@ extension ThreadDetailsViewController {
         let attachments = quoteType == .forward
             ? input.processedMessage?.attachments ?? []
             : []
-        showSpinner()
-        let decryptedAttachments = try await attachments.asyncMap { (attachment: MessageAttachment) -> MessageAttachment in
-            var updatedAttachment = attachment
-            if updatedAttachment.data == nil {
-                updatedAttachment.data = try await messageHelper.download(
-                    attachment: updatedAttachment,
-                    messageId: input.rawMessage.identifier,
-                    progressHandler: { [weak self] progress in
-                        self?.handleFetchProgress(state: .download(progress))
-                    }
-                )
-            }
-            if updatedAttachment.isEncrypted {
-                handleFetchProgress(state: .decrypt)
-                return try await messageHelper.decrypt(
-                    attachment: updatedAttachment,
-                    userEmail: appContext.user.email
-                )
-            }
-            return updatedAttachment
-        }
+        let decryptedAttachments = try await attachments.asyncMap { try await fetchAndDecrypt(attachment: $0, messageId: input.rawMessage.identifier) }
         hideSpinner()
 
         let subject = input.rawMessage.subject ?? "(no subject)"
@@ -256,7 +263,6 @@ extension ThreadDetailsViewController {
     func getAttachment(at indexPath: IndexPath) async throws -> MessageAttachment {
         defer { node.reloadRows(at: [indexPath], with: .automatic) }
 
-        let trace = Trace(id: "Attachment")
         let sectionIndex = indexPath.section - 1
         let section = input[sectionIndex]
         let attachmentIndex = indexPath.row - 2
@@ -265,33 +271,9 @@ extension ThreadDetailsViewController {
             throw MessageHelperError.attachmentNotFound
         }
 
-        if attachment.data == nil {
-            showSpinner()
-            attachment.data = try await messageHelper.download(
-                attachment: attachment,
-                messageId: section.rawMessage.identifier,
-                progressHandler: { [weak self] progress in
-                    self?.handleFetchProgress(state: .download(progress))
-                }
-            )
-            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = attachment
-        }
-
-        if attachment.isEncrypted {
-            handleFetchProgress(state: .decrypt)
-            let decryptedAttachment = try await messageHelper.decrypt(
-                attachment: attachment,
-                userEmail: appContext.user.email
-            )
-            logger.logInfo("Got encrypted attachment - \(trace.finish())")
-
-            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
-            return decryptedAttachment
-        } else {
-            logger.logInfo("Got not encrypted attachment - \(trace.finish())")
-            input[sectionIndex].processedMessage?.attachments[attachmentIndex] = attachment
-            return attachment
-        }
+        let decryptedAttachment = try await fetchAndDecrypt(attachment: attachment, messageId: section.rawMessage.identifier)
+        input[sectionIndex].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
+        return decryptedAttachment
     }
 
     func show(attachment: MessageAttachment) {
