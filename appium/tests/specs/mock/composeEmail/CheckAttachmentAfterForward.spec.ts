@@ -28,8 +28,9 @@ describe('COMPOSE EMAIL: ', () => {
       // check recipient text field focus for forward message
       await EmailScreen.clickMenuButton();
       await EmailScreen.clickForwardButton();
-      await EmailScreen.checkAttachment('image.png');
+      await EmailScreen.checkAttachment('test.txt');
       await EmailScreen.clickOnAttachmentCell();
+      await EmailScreen.checkAttachmentTextView('email with text attachment');
     });
   });
 });
