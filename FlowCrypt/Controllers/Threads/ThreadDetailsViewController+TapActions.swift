@@ -49,7 +49,13 @@ extension ThreadDetailsViewController {
     }
 
     func handleReplyTap(at indexPath: IndexPath) {
-        composeNewMessage(at: indexPath, quoteType: .reply)
+        Task {
+            do {
+                try await composeNewMessage(at: indexPath, quoteType: .reply)
+            } catch {
+                showAlert(message: error.errorMessage)
+            }
+        }
     }
 
     func handleDraftTap(at indexPath: IndexPath) {
@@ -119,7 +125,7 @@ extension ThreadDetailsViewController {
 
 // MARK: - Compsoe
 extension ThreadDetailsViewController {
-    private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) {
+    private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) async throws {
         guard let input = input[safe: indexPath.section - 1],
               let processedMessage = input.processedMessage
         else { return }
@@ -153,6 +159,28 @@ extension ThreadDetailsViewController {
         let attachments = quoteType == .forward
             ? input.processedMessage?.attachments ?? []
             : []
+        showSpinner()
+        let decryptedAttachments = try await attachments.asyncMap { (attachment: MessageAttachment) -> MessageAttachment in
+            var updatedAttachment = attachment
+            if updatedAttachment.data == nil {
+                updatedAttachment.data = try await messageHelper.download(
+                    attachment: updatedAttachment,
+                    messageId: input.rawMessage.identifier,
+                    progressHandler: { [weak self] progress in
+                        self?.handleFetchProgress(state: .download(progress))
+                    }
+                )
+            }
+            if updatedAttachment.isEncrypted {
+                handleFetchProgress(state: .decrypt)
+                return try await messageHelper.decrypt(
+                    attachment: updatedAttachment,
+                    userEmail: appContext.user.email
+                )
+            }
+            return updatedAttachment
+        }
+        hideSpinner()
 
         let subject = input.rawMessage.subject ?? "(no subject)"
         let threadId = quoteType == .forward ? nil : input.rawMessage.threadId
@@ -173,7 +201,7 @@ extension ThreadDetailsViewController {
             rfc822MsgId: input.rawMessage.rfc822MsgId,
             draftId: nil,
             shouldEncrypt: input.rawMessage.isPgp,
-            attachments: attachments
+            attachments: decryptedAttachments
         )
 
         let composeType: ComposeMessageInput.InputType = {
@@ -210,7 +238,13 @@ extension ThreadDetailsViewController {
             title: type.actionLabel,
             style: .default
         ) { [weak self] _ in
-            self?.composeNewMessage(at: indexPath, quoteType: type)
+            Task {
+                do {
+                    try await self?.composeNewMessage(at: indexPath, quoteType: type)
+                } catch {
+                    self?.showAlert(message: error.errorMessage)
+                }
+            }
         }
         action.accessibilityIdentifier = type.accessibilityIdentifier
         return action
