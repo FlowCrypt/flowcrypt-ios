@@ -175,6 +175,7 @@
 		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
+		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */; };
@@ -637,6 +638,7 @@
 		756BB98F285A19C100F73140 /* EmptyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellNode.swift; sourceTree = "<group>"; };
 		75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
@@ -2101,6 +2103,7 @@
 				9FD22A1B230FE7D0005067A6 /* Then.swift */,
 				D2FD0F682453245E00259FF0 /* Either.swift */,
 				750A6C3C28244A780048E1CC /* OptionalExtensions.swift */,
+				95473C1A297E61DE006C8957 /* SequenceExtension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2923,6 +2926,7 @@
 				9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */,
 				9FD5052B278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift in Sources */,
 				D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */,
+				95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */,
 				21F836B62652A26B00B2448C /* DataExtensions+ZBase32Encoding.swift in Sources */,
 				D29AFFF6240939AE00C1387D /* Then.swift in Sources */,
 				9FBD69EE27775086002FC602 /* ErrorExtensions.swift in Sources */,
