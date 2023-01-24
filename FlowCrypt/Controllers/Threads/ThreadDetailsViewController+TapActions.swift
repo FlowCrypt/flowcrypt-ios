@@ -141,7 +141,7 @@ extension ThreadDetailsViewController {
         return attachment
     }
 
-    private func decryptAttachment(for attachment: MessageAttachment) async throws -> MessageAttachment {
+    private func decrypt(attachment: MessageAttachment) async throws -> MessageAttachment {
         let trace = Trace(id: "Attachment")
 
         if attachment.isEncrypted {
@@ -193,7 +193,7 @@ extension ThreadDetailsViewController {
             : []
         let decryptedAttachments = try await attachments.asyncMap {
             let fetchedAttachment = try await fetchAttachmentDataIfNil(attachment: $0, messageId: input.rawMessage.identifier)
-            return try await decryptAttachment(for: fetchedAttachment)
+            return try await decrypt(attachment: fetchedAttachment)
         }
         hideSpinner()
 
@@ -281,7 +281,7 @@ extension ThreadDetailsViewController {
 
         let fetchedAttachment = try await fetchAttachmentDataIfNil(attachment: rawAttachment, messageId: section.rawMessage.identifier)
         input[sectionIndex].processedMessage?.attachments[attachmentIndex] = fetchedAttachment
-        let decryptedAttachment = try await decryptAttachment(for: fetchedAttachment)
+        let decryptedAttachment = try await decrypt(attachment: fetchedAttachment)
         input[sectionIndex].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
         return decryptedAttachment
     }
