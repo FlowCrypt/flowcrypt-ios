@@ -125,10 +125,9 @@ extension ThreadDetailsViewController {
 
 // MARK: - Compsoe
 extension ThreadDetailsViewController {
-    private func fetchAndDecrypt(attachment: MessageAttachment, messageId: Identifier) async throws -> MessageAttachment {
-        let trace = Trace(id: "Attachment")
-        var updatedAttachment = attachment
+    private func fetchAttachmentDataIfNil(attachment: MessageAttachment, messageId: Identifier) async throws -> MessageAttachment {
         if attachment.data == nil {
+            var updatedAttachment = attachment
             showSpinner()
             updatedAttachment.data = try await messageHelper.download(
                 attachment: attachment,
@@ -137,21 +136,27 @@ extension ThreadDetailsViewController {
                     self?.handleFetchProgress(state: .download(progress))
                 }
             )
+            return updatedAttachment
         }
-
-        if updatedAttachment.isEncrypted {
-            handleFetchProgress(state: .decrypt)
-            updatedAttachment = try await messageHelper.decrypt(
-                attachment: updatedAttachment,
-                userEmail: appContext.user.email
-            )
-            logger.logInfo("Got encrypted attachment - \(trace.finish())")
-        } else {
-            logger.logInfo("Got not encrypted attachment - \(trace.finish())")
-        }
-        return updatedAttachment
+        return attachment
     }
 
+    private func decryptAttachment(for attachment: MessageAttachment) async throws -> MessageAttachment {
+        let trace = Trace(id: "Attachment")
+
+        if attachment.isEncrypted {
+            handleFetchProgress(state: .decrypt)
+            logger.logInfo("Got encrypted attachment - \(trace.finish())")
+            return try await messageHelper.decrypt(
+                attachment: attachment,
+                userEmail: appContext.user.email
+            )
+        }
+        logger.logInfo("Attachment is not encrypted. Returning original attachment - \(trace.finish())")
+        return attachment
+    }
+
+    // swiftlint:disable cyclomatic_complexity function_body_length
     private func composeNewMessage(at indexPath: IndexPath, quoteType: MessageQuoteType) async throws {
         guard let input = input[safe: indexPath.section - 1],
               let processedMessage = input.processedMessage
@@ -186,7 +191,10 @@ extension ThreadDetailsViewController {
         let attachments = quoteType == .forward
             ? input.processedMessage?.attachments ?? []
             : []
-        let decryptedAttachments = try await attachments.asyncMap { try await fetchAndDecrypt(attachment: $0, messageId: input.rawMessage.identifier) }
+        let decryptedAttachments = try await attachments.asyncMap {
+            let fetchedAttachment = try await fetchAttachmentDataIfNil(attachment: $0, messageId: input.rawMessage.identifier)
+            return try await decryptAttachment(for: fetchedAttachment)
+        }
         hideSpinner()
 
         let subject = input.rawMessage.subject ?? "(no subject)"
@@ -267,11 +275,13 @@ extension ThreadDetailsViewController {
         let section = input[sectionIndex]
         let attachmentIndex = indexPath.row - 2
 
-        guard var attachment = section.processedMessage?.attachments[attachmentIndex] else {
+        guard let rawAttachment = section.processedMessage?.attachments[attachmentIndex] else {
             throw MessageHelperError.attachmentNotFound
         }
 
-        let decryptedAttachment = try await fetchAndDecrypt(attachment: attachment, messageId: section.rawMessage.identifier)
+        let fetchedAttachment = try await fetchAttachmentDataIfNil(attachment: rawAttachment, messageId: section.rawMessage.identifier)
+        input[sectionIndex].processedMessage?.attachments[attachmentIndex] = fetchedAttachment
+        let decryptedAttachment = try await decryptAttachment(for: fetchedAttachment)
         input[sectionIndex].processedMessage?.attachments[attachmentIndex] = decryptedAttachment
         return decryptedAttachment
     }
