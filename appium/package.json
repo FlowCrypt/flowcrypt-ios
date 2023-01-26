@@ -43,6 +43,6 @@
     "tsconfig-paths": "^4.0.0",
     "typescript": "^4.7.4",
     "wdio-video-reporter": "^3.3.2",
-    "webdriverio": "^8.2.3"
+    "webdriverio": "^8.2.4"
   }
 }
