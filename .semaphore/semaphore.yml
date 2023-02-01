@@ -42,6 +42,10 @@ blocks:
     execution_time_limit:
       minutes: 45
     task:
+      agent:
+        machine:
+          type: e1-standard-2
+          os_image: ubuntu2004
       env_vars:
         - name: LANG
           value: en_US.UTF-8
