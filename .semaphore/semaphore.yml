@@ -24,7 +24,7 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - sudo xcode-select -s /Applications/Xcode-14.1.app
+          - sudo xcode-select -s /Applications/Xcode-14.2.app
           - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
@@ -42,11 +42,15 @@ blocks:
     execution_time_limit:
       minutes: 45
     task:
+      agent:
+        machine:
+          type: e1-standard-2
+          os_image: ubuntu2004
       env_vars:
         - name: LANG
           value: en_US.UTF-8
         - name: SEMAPHORE_GIT_DIR
-          value: /Users/semaphore/git/flowcrypt-ios
+          value: /home/semaphore/git/flowcrypt-ios
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/
