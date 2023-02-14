@@ -172,6 +172,7 @@ final class MessageHelper {
         )
 
         var message = message
+        try await parseAttachmentTypes(message: &message)
         if message.hasSignatureAttachment || message.hasEncryptedMsgAttachment {
             // raw data is needed for verification of detached signature
             // and decrypting pgp/mime attachment
