@@ -3,15 +3,16 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import {
   EmailScreen,
   MailFolderScreen,
+  NewMessageScreen,
   SetupKeyScreen,
   SplashScreen
 } from '../../../screenobjects/all-screens';
 
 describe('COMPOSE EMAIL: ', () => {
 
-  it('check attachment after forward', async () => {
+  it('check forward message with attached pub key', async () => {
     const mockApi = new MockApi();
-    const subject = 'email with text attachment';
+    const subject = 'Test forward message with attached pub key';
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
@@ -25,13 +26,10 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickOnEmailBySubject(subject);
 
-      // check recipient text field focus for forward message
-      await EmailScreen.clickMenuButton();
       await browser.pause(1000);
+      await EmailScreen.clickMenuButton();
       await EmailScreen.clickForwardButton();
-      await EmailScreen.checkAttachment('test.txt');
-      await EmailScreen.clickOnAttachmentCell();
-      await EmailScreen.checkAttachmentTextView('email with text attachment');
+      await NewMessageScreen.checkSubject(`Fwd: ${subject}`);
     });
   });
 });

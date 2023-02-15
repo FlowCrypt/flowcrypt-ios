@@ -53,12 +53,16 @@ export const config: Options.Testrunner = {
   specFileRetries: 1,
   specFileRetriesDeferred: false,
 
-  afterTest: function ({ error }) {
-    if (error) {
-      const timestampNow = new Date().getTime().toString();
-      const path = join(process.cwd(), './tmp');
-      void driver.saveScreenshot(`${path}/${timestampNow}.png`);
-      console.log("Screenshot of failed test was saved to " + path)
+  afterTest: async function (_test, _context, { passed }) {
+    if (!passed) {
+      try {
+        const timestampNow = new Date().getTime().toString();
+        const path = join(process.cwd(), './tmp');
+        await browser.saveScreenshot(`${path}/${timestampNow}.png`);
+        console.log("Screenshot of failed test was saved to " + path)
+      } catch (e) {
+        console.error(`Error occurred while saving screenshot. Error: ${e}`);
+      }
     }
   }
 };

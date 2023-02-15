@@ -25,7 +25,7 @@ extension FileType {
 
     var type: String { mimeType ?? name.mimeType }
     var isEncrypted: Bool {
-        treatAs == "encryptedFile" || name.hasSuffix(".pgp") || name.hasSuffix(".asc")
+        treatAs == "encryptedFile"
     }
 }
 

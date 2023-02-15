@@ -222,14 +222,18 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await $(`~${email}`));
   };
 
+  checkSubject = async (subject: string) => {
+    const element = await this.filledSubject(subject);
+    await element.waitForDisplayed();
+  }
+
   checkFilledComposeEmailInfo = async (emailInfo: ComposeEmailInfo) => {
     const messageEl = await this.composeSecurityMessage;
     await ElementHelper.waitElementVisible(messageEl);
     const text = await messageEl.getText();
     expect(text.includes(emailInfo.message)).toBeTruthy();
 
-    const element = await this.filledSubject(emailInfo.subject);
-    await element.waitForDisplayed();
+    await this.checkSubject(emailInfo.subject);
 
     await ElementHelper.waitElementInvisible(await this.recipientSpinner);
     if (await this.recipientListLabel.isDisplayed()) {
