@@ -26,6 +26,7 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickOnEmailBySubject(subject);
 
+      await browser.pause(2000);
       await EmailScreen.clickMenuButton();
       await EmailScreen.clickForwardButton();
       await NewMessageScreen.checkSubject(`Fwd: ${subject}`);
