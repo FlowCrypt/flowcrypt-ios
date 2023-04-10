@@ -81,7 +81,6 @@
 		50531BE42629B9A80039BAE9 /* AttachmentNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50531BE32629B9A80039BAE9 /* AttachmentNode.swift */; };
 		5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */; };
 		510BB63527BE92CC00B1011F /* RecipientBase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 510BB63427BE92CC00B1011F /* RecipientBase.swift */; };
-		51114DB6280EB699006C252A /* gmp-interface.m in Sources */ = {isa = PBXBuildFile; fileRef = 51114DB5280EB699006C252A /* gmp-interface.m */; };
 		5113D22D28C0C43700A131E0 /* Gmail+MessageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5113D22C28C0C43700A131E0 /* Gmail+MessageExtension.swift */; };
 		511737682851F31700337B9F /* GoogleScope.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511737672851F31700337B9F /* GoogleScope.swift */; };
 		511D07E12769FBBA0050417B /* MessageActionCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 511D07E02769FBBA0050417B /* MessageActionCellNode.swift */; };
@@ -108,7 +107,6 @@
 		5152F196277E5AED00BE8A5B /* MessageUploadDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5152F195277E5AED00BE8A5B /* MessageUploadDetails.swift */; };
 		51540F732950ED5F00DCDC40 /* MessageActionsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51540F722950ED5F00DCDC40 /* MessageActionsHelper.swift */; };
 		51592FB528D9B03600FE9ACC /* MessageIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51592FB428D9B03600FE9ACC /* MessageIdentifier.swift */; };
-		515B7C2528119CED0066AB4F /* GMP in Frameworks */ = {isa = PBXBuildFile; productRef = 515B7C2428119CED0066AB4F /* GMP */; };
 		516481B129410A6E00A96095 /* ContactsProviderType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516481B029410A6E00A96095 /* ContactsProviderType.swift */; };
 		516481B329410F5700A96095 /* GoogleContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516481B229410F5700A96095 /* GoogleContactsProvider.swift */; };
 		516481B5294112A400A96095 /* IdToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 516481B4294112A400A96095 /* IdToken.swift */; };
@@ -547,9 +545,6 @@
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
 		5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		510BB63427BE92CC00B1011F /* RecipientBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientBase.swift; sourceTree = "<group>"; };
-		51114DB5280EB699006C252A /* gmp-interface.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "gmp-interface.m"; sourceTree = "<group>"; };
-		51114DB7280EB6B9006C252A /* gmp-interface.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "gmp-interface.h"; sourceTree = "<group>"; };
-		51114DBA280EBB78006C252A /* gmp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = gmp.h; sourceTree = "<group>"; };
 		5113D22C28C0C43700A131E0 /* Gmail+MessageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gmail+MessageExtension.swift"; sourceTree = "<group>"; };
 		511737672851F31700337B9F /* GoogleScope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleScope.swift; sourceTree = "<group>"; };
 		511D07E02769FBBA0050417B /* MessageActionCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageActionCellNode.swift; sourceTree = "<group>"; };
@@ -888,7 +883,6 @@
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
 				51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */,
 				51A1A12829070CDF007F1188 /* AsyncDisplayKit in Frameworks */,
-				515B7C2528119CED0066AB4F /* GMP in Frameworks */,
 				51E1675D270F36A400D27C52 /* Realm in Frameworks */,
 				51C0C1EF271982A1000C9738 /* MailCore in Frameworks */,
 				51E13F12270F92BA00F287CA /* IDZSwiftCommonCrypto in Frameworks */,
@@ -1098,7 +1092,6 @@
 			isa = PBXGroup;
 			children = (
 				51114DB9280EBB2B006C252A /* ObjcException */,
-				51114DB8280EBB1E006C252A /* GMP */,
 			);
 			path = Lib;
 			sourceTree = "<group>";
@@ -1121,16 +1114,6 @@
 				D2A9CA3C242619EC00E1D898 /* SignInViewDecorator.swift */,
 			);
 			path = SignIn;
-			sourceTree = "<group>";
-		};
-		51114DB8280EBB1E006C252A /* GMP */ = {
-			isa = PBXGroup;
-			children = (
-				51114DB5280EB699006C252A /* gmp-interface.m */,
-				51114DB7280EB6B9006C252A /* gmp-interface.h */,
-				51114DBA280EBB78006C252A /* gmp.h */,
-			);
-			path = GMP;
 			sourceTree = "<group>";
 		};
 		51114DB9280EBB2B006C252A /* ObjcException */ = {
@@ -2369,7 +2352,6 @@
 				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
 				51C0C1EE271982A1000C9738 /* MailCore */,
 				040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */,
-				515B7C2428119CED0066AB4F /* GMP */,
 				51A1A12729070CDF007F1188 /* AsyncDisplayKit */,
 			);
 			productName = FlowCrypt;
@@ -2482,7 +2464,6 @@
 				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
-				515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */,
 				51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */,
 				51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
 			);
@@ -2685,7 +2666,6 @@
 				32DCA04CA0DAB79C39514782 /* CoreTypes.swift in Sources */,
 				049E606F27FDBBD50089EE2A /* ComposeViewController+Picker.swift in Sources */,
 				9FB22CDD25715CF50026EE64 /* GmailApiError.swift in Sources */,
-				51114DB6280EB699006C252A /* gmp-interface.m in Sources */,
 				5ADEDCB923A42B9400EC495E /* KeyDetailViewDecorator.swift in Sources */,
 				9F416428266575DC00106194 /* BackupsManagerType.swift in Sources */,
 				2CC12C3F273571B80021DDDF /* AttachmentManager.swift in Sources */,
@@ -3820,14 +3800,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/FlowCrypt/GMP";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 6.2.1;
-			};
-		};
 		51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/lukepistrol/SwiftLintPlugin";
@@ -3912,11 +3884,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
 			productName = GoogleAPIClientForREST_PeopleService;
-		};
-		515B7C2428119CED0066AB4F /* GMP */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 515B7C2328119CED0066AB4F /* XCRemoteSwiftPackageReference "GMP" */;
-			productName = GMP;
 		};
 		51A1A11D2906AFEA007F1188 /* SwiftLint */ = {
 			isa = XCSwiftPackageProductDependency;

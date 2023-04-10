@@ -3,4 +3,3 @@
 //
 
 #import "ObjcException.h"
-#import "gmp-interface.h"
