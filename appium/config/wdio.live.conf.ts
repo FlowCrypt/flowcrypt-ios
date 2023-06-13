@@ -12,7 +12,7 @@ config.capabilities = [
     "appium:automationName": "XCUITest",
     "appium:options": {
       deviceName: "iPhone 14",
-      platformVersion: "16.3",
+      platformVersion: "16.4",
       app: join(process.cwd(), "./FlowCrypt.app"),
     },
   },
