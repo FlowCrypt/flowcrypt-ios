@@ -8,9 +8,9 @@
 
 ## Installation
 
-You'll need to have the latest version of Xcode installed.
+First, you need to have the latest version of Xcode installed.
 
-To run the app, you need to follow these instructions:
+To run the app, please follow these instructions:
 
 ```sh
 # 1. Clone the repository
@@ -30,7 +30,7 @@ make dependencies
 
 ## Development
 
-We recommended developing and running tests only using the `Debug FlowCrypt` scheme.
+We recommended developing and running tests using only the `Debug FlowCrypt` scheme.
 
 ## Code Design
 
@@ -38,19 +38,19 @@ Please refer to our [Code Design README](./code-design.md) to learn how we handl
 
 ## UI Tests
 
-Please refer to our [Appium README](./appium/README.md) for UI tests. It explains how to configure your environment, build the app, write, run, and debug tests.
+Please refer to our [Appium README](./appium/README.md) for UI tests. It explains how to configure your environment, build the app, and write, run, or debug tests.
 
 ## Dependency docs
 
-- UI: We use [Texture](https://texturegroup.org/docs/getting-started.html) to improve the performance, memory efficiency, and thread safety of the app.
-- Storage: We use [Realm](https://www.mongodb.com/docs/realm/sdk/swift/realm-database/) as an alternative to SQLite.      [Realm](https://github.com/realm/realm-swift)
-- IMAP/SMTP provider: We use [MailCore](http://libmailcore.com/api/objc/index.html) which provides an asynchronous API to work with the e-mail protocols.
-- Icons: We use [SF Symbols](https://developer.apple.com/sf-symbols/), a powerful resource for vast collection of vector-based icons.
+- **UI**: We use [Texture](https://texturegroup.org/docs/getting-started.html) to improve the performance, memory efficiency, and thread safety of the app.
+- **Storage**: We use [Realm](https://www.mongodb.com/docs/realm/sdk/swift/realm-database/) as an alternative to SQLite.
+- **IMAP/SMTP provider**: We use [MailCore](http://libmailcore.com/api/objc/index.html) which provides an asynchronous API to work with the e-mail protocols.
+- **Icons**: We use [SF Symbols](https://developer.apple.com/sf-symbols/), a powerful resource for a vast collection of vector icons.
 
-## Admin - generating .ipa for penetration tester
+## Generating .ipa for penetration tester (Admin)
 
-1\. Get the UUID of their device and input it into [Apple Developer](https://developer.apple.com/account/) account &#10140; **Devices**.
-2\. Choose the right build (e.g. `FlowCrypt Enterprise`) and choose `Any iOS Device (arm64)`.
+1\. Get the UUID of their device and input it into the [Apple Developer](https://developer.apple.com/account/) account &#10140; **Devices**.
+2\. Choose the right build (e.g. **FlowCrypt Enterprise**) and choose **Any iOS Device (arm64)**.
 3\. **Xcode** &#10140; **Product** &#10140; **Archive**.
-4\. Distribute app &#10140; **Add Hoc** &#10140; **Next** &#10140; **Next** (automatically manage signing).
-5\. This creates a folder at the target where you export it to, and the IPA will be there.
+4\. **Distribute app** &#10140; **Add Hoc** &#10140; **Next** &#10140; **Next** (automatically manage signing).
+5\. This creates a folder at the target where you export it, and the IPA will be there.
