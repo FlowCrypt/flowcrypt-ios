@@ -30,7 +30,7 @@ make dependencies
 
 ## 💻 Development
 
-We recommended developing and running tests using only the `Debug FlowCrypt` scheme.
+We recommend developing and running tests using only the `Debug FlowCrypt` scheme.
 
 ## 🖌️ Code Design
 
@@ -49,8 +49,8 @@ Please refer to our [Appium README](./appium/README.md) for UI tests. It explain
 
 ## 🛠️ Generating .ipa for penetration tester (Admin)
 
-1\. Get the UUID of their device and input it into the [Apple Developer](https://developer.apple.com/account/) account &#10140; **Devices**.
-2\. Choose the right build (e.g. **FlowCrypt Enterprise**) and choose **Any iOS Device (arm64)**.
-3\. **Xcode** &#10140; **Product** &#10140; **Archive**.
-4\. **Distribute app** &#10140; **Add Hoc** &#10140; **Next** &#10140; **Next** (automatically manage signing).
+1\. Get the UUID of their device and input it into the [Apple Developer](https://developer.apple.com/account/) account &#10140; **Devices**.  
+2\. Choose the right build (e.g. **FlowCrypt Enterprise**) and choose **Any iOS Device (arm64)**.  
+3\. **Xcode** &#10140; **Product** &#10140; **Archive**.  
+4\. **Distribute app** &#10140; **Add Hoc** &#10140; **Next** &#10140; **Next** (automatically manage signing).  
 5\. This creates a folder at the target where you export it, and the IPA will be there.
