@@ -6,7 +6,7 @@
 |:---------------------------------------------------------------------------------------------------------------|
 | Download the FlowCrypt app on your device from the [FlowCrypt Downloads](https://flowcrypt.com/download) page. |
 
-## Installation
+## ⚙️ Installation
 
 First, you need to have the latest version of Xcode installed.
 
