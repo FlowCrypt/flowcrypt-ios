@@ -1,4 +1,4 @@
-# 📱 FlowCrypt iOS App (Encrypt email with PGP)
+# 📱 FlowCrypt iOS App (🛡️ Encrypt email with PGP)
 
 ![Build Status](https://flowcrypt.semaphoreci.com/badges/flowcrypt-ios.svg?key=9bd38bf4-4a38-4cb3-b551-38302af1eb07)
 
@@ -28,7 +28,7 @@ brew install swiftformat
 make dependencies
 ```
 
-## 🖥️ Development
+## 💻 Development
 
 We recommended developing and running tests using only the `Debug FlowCrypt` scheme.
 
@@ -47,7 +47,7 @@ Please refer to our [Appium README](./appium/README.md) for UI tests. It explain
 - **IMAP/SMTP provider**: We use [MailCore](http://libmailcore.com/api/objc/index.html) which provides an asynchronous API to work with the e-mail protocols.
 - **Icons**: We use [SF Symbols](https://developer.apple.com/sf-symbols/), a powerful resource for a vast collection of vector icons.
 
-## 🛠 Generating .ipa for penetration tester (Admin)
+## 🛠️ Generating .ipa for penetration tester (Admin)
 
 1\. Get the UUID of their device and input it into the [Apple Developer](https://developer.apple.com/account/) account &#10140; **Devices**.
 2\. Choose the right build (e.g. **FlowCrypt Enterprise**) and choose **Any iOS Device (arm64)**.
