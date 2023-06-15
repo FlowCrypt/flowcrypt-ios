@@ -32,22 +32,22 @@ make dependencies
 
 We recommended developing and running tests using only the `Debug FlowCrypt` scheme.
 
-## Code Design
+## 🖌️ Code Design
 
 Please refer to our [Code Design README](./code-design.md) to learn how we handle errors and tasks.
 
-## UI Tests
+## 🔍 UI Tests
 
 Please refer to our [Appium README](./appium/README.md) for UI tests. It explains how to configure your environment, build the app, and write, run, or debug tests.
 
-## Dependency docs
+## 📚 Dependency docs
 
 - ✅ **UI**: We use [Texture](https://texturegroup.org/docs/getting-started.html) to improve the performance, memory efficiency, and thread safety of the app.
 - **Storage**: We use [Realm](https://www.mongodb.com/docs/realm/sdk/swift/realm-database/) as an alternative to SQLite.
 - **IMAP/SMTP provider**: We use [MailCore](http://libmailcore.com/api/objc/index.html) which provides an asynchronous API to work with the e-mail protocols.
 - **Icons**: We use [SF Symbols](https://developer.apple.com/sf-symbols/), a powerful resource for a vast collection of vector icons.
 
-## Generating .ipa for penetration tester (Admin)
+## 🛠 Generating .ipa for penetration tester (Admin)
 
 1\. Get the UUID of their device and input it into the [Apple Developer](https://developer.apple.com/account/) account &#10140; **Devices**.
 2\. Choose the right build (e.g. **FlowCrypt Enterprise**) and choose **Any iOS Device (arm64)**.
