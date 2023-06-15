@@ -2,7 +2,7 @@
 
 ![Build Status](https://flowcrypt.semaphoreci.com/badges/flowcrypt-ios.svg?key=9bd38bf4-4a38-4cb3-b551-38302af1eb07)
 
-| ⬅ Prerequisites                                                                                                |
+| 👋 Try our app                                                                                                 |
 |:---------------------------------------------------------------------------------------------------------------|
 | Download the FlowCrypt app on your device from the [FlowCrypt Downloads](https://flowcrypt.com/download) page. |
 
