@@ -24,7 +24,6 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - sudo xcode-select -s /Applications/Xcode-14.2.app
           - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
