@@ -3,45 +3,59 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen,
-  AttachmentScreen
-} from '../../../screenobjects/all-screens';
+  AttachmentScreen,
+} from "../../../screenobjects/all-screens";
 
-import { CommonData } from '../../../data';
-import { MockApi } from 'api-mocks/mock';
-import AppiumHelper from 'tests/helpers/AppiumHelper';
-import { MockApiConfig } from 'api-mocks/mock-config';
-import { MockUserList } from 'api-mocks/mock-data';
+import { CommonData } from "../../../data";
+import { MockApi } from "api-mocks/mock";
+import AppiumHelper from "tests/helpers/AppiumHelper";
+import { MockApiConfig } from "api-mocks/mock-config";
+import { MockUserList } from "api-mocks/mock-data";
+import TouchHelper from "tests/helpers/TouchHelper";
 
-describe('INBOX: ', () => {
-
-  it('user is able to view encrypted email with attachment', async () => {
-
+describe("INBOX: ", () => {
+  it("user is able to view encrypted email with attachment", async () => {
     const senderName = CommonData.encryptedEmailWithAttachment.senderName;
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
-    const attachmentName = CommonData.encryptedEmailWithAttachment.attachmentName;
-    const attachmentNameWithoutExtension = attachmentName.substring(0, attachmentName.lastIndexOf('.'));
-    const encryptedAttachmentName = CommonData.encryptedEmailWithAttachment.encryptedAttachmentName;
+    const attachmentName =
+      CommonData.encryptedEmailWithAttachment.attachmentName;
+    const attachmentNameWithoutExtension = attachmentName.substring(
+      0,
+      attachmentName.lastIndexOf(".")
+    );
+    const encryptedAttachmentName =
+      CommonData.encryptedEmailWithAttachment.encryptedAttachmentName;
 
-    const messageWithoutPreviewSender = CommonData.encryptedEmailWithAttachmentWithoutPreview.sender;
-    const messageWithoutPreviewSubject = CommonData.encryptedEmailWithAttachmentWithoutPreview.subject;
-    const attachmentWithoutPreviewName = CommonData.encryptedEmailWithAttachmentWithoutPreview.attachmentName;
-    const attachmentWithoutPreviewNameWithoutExtension = attachmentWithoutPreviewName.substring(0, attachmentWithoutPreviewName.lastIndexOf('.'));
+    const messageWithoutPreviewSender =
+      CommonData.encryptedEmailWithAttachmentWithoutPreview.sender;
+    const messageWithoutPreviewSubject =
+      CommonData.encryptedEmailWithAttachmentWithoutPreview.subject;
+    const attachmentWithoutPreviewName =
+      CommonData.encryptedEmailWithAttachmentWithoutPreview.attachmentName;
+    const attachmentWithoutPreviewNameWithoutExtension =
+      attachmentWithoutPreviewName.substring(
+        0,
+        attachmentWithoutPreviewName.lastIndexOf(".")
+      );
 
-    const wrongPassPhrase = 'wrong';
+    const wrongPassPhrase = "wrong";
     const correctPassPhrase = CommonData.account.passPhrase;
     const processArgs = CommonData.mockProcessArgs;
 
     const mockApi = new MockApi();
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      messages: ['Message with cc and multiple recipients and text attachment', 'message with kdbx file'],
+    mockApi.addGoogleAccount("e2e.enterprise.test@flowcrypt.com", {
+      messages: [
+        "Message with cc and multiple recipients and text attachment",
+        "message with kdbx file",
+      ],
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
         [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -91,17 +105,24 @@ describe('INBOX: ', () => {
 
       await AttachmentScreen.clickSaveButton();
       await AttachmentScreen.checkDownloadPopUp(attachmentNameWithoutExtension);
-      await AttachmentScreen.clickSystemBackButton();
-      await AttachmentScreen.clickCancelButton();
+      await TouchHelper.pullToRefresh(); // to hide file manager popup
       await AttachmentScreen.clickBackButton();
       await EmailScreen.clickBackButton();
 
       await MailFolderScreen.checkInboxScreen();
-      await MailFolderScreen.clickOnEmailBySubject(messageWithoutPreviewSubject);
-      await EmailScreen.checkOpenedEmail(messageWithoutPreviewSender, messageWithoutPreviewSubject, '');
+      await MailFolderScreen.clickOnEmailBySubject(
+        messageWithoutPreviewSubject
+      );
+      await EmailScreen.checkOpenedEmail(
+        messageWithoutPreviewSender,
+        messageWithoutPreviewSubject,
+        ""
+      );
       await EmailScreen.checkAttachment(attachmentWithoutPreviewName);
       await EmailScreen.clickOnAttachmentCell();
-      await AttachmentScreen.checkDownloadPopUp(attachmentWithoutPreviewNameWithoutExtension);
+      await AttachmentScreen.checkDownloadPopUp(
+        attachmentWithoutPreviewNameWithoutExtension
+      );
     });
   });
 });
