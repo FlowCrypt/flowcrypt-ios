@@ -4,7 +4,7 @@
 
 | ⬅ Prerequisites                                                                                          |
 |:---------------------------------------------------------------------------------------------------------------|
-| Download the FlowCrypt app on your device from the [FlowCrypt Downloads](https://flowcrypt.com/download) page. |
+| ⬇ Download the FlowCrypt app on your device from the [FlowCrypt Downloads](https://flowcrypt.com/download) page. |
 
 ## ⚙️ Installation
 
