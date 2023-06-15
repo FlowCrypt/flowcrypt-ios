@@ -1,5 +1,7 @@
 # 📱 FlowCrypt iOS App (Encrypt email with PGP)
 
+[![FlowCrypt Logo](https://blog.jabberhead.tk/wp-content/uploads/2022/05/flowcrypt-logo.svg)](https://flowcrypt.com)
+
 ![Build Status](https://flowcrypt.semaphoreci.com/badges/flowcrypt-ios.svg?key=9bd38bf4-4a38-4cb3-b551-38302af1eb07)
 
 | 👋 Try our app                                                                                                   |
