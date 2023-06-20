@@ -42,7 +42,7 @@
     "ts-node": "^10.5.0",
     "tsconfig-paths": "^4.0.0",
     "typescript": "^4.9.5",
-    "wdio-video-reporter": "^3.5.0",
+    "wdio-video-reporter": "^4.0.3",
     "webdriverio": "^8.5.9"
   }
 }
