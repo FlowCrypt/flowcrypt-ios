@@ -182,11 +182,18 @@ extension MyMenuViewController {
     private func handleNewFolders(with folders: [FolderViewModel]) {
         hideSpinner()
         let updatedFolders = folders.sorted(
-            by: { left, _ in
+            by: { left, right in
                 if left.path.caseInsensitiveCompare(Constants.inbox) == .orderedSame {
                     return true
-                } else if left.path.caseInsensitiveCompare(Constants.allMail) == .orderedSame {
+                }
+                if left.path.caseInsensitiveCompare(Constants.allMail) == .orderedSame {
                     return true
+                }
+                // For user labels(not standard gmail labels) sort it alphabetically
+                let isLeftLabelStandard = GeneralConstants.Gmail.standardGmailPaths.contains(left.path)
+                let isRightLabelStandard = GeneralConstants.Gmail.standardGmailPaths.contains(right.path)
+                if !isLeftLabelStandard, !isRightLabelStandard {
+                    return left.name < right.name
                 }
                 return false
             }
