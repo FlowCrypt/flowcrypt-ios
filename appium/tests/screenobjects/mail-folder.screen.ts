@@ -146,7 +146,7 @@ class MailFolderScreen extends BaseScreen {
   scrollUpToFirstEmail = async () => {
     const elem = await this.inboxList[0];
     if (elem) {
-      await TouchHelper.scrollUpToElement(elem);
+      await TouchHelper.scrollUpToElement(elem as WebdriverIO.Element);
     }
   }
 
