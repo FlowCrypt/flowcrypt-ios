@@ -64,19 +64,7 @@ private extension Folder {
             return nil
         }
 
-        let standardGmailLabels = [
-            "INBOX",
-            "CHAT",
-            "SENT",
-            "IMPORTANT",
-            "TRASH",
-            "DRAFT",
-            "SPAM",
-            "STARRED",
-            "UNREAD",
-            "ALL MAIL"
-        ]
-        if standardGmailLabels.contains(name) {
+        if GeneralConstants.Gmail.standardGmailPaths.contains(path) {
             name = "folder_\(name.replacingOccurrences(of: " ", with: "_"))".localized
         }
         self.init(

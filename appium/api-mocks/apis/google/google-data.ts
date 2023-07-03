@@ -15,7 +15,7 @@ type GmailMsg$payload$part = { partId?: string, body?: GmailMsg$payload$body, fi
 type GmailMsg$payload = { partId?: string, filename?: string, parts?: GmailMsg$payload$part[], headers?: GmailMsg$header[], mimeType?: string, body?: GmailMsg$payload$body };
 type GmailMsg$labelId = 'INBOX' | 'UNREAD' | 'CATEGORY_PERSONAL' | 'IMPORTANT' | 'SENT' | 'CATEGORY_UPDATES' | 'DRAFT' | 'TRASH';
 type GmailThread = { historyId: string; id: string; snippet: string; };
-type Label = { id: string, name: string, messageListVisibility: 'show' | 'hide', labelListVisibility: 'labelShow' | 'labelHide', type: 'system' };
+type Label = { id: string, name: string, path: string, messageListVisibility: 'show' | 'hide', labelListVisibility: 'labelShow' | 'labelHide', type: 'system' };
 type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[], contacts: MockUser[], aliases: MockUserAlias[] };
 type ExportedMsg = { acctEmail: string, full: GmailMsg, raw: GmailMsg, attachments: { [id: string]: { data: string, size: number } } };
 
@@ -171,10 +171,10 @@ export class GoogleData {
         aliases: [...aliases, ...additionalAliases],
         labels:
           [
-            { id: 'INBOX', name: 'Inbox', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
-            { id: 'SENT', name: 'Sent', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
-            { id: 'DRAFT', name: 'Drafts', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
-            { id: 'TRASH', name: 'Trash', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
+            { id: 'INBOX', name: 'INBOX', path: 'INBOX', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
+            { id: 'SENT', name: 'SENT', path: 'SENT', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
+            { id: 'DRAFT', name: 'DRAFT', path: 'DRAFT', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
+            { id: 'TRASH', name: 'TRASH', path: 'TRASH', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
           ]
       };
 
