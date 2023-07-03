@@ -40,8 +40,14 @@ class AttachmentScreen extends BaseScreen {
   }
 
   clickSystemBackButton = async () => {
-    await browser.pause(1000);
     await ElementHelper.waitAndClick(await this.systemBackButton);
+  }
+
+  clickSystemBackButtonIfStillPresent = async () => {
+    const systemBackButton = await this.systemBackButton;
+    if (await systemBackButton.isDisplayed()) {
+      await this.clickSystemBackButton();
+    }
   }
 
   clickCancelButton = async () => {

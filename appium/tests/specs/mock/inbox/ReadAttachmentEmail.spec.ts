@@ -89,6 +89,7 @@ describe("INBOX: ", () => {
 
       await AttachmentScreen.checkDownloadPopUp(attachmentNameWithoutExtension);
       await AttachmentScreen.clickSystemBackButton();
+      await AttachmentScreen.clickSystemBackButtonIfStillPresent();
       await AttachmentScreen.clickCancelButton();
       await AttachmentScreen.checkAttachment(attachmentName);
       await AttachmentScreen.clickBackButton();
