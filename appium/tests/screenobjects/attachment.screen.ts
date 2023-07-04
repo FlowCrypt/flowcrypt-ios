@@ -39,10 +39,9 @@ class AttachmentScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.backButton);
   }
 
-  clickSystemBackButton = async () => {
-    await browser.pause(5000);
-    await driver.back(); // temp solution try to navigate with both driver back and selector
-    await ElementHelper.waitAndClick(await this.systemBackButton);
+  clickSystemBackButton = async (delay: number) => {
+    await browser.pause(delay);
+    await driver.back();
   }
 
   clickCancelButton = async () => {
