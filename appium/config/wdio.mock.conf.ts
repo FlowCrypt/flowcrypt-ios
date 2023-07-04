@@ -19,7 +19,7 @@ config.capabilities = [
     "appium:processArguments": {
       args: ["--mock-fes-api", "--mock-attester-api", "--mock-gmail-api"],
     },
-    deviceName: "iPhone 14",
+    "appium:deviceName": "iPhone 14",
     "appium:platformVersion": "16.4",
     "appium:app": join(process.cwd(), "./FlowCrypt.app")
   },
