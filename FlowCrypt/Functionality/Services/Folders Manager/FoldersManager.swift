@@ -84,7 +84,9 @@ private extension FolderViewModel {
             name: folder.name,
             path: folder.path,
             image: nil, // no op for now
-            itemType: .folder
+            itemType: .folder,
+            backgroundColor: folder.backgroundColor,
+            isHidden: folder.isHidden
         )
     }
 }
