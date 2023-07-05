@@ -21,7 +21,7 @@
   "author": "FlowCrypt a. s.",
   "license": "proprietary",
   "devDependencies": {
-    "@types/jest": "^29.4.0",
+    "@types/jest": "^29.5.2",
     "@types/mailparser": "^3.4.0",
     "@types/node": "^18.14.6",
     "@wdio/allure-reporter": "^8.11.0",
