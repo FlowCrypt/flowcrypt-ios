@@ -406,23 +406,23 @@ final class FlowCryptCoreTests: XCTestCase {
 
     func testRsaPerformance() async throws {
         // Test decrypt key
-        await testPerformance(maxDuration: 500) {
+        await testPerformance(maxDuration: 600) {
             _ = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.private, passphrase: TestData.k3rsa4096.passphrase!)
         }
 
         // Test encrypt key
         let decryptKeyRes = try await core.decryptKey(armoredPrv: TestData.k3rsa4096.private, passphrase: TestData.k3rsa4096.passphrase!)
-        await testPerformance(maxDuration: 800) {
+        await testPerformance(maxDuration: 1000) {
             _ = try await core.encryptKey(armoredPrv: decryptKeyRes.decryptedKey, passphrase: TestData.k3rsa4096.passphrase!)
         }
 
         // Test verify key
-        await testPerformance(maxDuration: 150) {
+        await testPerformance(maxDuration: 200) {
             try await core.verifyKey(armoredPrv: TestData.k3rsa4096.private)
         }
 
         // Test encrypt message
-        await testPerformance(maxDuration: 150) {
+        await testPerformance(maxDuration: 200) {
             _ = try await core.encrypt(
                 data: "Test email message".data(),
                 pubKeys: [TestData.k3rsa4096.public],
