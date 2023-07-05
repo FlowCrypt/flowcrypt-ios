@@ -42,6 +42,7 @@ class AttachmentScreen extends BaseScreen {
   clickSystemBackButton = async (delay: number) => {
     await browser.pause(delay);
     await driver.back();
+    await browser.pause(2000);
     const systemBackButton = await this.systemBackButton;
     // Added this logic because clicking `Back` button doesn't work in semaphoreCI
     if (await systemBackButton.isDisplayed()) {
