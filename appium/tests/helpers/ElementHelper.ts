@@ -56,6 +56,24 @@ class ElementHelper {
     await element.click();
   }
 
+  static waitAndClickUntilDisappear = async (element: WebdriverIO.Element, retryLimit = 3) => {
+    await this.waitElementVisible(element);
+    let retryCount = 0;
+    let isElementDisplayed = await element.isDisplayed();
+    while (isElementDisplayed && retryCount < retryLimit) {
+      await element.click();
+      await browser.pause(3000);
+      isElementDisplayed = await element.isDisplayed();
+      if (!isElementDisplayed) {
+        return;
+      }
+      retryCount += 1;
+    }
+    if (retryCount >= retryLimit) {
+      throw new Error(`Unable to click the element until it disappeared after ${retryLimit} attempts.`);
+    }
+  }
+
   static clearInput = async (element: WebdriverIO.Element) => {
     const elValue = await element.getValue();
     if (!elValue) { return }
