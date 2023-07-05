@@ -56,21 +56,23 @@ class ElementHelper {
     await element.click();
   }
 
-  static waitAndClickUntilDisappear = async (element: WebdriverIO.Element, retryLimit = 3) => {
+  static waitAndClickUntilOtherElementAppear = async (element: WebdriverIO.Element, otherEl: WebdriverIO.Element, retryLimit = 3) => {
     await this.waitElementVisible(element);
     let retryCount = 0;
-    let isElementDisplayed = await element.isDisplayed();
-    while (isElementDisplayed && retryCount < retryLimit) {
-      await element.click();
+    let isOtherElementDisplayed = await otherEl.isDisplayed();
+    while (!isOtherElementDisplayed && retryCount < retryLimit) {
+      if (await element.isDisplayed()) {
+        await element.click();
+      }
       await browser.pause(3000);
-      isElementDisplayed = await element.isDisplayed();
-      if (!isElementDisplayed) {
+      isOtherElementDisplayed = await otherEl.isDisplayed();
+      if (isOtherElementDisplayed) {
         return;
       }
       retryCount += 1;
     }
     if (retryCount >= retryLimit) {
-      throw new Error(`Unable to click the element until it disappeared after ${retryLimit} attempts.`);
+      throw new Error(`Other element doesn't appear after ${retryLimit} attempts.`);
     }
   }
 

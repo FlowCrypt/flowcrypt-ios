@@ -253,7 +253,7 @@ class EmailScreen extends BaseScreen {
   }
 
   clickMenuButton = async () => {
-    await ElementHelper.waitAndClick(await this.menuButton, 1000);
+    await ElementHelper.waitAndClickUntilOtherElementAppear(await this.menuButton, await this.forwardButton);
   }
 
   clickForwardButton = async () => {
