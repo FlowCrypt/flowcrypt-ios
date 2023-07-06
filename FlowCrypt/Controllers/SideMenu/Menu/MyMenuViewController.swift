@@ -197,7 +197,11 @@ extension MyMenuViewController {
                 }
                 return false
             }
-        )
+        ).filter { label in
+            let isStandardLabel = GeneralConstants.Gmail.standardGmailPaths.contains(label.path)
+            // hide user defined labels when labelListVisibility=hide
+            return isStandardLabel || label.isHidden == false
+        }
         // Only reload table node when folder items changed
         if updatedFolders != self.folders {
             self.folders = updatedFolders

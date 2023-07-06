@@ -19,6 +19,8 @@ struct FolderViewModel {
     let path: String
     let image: UIImage?
     let itemType: ItemType
+    let backgroundColor: String?
+    let isHidden: Bool?
 }
 
 // MARK: - Map from server(imap) model
@@ -29,6 +31,8 @@ extension FolderViewModel {
         self.path = folder.path
         self.image = image
         self.itemType = itemType
+        self.backgroundColor = nil
+        self.isHidden = false
     }
 }
 
@@ -39,7 +43,9 @@ extension FolderViewModel {
             name: object.name,
             path: object.path,
             image: object.image.flatMap(UIImage.init) ?? UIImage(systemName: object.path.mailFolderIcon),
-            itemType: ItemType(rawValue: object.itemType) ?? .folder
+            itemType: ItemType(rawValue: object.itemType) ?? .folder,
+            backgroundColor: object.backgroundColor,
+            isHidden: object.isHidden
         )
     }
 }

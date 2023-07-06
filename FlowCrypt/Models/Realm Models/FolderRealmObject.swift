@@ -14,6 +14,8 @@ final class FolderRealmObject: Object {
     @Persisted var image: Data?
     @Persisted var itemType: String
     @Persisted var user: UserRealmObject?
+    @Persisted var backgroundColor: String?
+    @Persisted var isHidden: Bool?
 }
 
 extension FolderRealmObject {
@@ -24,5 +26,7 @@ extension FolderRealmObject {
         self.image = folder.image
         self.itemType = folder.itemType
         self.user = UserRealmObject(user)
+        self.backgroundColor = folder.backgroundColor
+        self.isHidden = folder.isHidden
     }
 }

@@ -12,5 +12,7 @@ struct Folder {
     var path: String
     var name: String
     var image: Data?
+    var backgroundColor: String?
+    var isHidden: Bool?
     var itemType: String = FolderViewModel.ItemType.folder.rawValue
 }

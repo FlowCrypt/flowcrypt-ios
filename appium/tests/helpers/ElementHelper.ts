@@ -56,6 +56,26 @@ class ElementHelper {
     await element.click();
   }
 
+  static clickUntilExpectedElementAppears = async (element: WebdriverIO.Element, expectedElement: WebdriverIO.Element, maximumRetries = 3) => {
+    await this.waitElementVisible(element);
+    let currentRetryCount = 0;
+    let isExpectedElementVisible = await expectedElement.isDisplayed();
+    while (!isExpectedElementVisible && currentRetryCount < maximumRetries) {
+      if (await element.isDisplayed()) {
+        await element.click();
+      }
+      await browser.pause(3000);
+      isExpectedElementVisible = await expectedElement.isDisplayed();
+      if (isExpectedElementVisible) {
+        return;
+      }
+      currentRetryCount += 1;
+    }
+    if (currentRetryCount >= maximumRetries) {
+      throw new Error(`The expected web element didn't appear after ${maximumRetries} attempts.`);
+    }
+  }
+
   static clearInput = async (element: WebdriverIO.Element) => {
     const elValue = await element.getValue();
     if (!elValue) { return }

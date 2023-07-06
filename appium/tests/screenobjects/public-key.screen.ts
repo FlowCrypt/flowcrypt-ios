@@ -37,12 +37,12 @@ class PublicKeyScreen extends BaseScreen {
 
   checkPublicKeyContains = async (text: string) => {
     const pubkeyValue = await this.getPublicKeyValue();
-    expect(pubkeyValue).toContain(text);
+    expect(pubkeyValue.includes(text)).toBeTruthy();
   }
 
   checkPublicKeyNotContains = async (text: string) => {
     const pubkeyValue = await this.getPublicKeyValue();
-    expect(pubkeyValue).not.toContain(text);
+    expect(pubkeyValue.includes(text)).toBeFalsy();
   }
 
   clickBackButton = async () => {
