@@ -70,7 +70,9 @@ private extension Folder {
         self.init(
             path: path,
             name: name,
-            image: nil
+            image: nil,
+            backgroundColor: gmailFolder.color?.backgroundColor,
+            isHidden: gmailFolder.labelListVisibility == "labelHide"
         )
     }
 }

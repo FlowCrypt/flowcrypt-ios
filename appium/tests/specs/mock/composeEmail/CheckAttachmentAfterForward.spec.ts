@@ -27,7 +27,6 @@ describe('COMPOSE EMAIL: ', () => {
 
       // check recipient text field focus for forward message
       await EmailScreen.clickMenuButton();
-      await browser.pause(1000);
       await EmailScreen.clickForwardButton();
       await EmailScreen.checkAttachment('test.txt');
       await EmailScreen.clickOnAttachmentCell();
