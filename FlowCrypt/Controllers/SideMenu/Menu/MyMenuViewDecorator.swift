@@ -54,13 +54,17 @@ extension FolderViewModel {
                 name: "folder_settings".localized,
                 path: "",
                 image: UIImage(systemName: "gearshape"),
-                itemType: .settings
+                itemType: .settings,
+                backgroundColor: nil,
+                isHidden: false
             ),
             FolderViewModel(
                 name: "log_out".localized,
                 path: "",
                 image: UIImage(systemName: "rectangle.portrait.and.arrow.right"),
-                itemType: .logOut
+                itemType: .logOut,
+                backgroundColor: nil,
+                isHidden: false
             )
         ]
     }
@@ -81,10 +85,14 @@ extension InfoCellNode.Input {
 
     init(_ viewModel: FolderViewModel) {
         let identifier = viewModel.name.replacingOccurrences(of: " ", with: "-").lowercased()
+        var image = viewModel.image?.tinted(.mainTextColor)
+        if let backgroundColorStr = viewModel.backgroundColor, let backgroundColor = UIColor(hex: backgroundColorStr) {
+            image = image?.tinted(backgroundColor)
+        }
         self.init(
             attributedText: viewModel.name
                 .attributed(.regular(17), color: .mainTextColor),
-            image: viewModel.image?.tinted(.mainTextColor),
+            image: image,
             accessibilityIdentifier: "aid-menu-bar-item-\(identifier)"
         )
     }

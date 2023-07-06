@@ -40,7 +40,9 @@ class AttachmentScreen extends BaseScreen {
   }
 
   clickSystemBackButton = async () => {
-    await ElementHelper.waitAndClick(await this.systemBackButton);
+    // Due to a issue in SemaphoreCI environment, a single back button click does not yield the expected behavior. 
+    // Therefore, we have implemented a mechanism to continuously click the system back button until cancel button appears.
+    await ElementHelper.clickUntilExpectedElementAppears(await this.systemBackButton, await this.cancelButton, 10);
   }
 
   clickCancelButton = async () => {

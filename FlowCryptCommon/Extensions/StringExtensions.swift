@@ -70,7 +70,7 @@ public extension String {
             return "message"
         case "SENT":
             return "paperplane"
-        case "IMPORTANT":
+        case "IMPORTANT", "":
             return "tag"
         case "TRASH":
             return "trash"
@@ -83,7 +83,7 @@ public extension String {
         case "UNREAD":
             return "envelope.badge"
         default:
-            return "tag"
+            return "tag.fill"
         }
     }
 
