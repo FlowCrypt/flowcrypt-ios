@@ -1,5 +1,5 @@
 import BaseScreen from './base.screen';
-import ElementHelper from "../helpers/ElementHelper";
+import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -66,7 +66,7 @@ class ContactPublicKeyScreen extends BaseScreen {
     expect(await (await this.createdValue).getAttribute('value')).toBeTruthy();
     await (await this.expiresLabel).waitForDisplayed();
     expect(await (await this.expiresValue).getAttribute('value')).toBeTruthy();
-  }
+  };
 
   checkPublicKeyDetailsNotDisplayed = async () => {
     await ElementHelper.waitElementInvisible(await this.fingerPrintLabel);
@@ -75,26 +75,26 @@ class ContactPublicKeyScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(await this.createdValue);
     await ElementHelper.waitElementInvisible(await this.expiresLabel);
     await ElementHelper.waitElementInvisible(await this.expiresValue);
-  }
+  };
 
   checkPgpUserId = async (email: string, name?: string) => {
     const value = name ? `${name} <${email}>` : email;
     await (await this.trashButton).waitForDisplayed();
     await (await this.pgpUserIdLabel).waitForDisplayed();
     expect(await (await this.pgpUserIdEmailValue).getAttribute('value')).toContain(value);
-  }
+  };
 
   clickOnFingerPrint = async () => {
     await ElementHelper.waitAndClick(await this.fingerPrintValue);
-  }
+  };
 
   clickBackButton = async () => {
     await ElementHelper.waitAndClick(await this.backButton);
-  }
+  };
 
   clickTrashButton = async () => {
     await ElementHelper.waitAndClick(await this.trashButton);
-  }
+  };
 }
 
 export default new ContactPublicKeyScreen();

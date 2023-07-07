@@ -2,53 +2,50 @@
 
 import { HandlersDefinition, HttpErr } from '../../lib/api';
 import { EkmConfig, MockConfig } from '../../lib/configuration-types';
-import { throwIfNotGetMethod } from "../../lib/mock-util";
+import { throwIfNotGetMethod } from '../../lib/mock-util';
 
 export class EkmHttpErr extends HttpErr {
   public formatted = (): unknown => {
-    return { // follows EKM error response format
-      "code": this.statusCode,
-      "message": `message:${this.message}`,
-      "details": `details:${this.message}`
-    }
-  }
+    return {
+      // follows EKM error response format
+      code: this.statusCode,
+      message: `message:${this.message}`,
+      details: `details:${this.message}`,
+    };
+  };
 }
 
-export const MOCK_KM_LAST_INSERTED_KEY: { [acct: string]: { decryptedPrivateKey: string, publicKey: string } } = {}; // accessed from test runners
+export const MOCK_KM_LAST_INSERTED_KEY: { [acct: string]: { decryptedPrivateKey: string; publicKey: string } } = {}; // accessed from test runners
 
 /**
  * Email Key Manager - distributes private keys to users who own them
  */
-export const getMockEkmEndpoints = (
-  mockConfig: MockConfig,
-  ekmConfig: EkmConfig | undefined
-): HandlersDefinition => {
-
+export const getMockEkmEndpoints = (mockConfig: MockConfig, ekmConfig: EkmConfig | undefined): HandlersDefinition => {
   if (!ekmConfig) {
     return {};
   }
 
   // todo
   return {
-    '/ekm/v1/keys/private': async ({ }, req) => {
+    '/ekm/v1/keys/private': async ({}, req) => {
       throwErrorIfConfigSaysSo(ekmConfig);
 
       throwIfNotGetMethod(req);
 
       const keys = ekmConfig.returnKeys ?? [];
-      const decryptedPrivateKeys = keys.map((key) => ({ decryptedPrivateKey: key }));
+      const decryptedPrivateKeys = keys.map(key => ({ decryptedPrivateKey: key }));
       return {
-        privateKeys: decryptedPrivateKeys
+        privateKeys: decryptedPrivateKeys,
       };
     },
   };
-}
+};
 
 const throwErrorIfConfigSaysSo = (config: EkmConfig) => {
   if (config.returnError) {
     throw new EkmHttpErr(config.returnError.message, config.returnError.code);
   }
-}
+};
 
 // pub, primaryFingerprint, name, date are used to check Keys in KeyScreen and can be optional
 export interface KeyDetailInfo {
@@ -59,7 +56,15 @@ export interface KeyDetailInfo {
   renderedDateCreated?: string;
 }
 
-type KeySampleName = 'e2e' | 'flowcryptCompability' | 'flowcryptCompabilityOther' | 'key0' | 'key0Updated' | 'key0Revoked' | 'key1' | 'e2eRevokedKey';
+type KeySampleName =
+  | 'e2e'
+  | 'flowcryptCompability'
+  | 'flowcryptCompabilityOther'
+  | 'key0'
+  | 'key0Updated'
+  | 'key0Revoked'
+  | 'key1'
+  | 'e2eRevokedKey';
 
 export const ekmKeySamples: Record<KeySampleName, KeyDetailInfo> = {
   e2e: {
@@ -98,7 +103,7 @@ CwkIBwUVCgkICwIeAQAKCRClTYK+FSHSDsUNAP9+YFUHDOCxJLmv6HZI6y2o
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: '3810 0D21 F173 26E4 4786 9DA7 A54D 82BE 1521 D20E',
     renderedPrimaryUid: 'e2e enterprise tests <e2e.enterprise.test@flowcrypt.com>',
-    renderedDateCreated: '9/22/21'
+    renderedDateCreated: '9/22/21',
   },
   flowcryptCompability: {
     prv: '',
@@ -161,7 +166,7 @@ Eg==
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: 'E8F0 517B A6D7 DAB6 081C 96E4 ADAC 279C 9509 3207',
     renderedPrimaryUid: 'FlowCrypt Compatibility <flowcrypt.compatibility@gmail.com>',
-    renderedDateCreated: '11/2/17'
+    renderedDateCreated: '11/2/17',
   },
   flowcryptCompabilityOther: {
     prv: '',
@@ -224,7 +229,7 @@ eg==
 -----END PGP PUBLIC KEY BLOCK-----`,
     primaryFingerprint: '5520 CACE 2CB6 1EA7 13E5 B005 7FDE 6855 48AE A788',
     renderedPrimaryUid: 'FlowCrypt Compatibility <flowcrypt.compatibility@gmail.com>',
-    renderedDateCreated: '11/3/17'
+    renderedDateCreated: '11/3/17',
   },
   key0: {
     prv: `-----BEGIN PGP PRIVATE KEY BLOCK-----
@@ -771,6 +776,6 @@ ZLnBXZw3ksb59nxfDZ/IfxJ81PUqiw6YgOqSNN859Xi2s/8YFb03QXU2XtCK
 pojfAZbWHcKn2vZgEtUYdkAwFQ6wEZs=
 =zPzB
 -----END PGP PRIVATE KEY BLOCK-----
-    `
-  }
+    `,
+  },
 };

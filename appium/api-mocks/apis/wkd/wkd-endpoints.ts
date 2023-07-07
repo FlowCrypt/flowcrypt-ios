@@ -6,22 +6,19 @@ import { MockConfig, WkdConfig } from '../../lib/configuration-types';
 
 export class WkdHttpErr extends HttpErr {
   public formatted = (): unknown => {
-    return { // follows WKD error response format
-      "code": this.statusCode,
-      "message": `message:${this.message}`,
-      "details": `details:${this.message}`
-    }
-  }
+    return {
+      // follows WKD error response format
+      code: this.statusCode,
+      message: `message:${this.message}`,
+      details: `details:${this.message}`,
+    };
+  };
 }
 
 /**
-* Web Key Directory - distributes private keys to users who own them
-*/
-export const getMockWkdEndpoints = (
-  mockConfig: MockConfig,
-  wkdConfig: WkdConfig | undefined
-): HandlersDefinition => {
-
+ * Web Key Directory - distributes private keys to users who own them
+ */
+export const getMockWkdEndpoints = (mockConfig: MockConfig, wkdConfig: WkdConfig | undefined): HandlersDefinition => {
   if (!wkdConfig) {
     return {};
   }
@@ -35,7 +32,7 @@ export const getMockWkdEndpoints = (
         if (pubkey) {
           return pubkey;
         }
-        return { "code": 404, "message": "Public key not found", "details": "" }
+        return { code: 404, message: 'Public key not found', details: '' };
       } else {
         throw new WkdHttpErr(`Not implemented: ${req.method}`, Status.BAD_REQUEST);
       }
@@ -47,10 +44,10 @@ export const getMockWkdEndpoints = (
       return ''; // allow direct for all
     },
   };
-}
+};
 
 const throwErrorIfConfigSaysSo = (config: WkdConfig) => {
   if (config.returnError) {
     throw new WkdHttpErr(config.returnError.message, config.returnError.code);
   }
-}
+};

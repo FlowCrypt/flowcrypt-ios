@@ -1,20 +1,28 @@
-type ScreenPosition = 'topLeft' | 'topCenter' | 'topRight' | 'centerLeft' | 'centerCenter' | 'centerRight' | 'bottomLeft' | 'bottomCenter' | 'bottomRight';
+type ScreenPosition =
+  | 'topLeft'
+  | 'topCenter'
+  | 'topRight'
+  | 'centerLeft'
+  | 'centerCenter'
+  | 'centerRight'
+  | 'bottomLeft'
+  | 'bottomCenter'
+  | 'bottomRight';
 
 class TouchHelper {
-
   /**
-  * scroll down
-  */
+   * scroll down
+   */
   static scrollDown = async () => {
     await driver.execute('mobile: scroll', { direction: 'down' });
-  }
+  };
 
   /**
-  * scroll up
-  */
+   * scroll up
+   */
   static scrollUp = async () => {
     await driver.execute('mobile: scroll', { direction: 'up' });
-  }
+  };
 
   /**
    * Tap Screen
@@ -57,7 +65,7 @@ class TouchHelper {
       { action: 'release', options: {} },
     ]);
     await browser.pause(100);
-  }
+  };
 
   static pullToRefresh = async () => {
     const { width, height } = await driver.getWindowSize();
@@ -72,7 +80,7 @@ class TouchHelper {
       { action: 'wait', options: { ms: 1000 } },
       { action: 'release', options: {} },
     ]);
-  }
+  };
 
   static scrollDownToElement = async (element: WebdriverIO.Element) => {
     const { width, height } = await driver.getWindowSize();
@@ -95,7 +103,7 @@ class TouchHelper {
       await browser.pause(1000); // due to scroll action which takes about second
     }
     throw new Error(`Element ${JSON.stringify(element.selector)} not displayed after scroll`);
-  }
+  };
 
   static scrollUpToElement = async (element: WebdriverIO.Element) => {
     const { width, height } = await driver.getWindowSize();
@@ -118,7 +126,7 @@ class TouchHelper {
       await browser.pause(1000); // due to scroll action which takes about second
     }
     throw new Error(`Element ${JSON.stringify(element.selector)} not displayed after scroll`);
-  }
+  };
 
   static swipeElement = async (element: WebdriverIO.Element, side: 'leading' | 'trailing') => {
     const location = await element.getLocation();
@@ -135,7 +143,7 @@ class TouchHelper {
       { action: 'moveTo', options: { x: targetX, y: midY } },
       { action: 'release', options: {} },
     ]);
-  }
+  };
 
   static tapSwipeAction = async (element: WebdriverIO.Element, side: 'leading' | 'trailing') => {
     const window = await driver.getWindowSize();
@@ -150,6 +158,6 @@ class TouchHelper {
       { action: 'wait', options: { ms: 100 } },
       { action: 'release', options: {} },
     ]);
-  }
+  };
 }
 export default TouchHelper;

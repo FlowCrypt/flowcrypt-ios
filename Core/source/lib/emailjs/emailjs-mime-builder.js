@@ -24,11 +24,21 @@
   if (typeof define === 'function' && define.amd) {
     define(['emailjs-mime-codec', 'emailjs-mime-types', 'punycode', 'emailjs-addressparser'], factory);
   } else if (typeof exports === 'object') {
-    module.exports = factory(require('./emailjs-mime-codec'), require('./emailjs-mime-types'), require('./punycode'), require('./emailjs-addressparser'));
+    module.exports = factory(
+      require('./emailjs-mime-codec'),
+      require('./emailjs-mime-types'),
+      require('./punycode'),
+      require('./emailjs-addressparser'),
+    );
   } else {
-    root['emailjs-mime-builder'] = factory(root['emailjs-mime-codec'], root['emailjs-mime-types'], root.punycode, root['emailjs-addressparser']);
+    root['emailjs-mime-builder'] = factory(
+      root['emailjs-mime-codec'],
+      root['emailjs-mime-types'],
+      root.punycode,
+      root['emailjs-addressparser'],
+    );
   }
-}(this, function (mimecodec, mimetypes, punycode, addressparser) {
+})(this, function (mimecodec, mimetypes, punycode, addressparser) {
   'use strict';
 
   /**
@@ -135,7 +145,6 @@
    * @return {Object} Appended node object
    */
   MimeNode.prototype.appendChild = function (childNode) {
-
     if (childNode.rootNode !== this.rootNode) {
       childNode.rootNode = this.rootNode;
       childNode._nodeId = ++this.rootNode.nodeCounter;
@@ -158,19 +167,20 @@
       return this;
     }
 
-    this.parentNode._childNodes.forEach(function (childNode, i) {
-      if (childNode === this) {
+    this.parentNode._childNodes.forEach(
+      function (childNode, i) {
+        if (childNode === this) {
+          node.rootNode = this.rootNode;
+          node.parentNode = this.parentNode;
+          node._nodeId = this._nodeId;
 
-        node.rootNode = this.rootNode;
-        node.parentNode = this.parentNode;
-        node._nodeId = this._nodeId;
+          this.rootNode = this;
+          this.parentNode = undefined;
 
-        this.rootNode = this;
-        this.parentNode = undefined;
-
-        node.parentNode._childNodes[i] = node;
-      }
-    }.bind(this));
+          node.parentNode._childNodes[i] = node;
+        }
+      }.bind(this),
+    );
 
     return node;
   };
@@ -216,15 +226,19 @@
       }
       // allow [{key:'content-type', value: 'text/plain'}]
       else if (Array.isArray(key)) {
-        key.forEach(function (i) {
-          this.setHeader(i.key, i.value);
-        }.bind(this));
+        key.forEach(
+          function (i) {
+            this.setHeader(i.key, i.value);
+          }.bind(this),
+        );
       }
       // allow {'content-type': 'text/plain'}
       else {
-        Object.keys(key).forEach(function (i) {
-          this.setHeader(i, key[i]);
-        }.bind(this));
+        Object.keys(key).forEach(
+          function (i) {
+            this.setHeader(i, key[i]);
+          }.bind(this),
+        );
       }
       return this;
     }
@@ -233,7 +247,7 @@
 
     headerValue = {
       key: key,
-      value: value
+      value: value,
     };
 
     // Check if the value exists and overwrite
@@ -271,7 +285,6 @@
    * @return {Object} current node
    */
   MimeNode.prototype.addHeader = function (key, value) {
-
     // Allow setting multiple headers at once
     if (!value && key && typeof key === 'object') {
       // allow {key:'content-type', value: 'text/plain'}
@@ -280,22 +293,26 @@
       }
       // allow [{key:'content-type', value: 'text/plain'}]
       else if (Array.isArray(key)) {
-        key.forEach(function (i) {
-          this.addHeader(i.key, i.value);
-        }.bind(this));
+        key.forEach(
+          function (i) {
+            this.addHeader(i.key, i.value);
+          }.bind(this),
+        );
       }
       // allow {'content-type': 'text/plain'}
       else {
-        Object.keys(key).forEach(function (i) {
-          this.addHeader(i, key[i]);
-        }.bind(this));
+        Object.keys(key).forEach(
+          function (i) {
+            this.addHeader(i, key[i]);
+          }.bind(this),
+        );
       }
       return this;
     }
 
     this._headers.push({
       key: this._normalizeHeaderKey(key),
-      value: value
+      value: value,
     });
 
     return this;
@@ -338,7 +355,8 @@
   MimeNode.prototype.build = function () {
     var lines = [],
       contentType = (this.getHeader('Content-Type') || '').toString().toLowerCase().trim(),
-      transferEncoding, flowed;
+      transferEncoding,
+      flowed;
 
     if (this.content) {
       transferEncoding = (this.getHeader('Content-Transfer-Encoding') || '').toString().toLowerCase().trim();
@@ -368,52 +386,58 @@
       this.setHeader('Content-Disposition', 'attachment');
     }
 
-    this._headers.forEach(function (header) {
-      var key = header.key,
-        value = header.value,
-        structured;
+    this._headers.forEach(
+      function (header) {
+        var key = header.key,
+          value = header.value,
+          structured;
 
-      switch (header.key) {
-        case 'Content-Disposition':
-          structured = mimecodec.parseHeaderValue(value);
-          if (this.filename) {
-            structured.params.filename = this.filename;
-          }
-          value = this._buildHeaderValue(structured);
-          break;
-        case 'Content-Type':
-          structured = mimecodec.parseHeaderValue(value);
+        switch (header.key) {
+          case 'Content-Disposition':
+            structured = mimecodec.parseHeaderValue(value);
+            if (this.filename) {
+              structured.params.filename = this.filename;
+            }
+            value = this._buildHeaderValue(structured);
+            break;
+          case 'Content-Type':
+            structured = mimecodec.parseHeaderValue(value);
 
-          this._handleContentType(structured);
+            this._handleContentType(structured);
 
-          if (flowed) {
-            structured.params.format = 'flowed';
-          }
-          if (String(structured.params.format).toLowerCase().trim() === 'flowed') {
-            flowed = true;
-          }
+            if (flowed) {
+              structured.params.format = 'flowed';
+            }
+            if (String(structured.params.format).toLowerCase().trim() === 'flowed') {
+              flowed = true;
+            }
 
-          if (structured.value.match(/^text\//) && typeof this.content === 'string' && /[\u0080-\uFFFF]/.test(this.content)) {
-            structured.params.charset = 'utf-8';
-          }
+            if (
+              structured.value.match(/^text\//) &&
+              typeof this.content === 'string' &&
+              /[\u0080-\uFFFF]/.test(this.content)
+            ) {
+              structured.params.charset = 'utf-8';
+            }
 
-          value = this._buildHeaderValue(structured);
-          break;
-        case 'Bcc':
-          if (this.includeBccInHeader === false) {
-            // skip BCC values
-            return;
-          }
-      }
+            value = this._buildHeaderValue(structured);
+            break;
+          case 'Bcc':
+            if (this.includeBccInHeader === false) {
+              // skip BCC values
+              return;
+            }
+        }
 
-      // skip empty lines
-      value = this._encodeHeaderValue(key, value);
-      if (!(value || '').toString().trim()) {
-        return;
-      }
+        // skip empty lines
+        value = this._encodeHeaderValue(key, value);
+        if (!(value || '').toString().trim()) {
+          return;
+        }
 
-      lines.push(mimecodec.foldLines(key + ': ' + value, 76));
-    }.bind(this));
+        lines.push(mimecodec.foldLines(key + ': ' + value, 76));
+      }.bind(this),
+    );
 
     // Ensure mandatory header fields
     if (this.rootNode === this) {
@@ -422,18 +446,24 @@
       }
       // You really should define your own Message-Id field
       if (!this.getHeader('Message-Id')) {
-        lines.push('Message-Id: <' +
-          // crux to generate random strings like this:
-          // "1401391905590-58aa8c32-d32a065c-c1a2aad2"
-          [0, 0, 0].reduce(function (prev) {
-            return prev + '-' + Math.floor((1 + Math.random()) * 0x100000000).
-              toString(16).
-              substring(1);
-          }, Date.now()) +
-          '@' +
-          // try to use the domain of the FROM address or fallback localhost
-          (this.getEnvelope().from || 'localhost').split('@').pop() +
-          '>');
+        lines.push(
+          'Message-Id: <' +
+            // crux to generate random strings like this:
+            // "1401391905590-58aa8c32-d32a065c-c1a2aad2"
+            [0, 0, 0].reduce(function (prev) {
+              return (
+                prev +
+                '-' +
+                Math.floor((1 + Math.random()) * 0x100000000)
+                  .toString(16)
+                  .substring(1)
+              );
+            }, Date.now()) +
+            '@' +
+            // try to use the domain of the FROM address or fallback localhost
+            (this.getEnvelope().from || 'localhost').split('@').pop() +
+            '>',
+        );
       }
       if (!this.getHeader('MIME-Version')) {
         lines.push('MIME-Version: 1.0');
@@ -442,20 +472,25 @@
     lines.push('');
 
     if (this.content) {
-
       switch (transferEncoding) {
         case 'quoted-printable':
           lines.push(mimecodec.quotedPrintableEncode(this.content));
           break;
         case 'base64':
-          lines.push(mimecodec.base64Encode(this.content, typeof this.content === 'object' && 'binary' || false));
+          lines.push(mimecodec.base64Encode(this.content, (typeof this.content === 'object' && 'binary') || false));
           break;
         default:
           if (flowed) {
-            lines.push(mimecodec.foldLines(this.content.replace(/\r?\n/g, '\r\n').
-              // space stuffing http://tools.ietf.org/html/rfc3676#section-4.2
-              replace(/^( |From|>)/igm, ' $1'),
-              76, true));
+            lines.push(
+              mimecodec.foldLines(
+                this.content
+                  .replace(/\r?\n/g, '\r\n')
+                  // space stuffing http://tools.ietf.org/html/rfc3676#section-4.2
+                  .replace(/^( |From|>)/gim, ' $1'),
+                76,
+                true,
+              ),
+            );
           } else {
             lines.push(this.content.replace(/\r?\n/g, '\r\n'));
           }
@@ -466,10 +501,12 @@
     }
 
     if (this.multipart) {
-      this._childNodes.forEach(function (node) {
-        lines.push('--' + this.boundary);
-        lines.push(node.build());
-      }.bind(this));
+      this._childNodes.forEach(
+        function (node) {
+          lines.push('--' + this.boundary);
+          lines.push(node.build());
+        }.bind(this),
+      );
       lines.push('--' + this.boundary + '--');
       lines.push('');
     }
@@ -485,19 +522,21 @@
   MimeNode.prototype.getEnvelope = function () {
     var envelope = {
       from: false,
-      to: []
+      to: [],
     };
-    this._headers.forEach(function (header) {
-      var list = [];
-      if (header.key === 'From' || (!envelope.from && ['Reply-To', 'Sender'].indexOf(header.key) >= 0)) {
-        this._convertAddresses(this._parseAddresses(header.value), list);
-        if (list.length && list[0]) {
-          envelope.from = list[0];
+    this._headers.forEach(
+      function (header) {
+        var list = [];
+        if (header.key === 'From' || (!envelope.from && ['Reply-To', 'Sender'].indexOf(header.key) >= 0)) {
+          this._convertAddresses(this._parseAddresses(header.value), list);
+          if (list.length && list[0]) {
+            envelope.from = list[0];
+          }
+        } else if (['To', 'Cc', 'Bcc'].indexOf(header.key) >= 0) {
+          this._convertAddresses(this._parseAddresses(header.value), envelope.to);
         }
-      } else if (['To', 'Cc', 'Bcc'].indexOf(header.key) >= 0) {
-        this._convertAddresses(this._parseAddresses(header.value), envelope.to);
-      }
-    }.bind(this));
+      }.bind(this),
+    );
 
     return envelope;
   };
@@ -512,12 +551,17 @@
    * @return {Array} An array of address objects
    */
   MimeNode.prototype._parseAddresses = function (addresses) {
-    return [].concat.apply([], [].concat(addresses).map(function (address) {
-      if (address && address.address) {
-        address = this._convertAddresses(address);
-      }
-      return addressparser.parse(address);
-    }.bind(this)));
+    return [].concat.apply(
+      [],
+      [].concat(addresses).map(
+        function (address) {
+          if (address && address.address) {
+            address = this._convertAddresses(address);
+          }
+          return addressparser.parse(address);
+        }.bind(this),
+      ),
+    );
   };
 
   /**
@@ -527,14 +571,18 @@
    * @return {String} key in Camel-Case form
    */
   MimeNode.prototype._normalizeHeaderKey = function (key) {
-    return (key || '').toString().
-      // no newlines in keys
-      replace(/\r?\n|\r/g, ' ').
-      trim().toLowerCase().
-      // use uppercase words, except MIME
-      replace(/^MIME\b|^[a-z]|\-[a-z]/ig, function (c) {
-        return c.toUpperCase();
-      });
+    return (
+      (key || '')
+        .toString()
+        // no newlines in keys
+        .replace(/\r?\n|\r/g, ' ')
+        .trim()
+        .toLowerCase()
+        // use uppercase words, except MIME
+        .replace(/^MIME\b|^[a-z]|\-[a-z]/gi, function (c) {
+          return c.toUpperCase();
+        })
+    );
   };
 
   /**
@@ -546,18 +594,20 @@
   MimeNode.prototype._buildHeaderValue = function (structured) {
     var paramsArray = [];
 
-    Object.keys(structured.params || {}).forEach(function (param) {
-      // filename might include unicode characters so it is a special case
-      if (param === 'filename') {
-        mimecodec.continuationEncode(param, structured.params[param], 50).forEach(function (encodedParam) {
-          // continuation encoded strings are always escaped, so no need to use enclosing quotes
-          // in fact using quotes might end up with invalid filenames in some clients
-          paramsArray.push(encodedParam.key + '=' + encodedParam.value);
-        });
-      } else {
-        paramsArray.push(param + '=' + this._escapeHeaderArgument(structured.params[param]));
-      }
-    }.bind(this));
+    Object.keys(structured.params || {}).forEach(
+      function (param) {
+        // filename might include unicode characters so it is a special case
+        if (param === 'filename') {
+          mimecodec.continuationEncode(param, structured.params[param], 50).forEach(function (encodedParam) {
+            // continuation encoded strings are always escaped, so no need to use enclosing quotes
+            // in fact using quotes might end up with invalid filenames in some clients
+            paramsArray.push(encodedParam.key + '=' + encodedParam.value);
+          });
+        } else {
+          paramsArray.push(param + '=' + this._escapeHeaderArgument(structured.params[param]));
+        }
+      }.bind(this),
+    );
 
     return structured.value + (paramsArray.length ? '; ' + paramsArray.join('; ') : '');
   };
@@ -571,7 +621,7 @@
    */
   MimeNode.prototype._escapeHeaderArgument = function (value) {
     if (value.match(/[\s'"\\;\/=]|^\-/g)) {
-      return '"' + value.replace(/(["\\])/g, "\\$1") + '"';
+      return '"' + value.replace(/(["\\])/g, '\\$1') + '"';
     } else {
       return value;
     }
@@ -591,7 +641,8 @@
     });
 
     if (this.multipart) {
-      this.boundary = structured.params.boundary = structured.params.boundary || this.boundary || this._generateBoundary();
+      this.boundary = structured.params.boundary =
+        structured.params.boundary || this.boundary || this._generateBoundary();
     } else {
       this.boundary = false;
     }
@@ -639,20 +690,30 @@
         return value;
 
       case 'References':
-        value = [].concat.apply([], [].concat(value || '').map(function (elm) {
-          elm = (elm || '').toString().replace(/\r?\n|\r/g, ' ').trim();
-          return elm.replace(/<[^>]*>/g, function (str) {
-            return str.replace(/\s/g, '');
-          }).split(/\s+/);
-        })).map(function (elm) {
-          if (elm.charAt(0) !== '<') {
-            elm = '<' + elm;
-          }
-          if (elm.charAt(elm.length - 1) !== '>') {
-            elm = elm + '>';
-          }
-          return elm;
-        });
+        value = [].concat
+          .apply(
+            [],
+            [].concat(value || '').map(function (elm) {
+              elm = (elm || '')
+                .toString()
+                .replace(/\r?\n|\r/g, ' ')
+                .trim();
+              return elm
+                .replace(/<[^>]*>/g, function (str) {
+                  return str.replace(/\s/g, '');
+                })
+                .split(/\s+/);
+            }),
+          )
+          .map(function (elm) {
+            if (elm.charAt(0) !== '<') {
+              elm = '<' + elm;
+            }
+            if (elm.charAt(elm.length - 1) !== '>') {
+              elm = elm + '>';
+            }
+            return elm;
+          });
 
         return value.join(' ').trim();
 
@@ -675,27 +736,36 @@
 
     uniqueList = uniqueList || [];
 
-    [].concat(addresses || []).forEach(function (address) {
-      if (address.address) {
-        address.address = address.address.replace(/^.*?(?=\@)/, function (user) {
-          return mimecodec.mimeWordsEncode(user, 'Q', 52);
-        }).replace(/@.+$/, function (domain) {
-          return '@' + punycode.toASCII(domain.substr(1));
-        });
+    [].concat(addresses || []).forEach(
+      function (address) {
+        if (address.address) {
+          address.address = address.address
+            .replace(/^.*?(?=\@)/, function (user) {
+              return mimecodec.mimeWordsEncode(user, 'Q', 52);
+            })
+            .replace(/@.+$/, function (domain) {
+              return '@' + punycode.toASCII(domain.substr(1));
+            });
 
-        if (!address.name) {
-          values.push(address.address);
-        } else if (address.name) {
-          values.push(this._encodeAddressName(address.name) + ' <' + address.address + '>');
-        }
+          if (!address.name) {
+            values.push(address.address);
+          } else if (address.name) {
+            values.push(this._encodeAddressName(address.name) + ' <' + address.address + '>');
+          }
 
-        if (uniqueList.indexOf(address.address) < 0) {
-          uniqueList.push(address.address);
+          if (uniqueList.indexOf(address.address) < 0) {
+            uniqueList.push(address.address);
+          }
+        } else if (address.group) {
+          values.push(
+            this._encodeAddressName(address.name) +
+              ':' +
+              (address.group.length ? this._convertAddresses(address.group, uniqueList) : '').trim() +
+              ';',
+          );
         }
-      } else if (address.group) {
-        values.push(this._encodeAddressName(address.name) + ':' + (address.group.length ? this._convertAddresses(address.group, uniqueList) : '').trim() + ';');
-      }
-    }.bind(this));
+      }.bind(this),
+    );
 
     return values.join(', ');
   };
@@ -732,4 +802,4 @@
   };
 
   return MimeNode;
-}));
+});

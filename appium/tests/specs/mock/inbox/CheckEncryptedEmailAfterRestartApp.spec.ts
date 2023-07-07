@@ -1,9 +1,4 @@
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  EmailScreen
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, EmailScreen } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
@@ -12,9 +7,7 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
-
   it('user is able to see encrypted email with pass phrase after restart app', async () => {
-
     const senderName = CommonData.encryptedEmailWithAttachment.senderName;
     const emailSubject = CommonData.encryptedEmailWithAttachment.subject;
     const emailText = CommonData.encryptedEmailWithAttachment.message;
@@ -32,8 +25,8 @@ describe('INBOX: ', () => {
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
-        [MockUserList.e2e.email]: MockUserList.e2e.pub!
-      }
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {

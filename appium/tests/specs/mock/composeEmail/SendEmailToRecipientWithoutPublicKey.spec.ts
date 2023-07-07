@@ -4,7 +4,7 @@ import {
   MailFolderScreen,
   NewMessageScreen,
   MenuBarScreen,
-  EmailScreen
+  EmailScreen,
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -15,9 +15,7 @@ import { MockUserList } from 'api-mocks/mock-data';
 import AppiumHelper from 'tests/helpers/AppiumHelper';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('sending message to user without public key produces password modal', async () => {
-
     const sender = CommonData.account.email;
     const recipient = CommonData.recipientWithoutPublicKey.email;
     const emailSubject = CommonData.recipientWithoutPublicKey.subject;
@@ -39,8 +37,8 @@ describe('COMPOSE EMAIL: ', () => {
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.attesterConfig = {
       servedPubkeys: {
-        [MockUserList.e2e.email]: MockUserList.e2e.pub!
-      }
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -54,7 +52,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [recipient],
         subject: emailSubject,
-        message: emailText
+        message: emailText,
       });
       await NewMessageScreen.clickSendButton();
       await BaseScreen.checkModalMessage(plainMessageModal);
@@ -111,7 +109,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [recipient],
         subject: emailSubject,
-        message: emailText
+        message: emailText,
       });
       await NewMessageScreen.clickSendButton();
       await BaseScreen.checkModalMessage(passwordModalMessage);

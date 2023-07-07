@@ -1,4 +1,3 @@
-
 export class MimeParser {
   constructor();
   onheader: (node: MimeParserNode) => void;
@@ -11,11 +10,18 @@ export class MimeParser {
 
 export type MimeParserNode = {
   path: string[];
-  headers: { [key: string]: { value: string; initial: string; params?: { charset?: string, filename?: string, name?: string } }[]; };
+  headers: {
+    [key: string]: {
+      value: string;
+      initial: string;
+      params?: { charset?: string; filename?: string; name?: string };
+    }[];
+  };
   rawContent: string | undefined; // only for content nodes (leaves)
   content: Uint8Array;
   appendChild: (child: MimeParserNode) => void;
-  contentTransferEncoding: { value: string }; charset?: string;
+  contentTransferEncoding: { value: string };
+  charset?: string;
   addHeader: (name: string, value: string) => void;
   raw: string; // on all nodes, not just body nodes
   _parentNode: MimeParserNode | null;

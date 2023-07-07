@@ -5,11 +5,10 @@ import {
   MailFolderScreen,
   NewMessageScreen,
   SetupKeyScreen,
-  SplashScreen
+  SplashScreen,
 } from '../../../screenobjects/all-screens';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('check forward message with attached pub key', async () => {
     const mockApi = new MockApi();
     const subject = 'Test forward message with attached pub key';

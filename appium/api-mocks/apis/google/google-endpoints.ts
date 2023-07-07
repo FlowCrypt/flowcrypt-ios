@@ -8,22 +8,29 @@ import { isDelete, isGet, isPost, isPut, parseResourceId } from '../../lib/mock-
 import { oauth } from '../../lib/oauth';
 import { GoogleMockAccountEmail } from './google-messages';
 
-type DraftSaveModel = { message: { raw: string, threadId: string }, id?: string };
-type LabelsModifyModel = { addLabelIds: string[], removeLabelIds: string[] }
+type DraftSaveModel = { message: { raw: string; threadId: string }; id?: string };
+type LabelsModifyModel = { addLabelIds: string[]; removeLabelIds: string[] };
 interface BatchModifyInterface {
   ids: string[];
   addLabelIds: string[];
   removeLabelIds: string[];
 }
 
-export const getMockGoogleEndpoints = (
-  mockConfig: MockConfig,
-  googleConfig?: GoogleConfig
-): HandlersDefinition => {
-
+export const getMockGoogleEndpoints = (mockConfig: MockConfig, googleConfig?: GoogleConfig): HandlersDefinition => {
   return {
-    '/o/oauth2/auth': async ({ query: { client_id, nonce, response_type, state, redirect_uri, scope, login_hint } }, req) => {
-      if (isGet(req) && client_id === oauth.clientId && response_type === 'code' && state && redirect_uri === oauth.redirectUri && scope) { // auth screen
+    '/o/oauth2/auth': async (
+      { query: { client_id, nonce, response_type, state, redirect_uri, scope, login_hint } },
+      req,
+    ) => {
+      if (
+        isGet(req) &&
+        client_id === oauth.clientId &&
+        response_type === 'code' &&
+        state &&
+        redirect_uri === oauth.redirectUri &&
+        scope
+      ) {
+        // auth screen
         if (!login_hint) {
           return oauth.renderText('choose account with login_hint');
         } else {
@@ -33,9 +40,11 @@ export const getMockGoogleEndpoints = (
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
     '/token': async ({ query: { grant_type, refresh_token, client_id, code } }, req) => {
-      if (isPost(req) && grant_type === 'authorization_code' && code && client_id === oauth.clientId) { // auth code from auth screen gets exchanged for access and refresh tokens
+      if (isPost(req) && grant_type === 'authorization_code' && code && client_id === oauth.clientId) {
+        // auth code from auth screen gets exchanged for access and refresh tokens
         return oauth.getRefreshTokenResponse(code);
-      } else if (isPost(req) && grant_type === 'refresh_token' && refresh_token && client_id === oauth.clientId) { // here also later refresh token gets exchanged for access token
+      } else if (isPost(req) && grant_type === 'refresh_token' && refresh_token && client_id === oauth.clientId) {
+        // here also later refresh token gets exchanged for access token
         return oauth.getAccessTokenResponse(refresh_token);
       }
       throw new Error(`Method not implemented for ${req.url}: ${req.method}`);
@@ -58,15 +67,11 @@ export const getMockGoogleEndpoints = (
       const results = contacts.map(contact => {
         return {
           person: {
-            emailAddresses: [
-              { metadata: { primary: true }, value: contact.email }
-            ],
-            names: [
-              { metadata: { primary: true }, displayName: contact.name }
-            ]
-          }
-        }
-      })
+            emailAddresses: [{ metadata: { primary: true }, value: contact.email }],
+            names: [{ metadata: { primary: true }, displayName: contact.name }],
+          },
+        };
+      });
       return { results };
     },
     '/v1/otherContacts:search': async (_, req) => {
@@ -74,7 +79,7 @@ export const getMockGoogleEndpoints = (
         throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
       }
 
-      return {}
+      return {};
     },
     '/gmail/v1/users/me/settings/sendAs': async (parsedReq, req) => {
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
@@ -84,16 +89,21 @@ export const getMockGoogleEndpoints = (
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
-    '/gmail/v1/users/me/messages': async (parsedReq, req) => { // search messages
+    '/gmail/v1/users/me/messages': async (parsedReq, req) => {
+      // search messages
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
         const labelIds = [parsedReq.query.labelIds].filter(i => i);
-        const msgs = (await GoogleData.withInitializedData(acct, googleConfig)).getMessages(labelIds, parsedReq.query.q);
+        const msgs = (await GoogleData.withInitializedData(acct, googleConfig)).getMessages(
+          labelIds,
+          parsedReq.query.q,
+        );
         return { messages: msgs.map(({ id, threadId }) => ({ id, threadId })), resultSizeEstimate: msgs.length };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
-    '/gmail/v1/users/me/messages/?': async (parsedReq, req) => { // get msg or attachment
+    '/gmail/v1/users/me/messages/?': async (parsedReq, req) => {
+      // get msg or attachment
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
         const id = parseResourceId(req.url!);
@@ -139,7 +149,10 @@ export const getMockGoogleEndpoints = (
     '/gmail/v1/users/me/threads': async (parsedReq, req) => {
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
-        const threads = (await GoogleData.withInitializedData(acct, googleConfig)).getThreads([parsedReq.query.labelIds].filter(i => i), parsedReq.query.q); // todo: support arrays?
+        const threads = (await GoogleData.withInitializedData(acct, googleConfig)).getThreads(
+          [parsedReq.query.labelIds].filter(i => i),
+          parsedReq.query.q,
+        ); // todo: support arrays?
         return { threads, resultSizeEstimate: threads.length };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
@@ -155,7 +168,11 @@ export const getMockGoogleEndpoints = (
         if (!msgs.length) {
           throw new HttpErr(`MOCK thread not found for ${acct}: ${id}`, 404);
         }
-        return { id, historyId: msgs[0].historyId, messages: msgs.map(m => GoogleData.fmtMsg(m, parsedReq.query.format)) };
+        return {
+          id,
+          historyId: msgs[0].historyId,
+          messages: msgs.map(m => GoogleData.fmtMsg(m, parsedReq.query.format)),
+        };
       } else if (isPost(req)) {
         const urlData = req.url!.split('/');
         const threadId = urlData[urlData.length - 2];
@@ -163,16 +180,16 @@ export const getMockGoogleEndpoints = (
         const data = await GoogleData.withInitializedData(acct, googleConfig);
         data.updateMessageLabels(body.addLabelIds, body.removeLabelIds, undefined, threadId);
         const msgs = data.getMessagesByThread(threadId).map(msg => {
-          return GoogleData.fmtMsg(msg, parsedReq.query.format)
+          return GoogleData.fmtMsg(msg, parsedReq.query.format);
         });
         return msgs;
       } else if (isDelete(req)) {
         const id = parseResourceId(req.url!);
         const data = await GoogleData.withInitializedData(acct, googleConfig);
         data.deleteThread(id);
-        return {}
+        return {};
       }
-      return {}
+      return {};
     },
     '/gmail/v1/users/me/drafts': async (parsedReq, req) => {
       if (isPost(req)) {
@@ -180,18 +197,19 @@ export const getMockGoogleEndpoints = (
         const body = parsedReq.body as DraftSaveModel;
         const data = await GoogleData.withInitializedData(acct, googleConfig);
         if (body && body.message && body.message.raw && typeof body.message.raw === 'string') {
-          if (body.message.threadId && !(data.getThreads().find(t => t.id === body.message.threadId))) {
+          if (body.message.threadId && !data.getThreads().find(t => t.id === body.message.threadId)) {
             throw new HttpErr('The thread you are replying to not found', 404);
           }
           const decoded = await Parse.convertBase64ToMimeMsg(body.message.raw);
           const draft = data.addDraft(body.message.raw, decoded, undefined, body.message.threadId);
 
           return {
-            id: draft.draftId, message: {
+            id: draft.draftId,
+            message: {
               id: draft.id,
               labelIds: ['DRAFT'],
-              threadId: draft.threadId
-            }
+              threadId: draft.threadId,
+            },
           };
         }
       } else if (isGet(req)) {
@@ -202,9 +220,9 @@ export const getMockGoogleEndpoints = (
           drafts: [
             {
               id: message.draftId,
-              message: message
-            }
-          ]
+              message: message,
+            },
+          ],
         };
       }
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
@@ -213,7 +231,7 @@ export const getMockGoogleEndpoints = (
       const acct = oauth.checkAuthorizationHeaderWithAccessToken(req.headers.authorization);
       if (isGet(req)) {
         const id = parseResourceId(req.url!);
-        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
         const draft = data.getDraft(id);
         if (draft) {
           return { id: draft.draftId, message: draft };
@@ -227,19 +245,20 @@ export const getMockGoogleEndpoints = (
         }
         const decoded = await Parse.convertBase64ToMimeMsg(raw);
 
-        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
         const draft = data.addDraft(raw, decoded, body.id, body.message?.threadId);
 
         return {
-          id: draft.draftId, message: {
+          id: draft.draftId,
+          message: {
             id: draft.id,
             labelIds: ['DRAFT'],
-            threadId: draft.threadId
-          }
+            threadId: draft.threadId,
+          },
         };
       } else if (isDelete(req)) {
         const id = parseResourceId(req.url!);
-        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
         await browser.pause(2000); // wait some time because autosave and delete mock draft api requests might be interfering
         data.deleteDraft(id);
         return {};
@@ -252,9 +271,9 @@ export const getMockGoogleEndpoints = (
       if (isPost(req)) {
         const raw = (parsedReq.body as { raw: string })?.raw;
         const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
-        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
         data.addMessage(raw, mimeMsg);
-        return {}
+        return {};
       }
 
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
@@ -264,9 +283,9 @@ export const getMockGoogleEndpoints = (
 
       if (isPost(req)) {
         const ids = (parsedReq.body as { ids: string[] })?.ids;
-        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
         data.deleteMessages(ids);
-        return {}
+        return {};
       }
 
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
@@ -276,12 +295,12 @@ export const getMockGoogleEndpoints = (
 
       if (isPost(req)) {
         const requestBody = parsedReq.body as BatchModifyInterface;
-        const data = (await GoogleData.withInitializedData(acct, googleConfig));
+        const data = await GoogleData.withInitializedData(acct, googleConfig);
         data.updateBatchMessageLabels(requestBody.addLabelIds, requestBody.removeLabelIds, requestBody.ids);
-        return {}
+        return {};
       }
 
       throw new HttpErr(`Method not implemented for ${req.url}: ${req.method}`);
     },
   };
-}
+};

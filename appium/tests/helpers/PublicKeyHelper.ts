@@ -1,13 +1,18 @@
-import MailFolderScreen from "../screenobjects/mail-folder.screen";
-import NewMessageScreen from "../screenobjects/new-message.screen";
-import MenuBarScreen from "../screenobjects/menu-bar.screen";
-import SettingsScreen from "../screenobjects/settings.screen";
-import ContactScreen from "../screenobjects/contacts.screen";
-import ContactPublicKeyScreen from "../screenobjects/contact-public-key.screen";
-import PublicKeyDetailsScreen from "../screenobjects/public-key-details.screen";
+import MailFolderScreen from '../screenobjects/mail-folder.screen';
+import NewMessageScreen from '../screenobjects/new-message.screen';
+import MenuBarScreen from '../screenobjects/menu-bar.screen';
+import SettingsScreen from '../screenobjects/settings.screen';
+import ContactScreen from '../screenobjects/contacts.screen';
+import ContactPublicKeyScreen from '../screenobjects/contact-public-key.screen';
+import PublicKeyDetailsScreen from '../screenobjects/public-key-details.screen';
 
 class PublicKeyHelper {
-  static loadRecipientInComposeThenCheckSignatureAndFingerprints = async (userEmail: string, signatureDate: string, fingerprintsValue: string, recipientName?: string) => {
+  static loadRecipientInComposeThenCheckSignatureAndFingerprints = async (
+    userEmail: string,
+    signatureDate: string,
+    fingerprintsValue: string,
+    recipientName?: string,
+  ) => {
     await MailFolderScreen.checkInboxScreen();
     await MailFolderScreen.clickCreateEmail();
     await NewMessageScreen.setAddRecipient(userEmail);
@@ -34,7 +39,7 @@ class PublicKeyHelper {
     await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
     await PublicKeyDetailsScreen.checkSignatureDateValue(signatureDate);
     await PublicKeyDetailsScreen.checkFingerPrintsValue(fingerprintsValue);
-  }
+  };
   static addRecipientAndCheckFetchedKey = async (userName: string, userEmail: string) => {
     // Add first contact
     await MailFolderScreen.clickCreateEmail();
@@ -60,7 +65,7 @@ class PublicKeyHelper {
 
     await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
     await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
-  }
+  };
 }
 
 export default PublicKeyHelper;

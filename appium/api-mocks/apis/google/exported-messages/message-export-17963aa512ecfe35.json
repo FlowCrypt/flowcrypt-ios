@@ -3,10 +3,7 @@
   "full": {
     "id": "17963aa512ecfe35",
     "threadId": "17963aa512ecfe35",
-    "labelIds": [
-      "CATEGORY_PERSONAL",
-      "INBOX"
-    ],
+    "labelIds": ["CATEGORY_PERSONAL", "INBOX"],
     "snippet": "Test email",
     "payload": {
       "partId": "",
@@ -59,10 +56,7 @@
   "raw": {
     "id": "17963aa512ecfe35",
     "threadId": "17963aa512ecfe35",
-    "labelIds": [
-      "CATEGORY_PERSONAL",
-      "INBOX"
-    ],
+    "labelIds": ["CATEGORY_PERSONAL", "INBOX"],
     "snippet": "Test email",
     "sizeEstimate": 6885,
     "raw": "TUlNRS1WZXJzaW9uOiAxLjAKRGF0ZTogRnJpLCA1IEp1biAyMDIwIDE5OjM0OjQxICswMDAwCk1lc3NhZ2UtSUQ6IDxDQUtidUxUcnJtSlNhY2hXZTlFUTMzb2RTK0hxdjZfWUZIRVg4VHZmYXUraUxmRVk9WndAbWFpbC5nbWFpbC5jb20+ClN1YmplY3Q6IFRlc3QgMQpGcm9tOiBEbWl0cnkgYXQgRmxvd0NyeXB0IDxkbWl0cnlAZmxvd2NyeXB0LmNvbT4KVG86IGUyZS5lbnRlcnByaXNlLnRlc3RAZmxvd2NyeXB0LmNvbQpDb250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJzZXQ9IlVURi04IgoKVGVzdCBlbWFpbA==",

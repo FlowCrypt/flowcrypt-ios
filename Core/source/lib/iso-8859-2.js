@@ -1,12 +1,10 @@
 /*! https://mths.be/iso-8859-2 v3.0.4 by @mathias | MIT license */
-; (function (root) {
-
+(function (root) {
   // Detect free variables `exports`.
   var freeExports = typeof exports == 'object' && exports;
 
   // Detect free variable `module`.
-  var freeModule = typeof module == 'object' && module &&
-    module.exports == freeExports && module;
+  var freeModule = typeof module == 'object' && module && module.exports == freeExports && module;
 
   // Detect free variable `global`, from Node.js/io.js or Browserified code,
   // and use it as `root`.
@@ -147,7 +145,7 @@
     [728, 34],
     [729, 127],
     [731, 50],
-    [733, 61]
+    [733, 61],
   ]);
   const INDEX_BY_POINTER = new Map([
     [0, '\x80'],
@@ -277,11 +275,11 @@
     [124, '\xFC'],
     [125, '\xFD'],
     [126, '\u0163'],
-    [127, '\u02D9']
+    [127, '\u02D9'],
   ]);
 
   // https://encoding.spec.whatwg.org/#error-mode
-  const decodingError = (mode) => {
+  const decodingError = mode => {
     if (mode === 'replacement') {
       return '\uFFFD';
     }
@@ -289,9 +287,9 @@
     throw new Error();
   };
 
-  const encodingError = (mode) => {
+  const encodingError = mode => {
     if (mode === 'replacement') {
-      return 0xFFFD;
+      return 0xfffd;
     }
     // Else, `mode == 'fatal'`.
     throw new Error();
@@ -325,7 +323,7 @@
       const byteValue = input[index];
       // “If `byte` is an ASCII byte, return a code point whose value is
       // `byte`.”
-      if (0x00 <= byteValue && byteValue <= 0x7F) {
+      if (0x00 <= byteValue && byteValue <= 0x7f) {
         buffer.push(stringFromCharCode(byteValue));
         continue;
       }
@@ -360,7 +358,7 @@
       const codePoint = input.charCodeAt(index);
       // “If `code point` is an ASCII code point, return a byte whose
       // value is `code point`.”
-      if (0x00 <= codePoint && codePoint <= 0x7F) {
+      if (0x00 <= codePoint && codePoint <= 0x7f) {
         result[index] = codePoint;
         continue;
       }
@@ -379,9 +377,9 @@
   };
 
   var iso88592 = {
-    'encode': encode,
-    'decode': decode,
-    'labels': [
+    encode: encode,
+    decode: decode,
+    labels: [
       'csisolatin2',
       'iso-8859-2',
       'iso-ir-101',
@@ -390,31 +388,29 @@
       'iso_8859-2',
       'iso_8859-2:1987',
       'l2',
-      'latin2'
+      'latin2',
     ],
-    'version': '3.0.4'
+    version: '3.0.4',
   };
 
   // Some AMD build optimizers, like r.js, check for specific condition patterns
   // like the following:
-  if (
-    typeof define == 'function' &&
-    typeof define.amd == 'object' &&
-    define.amd
-  ) {
+  if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
     define(function () {
       return iso88592;
     });
   } else if (freeExports && !freeExports.nodeType) {
-    if (freeModule) { // in Node.js, io.js or RingoJS v0.8.0+
+    if (freeModule) {
+      // in Node.js, io.js or RingoJS v0.8.0+
       freeModule.exports = iso88592;
-    } else { // in Narwhal or RingoJS v0.7.0-
+    } else {
+      // in Narwhal or RingoJS v0.7.0-
       for (var key in iso88592) {
         iso88592.hasOwnProperty(key) && (freeExports[key] = iso88592[key]);
       }
     }
-  } else { // in Rhino or a web browser
+  } else {
+    // in Rhino or a web browser
     root.iso88592 = iso88592;
   }
-
-}(this));
+})(this);

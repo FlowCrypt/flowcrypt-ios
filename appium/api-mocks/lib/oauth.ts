@@ -9,7 +9,6 @@ import { GoogleMockAccountEmail } from 'api-mocks/apis/google/google-messages';
 const authURL = 'https://localhost:8001';
 
 export class OauthMock {
-
   public clientId = '679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc.apps.googleusercontent.com';
   public expiresIn = 2 * 60 * 60; // 2hrs in seconds
   public redirectUri = 'com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect';
@@ -24,7 +23,7 @@ export class OauthMock {
 
   public renderText = (text: string) => {
     return this.htmlPage(text, text);
-  }
+  };
 
   public generateAuthTokensAndRedirectUrl = (acct: GoogleMockAccountEmail, state: string, nonce: string) => {
     const authCode = `mock-auth-code-${acct.replace(/[^a-z0-9]+/g, '')}`;
@@ -36,9 +35,11 @@ export class OauthMock {
     this.acctByAccessToken[accessToken] = acct;
     this.nonceByAcct[acct] = nonce;
 
-    const redirectUri = `${this.redirectUri}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(state)}&authuser=0&prompt=consent&nonce=${encodeURIComponent(nonce)}`;
+    const redirectUri = `${this.redirectUri}?code=${encodeURIComponent(authCode)}&state=${encodeURIComponent(
+      state,
+    )}&authuser=0&prompt=consent&nonce=${encodeURIComponent(nonce)}`;
     throw new TemporaryRedirectHttpErr(redirectUri);
-  }
+  };
 
   public getRefreshTokenResponse = (code: string) => {
     const refresh_token = this.refreshTokenByAuthCode[code];
@@ -46,9 +47,18 @@ export class OauthMock {
     const acct = this.acctByAccessToken[access_token];
     const id_token = this.generateIdToken(acct);
     const nonce = this.nonceByAcct[acct];
-    const scope = 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://mail.google.com/ openid https://www.googleapis.com/auth/contacts https://www.googleapis.com/auth/contacts.other.readonly';
-    return { access_token, refresh_token, expires_in: this.expiresIn, id_token: id_token, nonce: nonce, token_type: 'Bearer', scope: scope }; // guessed the token_type
-  }
+    const scope =
+      'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile https://mail.google.com/ openid https://www.googleapis.com/auth/contacts https://www.googleapis.com/auth/contacts.other.readonly';
+    return {
+      access_token,
+      refresh_token,
+      expires_in: this.expiresIn,
+      id_token: id_token,
+      nonce: nonce,
+      token_type: 'Bearer',
+      scope: scope,
+    }; // guessed the token_type
+  };
 
   public getAccessTokenResponse = (refreshToken: string) => {
     try {
@@ -60,7 +70,7 @@ export class OauthMock {
     } catch (e) {
       throw new HttpErr('invalid_grant', Status.BAD_REQUEST);
     }
-  }
+  };
 
   public checkAuthorizationHeaderWithAccessToken = (authorization: string | undefined) => {
     if (!authorization) {
@@ -72,7 +82,7 @@ export class OauthMock {
       throw new HttpErr('Invalid mock auth token', Status.UNAUTHORIZED);
     }
     return acct;
-  }
+  };
 
   /**
    * As if a 3rd party was evaluating it, such as key manager
@@ -87,13 +97,14 @@ export class OauthMock {
       throw new HttpErr('Invalid idToken token', Status.UNAUTHORIZED);
     }
     return acct;
-  }
+  };
 
-  public isIdTokenValid = (idToken: string) => { // we verify mock idToken by checking if we ever issued it
-    const [, data,] = idToken.split('.');
+  public isIdTokenValid = (idToken: string) => {
+    // we verify mock idToken by checking if we ever issued it
+    const [, data] = idToken.split('.');
     const claims = JSON.parse(Buf.fromBase64UrlStr(data).toUtfStr());
     return (this.issuedIdTokensByAcct[claims.email] || []).includes(idToken);
-  }
+  };
 
   // -- private
 
@@ -106,7 +117,7 @@ export class OauthMock {
     this.issuedIdTokensByAcct[email].push(newIdToken);
     this.acctByIdToken[newIdToken] = email;
     return newIdToken;
-  }
+  };
 
   private getAccessToken(refreshToken: string): string {
     if (this.accessTokenByRefreshToken[refreshToken]) {
@@ -117,13 +128,12 @@ export class OauthMock {
 
   private htmlPage = (title: string, content: string) => {
     return `<!DOCTYPE HTML><html><head><title>${title}</title></head><body>${content}</body></html>`;
-  }
+  };
 }
 
 export class MockJwt {
-
   public static new = (email: string, nonce: string, expiresIn = 1 * 60 * 60): string => {
-    const prefix = { "alg": "RS256", "kid": Str.sloppyRandom(40), "typ": "JWT" };
+    const prefix = { alg: 'RS256', kid: Str.sloppyRandom(40), typ: 'JWT' };
     const data = {
       at_hash: 'at_hash',
       exp: Math.round(Date.now() / 1000) + expiresIn,
@@ -139,11 +149,13 @@ export class MockJwt {
       given_name: 'First',
       email,
       email_verified: true,
-      nonce: nonce
+      nonce: nonce,
     };
-    const newIdToken = `${Buf.fromUtfStr(JSON.stringify(prefix)).toBase64UrlStr()}.${Buf.fromUtfStr(JSON.stringify(data)).toBase64UrlStr()}.${Str.sloppyRandom(30)}`;
+    const newIdToken = `${Buf.fromUtfStr(JSON.stringify(prefix)).toBase64UrlStr()}.${Buf.fromUtfStr(
+      JSON.stringify(data),
+    ).toBase64UrlStr()}.${Str.sloppyRandom(30)}`;
     return newIdToken;
-  }
+  };
 
   public static parseEmail = (jwt: string): string => {
     const email = JSON.parse(Buf.fromBase64Str(jwt.split('.')[1]).toUtfStr()).email as string;
@@ -151,8 +163,7 @@ export class MockJwt {
       throw new Error(`Missing email in MockJwt ${jwt}`);
     }
     return email;
-  }
-
+  };
 }
 
 export const oauth = new OauthMock();

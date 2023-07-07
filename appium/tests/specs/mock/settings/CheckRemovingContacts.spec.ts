@@ -3,17 +3,15 @@ import {
   SetupKeyScreen,
   MenuBarScreen,
   SettingsScreen,
-  MailFolderScreen
+  MailFolderScreen,
 } from '../../../screenobjects/all-screens';
-import NewMessageScreen from "../../../screenobjects/new-message.screen";
-import ContactScreen from "../../../screenobjects/contacts.screen";
+import NewMessageScreen from '../../../screenobjects/new-message.screen';
+import ContactScreen from '../../../screenobjects/contacts.screen';
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
-
 describe('SETTINGS: ', () => {
-
   it('check correct removing contacts', async () => {
     const recipient1 = MockUserList.dmitry;
     const recipient2 = MockUserList.demo;
@@ -35,7 +33,7 @@ describe('SETTINGS: ', () => {
         [recipient3.email]: recipient3.pub!,
         [recipient4.email]: recipient4.pub!,
         [recipient5.email]: recipient5.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {

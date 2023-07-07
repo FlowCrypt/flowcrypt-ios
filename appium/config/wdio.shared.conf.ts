@@ -15,8 +15,8 @@ process.on('SIGINT', () => {
 export const config: Options.Testrunner = {
   autoCompileOpts: {
     tsNodeOpts: {
-      project: './tsconfig.json'
-    }
+      project: './tsconfig.json',
+    },
   },
   runner: 'local',
   framework: 'jasmine',
@@ -31,12 +31,15 @@ export const config: Options.Testrunner = {
   maxInstancesPerCapability: 1,
   reporters: [
     'spec',
-    ['junit', {
-      outputDir: './tmp/test-results',
-      outputFileFormat: function (options) {
-        return `wdio-${options.cid}.xml`
-      }
-    }],
+    [
+      'junit',
+      {
+        outputDir: './tmp/test-results',
+        outputFileFormat: function (options) {
+          return `wdio-${options.cid}.xml`;
+        },
+      },
+    ],
     // [video, {
     //   saveAllVideos: false,       // If true, also saves videos for successful test cases
     //   outputDir: './tmp/video',
@@ -44,10 +47,13 @@ export const config: Options.Testrunner = {
   ],
   capabilities: [],
   services: [
-    ['appium', {
-      command: './node_modules/.bin/appium',
-      logPath: join(process.cwd(), './tmp')
-    }]
+    [
+      'appium',
+      {
+        command: './node_modules/.bin/appium',
+        logPath: join(process.cwd(), './tmp'),
+      },
+    ],
   ],
   port: 4723,
   specFileRetries: 1,
@@ -59,10 +65,10 @@ export const config: Options.Testrunner = {
         const timestampNow = new Date().getTime().toString();
         const path = join(process.cwd(), './tmp');
         await browser.saveScreenshot(`${path}/${timestampNow}.png`);
-        console.log("Screenshot of failed test was saved to " + path)
+        console.log('Screenshot of failed test was saved to ' + path);
       } catch (e) {
         console.error(`Error occurred while saving screenshot. Error: ${e}`);
       }
     }
-  }
+  },
 };

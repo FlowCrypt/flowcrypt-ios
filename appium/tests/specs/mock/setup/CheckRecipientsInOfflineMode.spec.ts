@@ -1,17 +1,10 @@
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  NewMessageScreen,
-} from '../../../screenobjects/all-screens';
-import { MockApi } from "../../../../api-mocks/mock";
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, NewMessageScreen } from '../../../screenobjects/all-screens';
+import { MockApi } from '../../../../api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('check valid, revoked and expired recipients in offline mode', async () => {
-
     const validRecipient = MockUserList.dmitry;
     const expiredRecipient = MockUserList.expired;
     const revokedRecipient = MockUserList.revoked;
@@ -25,7 +18,7 @@ describe('COMPOSE EMAIL: ', () => {
         [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
         [MockUserList.expired.email]: MockUserList.expired.pub!,
         [MockUserList.revoked.email]: MockUserList.revoked.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -49,8 +42,8 @@ describe('COMPOSE EMAIL: ', () => {
       mockApi.attesterConfig = {
         returnError: {
           code: 400,
-          message: "some client err"
-        }
+          message: 'some client err',
+        },
       };
 
       await NewMessageScreen.setAddRecipient(validRecipient.email);

@@ -8,17 +8,14 @@ import {
   SettingsScreen,
   ContactScreen,
 } from '../../../screenobjects/all-screens';
-import { attesterPublicKeySamples } from "../../../../api-mocks/apis/attester/attester-endpoints";
-import { CommonData } from "../../../data";
-import DataHelper from "../../../helpers/DataHelper";
-import PublicKeyHelper from "../../../helpers/PublicKeyHelper";
+import { attesterPublicKeySamples } from '../../../../api-mocks/apis/attester/attester-endpoints';
+import { CommonData } from '../../../data';
+import DataHelper from '../../../helpers/DataHelper';
+import PublicKeyHelper from '../../../helpers/PublicKeyHelper';
 import { MockApiConfig } from 'api-mocks/mock-config';
 
-
 describe('SETUP: ', () => {
-
   it('app updates older public keys to newer but not vice versa', async () => {
-
     let firstFetchedDate, secondFetchedDate, thirdFetchedDate, fourthFetchedDate;
 
     const userEmail = CommonData.updateRecipientPublicKey.email;
@@ -34,8 +31,8 @@ describe('SETUP: ', () => {
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.attesterConfig = {
       servedPubkeys: {
-        'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
-      }
+        'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion,
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -47,7 +44,7 @@ describe('SETUP: ', () => {
         userEmail,
         oldSignatureDate,
         oldFingerprintsValue,
-        userName
+        userName,
       );
       firstFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
 
@@ -64,14 +61,14 @@ describe('SETUP: ', () => {
       //stage 2
       mockApi.attesterConfig = {
         servedPubkeys: {
-          'updating.key@example.test': attesterPublicKeySamples.keyNewerVersion
-        }
+          'updating.key@example.test': attesterPublicKeySamples.keyNewerVersion,
+        },
       };
       await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
         userEmail,
         newSignatureDate,
         newFingerprintsValue,
-        userName
+        userName,
       );
 
       secondFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
@@ -91,14 +88,14 @@ describe('SETUP: ', () => {
       //stage 3
       mockApi.attesterConfig = {
         servedPubkeys: {
-          'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion
-        }
+          'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion,
+        },
       };
       await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
         userEmail,
         newSignatureDate,
         newFingerprintsValue,
-        userName
+        userName,
       );
 
       thirdFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
@@ -120,7 +117,7 @@ describe('SETUP: ', () => {
         userEmail,
         oldSignatureDate,
         oldFingerprintsValue,
-        userName
+        userName,
       );
 
       fourthFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());

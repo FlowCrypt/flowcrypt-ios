@@ -1,20 +1,14 @@
 import { MockApi } from 'api-mocks/mock';
-import {
-  KeysScreen,
-  SetupKeyScreen,
-  SplashScreen,
-} from '../../../screenobjects/all-screens';
-import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
-import { CommonData } from "../../../data";
-import RefreshKeyScreen from "../../../screenobjects/refresh-key.screen";
-import BaseScreen from "../../../screenobjects/base.screen";
-import AppiumHelper from "../../../helpers/AppiumHelper";
+import { KeysScreen, SetupKeyScreen, SplashScreen } from '../../../screenobjects/all-screens';
+import { ekmKeySamples } from '../../../../api-mocks/apis/ekm/ekm-endpoints';
+import { CommonData } from '../../../data';
+import RefreshKeyScreen from '../../../screenobjects/refresh-key.screen';
+import BaseScreen from '../../../screenobjects/base.screen';
+import AppiumHelper from '../../../helpers/AppiumHelper';
 import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('SETUP: ', () => {
-
   it('app auto updates keys from EKM during startup with a pass phrase prompt', async () => {
-
     const passPhrase = CommonData.account.passPhrase;
     const successMessage = CommonData.refreshingKeysFromEkm.updatedSuccessfully;
     const processArgs = CommonData.mockProcessArgs;
@@ -23,7 +17,7 @@ describe('SETUP: ', () => {
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.key0.prv]
+      returnKeys: [ekmKeySamples.key0.prv],
     };
 
     await mockApi.withMockedApis(async () => {
@@ -35,7 +29,7 @@ describe('SETUP: ', () => {
 
       // stage 2 - prompt appears / wrong pass phrase rejected / cancel
       mockApi.ekmConfig = {
-        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
+        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv],
       };
       await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
@@ -58,7 +52,7 @@ describe('SETUP: ', () => {
 
       // stage 4 - modified key gets updated
       mockApi.ekmConfig = {
-        returnKeys: [ekmKeySamples.key0Updated.prv, ekmKeySamples.key1.prv]
+        returnKeys: [ekmKeySamples.key0Updated.prv, ekmKeySamples.key1.prv],
       };
       await AppiumHelper.restartApp(processArgs);
       await RefreshKeyScreen.waitForScreen(true);
@@ -70,7 +64,7 @@ describe('SETUP: ', () => {
 
       // stage 5 - older version of key does not get updated
       mockApi.ekmConfig = {
-        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
+        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv],
       };
       await AppiumHelper.restartApp(processArgs);
       await KeysScreen.openScreenFromSideMenu();

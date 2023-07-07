@@ -1,12 +1,7 @@
 import { CommonData } from 'tests/data';
-import {
-  MailFolderScreen,
-  EmailScreen,
-  MenuBarScreen,
-} from '../screenobjects/all-screens';
+import { MailFolderScreen, EmailScreen, MenuBarScreen } from '../screenobjects/all-screens';
 
 class MailFolderHelper {
-
   static checkPagination = async (subject: string) => {
     const emailsCountBeforeScroll = await MailFolderScreen.getEmailCount();
     await MailFolderScreen.scrollDownToEmail(subject);
@@ -14,7 +9,7 @@ class MailFolderHelper {
 
     const emailsCountAfterScroll = await MailFolderScreen.getEmailCount();
     expect(emailsCountBeforeScroll).toBeLessThan(emailsCountAfterScroll);
-  }
+  };
 
   static deleteSentEmail = async (subject: string, message: string, sender = CommonData.account.email) => {
     await MenuBarScreen.clickMenuBtn();
@@ -45,6 +40,6 @@ class MailFolderHelper {
     await MailFolderScreen.refreshMailList();
     await MailFolderScreen.checkTrashScreen();
     await MailFolderScreen.checkEmailIsNotDisplayed(subject);
-  }
+  };
 }
 export default MailFolderHelper;

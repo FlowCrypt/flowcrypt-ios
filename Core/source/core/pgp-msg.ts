@@ -12,8 +12,19 @@ import { MsgBlockParser } from './msg-block-parser';
 import { PgpArmor } from './pgp-armor';
 import { Store } from '../platform/store';
 import {
-  CleartextMessage, createCleartextMessage, createMessage, Data, encrypt, enums, Key,
-  KeyID, Message, PrivateKey, readKeys, sign, VerificationResult
+  CleartextMessage,
+  createCleartextMessage,
+  createMessage,
+  Data,
+  encrypt,
+  enums,
+  Key,
+  KeyID,
+  Message,
+  PrivateKey,
+  readKeys,
+  sign,
+  VerificationResult,
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
@@ -21,22 +32,22 @@ import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
 export namespace PgpMsgMethod {
   export namespace Arg {
     export type Encrypt = {
-      pubkeys: string[],
-      signingPrv?: Key,
-      pwd?: string,
-      data: Uint8Array,
-      filename?: string,
-      armor: boolean,
-      date?: Date
+      pubkeys: string[];
+      signingPrv?: Key;
+      pwd?: string;
+      data: Uint8Array;
+      filename?: string;
+      armor: boolean;
+      date?: Date;
     };
     export type Type = { data: Uint8Array };
     export type Decrypt = {
-      kisWithPp: PrvKeyInfo[],
-      encryptedData: Uint8Array,
-      msgPwd?: string,
-      verificationPubkeys?: string[]
+      kisWithPp: PrvKeyInfo[];
+      encryptedData: Uint8Array;
+      msgPwd?: string;
+      verificationPubkeys?: string[];
     };
-    export type VerifyDetached = { plaintext: Uint8Array, sigText: Uint8Array, verificationPubkeys?: string[] };
+    export type VerifyDetached = { plaintext: Uint8Array; sigText: Uint8Array; verificationPubkeys?: string[] };
   }
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
   export type Decrypt = (arg: Arg.Decrypt) => Promise<DecryptSuccess | DecryptError>;
@@ -54,15 +65,20 @@ type SortedKeysForDecrypt = {
   prvForDecryptWithoutPassphrases: PrvKeyInfo[];
 };
 
-type DecryptSuccess = { success: true; signature?: VerifyRes; isEncrypted?: boolean, filename?: string, content: Buf };
-type DecryptError$error = { type: DecryptErrTypes; message: string; };
-type DecryptError$longids = { message: string[]; matching: string[]; chosen: string[]; needPassphrase: string[]; };
+type DecryptSuccess = { success: true; signature?: VerifyRes; isEncrypted?: boolean; filename?: string; content: Buf };
+type DecryptError$error = { type: DecryptErrTypes; message: string };
+type DecryptError$longids = { message: string[]; matching: string[]; chosen: string[]; needPassphrase: string[] };
 export type DecryptError = {
-  success: false; error: DecryptError$error; longids: DecryptError$longids; content?: Buf;
-  isEncrypted?: boolean; message?: Message<Data> | CleartextMessage;
+  success: false;
+  error: DecryptError$error;
+  longids: DecryptError$longids;
+  content?: Buf;
+  isEncrypted?: boolean;
+  message?: Message<Data> | CleartextMessage;
 };
-type PreparedForDecrypt = { isArmored: boolean, isCleartext: true, message: CleartextMessage }
-  | { isArmored: boolean, isCleartext: false, message: Message<Data> };
+type PreparedForDecrypt =
+  | { isArmored: boolean; isCleartext: true; message: CleartextMessage }
+  | { isArmored: boolean; isCleartext: false; message: Message<Data> };
 
 type OpenpgpMsgOrCleartext = Message<Data> | CleartextMessage;
 
@@ -73,10 +89,10 @@ export type VerifyRes = {
   mixed?: boolean;
   partial?: boolean;
 };
-export type PgpMsgTypeResult = { armored: boolean, type: MsgBlockType } | undefined;
+export type PgpMsgTypeResult = { armored: boolean; type: MsgBlockType } | undefined;
 export type DecryptResult = DecryptSuccess | DecryptError;
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export type DiagnoseMsgPubkeysResult = { found_match: boolean, receivers: number, };
+export type DiagnoseMsgPubkeysResult = { found_match: boolean; receivers: number };
 export enum DecryptErrTypes {
   keyMismatch = 'key_mismatch',
   usePassword = 'use_password',
@@ -97,18 +113,21 @@ export class FormatError extends Error {
 }
 
 export class PgpMsg {
-
-  public static type: PgpMsgMethod.Type = async ({ data }) => { // promisified because used through bg script
+  public static type: PgpMsgMethod.Type = async ({ data }) => {
+    // promisified because used through bg script
     if (!data || !data.length) {
       return undefined;
     }
     const firstByte = data[0];
     // attempt to understand this as a binary PGP packet: https://tools.ietf.org/html/rfc4880#section-4.2
-    if ((firstByte & 0b10000000) === 0b10000000) { // 1XXX XXXX - potential pgp packet tag
+    if ((firstByte & 0b10000000) === 0b10000000) {
+      // 1XXX XXXX - potential pgp packet tag
       let tagNumber = 0; // zero is a forbidden tag number
-      if ((firstByte & 0b11000000) === 0b11000000) { // 11XX XXXX - potential new pgp packet tag
-        tagNumber = firstByte & 0b00111111;  // 11TTTTTT where T is tag number bit
-      } else { // 10XX XXXX - potential old pgp packet tag
+      if ((firstByte & 0b11000000) === 0b11000000) {
+        // 11XX XXXX - potential new pgp packet tag
+        tagNumber = firstByte & 0b00111111; // 11TTTTTT where T is tag number bit
+      } else {
+        // 10XX XXXX - potential old pgp packet tag
         // 10TTTTLL where T is tag number bit. Division by 4 in place of two bit shifts. I hate bit shifts.
         tagNumber = (firstByte & 0b00111100) / 4;
       }
@@ -122,15 +141,18 @@ export class PgpMsg {
           t.modificationDetectionCode,
           t.aeadEncryptedData,
           t.symmetricallyEncryptedData,
-          t.compressedData
+          t.compressedData,
         ];
         return { armored: false, type: msgTpes.includes(tagNumber) ? 'encryptedMsg' : 'publicKey' };
       }
     }
     // only interested in first 50 bytes
     const { blocks } = MsgBlockParser.detectBlocks(new Buf(data.slice(0, 50)).toUtfStr().trim());
-    if (blocks.length === 1 && blocks[0].complete === false
-      && ['encryptedMsg', 'privateKey', 'publicKey', 'signedMsg'].includes(blocks[0].type)) {
+    if (
+      blocks.length === 1 &&
+      blocks[0].complete === false &&
+      ['encryptedMsg', 'privateKey', 'publicKey', 'signedMsg'].includes(blocks[0].type)
+    ) {
       return { armored: true, type: blocks[0].type };
     }
     return undefined;
@@ -144,16 +166,16 @@ export class PgpMsg {
     const message = await createCleartextMessage({ text: data });
     const signRes = await sign({
       message,
-      signingKeys: (signingPrv as PrivateKey),
+      signingKeys: signingPrv as PrivateKey,
       detached,
-      format: 'armored'
+      format: 'armored',
     });
     return signRes;
   };
 
   public static verify = async (
     msgOrVerResults: OpenpgpMsgOrCleartext | VerificationResult[],
-    pubs: Key[]
+    pubs: Key[],
   ): Promise<VerifyRes> => {
     const sig: VerifyRes = { match: null };
     try {
@@ -177,7 +199,7 @@ export class PgpMsg {
           // Should we be showing all signers? How common is that?
           sig.signer = await PgpKey.longid(verifyRes.keyID.bytes);
         }
-        sig.match = (sig.match === true || sig.match === null) && await verifyRes.verified;
+        sig.match = (sig.match === true || sig.match === null) && (await verifyRes.verified);
       }
     } catch (verifyErr) {
       sig.match = null;
@@ -230,7 +252,7 @@ export class PgpMsg {
         error: { type: DecryptErrTypes.keyMismatch, message: 'Missing appropriate key' },
         message: prepared.message,
         longids,
-        isEncrypted
+        isEncrypted,
       };
     }
     if (!keys.prvForDecryptDecrypted.length && !msgPwd) {
@@ -239,7 +261,7 @@ export class PgpMsg {
         error: { type: DecryptErrTypes.needPassphrase, message: 'Missing pass phrase' },
         message: prepared.message,
         longids,
-        isEncrypted
+        isEncrypted,
       };
     }
     try {
@@ -251,7 +273,7 @@ export class PgpMsg {
           success: false,
           error: { type: DecryptErrTypes.usePassword, message: 'Use message password' },
           longids,
-          isEncrypted
+          isEncrypted,
         };
       }
       const passwords = msgPwd ? [msgPwd] : undefined;
@@ -268,22 +290,33 @@ export class PgpMsg {
       const content = new Buf(await readToEnd(decrypted.getLiteralData() as MaybeStream<Uint8Array>));
       // evaluate verify results third to prevent stream hang
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined;
-      if (!prepared.isCleartext && (prepared.message as Message<Data>).packets
-        .filterByTag(enums.packet.symmetricallyEncryptedData).length) {
-        const noMdc = 'Security threat!\n\nMessage is missing integrity checks (MDC). ' +
+      if (
+        !prepared.isCleartext &&
+        (prepared.message as Message<Data>).packets.filterByTag(enums.packet.symmetricallyEncryptedData).length
+      ) {
+        const noMdc =
+          'Security threat!\n\nMessage is missing integrity checks (MDC). ' +
           'The sender should update their outdated software and resend.';
         return {
-          success: false, content, error: {
-            type: DecryptErrTypes.noMdc, message: noMdc
+          success: false,
+          content,
+          error: {
+            type: DecryptErrTypes.noMdc,
+            message: noMdc,
           },
-          message: prepared.message, longids, isEncrypted
+          message: prepared.message,
+          longids,
+          isEncrypted,
         };
       }
       return { success: true, content, isEncrypted, filename: decrypted.getFilename() || undefined, signature };
     } catch (e) {
       return {
-        success: false, error: PgpMsg.cryptoMsgDecryptCategorizeErr(e as Error, msgPwd),
-        message: prepared.message, longids, isEncrypted
+        success: false,
+        error: PgpMsg.cryptoMsgDecryptCategorizeErr(e as Error, msgPwd),
+        message: prepared.message,
+        longids,
+        isEncrypted,
       };
     }
   };
@@ -304,7 +337,7 @@ export class PgpMsg {
       date,
       encryptionKeys,
       passwords: pwd ? [pwd] : undefined,
-      signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined
+      signingKeys: signingPrv && signingPrv.isPrivate() ? signingPrv : undefined,
     };
 
     if (!armor) {
@@ -320,18 +353,22 @@ export class PgpMsg {
     // thus we use RegEx so that it works on both browser and node
     if (decryptedContent.includes('class="cryptup_file"')) {
       decryptedContent = decryptedContent.replace(
-        /<a\s+href="([^"]+)"\s+class="cryptup_file"\s+cryptup-data="([^"]+)"\s*>[^<]+<\/a>\n?/gm, (_, url, fcData) => {
+        /<a\s+href="([^"]+)"\s+class="cryptup_file"\s+cryptup-data="([^"]+)"\s*>[^<]+<\/a>\n?/gm,
+        (_, url, fcData) => {
           const a = Str.htmlAttrDecode(String(fcData));
           if (PgpMsg.isFcAttLinkData(a)) {
-            blocks.push(MsgBlock.fromAtt('encryptedAttLink', '', {
-              type: a.type,
-              name: a.name,
-              length: a.size,
-              url: String(url)
-            }));
+            blocks.push(
+              MsgBlock.fromAtt('encryptedAttLink', '', {
+                type: a.type,
+                name: a.name,
+                length: a.size,
+                url: String(url),
+              }),
+            );
           }
           return '';
-        });
+        },
+      );
     }
     return decryptedContent;
   };
@@ -354,20 +391,21 @@ export class PgpMsg {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static isFcAttLinkData = (o: any): o is FcAttLinkData => {
-    return o // eslint-disable-line @typescript-eslint/no-unsafe-return
-      && typeof o === 'object'
-      && typeof (o as FcAttLinkData).name !== 'undefined'
-      && typeof (o as FcAttLinkData).size !== 'undefined'
-      && typeof (o as FcAttLinkData).type !== 'undefined';
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return (
+      o &&
+      typeof o === 'object' &&
+      typeof (o as FcAttLinkData).name !== 'undefined' &&
+      typeof (o as FcAttLinkData).size !== 'undefined' &&
+      typeof (o as FcAttLinkData).type !== 'undefined'
+    );
   };
 
   private static cryptoMsgGetSignedBy = async (msg: OpenpgpMsgOrCleartext, keys: SortedKeysForDecrypt) => {
-    keys.signedBy = Value.arr.unique(await PgpKey.longids(
-      msg.getSigningKeyIDs ? msg.getSigningKeyIDs() : []));
+    keys.signedBy = Value.arr.unique(await PgpKey.longids(msg.getSigningKeyIDs ? msg.getSigningKeyIDs() : []));
   };
 
-  private static populateKeysForVerification = async (keys: SortedKeysForDecrypt,
-    verificationPubkeys?: string[]) => {
+  private static populateKeysForVerification = async (keys: SortedKeysForDecrypt, verificationPubkeys?: string[]) => {
     if (typeof verificationPubkeys !== 'undefined') {
       keys.forVerification = [];
       for (const verificationPubkey of verificationPubkeys) {
@@ -377,8 +415,11 @@ export class PgpMsg {
     }
   };
 
-  private static getSortedKeys = async (kiWithPp: PrvKeyInfo[],
-    msg: OpenpgpMsgOrCleartext, verificationPubkeys?: string[]): Promise<SortedKeysForDecrypt> => {
+  private static getSortedKeys = async (
+    kiWithPp: PrvKeyInfo[],
+    msg: OpenpgpMsgOrCleartext,
+    verificationPubkeys?: string[],
+  ): Promise<SortedKeysForDecrypt> => {
     const keys: SortedKeysForDecrypt = {
       forVerification: [],
       encryptedFor: [],
@@ -388,9 +429,7 @@ export class PgpMsg {
       prvForDecryptDecrypted: [],
       prvForDecryptWithoutPassphrases: [],
     };
-    const encryptedForKeyids = msg instanceof Message
-      ? (msg as Message<Data>).getEncryptionKeyIDs()
-      : [];
+    const encryptedForKeyids = msg instanceof Message ? (msg as Message<Data>).getEncryptionKeyIDs() : [];
     keys.encryptedFor = await PgpKey.longids(encryptedForKeyids);
     await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
     await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
@@ -412,7 +451,8 @@ export class PgpMsg {
         }
       }
       keys.prvForDecrypt = keys.prvMatching;
-    } else { // prvs not needed for signed msgs
+    } else {
+      // prvs not needed for signed msgs
       keys.prvForDecrypt = [];
     }
     for (const ki of keys.prvForDecrypt) {
@@ -424,8 +464,10 @@ export class PgpMsg {
       if (cachedKey && PgpMsg.isKeyDecryptedFor(cachedKey, matchingKeyids)) {
         ki.decrypted = cachedKey as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
-      } else if (PgpMsg.isKeyDecryptedFor(ki.parsed, matchingKeyids)
-        || await PgpMsg.decryptKeyFor(ki.parsed, ki.passphrase, matchingKeyids) === true) {
+      } else if (
+        PgpMsg.isKeyDecryptedFor(ki.parsed, matchingKeyids) ||
+        (await PgpMsg.decryptKeyFor(ki.parsed, ki.passphrase, matchingKeyids)) === true
+      ) {
         Store.decryptedKeyCacheSet(ki.parsed);
         ki.decrypted = ki.parsed as PrivateKey;
         keys.prvForDecryptDecrypted.push(ki);
@@ -442,11 +484,13 @@ export class PgpMsg {
   };
 
   private static decryptKeyFor = async (prv: Key, passphrase: string, matchingKeyIds: KeyID[]): Promise<boolean> => {
-    if (!matchingKeyIds.length) { // we don't know which keyids match, decrypt all key packets
+    if (!matchingKeyIds.length) {
+      // we don't know which keyids match, decrypt all key packets
       return await PgpKey.decrypt(prv, passphrase, undefined, 'OK-IF-ALREADY-DECRYPTED');
     }
-    for (const matchingKeyId of matchingKeyIds) { // we know which keyids match, decrypt only matching key packets
-      if (! await PgpKey.decrypt(prv, passphrase, matchingKeyId, 'OK-IF-ALREADY-DECRYPTED')) {
+    for (const matchingKeyId of matchingKeyIds) {
+      // we know which keyids match, decrypt only matching key packets
+      if (!(await PgpKey.decrypt(prv, passphrase, matchingKeyId, 'OK-IF-ALREADY-DECRYPTED'))) {
         return false; // failed to decrypt a particular needed key packet
       }
     }
@@ -469,26 +513,34 @@ export class PgpMsg {
 
   private static cryptoMsgDecryptCategorizeErr = (decryptErr: Error, msgPwd?: string): DecryptError$error => {
     const e = String(decryptErr).replace('Error: ', '').replace('Error decrypting message: ', '');
-    const keyMismatchErrStrings = ['Cannot read property \'isDecrypted\' of null', 'privateKeyPacket is null',
-      'TypeprivateKeyPacket is null', 'Session key decryption failed.', 'Invalid session key for decryption.'];
+    const keyMismatchErrStrings = [
+      "Cannot read property 'isDecrypted' of null",
+      'privateKeyPacket is null',
+      'TypeprivateKeyPacket is null',
+      'Session key decryption failed.',
+      'Invalid session key for decryption.',
+    ];
     if (keyMismatchErrStrings.includes(e) && !msgPwd) {
       return { type: DecryptErrTypes.keyMismatch, message: e };
-    } else if (msgPwd
-      && ['Invalid enum value.', 'CFB decrypt: invalid key', 'Session key decryption failed.'].includes(e)) {
+    } else if (
+      msgPwd &&
+      ['Invalid enum value.', 'CFB decrypt: invalid key', 'Session key decryption failed.'].includes(e)
+    ) {
       return { type: DecryptErrTypes.wrongPwd, message: e };
-    } else if (e === 'Decryption failed due to missing MDC in combination with modern cipher.'
-      || e === 'Decryption failed due to missing MDC.') {
+    } else if (
+      e === 'Decryption failed due to missing MDC in combination with modern cipher.' ||
+      e === 'Decryption failed due to missing MDC.'
+    ) {
       return { type: DecryptErrTypes.noMdc, message: e };
     } else if (e === 'Decryption error') {
       return { type: DecryptErrTypes.format, message: e };
     } else if (e === 'Modification detected.') {
       return {
         type: DecryptErrTypes.badMdc,
-        message: `Security threat - opening this message is dangerous because it was modified in transit.`
+        message: `Security threat - opening this message is dangerous because it was modified in transit.`,
       };
     } else {
       return { type: DecryptErrTypes.other, message: e };
     }
   };
-
 }

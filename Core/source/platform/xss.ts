@@ -2,20 +2,23 @@
 import { Str } from '../core/common';
 
 type Attributes = { [attr: string]: string };
-type Tag = { tagName: string; attribs: Attributes; text?: string; };
+type Tag = { tagName: string; attribs: Attributes; text?: string };
 type Transformer = (tagName: string, attribs: Attributes) => Tag;
 
 export type SanitizeImgHandling = 'IMG-DEL' | 'IMG-KEEP' | 'IMG-TO-LINK';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-declare const dereq_sanitize_html: (dirty: string, opts?: {
-  allowedTags?: string[],
-  selfClosing?: string[],
-  exclusiveFilter?: (frame: { tag: string, attribs: Attributes, text: string, tagPosition: number }) => boolean,
-  transformTags?: { [tagName: string]: string | Transformer };
-  allowedAttributes?: { [tag: string]: string[] },
-  allowedSchemes?: string[],
-}) => string;
+declare const dereq_sanitize_html: (
+  dirty: string,
+  opts?: {
+    allowedTags?: string[];
+    selfClosing?: string[];
+    exclusiveFilter?: (frame: { tag: string; attribs: Attributes; text: string; tagPosition: number }) => boolean;
+    transformTags?: { [tagName: string]: string | Transformer };
+    allowedAttributes?: { [tag: string]: string[] };
+    allowedSchemes?: string[];
+  },
+) => string;
 
 /**
  * This file needs to be in platform/ folder because its implementation is platform-dependant
@@ -27,9 +30,41 @@ declare const dereq_sanitize_html: (dirty: string, opts?: {
 export class Xss {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ALLOWED_BASIC_TAGS = [
-    'p', 'div', 'br', 'u', 'i', 'em', 'b', 'ol', 'ul', 'pre', 'li', 'table',
-    'thead', 'tbody', 'tfoot', 'tr', 'td', 'th', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr',
-    'address', 'blockquote', 'dl', 'fieldset', 'a', 'font', 'strong', 'strike', 'code'
+    'p',
+    'div',
+    'br',
+    'u',
+    'i',
+    'em',
+    'b',
+    'ol',
+    'ul',
+    'pre',
+    'li',
+    'table',
+    'thead',
+    'tbody',
+    'tfoot',
+    'tr',
+    'td',
+    'th',
+    'img',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'hr',
+    'address',
+    'blockquote',
+    'dl',
+    'fieldset',
+    'a',
+    'font',
+    'strong',
+    'strike',
+    'code',
   ];
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -60,15 +95,16 @@ export class Xss {
       allowedAttributes: Xss.ALLOWED_ATTRS,
       allowedSchemes: Xss.ALLOWED_SCHEMES,
       transformTags: {
-        'img': (tagName, attribs) => {
+        img: (tagName, attribs) => {
           const srcBegin = (attribs.src || '').substring(0, 10);
           if (srcBegin.startsWith('data:')) {
             return { tagName: 'img', attribs: { src: attribs.src, alt: attribs.alt || '' } };
           } else if (srcBegin.startsWith('http://') || srcBegin.startsWith('https://')) {
             remoteContentReplacedWithLink = true;
             return {
-              tagName: 'a', attribs: { href: String(attribs.src), target: "_blank" },
-              text: imgContentReplaceable
+              tagName: 'a',
+              attribs: { href: String(attribs.src), target: '_blank' },
+              text: imgContentReplaceable,
             };
           } else {
             return { tagName: 'img', attribs: { alt: attribs.alt, title: attribs.title }, text: '[img]' } as Tag;
@@ -92,19 +128,23 @@ export class Xss {
           return true; // remove tiny elements (often contain hidden content, tracking pixels, etc)
         }
         return false;
-      }
+      },
     });
     if (remoteContentReplacedWithLink) {
-      cleanHtml = '<font size="-1" color="#31a217" face="monospace">' +
+      cleanHtml =
+        '<font size="-1" color="#31a217" face="monospace">' +
         `[remote content blocked for your privacy]</font><br /><br />${cleanHtml}`;
       // clean it one more time in case something bad slipped in
       cleanHtml = dereq_sanitize_html(cleanHtml, {
-        allowedTags: Xss.ALLOWED_BASIC_TAGS, allowedAttributes: Xss.ALLOWED_ATTRS,
-        allowedSchemes: Xss.ALLOWED_SCHEMES
+        allowedTags: Xss.ALLOWED_BASIC_TAGS,
+        allowedAttributes: Xss.ALLOWED_ATTRS,
+        allowedSchemes: Xss.ALLOWED_SCHEMES,
       });
     }
-    cleanHtml = cleanHtml.replace(new RegExp(imgContentReplaceable, 'g'),
-      `<font color="#D14836" face="monospace">[img]</font>`);
+    cleanHtml = cleanHtml.replace(
+      new RegExp(imgContentReplaceable, 'g'),
+      `<font color="#D14836" face="monospace">[img]</font>`,
+    );
     return cleanHtml;
   };
 
@@ -117,14 +157,30 @@ export class Xss {
     html = html.replace(/<br[^>]*>/gi, br);
     html = html.replace(/\n/g, '');
     html = html.replace(
-      /<\/(p|h1|h2|h3|h4|h5|h6|ol|ul|pre|address|blockquote|dl|div|fieldset|form|hr|table)[^>]*>/gi, blockEnd);
+      /<\/(p|h1|h2|h3|h4|h5|h6|ol|ul|pre|address|blockquote|dl|div|fieldset|form|hr|table)[^>]*>/gi,
+      blockEnd,
+    );
     html = html.replace(
-      /<(p|h1|h2|h3|h4|h5|h6|ol|ul|pre|address|blockquote|dl|div|fieldset|form|hr|table)[^>]*>/gi, blockStart);
+      /<(p|h1|h2|h3|h4|h5|h6|ol|ul|pre|address|blockquote|dl|div|fieldset|form|hr|table)[^>]*>/gi,
+      blockStart,
+    );
     html = html.replace(RegExp(`(${blockStart})+`, 'g'), blockStart).replace(RegExp(`(${blockEnd})+`, 'g'), blockEnd);
-    html = html.split(br + blockEnd + blockStart).join(br).split(blockEnd + blockStart).join(br)
-      .split(br + blockEnd).join(br);
-    let text = html.split(br).join('\n').split(blockStart).filter(v => !!v).join('\n')
-      .split(blockEnd).filter(v => !!v).join('\n');
+    html = html
+      .split(br + blockEnd + blockStart)
+      .join(br)
+      .split(blockEnd + blockStart)
+      .join(br)
+      .split(br + blockEnd)
+      .join(br);
+    let text = html
+      .split(br)
+      .join('\n')
+      .split(blockStart)
+      .filter(v => !!v)
+      .join('\n')
+      .split(blockEnd)
+      .filter(v => !!v)
+      .join('\n');
     text = text.replace(/\n{2,}/g, '\n\n');
     // not all tags were removed above. Remove all remaining tags
     text = dereq_sanitize_html(text, {
@@ -132,10 +188,10 @@ export class Xss {
       allowedAttributes: { img: ['src'] },
       allowedSchemes: Xss.ALLOWED_SCHEMES,
       transformTags: {
-        'img': (tagName, attribs) => {
+        img: (tagName, attribs) => {
           return { tagName: 'span', attribs: {}, text: `[image: ${attribs.alt || attribs.title || 'no name'}]` };
         },
-      }
+      },
     });
     // clean it one more time to replace leftover spans with their text
     text = dereq_sanitize_html(text, { allowedTags: [] });
@@ -147,8 +203,13 @@ export class Xss {
   };
 
   public static escape = (str: string) => {
-    return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')
-      .replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\//g, '&#x2F;');
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\//g, '&#x2F;');
   };
 
   public static escapeTextAsRenderableHtml = (text: string) => {
@@ -162,10 +223,13 @@ export class Xss {
   public static htmlUnescape = (str: string) => {
     // the &nbsp; at the end is replaced with an actual NBSP character,
     // not a space character. IDE won't show you the difference. Do not change.
-    return str.replace(/&#x2F;/g, '/').replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'").replace(/&lt;/g, '<')
-      .replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+    return str
+      .replace(/&#x2F;/g, '/')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&nbsp;/g, ' ')
       .replace(/&amp;/g, '&');
   };
-
 }

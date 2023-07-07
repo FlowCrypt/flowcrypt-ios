@@ -3,9 +3,7 @@
   "full": {
     "id": "17d7a76924f539ec",
     "threadId": "17d7a76924f539ec",
-    "labelIds": [
-      "INBOX"
-    ],
+    "labelIds": ["INBOX"],
     "snippet": "On reply, it should show reply@domain.com not flowcrypt.compatibility@gmail.com",
     "payload": {
       "partId": "",
@@ -42,9 +40,7 @@
   "raw": {
     "id": "17d7a76924f539ec",
     "threadId": "17d7a76924f539ec",
-    "labelIds": [
-      "INBOX"
-    ],
+    "labelIds": ["INBOX"],
     "snippet": "On reply, it should show reply@domain.com not e2e.enterprise.test@flowcrypt.com",
     "sizeEstimate": 226,
     "raw": "U3ViamVjdDogSG9ub3IgcmVwbHktdG8gYWRkcmVzcyAtIHBsYWluCkZyb206IGZsb3djcnlwdC5jb21wYXRpYmlsaXR5QGdtYWlsLmNvbQpUbzogZmxvd2NyeXB0LmNvbXBhdGliaWxpdHlAZ21haWwuY29tClJlcGx5LVRvOiByZXBseUBkb21haW4uY29tCkRhdGU6IFR1ZSwgMjQgQXByIDIwMTggMTM6MjQ6MjYgKzA1MzAKQ29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0PSJVVEYtOCIKCk9uIHJlcGx5LCBpdCBzaG91bGQgc2hvdyByZXBseUBkb21haW4uY29tCm5vdCBmbG93Y3J5cHQuY29tcGF0aWJpbGl0eUBnbWFpbC5jb20K",

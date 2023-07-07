@@ -4,12 +4,11 @@
 
 import { base64decode } from '../platform/util';
 
-export type Dict<T> = { [key: string]: T; };
+export type Dict<T> = { [key: string]: T };
 export type UrlParam = string | number | null | undefined | boolean | string[];
 export type UrlParams = Dict<UrlParam>;
 
 export class Str {
-
   public static extractErrorMessage = (e: Error): string | undefined => {
     if (typeof e !== 'object') return undefined;
     /* eslint-disable @typescript-eslint/no-unsafe-return */
@@ -25,7 +24,11 @@ export class Str {
     if (full.includes('<') && full.includes('>')) {
       const openArrow = full.indexOf('<');
       const closeArrow = full.indexOf('>');
-      email = full.substr(openArrow + 1, openArrow - closeArrow - 1).replace(/["']/g, '').trim().toLowerCase();
+      email = full
+        .substr(openArrow + 1, openArrow - closeArrow - 1)
+        .replace(/["']/g, '')
+        .trim()
+        .toLowerCase();
       name = full.substr(0, full.indexOf('<')).replace(/["']/g, '').trim();
     } else {
       email = full.replace(/["']/g, '').trim().toLowerCase();
@@ -37,7 +40,7 @@ export class Str {
   };
 
   public static prettyPrint = (obj: unknown) => {
-    return (typeof obj === 'object')
+    return typeof obj === 'object'
       ? JSON.stringify(obj, undefined, 2).replace(/ /g, '&nbsp;').replace(/\n/g, '<br />')
       : String(obj);
   };
@@ -59,15 +62,26 @@ export class Str {
       return false;
     }
     // eslint-disable-next-line max-len
-    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(email);
+    return /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/i.test(
+      email,
+    );
   };
 
   public static monthName = (monthIndex: number) => {
     return [
-      'January', 'February', 'March',
-      'April', 'May', 'June',
-      'July', 'August', 'September',
-      'October', 'November', 'December'][monthIndex];
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ][monthIndex];
   };
 
   public static sloppyRandom = (length = 5) => {
@@ -84,9 +98,14 @@ export class Str {
   };
 
   public static asEscapedHtml = (text: string) => {
-    return text.replace(/&/g, '&amp;').replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-      .replace(/\//g, '&#x2F;').replace(/\n/g, '<br />');
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\//g, '&#x2F;')
+      .replace(/\n/g, '<br />');
   };
 
   public static htmlAttrDecode = (encoded: string): unknown => {
@@ -98,7 +117,11 @@ export class Str {
   };
 
   public static capitalize = (string: string): string => {
-    return string.trim().split(' ').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+    return string
+      .trim()
+      .split(' ')
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join(' ');
   };
 
   public static pluralize = (count: number, noun: string, suffix = 's'): string => {
@@ -114,7 +137,10 @@ export class Str {
   };
 
   public static fromDate = (date: Date) => {
-    return date.toISOString().replace(/T/, ' ').replace(/:[^:]+$/, '');
+    return date
+      .toISOString()
+      .replace(/T/, ' ')
+      .replace(/:[^:]+$/, '');
   };
 
   private static base64urlUtfDecode = (str: string) => {
@@ -124,15 +150,18 @@ export class Str {
       return str;
     }
     return decodeURIComponent(
-      String(Array.prototype.map.call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join('')));
+      String(
+        Array.prototype.map
+          .call(base64decode(str.replace(/-/g, '+').replace(/_/g, '/')), (c: string) => {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join(''),
+      ),
+    );
   };
-
 }
 
 export class Value {
-
   public static arr = {
     unique: <T>(array: T[]): T[] => {
       const unique: T[] = [];

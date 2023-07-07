@@ -1,22 +1,31 @@
 export type MockUser = {
-  email: string
-  name: string
-  pub?: string
-  pubOther?: string
-}
+  email: string;
+  name: string;
+  pub?: string;
+  pubOther?: string;
+};
 
 export type MockUserAlias = {
-  sendAsEmail: string
-  displayName: string
-  replyToAddress: string
-  signature: string
-  isDefault: boolean
-  isPrimary: boolean
-  treatAsAlias: boolean
-  verificationStatus: string
-}
+  sendAsEmail: string;
+  displayName: string;
+  replyToAddress: string;
+  signature: string;
+  isDefault: boolean;
+  isPrimary: boolean;
+  treatAsAlias: boolean;
+  verificationStatus: string;
+};
 
-export type MockUserName = 'e2e' | 'flowcryptCompatibility' | 'dmitry' | 'demo' | 'robot' | 'expired' | 'revoked' | 'sunit' | 'ioan';
+export type MockUserName =
+  | 'e2e'
+  | 'flowcryptCompatibility'
+  | 'dmitry'
+  | 'demo'
+  | 'robot'
+  | 'expired'
+  | 'revoked'
+  | 'sunit'
+  | 'ioan';
 
 export const MockUserList: Record<MockUserName, MockUser> = {
   e2e: {
@@ -37,7 +46,7 @@ CwkIBwUVCgkICwIeAQAKCRClTYK+FSHSDsUNAP9+YFUHDOCxJLmv6HZI6y2o
 3HWm193CuAoB2mWLEg6cnAEAoiq3T6s5r5X880Yx+VdJSHposEtzbQtBrzl8
 9//SbQE=
 =n4ak
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
   },
   flowcryptCompatibility: {
     email: 'flowcrypt.compatibility@gmail.com',
@@ -98,7 +107,7 @@ WlK7v7H/kIqy9Ggvz6j/seqokN7X4nuc7xOTub6WI1sNRQePIuw2um+Yp14n
 Bk66Izujnvwa9bVz3nuXhI90WDLnu8OQyAe/N4Pv9pXu1IGg4Nx8yYBLuMuc
 eg==
 =CvEL
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
   },
   dmitry: {
     email: 'dmitry@flowcrypt.com',
@@ -134,7 +143,7 @@ ndymJ9sE8hw6DwM3MU6AODwq+xLV1c3l55LkOKs+rFFXEX0ksxZmHVxOZ1D8wgHQ
 dko=
 =2NQp
 -----END PGP PUBLIC KEY BLOCK-----
-`
+`,
   },
   demo: {
     email: 'demo@flowcrypt.com',
@@ -300,7 +309,7 @@ jrD6JEND57Ht8VX3hcNuHOINU0sh8Zr4E/D08glgVU03NX/H3Xx/bvKNu6cJpH5S
 Lx7Vlm9OUJ/HB4t/HnCwtWPe1UnNcV72aCjv5ibaG1FC3KFCTRWiaMMKVibI8lzh
 Wed/zl8urp0GM8sLA2Q=
 =q8Kj
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
   },
   robot: {
     email: 'robot@flowcrypt.com',
@@ -319,7 +328,7 @@ B8JhBBgWCAAJBQJiwzopAhsMAAoJEPTrcG1FK4VEh4YBALYL4hcYE8/nUgHd
 i0Bd7uutnnkRdCDPTvY5ub4ZDrHGAQCFIYc+Mp6zZdR1s/3kIpjrcg6mOtmj
 7Xox/a0FLLQsCQ==
 =+AGT
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
   },
   expired: {
     email: 'expired@flowcrypt.com',
@@ -344,7 +353,7 @@ FQoJCAsCHgEFAmFvATcFiQABrJcACgkQLwevLuO6GOgHPgEAhfcecP1GG/dp
 1sbpsBfwJJKK+bJhiyYlB5izgpxslk4A/0wNujSC9MOusPziwgebviKxZQXP
 T4gbgCg6JBONQ8MM
 =Cabr
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
   },
   revoked: {
     email: 'revoked@flowcrypt.com',
@@ -364,7 +373,7 @@ FXJldm9rZWRAZmxvd2NyeXB0LmNvbcJeBBMWCgAGBQJhbwFrAAoJEF8Vl4kQ
 oXgKecoBALdrD8nkptLlT8Dg4cF+3swfY1urlbdEfEvIjN60HRDLAP4w3qeS
 zZ+OyuqPFaw7dM2KOu4++WigtbxRpDhpQ9U8BQ==
 =bMwq
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
   },
   sunit: {
     email: 'sunitnandi834@gmail.com',
@@ -499,7 +508,7 @@ Zvwqbkhs+GgMGT0LoJoqtvPtCYbVekT+wuB2DTZ9IKrRU9cDhAf+gy27Re8a
 JNAEPnEeB8Ywe8USuycxZUS3IDdGWS0RTPheDHe3XghmzkD3WP0+bcL9fyMt
 klJDb3YZ2cI=
 =qnsQ
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
   },
   ioan: {
     email: 'ioan@flowcrypt.com',
@@ -520,6 +529,6 @@ AASLCQgHBZUKCQgLAAoJEJs5ASDX+41RueYA/ixPnWLYX6tP0oR81hOWS6dH
 r9FLVFOGo9cLLDfqwMR5AP9A4dgF5OprbpTvNJDeuTwfKOWREm/HNYyiBuUb
 yBWYAw==
 =n23p
------END PGP PUBLIC KEY BLOCK-----`
-  }
+-----END PGP PUBLIC KEY BLOCK-----`,
+  },
 };

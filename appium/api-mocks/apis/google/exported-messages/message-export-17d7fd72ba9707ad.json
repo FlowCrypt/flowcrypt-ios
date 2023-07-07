@@ -3,10 +3,7 @@
   "full": {
     "id": "17d7fd72ba9707ad",
     "threadId": "17d7fd5908ff1270",
-    "labelIds": [
-      "INBOX",
-      "UNREAD"
-    ],
+    "labelIds": ["INBOX", "UNREAD"],
     "snippet": "Test message for CC and BCC recipients -- signature",
     "payload": {
       "partId": "",
@@ -59,9 +56,7 @@
   "raw": {
     "id": "17d7fd72ba9707ad",
     "threadId": "17d7fd5908ff1270",
-    "labelIds": [
-      "SENT"
-    ],
+    "labelIds": ["SENT"],
     "snippet": "Test message for CC and BCC recipients -- signature",
     "sizeEstimate": 446,
     "raw": "TUlNRS1WZXJzaW9uOiAxLjANCkRhdGU6IEZyaSwgMyBEZWMgMjAyMSAxMjoyOTowNyArMDIwMA0KQmNjOiBlMmUuZW50ZXJwcmlzZS50ZXN0QGZsb3djcnlwdC5jb20NCk1lc3NhZ2UtSUQ6IDxDQUtidUxUb1hFZWZUOGI2cjMxV3BZSDl0UU42RXh5eHpSQnBhX2dPeFdGM0Vpd21DVFFAbWFpbC5nbWFpbC5jb20-DQpTdWJqZWN0OiBDQyBhbmQgQkNDIHRlc3QNCkZyb206IEZsb3dDcnlwdCBDb21wYXRpYmlsaXR5IDxmbG93Y3J5cHQuY29tcGF0aWJpbGl0eUBnbWFpbC5jb20-DQpUbzogUm9ib3QgRmxvd0NyeXB0IDxyb2JvdEBmbG93Y3J5cHQuY29tPg0KQ2M6IHJvYm90K2NjQGZsb3djcnlwdC5jb20NCkNvbnRlbnQtVHlwZTogdGV4dC9wbGFpbjsgY2hhcnNldD0iVVRGLTgiDQoNClRlc3QgbWVzc2FnZSBmb3IgQ0MgYW5kIEJDQyByZWNpcGllbnRzDQoNCi0tIA0Kc2lnbmF0dXJlDQo=",

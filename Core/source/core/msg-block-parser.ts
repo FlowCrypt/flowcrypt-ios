@@ -13,10 +13,9 @@ import { PgpKey } from './pgp-key';
 import { PgpMsg, VerifyRes } from './pgp-msg';
 import { Str } from './common';
 
-type SanitizedBlocks = { blocks: MsgBlock[], subject: string | undefined, isRichText: boolean };
+type SanitizedBlocks = { blocks: MsgBlock[]; subject: string | undefined; isRichText: boolean };
 
 export class MsgBlockParser {
-
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ARMOR_HEADER_MAX_LENGTH = 50;
 
@@ -33,8 +32,9 @@ export class MsgBlockParser {
         return { blocks, normalized };
       } else {
         if (r.continueAt <= startAt) {
-          Catch.report(`PgpArmordetect_blocks likely infinite loop: r.continue_at(${r.continueAt})` +
-            ` <= start_at(${startAt})`);
+          Catch.report(
+            `PgpArmordetect_blocks likely infinite loop: r.continue_at(${r.continueAt})` + ` <= start_at(${startAt})`,
+          );
           return { blocks, normalized }; // prevent infinite loop
         }
         startAt = r.continueAt;
@@ -43,7 +43,9 @@ export class MsgBlockParser {
   };
 
   public static fmtDecryptedAsSanitizedHtmlBlocks = async (
-    decryptedContent: Uint8Array, signature?: VerifyRes): Promise<SanitizedBlocks> => {
+    decryptedContent: Uint8Array,
+    signature?: VerifyRes,
+  ): Promise<SanitizedBlocks> => {
     const blocks: MsgBlock[] = [];
     let isRichText = false;
     if (!Mime.resemblesMsg(decryptedContent)) {
@@ -77,8 +79,12 @@ export class MsgBlockParser {
       if (att.treatAs() === 'publicKey') {
         await MsgBlockParser.pushArmoredPubkeysToBlocks([att.getData().toUtfStr()], blocks);
       } else {
-        const block = MsgBlock.fromAtt('decryptedAtt', '',
-          { name: att.name, data: att.getData(), length: att.length, type: att.type });
+        const block = MsgBlock.fromAtt('decryptedAtt', '', {
+          name: att.name,
+          data: att.getData(),
+          length: att.length,
+          type: att.type,
+        });
         block.verifyRes = signature;
         blocks.push(block);
       }
@@ -87,17 +93,20 @@ export class MsgBlockParser {
   };
 
   private static detectBlockNext = (origText: string, startAt: number) => {
-    const result: { found: MsgBlock[], continueAt?: number } = { found: [] as MsgBlock[] };
+    const result: { found: MsgBlock[]; continueAt?: number } = { found: [] as MsgBlock[] };
     const begin = origText.indexOf(PgpArmor.headers('null').begin, startAt);
-    if (begin !== -1) { // found
+    if (begin !== -1) {
+      // found
       const potentialBeginHeader = origText.substring(begin, begin + MsgBlockParser.ARMOR_HEADER_MAX_LENGTH);
       for (const xType of Object.keys(PgpArmor.ARMOR_HEADER_DICT)) {
         const type = xType as ReplaceableMsgBlockType;
         const blockHeaderDef = PgpArmor.ARMOR_HEADER_DICT[type];
         if (blockHeaderDef.replace) {
           const indexOfConfirmedBegin = potentialBeginHeader.indexOf(blockHeaderDef.begin);
-          if (indexOfConfirmedBegin === 0
-            || (type === 'encryptedMsgLink' && indexOfConfirmedBegin >= 0 && indexOfConfirmedBegin < 15)) {
+          if (
+            indexOfConfirmedBegin === 0 ||
+            (type === 'encryptedMsgLink' && indexOfConfirmedBegin >= 0 && indexOfConfirmedBegin < 15)
+          ) {
             // identified beginning of a specific block
             if (begin > startAt) {
               const potentialTextBeforeBlockBegun = origText.substring(startAt, begin).trim();
@@ -110,7 +119,8 @@ export class MsgBlockParser {
             if (typeof blockHeaderDef.end === 'string') {
               endIndex = origText.indexOf(blockHeaderDef.end, begin + blockHeaderDef.begin.length);
               foundBlockEndHeaderLength = blockHeaderDef.end.length;
-            } else { // regexp
+            } else {
+              // regexp
               const origTextAfterBeginIndex = origText.substring(begin);
               const matchEnd = origTextAfterBeginIndex.match(blockHeaderDef.end);
               if (matchEnd) {
@@ -118,10 +128,12 @@ export class MsgBlockParser {
                 foundBlockEndHeaderLength = matchEnd[0].length;
               }
             }
-            if (endIndex !== -1) { // identified end of the same block
+            if (endIndex !== -1) {
+              // identified end of the same block
               if (type !== 'encryptedMsgLink') {
-                result.found.push(MsgBlock.fromContent(
-                  type, origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim()));
+                result.found.push(
+                  MsgBlock.fromContent(type, origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim()),
+                );
               } else {
                 const pwdMsgFullText = origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim();
                 const pwdMsgShortIdMatch = pwdMsgFullText.match(/[a-zA-Z0-9]{10}$/);
@@ -132,7 +144,8 @@ export class MsgBlockParser {
                 }
               }
               result.continueAt = endIndex + foundBlockEndHeaderLength;
-            } else { // corresponding end not found
+            } else {
+              // corresponding end not found
               result.found.push(MsgBlock.fromContent(type, origText.substring(begin), true));
             }
             break;
@@ -140,7 +153,8 @@ export class MsgBlockParser {
         }
       }
     }
-    if (origText && !result.found.length) { // didn't find any blocks, but input is non-empty
+    if (origText && !result.found.length) {
+      // didn't find any blocks, but input is non-empty
       const potentialText = origText.substring(startAt).trim();
       if (potentialText) {
         result.found.push(MsgBlock.fromContent('plainText', potentialText));
@@ -157,5 +171,4 @@ export class MsgBlockParser {
       }
     }
   };
-
 }

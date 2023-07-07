@@ -1,16 +1,10 @@
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  MenuBarScreen
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, MenuBarScreen } from '../../../screenobjects/all-screens';
 
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import BaseScreen from 'tests/screenobjects/base.screen';
 
 describe('INBOX: ', () => {
-
   it('should show appropriate swipe actions', async () => {
     const mockApi = new MockApi();
 

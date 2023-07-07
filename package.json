@@ -21,6 +21,7 @@
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "@typescript-eslint/parser": "^5.56.0",
     "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsdoc": "^46.2.6",
@@ -28,12 +29,14 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "git-format-staged": "^3.0.0",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.2"
+    "lint-staged": "^13.1.2",
+    "prettier": "^3.0.0"
   },
   "lint-staged": {
     "*.ts": [
       "npx eslint --fix",
-      "npx eslint"
+      "npx eslint",
+      "prettier --write"
     ]
   }
 }

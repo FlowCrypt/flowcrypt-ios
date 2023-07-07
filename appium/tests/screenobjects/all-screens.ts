@@ -29,5 +29,5 @@ export {
   MailFolderScreen,
   SearchScreen,
   EmailProviderScreen,
-  PublicKeyDetailsScreen
+  PublicKeyDetailsScreen,
 };

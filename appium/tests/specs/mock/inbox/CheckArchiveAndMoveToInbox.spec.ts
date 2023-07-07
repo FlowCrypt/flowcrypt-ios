@@ -5,11 +5,10 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen,
-  MenuBarScreen
+  MenuBarScreen,
 } from '../../../screenobjects/all-screens';
 
 describe('INBOX: ', () => {
-
   it('user is able to archive and move to inbox email', async () => {
     const mockApi = new MockApi();
     const testMessageSubject = 'Message with cc and multiple recipients and text attachment';

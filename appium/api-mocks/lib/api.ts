@@ -5,7 +5,7 @@ import * as http from 'http';
 import { readFileSync } from 'fs';
 import { oauth } from './oauth';
 
-export type HandlersDefinition = Handlers<{ query: { [k: string]: string; }; body?: unknown; }, unknown>;
+export type HandlersDefinition = Handlers<{ query: { [k: string]: string }; body?: unknown }, unknown>;
 
 export enum Status {
   OK = 200,
@@ -23,7 +23,6 @@ export type RequestHandler<REQ, RES> = (parsedReqBody: REQ, req: http.IncomingMe
 export type Handlers<REQ, RES> = { [request: string]: RequestHandler<REQ, RES> };
 
 export class Api<REQ, RES> {
-
   public server: https.Server | http.Server;
   protected apiName: string;
   protected maxRequestSizeMb = 0;
@@ -35,14 +34,17 @@ export class Api<REQ, RES> {
     apiName: string,
     protected handlerGetters: (() => Handlers<REQ, RES>)[],
     protected urlPrefix = '',
-    useHttps = true
+    useHttps = true,
   ) {
     this.apiName = apiName;
     if (useHttps) {
-      this.server = https.createServer({
-        key: readFileSync('./api-mocks/mock-ssl-cert/key.pem.mock'),
-        cert: readFileSync('./api-mocks/mock-ssl-cert/cert.pem.mock')
-      }, this.serverRequestListener);
+      this.server = https.createServer(
+        {
+          key: readFileSync('./api-mocks/mock-ssl-cert/key.pem.mock'),
+          cert: readFileSync('./api-mocks/mock-ssl-cert/cert.pem.mock'),
+        },
+        this.serverRequestListener,
+      );
     } else {
       this.server = http.createServer(this.serverRequestListener);
     }
@@ -50,44 +52,47 @@ export class Api<REQ, RES> {
 
   private serverRequestListener = (request: http.IncomingMessage, response: http.ServerResponse) => {
     const start = Date.now();
-    this.handleReq(request, response).then(data => this.throttledResponse(response, data)).then(() => {
-      try {
-        this.log(Date.now() - start, request, response);
-      } catch (e) {
-        console.error(e);
-        process.exit(1);
-      }
-    }).catch((e) => {
-      response.setHeader('Access-Control-Allow-Origin', '*');
-      response.setHeader('content-type', 'application/json');
-
-      if (e instanceof TemporaryRedirectHttpErr) {
-        response.writeHead(302, {
-          Location: e.redirectUrl
-        });
-        response.write(Buffer.from(e.redirectUrl, "utf-8"));
-      } else if (e instanceof HttpErr) {
-        response.statusCode = e.statusCode;
-        e.stack = undefined;
-      } else {
-        response.statusCode = Status.SERVER_ERROR;
-        if (e instanceof Error && e.message.toLowerCase().includes('intentional error')) {
-          // don't log this, intentional error
-        } else {
-          console.error('url:%s:%s', request.method, request.url?.replace(/\n|\r/g, ""), e);
+    this.handleReq(request, response)
+      .then(data => this.throttledResponse(response, data))
+      .then(() => {
+        try {
+          this.log(Date.now() - start, request, response);
+        } catch (e) {
+          console.error(e);
+          process.exit(1);
         }
-      }
+      })
+      .catch(e => {
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.setHeader('content-type', 'application/json');
 
-      const formattedErr = this.fmtErr(e);
-      response.end(formattedErr);
+        if (e instanceof TemporaryRedirectHttpErr) {
+          response.writeHead(302, {
+            Location: e.redirectUrl,
+          });
+          response.write(Buffer.from(e.redirectUrl, 'utf-8'));
+        } else if (e instanceof HttpErr) {
+          response.statusCode = e.statusCode;
+          e.stack = undefined;
+        } else {
+          response.statusCode = Status.SERVER_ERROR;
+          if (e instanceof Error && e.message.toLowerCase().includes('intentional error')) {
+            // don't log this, intentional error
+          } else {
+            console.error('url:%s:%s', request.method, request.url?.replace(/\n|\r/g, ''), e);
+          }
+        }
 
-      try {
-        this.log(Date.now() - start, request, response, formattedErr);
-      } catch (e) {
-        console.error('error logging req', e);
-      }
-    });
-  }
+        const formattedErr = this.fmtErr(e);
+        response.end(formattedErr);
+
+        try {
+          this.log(Date.now() - start, request, response, formattedErr);
+        } catch (e) {
+          console.error('error logging req', e);
+        }
+      });
+  };
 
   public listen = (port: number, host = '127.0.0.1', maxMb = 100): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -101,7 +106,7 @@ export class Api<REQ, RES> {
           console.log(msg);
           resolve();
         });
-        this.server.on('error', (e) => {
+        this.server.on('error', e => {
           console.error('failed to start mock server', e);
           reject(e);
         });
@@ -110,23 +115,24 @@ export class Api<REQ, RES> {
         reject(e);
       }
     });
-  }
+  };
 
   public close = (): Promise<void> => {
-    return new Promise((resolve, reject) => this.server.close((err: Error) => err ? reject(err) : resolve()));
-  }
+    return new Promise((resolve, reject) => this.server.close((err: Error) => (err ? reject(err) : resolve())));
+  };
 
-  protected log = (ms: number, req: http.IncomingMessage, res: http.ServerResponse, errRes?: Buffer) => { // eslint-disable-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected log = (ms: number, req: http.IncomingMessage, res: http.ServerResponse, errRes?: Buffer) => {
     return undefined as void;
-  }
+  };
 
   private getHandlers = (): Handlers<REQ, RES> => {
     let allHandlers: Handlers<REQ, RES> = {};
     for (const handlerGetter of this.handlerGetters) {
-      allHandlers = { ...allHandlers, ...handlerGetter() }
+      allHandlers = { ...allHandlers, ...handlerGetter() };
     }
     return allHandlers;
-  }
+  };
 
   protected handleReq = async (req: http.IncomingMessage, res: http.ServerResponse): Promise<Buffer> => {
     if (req.method === 'OPTIONS') {
@@ -145,23 +151,28 @@ export class Api<REQ, RES> {
       res.setHeader('content-type', 'application/json');
       return this.fmtRes({ app_name: this.apiName });
     }
-    if ((req.url === '/alive' || req.url === `${this.urlPrefix}/alive`) && (req.method === 'GET' || req.method === 'HEAD')) {
+    if (
+      (req.url === '/alive' || req.url === `${this.urlPrefix}/alive`) &&
+      (req.method === 'GET' || req.method === 'HEAD')
+    ) {
       res.setHeader('content-type', 'application/json');
       return this.fmtRes({ alive: true });
     }
     throw new HttpErr(`unknown MOCK path ${req.url}`, Status.BAD_REQUEST);
-  }
+  };
 
   protected chooseHandler = (req: http.IncomingMessage): RequestHandler<REQ, RES> | undefined => {
     if (!req.url) {
       throw new Error('no url');
     }
     const handlers = this.getHandlers();
-    if (req.url in handlers) { // direct handler name match
+    if (req.url in handlers) {
+      // direct handler name match
       return handlers[req.url];
     }
     const url = req.url.split('?')[0];
-    if (url in handlers) { // direct handler name match - ignoring query
+    if (url in handlers) {
+      // direct handler name match - ignoring query
       return handlers[url];
     }
     // handler match where definition url ends with "/?" - incomplete path definition
@@ -171,28 +182,31 @@ export class Api<REQ, RES> {
       }
     }
     return undefined;
-  }
+  };
 
   protected fmtErr = (e: Error): Buffer => {
     if (String(e).includes('invalid_grant')) {
-      return Buffer.from(JSON.stringify({ "error": "invalid_grant", "error_description": "Bad Request" }));
+      return Buffer.from(JSON.stringify({ error: 'invalid_grant', error_description: 'Bad Request' }));
     }
     if (!(e instanceof HttpErr)) {
       if (e instanceof Error) {
-        const newErr = new HttpErr(e.message, Status.SERVER_ERROR)
+        const newErr = new HttpErr(e.message, Status.SERVER_ERROR);
         newErr.stack = e.stack;
         e = newErr;
       } else {
-        e = new HttpErr("Non-error thrown in mock: " + String(e), Status.SERVER_ERROR);
+        e = new HttpErr('Non-error thrown in mock: ' + String(e), Status.SERVER_ERROR);
       }
     }
     return Buffer.from(JSON.stringify((e as HttpErr).formatted()));
-  }
+  };
 
   protected fmtHandlerRes = (handlerRes: RES, serverRes: http.ServerResponse): Buffer => {
     if (typeof handlerRes === 'string' && handlerRes.match(/^<!DOCTYPE HTML><html>/)) {
       serverRes.setHeader('content-type', 'text/html');
-    } else if (typeof handlerRes === 'object' || (typeof handlerRes === 'string' && handlerRes.match(/^\{/) && handlerRes.match(/\}$/))) {
+    } else if (
+      typeof handlerRes === 'object' ||
+      (typeof handlerRes === 'string' && handlerRes.match(/^\{/) && handlerRes.match(/\}$/))
+    ) {
       serverRes.setHeader('content-type', 'application/json');
     } else if (typeof handlerRes === 'string') {
       serverRes.setHeader('content-type', 'text/plain');
@@ -202,7 +216,7 @@ export class Api<REQ, RES> {
     serverRes.setHeader('Access-Control-Allow-Origin', '*');
 
     return this.fmtRes(handlerRes);
-  }
+  };
 
   protected fmtRes = (response: {} | string): Buffer => {
     if (response instanceof Buffer) {
@@ -212,7 +226,7 @@ export class Api<REQ, RES> {
     }
     const json = JSON.stringify(response);
     return Buffer.from(json);
-  }
+  };
 
   protected collectReq = (req: http.IncomingMessage): Promise<Buffer> => {
     return new Promise((resolve, reject) => {
@@ -238,7 +252,7 @@ export class Api<REQ, RES> {
         }
       });
     });
-  }
+  };
 
   protected parseReqBody = (body: Buffer, req: http.IncomingMessage): REQ => {
     let parsedBody: string | undefined;
@@ -258,13 +272,13 @@ export class Api<REQ, RES> {
 
     const query = req.url!.startsWith('/token') ? this.parseUrlQuery(body.toString()) : this.parseUrlQuery(req.url!);
     return { query: query, body: parsedBody } as unknown as REQ;
-  }
+  };
 
   private throttledResponse = async (response: http.ServerResponse, data: Buffer) => {
     if (data.toString().startsWith(oauth.redirectUri)) {
       // send redirect for mobile app auth
       response.writeHead(302, {
-        Location: data.toString()
+        Location: data.toString(),
       });
       response.write(data);
       response.end();
@@ -280,12 +294,11 @@ export class Api<REQ, RES> {
 
       response.end();
     }
-
-  }
+  };
 
   private sleep = async (seconds: number) => {
     return await new Promise(resolve => setTimeout(resolve, seconds * 1000));
-  }
+  };
 
   private parseUrlQuery = (url: string): { [k: string]: string } => {
     const queryIndex = url.indexOf('?');
@@ -299,21 +312,23 @@ export class Api<REQ, RES> {
       }
     }
     return Object.fromEntries(params);
-  }
-
+  };
 }
 
 export class HttpErr extends Error {
-  constructor(message: string, public statusCode: number = 400) {
+  constructor(
+    message: string,
+    public statusCode: number = 400,
+  ) {
     super(message);
   }
   public formatted = (): unknown => {
     return {
-      "mockError": this.message,
-      "mockStack": this.stack || "no stack",
-      "noFormatter": "if you wanted a different error format, subclass from HttpErr and add a formatter",
-    }
-  }
+      mockError: this.message,
+      mockStack: this.stack || 'no stack',
+      noFormatter: 'if you wanted a different error format, subclass from HttpErr and add a formatter',
+    };
+  };
 }
 
 export class TemporaryRedirectHttpErr extends Error {

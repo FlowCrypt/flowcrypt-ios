@@ -8,13 +8,11 @@ import {
   SettingsScreen,
   KeysScreen,
   PublicKeyScreen,
-  MailFolderScreen
+  MailFolderScreen,
 } from '../../../screenobjects/all-screens';
 
 describe('SETTINGS: ', () => {
-
   it('user should see public key and should not see private key', async () => {
-
     const mockApi = new MockApi();
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;

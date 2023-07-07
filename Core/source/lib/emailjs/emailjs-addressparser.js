@@ -19,7 +19,7 @@
 // THE SOFTWARE.
 
 (function (root, factory) {
-  "use strict";
+  'use strict';
 
   if (typeof define === 'function' && define.amd) {
     define(factory);
@@ -28,8 +28,8 @@
   } else {
     root['emailjs-addressparser'] = factory();
   }
-}(this, function () {
-  "use strict";
+})(this, function () {
+  'use strict';
 
   /**
    * Defines an object as a namespace for the parsing function
@@ -59,7 +59,7 @@
       parsedAddresses = [];
 
     tokens.forEach(function (token) {
-      if (token.type === "operator" && (token.value === "," || token.value === ";")) {
+      if (token.type === 'operator' && (token.value === ',' || token.value === ';')) {
         if (address.length) {
           addresses.push(address);
         }
@@ -98,10 +98,11 @@
       address: [],
       comment: [],
       group: [],
-      text: []
+      text: [],
 
       // Filter out <addresses>, (comments) and regular text
-    }; for (var i = 0, len = tokens.length; i < len; i++) {
+    };
+    for (var i = 0, len = tokens.length; i < len; i++) {
       var token = tokens[i];
 
       if (token.type === 'operator') {
@@ -136,8 +137,8 @@
       // http://tools.ietf.org/html/rfc2822#appendix-A.1.3
       data.text = data.text.join(' ');
       addresses.push({
-        name: data.text || address && address.name,
-        group: data.group.length ? parse(data.group.join(',')) : []
+        name: data.text || (address && address.name),
+        group: data.group.length ? parse(data.group.join(',')) : [],
       });
     } else {
       // If no address was found, try to detect one from regular text
@@ -178,9 +179,11 @@
       // Keep only the last address occurence, push others to regular text
       if (data.address.length > 1) {
         var _address = data.address.pop();
-        data.text = data.text.concat(data.address.map(function (fakeAddress) {
-          return '<' + fakeAddress + '>';
-        }));
+        data.text = data.text.concat(
+          data.address.map(function (fakeAddress) {
+            return '<' + fakeAddress + '>';
+          }),
+        );
         data.address = [_address];
       }
 
@@ -190,7 +193,7 @@
 
       address = {
         address: data.address || data.text || '',
-        name: data.text || data.address || ''
+        name: data.text || data.address || '',
       };
 
       if (address.address === address.name) {
@@ -214,34 +217,32 @@
    * @param {String} str Address field string
    */
   addressparser.Tokenizer = function (str) {
-
-    this.str = (str || "").toString();
-    this.operatorCurrent = "";
-    this.operatorExpecting = "";
+    this.str = (str || '').toString();
+    this.operatorCurrent = '';
+    this.operatorExpecting = '';
     this.node = null;
     this.escaped = false;
 
     this.list = [];
-
   };
 
   /**
    * Operator tokens and which tokens are expected to end the sequence
    */
   addressparser.Tokenizer.prototype.operators = {
-    "\"": "\"",
-    "(": ")",
-    "<": ">",
-    ",": "",
+    '"': '"',
+    '(': ')',
+    '<': '>',
+    ',': '',
     // Groups are ended by semicolons
-    ":": ";",
+    ':': ';',
     // Semicolons are not a legal delimiter per the RFC2822 grammar other
     // than for terminating a group, but they are also not valid for any
     // other use in this context.  Given that some mail clients have
     // historically allowed the semicolon as a delimiter equivalent to the
     // comma in their UI, it makes sense to treat them the same as a comma
     // when used outside of a group.
-    ";": ""
+    ';': '',
   };
 
   /**
@@ -250,14 +251,15 @@
    * @return {Array} An array of operator|text tokens
    */
   addressparser.Tokenizer.prototype.tokenize = function () {
-    var chr, list = [];
+    var chr,
+      list = [];
     for (var i = 0, len = this.str.length; i < len; i++) {
       chr = this.str.charAt(i);
       this.checkChar(chr);
     }
 
     this.list.forEach(function (node) {
-      node.value = (node.value || "").toString().trim();
+      node.value = (node.value || '').toString().trim();
       if (node.value) {
         list.push(node);
       }
@@ -272,22 +274,22 @@
    * @param {String} chr Character from the address field
    */
   addressparser.Tokenizer.prototype.checkChar = function (chr) {
-    if ((chr in this.operators || chr === "\\") && this.escaped) {
+    if ((chr in this.operators || chr === '\\') && this.escaped) {
       this.escaped = false;
     } else if (this.operatorExpecting && chr === this.operatorExpecting) {
       this.node = {
-        type: "operator",
-        value: chr
+        type: 'operator',
+        value: chr,
       };
       this.list.push(this.node);
       this.node = null;
-      this.operatorExpecting = "";
+      this.operatorExpecting = '';
       this.escaped = false;
       return;
     } else if (!this.operatorExpecting && chr in this.operators) {
       this.node = {
-        type: "operator",
-        value: chr
+        type: 'operator',
+        value: chr,
       };
       this.list.push(this.node);
       this.node = null;
@@ -296,21 +298,21 @@
       return;
     }
 
-    if (!this.escaped && chr === "\\") {
+    if (!this.escaped && chr === '\\') {
       this.escaped = true;
       return;
     }
 
     if (!this.node) {
       this.node = {
-        type: "text",
-        value: ""
+        type: 'text',
+        value: '',
       };
       this.list.push(this.node);
     }
 
-    if (this.escaped && chr !== "\\") {
-      this.node.value += "\\";
+    if (this.escaped && chr !== '\\') {
+      this.node.value += '\\';
     }
 
     this.node.value += chr;
@@ -318,4 +320,4 @@
   };
 
   return addressparser;
-}));
+});

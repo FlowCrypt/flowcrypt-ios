@@ -1,30 +1,24 @@
 import { MockApi } from 'api-mocks/mock';
-import {
-  KeysScreen,
-  SetupKeyScreen,
-  SplashScreen,
-} from '../../../screenobjects/all-screens';
-import { ekmKeySamples } from "../../../../api-mocks/apis/ekm/ekm-endpoints";
-import { CommonData } from "../../../data";
-import BaseScreen from "../../../screenobjects/base.screen";
-import AppiumHelper from "../../../helpers/AppiumHelper";
+import { KeysScreen, SetupKeyScreen, SplashScreen } from '../../../screenobjects/all-screens';
+import { ekmKeySamples } from '../../../../api-mocks/apis/ekm/ekm-endpoints';
+import { CommonData } from '../../../data';
+import BaseScreen from '../../../screenobjects/base.screen';
+import AppiumHelper from '../../../helpers/AppiumHelper';
 
 describe('SETUP: ', () => {
-
   it('app auto updates keys from EKM during startup without pass phrase prompt', async () => {
-
     const mockApi = new MockApi();
     const processArgs = CommonData.mockProcessArgs;
 
     mockApi.fesConfig = {
       clientConfiguration: {
-        flags: ["NO_PRV_CREATE", "NO_PRV_BACKUP", "NO_ATTESTER_SUBMIT", "PRV_AUTOIMPORT_OR_AUTOGEN"],
+        flags: ['NO_PRV_CREATE', 'NO_PRV_BACKUP', 'NO_ATTESTER_SUBMIT', 'PRV_AUTOIMPORT_OR_AUTOGEN'],
         key_manager_url: CommonData.keyManagerURL.mockServer,
-      }
+      },
     };
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.key0.prv]
-    }
+      returnKeys: [ekmKeySamples.key0.prv],
+    };
 
     await mockApi.withMockedApis(async () => {
       // stage 1 - setup
@@ -35,7 +29,7 @@ describe('SETUP: ', () => {
 
       // stage 2 - keys get auto-updated
       mockApi.ekmConfig = {
-        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv]
+        returnKeys: [ekmKeySamples.key0.prv, ekmKeySamples.key1.prv],
       };
       await AppiumHelper.restartApp(processArgs);
       await BaseScreen.checkToastMessage(CommonData.refreshingKeysFromEkm.updatedSuccessfully);

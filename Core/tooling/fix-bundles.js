@@ -17,7 +17,10 @@ try {
 for (const filename of fs.readdirSync(bundleRawDir)) {
   if (!filename.startsWith('entrypoint-')) {
     const src = fs.readFileSync(`${bundleRawDir}/${filename}`).toString();
-    const importableName = `dereq_${filename.replace(/\.js$/, '').replace(/^(node|bare)-/, '').replace(/-/g, '_')}`;
+    const importableName = `dereq_${filename
+      .replace(/\.js$/, '')
+      .replace(/^(node|bare)-/, '')
+      .replace(/-/g, '_')}`;
     const fixedExportSrc = src.replace(/^module\.exports =\n/, `const ${importableName} =\n`);
     fs.writeFileSync(`${bundleWipDir}/${filename}`, fixedExportSrc);
   }
@@ -45,24 +48,29 @@ const emailjsRawDep = [
   `${libsDir}/emailjs/emailjs-addressparser.js`,
   `${libsDir}/emailjs/emailjs-mime-parser.js`,
   `${libsDir}/emailjs/emailjs-mime-builder.js`,
-].map(path => fs.readFileSync(path).toString()).join('\n');
+]
+  .map(path => fs.readFileSync(path).toString())
+  .join('\n');
 const emailjsNodeDep = emailjsRawDep // these replacements fix imports and exports of modules for use in nodejs-mobile
   .replace(/require\(['"]buffer['"]\)\.Buffer/g, 'Buffer')
   .replace(/require\(['"](punycode|emailjs-[a-z\-]+)['"]\)/g, found =>
-    found.replace('require(', 'global[').replace(')', ']')
+    found.replace('require(', 'global[').replace(')', ']'),
   )
   .replace(/typeof define === 'function' && define\.amd/g, 'false')
   .replace(/typeof exports ===? 'object'/g, 'false');
 fs.writeFileSync(
   `${bundleDir}/bare-emailjs-bundle.js`,
-  `\n(function(){\n// begin emailjs\n${emailjsRawDep}\n// end emailjs\n})();\n`
+  `\n(function(){\n// begin emailjs\n${emailjsRawDep}\n// end emailjs\n})();\n`,
 );
 fs.writeFileSync(
   `${bundleDir}/node-emailjs-bundle.js`,
-  `\n(function(){\n// begin emailjs\n${emailjsNodeDep}\n// end emailjs\n})();\n`
+  `\n(function(){\n// begin emailjs\n${emailjsNodeDep}\n// end emailjs\n})();\n`,
 );
 
 let entrypointBareSrc = fs.readFileSync(`${bundleRawDir}/entrypoint-bare.js`).toString();
-fs.writeFileSync(`${bundleDir}/entrypoint-bare-bundle.js`, `
+fs.writeFileSync(
+  `${bundleDir}/entrypoint-bare-bundle.js`,
+  `
   ${entrypointBareSrc};
-`);
+`,
+);

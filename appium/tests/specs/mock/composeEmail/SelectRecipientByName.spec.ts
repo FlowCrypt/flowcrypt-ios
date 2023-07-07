@@ -7,7 +7,7 @@ import {
   ContactPublicKeyScreen,
   SettingsScreen,
   MenuBarScreen,
-  PublicKeyDetailsScreen
+  PublicKeyDetailsScreen,
 } from '../../../screenobjects/all-screens';
 
 import { MockApi } from 'api-mocks/mock';
@@ -15,9 +15,7 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('user is able to select recipient from contact list using contact name', async () => {
-
     const firstContact = MockUserList.dmitry;
     const secondContact = MockUserList.demo;
 
@@ -31,8 +29,8 @@ describe('COMPOSE EMAIL: ', () => {
     mockApi.attesterConfig = {
       servedPubkeys: {
         [firstContact.email]: firstContact.pub!,
-        [secondContact.email]: secondContact.pub!
-      }
+        [secondContact.email]: secondContact.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {

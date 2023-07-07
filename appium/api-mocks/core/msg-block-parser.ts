@@ -10,14 +10,14 @@ import { Str } from './common';
 import { KeyUtil } from './crypto/key';
 
 export class MsgBlockParser {
-
   private static ARMOR_HEADER_MAX_LENGTH = 50;
 
   public static detectBlocks = (origText: string) => {
     const blocks: MsgBlock[] = [];
     const normalized = Str.normalize(origText);
     let startAt = 0;
-    while (true) { // eslint-disable-line no-constant-condition
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
       const { found, continueAt } = MsgBlockParser.detectBlockNext(normalized, startAt);
       if (found) {
         blocks.push(...found);
@@ -26,23 +26,26 @@ export class MsgBlockParser {
         return { blocks, normalized };
       } else {
         if (continueAt <= startAt) {
-          Catch.report(`MsgBlockParser.detectBlocks likely infinite loop: r.continueAt(${continueAt}) <= startAt(${startAt})`);
+          Catch.report(
+            `MsgBlockParser.detectBlocks likely infinite loop: r.continueAt(${continueAt}) <= startAt(${startAt})`,
+          );
           return { blocks, normalized }; // prevent infinite loop
         }
         startAt = continueAt;
       }
     }
-  }
+  };
 
   public static stripFcTeplyToken = (decryptedContent: string) => {
     return decryptedContent.replace(/<div[^>]+class="cryptup_reply"[^>]+><\/div>/, '');
-  }
+  };
 
   private static detectBlockNext = (origText: string, startAt: number) => {
     const armorHdrTypes = Object.keys(PgpArmor.ARMOR_HEADER_DICT) as ReplaceableMsgBlockType[];
-    const result: { found: MsgBlock[], continueAt?: number } = { found: [] as MsgBlock[] };
+    const result: { found: MsgBlock[]; continueAt?: number } = { found: [] as MsgBlock[] };
     const begin = origText.indexOf(PgpArmor.headers('null').begin, startAt);
-    if (begin !== -1) { // found
+    if (begin !== -1) {
+      // found
       const potentialBeginHeader = origText.substr(begin, MsgBlockParser.ARMOR_HEADER_MAX_LENGTH);
       for (const armorHdrType of armorHdrTypes) {
         const blockHeaderDef = PgpArmor.ARMOR_HEADER_DICT[armorHdrType];
@@ -70,7 +73,8 @@ export class MsgBlockParser {
             if (typeof blockHeaderDef.end === 'string') {
               endIndex = origText.indexOf(blockHeaderDef.end, begin + blockHeaderDef.begin.length);
               foundBlockEndHeaderLength = blockHeaderDef.end.length;
-            } else { // regexp
+            } else {
+              // regexp
               const origTextAfterBeginIndex = origText.substring(begin);
               const matchEnd = origTextAfterBeginIndex.match(blockHeaderDef.end);
               if (matchEnd) {
@@ -78,10 +82,17 @@ export class MsgBlockParser {
                 foundBlockEndHeaderLength = matchEnd[0].length;
               }
             }
-            if (endIndex !== -1) { // identified end of the same block
-              result.found.push(MsgBlock.fromContent(armorHdrType, origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim()));
+            if (endIndex !== -1) {
+              // identified end of the same block
+              result.found.push(
+                MsgBlock.fromContent(
+                  armorHdrType,
+                  origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim(),
+                ),
+              );
               result.continueAt = endIndex + foundBlockEndHeaderLength;
-            } else { // corresponding end not found
+            } else {
+              // corresponding end not found
               result.found.push(MsgBlock.fromContent(armorHdrType, origText.substr(begin), true));
             }
             break;
@@ -89,14 +100,15 @@ export class MsgBlockParser {
         }
       }
     }
-    if (origText && !result.found.length) { // didn't find any blocks, but input is non-empty
+    if (origText && !result.found.length) {
+      // didn't find any blocks, but input is non-empty
       const potentialText = origText.substr(startAt).trim();
       if (potentialText) {
         result.found.push(MsgBlock.fromContent('plainText', potentialText));
       }
     }
     return result;
-  }
+  };
 
   private static pushArmoredPubkeysToBlocks = async (armoredPubkeys: string[], blocks: MsgBlock[]): Promise<void> => {
     for (const armoredPubkey of armoredPubkeys) {
@@ -106,6 +118,5 @@ export class MsgBlockParser {
         blocks.push(MsgBlock.fromContent('publicKey', KeyUtil.armor(pub)));
       }
     }
-  }
-
+  };
 }

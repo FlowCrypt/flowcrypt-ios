@@ -4,17 +4,14 @@ import {
   MailFolderScreen,
   SearchScreen,
   EmailScreen,
-  MenuBarScreen
+  MenuBarScreen,
 } from '../../../screenobjects/all-screens';
-import { CommonData } from "../../../data";
-import BaseScreen from "../../../screenobjects/base.screen";
-
+import { CommonData } from '../../../data';
+import BaseScreen from '../../../screenobjects/base.screen';
 
 describe('LOGIN: ', () => {
-
   // Temporary disabled because of https://github.com/FlowCrypt/flowcrypt-ios/issues/1383
   xit('user should be able login to multiple accounts', async () => {
-
     const senderOutlook = CommonData.outlookEmail.sender;
     const subjectOutlook = CommonData.outlookEmail.subject;
     const messageOutlook = CommonData.outlookEmail.message;

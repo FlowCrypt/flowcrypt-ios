@@ -11,15 +11,13 @@ import {
   ContactScreen,
   ContactPublicKeyScreen,
   SearchScreen,
-  PublicKeyDetailsScreen
+  PublicKeyDetailsScreen,
 } from '../../../screenobjects/all-screens';
-import MailFolderHelper from "../../../helpers/MailFolderHelper";
-import { CommonData } from "../../../data";
+import MailFolderHelper from '../../../helpers/MailFolderHelper';
+import { CommonData } from '../../../data';
 
 describe('UPDATE: ', () => {
-
   it('user should be able to check encrypted email, contacts after update app from old version', async () => {
-
     const oldAppPath = CommonData.appPath.old;
     const newAppPath = CommonData.appPath.new;
     const bundleId = CommonData.bundleId.id;

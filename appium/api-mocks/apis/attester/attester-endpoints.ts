@@ -8,22 +8,22 @@ import { AttesterConfig, MockConfig } from '../../lib/configuration-types';
 
 export class AttesterErr extends HttpErr {
   public formatted = (): unknown => {
-    return { // follows Attester error format
+    return {
+      // follows Attester error format
       error: {
-        "code": this.statusCode,
-        "message": this.message,
-      }
-    }
-  }
+        code: this.statusCode,
+        message: this.message,
+      },
+    };
+  };
 }
 
 export const MOCK_ATTESTER_LAST_INSERTED_PUB: { [email: string]: string } = {};
 
 export const getMockAttesterEndpoints = (
   mockConfig: MockConfig,
-  attesterConfig: AttesterConfig | undefined
+  attesterConfig: AttesterConfig | undefined,
 ): HandlersDefinition => {
-
   if (!attesterConfig) {
     return {};
   }
@@ -71,12 +71,12 @@ export const getMockAttesterEndpoints = (
       return { sent: true };
     },
   };
-}
+};
 const throwErrorIfConfigSaysSo = (config: AttesterConfig) => {
   if (config.returnError) {
     throw new AttesterErr(config.returnError.message, config.returnError.code);
   }
-}
+};
 
 export const attesterPublicKeySamples = {
   valid: `-----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -127,5 +127,5 @@ THYvVGaNESiiVKmyrTEnXonGUS58TwMDAQgHwmEEGBYIAAkFAmHfK5gCGwwA
 CgkQx8mQwaLqeN3PWwD9ErvC+ufnX0O2AmZDz67QfFH6tA1t1/wUEHgzBXEe
 gc8BAMaYm3AlSGbX1rJYgUtCWukkLuURdECIzerG2UuP87ID
 =dQen
------END PGP PUBLIC KEY BLOCK-----`
+-----END PGP PUBLIC KEY BLOCK-----`,
 };

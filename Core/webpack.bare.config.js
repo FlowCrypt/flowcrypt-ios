@@ -8,7 +8,7 @@ module.exports = {
   mode: 'production',
   entry: {
     'entrypoint-bare': './build/ts/entrypoint-bare.js',
-    'web-stream-tools': './node_modules/@openpgp/web-stream-tools/lib/streams.js'
+    'web-stream-tools': './node_modules/@openpgp/web-stream-tools/lib/streams.js',
   },
   output: {
     path: __dirname + '/build/bundles/raw',
@@ -30,12 +30,12 @@ module.exports = {
   },
   resolve: {
     alias: {
-      openpgp: path.resolve(__dirname, './node_modules/openpgp/dist/openpgp.mjs')
+      openpgp: path.resolve(__dirname, './node_modules/openpgp/dist/openpgp.mjs'),
     },
     fallback: {
-      "stream": false,
-      "buffer": false,
-      "crypto": false
-    }
-  }
+      stream: false,
+      buffer: false,
+      crypto: false,
+    },
+  },
 };

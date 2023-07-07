@@ -1,5 +1,5 @@
 import BaseScreen from './base.screen';
-import ElementHelper from "../helpers/ElementHelper";
+import ElementHelper from '../helpers/ElementHelper';
 const SELECTORS = {
   MENU_ICON: '~aid-menu-button',
 };
@@ -11,7 +11,7 @@ class SettingsScreen extends BaseScreen {
 
   settingsItem = async (setting: string) => {
     return await $(`~${setting}`);
-  }
+  };
 
   checkSettingsScreen = async () => {
     await (await this.settingsItem('Security and Privacy')).waitForDisplayed();
@@ -22,11 +22,11 @@ class SettingsScreen extends BaseScreen {
     await (await this.settingsItem('Legal')).waitForDisplayed();
     await (await this.settingsItem('Experimental')).waitForDisplayed();
     await (await this.settingsItem('Backups')).waitForDisplayed({ reverse: true });
-  }
+  };
 
   clickOnSettingItem = async (item: string) => {
     await ElementHelper.waitAndClick(await this.settingsItem(item));
-  }
+  };
 }
 
 export default new SettingsScreen();

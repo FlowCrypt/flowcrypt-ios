@@ -1,7 +1,7 @@
 import BaseScreen from './base.screen';
-import ElementHelper from "../helpers/ElementHelper";
+import ElementHelper from '../helpers/ElementHelper';
 import TouchHelper from '../helpers/TouchHelper';
-import moment from 'moment'
+import moment from 'moment';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -15,7 +15,7 @@ const SELECTORS = {
   LAST_FETCHED_DATE_LABEL: '~aid-signature-fetched-date-label',
   LAST_FETCHED_DATE_VALUE: '~aid-signature-fetched-date',
   FINGERPRINTS_VALUE: '~aid-signature-fingerprints',
-  FINGERPRINTS_LABEL: '~aid-signature-fingerprints-label'
+  FINGERPRINTS_LABEL: '~aid-signature-fingerprints-label',
 };
 
 class PublicKeyDetailsScreen extends BaseScreen {
@@ -32,7 +32,7 @@ class PublicKeyDetailsScreen extends BaseScreen {
   }
 
   get shareButton() {
-    return $(SELECTORS.SHARE_BUTTON)
+    return $(SELECTORS.SHARE_BUTTON);
   }
 
   get backButton() {
@@ -44,7 +44,7 @@ class PublicKeyDetailsScreen extends BaseScreen {
   }
 
   get signatureLabel() {
-    return $(SELECTORS.SIGNATURE_LABEL)
+    return $(SELECTORS.SIGNATURE_LABEL);
   }
 
   get signatureValue() {
@@ -56,11 +56,11 @@ class PublicKeyDetailsScreen extends BaseScreen {
   }
 
   get lastFetchedDateLabel() {
-    return $(SELECTORS.LAST_FETCHED_DATE_LABEL)
+    return $(SELECTORS.LAST_FETCHED_DATE_LABEL);
   }
 
   get lastFetchedDateValue() {
-    return $(SELECTORS.LAST_FETCHED_DATE_VALUE)
+    return $(SELECTORS.LAST_FETCHED_DATE_VALUE);
   }
 
   get fingerprintsLabel() {
@@ -68,7 +68,7 @@ class PublicKeyDetailsScreen extends BaseScreen {
   }
 
   get fingerprintsValue() {
-    return $(SELECTORS.FINGERPRINTS_VALUE)
+    return $(SELECTORS.FINGERPRINTS_VALUE);
   }
 
   checkPublicKeyDetailsScreen = async () => {
@@ -80,39 +80,39 @@ class PublicKeyDetailsScreen extends BaseScreen {
     await (await this.signatureLabel).waitForDisplayed();
     await (await this.lastFetchedDateLabel).waitForDisplayed();
     await (await this.fingerprintsLabel).waitForDisplayed();
-  }
+  };
 
   checkPublicKeyNotEmpty = async () => {
     const pubkeyEl = await this.publicKeyValue;
     await pubkeyEl.waitForExist();
     expect(await pubkeyEl.getAttribute('value')).toBeTruthy();
-  }
+  };
 
   checkSignatureDateValue = async (value: string) => {
     const signatureValue = await this.signatureValue.getValue();
     const convertedToUTC = moment(signatureValue.replace('at', '')).utcOffset(0).format('D MMM yyyy, hh:mm:ss A');
     expect(convertedToUTC).toEqual(value);
-  }
+  };
 
   getLastFetchedDateValue = async () => {
     await (await this.lastFetchedDateLabel).waitForDisplayed();
     const lastFetchedDate = await this.lastFetchedDateValue;
-    return (await lastFetchedDate.getAttribute('value'));
-  }
+    return await lastFetchedDate.getAttribute('value');
+  };
 
   checkFingerPrintsValue = async (value: string) => {
     const fingerprints = await this.fingerprintsValue;
     await fingerprints.waitForExist();
     expect(await fingerprints.getAttribute('value')).toEqual(value);
-  }
+  };
 
   clickBackButton = async () => {
     await ElementHelper.waitAndClick(await this.backButton);
-  }
+  };
 
   clickTrashButton = async () => {
     await ElementHelper.waitAndClick(await this.trashButton);
-  }
+  };
 }
 
 export default new PublicKeyDetailsScreen();

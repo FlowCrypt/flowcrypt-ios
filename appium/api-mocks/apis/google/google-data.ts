@@ -9,18 +9,58 @@ import { MockUser, MockUserAlias } from 'api-mocks/mock-data';
 import Parse from '../../util/parse';
 import { TextDecoder } from 'util';
 
-type GmailMsg$header = { name: string, value: string };
-type GmailMsg$payload$body = { attachmentId?: string, size: number, data?: string };
-type GmailMsg$payload$part = { partId?: string, body?: GmailMsg$payload$body, filename?: string, mimeType?: string, headers?: GmailMsg$header[], parts?: GmailMsg$payload$part[] };
-type GmailMsg$payload = { partId?: string, filename?: string, parts?: GmailMsg$payload$part[], headers?: GmailMsg$header[], mimeType?: string, body?: GmailMsg$payload$body };
-type GmailMsg$labelId = 'INBOX' | 'UNREAD' | 'CATEGORY_PERSONAL' | 'IMPORTANT' | 'SENT' | 'CATEGORY_UPDATES' | 'DRAFT' | 'TRASH';
-type GmailThread = { historyId: string; id: string; snippet: string; };
-type Label = { id: string, name: string, path: string, messageListVisibility: 'show' | 'hide', labelListVisibility: 'labelShow' | 'labelHide', type: 'system' };
-type AcctDataFile = { messages: GmailMsg[]; drafts: GmailMsg[], attachments: { [id: string]: { data: string, size: number, filename?: string } }, labels: Label[], contacts: MockUser[], aliases: MockUserAlias[] };
-type ExportedMsg = { acctEmail: string, full: GmailMsg, raw: GmailMsg, attachments: { [id: string]: { data: string, size: number } } };
+type GmailMsg$header = { name: string; value: string };
+type GmailMsg$payload$body = { attachmentId?: string; size: number; data?: string };
+type GmailMsg$payload$part = {
+  partId?: string;
+  body?: GmailMsg$payload$body;
+  filename?: string;
+  mimeType?: string;
+  headers?: GmailMsg$header[];
+  parts?: GmailMsg$payload$part[];
+};
+type GmailMsg$payload = {
+  partId?: string;
+  filename?: string;
+  parts?: GmailMsg$payload$part[];
+  headers?: GmailMsg$header[];
+  mimeType?: string;
+  body?: GmailMsg$payload$body;
+};
+type GmailMsg$labelId =
+  | 'INBOX'
+  | 'UNREAD'
+  | 'CATEGORY_PERSONAL'
+  | 'IMPORTANT'
+  | 'SENT'
+  | 'CATEGORY_UPDATES'
+  | 'DRAFT'
+  | 'TRASH';
+type GmailThread = { historyId: string; id: string; snippet: string };
+type Label = {
+  id: string;
+  name: string;
+  path: string;
+  messageListVisibility: 'show' | 'hide';
+  labelListVisibility: 'labelShow' | 'labelHide';
+  type: 'system';
+};
+type AcctDataFile = {
+  messages: GmailMsg[];
+  drafts: GmailMsg[];
+  attachments: { [id: string]: { data: string; size: number; filename?: string } };
+  labels: Label[];
+  contacts: MockUser[];
+  aliases: MockUserAlias[];
+};
+type ExportedMsg = {
+  acctEmail: string;
+  full: GmailMsg;
+  raw: GmailMsg;
+  attachments: { [id: string]: { data: string; size: number } };
+};
 
 export class GmailMsg {
-
   public id: string;
   public historyId: string;
   public sizeEstimate?: number;
@@ -32,14 +72,22 @@ export class GmailMsg {
   public snippet?: string;
   public raw?: string;
 
-  constructor(msg: { id: string, labelIds?: GmailMsg$labelId[], raw: string, payload?: GmailMsg$payload, mimeMsg: ParsedMail, threadId?: string | null, draftId?: string | null }) {
+  constructor(msg: {
+    id: string;
+    labelIds?: GmailMsg$labelId[];
+    raw: string;
+    payload?: GmailMsg$payload;
+    mimeMsg: ParsedMail;
+    threadId?: string | null;
+    draftId?: string | null;
+  }) {
     this.id = msg.id;
     this.historyId = msg.id;
     this.threadId = msg.threadId ?? msg.id;
     this.draftId = msg.draftId;
     this.labelIds = msg.labelIds;
     this.raw = msg.raw;
-    this.sizeEstimate = Buffer.byteLength(msg.raw, "utf-8");
+    this.sizeEstimate = Buffer.byteLength(msg.raw, 'utf-8');
 
     const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
     this.internalDate = dateHeader.getTime();
@@ -69,9 +117,9 @@ export class GmailMsg {
       }
 
       const headers = [
-        { name: "Content-Type", value: `${contentTypeHeader.value}; boundary="${contentTypeHeader.params.boundary}"` },
-        { name: "Message-Id", value: messageIdHeader },
-        { name: "Mime-Version", value: mimeVersionHeader }
+        { name: 'Content-Type', value: `${contentTypeHeader.value}; boundary="${contentTypeHeader.params.boundary}"` },
+        { name: 'Message-Id', value: messageIdHeader },
+        { name: 'Mime-Version', value: mimeVersionHeader },
       ];
 
       if (toHeader) {
@@ -99,7 +147,7 @@ export class GmailMsg {
       this.payload = {
         mimeType: contentTypeHeader.value,
         headers: headers,
-        body
+        body,
       };
     }
   }
@@ -113,15 +161,16 @@ export class GmailMsg {
     }
 
     if (removeLabelsIds) {
-      this.labelIds = this.labelIds?.filter((l) => !removeLabelsIds.includes(l));
+      this.labelIds = this.labelIds?.filter(l => !removeLabelsIds.includes(l));
     }
-  }
+  };
 }
 
 export class GmailParser {
-
   public static findHeader = (apiGmailMsgObj: GmailMsg | GmailMsg$payload, headerName: string) => {
-    const node: GmailMsg$payload = apiGmailMsgObj.hasOwnProperty('payload') ? (apiGmailMsgObj as GmailMsg).payload! : apiGmailMsgObj as GmailMsg$payload;
+    const node: GmailMsg$payload = apiGmailMsgObj.hasOwnProperty('payload')
+      ? (apiGmailMsgObj as GmailMsg).payload!
+      : (apiGmailMsgObj as GmailMsg$payload);
     if (typeof node.headers !== 'undefined') {
       for (const header of node.headers) {
         if (header.name.toLowerCase() === headerName.toLowerCase()) {
@@ -131,7 +180,6 @@ export class GmailParser {
     }
     return undefined;
   };
-
 }
 
 const DATA: { [acct: string]: AcctDataFile } = {};
@@ -142,7 +190,6 @@ const DATA: { [acct: string]: AcctDataFile } = {};
  *   Either that, or have each instance hold data independently (unless it turns out there are memory issues)
  */
 export class GoogleData {
-
   /**
    * This is the proper way to add messages to mock api for testing:
    *   1) log into flowcrypt.compatibility@gmail.com
@@ -152,30 +199,65 @@ export class GoogleData {
    */
   private static exportedMsgsPath = './api-mocks/apis/google/exported-messages/';
 
-  public static withInitializedData = async (acct: GoogleMockAccountEmail, config?: GoogleConfig): Promise<GoogleData> => {
+  public static withInitializedData = async (
+    acct: GoogleMockAccountEmail,
+    config?: GoogleConfig,
+  ): Promise<GoogleData> => {
     if (typeof DATA[acct] === 'undefined') {
       const contacts = config?.accounts[acct]?.contacts ?? [];
-      const aliases: MockUserAlias[] = [{
-        sendAsEmail: acct,
-        displayName: '',
-        replyToAddress: acct,
-        signature: '',
-        isDefault: true,
-        isPrimary: true,
-        treatAsAlias: false,
-        verificationStatus: 'accepted'
-      }];
+      const aliases: MockUserAlias[] = [
+        {
+          sendAsEmail: acct,
+          displayName: '',
+          replyToAddress: acct,
+          signature: '',
+          isDefault: true,
+          isPrimary: true,
+          treatAsAlias: false,
+          verificationStatus: 'accepted',
+        },
+      ];
       const additionalAliases = config?.accounts[acct]?.aliases ?? [];
       const acctData: AcctDataFile = {
-        drafts: [], messages: [], attachments: {}, contacts: contacts,
+        drafts: [],
+        messages: [],
+        attachments: {},
+        contacts: contacts,
         aliases: [...aliases, ...additionalAliases],
-        labels:
-          [
-            { id: 'INBOX', name: 'INBOX', path: 'INBOX', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
-            { id: 'SENT', name: 'SENT', path: 'SENT', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
-            { id: 'DRAFT', name: 'DRAFT', path: 'DRAFT', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
-            { id: 'TRASH', name: 'TRASH', path: 'TRASH', messageListVisibility: 'show', labelListVisibility: 'labelShow', type: 'system' },
-          ]
+        labels: [
+          {
+            id: 'INBOX',
+            name: 'INBOX',
+            path: 'INBOX',
+            messageListVisibility: 'show',
+            labelListVisibility: 'labelShow',
+            type: 'system',
+          },
+          {
+            id: 'SENT',
+            name: 'SENT',
+            path: 'SENT',
+            messageListVisibility: 'show',
+            labelListVisibility: 'labelShow',
+            type: 'system',
+          },
+          {
+            id: 'DRAFT',
+            name: 'DRAFT',
+            path: 'DRAFT',
+            messageListVisibility: 'show',
+            labelListVisibility: 'labelShow',
+            type: 'system',
+          },
+          {
+            id: 'TRASH',
+            name: 'TRASH',
+            path: 'TRASH',
+            messageListVisibility: 'show',
+            labelListVisibility: 'labelShow',
+            type: 'system',
+          },
+        ],
       };
 
       DATA[acct] = acctData;
@@ -194,12 +276,14 @@ export class GoogleData {
     const msgCopy = JSON.parse(JSON.stringify(m)) as GmailMsg;
     if (format === 'raw') {
       if (!msgCopy.raw) {
-        throw new Error(`MOCK: format=raw missing data for message id ${m.id}. Solution: add them to ./test/source/mock/data/google/exported-messages`);
+        throw new Error(
+          `MOCK: format=raw missing data for message id ${m.id}. Solution: add them to ./test/source/mock/data/google/exported-messages`,
+        );
       }
     } else {
       msgCopy.raw = undefined;
     }
-    if (msgCopy.payload && (['metadata', 'raw'].includes(format))) {
+    if (msgCopy.payload && ['metadata', 'raw'].includes(format)) {
       msgCopy.payload.body = undefined;
       msgCopy.payload.parts = undefined;
     }
@@ -213,17 +297,20 @@ export class GoogleData {
   };
 
   private static msgId = (m: GmailMsg): string => {
-    const msgIdHeader = m.payload && m.payload.headers && m.payload.headers.find(h => h.name.toLowerCase() === 'message-id');
+    const msgIdHeader =
+      m.payload && m.payload.headers && m.payload.headers.find(h => h.name.toLowerCase() === 'message-id');
     return (msgIdHeader && msgIdHeader.value) || '';
   };
 
   private static parseAcctMessages = async (acct: GoogleMockAccountEmail, config?: GoogleConfig) => {
     if (config?.accounts[acct]?.messages) {
       const dir = GoogleData.exportedMsgsPath;
-      const filenames: string[] = await new Promise((res, rej) => readdir(dir, (e, f) => e ? rej(e) : res(f)));
+      const filenames: string[] = await new Promise((res, rej) => readdir(dir, (e, f) => (e ? rej(e) : res(f))));
       const validFiles = filenames.filter(item => !/(^|\/)\.[^/.]/g.test(item)); // ignore hidden files
-      const filePromises = validFiles.map(f => new Promise((res, rej) => readFile(dir + f, (e, d) => e ? rej(e) : res(d))));
-      const files = await Promise.all(filePromises) as Uint8Array[];
+      const filePromises = validFiles.map(
+        f => new Promise((res, rej) => readFile(dir + f, (e, d) => (e ? rej(e) : res(d)))),
+      );
+      const files = (await Promise.all(filePromises)) as Uint8Array[];
       const msgSubjects = config?.accounts[acct]?.messages?.map(m => m.toString());
       const existingMessages = DATA[acct].messages.map(m => m.id);
       for (const file of files) {
@@ -236,10 +323,19 @@ export class GoogleData {
         if (isValidMsg) {
           const raw = json.raw.raw;
 
-          if (!raw || existingMessages.includes(json.raw.id)) { continue; }
+          if (!raw || existingMessages.includes(json.raw.id)) {
+            continue;
+          }
 
           const mimeMsg = await Parse.convertBase64ToMimeMsg(raw);
-          const msg = new GmailMsg({ id: json.raw.id, labelIds: json.full.labelIds, raw: raw, payload: json.full.payload, mimeMsg: mimeMsg, threadId: json.full.threadId });
+          const msg = new GmailMsg({
+            id: json.raw.id,
+            labelIds: json.full.labelIds,
+            raw: raw,
+            payload: json.full.payload,
+            mimeMsg: mimeMsg,
+            threadId: json.full.threadId,
+          });
           if (json.full.labelIds && json.full.labelIds.includes('DRAFT')) {
             DATA[acct].drafts.push(msg);
           } else {
@@ -252,7 +348,7 @@ export class GoogleData {
         }
       }
     }
-  }
+  };
 
   constructor(private acct: string) {
     if (!DATA[acct]) {
@@ -268,12 +364,12 @@ export class GoogleData {
       given_name: 'First',
       family_name: 'Last',
       picture: '',
-    }
-  }
+    };
+  };
 
   public getAliases = () => {
     return DATA[this.acct].aliases;
-  }
+  };
 
   public getMessage = (id: string): GmailMsg | undefined => {
     return this.getMessagesAndDrafts().find(m => m.id === id);
@@ -301,20 +397,23 @@ export class GoogleData {
 
   public updateMessageLabels = (addLabels: string[], removeLabels: string[], messageId?: string, threadId?: string) => {
     for (const index in DATA[this.acct].messages) {
-      if ((messageId && DATA[this.acct].messages[index].id == messageId) || (threadId && DATA[this.acct].messages[index].threadId == threadId)) {
+      if (
+        (messageId && DATA[this.acct].messages[index].id == messageId) ||
+        (threadId && DATA[this.acct].messages[index].threadId == threadId)
+      ) {
         DATA[this.acct].messages[index].updateLabels(addLabels, removeLabels);
       }
     }
-  }
+  };
 
   public updateBatchMessageLabels = (addLabels: string[], removeLabels: string[], messageIds: string[]) => {
     for (const messageId of messageIds) {
-      const index = DATA[this.acct].messages.findIndex((message) => message.id == messageId);
+      const index = DATA[this.acct].messages.findIndex(message => message.id == messageId);
       if (index > -1) {
         DATA[this.acct].messages[index].updateLabels(addLabels, removeLabels);
       }
     }
-  }
+  };
 
   public getMessages = (labelIds: string[] = [], query?: string) => {
     const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
@@ -338,7 +437,9 @@ export class GoogleData {
     const id = `msg_id_${lousyRandom()}`;
 
     // fix raw for iOS parser
-    const decodedRaw = Buffer.from(raw, 'base64').toString().replace(/sinikael-\?=/g, 'sinikael-=');
+    const decodedRaw = Buffer.from(raw, 'base64')
+      .toString()
+      .replace(/sinikael-\?=/g, 'sinikael-=');
     const rawBase64 = Buffer.from(decodedRaw).toString('base64');
 
     const msg = new GmailMsg({ labelIds: ['SENT'], id, raw: rawBase64, mimeMsg });
@@ -348,15 +449,15 @@ export class GoogleData {
 
   public deleteThread = (threadId: string) => {
     DATA[this.acct].messages = DATA[this.acct].messages.filter(m => m.threadId != threadId);
-  }
+  };
 
   public deleteMessages = (ids: string[]) => {
     DATA[this.acct].messages = DATA[this.acct].messages.filter(m => !ids.includes(m.id));
-  }
+  };
 
   public deleteDraft = (id: string) => {
     DATA[this.acct].messages = DATA[this.acct].messages.filter(m => id !== m.draftId);
-  }
+  };
 
   public addDraft = (raw: string, mimeMsg: ParsedMail, id?: string, threadId?: string) => {
     const draftId = id ?? `draft_id_${lousyRandom()}`;
@@ -389,8 +490,8 @@ export class GoogleData {
     const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
     const threads: GmailThread[] = [];
 
-    const filteredThreads = this.getMessagesAndDrafts().
-      filter(m => {
+    const filteredThreads = this.getMessagesAndDrafts()
+      .filter(m => {
         if (labelIds.length) {
           const messageLabels = m.labelIds || [];
           if (messageLabels.includes('TRASH')) {
@@ -401,9 +502,9 @@ export class GoogleData {
         } else {
           return true;
         }
-      }).
-      filter(m => subject ? GoogleData.msgSubject(m).toLowerCase().includes(subject) : true).
-      map(m => ({ historyId: m.historyId, id: m.threadId!, snippet: `MOCK SNIPPET: ${GoogleData.msgSubject(m)}` }))
+      })
+      .filter(m => (subject ? GoogleData.msgSubject(m).toLowerCase().includes(subject) : true))
+      .map(m => ({ historyId: m.historyId, id: m.threadId!, snippet: `MOCK SNIPPET: ${GoogleData.msgSubject(m)}` }));
 
     for (const thread of filteredThreads) {
       if (thread.id && !threads.map(t => t.id).includes(thread.id)) {
@@ -419,11 +520,10 @@ export class GoogleData {
       const contactData = [contact.name, contact.email].join(' ').toLowerCase();
       return contactData.includes(query.toLowerCase());
     });
-  }
+  };
 
   // returns ordinary messages and drafts
   private getMessagesAndDrafts = () => {
     return DATA[this.acct].messages.concat(DATA[this.acct].drafts);
   };
-
 }

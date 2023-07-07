@@ -5,36 +5,39 @@
 const VERSION = 'B.1.0';
 
 export type ObjWithStack = { stack: string };
-export class UnreportableError extends Error { }
+export class UnreportableError extends Error {}
 
 export class Catch {
-
   public static RUNTIME_VERSION = VERSION;
   public static RUNTIME_ENVIRONMENT = 'undetermined';
 
-  public static handleErr = (e: Error) => { // eslint-disable-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static handleErr = (e: Error) => {
     // core errs that are not rethrown are not very interesting
-  }
+  };
 
-  public static reportErr = (err: Error) => { // eslint-disable-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static reportErr = (err: Error) => {
     // core reports are not very interesting
-  }
+  };
 
-  public static report = (name: string) => { // eslint-disable-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public static report = (name: string) => {
     // core reports are not very interesting
-  }
+  };
 
   public static doesReject = async (p: Promise<unknown>, errNeedle?: string[]): Promise<boolean> => {
     try {
       await p;
       return false;
     } catch (e) {
-      if (!errNeedle) { // no needles to check against
+      if (!errNeedle) {
+        // no needles to check against
         return true;
       }
       return !!errNeedle.find(needle => String(e).includes(needle));
     }
-  }
+  };
 
   public static undefinedOnException = async <T>(p: Promise<T>): Promise<T | undefined> => {
     try {
@@ -42,10 +45,9 @@ export class Catch {
     } catch (e) {
       return undefined;
     }
-  }
+  };
 
   public static version = () => {
     return Catch.RUNTIME_VERSION;
-  }
-
+  };
 }

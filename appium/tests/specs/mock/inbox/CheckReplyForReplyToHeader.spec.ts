@@ -3,7 +3,7 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen,
-  NewMessageScreen
+  NewMessageScreen,
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -11,9 +11,7 @@ import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('INBOX: ', () => {
-
   it('should honor reply-to address when reply-to header is present', async () => {
-
     const senderEmail = CommonData.honorReplyTo.sender;
     const emailSubject = CommonData.honorReplyTo.subject;
     const replySubject = `Re: ${emailSubject}`;
@@ -39,7 +37,7 @@ describe('INBOX: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [CommonData.honorReplyTo.replyToEmail],
         subject: replySubject,
-        message: quoteText
+        message: quoteText,
       });
     });
   });

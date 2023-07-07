@@ -3,11 +3,11 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   NewMessageScreen,
-  EmailScreen
+  EmailScreen,
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
-import BaseScreen from "../../../screenobjects/base.screen";
+import BaseScreen from '../../../screenobjects/base.screen';
 import MailFolderHelper from 'tests/helpers/MailFolderHelper';
 import { MockApi } from 'api-mocks/mock';
 import AppiumHelper from 'tests/helpers/AppiumHelper';
@@ -15,15 +15,13 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('user is able to send encrypted email when pass phrase session ended + move to trash, delete', async () => {
-
     const contact = MockUserList.dmitry;
     const emailSubject = CommonData.simpleEmail.subject;
     const emailText = CommonData.simpleEmail.message;
     const passPhrase = CommonData.account.passPhrase;
     const wrongPassPhraseError = CommonData.errors.wrongPassPhrase;
-    const wrongPassPhrase = "wrong";
+    const wrongPassPhrase = 'wrong';
     const processArgs = CommonData.mockProcessArgs;
 
     const mockApi = new MockApi();
@@ -36,8 +34,8 @@ describe('COMPOSE EMAIL: ', () => {
     mockApi.attesterConfig = {
       servedPubkeys: {
         [contact.email]: contact.pub!,
-        [MockUserList.e2e.email]: MockUserList.e2e.pub!
-      }
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -54,7 +52,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [contact.name],
         subject: emailSubject,
-        message: emailText
+        message: emailText,
       });
 
       // Set wrong pass phrase and check error

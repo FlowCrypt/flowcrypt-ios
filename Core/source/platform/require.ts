@@ -2,7 +2,7 @@
 
 'use strict';
 
-export interface BaseStream<T extends Uint8Array | string> extends AsyncIterable<T> { }
+export interface BaseStream<T extends Uint8Array | string> extends AsyncIterable<T> {}
 
 // copied+simplified version of ReadableStream from lib.dom.d.ts
 export interface WebStream<T extends Uint8Array | string> extends BaseStream<T> {
@@ -30,8 +30,7 @@ export interface NodeStream<T extends Uint8Array | string> extends BaseStream<T>
 
 export type MaybeStream<T extends Uint8Array | string> = T | WebStream<T> | NodeStream<T>;
 
-type ReadToEndFn = <T extends Uint8Array | string>
-  (input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
+type ReadToEndFn = <T extends Uint8Array | string>(input: MaybeStream<T>, concat?: (list: T[]) => T) => Promise<T>;
 
 /* eslint-disable */
 export const requireStreamReadToEnd = async (): Promise<ReadToEndFn> => {

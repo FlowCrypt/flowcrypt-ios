@@ -1,14 +1,8 @@
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
-import {
-  EmailScreen,
-  MailFolderScreen,
-  SetupKeyScreen,
-  SplashScreen
-} from '../../../screenobjects/all-screens';
+import { EmailScreen, MailFolderScreen, SetupKeyScreen, SplashScreen } from '../../../screenobjects/all-screens';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('check attachment after forward', async () => {
     const mockApi = new MockApi();
     const subject = 'email with text attachment';

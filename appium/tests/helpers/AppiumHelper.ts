@@ -1,4 +1,4 @@
-import { CommonData } from "../data";
+import { CommonData } from '../data';
 
 class AppiumHelper {
   /**
@@ -9,8 +9,8 @@ class AppiumHelper {
     await driver.terminateApp(bundleId);
     const args = {
       bundleId,
-      arguments: processArgs
-    }
+      arguments: processArgs,
+    };
     await driver.execute('mobile: launchApp', args);
   }
 }

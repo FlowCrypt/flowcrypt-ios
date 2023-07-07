@@ -8,9 +8,24 @@ import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, strToHex } from '../platform/util';
 import {
-  AllowedKeyPackets, AnyKeyPacket, encryptKey, enums, generateKey, Key, KeyID,
-  PacketList, PrivateKey, PublicKey, readKey, readKeys, readMessage, revokeKey,
-  SecretKeyPacket, SecretSubkeyPacket, SignaturePacket, UserID
+  AllowedKeyPackets,
+  AnyKeyPacket,
+  encryptKey,
+  enums,
+  generateKey,
+  Key,
+  KeyID,
+  PacketList,
+  PrivateKey,
+  PublicKey,
+  readKey,
+  readKeys,
+  readMessage,
+  revokeKey,
+  SecretKeyPacket,
+  SecretSubkeyPacket,
+  SignaturePacket,
+  UserID,
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
@@ -20,8 +35,8 @@ export interface PrvKeyInfo {
   private: string;
   longid: string;
   passphrase?: string;
-  decrypted?: PrivateKey;  // only for internal use in this file
-  parsed?: Key;     // only for internal use in this file
+  decrypted?: PrivateKey; // only for internal use in this file
+  parsed?: Key; // only for internal use in this file
 }
 
 export type KeyAlgo = 'curve25519' | 'rsa2048' | 'rsa4096';
@@ -54,7 +69,8 @@ export interface KeyDetails {
   revoked: boolean;
   usableForEncryption: boolean;
   usableForSigning: boolean;
-  algo: { // same as openpgp.js Key.AlgorithmInfo
+  algo: {
+    // same as openpgp.js Key.AlgorithmInfo
     algorithm: string;
     algorithmId: number;
     bits?: number;
@@ -62,7 +78,7 @@ export interface KeyDetails {
   };
 }
 
-export type PrvPacket = (SecretKeyPacket | SecretSubkeyPacket);
+export type PrvPacket = SecretKeyPacket | SecretSubkeyPacket;
 
 type KeyRevocationResult = {
   key: PrivateKey;
@@ -70,12 +86,17 @@ type KeyRevocationResult = {
 };
 
 export class PgpKey {
-  public static create = async (userIds: UserID[], variant: KeyAlgo, passphrase: string):
-    Promise<{ private: string, public: string, revCert: string }> => {
+  public static create = async (
+    userIds: UserID[],
+    variant: KeyAlgo,
+    passphrase: string,
+  ): Promise<{ private: string; public: string; revCert: string }> => {
     const k = await generateKey({
-      userIDs: userIds, passphrase, format: 'armored',
-      curve: (variant === 'curve25519' ? 'curve25519' : undefined),
-      rsaBits: (variant === 'curve25519' ? undefined : (variant === 'rsa2048' ? 2048 : 4096))
+      userIDs: userIds,
+      passphrase,
+      format: 'armored',
+      curve: variant === 'curve25519' ? 'curve25519' : undefined,
+      rsaBits: variant === 'curve25519' ? undefined : variant === 'rsa2048' ? 2048 : 4096,
     });
     return { public: k.publicKey, private: k.privateKey, revCert: k.revocationCertificate };
   };
@@ -83,7 +104,8 @@ export class PgpKey {
   /**
    * used only for keys that we ourselves parsed / formatted before, eg from local storage, because no err handling
    */
-  public static read = async (armoredKey: string) => { // should be renamed to readOne
+  public static read = async (armoredKey: string) => {
+    // should be renamed to readOne
     const fromCache = Store.armoredKeyCacheGet(armoredKey);
     if (fromCache) {
       return fromCache;
@@ -107,23 +129,36 @@ export class PgpKey {
     }
   };
 
-  public static decrypt = async (prv: Key, passphrase: string, optionalKeyid?: KeyID,
-    optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED'): Promise<boolean> => {
+  public static decrypt = async (
+    prv: Key,
+    passphrase: string,
+    optionalKeyid?: KeyID,
+    optionalBehaviorFlag?: 'OK-IF-ALREADY-DECRYPTED',
+  ): Promise<boolean> => {
     if (!prv.isPrivate()) {
-      throw new Error("Nothing to decrypt in a public key");
+      throw new Error('Nothing to decrypt in a public key');
     }
-    const chosenPrvPackets = prv.getKeys(optionalKeyid).map(k => k.keyPacket)
+    const chosenPrvPackets = prv
+      .getKeys(optionalKeyid)
+      .map(k => k.keyPacket)
       .filter(PgpKey.isPacketPrivate) as PrvPacket[];
     if (!chosenPrvPackets.length) {
-      throw new Error('No private key packets selected of'
-        + `${prv.getKeys().map(k => k.keyPacket).filter(PgpKey.isPacketPrivate).length} prv packets available`);
+      throw new Error(
+        'No private key packets selected of' +
+          `${
+            prv
+              .getKeys()
+              .map(k => k.keyPacket)
+              .filter(PgpKey.isPacketPrivate).length
+          } prv packets available`,
+      );
     }
     for (const prvPacket of chosenPrvPackets) {
       if (prvPacket.isDecrypted()) {
         if (optionalBehaviorFlag === 'OK-IF-ALREADY-DECRYPTED') {
           continue;
         } else {
-          throw new Error("Decryption failed - key packet was already decrypted");
+          throw new Error('Decryption failed - key packet was already decrypted');
         }
       }
       try {
@@ -143,27 +178,33 @@ export class PgpKey {
     if (!passphrase || passphrase === 'undefined' || passphrase === 'null') {
       throw new Error(`Encryption passphrase should not be empty:${typeof passphrase}:${passphrase}`);
     }
-    const secretPackets = prv.getKeys().map(k => k.keyPacket).filter(PgpKey.isPacketPrivate);
+    const secretPackets = prv
+      .getKeys()
+      .map(k => k.keyPacket)
+      .filter(PgpKey.isPacketPrivate);
     const encryptedPacketCount = secretPackets.filter(p => !p.isDecrypted()).length;
     if (!secretPackets.length) {
       throw new Error(`No private key packets in key to encrypt. Is this a private key?`);
     }
     if (encryptedPacketCount) {
-      throw new Error(`Cannot encrypt a key that has ${encryptedPacketCount} of ` +
-        `${secretPackets.length} private packets still encrypted`);
+      throw new Error(
+        `Cannot encrypt a key that has ${encryptedPacketCount} of ` +
+          `${secretPackets.length} private packets still encrypted`,
+      );
     }
-    await encryptKey({ privateKey: (prv as PrivateKey), passphrase });
+    await encryptKey({ privateKey: prv as PrivateKey, passphrase });
   };
 
-  public static normalize = async (armored: string):
-    Promise<{ normalized: string, keys: Key[], error?: string | undefined }> => {
+  public static normalize = async (
+    armored: string,
+  ): Promise<{ normalized: string; keys: Key[]; error?: string | undefined }> => {
     try {
       let keys: Key[] = [];
       armored = PgpArmor.normalize(armored, 'key');
       if (RegExp(PgpArmor.headers('publicKey', 're').begin).test(armored)) {
-        keys = (await readKeys({ armoredKeys: armored }));
+        keys = await readKeys({ armoredKeys: armored });
       } else if (RegExp(PgpArmor.headers('privateKey', 're').begin).test(armored)) {
-        keys = (await readKeys({ armoredKeys: armored }));
+        keys = await readKeys({ armoredKeys: armored });
       } else if (RegExp(PgpArmor.headers('encryptedMsg', 're').begin).test(armored)) {
         const msg = await readMessage({ armoredMessage: armored });
         keys = [new PublicKey(msg.packets as PacketList<AnyKeyPacket>)];
@@ -184,7 +225,7 @@ export class PgpKey {
   public static fingerprint = async (key: Key | string): Promise<string | undefined> => {
     if (!key) {
       return undefined;
-    } else if (typeof (key) === 'string') {
+    } else if (typeof key === 'string') {
       try {
         return await PgpKey.fingerprint(await PgpKey.read(key));
       } catch (e) {
@@ -280,14 +321,16 @@ export class PgpKey {
     // const expires = await openPgpKey.getExpirationTime();
     // meanhile use or backported fuinction
     const expires = await getKeyExpirationTimeForCapabilities(openPgpKey, 'encrypt');
-    if (expires instanceof Date && expires.getTime() < Date.now()) { // expired
+    if (expires instanceof Date && expires.getTime() < Date.now()) {
+      // expired
       return new Date(expires.getTime() - 1000);
     }
     return undefined;
   };
 
-  public static parse = async (armored: string):
-    Promise<{ original: string, normalized: string, keys: KeyDetails[], error?: string | undefined }> => {
+  public static parse = async (
+    armored: string,
+  ): Promise<{ original: string; normalized: string; keys: KeyDetails[]; error?: string | undefined }> => {
     const { normalized, keys, error } = await PgpKey.normalize(armored);
     return { original: armored, normalized, keys: await Promise.all(keys.map(PgpKey.details)), error };
   };
@@ -297,15 +340,19 @@ export class PgpKey {
     const algoInfo = k.keyPacket.getAlgorithmInfo();
     const algo = {
       algorithm: algoInfo.algorithm,
-      algorithmId: enums.publicKey[algoInfo.algorithm]
+      algorithmId: enums.publicKey[algoInfo.algorithm],
     };
-    if (algoInfo.bits) { Object.assign(algo, { bits: algoInfo.bits }); }
-    if (algoInfo.curve) { Object.assign(algo, { curve: algoInfo.curve }); }
+    if (algoInfo.bits) {
+      Object.assign(algo, { bits: algoInfo.bits });
+    }
+    if (algoInfo.curve) {
+      Object.assign(algo, { curve: algoInfo.curve });
+    }
     const created = k.keyPacket.created.getTime() / 1000;
     // meanwhile use our backported function
     const exp = await getKeyExpirationTimeForCapabilities(k, 'encrypt');
     const expiration = exp === Infinity || !exp ? undefined : (exp as Date).getTime() / 1000;
-    const lastModified = await PgpKey.lastSig(k) / 1000;
+    const lastModified = (await PgpKey.lastSig(k)) / 1000;
 
     const ids: KeyDetails$ids[] = [];
     for (const key of keys) {
@@ -331,14 +378,14 @@ export class PgpKey {
       lastModified,
       revoked: k.revocationSignatures.length > 0,
       usableForEncryption: await PgpKey.usable(armoredPublic, 'encrypt'),
-      usableForSigning: await PgpKey.usable(armoredPublic, 'sign')
+      usableForSigning: await PgpKey.usable(armoredPublic, 'sign'),
     };
 
     if (k.isPrivate()) {
       Object.assign(keyDetails, {
         private: k.armor(),
         isFullyDecrypted: isFullyDecrypted(k),
-        isFullyEncrypted: isFullyEncrypted(k)
+        isFullyEncrypted: isFullyEncrypted(k),
       });
     }
 
@@ -369,18 +416,20 @@ export class PgpKey {
         const latestValidKeyBindingSig = await subKey.verify();
         allSignatures.push(latestValidKeyBindingSig);
       } catch (e) {
-        console.log(`PgpKey.lastSig: Skipping subkey ${subKey.getKeyID().toHex()} ` +
-          `because there is no valid binding signature: ${String(e)}`);
+        console.log(
+          `PgpKey.lastSig: Skipping subkey ${subKey.getKeyID().toHex()} ` +
+            `because there is no valid binding signature: ${String(e)}`,
+        );
       }
     }
     if (allSignatures.length > 0) {
-      return Math.max(...allSignatures.map(x => x.created ? x.created.getTime() : 0));
+      return Math.max(...allSignatures.map(x => (x.created ? x.created.getTime() : 0)));
     }
     throw new Error('No valid signature found in key');
   };
 
   public static revoke = async (key: PrivateKey): Promise<KeyRevocationResult | undefined> => {
-    if (! await key.isRevoked()) {
+    if (!(await key.isRevoked())) {
       const keypair = await revokeKey({ key, format: 'object' });
       key = keypair.privateKey;
     }
@@ -393,14 +442,16 @@ export class PgpKey {
       const readToEnd = await requireStreamReadToEnd();
       return {
         key,
-        revocationCertificate: await readToEnd(certificate as MaybeStream<string>)
+        revocationCertificate: await readToEnd(certificate as MaybeStream<string>),
       };
     }
   };
 
   private static keyIsUsable = async (k: Key, type: KeyUsage, date?: Date | null): Promise<boolean> => {
-    return Boolean(await Catch.undefinedOnException(
-      type === 'encrypt' ? k.getEncryptionKey(undefined, date) : k.getSigningKey(undefined, date)
-    ));
+    return Boolean(
+      await Catch.undefinedOnException(
+        type === 'encrypt' ? k.getEncryptionKey(undefined, date) : k.getSigningKey(undefined, date),
+      ),
+    );
   };
 }

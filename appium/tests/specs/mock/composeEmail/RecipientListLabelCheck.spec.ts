@@ -3,7 +3,7 @@ import {
   MenuBarScreen,
   NewMessageScreen,
   SetupKeyScreen,
-  SplashScreen
+  SplashScreen,
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -13,14 +13,12 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('should toggle recipient list label and show correct email addresses', async () => {
-
     const recipient = MockUserList.robot;
     const ccRecipient = MockUserList.expired;
     const bccRecipientEmail = CommonData.recipientWithoutPublicKey.email;
-    const subject = "Test recipient list label subject"
-    const message = "Test recipient list label message"
+    const subject = 'Test recipient list label subject';
+    const message = 'Test recipient list label message';
 
     const mockApi = new MockApi();
 
@@ -32,8 +30,8 @@ describe('COMPOSE EMAIL: ', () => {
     mockApi.attesterConfig = {
       servedPubkeys: {
         [recipient.email]: recipient.pub!,
-        [ccRecipient.email]: ccRecipient.pub!
-      }
+        [ccRecipient.email]: ccRecipient.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {

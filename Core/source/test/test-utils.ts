@@ -13,7 +13,7 @@ config.truncateThreshold = 0;
 export type AvaContext = ava.ExecutionContext<unknown>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type JsonDict = { [k: string]: any };
-type TestKey = { pubKey: string, private: string, decrypted: string, passphrase: string, longid: string };
+type TestKey = { pubKey: string; private: string; decrypted: string; passphrase: string; longid: string };
 
 export const httpGet = async (url: string): Promise<Buf> => {
   return await new Promise((resolve, reject) => {
@@ -45,8 +45,11 @@ export const expectNoData = (data: Uint8Array) => {
   expect(data).to.have.property('length').that.equals(0);
 };
 
-export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' | 'binary',
-  details?: unknown[] | Buffer) => {
+export const expectData = (
+  _data: Uint8Array,
+  type?: 'armoredMsg' | 'msgBlocks' | 'binary',
+  details?: unknown[] | Buffer,
+) => {
   expect(_data).to.be.instanceof(Uint8Array);
   const data = Buffer.from(_data);
   expect(data).to.have.property('length').that.does.not.equal(0);
@@ -56,7 +59,10 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     expect(dataStr).to.contain('-----END PGP MESSAGE-----');
   } else if (type === 'msgBlocks') {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const blocks: any[] = data.toString().split('\n').map(block => JSON.parse(block) as MsgBlock);
+    const blocks: any[] = data
+      .toString()
+      .split('\n')
+      .map(block => JSON.parse(block) as MsgBlock);
     expect(details).to.be.instanceOf(Array);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const expectedBlocks = details as any[];
@@ -72,7 +78,6 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
     expect(foot).to.contain('</html>');
 
     if (body.includes('<!-- next MsgBlock -->\n')) {
-
       const renderedContentBlocks = body.split('<!-- next MsgBlock -->\n');
       // last one should be empty due to the splitting above
 
@@ -82,11 +87,12 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
       for (const renderedContentBlock of renderedContentBlocks) {
         // (.*) doesn't work for some whitespaces, so use ([\s\S]+)
         const m = (renderedContentBlock as string).match(
-          /<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/);
+          /<div class="MsgBlock ([a-z]+)" style="[^"]+">([\s\S]+)<\/div>/,
+        );
         if (m === null) {
           blocks.unshift({
-            error: "TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT",
-            content: renderedContentBlock
+            error: 'TEST VALIDATION ERROR - MISMATCHING CONTENT BLOCK FORMAT',
+            content: renderedContentBlock,
           });
         } else {
           blocks.unshift({ rendered: true, frameColor: m[1], htmlContent: m[2] });
@@ -99,18 +105,19 @@ export const expectData = (_data: Uint8Array, type?: 'armoredMsg' | 'msgBlocks' 
       const b = expectedBlocks[i];
       expect(a).to.deep.equal(b, `block ${i} failed cmp check`);
     }
-  } else if (type === "binary") {
+  } else if (type === 'binary') {
     expect(details).to.be.instanceOf(Buffer);
     const expectedBuffer = details as Buffer;
     expect(data).to.deep.equal(expectedBuffer);
   } else if (typeof details !== 'undefined') {
-    throw Error("Unknown test type");
+    throw Error('Unknown test type');
   }
 };
 
 const TEST_KEYS: { [name: string]: TestKey } = {
-  'rsa1': {
-    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+  rsa1: {
+    pubKey:
+      '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
       'Version: FlowCrypt 6.3.5 Gmail Encryption\n' +
       'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
@@ -142,7 +149,8 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       'BsSgJlOC5hrT+PKlfr9ic75fqnJqmLircB+hVnfhGR9OzH3RCIky\n' +
       '=VKq5\n' +
       '-----END PGP PUBLIC KEY BLOCK-----\n',
-    private: '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
+    private:
+      '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
       'Version: FlowCrypt [BUILD_REPLACEABLE_VERSION] Gmail Encryption\n' +
       'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
@@ -205,7 +213,8 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       'xKAmU4LmGtP48qV+v2Jzvl+qcmqYuKtwH6FWd+EZH07MfdEIiTI=\n' +
       '=15Xc\n' +
       '-----END PGP PRIVATE KEY BLOCK-----',
-    decrypted: '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
+    decrypted:
+      '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
       'Version: FlowCrypt 0.0.1-dev Gmail Encryption\n' +
       'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
@@ -268,10 +277,11 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       '=GVVZ\n' +
       '-----END PGP PRIVATE KEY BLOCK-----\n',
     passphrase: 'some long pp',
-    longid: '3A30F4CC0A9A8F10'
+    longid: '3A30F4CC0A9A8F10',
   },
-  'rsa2': {
-    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+  rsa2: {
+    pubKey:
+      '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
       'Version: FlowCrypt 6.3.5 Gmail Encryption\n' +
       'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
@@ -326,7 +336,8 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       'KQk670ezsXQMRX/AeM4Ttn2ZIjItmIpo7mUOfqE=\n' +
       '=eep/\n' +
       '-----END PGP PUBLIC KEY BLOCK-----\n',
-    private: '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
+    private:
+      '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
       'Version: FlowCrypt  Email Encryption - flowcrypt.com\n' +
       'Comment: Seamlessly send, receive and search encrypted email\n' +
       '\n' +
@@ -443,10 +454,11 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       '-----END PGP PRIVATE KEY BLOCK-----',
     decrypted: '', // todo in case needed
     passphrase: 'some long pp',
-    longid: '7C307E6F2092962D'
+    longid: '7C307E6F2092962D',
   },
-  'ecc': {
-    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+  ecc: {
+    pubKey:
+      '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
       'Version: FlowCrypt 6.3.5 Gmail Encryption\n' +
       'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
@@ -460,7 +472,8 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       'pQD/TCpMKlsFZCVzCaXyOohESrVD+UM7f/1A9QsqKh7Zmgw=\n' +
       '=WZgv\n' +
       '-----END PGP PUBLIC KEY BLOCK-----\n',
-    private: '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
+    private:
+      '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
       'Version: FlowCrypt 6.3.5 Gmail Encryption\n' +
       'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
@@ -483,8 +496,10 @@ const TEST_KEYS: { [name: string]: TestKey } = {
     longid: '063635B3E33EB14C',
   },
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  'gpg-dummy': { // first key is a dummy primary key, with an actual subkey. Achieved with gnupg --export-secret-subkeys
-    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+  'gpg-dummy': {
+    // first key is a dummy primary key, with an actual subkey. Achieved with gnupg --export-secret-subkeys
+    pubKey:
+      '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
       '\n' +
       'mQGNBF1gO6wBDACy3MHo3fjP4Npnf0zfrr4b4utxjchrPoWX7Be08RpKyZgzH2o/\n' +
       'GVrkMD0nXWcJR/xAH9eI5QyedZHJxb3ukTH0sgSlSxiF2imXwJGFqmDXof5VOmtm\n' +
@@ -525,7 +540,8 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       'fga3xzGyrbBy00LYVylMDvs5GPYyCCi7Ch9cgvg=\n' +
       '=nkDv\n' +
       '-----END PGP PUBLIC KEY BLOCK-----',
-    private: '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
+    private:
+      '-----BEGIN PGP PRIVATE KEY BLOCK-----\n' +
       '\n' +
       'lQGVBF1gO6wBDACy3MHo3fjP4Npnf0zfrr4b4utxjchrPoWX7Be08RpKyZgzH2o/\n' +
       'GVrkMD0nXWcJR/xAH9eI5QyedZHJxb3ukTH0sgSlSxiF2imXwJGFqmDXof5VOmtm\n' +
@@ -591,8 +607,9 @@ const TEST_KEYS: { [name: string]: TestKey } = {
     passphrase: 'FlowCrypt',
     longid: '96FB3C9661A5573C',
   },
-  'expired': {
-    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\r\n' +
+  expired: {
+    pubKey:
+      '-----BEGIN PGP PUBLIC KEY BLOCK-----\r\n' +
       'Version: FlowCrypt Email Encryption 7.8.4\r\n' +
       'Comment: Seamlessly send and receive encrypted email\r\n' +
       '\r\n' +
@@ -630,10 +647,11 @@ const TEST_KEYS: { [name: string]: TestKey } = {
     private: '',
     decrypted: '',
     passphrase: '',
-    longid: ''
+    longid: '',
   },
-  'revoked': {
-    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
+  revoked: {
+    pubKey:
+      '-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
       'Version: FlowCrypt Email Encryption 8.1.5\n' +
       'Comment: Seamlessly send and receive encrypted email\n' +
       '\n' +
@@ -653,11 +671,12 @@ const TEST_KEYS: { [name: string]: TestKey } = {
     private: '',
     decrypted: '',
     passphrase: '',
-    longid: ''
+    longid: '',
   },
   // eslint-disable-next-line @typescript-eslint/naming-convention
   'flowcrypt.compatibility': {
-    pubKey: '-----BEGIN PGP PUBLIC KEY BLOCK-----\r\n' +
+    pubKey:
+      '-----BEGIN PGP PUBLIC KEY BLOCK-----\r\n' +
       'Version: FlowCrypt iOS 0.2 Gmail Encryption\r\n' +
       'Comment: Seamlessly send and receive encrypted email\r\n' +
       '\r\n' +
@@ -714,7 +733,8 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       'Eg==\r\n' +
       '=r2et\r\n' +
       '-----END PGP PUBLIC KEY BLOCK-----\r\n',
-    private: '-----BEGIN PGP PRIVATE KEY BLOCK-----\r\n' +
+    private:
+      '-----BEGIN PGP PRIVATE KEY BLOCK-----\r\n' +
       'Version: FlowCrypt iOS 0.2 Gmail Encryption\r\n' +
       'Comment: Seamlessly send and receive encrypted email\r\n' +
       '\r\n' +
@@ -832,21 +852,29 @@ const TEST_KEYS: { [name: string]: TestKey } = {
       '-----END PGP PRIVATE KEY BLOCK-----\r\n',
     decrypted: '',
     passphrase: 'London blueBARREY capi',
-    longid: 'ADAC279C95093207'
-  }
+    longid: 'ADAC279C95093207',
+  },
 };
 
 type KeypairName = 'rsa1' | 'rsa2' | 'ecc' | 'gpg-dummy' | 'expired' | 'revoked' | 'flowcrypt.compatibility';
 
 export const allKeypairNames: KeypairName[] = [
-  'rsa1', 'rsa2', 'ecc', 'gpg-dummy', 'expired', 'revoked', 'flowcrypt.compatibility'
+  'rsa1',
+  'rsa2',
+  'ecc',
+  'gpg-dummy',
+  'expired',
+  'revoked',
+  'flowcrypt.compatibility',
 ];
 
 export const getKeypairs = (...names: KeypairName[]) => {
   return {
     pubKeys: names.map(name => TEST_KEYS[name].pubKey),
     keys: names.map(name => ({
-      private: TEST_KEYS[name].private, longid: TEST_KEYS[name].longid, passphrase: TEST_KEYS[name].passphrase
+      private: TEST_KEYS[name].private,
+      longid: TEST_KEYS[name].longid,
+      passphrase: TEST_KEYS[name].passphrase,
     })),
     decrypted: names.map(name => TEST_KEYS[name].decrypted),
     longids: names.map(name => TEST_KEYS[name].longid),
@@ -862,11 +890,11 @@ export const getHtmlAsset = async (name: string) => {
 };
 
 export const readFile = (path: string): Promise<Buffer> => {
-  return new Promise((resolve, reject) => fs.readFile(path, (e, data) => e ? reject(e) : resolve(data)));
+  return new Promise((resolve, reject) => fs.readFile(path, (e, data) => (e ? reject(e) : resolve(data))));
 };
 
 export const writeFile = (path: string, data: Buffer): Promise<void> => {
-  return new Promise((resolve, reject) => fs.writeFile(path, data, e => e ? reject(e) : resolve()));
+  return new Promise((resolve, reject) => fs.writeFile(path, data, e => (e ? reject(e) : resolve())));
 };
 
 export const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
