@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "TypeScript core for FlowCrypt iOS internal use",
   "dependencies": {
-    "@openpgp/web-stream-tools": "^0.0.13",
+    "@openpgp/web-stream-tools": "^0.0.14",
     "encoding-japanese": "^2.0.0",
     "openpgp": "5.9.0",
     "sanitize-html": "^2.8.0",
