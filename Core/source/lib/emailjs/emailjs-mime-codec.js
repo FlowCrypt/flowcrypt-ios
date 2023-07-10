@@ -37,13 +37,13 @@
     encoding = require('./emailjs-stringencoding');
     module.exports = factory(encoding.TextEncoder, encoding.TextDecoder, function (str) {
       var NodeBuffer = require('buffer').Buffer;
-      return new NodeBuffer(str, 'binary').toString('base64');
+      return new NodeBuffer(str, 'binary').toString("base64");
     });
   } else {
     // global for browser
     root['emailjs-mime-codec'] = factory(root.TextEncoder, root.TextDecoder, root.btoa);
   }
-})(this, function (TextEncoder, TextDecoder, btoa) {
+}(this, function (TextEncoder, TextDecoder, btoa) {
   'use strict';
 
   btoa = btoa || base64Encode;
@@ -65,10 +65,10 @@
         ranges = [
           // https://tools.ietf.org/html/rfc2045#section-6.7
           [0x09], // <TAB>
-          [0x0a], // <LF>
-          [0x0d], // <CR>
-          [0x20, 0x3c], // <SP>!"#$%&'()*+,-./0123456789:;
-          [0x3e, 0x7e], // >?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}
+          [0x0A], // <LF>
+          [0x0D], // <CR>
+          [0x20, 0x3C], // <SP>!"#$%&'()*+,-./0123456789:;
+          [0x3E, 0x7E] // >?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}
         ],
         result = '',
         ord;
@@ -76,10 +76,7 @@
       for (var i = 0, len = buffer.length; i < len; i++) {
         ord = buffer[i];
         // if the char is in allowed range, then keep as is, unless it is a ws in the end of a line
-        if (
-          mimecodec._checkRanges(ord, ranges) &&
-          !((ord === 0x20 || ord === 0x09) && (i === len - 1 || buffer[i + 1] === 0x0a || buffer[i + 1] === 0x0d))
-        ) {
+        if (mimecodec._checkRanges(ord, ranges) && !((ord === 0x20 || ord === 0x09) && (i === len - 1 || buffer[i + 1] === 0x0a || buffer[i + 1] === 0x0d))) {
           result += String.fromCharCode(ord);
           continue;
         }
@@ -103,8 +100,7 @@
 
       var encodedBytesCount = (str.match(/\=[\da-fA-F]{2}/g) || []).length,
         bufferLength = str.length - encodedBytesCount * 2,
-        chr,
-        hex,
+        chr, hex,
         buffer = new Uint8Array(bufferLength),
         bufferPos = 0;
 
@@ -166,11 +162,11 @@
     quotedPrintableEncode: function (data, fromCharset) {
       var mimeEncodedStr = mimecodec.mimeEncode(data, fromCharset);
 
-      mimeEncodedStr = mimeEncodedStr
+      mimeEncodedStr = mimeEncodedStr.
         // fix line breaks, ensure <CR><LF>
-        .replace(/\r?\n|\r/g, '\r\n')
+        replace(/\r?\n|\r/g, '\r\n').
         // replace spaces in the end of lines
-        .replace(/[\t ]+$/gm, function (spaces) {
+        replace(/[\t ]+$/gm, function (spaces) {
           return spaces.replace(/ /g, '=20').replace(/\t/g, '=09');
         });
 
@@ -189,11 +185,11 @@
     quotedPrintableDecode: function (str, fromCharset) {
       str = (str || '').toString();
 
-      str = str
+      str = str.
         // remove invalid whitespace from the end of lines
-        .replace(/[\t ]+$/gm, '')
+        replace(/[\t ]+$/gm, '').
         // remove soft line breaks
-        .replace(/\=(?:\r?\n|$)/g, '');
+        replace(/\=(?:\r?\n|$)/g, '');
 
       return mimecodec.mimeDecode(str, fromCharset);
     },
@@ -219,18 +215,16 @@
 
       var encodedStr,
         toCharset = 'UTF-8',
-        i,
-        len,
-        parts;
+        i, len, parts;
 
       if (maxLength && maxLength > 7 + toCharset.length) {
-        maxLength -= 7 + toCharset.length;
+        maxLength -= (7 + toCharset.length);
       }
 
       if (mimeWordEncoding === 'Q') {
         encodedStr = mimecodec.mimeEncode(data, fromCharset);
         // https://tools.ietf.org/html/rfc2047#section-5 rule (3)
-        encodedStr = encodedStr.replace(/[^a-z0-9!*+\-\/=]/gi, function (chr) {
+        encodedStr = encodedStr.replace(/[^a-z0-9!*+\-\/=]/ig, function (chr) {
           var code = chr.charCodeAt(0);
           if (chr === ' ') {
             return '_';
@@ -240,15 +234,14 @@
         });
       } else if (mimeWordEncoding === 'B') {
         encodedStr = typeof data === 'string' ? data : mimecodec.decode(data, fromCharset);
-        maxLength = Math.max(3, ((maxLength - (maxLength % 4)) / 4) * 3);
+        maxLength = Math.max(3, (maxLength - maxLength % 4) / 4 * 3);
       }
 
       if (maxLength && encodedStr.length > maxLength) {
         if (mimeWordEncoding === 'Q') {
-          encodedStr = mimecodec
-            ._splitMimeEncodedString(encodedStr, maxLength)
-            .join('?= =?' + toCharset + '?' + mimeWordEncoding + '?');
+          encodedStr = mimecodec._splitMimeEncodedString(encodedStr, maxLength).join('?= =?' + toCharset + '?' + mimeWordEncoding + '?');
         } else {
+
           // RFC2047 6.3 (2) states that encoded-word must include an integral number of characters, so no chopping unicode sequences
           parts = [];
           for (i = 0, len = encodedStr.length; i < len; i += maxLength) {
@@ -256,15 +249,7 @@
           }
 
           if (parts.length > 1) {
-            return (
-              '=?' +
-              toCharset +
-              '?' +
-              mimeWordEncoding +
-              '?' +
-              parts.join('?= =?' + toCharset + '?' + mimeWordEncoding + '?') +
-              '?='
-            );
+            return '=?' + toCharset + '?' + mimeWordEncoding + '?' + parts.join('?= =?' + toCharset + '?' + mimeWordEncoding + '?') + '?=';
           } else {
             encodedStr = parts.join('');
           }
@@ -273,9 +258,7 @@
         encodedStr = mimecodec.base64.encode(encodedStr);
       }
 
-      return (
-        '=?' + toCharset + '?' + mimeWordEncoding + '?' + encodedStr + (encodedStr.substr(-2) === '?=' ? '' : '?=')
-      );
+      return '=?' + toCharset + '?' + mimeWordEncoding + '?' + encodedStr + (encodedStr.substr(-2) === '?=' ? '' : '?=');
     },
 
     /**
@@ -295,15 +278,12 @@
 
       maxLength = maxLength || 0;
 
-      var decodedValue = mimecodec.charset.decode(mimecodec.charset.convert(data || '', fromCharset)),
+      var decodedValue = mimecodec.charset.decode(mimecodec.charset.convert((data || ''), fromCharset)),
         encodedValue;
 
-      encodedValue = decodedValue.replace(
-        /([^\s\u0080-\uFFFF]*[\u0080-\uFFFF]+[^\s\u0080-\uFFFF]*(?:\s+[^\s\u0080-\uFFFF]*[\u0080-\uFFFF]+[^\s\u0080-\uFFFF]*\s*)?)+/g,
-        function (match) {
-          return match.length ? mimecodec.mimeWordEncode(match, mimeWordEncoding || 'Q', maxLength) : '';
-        },
-      );
+      encodedValue = decodedValue.replace(/([^\s\u0080-\uFFFF]*[\u0080-\uFFFF]+[^\s\u0080-\uFFFF]*(?:\s+[^\s\u0080-\uFFFF]*[\u0080-\uFFFF]+[^\s\u0080-\uFFFF]*\s*)?)+/g, function (match) {
+        return match.length ? mimecodec.mimeWordEncode(match, mimeWordEncoding || 'Q', maxLength) : '';
+      });
 
       return encodedValue;
     },
@@ -339,6 +319,7 @@
       } else {
         return str;
       }
+
     },
 
     /**
@@ -349,9 +330,9 @@
      */
     mimeWordsDecode: function (str) {
       str = (str || '').toString();
-      str = str
-        .replace(/(=\?[^?]+\?[QqBb]\?[^?]+\?=)\s+(?==\?[^?]+\?[QqBb]\?[^?]+\?=)/g, '$1')
-        .replace(/\=\?([\w_\-\*]+)\?([QqBb])\?[^\?]+\?\=/g, function (mimeWord) {
+      str = str.
+        replace(/(=\?[^?]+\?[QqBb]\?[^?]+\?=)\s+(?==\?[^?]+\?[QqBb]\?[^?]+\?=)/g, '$1').
+        replace(/\=\?([\w_\-\*]+)\?([QqBb])\?[^\?]+\?\=/g, function (mimeWord) {
           return mimecodec.mimeWordDecode(mimeWord);
         });
 
@@ -374,8 +355,7 @@
       var pos = 0,
         len = str.length,
         result = '',
-        line,
-        match;
+        line, match;
 
       while (pos < len) {
         line = str.substr(pos, lineLengthMax);
@@ -388,10 +368,7 @@
           result += line;
           pos += line.length;
           continue;
-        } else if (
-          (match = line.match(/(\s+)[^\s]*$/)) &&
-          match[0].length - (afterSpace ? (match[1] || '').length : 0) < line.length
-        ) {
+        } else if ((match = line.match(/(\s+)[^\s]*$/)) && match[0].length - (afterSpace ? (match[1] || '').length : 0) < line.length) {
           line = line.substr(0, line.length - (match[0].length - (afterSpace ? (match[1] || '').length : 0)));
         } else if ((match = str.substr(pos + line.length).match(/^[^\s]+(\s*)/))) {
           line = line + match[0].substr(0, match[0].length - (!afterSpace ? (match[1] || '').length : 0));
@@ -430,17 +407,14 @@
      * @return {Object} And object of {key, value}
      */
     headerLineDecode: function (headerLine) {
-      var line = (headerLine || '')
-          .toString()
-          .replace(/(?:\r?\n|\r)[ \t]*/g, ' ')
-          .trim(),
+      var line = (headerLine || '').toString().replace(/(?:\r?\n|\r)[ \t]*/g, ' ').trim(),
         match = line.match(/^\s*([^:]+):(.*)$/),
-        key = ((match && match[1]) || '').trim(),
-        value = ((match && match[2]) || '').trim();
+        key = (match && match[1] || '').trim(),
+        value = (match && match[2] || '').trim();
 
       return {
         key: key,
-        value: value,
+        value: value
       };
     },
 
@@ -454,11 +428,9 @@
     headerLinesDecode: function (headers) {
       var lines = headers.split(/\r?\n|\r/),
         headersObj = {},
-        key,
-        value,
+        key, value,
         header,
-        i,
-        len;
+        i, len;
 
       for (i = lines.length - 1; i >= 0; i--) {
         if (i && lines[i].match(/^\s/)) {
@@ -535,9 +507,9 @@
      */
     parseHeaderValue: function (str) {
       var response = {
-          value: false,
-          params: {},
-        },
+        value: false,
+        params: {}
+      },
         key = false,
         value = '',
         type = 'value',
@@ -577,6 +549,7 @@
             value += chr;
           }
           escaped = false;
+
         }
       }
 
@@ -603,7 +576,7 @@
           if (!response.params[actualKey] || typeof response.params[actualKey] !== 'object') {
             response.params[actualKey] = {
               charset: false,
-              values: [],
+              values: []
             };
           }
 
@@ -622,41 +595,36 @@
       });
 
       // concatenate split rfc2231 strings and convert encoded strings to mime encoded words
-      Object.keys(response.params).forEach(
-        function (key) {
-          var value;
-          if (response.params[key] && Array.isArray(response.params[key].values)) {
-            value = response.params[key].values
-              .map(function (val) {
-                return val || '';
-              })
-              .join('');
+      Object.keys(response.params).forEach(function (key) {
+        var value;
+        if (response.params[key] && Array.isArray(response.params[key].values)) {
+          value = response.params[key].values.map(function (val) {
+            return val || '';
+          }).join('');
 
-            if (response.params[key].charset) {
-              // convert "%AB" to "=?charset?Q?=AB?="
-              response.params[key] =
-                '=?' +
-                response.params[key].charset +
-                '?Q?' +
-                value
-                  // fix invalidly encoded chars
-                  .replace(/[=\?_\s]/g, function (s) {
-                    var c = s.charCodeAt(0).toString(16);
-                    if (s === ' ') {
-                      return '_';
-                    } else {
-                      return '%' + (c.length < 2 ? '0' : '') + c;
-                    }
-                  })
-                  // change from urlencoding to percent encoding
-                  .replace(/%/g, '=') +
-                '?=';
-            } else {
-              response.params[key] = value;
-            }
+          if (response.params[key].charset) {
+            // convert "%AB" to "=?charset?Q?=AB?="
+            response.params[key] = '=?' +
+              response.params[key].charset +
+              '?Q?' +
+              value.
+                // fix invalidly encoded chars
+                replace(/[=\?_\s]/g, function (s) {
+                  var c = s.charCodeAt(0).toString(16);
+                  if (s === ' ') {
+                    return '_';
+                  } else {
+                    return '%' + (c.length < 2 ? '0' : '') + c;
+                  }
+                }).
+                // change from urlencoding to percent encoding
+                replace(/%/g, '=') +
+              '?=';
+          } else {
+            response.params[key] = value;
           }
-        }.bind(this),
-      );
+        }
+      }.bind(this));
 
       return response;
     },
@@ -688,36 +656,38 @@
 
       // process ascii only text
       if (/^[\w.\- ]*$/.test(data)) {
+
         // check if conversion is even needed
         if (encodedStr.length <= maxLength) {
-          return [
-            {
-              key: key,
-              value: /[\s";=]/.test(encodedStr) ? '"' + encodedStr + '"' : encodedStr,
-            },
-          ];
+          return [{
+            key: key,
+            value: /[\s";=]/.test(encodedStr) ? '"' + encodedStr + '"' : encodedStr
+          }];
         }
 
         encodedStr = encodedStr.replace(new RegExp('.{' + maxLength + '}', 'g'), function (str) {
           list.push({
-            line: str,
+            line: str
           });
           return '';
         });
 
         if (encodedStr) {
           list.push({
-            line: encodedStr,
+            line: encodedStr
           });
         }
+
       } else {
+
         // first line includes the charset and language info and needs to be encoded
         // even if it does not contain any unicode characters
-        line = "utf-8''";
+        line = 'utf-8\'\'';
         isEncoded = true;
         startPos = 0;
         // process text with unicode or special chars
         for (var i = 0, len = encodedStr.length; i < len; i++) {
+
           chr = encodedStr[i];
 
           if (isEncoded) {
@@ -735,7 +705,7 @@
               if ((encodeURIComponent(line) + chr).length >= maxLength) {
                 list.push({
                   line: line,
-                  encoded: isEncoded,
+                  encoded: isEncoded
                 });
                 line = '';
                 startPos = i - 1;
@@ -752,7 +722,7 @@
           if ((line + chr).length >= maxLength) {
             list.push({
               line: line,
-              encoded: isEncoded,
+              encoded: isEncoded
             });
             line = chr = encodedStr[i] === ' ' ? ' ' : encodeURIComponent(encodedStr[i]);
             if (chr === encodedStr[i]) {
@@ -769,7 +739,7 @@
         if (line) {
           list.push({
             line: line,
-            encoded: isEncoded,
+            encoded: isEncoded
           });
         }
       }
@@ -780,7 +750,7 @@
           // unencoded lines: {name}*{part}
           // if any line needs to be encoded then the first line (part==0) is always encoded
           key: key + '*' + i + (item.encoded ? '*' : ''),
-          value: /[\s";=]/.test(item.line) ? '"' + item.line + '"' : item.line,
+          value: /[\s";=]/.test(item.line) ? '"' + item.line + '"' : item.line
         };
       });
     },
@@ -793,10 +763,7 @@
      * @return {Array} Split string
      */
     _splitMimeEncodedString: function (str, maxlen) {
-      var curLine,
-        match,
-        chr,
-        done,
+      var curLine, match, chr, done,
         lines = [];
 
       // require at least 12 symbols to fit possible 4 octet UTF-8 sequences
@@ -817,7 +784,7 @@
           if ((match = str.substr(curLine.length).match(/^\=([0-9A-F]{2})/i))) {
             chr = parseInt(match[1], 16);
             // invalid sequence, move one char back anc recheck
-            if (chr < 0xc2 && chr > 0x7f) {
+            if (chr < 0xC2 && chr > 0x7F) {
               curLine = curLine.substr(0, curLine.length - 3);
               done = false;
             }
@@ -883,9 +850,7 @@
 
       var pos = 0,
         len = qpEncodedStr.length,
-        match,
-        code,
-        line,
+        match, code, line,
         lineMargin = Math.floor(lineLengthMax / 3),
         result = '';
 
@@ -910,28 +875,21 @@
           result += line;
           pos += line.length;
           continue;
-        } else if (
-          line.length > lineLengthMax - lineMargin &&
-          (match = line.substr(-lineMargin).match(/[ \t\.,!\?][^ \t\.,!\?]*$/))
-        ) {
+        } else if (line.length > lineLengthMax - lineMargin && (match = line.substr(-lineMargin).match(/[ \t\.,!\?][^ \t\.,!\?]*$/))) {
           // truncate to nearest space
           line = line.substr(0, line.length - (match[0].length - 1));
         } else if (line.substr(-1) === '\r') {
           line = line.substr(0, line.length - 1);
         } else {
           if (line.match(/\=[\da-f]{0,2}$/i)) {
+
             // push incomplete encoding sequences to the next line
             if ((match = line.match(/\=[\da-f]{0,1}$/i))) {
               line = line.substr(0, line.length - match[0].length);
             }
 
             // ensure that utf-8 sequences are not split
-            while (
-              line.length > 3 &&
-              line.length < len - pos &&
-              !line.match(/^(?:=[\da-f]{2}){1,4}$/i) &&
-              (match = line.match(/\=[\da-f]{2}$/gi))
-            ) {
+            while (line.length > 3 && line.length < len - pos && !line.match(/^(?:=[\da-f]{2}){1,4}$/i) && (match = line.match(/\=[\da-f]{2}$/ig))) {
               code = parseInt(match[0].substr(1, 2), 16);
               if (code < 128) {
                 break;
@@ -939,10 +897,11 @@
 
               line = line.substr(0, line.length - 3);
 
-              if (code >= 0xc0) {
+              if (code >= 0xC0) {
                 break;
               }
             }
+
           }
         }
 
@@ -984,13 +943,14 @@
         }
       }
       return false;
-    },
+    }
   };
 
   /**
    * Character set encoding and decoding functions
    */
   mimecodec.charset = {
+
     /**
      * Encodes an unicode string into an Uint8Array object as UTF-8
      *
@@ -1024,7 +984,7 @@
       } catch (E) {
         try {
           return new TextDecoder('utf-8', {
-            fatal: true, // if the input is not a valid utf-8 the decoder will throw
+            fatal: true // if the input is not a valid utf-8 the decoder will throw
           }).decode(buf);
         } catch (E) {
           try {
@@ -1035,6 +995,7 @@
           }
         }
       }
+
     },
 
     /**
@@ -1082,13 +1043,14 @@
       }
 
       return charset;
-    },
+    }
   };
 
   /**
    * Base64 encoding and decoding functions
    */
   mimecodec.base64 = {
+
     /**
      * Encodes input into base64
      *
@@ -1153,29 +1115,23 @@
       var bitsSoFar = 0;
       var validBits = 0;
       var iOut = 0;
-      var arr = new Uint8Array(Math.ceil((base64Str.length * 3) / 4));
+      var arr = new Uint8Array(Math.ceil(base64Str.length * 3 / 4));
       var c;
       var bits;
 
       for (var i = 0, len = base64Str.length; i < len; i++) {
         c = base64Str.charCodeAt(i);
-        if (c >= 0x41 && c <= 0x5a) {
-          // [A-Z]
+        if (c >= 0x41 && c <= 0x5a) { // [A-Z]
           bits = c - 0x41;
-        } else if (c >= 0x61 && c <= 0x7a) {
-          // [a-z]
+        } else if (c >= 0x61 && c <= 0x7a) { // [a-z]
           bits = c - 0x61 + 0x1a;
-        } else if (c >= 0x30 && c <= 0x39) {
-          // [0-9]
+        } else if (c >= 0x30 && c <= 0x39) { // [0-9]
           bits = c - 0x30 + 0x34;
-        } else if (c === 0x2b) {
-          // +
+        } else if (c === 0x2b) { // +
           bits = 0x3e;
-        } else if (c === 0x2f) {
-          // /
+        } else if (c === 0x2f) { // /
           bits = 0x3f;
-        } else if (c === 0x3d) {
-          // =
+        } else if (c === 0x3d) { // =
           validBits = 0;
           continue;
         } else {
@@ -1199,7 +1155,7 @@
         return arr.subarray(0, iOut);
       }
       return arr;
-    },
+    }
   };
 
   /*
@@ -1209,19 +1165,15 @@
   function base64Encode(input) {
     var str = String(input);
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    for (
-      var block, charCode, idx = 0, map = chars, output = '';
-      str.charAt(idx | 0) || ((map = '='), idx % 1);
-      output += map.charAt(63 & (block >> (8 - (idx % 1) * 8)))
-    ) {
-      charCode = str.charCodeAt((idx += 3 / 4));
-      if (charCode > 0xff) {
+    for (var block, charCode, idx = 0, map = chars, output = ''; str.charAt(idx | 0) || (map = '=', idx % 1); output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
+      charCode = str.charCodeAt(idx += 3 / 4);
+      if (charCode > 0xFF) {
         throw new Error("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
       }
-      block = (block << 8) | charCode;
+      block = block << 8 | charCode;
     }
     return output;
   }
 
   return mimecodec;
-});
+}));
