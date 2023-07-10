@@ -3,7 +3,6 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MailFolderScreen, NewMessageScreen, SetupKeyScreen, SplashScreen } from '../../../screenobjects/all-screens';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('check recipient evaluation when user taps outside the search area', async () => {
     const mockApi = new MockApi();
 

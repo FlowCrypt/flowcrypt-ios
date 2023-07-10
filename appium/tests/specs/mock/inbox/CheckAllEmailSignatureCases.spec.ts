@@ -1,27 +1,29 @@
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  EmailScreen
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, EmailScreen } from '../../../screenobjects/all-screens';
 
 describe('INBOX: ', () => {
-
   it('user is able to view correct signature badge for all cases', async () => {
     const mockApi = new MockApi();
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      messages: ['Signed and encrypted message', 'Signed only message', 'Signed only message with detached signature', 'Test 1', 'Signed only message where the pubkey is not available', 'Signed only message that was tempered during transit', 'Partially signed only message'],
+      messages: [
+        'Signed and encrypted message',
+        'Signed only message',
+        'Signed only message with detached signature',
+        'Test 1',
+        'Signed only message where the pubkey is not available',
+        'Signed only message that was tempered during transit',
+        'Partially signed only message',
+      ],
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
-        [MockUserList.e2e.email]: MockUserList.e2e.pub!
-      }
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {

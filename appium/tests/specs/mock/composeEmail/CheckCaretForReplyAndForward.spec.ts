@@ -2,13 +2,13 @@ import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import {
   EmailScreen,
-  MailFolderScreen, NewMessageScreen,
+  MailFolderScreen,
+  NewMessageScreen,
   SetupKeyScreen,
-  SplashScreen
+  SplashScreen,
 } from '../../../screenobjects/all-screens';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('check caret position for reply and forward', async () => {
     const mockApi = new MockApi();
     const subject = 'Test 1';

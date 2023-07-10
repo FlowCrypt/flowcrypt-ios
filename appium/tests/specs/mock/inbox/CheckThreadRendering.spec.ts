@@ -3,7 +3,7 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen,
-  MenuBarScreen
+  MenuBarScreen,
 } from '../../../screenobjects/all-screens';
 import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
@@ -11,7 +11,6 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
-
   it('check thread rendering and archived message actions', async () => {
     const senderName = CommonData.threadMessage.senderName;
     const emailSubject = CommonData.threadMessage.subject;
@@ -35,7 +34,7 @@ describe('INBOX: ', () => {
     mockApi.attesterConfig = {
       servedPubkeys: {
         [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {

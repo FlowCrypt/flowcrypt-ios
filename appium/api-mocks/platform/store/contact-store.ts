@@ -15,24 +15,26 @@ export type Pubkey = {
   fingerprint: string;
   armoredKey: string;
   longids: string[];
-  lastCheck: number | null,
+  lastCheck: number | null;
   expiresOn: number | null;
 };
 
 export type PubkeyInfo = {
-  pubkey: Key,
-  revoked: boolean,
-  lastCheck?: number | undefined
+  pubkey: Key;
+  revoked: boolean;
+  lastCheck?: number | undefined;
 };
 
 export class ContactStore {
-
   public static get = async (db: void, emailOrLongid: string[]): Promise<(Contact | undefined)[]> => {
-    const result = DATA.filter(x => emailOrLongid.includes(x.email) ||
-      // is there any intersection
-      (x.pubkey && KeyUtil.getPubkeyLongids(x.pubkey).some(y => emailOrLongid.includes(y))));
+    const result = DATA.filter(
+      x =>
+        emailOrLongid.includes(x.email) ||
+        // is there any intersection
+        (x.pubkey && KeyUtil.getPubkeyLongids(x.pubkey).some(y => emailOrLongid.includes(y))),
+    );
     return result;
-  }
+  };
 
   public static update = async (db: void, email: string | string[], update: ContactUpdate): Promise<void> => {
     if (Array.isArray(email)) {
@@ -40,7 +42,8 @@ export class ContactStore {
       return;
     }
     let [updated] = await ContactStore.get(db, [email]);
-    if (!updated) { // updating a non-existing contact, insert it first
+    if (!updated) {
+      // updating a non-existing contact, insert it first
       updated = await ContactStore.obj({ email });
       DATA.push(updated);
     }
@@ -57,7 +60,7 @@ export class ContactStore {
       updated.expiresOn = key.expiration ? Number(key.expiration) : null;
       updated.hasPgp = 1;
     }
-  }
+  };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public static obj = async ({ email, name, pubkey, lastUse, lastCheck }: any): Promise<Contact> => {
@@ -71,7 +74,7 @@ export class ContactStore {
         lastUse: lastUse || null,
         pubkeyLastCheck: null,
         expiresOn: null,
-        revoked: false
+        revoked: false,
       };
     }
     const pk = await KeyUtil.parse(pubkey);
@@ -83,10 +86,10 @@ export class ContactStore {
       fingerprint: pk.id,
       lastUse,
       pubkeyLastCheck: lastCheck,
-      revoked: pk.revoked
+      revoked: pk.revoked,
     } as Contact;
     return contact;
-  }
+  };
 
   public static save = async (db: unknown, contact: Contact | Contact[]): Promise<void> => {
     if (Array.isArray(contact)) {
@@ -94,5 +97,5 @@ export class ContactStore {
     } else {
       DATA.push(contact);
     }
-  }
+  };
 }

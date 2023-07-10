@@ -15,7 +15,6 @@ interface PwdStrengthResult {
 }
 
 export class PgpPwd {
-
   // (10k pc)*(2 core p/pc)*(4k guess p/core)
   // https://www.abuse.ch/?p=3294://threatpost.com/how-much-does-botnet-cost-022813/77573/
   // https://www.abuse.ch/?p=3294
@@ -23,7 +22,8 @@ export class PgpPwd {
   private static CRACK_GUESSES_PER_SECOND = 10000 * 2 * 4000;
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  private static CRACK_TIME_WORDS_PWD = [ // the requirements for a one-time password are less strict
+  private static CRACK_TIME_WORDS_PWD = [
+    // the requirements for a one-time password are less strict
     { match: 'millenni', word: 'perfect', bar: 100, color: 'green', pass: true },
     { match: 'centu', word: 'perfect', bar: 95, color: 'green', pass: true },
     { match: 'year', word: 'great', bar: 80, color: 'orange', pass: true },
@@ -36,7 +36,8 @@ export class PgpPwd {
   ];
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  private static CRACK_TIME_WORDS_PASS_PHRASE = [ // the requirements for a pass phrase are meant to be strict
+  private static CRACK_TIME_WORDS_PASS_PHRASE = [
+    // the requirements for a pass phrase are meant to be strict
     { match: 'millenni', word: 'perfect', bar: 100, color: 'green', pass: true },
     { match: 'centu', word: 'great', bar: 80, color: 'green', pass: true },
     { match: 'year', word: 'good', bar: 60, color: 'orange', pass: true },
@@ -46,12 +47,15 @@ export class PgpPwd {
     { match: '', word: 'weak', bar: 10, color: 'red', pass: false },
   ];
 
-  public static estimateStrength = (zxcvbnResultGuesses: number,
-    type: 'passphrase' | 'pwd' = 'passphrase'): PwdStrengthResult => {
+  public static estimateStrength = (
+    zxcvbnResultGuesses: number,
+    type: 'passphrase' | 'pwd' = 'passphrase',
+  ): PwdStrengthResult => {
     const timeToCrack = zxcvbnResultGuesses / PgpPwd.CRACK_GUESSES_PER_SECOND;
     for (const word of type === 'pwd' ? PgpPwd.CRACK_TIME_WORDS_PWD : PgpPwd.CRACK_TIME_WORDS_PASS_PHRASE) {
       const readableTime = PgpPwd.readableCrackTime(timeToCrack);
-      if (readableTime.includes(word.match)) { // looks for a word match from readable_crack_time, defaults on "weak"
+      if (readableTime.includes(word.match)) {
+        // looks for a word match from readable_crack_time, defaults on "weak"
         return { word, seconds: Math.round(timeToCrack), time: readableTime };
       }
     }
@@ -60,19 +64,55 @@ export class PgpPwd {
 
   public static weakWords = () => {
     return [
-      'crypt', 'up', 'cryptup', 'flow', 'flowcrypt', 'encryption', 'pgp', 'email', 'set', 'backup', 'passphrase',
-      'best', 'pass', 'phrases', 'are', 'long', 'and', 'have', 'several', 'words', 'in', 'them',
-      'Best pass phrases are long', 'have several words', 'in them', 'bestpassphrasesarelong', 'haveseveralwords',
-      'inthem', 'Loss of this pass phrase', 'cannot be recovered', 'Note it down', 'on a paper',
-      'lossofthispassphrase', 'cannotberecovered', 'noteitdown', 'onapaper',
-      'setpassword', 'set password', 'set pass word', 'setpassphrase', 'set pass phrase', 'set passphrase'
+      'crypt',
+      'up',
+      'cryptup',
+      'flow',
+      'flowcrypt',
+      'encryption',
+      'pgp',
+      'email',
+      'set',
+      'backup',
+      'passphrase',
+      'best',
+      'pass',
+      'phrases',
+      'are',
+      'long',
+      'and',
+      'have',
+      'several',
+      'words',
+      'in',
+      'them',
+      'Best pass phrases are long',
+      'have several words',
+      'in them',
+      'bestpassphrasesarelong',
+      'haveseveralwords',
+      'inthem',
+      'Loss of this pass phrase',
+      'cannot be recovered',
+      'Note it down',
+      'on a paper',
+      'lossofthispassphrase',
+      'cannotberecovered',
+      'noteitdown',
+      'onapaper',
+      'setpassword',
+      'set password',
+      'set pass word',
+      'setpassphrase',
+      'set pass phrase',
+      'set passphrase',
     ];
   };
 
   private static readableCrackTime = (totalSeconds: number) => {
     // eslint-disable-next-line max-len
     // See http://stackoverflow.com/questions/8211744/convert-time-interval-given-in-seconds-into-more-human-readable-form
-    const numberWordEnding = (n: number) => (n > 1) ? 's' : '';
+    const numberWordEnding = (n: number) => (n > 1 ? 's' : '');
     totalSeconds = Math.round(totalSeconds);
     const millennia = Math.round(totalSeconds / (86400 * 30 * 12 * 100 * 1000));
     if (millennia) {

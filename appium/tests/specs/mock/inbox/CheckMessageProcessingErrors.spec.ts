@@ -1,9 +1,4 @@
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  EmailScreen
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, EmailScreen } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
 import BaseScreen from 'tests/screenobjects/base.screen';
@@ -12,9 +7,7 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
-
   it('user is able to view message processing errors', async () => {
-
     const decryptErrorBadgeText = CommonData.decryptErrorBadge.badgeText;
 
     // Const for MDC hash mismatch message
@@ -55,14 +48,14 @@ describe('INBOX: ', () => {
         'message encrypted for another public key (only one pubkey used)',
         'wrong checksum',
         'not integrity protected - should show a warning and not decrypt automatically',
-        'key mismatch unexpectedly produces a modal'
+        'key mismatch unexpectedly produces a modal',
       ],
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
         [MockUserList.sunit.email]: MockUserList.sunit.pub!,
-        [MockUserList.flowcryptCompatibility.email]: MockUserList.flowcryptCompatibility.pub!
-      }
+        [MockUserList.flowcryptCompatibility.email]: MockUserList.flowcryptCompatibility.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -80,7 +73,11 @@ describe('INBOX: ', () => {
 
       // Checking error message encrypted for another public key
       await MailFolderScreen.clickOnEmailBySubject(encryptedForAnotherPublicKeySubject);
-      await EmailScreen.checkOpenedEmail(encryptedForAnotherPublicKeyName, encryptedForAnotherPublicKeySubject, encryptedForAnotherPublicKeyText);
+      await EmailScreen.checkOpenedEmail(
+        encryptedForAnotherPublicKeyName,
+        encryptedForAnotherPublicKeySubject,
+        encryptedForAnotherPublicKeyText,
+      );
       await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
       await EmailScreen.clickBackButton();
@@ -96,7 +93,11 @@ describe('INBOX: ', () => {
 
       // Checking error for integrity protected message
       await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
-      await EmailScreen.checkOpenedEmail(notIntegrityProtectedSender, notIntegrityProtectedSubject, notIntegrityProtectedText);
+      await EmailScreen.checkOpenedEmail(
+        notIntegrityProtectedSender,
+        notIntegrityProtectedSubject,
+        notIntegrityProtectedText,
+      );
       await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
       await EmailScreen.clickBackButton();

@@ -9,7 +9,16 @@ import { getMockGoogleEndpoints } from './apis/google/google-endpoints';
 import { getMockEkmEndpoints } from './apis/ekm/ekm-endpoints';
 import { getMockWkdEndpoints } from './apis/wkd/wkd-endpoints';
 import { getMockFesEndpoints } from './apis/fes/fes-endpoints';
-import { AttesterConfig, EkmConfig, FesConfig, GoogleConfig, GoogleMockAccount, Logger, MockConfig, WkdConfig } from './lib/configuration-types';
+import {
+  AttesterConfig,
+  EkmConfig,
+  FesConfig,
+  GoogleConfig,
+  GoogleMockAccount,
+  Logger,
+  MockConfig,
+  WkdConfig,
+} from './lib/configuration-types';
 import { readFileSync } from 'fs';
 import { GoogleMockAccountEmail, GoogleMockMessage } from './apis/google/google-messages';
 
@@ -33,9 +42,8 @@ import { GoogleMockAccountEmail, GoogleMockMessage } from './apis/google/google-
  * });
  */
 export class MockApi {
-
   private port = 8001;
-  private logger: Logger = console.log // change here to log to a file instead
+  private logger: Logger = console.log; // change here to log to a file instead
 
   private _mockConfig: MockConfig = { serverUrl: `https://127.0.0.1:${this.port}` };
 
@@ -63,7 +71,7 @@ export class MockApi {
 
   public addGoogleAccount(email: GoogleMockAccountEmail, account: GoogleMockAccount = {}) {
     if (!this._googleConfig) {
-      this._googleConfig = { accounts: {} }
+      this._googleConfig = { accounts: {} };
     }
 
     this._googleConfig.accounts[email] = account;
@@ -71,7 +79,7 @@ export class MockApi {
 
   public addGoogleMessage(email: GoogleMockAccountEmail, message: GoogleMockMessage) {
     const account = this._googleConfig?.accounts[email] || {};
-    account.messages = [...account.messages || [], ...[message]];
+    account.messages = [...(account.messages || []), ...[message]];
     this.addGoogleAccount(email, account);
   }
 
@@ -79,22 +87,27 @@ export class MockApi {
     const logger = this.logger;
 
     const base64 = readFileSync('./api-mocks/mock-ssl-cert/cert.pem.mock').toString('base64');
-    await driver.execute('mobile: installCertificate', { content: base64 })
+    await driver.execute('mobile: installCertificate', { content: base64 });
 
     class LoggedApi<REQ, RES> extends Api<REQ, RES> {
       protected throttleChunkMsUpload = 5;
       protected throttleChunkMsDownload = 10;
       protected log = (ms: number, req: http.IncomingMessage, res: http.ServerResponse, errRes?: Buffer) => {
         logger(`${ms}ms | ${res.statusCode} ${req.method} ${req.url} | ${errRes ? errRes : ''}`);
-      }
+      };
     }
-    const api = new LoggedApi<{ query: { [k: string]: string }, body?: unknown }, unknown>('api-mock', [
-      () => getMockFesEndpoints(this._mockConfig, this._fesConfig),
-      () => getMockAttesterEndpoints(this._mockConfig, this._attesterConfig),
-      () => getMockGoogleEndpoints(this._mockConfig, this._googleConfig),
-      () => getMockEkmEndpoints(this._mockConfig, this._ekmConfig),
-      () => getMockWkdEndpoints(this._mockConfig, this._wkdConfig),
-    ], undefined, true);
+    const api = new LoggedApi<{ query: { [k: string]: string }; body?: unknown }, unknown>(
+      'api-mock',
+      [
+        () => getMockFesEndpoints(this._mockConfig, this._fesConfig),
+        () => getMockAttesterEndpoints(this._mockConfig, this._attesterConfig),
+        () => getMockGoogleEndpoints(this._mockConfig, this._googleConfig),
+        () => getMockEkmEndpoints(this._mockConfig, this._ekmConfig),
+        () => getMockWkdEndpoints(this._mockConfig, this._wkdConfig),
+      ],
+      undefined,
+      true,
+    );
     await api.listen(this.port);
     try {
       await testRunner();
@@ -103,4 +116,3 @@ export class MockApi {
     }
   };
 }
-

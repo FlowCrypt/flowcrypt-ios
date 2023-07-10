@@ -14,30 +14,25 @@
   ],
   "settings": {
     "typescript.tsdk": "./node_modules/typescript/lib",
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true,
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
     "editor.detectIndentation": false,
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true,
+      "source.fixAll.eslint": true
     },
-    "errorLens.enabledDiagnosticLevels": [
-      "error"
-    ],
-    "eslint.validate": [
-      "javascript",
-      "typescript",
-    ],
+    "errorLens.enabledDiagnosticLevels": ["error"],
+    "eslint.validate": ["javascript", "typescript"],
     "typescript.surveys.enabled": false,
     "typescript.preferences.quoteStyle": "single",
-    "editor.rulers": [
-      160
-    ]
+    "editor.rulers": [160]
   },
   "extensions": {
     "recommendations": [
       "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
       "usernamehw.errorlens"
     ]
   }

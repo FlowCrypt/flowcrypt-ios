@@ -3,7 +3,7 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen,
-  NewMessageScreen
+  NewMessageScreen,
 } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
@@ -12,9 +12,7 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
-
   it('test for replying to my own email and changing recipient', async () => {
-
     const senderEmail = CommonData.emailForReplyWithChangingRecipient.senderEmail;
     const emailSubject = CommonData.emailForReplyWithChangingRecipient.subject;
     const secondMessage = CommonData.emailForReplyWithChangingRecipient.secondMessage;
@@ -41,7 +39,7 @@ describe('INBOX: ', () => {
         [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
         [MockUserList.robot.email]: MockUserList.robot.pub!,
         [MockUserList.ioan.email]: MockUserList.ioan.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -58,7 +56,7 @@ describe('INBOX: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [firstRecipientName, secondRecipientName],
         subject: replySubject,
-        message: quoteText
+        message: quoteText,
       });
       await NewMessageScreen.deleteAddedRecipientWithDoubleBackspace();
       await NewMessageScreen.setAddRecipient(newRecipientEmail);
@@ -66,7 +64,7 @@ describe('INBOX: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [firstRecipientName, newRecipientName],
         subject: replySubject,
-        message: quoteText
+        message: quoteText,
       });
 
       await NewMessageScreen.clickBackButton();
@@ -78,7 +76,7 @@ describe('INBOX: ', () => {
         recipients: [firstRecipientName, secondRecipientName],
         cc: [thirdRecipientName],
         subject: replySubject,
-        message: quoteText
+        message: quoteText,
       });
 
       await NewMessageScreen.deleteAddedRecipientWithDoubleBackspace();
@@ -87,7 +85,7 @@ describe('INBOX: ', () => {
         recipients: [firstRecipientName, newRecipientName],
         cc: [thirdRecipientName],
         subject: replySubject,
-        message: quoteText
+        message: quoteText,
       });
       await NewMessageScreen.clickBackButton();
       await EmailScreen.checkThreadMessage(senderEmail, emailSubject, secondMessage, 1);

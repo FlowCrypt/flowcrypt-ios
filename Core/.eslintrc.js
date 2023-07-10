@@ -10,17 +10,18 @@ module.exports = {
     browser: true,
     node: true,
     commonjs: true,
-    es6: true
+    es6: true,
   },
   globals: {
-    '$': false,
-    'chrome': false,
-    'OpenPGP': false
+    $: false,
+    chrome: false,
+    OpenPGP: false,
   },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/base',
-    'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/recommended',
+    'prettier',
   ],
   plugins: [
     'no-only-tests',
@@ -29,37 +30,37 @@ module.exports = {
     'eslint-plugin-prefer-arrow',
     'eslint-plugin-import',
     '@typescript-eslint',
-    'eslint-plugin-local-rules'
+    'eslint-plugin-local-rules',
   ],
   rules: {
     '@typescript-eslint/adjacent-overload-signatures': 'error',
     '@typescript-eslint/array-type': 'off',
     '@typescript-eslint/await-thenable': 'off',
-    "@typescript-eslint/ban-ts-comment": "off",
+    '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/ban-types': [
       'error',
       {
-        'types': {
-          'Object': {
-            'message': 'Avoid using the `Object` type. Did you mean `object`?'
+        types: {
+          Object: {
+            message: 'Avoid using the `Object` type. Did you mean `object`?',
           },
-          'Function': {
-            'message': 'Avoid using the `Function` type. Prefer `() => void`'
+          Function: {
+            message: 'Avoid using the `Function` type. Prefer `() => void`',
           },
-          'Boolean': {
-            'message': 'Avoid using the `Boolean` type. Did you mean `boolean`?'
+          Boolean: {
+            message: 'Avoid using the `Boolean` type. Did you mean `boolean`?',
           },
-          'Number': {
-            'message': 'Avoid using the `Number` type. Did you mean `number`?'
+          Number: {
+            message: 'Avoid using the `Number` type. Did you mean `number`?',
           },
-          'String': {
-            'message': 'Avoid using the `String` type. Did you mean `string`?'
+          String: {
+            message: 'Avoid using the `String` type. Did you mean `string`?',
           },
-          'Symbol': {
-            'message': 'Avoid using the `Symbol` type. Did you mean `symbol`?'
-          }
-        }
-      }
+          Symbol: {
+            message: 'Avoid using the `Symbol` type. Did you mean `symbol`?',
+          },
+        },
+      },
     ],
     '@typescript-eslint/consistent-type-assertions': 'error',
     '@typescript-eslint/consistent-type-definitions': 'off',
@@ -68,19 +69,17 @@ module.exports = {
     '@typescript-eslint/explicit-member-accessibility': [
       'error',
       {
-        'accessibility': 'explicit'
-      }
+        accessibility: 'explicit',
+      },
     ],
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/indent': ['error', 2,
+    '@typescript-eslint/indent': [
+      'error',
+      2,
       {
         SwitchCase: 1,
-        ignoredNodes: [
-          "TSUnionType",
-          "TSTypeAliasDeclaration *",
-          "TSTypeAnnotation"
-        ]
-      }
+        ignoredNodes: ['TSUnionType', 'TSTypeAliasDeclaration *', 'TSTypeAnnotation'],
+      },
     ],
     '@typescript-eslint/member-ordering': 'error',
     '@typescript-eslint/naming-convention': 'error',
@@ -95,8 +94,8 @@ module.exports = {
     '@typescript-eslint/no-shadow': [
       'off',
       {
-        'hoist': 'all'
-      }
+        hoist: 'all',
+      },
     ],
     '@typescript-eslint/no-unsafe-return': 'error',
     '@typescript-eslint/no-unsafe-argument': 'warn',
@@ -112,28 +111,22 @@ module.exports = {
     '@typescript-eslint/triple-slash-reference': [
       'off',
       {
-        'path': 'always',
-        'types': 'prefer-import',
-        'lib': 'always'
-      }
+        path: 'always',
+        types: 'prefer-import',
+        lib: 'always',
+      },
     ],
     '@typescript-eslint/type-annotation-spacing': 'off',
     '@typescript-eslint/typedef': 'off',
     '@typescript-eslint/unbound-method': 'error',
     '@typescript-eslint/unified-signatures': 'error',
-    'indent': 'off',
+    indent: 'off',
     'max-len': ['error', { code: 120 }],
-    'arrow-parens': [
-      'off',
-      'always'
-    ],
-    'complexity': 'off',
+    'arrow-parens': ['off', 'always'],
+    complexity: 'off',
     'constructor-super': 'error',
     'dot-notation': 'error',
-    'eqeqeq': [
-      'error',
-      'smart'
-    ],
+    eqeqeq: ['error', 'smart'],
     'guard-for-in': 'error',
     'id-denylist': 'error',
     'id-match': 'error',
@@ -173,44 +166,48 @@ module.exports = {
     'no-useless-escape': 0,
     'no-var': 'error',
     'object-shorthand': 'error',
-    'one-var': [
-      'off',
-      'never'
-    ],
+    'one-var': ['off', 'never'],
     'prefer-arrow/prefer-arrow-functions': 'error',
-    'prefer-const': ['error', {
-      destructuring: 'all',
-    }],
-    'radix': 'off',
+    'prefer-const': [
+      'error',
+      {
+        destructuring: 'all',
+      },
+    ],
+    radix: 'off',
     'require-atomic-updates': 0,
-    'semi': 0,
-    'sort-imports': ['off', {
-      'ignoreCase': false,
-      'ignoreDeclarationSort': false,
-      'ignoreMemberSort': false,
-      'memberSyntaxSortOrder': ['none', 'all', 'multiple', 'single']
-    }],
+    semi: 0,
+    'sort-imports': [
+      'off',
+      {
+        ignoreCase: false,
+        ignoreDeclarationSort: false,
+        ignoreMemberSort: false,
+        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+      },
+    ],
     'space-before-blocks': ['error', 'always'],
     'spaced-comment': [
       'error',
       'always',
       {
-        'markers': [
-          '/'
-        ]
-      }
+        markers: ['/'],
+      },
     ],
     'use-isnan': 'error',
     'valid-typeof': 'off',
-    'local-rules/standard-loops': 'error'
+    'local-rules/standard-loops': 'error',
   },
   overrides: [
     {
-      'files': ['./source/**/*.ts'],
-      'rules': {
-        'header/header': ['error', 'block',
-          ' ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com ']
-      }
-    }
-  ]
+      files: ['./source/**/*.ts'],
+      rules: {
+        'header/header': [
+          'error',
+          'block',
+          ' ©️ 2016 - present FlowCrypt a.s. Limitations apply. Contact human@flowcrypt.com ',
+        ],
+      },
+    },
+  ],
 };

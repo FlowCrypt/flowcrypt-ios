@@ -1,19 +1,12 @@
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  EmailScreen
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, EmailScreen } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
-import { MockApi } from "../../../../api-mocks/mock";
+import { MockApi } from '../../../../api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
-
   it('user is able to view text email and recipients list', async () => {
-
     const senderName = CommonData.recipientsListEmail.senderName;
     const emailSubject = CommonData.recipientsListEmail.subject;
     const emailText = CommonData.recipientsListEmail.message;
@@ -33,8 +26,8 @@ describe('INBOX: ', () => {
       servedPubkeys: {
         [MockUserList.flowcryptCompatibility.email]: MockUserList.flowcryptCompatibility.pub!,
         [MockUserList.robot.email]: MockUserList.robot.pub!,
-        [MockUserList.e2e.email]: MockUserList.e2e.pub!
-      }
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {

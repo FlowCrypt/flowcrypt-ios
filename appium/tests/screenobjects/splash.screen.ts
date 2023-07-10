@@ -1,9 +1,7 @@
 import BaseScreen from './base.screen';
-import { CommonData } from "../data";
-import ElementHelper from "../helpers/ElementHelper";
-import {
-  EmailProviderScreen
-} from '../screenobjects/all-screens';
+import { CommonData } from '../data';
+import ElementHelper from '../helpers/ElementHelper';
+import { EmailProviderScreen } from '../screenobjects/all-screens';
 
 const SELECTORS = {
   PRIVACY_TAB: '~aid-privacy-btn',
@@ -19,9 +17,10 @@ const SELECTORS = {
   NEXT_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Next"`][1]',
   PASSWORD_FIELD: '~Enter your password',
   DONE_BTN: '~Done',
-  LANGUAGE_DROPDOWN: '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
+  LANGUAGE_DROPDOWN:
+    '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
   SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]',
-  USE_ANOTHER_ACCOUNT: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Use another account"`]'
+  USE_ANOTHER_ACCOUNT: '-ios class chain:**/XCUIElementTypeStaticText[`label == "Use another account"`]',
 };
 
 class SplashScreen extends BaseScreen {
@@ -74,11 +73,11 @@ class SplashScreen extends BaseScreen {
   }
 
   get doneButton() {
-    return $(SELECTORS.DONE_BTN)
+    return $(SELECTORS.DONE_BTN);
   }
 
   get languageDropdown() {
-    return $(SELECTORS.LANGUAGE_DROPDOWN)
+    return $(SELECTORS.LANGUAGE_DROPDOWN);
   }
 
   get signInAsGoogleAccounLabel() {
@@ -97,51 +96,51 @@ class SplashScreen extends BaseScreen {
     // these login methods currently disabled on ios
     // await ElementHelper.waitElementVisible(await this.continueWithOutlookBtn);
     // await ElementHelper.waitElementVisible(await this.otherEmailProviderButton);
-  }
+  };
 
   clickContinueWithGmail = async () => {
     await ElementHelper.waitAndClick(await this.continueWithGmailBtn);
-  }
+  };
 
   clickOtherEmailProvider = async () => {
     await ElementHelper.waitAndClick(await this.otherEmailProviderButton);
-  }
+  };
 
   clickContinueBtn = async () => {
     // expect(await this.continueButton).toBeDisplayed();
     // expect(await this.cancelButton).toBeDisplayed();
     await ElementHelper.waitAndClick(await this.continueButton);
-  }
+  };
 
   clickCancelButton = async () => {
     await ElementHelper.waitAndClick(await this.cancelButton);
-  }
+  };
 
   changeLanguage = async (language = '‪English (United States)‬') => {
     await ElementHelper.waitAndClick(await this.languageDropdown, 500);
     const selector = `~${language}`;
     await ElementHelper.waitAndClick(await $(selector));
-  }
+  };
 
   fillEmail = async (email: string) => {
     await ElementHelper.waitClickAndType(await this.loginField, email);
     await this.clickDoneBtn();
     await browser.pause(500); // stability sleep
-  }
+  };
 
   fillPassword = async (password: string) => {
     await ElementHelper.waitClickAndType(await this.passwordField, password);
     await this.clickDoneBtn();
     await browser.pause(500); // stability sleep
-  }
+  };
 
   clickNextBtn = async () => {
     await ElementHelper.waitAndClick(await this.nextButton);
-  }
+  };
 
   clickDoneBtn = async () => {
     await ElementHelper.waitAndClick(await this.doneButton);
-  }
+  };
 
   gmailLogin = async (email: string, password: string) => {
     const emailSelector = `-ios class chain:**/XCUIElementTypeLink/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
@@ -160,9 +159,13 @@ class SplashScreen extends BaseScreen {
       await this.fillPassword(password);
       await this.clickNextBtn();
     }
-  }
+  };
 
-  login = async (email: string = CommonData.account.email, password: string = CommonData.account.password!, isMock = false) => {
+  login = async (
+    email: string = CommonData.account.email,
+    password: string = CommonData.account.password!,
+    isMock = false,
+  ) => {
     await this.clickContinueWithGmail();
     await this.clickContinueBtn();
 
@@ -172,19 +175,22 @@ class SplashScreen extends BaseScreen {
     }
 
     await ElementHelper.waitElementInvisible(await this.signInAsGoogleAccounLabel);
-  }
+  };
 
-  loginToOtherEmailProvider = async (email: string = CommonData.outlookAccount.email, password: string = CommonData.outlookAccount.password!) => {
+  loginToOtherEmailProvider = async (
+    email: string = CommonData.outlookAccount.email,
+    password: string = CommonData.outlookAccount.password!,
+  ) => {
     await this.clickOtherEmailProvider();
     await EmailProviderScreen.checkEmailProviderScreen();
     await EmailProviderScreen.fillEmail(email);
     await EmailProviderScreen.fillPassword(password);
     await EmailProviderScreen.clickConnectBtn();
-  }
+  };
 
   mockLogin = async () => {
     await this.login('', '', true);
-  }
+  };
 }
 
 export default new SplashScreen();

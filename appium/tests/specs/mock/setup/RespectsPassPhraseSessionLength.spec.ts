@@ -4,25 +4,20 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { CommonData } from 'tests/data';
 import AppiumHelper from 'tests/helpers/AppiumHelper';
 import BaseScreen from 'tests/screenobjects/base.screen';
-import {
-  EmailScreen,
-  SplashScreen
-} from '../../../screenobjects/all-screens';
-import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
-import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
+import { EmailScreen, SplashScreen } from '../../../screenobjects/all-screens';
+import MailFolderScreen from '../../../screenobjects/mail-folder.screen';
+import SetupKeyScreen from '../../../screenobjects/setup-key.screen';
 
 describe('SETUP: ', () => {
-
   it('respects in_memory_pass_phrase_session_length and passphrase expire in that seconds', async () => {
-
     const mockApi = new MockApi();
     const testMessageSubject = 'Message with cc and multiple recipients and text attachment';
     const processArgs = CommonData.mockProcessArgs;
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = {
-      returnKeys: [ekmKeySamples.e2e.prv]
-    }
+      returnKeys: [ekmKeySamples.e2e.prv],
+    };
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
       messages: [testMessageSubject],
     });
@@ -41,8 +36,8 @@ describe('SETUP: ', () => {
       mockApi.fesConfig = {
         clientConfiguration: {
           ...MockApiConfig.defaultEnterpriseFesConfiguration.clientConfiguration,
-          in_memory_pass_phrase_session_length: 5
-        }
+          in_memory_pass_phrase_session_length: 5,
+        },
       };
       await AppiumHelper.restartApp(processArgs);
       await MailFolderScreen.clickOnEmailBySubject(testMessageSubject);

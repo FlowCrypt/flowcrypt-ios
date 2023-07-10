@@ -8,62 +8,59 @@ import { expectContains, throwIfNotGetMethod } from '../../lib/mock-util';
 
 export class FesHttpErr extends HttpErr {
   public formatted = (): unknown => {
-    return { // follows FES error response format
-      "code": this.statusCode,
-      "message": `message:${this.message}`,
-      "details": `details:${this.message}`
-    }
-  }
+    return {
+      // follows FES error response format
+      code: this.statusCode,
+      message: `message:${this.message}`,
+      details: `details:${this.message}`,
+    };
+  };
 }
 
 export class FesWrongFormatHttpErr extends HttpErr {
   public formatted = (): unknown => {
     return {
-      "wrongFieldError": {
-        "wrongFieldCode": this.statusCode,
-        "wrongFieldMessage": this.message,
-      }
-    }
-  }
+      wrongFieldError: {
+        wrongFieldCode: this.statusCode,
+        wrongFieldMessage: this.message,
+      },
+    };
+  };
 }
 
 export class FesPlainHttpErr extends HttpErr {
   public formatted = (): unknown => {
-    return this.message
-  }
+    return this.message;
+  };
 }
 
-export const getMockFesEndpoints = (
-  mockConfig: MockConfig,
-  fesConfig: FesConfig | undefined
-): HandlersDefinition => {
-
+export const getMockFesEndpoints = (mockConfig: MockConfig, fesConfig: FesConfig | undefined): HandlersDefinition => {
   if (!fesConfig) {
     return {};
   }
 
   return {
-    '/fes/api/': async ({ }, req) => {
+    '/fes/api/': async ({}, req) => {
       throwErrorIfConfigSaysSo(fesConfig);
       throwIfNotGetMethod(req);
       return {
-        "vendor": "Mock",
-        "service": "external-service",
-        "orgId": "standardsubdomainfes.test",
-        "version": "MOCK",
-        "apiVersion": 'v1',
+        vendor: 'Mock',
+        service: 'external-service',
+        orgId: 'standardsubdomainfes.test',
+        version: 'MOCK',
+        apiVersion: 'v1',
       };
     },
-    '/fes/api/v1/client-configuration': async ({ }, req) => {
+    '/fes/api/v1/client-configuration': async ({}, req) => {
       throwErrorIfConfigSaysSo(fesConfig);
       throwIfNotGetMethod(req);
       return { clientConfiguration: fesConfig.clientConfiguration || {} };
     },
-    '/fes/api/v1/message/new-reply-token': async ({ }, req) => {
+    '/fes/api/v1/message/new-reply-token': async ({}, req) => {
       throwErrorIfConfigSaysSo(fesConfig);
       if (req.method === 'POST') {
         authenticate(req);
-        return { 'replyToken': 'mock-fes-reply-token' };
+        return { replyToken: 'mock-fes-reply-token' };
       }
       throw new FesHttpErr('Not Found', Status.NOT_FOUND);
     },
@@ -78,25 +75,25 @@ export const getMockFesEndpoints = (
         expectContains(body, '"bcc":["bcc@example.com"]');
         authenticate(req);
         expectContains(body, '"from":"user@disablefesaccesstoken.test:8001"');
-        return { 'url': `${mockConfig}/message/FES-MOCK-MESSAGE-ID` };
+        return { url: `${mockConfig}/message/FES-MOCK-MESSAGE-ID` };
       }
       throw new FesHttpErr('Not Found', Status.NOT_FOUND);
     },
   };
-}
+};
 
 const throwErrorIfConfigSaysSo = (config: FesConfig) => {
   if (config.returnError) {
     switch (config.returnError.format) {
-      case "wrong-text":
+      case 'wrong-text':
         throw new FesPlainHttpErr(config.returnError.message, config.returnError.code);
-      case "wrong-json":
+      case 'wrong-json':
         throw new FesWrongFormatHttpErr(config.returnError.message, config.returnError.code);
       default:
         throw new FesHttpErr(config.returnError.message, config.returnError.code);
     }
   }
-}
+};
 
 const authenticate = (req: IncomingMessage): string => {
   const jwt = (req.headers.authorization || '').replace('Bearer ', '');

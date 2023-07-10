@@ -1,15 +1,9 @@
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  EmailScreen
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, EmailScreen } from '../../../screenobjects/all-screens';
 
 describe('INBOX: ', () => {
-
   it('check "archive thread" too aggressive', async () => {
     const mockApi = new MockApi();
 
@@ -22,8 +16,8 @@ describe('INBOX: ', () => {
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
-        [MockUserList.e2e.email]: MockUserList.e2e.pub!
-      }
+        [MockUserList.e2e.email]: MockUserList.e2e.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -40,7 +34,7 @@ describe('INBOX: ', () => {
       await MailFolderScreen.checkEmailIsNotDisplayed(testMessage);
 
       await MailFolderScreen.refreshMailList();
-      // When new message is arrived thread should be displayed      
+      // When new message is arrived thread should be displayed
       await MailFolderScreen.clickOnEmailBySubject(testMessage);
     });
   });

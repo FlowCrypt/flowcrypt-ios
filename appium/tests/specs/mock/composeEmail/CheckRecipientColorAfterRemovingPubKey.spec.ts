@@ -6,16 +6,15 @@ import {
   ContactPublicKeyScreen,
   SettingsScreen,
   MenuBarScreen,
-  PublicKeyDetailsScreen
+  PublicKeyDetailsScreen,
 } from '../../../screenobjects/all-screens';
 
-import PublicKeyHelper from "../../../helpers/PublicKeyHelper";
+import PublicKeyHelper from '../../../helpers/PublicKeyHelper';
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('check recipient color after removing public key from settings', async () => {
     const mockApi = new MockApi();
     const contact = MockUserList.dmitry;
@@ -27,8 +26,8 @@ describe('COMPOSE EMAIL: ', () => {
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
-        [contact.email]: contact.pub!
-      }
+        [contact.email]: contact.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {

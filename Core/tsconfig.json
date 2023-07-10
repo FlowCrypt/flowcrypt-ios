@@ -2,10 +2,7 @@
   "compilerOptions": {
     "target": "es2022",
     "module": "commonjs",
-    "lib": [
-      "es2022",
-      "dom"
-    ],
+    "lib": ["es2022", "dom"],
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -21,16 +18,8 @@
     "outDir": "./build/ts",
     "baseUrl": "./",
     "traceResolution": false,
-    "typeRoots": [
-      "./source/core/types/",
-      "./node_modules/@types/"
-    ]
+    "typeRoots": ["./source/core/types/", "./node_modules/@types/"]
   },
-  "include": [
-    "./source/**/*.ts"
-  ],
-  "exclude": [
-    "**/build/**",
-    "**/node_modules/**"
-  ]
+  "include": ["./source/**/*.ts"],
+  "exclude": ["**/build/**", "**/node_modules/**"]
 }

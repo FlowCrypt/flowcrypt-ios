@@ -9,8 +9,9 @@ const path = {
 // bare
 const bareDepsSrc = fs.readFileSync(path.bareDepsBundle).toString();
 const bareEntrypointSrc = fs
-  .readFileSync(path.bareEntrypointBundle).toString()
-  .replace("\"[BUILD_REPLACEABLE_VERSION]\"", 'APP_VERSION');
+  .readFileSync(path.bareEntrypointBundle)
+  .toString()
+  .replace('"[BUILD_REPLACEABLE_VERSION]"', 'APP_VERSION');
 
 // final (node, bare, dev)
 const finalBareSrc = `

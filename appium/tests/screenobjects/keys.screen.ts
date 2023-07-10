@@ -1,10 +1,7 @@
 import BaseScreen from './base.screen';
-import ElementHelper from "../helpers/ElementHelper";
-import { KeyDetailInfo } from "../../api-mocks/apis/ekm/ekm-endpoints";
-import {
-  MenuBarScreen,
-  SettingsScreen
-} from '../screenobjects/all-screens';
+import ElementHelper from '../helpers/ElementHelper';
+import { KeyDetailInfo } from '../../api-mocks/apis/ekm/ekm-endpoints';
+import { MenuBarScreen, SettingsScreen } from '../screenobjects/all-screens';
 
 const SELECTORS = {
   KEYS_HEADER: '~aid-navigation-item-keys',
@@ -18,7 +15,7 @@ const SELECTORS = {
   SHARE_BUTTON: '~aid-key-share',
   SHOW_PRIVATE_KEY_BUTTON: '~aid-key-private-info',
   BACK_BUTTON: '~aid-back-button',
-  EMPTY_VIEW: '~aid-key-empty-view'
+  EMPTY_VIEW: '~aid-key-empty-view',
 };
 
 class KeysScreen extends BaseScreen {
@@ -67,22 +64,22 @@ class KeysScreen extends BaseScreen {
   }
 
   get backButton() {
-    return $(SELECTORS.BACK_BUTTON)
+    return $(SELECTORS.BACK_BUTTON);
   }
 
   get emptyView() {
-    return $(SELECTORS.EMPTY_VIEW)
+    return $(SELECTORS.EMPTY_VIEW);
   }
 
   checkIfKeysAreEmpty = async () => {
     await ElementHelper.waitElementVisible(await this.emptyView);
-  }
+  };
 
   checkKeysScreen = async (keys: KeyDetailInfo[]) => {
     await (await this.keysHeader).waitForDisplayed();
     await (await this.addButton).waitForDisplayed({ reverse: true });
     await this.checkKeys(keys);
-  }
+  };
 
   private checkKeys = async (keys: KeyDetailInfo[]) => {
     expect((await this.fingerPrint).length).toEqual(keys.length);
@@ -92,11 +89,11 @@ class KeysScreen extends BaseScreen {
       expect(await (await this.nameAndEmail)[index].getValue()).toEqual(key.renderedPrimaryUid ?? '');
       expect(await (await this.dateCreated)[index].getValue()).toEqual(key.renderedDateCreated ?? '');
     }
-  }
+  };
 
   clickOnKey = async (index = 0) => {
     await ElementHelper.waitAndClick((await this.nameAndEmail)[index]);
-  }
+  };
 
   checkSelectedKeyScreen = async () => {
     await (await this.showPublicKeyButton).waitForDisplayed();
@@ -104,21 +101,21 @@ class KeysScreen extends BaseScreen {
     await (await this.showKeyDetailsButton).waitForDisplayed();
     await (await this.shareButton).waitForDisplayed();
     await (await this.copyToClipboardButton).waitForDisplayed();
-  }
+  };
 
   clickOnShowPublicKey = async () => {
     await ElementHelper.waitAndClick(await this.showPublicKeyButton);
-  }
+  };
 
   clickBackButton = async () => {
     await this.backButton.click();
-  }
+  };
 
   openScreenFromSideMenu = async () => {
     await MenuBarScreen.clickMenuBtn();
     await MenuBarScreen.clickSettingsButton();
     await SettingsScreen.clickOnSettingItem('Keys');
-  }
+  };
 }
 
 export default new KeysScreen();

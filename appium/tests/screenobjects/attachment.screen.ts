@@ -1,11 +1,11 @@
 import BaseScreen from './base.screen';
-import ElementHelper from "../helpers/ElementHelper";
+import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
   SYSTEM_BACK_BTN: '~Back',
   SAVE_BTN: '~aid-save-attachment-to-device',
-  CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController 
+  CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController
 };
 
 class AttachmentScreen extends BaseScreen {
@@ -26,28 +26,28 @@ class AttachmentScreen extends BaseScreen {
   }
 
   get cancelButton() {
-    return $(SELECTORS.CANCEL_BTN)
+    return $(SELECTORS.CANCEL_BTN);
   }
 
   checkDownloadPopUp = async (name: string) => {
     const attachmentTextField = $('-ios class chain:**/XCUIElementTypeTextField'); // textfield from system file dialog
     await ElementHelper.waitElementVisible(await attachmentTextField);
     expect(await attachmentTextField.getValue()).toEqual(name);
-  }
+  };
 
   clickBackButton = async () => {
     await ElementHelper.waitAndClick(await this.backButton);
-  }
+  };
 
   clickSystemBackButton = async () => {
-    // Due to a issue in SemaphoreCI environment, a single back button click does not yield the expected behavior. 
+    // Due to a issue in SemaphoreCI environment, a single back button click does not yield the expected behavior.
     // Therefore, we have implemented a mechanism to continuously click the system back button until cancel button appears.
     await ElementHelper.clickUntilExpectedElementAppears(await this.systemBackButton, await this.cancelButton, 10);
-  }
+  };
 
   clickCancelButton = async () => {
     await ElementHelper.waitAndClick(await this.cancelButton);
-  }
+  };
 
   checkAttachment = async (name: string) => {
     const attachmentHeader = `-ios class chain:**/XCUIElementTypeNavigationBar[\`name == "${name}"\`]`;
@@ -55,11 +55,11 @@ class AttachmentScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.backButton);
     await ElementHelper.waitElementVisible(await $(attachmentHeader));
     await ElementHelper.waitElementVisible(await this.saveButton);
-  }
+  };
 
   clickSaveButton = async () => {
     await ElementHelper.waitAndClick(await this.saveButton);
-  }
+  };
 }
 
 export default new AttachmentScreen();

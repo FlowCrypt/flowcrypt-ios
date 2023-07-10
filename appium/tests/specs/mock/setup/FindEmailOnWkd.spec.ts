@@ -1,15 +1,12 @@
 import { MockApi } from 'api-mocks/mock';
-import {
-  SplashScreen,
-} from '../../../screenobjects/all-screens';
-import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
-import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
-import NewMessageScreen from "../../../screenobjects/new-message.screen";
+import { SplashScreen } from '../../../screenobjects/all-screens';
+import SetupKeyScreen from '../../../screenobjects/setup-key.screen';
+import MailFolderScreen from '../../../screenobjects/mail-folder.screen';
+import NewMessageScreen from '../../../screenobjects/new-message.screen';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('SETUP: ', () => {
-
   it('can find email on wkd', async () => {
     const mockApi = new MockApi();
     const recipient = MockUserList.dmitry.email;
@@ -20,8 +17,8 @@ describe('SETUP: ', () => {
     mockApi.wkdConfig = {
       servedPubkeys: {
         [recipientPrefix]: MockUserList.dmitry.pub!,
-      }
-    }
+      },
+    };
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();

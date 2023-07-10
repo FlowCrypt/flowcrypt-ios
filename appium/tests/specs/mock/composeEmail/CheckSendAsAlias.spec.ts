@@ -2,16 +2,10 @@ import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 import { CommonData } from 'tests/data';
-import {
-  MailFolderScreen, NewMessageScreen,
-  SetupKeyScreen,
-  SplashScreen
-} from '../../../screenobjects/all-screens';
+import { MailFolderScreen, NewMessageScreen, SetupKeyScreen, SplashScreen } from '../../../screenobjects/all-screens';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('user should be able to send email with alias', async () => {
-
     const recipient = MockUserList.robot;
     const emailSubject = CommonData.alias.subject;
     const aliasEmail = CommonData.alias.email;
@@ -22,22 +16,24 @@ describe('COMPOSE EMAIL: ', () => {
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      aliases: [{
-        sendAsEmail: aliasEmail,
-        displayName: 'Demo Alias',
-        replyToAddress: aliasEmail,
-        signature: '',
-        isDefault: false,
-        isPrimary: false,
-        treatAsAlias: false,
-        verificationStatus: 'accepted'
-      }],
+      aliases: [
+        {
+          sendAsEmail: aliasEmail,
+          displayName: 'Demo Alias',
+          replyToAddress: aliasEmail,
+          signature: '',
+          isDefault: false,
+          isPrimary: false,
+          treatAsAlias: false,
+          verificationStatus: 'accepted',
+        },
+      ],
       contacts: [recipient],
     });
     mockApi.attesterConfig = {
       servedPubkeys: {
         [recipient.email]: recipient.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {

@@ -1,5 +1,5 @@
 import BaseScreen from './base.screen';
-import ElementHelper from "../helpers/ElementHelper";
+import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   ENTER_YOUR_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
@@ -17,24 +17,24 @@ class RefreshKeyScreen extends BaseScreen {
   }
 
   get okButton() {
-    return $(SELECTORS.OK_BUTTON)
+    return $(SELECTORS.OK_BUTTON);
   }
 
   get cancelButton() {
-    return $(SELECTORS.CANCEL_BUTTON)
+    return $(SELECTORS.CANCEL_BUTTON);
   }
 
   fillPassPhrase = async (passPhrase: string) => {
     await ElementHelper.waitClickAndType(await this.enterPassPhraseField, passPhrase);
-  }
+  };
 
   cancelRefresh = async () => {
-    await ElementHelper.waitAndClick(await this.cancelButton)
-  }
+    await ElementHelper.waitAndClick(await this.cancelButton);
+  };
 
   clickOkButton = async () => {
     await ElementHelper.waitAndClick(await this.okButton);
-  }
+  };
 }
 
 export default new RefreshKeyScreen();

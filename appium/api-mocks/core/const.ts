@@ -31,6 +31,6 @@ export const gmailBackupSearchQuery = (acctEmail: string) => {
     'to:' + acctEmail,
     '(subject:"' + GMAIL_RECOVERY_EMAIL_SUBJECTS.join('" OR subject: "') + '")',
     '-is:spam',
-    '-is:trash'
+    '-is:trash',
   ].join(' ');
 };

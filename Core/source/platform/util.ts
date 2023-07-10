@@ -33,7 +33,7 @@ export const iso2022jpToUtf = (content: Buf) => {
  */
 export const strToHex = (str: string): string => {
   if (str === null) {
-    return "";
+    return '';
   }
   const r = [];
   const e = str.length;
@@ -42,9 +42,9 @@ export const strToHex = (str: string): string => {
   while (c < e) {
     h = str.charCodeAt(c++).toString(16);
     while (h.length < 2) {
-      h = "0" + h;
+      h = '0' + h;
     }
-    r.push("" + h);
+    r.push('' + h);
   }
   return r.join('');
 };
@@ -70,7 +70,7 @@ export const getKeyExpirationTimeForCapabilities = async (
   key: Key,
   capabilities?: 'encrypt' | 'encrypt_sign' | 'sign' | null,
   keyId?: KeyID | undefined,
-  userId?: UserID | undefined
+  userId?: UserID | undefined,
 ): Promise<Date | null | typeof Infinity> => {
   const primaryUser = await key.getPrimaryUser(undefined, userId, undefined);
   if (!primaryUser) throw new Error('Could not find primary user');
@@ -82,24 +82,34 @@ export const getKeyExpirationTimeForCapabilities = async (
   let expiry = keyExpiry < sigExpiry ? keyExpiry : sigExpiry;
   if (capabilities === 'encrypt' || capabilities === 'encrypt_sign') {
     const encryptionKey =
-      (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => { return undefined; }))
-      || (await key.getEncryptionKey(keyId, null, userId).catch(() => { return undefined; }));
+      (await key.getEncryptionKey(keyId, new Date(expiry), userId).catch(() => {
+        return undefined;
+      })) ||
+      (await key.getEncryptionKey(keyId, null, userId).catch(() => {
+        return undefined;
+      }));
     if (!encryptionKey) return null;
     // for some reason, "instanceof Key" didn't work: 'Right-hand side of \'instanceof\' is not an object'
-    const encryptionKeyExpiry = 'bindingSignatures' in encryptionKey
-      ? getSubkeyExpirationTime(encryptionKey)
-      : (await encryptionKey.getExpirationTime(userId)) ?? 0;
+    const encryptionKeyExpiry =
+      'bindingSignatures' in encryptionKey
+        ? getSubkeyExpirationTime(encryptionKey)
+        : (await encryptionKey.getExpirationTime(userId)) ?? 0;
     if (encryptionKeyExpiry < expiry) expiry = encryptionKeyExpiry;
   }
   if (capabilities === 'sign' || capabilities === 'encrypt_sign') {
     const signatureKey =
-      (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => { return undefined; }))
-      || (await key.getSigningKey(keyId, null, userId).catch(() => { return undefined; }));
+      (await key.getSigningKey(keyId, new Date(expiry), userId).catch(() => {
+        return undefined;
+      })) ||
+      (await key.getSigningKey(keyId, null, userId).catch(() => {
+        return undefined;
+      }));
     if (!signatureKey) return null;
     // could be the same as above, so checking for property instead of using "instanceof"
-    const signatureKeyExpiry = 'bindingSignatures' in signatureKey
-      ? getSubkeyExpirationTime(signatureKey)
-      : (await signatureKey.getExpirationTime(userId)) ?? 0;
+    const signatureKeyExpiry =
+      'bindingSignatures' in signatureKey
+        ? getSubkeyExpirationTime(signatureKey)
+        : (await signatureKey.getExpirationTime(userId)) ?? 0;
     if (signatureKeyExpiry < expiry) expiry = signatureKeyExpiry;
   }
   return expiry;

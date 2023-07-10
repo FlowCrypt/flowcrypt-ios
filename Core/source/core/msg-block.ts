@@ -10,12 +10,21 @@ import { KeyDetails } from './pgp-key';
 
 export type KeyBlockType = 'publicKey' | 'privateKey';
 export type ReplaceableMsgBlockType = KeyBlockType | 'signedMsg' | 'encryptedMsg' | 'encryptedMsgLink';
-export type MsgBlockType = ReplaceableMsgBlockType | 'plainText' | 'decryptedText'
-  | 'plainHtml' | 'decryptedHtml' | 'plainAtt' | 'encryptedAtt' | 'decryptedAtt'
-  | 'encryptedAttLink' | 'decryptErr' | 'verifiedMsg' | 'signedHtml';
+export type MsgBlockType =
+  | ReplaceableMsgBlockType
+  | 'plainText'
+  | 'decryptedText'
+  | 'plainHtml'
+  | 'decryptedHtml'
+  | 'plainAtt'
+  | 'encryptedAtt'
+  | 'decryptedAtt'
+  | 'encryptedAttLink'
+  | 'decryptErr'
+  | 'verifiedMsg'
+  | 'signedHtml';
 
 export class MsgBlock {
-
   public constructor(
     public type: MsgBlockType,
     public content: string | Buf,
@@ -43,5 +52,4 @@ export class MsgBlock {
   public static fromAtt = (type: MsgBlockType, content: string, attMeta: AttMeta): MsgBlock => {
     return new MsgBlock(type, content, true, undefined, undefined, attMeta);
   };
-
 }

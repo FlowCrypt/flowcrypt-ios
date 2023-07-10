@@ -4,13 +4,14 @@ import { MockUserList } from 'api-mocks/mock-data';
 import { CommonData } from 'tests/data';
 import {
   EmailScreen,
-  MailFolderScreen, MenuBarScreen, NewMessageScreen,
+  MailFolderScreen,
+  MenuBarScreen,
+  NewMessageScreen,
   SetupKeyScreen,
-  SplashScreen
+  SplashScreen,
 } from '../../../screenobjects/all-screens';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('check drafts functionality', async () => {
     const mockApi = new MockApi();
 
@@ -33,7 +34,7 @@ describe('COMPOSE EMAIL: ', () => {
     mockApi.attesterConfig = {
       servedPubkeys: {
         [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {

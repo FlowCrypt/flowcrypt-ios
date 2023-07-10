@@ -1,6 +1,6 @@
 import BaseScreen from './base.screen';
-import ElementHelper from "../helpers/ElementHelper";
-import TouchHelper from "../helpers/TouchHelper";
+import ElementHelper from '../helpers/ElementHelper';
+import TouchHelper from '../helpers/TouchHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -33,37 +33,37 @@ class EmailProviderScreen extends BaseScreen {
   }
 
   get passwordField() {
-    return $(SELECTORS.PASSWORD_FIELD)
+    return $(SELECTORS.PASSWORD_FIELD);
   }
 
   get returnButton() {
-    return $(SELECTORS.RETURN_BUTTON)
+    return $(SELECTORS.RETURN_BUTTON);
   }
 
   checkEmailProviderScreen = async () => {
     await expect(this.backButton).toBeDisplayed();
     await expect(this.emailProviderHeader).toBeDisplayed();
     await expect(this.connectButton).toBeDisplayed();
-  }
+  };
 
   fillEmail = async (email: string) => {
     await ElementHelper.waitClickAndType(await this.emailField, email);
     await browser.pause(500);
-  }
+  };
 
   fillPassword = async (password: string) => {
     await ElementHelper.waitClickAndType(await this.passwordField, password);
     await browser.pause(500); // stability sleep
-  }
+  };
 
   clickConnectBtn = async () => {
     await TouchHelper.scrollUp();
     await ElementHelper.waitAndClick(await this.connectButton);
-  }
+  };
 
   clickReturnBtn = async () => {
     await ElementHelper.waitAndClick(await this.returnButton);
-  }
+  };
 }
 
 export default new EmailProviderScreen();

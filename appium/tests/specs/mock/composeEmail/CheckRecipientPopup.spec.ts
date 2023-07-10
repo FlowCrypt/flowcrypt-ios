@@ -5,7 +5,6 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('check added recipient popup', async () => {
     const recipient1 = MockUserList.dmitry;
     const recipient2 = MockUserList.expired;
@@ -23,7 +22,7 @@ describe('COMPOSE EMAIL: ', () => {
         [recipient1.email]: recipient1.pub!,
         [recipient2.email]: recipient2.pub!,
         [recipient3.email]: recipient3.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {

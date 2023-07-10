@@ -19,7 +19,7 @@ export const throwIfNotGetMethod = (req: IncomingMessage) => {
   if (req.method !== 'GET') {
     throw new HttpErr('Unsupported method', Status.BAD_REQUEST);
   }
-}
+};
 
 export const lousyRandom = () => Math.random().toString(36).substring(2);
 

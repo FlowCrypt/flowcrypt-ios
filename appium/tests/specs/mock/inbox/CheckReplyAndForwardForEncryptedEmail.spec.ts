@@ -12,9 +12,7 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
-
   it('user is able to reply or forward email and check info from composed email', async () => {
-
     const senderEmail = CommonData.encryptedEmailWithAttachment.sender;
     const senderName = CommonData.encryptedEmailWithAttachment.senderName;
     const recipientName = CommonData.encryptedEmailWithAttachment.recipientName;
@@ -39,7 +37,7 @@ describe('INBOX: ', () => {
         [MockUserList.flowcryptCompatibility.email]: MockUserList.flowcryptCompatibility.pub!,
         [MockUserList.demo.email]: MockUserList.demo.pub!,
         [MockUserList.dmitry.email]: MockUserList.dmitry.pub!,
-      }
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -56,7 +54,7 @@ describe('INBOX: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [senderName],
         subject: replySubject,
-        message: quoteText
+        message: quoteText,
       });
       await NewMessageScreen.clickBackButton();
 
@@ -68,7 +66,7 @@ describe('INBOX: ', () => {
         recipients: [recipientName, senderName],
         subject: replySubject,
         message: quoteText,
-        cc: [ccName]
+        cc: [ccName],
       });
       await NewMessageScreen.clickBackButton();
 
@@ -79,7 +77,7 @@ describe('INBOX: ', () => {
         attachmentName,
         recipients: [],
         subject: forwardSubject,
-        message: quoteText
+        message: quoteText,
       });
       await NewMessageScreen.deleteAttachment();
     });

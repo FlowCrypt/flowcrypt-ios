@@ -1,17 +1,14 @@
 import { MockApi } from 'api-mocks/mock';
-import {
-  SplashScreen,
-} from '../../../screenobjects/all-screens';
-import SetupKeyScreen from "../../../screenobjects/setup-key.screen";
-import MailFolderScreen from "../../../screenobjects/mail-folder.screen";
-import NewMessageScreen from "../../../screenobjects/new-message.screen";
+import { SplashScreen } from '../../../screenobjects/all-screens';
+import SetupKeyScreen from '../../../screenobjects/setup-key.screen';
+import MailFolderScreen from '../../../screenobjects/mail-folder.screen';
+import NewMessageScreen from '../../../screenobjects/new-message.screen';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 import AppiumHelper from 'tests/helpers/AppiumHelper';
 import { CommonData } from 'tests/data';
 
 describe('SETUP: ', () => {
-
   it('prefers wkd keys over attester keys', async () => {
     const mockApi = new MockApi();
     const recipient = MockUserList.demo;
@@ -23,8 +20,8 @@ describe('SETUP: ', () => {
     mockApi.attesterConfig = {
       servedPubkeys: {
         [recipient.email]: recipient.pub!,
-      }
-    }
+      },
+    };
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
@@ -37,7 +34,7 @@ describe('SETUP: ', () => {
       mockApi.wkdConfig = {
         servedPubkeys: {
           [recipientPrefix]: recipient.pubOther!,
-        }
+        },
       };
 
       await AppiumHelper.restartApp(processArgs);

@@ -3,7 +3,6 @@
 'use strict';
 
 export class Catch {
-
   public static reportErr = (e: Error) => {
     console.error(e); // core errors that were not re-thrown are not so interesting as of 2018
   };
@@ -19,5 +18,4 @@ export class Catch {
       return undefined;
     }
   };
-
 }

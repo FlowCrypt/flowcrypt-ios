@@ -11,7 +11,6 @@ let KEY_CACHE_WIPE_TIMEOUT: NodeJS.Timeout;
 const keyLongid = (k: Key) => strToHex(k.getKeyID().bytes).toUpperCase();
 
 export class Store {
-
   public static decryptedKeyCacheSet = (k: Key) => {
     Store.keyCacheRenewExpiry();
     KEY_CACHE[keyLongid(k)] = k;

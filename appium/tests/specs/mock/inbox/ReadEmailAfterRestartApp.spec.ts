@@ -1,9 +1,4 @@
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  EmailScreen
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, EmailScreen } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
@@ -12,9 +7,7 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { MockUserList } from 'api-mocks/mock-data';
 
 describe('INBOX: ', () => {
-
   it('user is able to see plain email without setting pass phrase after restart app', async () => {
-
     const processArgs = CommonData.mockProcessArgs;
     const senderName = MockUserList.dmitry.name;
     const emailSubject = CommonData.simpleEmail.subject;

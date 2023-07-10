@@ -1,18 +1,12 @@
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  NewMessageScreen
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, NewMessageScreen } from '../../../screenobjects/all-screens';
 
 import { CommonData } from '../../../data';
-import BaseScreen from "../../../screenobjects/base.screen";
+import BaseScreen from '../../../screenobjects/base.screen';
 import { MockApi } from 'api-mocks/mock';
 import { MockUserList } from 'api-mocks/mock-data';
 import { MockApiConfig } from 'api-mocks/mock-config';
 
 describe('COMPOSE EMAIL: ', () => {
-
   it('sending message to user with expired/revoked public key produces modal', async () => {
     const contactWithExpiredKey = MockUserList.expired;
     const contactWithRevokedKey = MockUserList.revoked;
@@ -32,8 +26,8 @@ describe('COMPOSE EMAIL: ', () => {
     mockApi.attesterConfig = {
       servedPubkeys: {
         [contactWithExpiredKey.email]: contactWithExpiredKey.pub!,
-        [contactWithRevokedKey.email]: contactWithRevokedKey.pub!
-      }
+        [contactWithRevokedKey.email]: contactWithRevokedKey.pub!,
+      },
     };
 
     await mockApi.withMockedApis(async () => {
@@ -46,7 +40,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [contactWithExpiredKey.name],
         subject: emailSubject,
-        message: emailText
+        message: emailText,
       });
       await NewMessageScreen.clickSendButton();
 
@@ -61,7 +55,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [contactWithRevokedKey.name],
         subject: emailSubject,
-        message: emailText
+        message: emailText,
       });
       await NewMessageScreen.clickSendButton();
 

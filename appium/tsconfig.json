@@ -1,19 +1,16 @@
 {
   "ts-node": {
     "transpileOnly": true,
-    "require": [
-      "tsconfig-paths/register"
-    ]
+    "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
     "outDir": "./.tsbuild/",
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "module": "commonjs",
     "target": "ES2022",
     "types": [
-      "node", "jest",
+      "node",
+      "jest",
       "@wdio/globals/types",
       "@wdio/jasmine-framework",
       "@wdio/junit-reporter",
@@ -35,9 +32,5 @@
     "skipLibCheck": true,
     "baseUrl": "."
   },
-  "include": [
-    "./api-mocks/**/*.ts",
-    "./config/*.ts",
-    "./tests/**/*.ts",
-  ]
+  "include": ["./api-mocks/**/*.ts", "./config/*.ts", "./tests/**/*.ts"]
 }

@@ -1,16 +1,10 @@
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  MailFolderScreen,
-  EmailScreen,
-} from '../../../screenobjects/all-screens';
+import { SplashScreen, SetupKeyScreen, MailFolderScreen, EmailScreen } from '../../../screenobjects/all-screens';
 import { CommonData } from '../../../data';
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { GoogleMockMessage } from 'api-mocks/apis/google/google-messages';
 
 describe('INBOX: ', () => {
-
   it('check rich text email rendering', async () => {
     const sender = CommonData.richTextMessage.sender;
     const subject = CommonData.richTextMessage.subject;

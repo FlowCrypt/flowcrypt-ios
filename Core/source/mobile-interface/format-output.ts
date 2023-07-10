@@ -11,14 +11,21 @@ import { Xss } from '../platform/xss';
 import { VerifyRes } from '../core/pgp-msg';
 
 export type Buffers = (Buf | Uint8Array)[];
-export type EndpointRes = { json: Record<string, unknown>, data: Buf | Uint8Array };
+export type EndpointRes = { json: Record<string, unknown>; data: Buf | Uint8Array };
 
 export const isContentBlock = (t: MsgBlockType) => {
-  return t === 'plainText' || t === 'decryptedText' || t === 'plainHtml'
-    || t === 'decryptedHtml' || t === 'signedMsg' || t === 'verifiedMsg';
+  return (
+    t === 'plainText' ||
+    t === 'decryptedText' ||
+    t === 'plainHtml' ||
+    t === 'decryptedHtml' ||
+    t === 'signedMsg' ||
+    t === 'verifiedMsg'
+  );
 };
 
-const seamlessLockBg = 'iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAMAAAAPdrEwAAAAh1BMVEXw8PD////' +
+const seamlessLockBg =
+  'iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAMAAAAPdrEwAAAAh1BMVEXw8PD////' +
   'w8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8' +
   'PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PDw8PD' +
   '7MuHIAAAALXRSTlMAAAECBAcICw4QEhUZIyYqMTtGTV5kdn2Ii5mfoKOqrbG0uL6/' +
@@ -34,8 +41,8 @@ const seamlessLockBg = 'iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAMAAAAPdrEwAAAAh1BMVEXw
   'veoKUIledQWoRK+6AlSiV13BP+/VVbky7Xq1AAAAAElFTkSuQmCC';
 
 const fmtMsgContentBlockAsHtml = (dirtyContent: string, frameColor: 'green' | 'gray' | 'red' | 'plain') => {
-  const generalCss = 'background: white;padding-left: 8px;min-height: 50px;padding-top: 4px;' +
-    'padding-bottom: 4px;width: 100%;';
+  const generalCss =
+    'background: white;padding-left: 8px;min-height: 50px;padding-top: 4px;' + 'padding-bottom: 4px;width: 100%;';
   let frameCss: string;
   if (frameColor === 'green') {
     frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #31A217;border-right: none;' +
@@ -44,14 +51,18 @@ const fmtMsgContentBlockAsHtml = (dirtyContent: string, frameColor: 'green' | 'g
     frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #d14836;border-right: none;`;
   } else if (frameColor === 'plain') {
     frameCss = `border: none;`;
-  } else { // gray
+  } else {
+    // gray
     frameCss = `border: 1px solid #f0f0f0;border-left: 8px solid #989898;border-right: none;`;
   }
-  return `<div class="MsgBlock ${frameColor}" style="${generalCss}${frameCss}">` +
-    `${Xss.htmlSanitizeKeepBasicTags(dirtyContent)}</div><!-- next MsgBlock -->\n`;
+  return (
+    `<div class="MsgBlock ${frameColor}" style="${generalCss}${frameCss}">` +
+    `${Xss.htmlSanitizeKeepBasicTags(dirtyContent)}</div><!-- next MsgBlock -->\n`
+  );
 };
 
-export const stripHtmlRootTags = (html: string) => { // todo - this is very rudimentary, use a proper parser
+export const stripHtmlRootTags = (html: string) => {
+  // todo - this is very rudimentary, use a proper parser
   html = html.replace(/<\/?html[^>]*>/g, ''); // remove opening and closing html tags
   html = html.replace(/<head[^>]*>.*<\/head>/g, ''); // remove the whole head section
   html = html.replace(/<\/?body[^>]*>/g, ''); // remove opening and closing body tags
@@ -80,7 +91,7 @@ const fillInlineHtmlImgs = (htmlContent: string, inlineImgsByCid: { [cid: string
   });
 };
 
-export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: MsgBlock, text: string } => {
+export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: MsgBlock; text: string } => {
   const msgContentAsHtml: string[] = [];
   const msgContentAsText: string[] = [];
   const contentBlocks = allContentBlocks.filter(b => !Mime.isPlainImgAtt(b));
@@ -147,13 +158,15 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
     const alt = `${inlineImg.attMeta?.name || '(unnamed image)'} - ${inlineImg.attMeta?.length ?? 0 / 1024}kb`;
     // in current usage, as used by `endpoints.ts`: `block.attMeta!.data`
     // actually contains base64 encoded data, not Uint8Array as the type claims
-    const inlineImgTag = `<img src="data:${inlineImg.attMeta?.type};` +
-      `base64,${inlineImg.attMeta?.data}" alt="${Xss.escape(alt)} " />`;
+    const inlineImgTag =
+      `<img src="data:${inlineImg.attMeta?.type};` + `base64,${inlineImg.attMeta?.data}" alt="${Xss.escape(alt)} " />`;
     msgContentAsHtml.push(fmtMsgContentBlockAsHtml(inlineImgTag, 'plain'));
     msgContentAsText.push(`[image: ${alt}]\n`);
   }
 
-  const contentBlock = MsgBlock.fromContent('plainHtml', `
+  const contentBlock = MsgBlock.fromContent(
+    'plainHtml',
+    `
     <!DOCTYPE html><html>
       <head>
         <meta name="viewport" content="width=device-width" />
@@ -165,7 +178,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
         </style>
       </head>
       <body>${msgContentAsHtml.join('')}</body>
-    </html>`
+    </html>`,
   );
   contentBlock.verifyRes = verifyRes;
   return { contentBlock, text: msgContentAsText.join('').trim() };
@@ -175,7 +188,7 @@ export const fmtContentBlock = (allContentBlocks: MsgBlock[]): { contentBlock: M
 export const fmtRes = (response: {}, data?: Buf | Uint8Array): EndpointRes => {
   return {
     json: response,
-    data: data || new Uint8Array(0)
+    data: data || new Uint8Array(0),
   };
 };
 
@@ -183,8 +196,8 @@ export const fmtErr = (e: Error): EndpointRes => {
   return fmtRes({
     error: {
       message: String(e),
-      stack: e && typeof e === 'object' ? e.stack || '' : ''
-    }
+      stack: e && typeof e === 'object' ? e.stack || '' : '',
+    },
   });
 };
 

@@ -5,11 +5,10 @@ import {
   SetupKeyScreen,
   MailFolderScreen,
   EmailScreen,
-  MenuBarScreen
+  MenuBarScreen,
 } from '../../../screenobjects/all-screens';
 
 describe('INBOX: ', () => {
-
   it('user is able to empty trash and delete all emails', async () => {
     const mockApi = new MockApi();
     const testMessageSubject = 'Signed and encrypted message';
