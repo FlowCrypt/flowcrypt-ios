@@ -97,6 +97,8 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
+    // swiftlint:enable cyclomatic_complexity
+
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         if case let .searchEmails(recipients) = state, let recipientType = selectedRecipientType {
             guard let section = sectionsList[safe: indexPath.section] else { return }

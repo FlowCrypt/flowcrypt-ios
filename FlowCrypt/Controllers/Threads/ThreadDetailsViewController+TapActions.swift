@@ -231,6 +231,8 @@ extension ThreadDetailsViewController {
         openComposeScreen(type: composeType)
     }
 
+    // swiftlint:enable cyclomatic_complexity function_body_length
+
     private func openComposeScreen(type: ComposeMessageInput.InputType) {
         Task {
             do {

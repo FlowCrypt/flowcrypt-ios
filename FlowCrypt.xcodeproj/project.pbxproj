@@ -2338,7 +2338,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				51A1A11E2906AFEA007F1188 /* PBXTargetDependency */,
+				95D83FBB2A5D4BED006FDC33 /* PBXTargetDependency */,
 				D2CDC3DC24052D0F002B045F /* PBXTargetDependency */,
 				D2CDC3E024052D50002B045F /* PBXTargetDependency */,
 			);
@@ -2464,8 +2464,8 @@
 				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
-				51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */,
 				51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
+				95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -2945,9 +2945,9 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		51A1A11E2906AFEA007F1188 /* PBXTargetDependency */ = {
+		95D83FBB2A5D4BED006FDC33 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 51A1A11D2906AFEA007F1188 /* SwiftLint */;
+			productRef = 95D83FBA2A5D4BED006FDC33 /* SwiftLintPlugin */;
 		};
 		9F2AC5CC267BE99E00F6149B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3800,14 +3800,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/lukepistrol/SwiftLintPlugin";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.4;
-			};
-		};
 		51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FlowCrypt/Texture/";
@@ -3872,6 +3864,14 @@
 				minimumVersion = 10.0.0;
 			};
 		};
+		95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/SwiftLint";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.52.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -3884,11 +3884,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
 			productName = GoogleAPIClientForREST_PeopleService;
-		};
-		51A1A11D2906AFEA007F1188 /* SwiftLint */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51A1A11C2906AFC4007F1188 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */;
-			productName = "plugin:SwiftLint";
 		};
 		51A1A12729070CDF007F1188 /* AsyncDisplayKit */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -3924,6 +3919,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
 			productName = RealmSwift;
+		};
+		95D83FBA2A5D4BED006FDC33 /* SwiftLintPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */;
+			productName = "plugin:SwiftLintPlugin";
 		};
 		9FBD69F7277B1E66002FC602 /* MBProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -80,6 +80,8 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
         }
     }
 
+    // swiftlint:enable cyclomatic_complexity
+
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         let part = self.parts[indexPath.row]
         switch part {
