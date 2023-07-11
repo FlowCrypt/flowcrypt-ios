@@ -3853,7 +3853,7 @@
 			repositoryURL = "https://github.com/google/google-api-objectivec-client-for-rest";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				minimumVersion = 3.1.0;
 			};
 		};
 		51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
@@ -3861,7 +3861,7 @@
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 6.0.0;
+				minimumVersion = 7.0.0;
 			};
 		};
 		51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
