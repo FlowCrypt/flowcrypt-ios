@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/google-api-objectivec-client-for-rest",
       "state" : {
-        "revision" : "0078161fcc2900ca06213a192bdfa5ece8ee58f1",
-        "version" : "2.0.1"
+        "revision" : "a330b7197b1cbece221b784a96ffeae441e8d064",
+        "version" : "3.1.0"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS",
       "state" : {
-        "revision" : "9c9b36af86a4dd3da16048a36cf37351e63ccfe1",
-        "version" : "6.2.4"
+        "revision" : "7932d33686c1dc4d7df7a919aae47361d1cdfda4",
+        "version" : "7.0.0"
       }
     },
     {
@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jpsim/SourceKitten.git",
       "state" : {
-        "revision" : "b6dc09ee51dfb0c66e042d2328c017483a1a5d56",
-        "version" : "0.34.1"
+        "revision" : "b1090ecd269dddd96bda0df24ca3f1aa78f33578",
+        "version" : "0.52.4"
       }
     },
     {
