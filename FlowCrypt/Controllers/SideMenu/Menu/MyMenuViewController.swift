@@ -181,26 +181,24 @@ extension MyMenuViewController {
 
     private func handleNewFolders(with folders: [FolderViewModel]) {
         hideSpinner()
-        let updatedFolders = folders.sorted(
-            by: { left, right in
+        let separator = FolderViewModel(name: "", path: "", image: nil, itemType: .separator, backgroundColor: nil, isHidden: nil)
+        let standardFolders = folders
+            .filter { GeneralConstants.Gmail.standardGmailPaths.contains($0.path) }
+            .sorted(by: { left, _ in
                 if left.path.caseInsensitiveCompare(Constants.inbox) == .orderedSame {
                     return true
                 }
-                if left.path.caseInsensitiveCompare(Constants.allMail) == .orderedSame {
-                    return true
-                }
-                // For user labels(not standard gmail labels) sort it alphabetically
-                let isLeftLabelStandard = GeneralConstants.Gmail.standardGmailPaths.contains(left.path)
-                let isRightLabelStandard = GeneralConstants.Gmail.standardGmailPaths.contains(right.path)
-                if !isLeftLabelStandard, !isRightLabelStandard {
-                    return left.name < right.name
-                }
                 return false
+            })
+        let notStandardFolders = folders
+            .filter { !GeneralConstants.Gmail.standardGmailPaths.contains($0.path) }
+            .filter { $0.isHidden == false }
+            .sorted { left, right in
+                return left.name < right.name
             }
-        ).filter { label in
-            let isStandardLabel = GeneralConstants.Gmail.standardGmailPaths.contains(label.path)
-            // hide user defined labels when labelListVisibility=hide
-            return isStandardLabel || label.isHidden == false
+        var updatedFolders = standardFolders + [separator]
+        if notStandardFolders.isNotEmpty {
+            updatedFolders += notStandardFolders + [separator]
         }
         // Only reload table node when folder items changed
         if updatedFolders != self.folders {
@@ -269,6 +267,14 @@ extension MyMenuViewController {
         case (.main, .accountAdding):
             return InfoCellNode(input: decorator.nodeForAccount(for: accounts[row], index: row))
         case (.main, .folders):
+            let folder = folders[safe: row]
+            if folder?.itemType == .separator {
+                let node = ASCellNode()
+                node.backgroundColor = .separator
+                node.style.flexGrow = 1.0
+                node.style.preferredSize.height = 0.5
+                return node
+            }
             return InfoCellNode(input: folders[safe: row].map(InfoCellNode.Input.init))
         case (.additional, .accountAdding):
             return InfoCellNode(input: .addAccount)
@@ -335,6 +341,8 @@ extension MyMenuViewController {
                     showAlert(message: error.errorMessage)
                 }
             }
+        default:
+            break
         }
     }
 
