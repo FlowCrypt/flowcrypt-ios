@@ -147,6 +147,9 @@ struct SetupImapViewDecorator {
         )
     }
 
+    // swiftlint:enable cyclomatic_complexity function_body_length
+
+    // swiftlint:disable cyclomatic_complexity function_body_length
     func stringFor(user: User, for section: SetupImapViewController.Section) -> NSAttributedString? {
         switch section {
         case let .account(part):
@@ -204,6 +207,8 @@ struct SetupImapViewDecorator {
             return nil
         }
     }
+
+    // swiftlint:enable cyclomatic_complexity function_body_length
 
     func pickerView(
         for section: SetupImapViewController.Section,

@@ -39,7 +39,6 @@ enum MessageLabel: Equatable, Hashable {
 
 // MARK: - IMAP Flags
 extension MessageLabel {
-    // swiftlint:disable cyclomatic_complexity
     init(imapFlag: MCOMessageFlag) {
         switch imapFlag {
         case .seen: self = .seen
