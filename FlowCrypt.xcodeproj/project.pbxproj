@@ -174,6 +174,7 @@
 		75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
+		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */; };
@@ -634,6 +635,7 @@
 		75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
+		9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSeparatorCellNode.swift; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
@@ -2213,6 +2215,7 @@
 				7536E72C285B00EA00A50043 /* RecipientFromCellNode.swift */,
 				756BB98F285A19C100F73140 /* EmptyCellNode.swift */,
 				75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */,
+				9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */,
 			);
 			path = "Cell Nodes";
 			sourceTree = "<group>";
@@ -2846,6 +2849,7 @@
 				9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */,
 				51DAD9BD273E7DD20076CBA7 /* BadgeNode.swift in Sources */,
 				51DE2FEE2714DA0400916222 /* ContactKeyCellNode.swift in Sources */,
+				9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */,
 				D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */,
 				D2F6D12F24324ACC00DB4065 /* SwitchCellNode.swift in Sources */,
 				51EBC5702746A06600178DE8 /* TextWithIconNode.swift in Sources */,

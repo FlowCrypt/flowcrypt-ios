@@ -12,7 +12,7 @@ import UIKit
 
 struct FolderViewModel {
     enum ItemType: String {
-        case folder, settings, logOut
+        case folder, settings, separator, logOut
     }
 
     let name: String
