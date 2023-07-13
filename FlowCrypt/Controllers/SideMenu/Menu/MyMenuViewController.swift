@@ -269,11 +269,7 @@ extension MyMenuViewController {
         case (.main, .folders):
             let folder = folders[safe: row]
             if folder?.itemType == .separator {
-                let node = ASCellNode()
-                node.backgroundColor = .separator
-                node.style.flexGrow = 1.0
-                node.style.preferredSize.height = 0.5
-                return node
+                return MenuSeparatorCellNode()
             }
             return InfoCellNode(input: folders[safe: row].map(InfoCellNode.Input.init))
         case (.additional, .accountAdding):
@@ -341,7 +337,7 @@ extension MyMenuViewController {
                     showAlert(message: error.errorMessage)
                 }
             }
-        default:
+        case .separator:
             break
         }
     }
