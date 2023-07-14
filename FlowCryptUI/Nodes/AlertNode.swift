@@ -4,7 +4,7 @@ public class AlertNode: ASDisplayNode {
 
     enum Constants {
         static let antiBruteForceProtectionAttemptsMaxValue = 5
-        static let blockingTimeInSeconds: Double = 5 * 10
+        static let blockingTimeInSeconds: Double = 5 * 60
     }
 
     private lazy var overlayNode = createOverlayNode()
