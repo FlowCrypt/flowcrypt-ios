@@ -73,7 +73,7 @@
 
 // Passphrase Anti BruteForcce Protection
 "passphrase_anti_brute_force_protection_hint" = "To protect you and your data, the next attempt will only be possible after the timer below finishes. Please wait until then before trying again.";
-"passphrase_attempt_introduce" = "For your protection and data security, there are currently only %@ left.\nIf attempts are exceeded, there will a 5-minute cooldown period before you may try again.";
+"passphrase_attempt_introduce" = "For your protection and data security, there are currently only %@ left.\nIf attempts are exceeded, there will be a 5-minute cooldown period before you may try again.";
 
 // ERROR
 "error_fetch_folders" = "Could not fetch folders";

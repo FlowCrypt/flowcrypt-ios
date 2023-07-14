@@ -4,7 +4,7 @@ public class AlertNode: ASDisplayNode {
 
     enum Constants {
         static let antiBruteForceProtectionAttemptsMaxValue = 5
-        static let blockingTimeInSeconds: Double = 5 * 60
+        static let blockingTimeInSeconds: Double = 5 * 10
     }
 
     private lazy var overlayNode = createOverlayNode()
@@ -100,7 +100,7 @@ public class AlertNode: ASDisplayNode {
     func updateRemainingAttemptsLabel() {
         let remainingAttempts = Constants.antiBruteForceProtectionAttemptsMaxValue - (failedPassPhraseAttempts ?? 0)
         introductionLabel.isHidden = false
-        let text = "passphrase_attempt_introduce".localizeWithArguments(remainingAttempts.pluralizeString(singularForm: "attempt", pluralForm: "attempts"))
+        let text = "passphrase_attempt_introduce".localizeWithArguments("%@ attempt(s)".localizePluralsWithArguments(remainingAttempts))
         introductionLabel.attributedText = NSAttributedString(string: text)
     }
 
