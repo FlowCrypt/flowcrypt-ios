@@ -174,8 +174,10 @@
 		75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
-		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
 		9547EF212A5F106E00A048FF /* AlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF202A5F106E00A048FF /* AlertNode.swift */; };
+		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
+		958566B72A6126DE001C84D3 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
+		958566B92A612822001C84D3 /* ASButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958566B82A612822001C84D3 /* ASButtonNode.swift */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */; };
@@ -243,7 +245,6 @@
 		9F8839142721EB5000669B56 /* MessageAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F8839132721EB5000669B56 /* MessageAction.swift */; };
 		9F883916272709E200669B56 /* MessagesThreadApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F883915272709E200669B56 /* MessagesThreadApiClient.swift */; };
 		9F88391927270A1A00669B56 /* MessagesThreadOperationsApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F88391827270A1A00669B56 /* MessagesThreadOperationsApiClient.swift */; };
-		9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		9F9361A52573CE260009912F /* MessageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9361A42573CE260009912F /* MessageProvider.swift */; };
 		9F9362062573D0C80009912F /* Gmail+MessagesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9362052573D0C80009912F /* Gmail+MessagesList.swift */; };
 		9F9362192573D10E0009912F /* Imap+Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9362182573D10E0009912F /* Imap+Message.swift */; };
@@ -636,8 +637,9 @@
 		75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
-		9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSeparatorCellNode.swift; sourceTree = "<group>"; };
 		9547EF202A5F106E00A048FF /* AlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertNode.swift; sourceTree = "<group>"; };
+		9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSeparatorCellNode.swift; sourceTree = "<group>"; };
+		958566B82A612822001C84D3 /* ASButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASButtonNode.swift; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
@@ -2091,6 +2093,7 @@
 				D2FD0F682453245E00259FF0 /* Either.swift */,
 				750A6C3C28244A780048E1CC /* OptionalExtensions.swift */,
 				95473C1A297E61DE006C8957 /* SequenceExtension.swift */,
+				958566B82A612822001C84D3 /* ASButtonNode.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -2723,6 +2726,7 @@
 				042B140227F596C70018BDC4 /* ComposeRecipientPopupViewController.swift in Sources */,
 				9FC4112E2595EA8B001180A8 /* Gmail+Search.swift in Sources */,
 				049E606327FDB9C70089EE2A /* ComposeViewController+Keyboard.swift in Sources */,
+				958566B72A6126DE001C84D3 /* EncryptedStorage.swift in Sources */,
 				5A948DC5239EF2F4006284D7 /* LegalViewController.swift in Sources */,
 				51C0C63828D1E42A003C540E /* ComposeViewController+ErrorHandling.swift in Sources */,
 				5133B6722716321F00C95463 /* ContactKeyDetailDecorator.swift in Sources */,
@@ -2827,7 +2831,6 @@
 				040FDF1227EDFC5C00CB936A /* IdTokenUtils.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				5137CB1427F8E0A900AEF895 /* EnterpriseServerApiHelper.swift in Sources */,
-				9F92EE72236F165E009BE0D7 /* EncryptedStorage.swift in Sources */,
 				51433AC32902A6EB00E9D488 /* RSAMessage.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
 				9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */,
@@ -2931,6 +2934,7 @@
 				21C7DEFE26669CE100C44800 /* DateFormattingExtensions.swift in Sources */,
 				9FD5052927889D8200FAA82F /* UIAlertControllerExtensions.swift in Sources */,
 				9FBD69EC27775086002FC602 /* UIApplicationExtensions.swift in Sources */,
+				958566B92A612822001C84D3 /* ASButtonNode.swift in Sources */,
 				D2CDC3D42402D50A002B045F /* EncodableExtensions.swift in Sources */,
 				9FD505272785C2CD00FAA82F /* UIDeviceExtensions.swift in Sources */,
 				750A6C3D28244A780048E1CC /* OptionalExtensions.swift in Sources */,

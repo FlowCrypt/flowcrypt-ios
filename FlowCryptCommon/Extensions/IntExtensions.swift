@@ -12,6 +12,14 @@ public extension Int {
     func toDate() -> Date {
         Date(timeIntervalSince1970: TimeInterval(self))
     }
+
+    func pluralizeString(singularForm: String, pluralForm: String) -> String {
+        if self == 1 {
+            return "\(self) \(singularForm)"
+        } else {
+            return "\(self) \(pluralForm)"
+        }
+    }
 }
 
 public extension Double {

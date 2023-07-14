@@ -28,7 +28,7 @@ class AlertsFactory {
             return
         }
         activeUser.failedPassPhraseAttempts = (activeUser.failedPassPhraseAttempts ?? 0) + 1
-        activeUser.lastUnsuccessfulPassphraseAttempt = Date()
+        activeUser.lastUnsuccessfulPassPhraseAttempt = Date()
         try? encryptedStorage.saveActiveUser(with: activeUser)
     }
 
@@ -37,7 +37,7 @@ class AlertsFactory {
             return
         }
         activeUser.failedPassPhraseAttempts = nil
-        activeUser.lastUnsuccessfulPassphraseAttempt = nil
+        activeUser.lastUnsuccessfulPassPhraseAttempt = nil
         try? encryptedStorage.saveActiveUser(with: activeUser)
     }
 
@@ -47,7 +47,15 @@ class AlertsFactory {
         onCancel: @escaping CancelCompletion,
         onCompletion: @escaping PassPhraseCompletion
     ) {
-        let alertNode = AlertNode(title: title, message: nil)
+        guard var activeUser = try? encryptedStorage.activeUser else {
+            return
+        }
+        let alertNode = AlertNode(
+            failedPassPhraseAttempts: activeUser.failedPassPhraseAttempts,
+            lastUnsuccessfulPassPhraseAttempt: activeUser.lastUnsuccessfulPassPhraseAttempt,
+            title: title,
+            message: nil
+        )
         alertNode.onOkay = { passPhrase in
             guard let passPhrase, passPhrase.isNotEmpty
             else {
@@ -60,6 +68,10 @@ class AlertsFactory {
         alertNode.onCancel = {
             viewController.dismiss(animated: true)
             onCancel()
+        }
+        alertNode.resetFailedPassphraseAttempts = {
+            activeUser.failedPassPhraseAttempts = 0
+            try? self.encryptedStorage.saveActiveUser(with: activeUser)
         }
         let alertViewController = ASDKViewController(node: alertNode)
         alertViewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext

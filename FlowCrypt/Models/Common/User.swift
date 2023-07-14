@@ -18,7 +18,7 @@ struct User: Codable, Equatable {
         }
     }
 
-    var lastUnsuccessfulPassphraseAttempt: Date?
+    var lastUnsuccessfulPassPhraseAttempt: Date?
     var failedPassPhraseAttempts: Int?
 
     var imap: Session?
@@ -71,7 +71,7 @@ extension User {
         self.isActive = userObject.isActive
         self.imap = userObject.imap.flatMap(Session.init)
         self.smtp = userObject.smtp.flatMap(Session.init)
-        self.lastUnsuccessfulPassphraseAttempt = userObject.lastUnsuccessfulPassphraseAttempt
+        self.lastUnsuccessfulPassPhraseAttempt = userObject.lastUnsuccessfulPassPhraseAttempt
         self.failedPassPhraseAttempts = userObject.failedPassPhraseAttempts
     }
 }

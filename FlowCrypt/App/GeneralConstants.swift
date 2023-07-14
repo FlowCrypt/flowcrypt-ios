@@ -16,8 +16,6 @@ enum GeneralConstants {
 
     enum Global {
         static let attachmentSizeLimit = 10_000_000
-        static let antiBruteForceProtectionAttemptsMaxValue = 5
-        static let blockingTimeInMilliSeconds = 5 * 60 * 1000
     }
 
     enum Mock {
