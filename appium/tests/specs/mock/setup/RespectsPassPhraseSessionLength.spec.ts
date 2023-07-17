@@ -3,7 +3,6 @@ import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
 import { CommonData } from 'tests/data';
 import AppiumHelper from 'tests/helpers/AppiumHelper';
-import BaseScreen from 'tests/screenobjects/base.screen';
 import { EmailScreen, SplashScreen } from '../../../screenobjects/all-screens';
 import MailFolderScreen from '../../../screenobjects/mail-folder.screen';
 import SetupKeyScreen from '../../../screenobjects/setup-key.screen';
@@ -46,7 +45,7 @@ describe('SETUP: ', () => {
       await EmailScreen.clickBackButton();
       await browser.pause(5000);
       await MailFolderScreen.clickOnEmailBySubject(testMessageSubject);
-      await BaseScreen.checkModalMessage('Please enter pass phrase');
+      await EmailScreen.checkPassPhraseModalTitle('Please enter pass phrase');
     });
   });
 });

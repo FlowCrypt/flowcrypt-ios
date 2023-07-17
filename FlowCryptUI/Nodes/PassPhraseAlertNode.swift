@@ -1,22 +1,33 @@
 import AsyncDisplayKit
 
-public class AlertNode: ASDisplayNode {
+public class PassPhraseAlertNode: ASDisplayNode {
 
     enum Constants {
         static let antiBruteForceProtectionAttemptsMaxValue = 5
-        static let blockingTimeInSeconds: Double = 5 * 60
+        static let blockingTimeInSeconds: Double = 5 * 2
     }
 
     private lazy var overlayNode = createOverlayNode()
     private lazy var contentView = createContentView()
     private lazy var separatorNode = createSeparatorNode()
-    private lazy var titleLabel = createTextNode(text: title, isBold: true, fontSize: 17)
+    private lazy var titleLabel = createTextNode(text: title, isBold: true, fontSize: 17, identifier: "aid-enter-passphrase-title-label")
     private lazy var messageLabel = createTextNode(text: message ?? "", isBold: false, fontSize: 13)
-    private lazy var introductionLabel = createTextNode(text: "", isBold: false, fontSize: 13)
-    private lazy var secureTextFieldNode = createSecureTextField()
-    private lazy var cancelButton = createButtonNode(title: "Cancel", color: .red, action: #selector(cancelButtonTapped))
-    private lazy var okayButton = createButtonNode(title: "Ok", color: .blue, action: #selector(okayButtonTapped))
+    private lazy var introductionLabel = createTextNode(text: "", isBold: false, fontSize: 13, identifier: "aid-anti-brute-force-introduce-label")
+    private lazy var passPhraseTextField = createPassPhraseTextField()
+    private lazy var cancelButton = createButtonNode(title: "Cancel", color: .red, identifier: "aid-cancel-button", action: #selector(cancelButtonTapped))
+    private lazy var okayButton = createButtonNode(title: "Ok", color: .blue, identifier: "aid-ok-button", action: #selector(okayButtonTapped))
     private weak var alertTimer: Timer?
+
+    private var introduction: String? {
+        didSet {
+            if let introduction, introduction.isNotEmpty {
+                introductionLabel.attributedText = NSAttributedString(string: introduction)
+                introductionLabel.isHidden = false
+            } else {
+                introductionLabel.isHidden = true
+            }
+        }
+    }
 
     private let title: String
     private let message: String?
@@ -53,14 +64,14 @@ public class AlertNode: ASDisplayNode {
         if message != nil {
             contentView.addSubnode(messageLabel)
         }
-        contentView.addSubnode(secureTextFieldNode)
+        contentView.addSubnode(passPhraseTextField)
         contentView.addSubnode(introductionLabel)
         contentView.addSubnode(separatorNode)
         contentView.addSubnode(cancelButton)
         contentView.addSubnode(okayButton)
         overlayNode.addSubnode(contentView)
         addSubnode(overlayNode)
-        secureTextFieldNode.becomeFirstResponder()
+        passPhraseTextField.becomeFirstResponder()
         if failedPassPhraseAttempts ?? 0 > 0 {
             updateRemainingAttemptsLabel()
         }
@@ -99,9 +110,7 @@ public class AlertNode: ASDisplayNode {
 
     func updateRemainingAttemptsLabel() {
         let remainingAttempts = Constants.antiBruteForceProtectionAttemptsMaxValue - (failedPassPhraseAttempts ?? 0)
-        introductionLabel.isHidden = false
-        let text = "passphrase_attempt_introduce".localizeWithArguments("%@ attempt(s)".localizePluralsWithArguments(remainingAttempts))
-        introductionLabel.attributedText = NSAttributedString(string: text)
+        introduction = "passphrase_attempt_introduce".localizeWithArguments("%@ attempt(s)".localizePluralsWithArguments(remainingAttempts))
     }
 
     func renderBruteForceProtectionAlert() {
@@ -111,8 +120,7 @@ public class AlertNode: ASDisplayNode {
         let now = Date()
         let remainingTimeInSeconds = lastUnsuccessfulPassPhraseAttempt.addingTimeInterval(Constants.blockingTimeInSeconds).timeIntervalSince(now)
 
-        introductionLabel.isHidden = false
-        introductionLabel.attributedText = NSAttributedString(string: "passphrase_anti_brute_force_protection_hint".localized)
+        introduction = "passphrase_anti_brute_force_protection_hint".localized
 
         okayButton.isEnabled = false
         okayButton.setTitle(convertToMinuteSecondFormat(seconds: Int(remainingTimeInSeconds)), with: UIFont.systemFont(ofSize: 15), with: .gray, for: .normal)
@@ -120,7 +128,7 @@ public class AlertNode: ASDisplayNode {
 
     func dismissBruteForceProtectionAlert() {
         if failedPassPhraseAttempts == 0 {
-            introductionLabel.isHidden = true
+            introduction = nil
         }
         okayButton.setTitle("Ok", with: UIFont.systemFont(ofSize: 15), with: .blue, for: .normal)
         okayButton.isEnabled = true
@@ -142,7 +150,7 @@ public class AlertNode: ASDisplayNode {
     }
 
     @objc private func okayButtonTapped() {
-        submitPassphrase(text: secureTextFieldNode.text)
+        submitPassphrase(text: passPhraseTextField.text)
     }
 
     private func submitPassphrase(text: String?) {
@@ -177,27 +185,29 @@ public class AlertNode: ASDisplayNode {
         return node
     }
 
-    private func createTextNode(text: String, isBold: Bool, fontSize: CGFloat) -> ASTextNode {
+    private func createTextNode(text: String, isBold: Bool, fontSize: CGFloat, identifier: String? = nil) -> ASTextNode {
         let node = ASTextNode()
         let font = isBold ? UIFont.boldSystemFont(ofSize: fontSize) : UIFont.systemFont(ofSize: fontSize)
         node.attributedText = NSAttributedString(
             string: text,
             attributes: [NSAttributedString.Key.font: font]
         )
+        node.accessibilityIdentifier = identifier
         return node
     }
 
-    private func createButtonNode(title: String, color: UIColor, action: Selector) -> ASButtonNode {
+    private func createButtonNode(title: String, color: UIColor, identifier: String, action: Selector) -> ASButtonNode {
         let node = ASButtonNode()
         node.setTitle(title, with: UIFont.systemFont(ofSize: 15), with: color, for: .normal)
         node.style.flexGrow = 1
         node.style.preferredSize.height = 35
         node.addTarget(self, action: action, forControlEvents: .touchUpInside)
+        node.accessibilityIdentifier = identifier
         node.setBackgroundColor(.lightGray, forState: .highlighted)
         return node
     }
 
-    private func createSecureTextField() -> TextFieldNode {
+    private func createPassPhraseTextField() -> TextFieldNode {
         let node = TextFieldNode(accessibilityIdentifier: "aid-message-passphrase-textfield") { [weak self] action in
             switch action {
             case let .didPaste(_, value):
@@ -236,12 +246,13 @@ public class AlertNode: ASDisplayNode {
         )
         buttonStack.style.flexGrow = 1.0
 
-        var contentChildren: [ASLayoutElement] = [secureTextFieldNode]
+        var contentChildren: [ASLayoutElement] = [passPhraseTextField]
         if message != nil {
             contentChildren.insert(messageLabel, at: 1)
         }
-        contentChildren.append(introductionLabel)
-
+        if introduction != nil {
+            contentChildren.append(introductionLabel)
+        }
         let verticalStack = ASStackLayoutSpec(
             direction: .vertical,
             spacing: 10,

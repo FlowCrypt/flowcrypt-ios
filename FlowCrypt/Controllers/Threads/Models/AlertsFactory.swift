@@ -50,7 +50,7 @@ class AlertsFactory {
         guard var activeUser = try? encryptedStorage.activeUser else {
             return
         }
-        let alertNode = AlertNode(
+        let alertNode = PassPhraseAlertNode(
             failedPassPhraseAttempts: activeUser.failedPassPhraseAttempts,
             lastUnsuccessfulPassPhraseAttempt: activeUser.lastUnsuccessfulPassPhraseAttempt,
             title: title,
