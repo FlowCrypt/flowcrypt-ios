@@ -29,7 +29,7 @@
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "git-format-staged": "^3.0.0",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.2",
+    "lint-staged": "^13.2.3",
     "prettier": "^3.0.0"
   },
   "lint-staged": {
