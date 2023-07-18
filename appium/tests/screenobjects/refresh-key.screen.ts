@@ -3,8 +3,9 @@ import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   ENTER_YOUR_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
-  OK_BUTTON: '~Ok',
-  CANCEL_BUTTON: '~Cancel',
+  OK_BUTTON: '~aid-ok-button',
+  SYSTEM_OK_BUTTON: '~Ok',
+  CANCEL_BUTTON: '~aid-cancel-button',
 };
 
 class RefreshKeyScreen extends BaseScreen {
@@ -18,6 +19,10 @@ class RefreshKeyScreen extends BaseScreen {
 
   get okButton() {
     return $(SELECTORS.OK_BUTTON);
+  }
+
+  get systemOkButton() {
+    return $(SELECTORS.SYSTEM_OK_BUTTON);
   }
 
   get cancelButton() {
@@ -34,6 +39,10 @@ class RefreshKeyScreen extends BaseScreen {
 
   clickOkButton = async () => {
     await ElementHelper.waitAndClick(await this.okButton);
+  };
+
+  clickSystemOkButton = async () => {
+    await ElementHelper.waitAndClick(await this.systemOkButton);
   };
 }
 

@@ -1,10 +1,18 @@
+//
+//  PassPhraseAlertNode.swift
+//  FlowCryptUI
+//
+//  Created by Ioan Moldovan on 17/07/23
+//  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
+//
+
 import AsyncDisplayKit
 
 public class PassPhraseAlertNode: ASDisplayNode {
 
     enum Constants {
         static let antiBruteForceProtectionAttemptsMaxValue = 5
-        static let blockingTimeInSeconds: Double = 5 * 2
+        static let blockingTimeInSeconds: Double = 5 * 60
     }
 
     private lazy var overlayNode = createOverlayNode()
@@ -18,16 +26,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
     private lazy var okayButton = createButtonNode(title: "Ok", color: .blue, identifier: "aid-ok-button", action: #selector(okayButtonTapped))
     private weak var alertTimer: Timer?
 
-    private var introduction: String? {
-        didSet {
-            if let introduction, introduction.isNotEmpty {
-                introductionLabel.attributedText = NSAttributedString(string: introduction)
-                introductionLabel.isHidden = false
-            } else {
-                introductionLabel.isHidden = true
-            }
-        }
-    }
+    private var introduction: String? { didSet { updateIntroduction() } }
 
     private let title: String
     private let message: String?
@@ -38,6 +37,8 @@ public class PassPhraseAlertNode: ASDisplayNode {
     public var onOkay: ((String?) -> Void)?
     public var onCancel: (() -> Void)?
     public var resetFailedPassphraseAttempts: (() -> Void)?
+
+    // MARK: - Initialization
 
     public init(
         failedPassPhraseAttempts: Int?,
@@ -55,11 +56,11 @@ public class PassPhraseAlertNode: ASDisplayNode {
     }
 
     deinit {
-        self.alertTimer?.invalidate()
-        self.alertTimer = nil
+        alertTimer?.invalidate()
+        alertTimer = nil
     }
 
-    func setupNodes() {
+    private func setupNodes() {
         contentView.addSubnode(titleLabel)
         if message != nil {
             contentView.addSubnode(messageLabel)
@@ -77,7 +78,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
         }
     }
 
-    func startTimer() {
+    private func startTimer() {
         guard alertTimer == nil else { return }
         alertTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             self?.monitorBruteForceProtection()
@@ -93,40 +94,39 @@ public class PassPhraseAlertNode: ASDisplayNode {
         // This condition ensures the brute force protection alert is only rendered or dismissed
         // when the state actually changes or when an update to the timer value is required.
         if isPassphraseCheckDisabled != previousState || (previousState ?? false && isPassphraseCheckDisabled) {
-            self.previousState = isPassphraseCheckDisabled
+            previousState = isPassphraseCheckDisabled
             if isPassphraseCheckDisabled {
-                self.renderBruteForceProtectionAlert()
+                renderBruteForceProtectionAlert()
             } else {
-                self.dismissBruteForceProtectionAlert()
+                dismissBruteForceProtectionAlert()
             }
         }
     }
 
-    func convertToMinuteSecondFormat(seconds: Int) -> String {
+    private func convertToMinuteSecondFormat(seconds: Int) -> String {
         let minutes = seconds / 60
         let remainingSeconds = seconds % 60
         return String(format: "%02d:%02d", minutes, remainingSeconds)
     }
 
-    func updateRemainingAttemptsLabel() {
+    private func updateRemainingAttemptsLabel() {
         let remainingAttempts = Constants.antiBruteForceProtectionAttemptsMaxValue - (failedPassPhraseAttempts ?? 0)
         introduction = "passphrase_attempt_introduce".localizeWithArguments("%@ attempt(s)".localizePluralsWithArguments(remainingAttempts))
     }
 
-    func renderBruteForceProtectionAlert() {
-        guard let lastUnsuccessfulPassPhraseAttempt else {
-            return
-        }
+    private func renderBruteForceProtectionAlert() {
+        guard let lastUnsuccessfulPassPhraseAttempt else { return }
         let now = Date()
         let remainingTimeInSeconds = lastUnsuccessfulPassPhraseAttempt.addingTimeInterval(Constants.blockingTimeInSeconds).timeIntervalSince(now)
 
         introduction = "passphrase_anti_brute_force_protection_hint".localized
 
         okayButton.isEnabled = false
-        okayButton.setTitle(convertToMinuteSecondFormat(seconds: Int(remainingTimeInSeconds)), with: UIFont.systemFont(ofSize: 15), with: .gray, for: .normal)
+        let minuteSecondStr = convertToMinuteSecondFormat(seconds: Int(remainingTimeInSeconds))
+        okayButton.setTitle(minuteSecondStr, with: .systemFont(ofSize: 15), with: .gray, for: .normal)
     }
 
-    func dismissBruteForceProtectionAlert() {
+    private func dismissBruteForceProtectionAlert() {
         if failedPassPhraseAttempts == 0 {
             introduction = nil
         }
@@ -134,7 +134,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
         okayButton.isEnabled = true
     }
 
-    func shouldDisablePassphraseCheck() -> Bool {
+    private func shouldDisablePassphraseCheck() -> Bool {
         let now = Date()
         // already passed anti-brute force 5 minute cooldown period
         // reset last unsuccessful count
@@ -143,14 +143,6 @@ public class PassPhraseAlertNode: ASDisplayNode {
             failedPassPhraseAttempts = 0
         }
         return (failedPassPhraseAttempts ?? 0) >= Constants.antiBruteForceProtectionAttemptsMaxValue
-    }
-
-    @objc private func cancelButtonTapped() {
-        onCancel?()
-    }
-
-    @objc private func okayButtonTapped() {
-        submitPassphrase(text: passPhraseTextField.text)
     }
 
     private func submitPassphrase(text: String?) {
@@ -207,13 +199,21 @@ public class PassPhraseAlertNode: ASDisplayNode {
         return node
     }
 
+    private func updateIntroduction() {
+        if let introduction, !introduction.isEmpty {
+            introductionLabel.attributedText = NSAttributedString(string: introduction)
+            introductionLabel.isHidden = false
+        } else {
+            introductionLabel.isHidden = true
+        }
+        setNeedsLayout()
+        contentView.setNeedsLayout()
+    }
+
     private func createPassPhraseTextField() -> TextFieldNode {
         let node = TextFieldNode(accessibilityIdentifier: "aid-message-passphrase-textfield") { [weak self] action in
-            switch action {
-            case let .didPaste(_, value):
+            if case let .didPaste(_, value) = action {
                 self?.submitPassphrase(text: value)
-            default:
-                break
             }
         }
         node.shouldReturn = { textField in
@@ -231,6 +231,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
         return node
     }
 
+    // MARK: - Layout
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
         let separatorInsetSpec = ASInsetLayoutSpec(
             insets: UIEdgeInsets(top: 10, left: 0, bottom: 0, right: 0),
@@ -278,5 +279,14 @@ public class PassPhraseAlertNode: ASDisplayNode {
             return centerSpec
         }
         return ASWrapperLayoutSpec(layoutElement: overlayNode)
+    }
+
+    // MARK: - Action Handlers
+    @objc private func cancelButtonTapped() {
+        onCancel?()
+    }
+
+    @objc private func okayButtonTapped() {
+        submitPassphrase(text: passPhraseTextField.text)
     }
 }
