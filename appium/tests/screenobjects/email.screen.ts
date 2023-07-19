@@ -81,7 +81,7 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.RECIPIENTS_BCC_LABEL);
   }
 
-  get antiBruteForceIntrodceLabel() {
+  get antiBruteForceIntroduceLabel() {
     return $(SELECTORS.ANTI_BRUTE_FORCE_INTRODUCE_LABEL);
   }
 
@@ -236,8 +236,8 @@ class EmailScreen extends BaseScreen {
   };
 
   checkAntiBruteForceIntroduceLabel = async (expectedValue: string) => {
-    await ElementHelper.waitElementVisible(await this.antiBruteForceIntrodceLabel);
-    const introduceLabel = await (await this.antiBruteForceIntrodceLabel).getValue();
+    await ElementHelper.waitElementVisible(await this.antiBruteForceIntroduceLabel);
+    const introduceLabel = await (await this.antiBruteForceIntroduceLabel).getValue();
     expect(introduceLabel.includes(expectedValue)).toEqual(true);
   };
 

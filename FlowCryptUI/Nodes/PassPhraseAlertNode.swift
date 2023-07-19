@@ -249,7 +249,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
         var contentChildren: [ASLayoutElement] = [passPhraseTextField]
         if message != nil {
-            contentChildren.insert(messageLabel, at: 1)
+            contentChildren.append(messageLabel)
         }
         if introduction != nil {
             contentChildren.append(introductionLabel)
