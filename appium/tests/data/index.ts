@@ -75,6 +75,10 @@ export const CommonData = {
     email: 'dmitry@flowcrypt.com',
     name: 'Dmitry at FlowCrypt',
   },
+  compatibilitySender: {
+    email: 'flowcrypt.compatibility@gmail.com',
+    name: 'FlowCrypt Compatibility',
+  },
   contact: {
     contactName: 'Dima Flowcrypt',
     email: 'dmitry@flowcrypt.com',

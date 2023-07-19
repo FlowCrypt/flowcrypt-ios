@@ -117,9 +117,10 @@ class SplashScreen extends BaseScreen {
   };
 
   changeLanguage = async (language = '‪English (United States)‬') => {
+    const langSelector = `-ios class chain:**/XCUIElementTypeOther[\`label == "${language}"\`]`;
     await ElementHelper.waitAndClick(await this.languageDropdown, 500);
-    const selector = `~${language}`;
-    await ElementHelper.waitAndClick(await $(selector));
+    //await browser.pause(10000000);
+    await ElementHelper.waitAndClick(await $(langSelector));
   };
 
   fillEmail = async (email: string) => {
