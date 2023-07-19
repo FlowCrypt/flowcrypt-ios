@@ -125,7 +125,7 @@ class SplashScreen extends BaseScreen {
       await ElementHelper.waitAndClick(langEl);
     } else {
       // eslint-disable-next-line no-irregular-whitespace
-      const newLangEl = await $(`"​ ‪English (United States)‬`);
+      const newLangEl = await $(`~​ ‪English (United States)‬`);
       await ElementHelper.waitAndClick(newLangEl);
     }
   };
