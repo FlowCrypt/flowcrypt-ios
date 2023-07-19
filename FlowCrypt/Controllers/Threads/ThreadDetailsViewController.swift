@@ -12,7 +12,7 @@ import FlowCryptUI
 import UIKit
 
 final class ThreadDetailsViewController: TableNodeViewController {
-    private lazy var alertsFactory = AlertsFactory()
+    private let alertsFactory: AlertsFactory
     lazy var logger = Logger.nested(Self.self)
 
     struct Input {
@@ -72,6 +72,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
             messageProvider: try mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
+        self.alertsFactory = AlertsFactory(encryptedStorage: appContext.encryptedStorage)
         self.threadOperationsApiClient = try mailProvider.threadOperationsApiClient
         self.messageActionsHelper = try await MessageActionsHelper(
             appContext: appContext
@@ -374,7 +375,8 @@ final class ThreadDetailsViewController: TableNodeViewController {
             ? "setup_enter_pass_phrase".localized
             : "setup_wrong_pass_phrase_retry".localized
 
-        let alert = alertsFactory.makePassPhraseAlert(
+        alertsFactory.makePassPhraseAlert(
+            viewController: self,
             title: title,
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
@@ -383,8 +385,6 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 self?.handlePassPhraseEntry(passPhrase, indexPath: indexPath)
             }
         )
-
-        present(alert, animated: true, completion: nil)
     }
 
     private func handlePassPhraseEntry(_ passPhrase: String, indexPath: IndexPath) {
@@ -409,8 +409,10 @@ final class ThreadDetailsViewController: TableNodeViewController {
                         isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                     )
 
+                    alertsFactory.passphraseCheckSucceed()
                     handle(processedMessage: processedMessage, at: indexPath)
                 } else {
+                    alertsFactory.passphraseCheckFailed()
                     handleWrongPassPhrase(passPhrase, indexPath: indexPath)
                 }
             } catch {

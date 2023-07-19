@@ -6,66 +6,78 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import AsyncDisplayKit
 import FlowCryptCommon
+import FlowCryptUI
 import UIKit
 
 class AlertsFactory {
     typealias PassPhraseCompletion = (String) -> Void
     typealias CancelCompletion = () -> Void
 
+    let encryptedStorage: EncryptedStorageType
+
+    init(encryptedStorage: EncryptedStorageType) {
+        self.encryptedStorage = encryptedStorage
+    }
+
     private var textFieldDelegate: UITextFieldDelegate?
 
+    func passphraseCheckFailed() {
+        guard var activeUser = try? encryptedStorage.activeUser else {
+            return
+        }
+        activeUser.failedPassPhraseAttempts = (activeUser.failedPassPhraseAttempts ?? 0) + 1
+        activeUser.lastUnsuccessfulPassPhraseAttempt = Date()
+        try? encryptedStorage.saveActiveUser(with: activeUser)
+    }
+
+    func passphraseCheckSucceed() {
+        guard var activeUser = try? encryptedStorage.activeUser else {
+            return
+        }
+        activeUser.failedPassPhraseAttempts = nil
+        activeUser.lastUnsuccessfulPassPhraseAttempt = nil
+        try? encryptedStorage.saveActiveUser(with: activeUser)
+    }
+
     func makePassPhraseAlert(
+        viewController: UIViewController,
         title: String = "setup_enter_pass_phrase".localized,
         onCancel: @escaping CancelCompletion,
         onCompletion: @escaping PassPhraseCompletion
-    ) -> UIAlertController {
-        let alert = UIAlertController(
-            title: title,
-            message: nil,
-            preferredStyle: .alert
-        )
-
-        textFieldDelegate = SubmitOnPasteTextFieldDelegate(onSubmit: { passPhrase in
-            alert.dismiss(animated: true, completion: {
-                onCompletion(passPhrase)
-            })
-        })
-
-        alert.addTextField { [weak self] tf in
-            tf.isSecureTextEntry = true
-            tf.delegate = self?.textFieldDelegate
-            tf.accessibilityIdentifier = "aid-message-passphrase-textfield"
+    ) {
+        guard var activeUser = try? encryptedStorage.activeUser else {
+            return
         }
-        let saveAction = UIAlertAction(
-            title: "ok".localized,
-            style: .default
-        ) { _ in
-            guard let textField = alert.textFields?.first,
-                  let passPhrase = textField.text,
-                  passPhrase.isNotEmpty
+        let alertNode = PassPhraseAlertNode(
+            failedPassPhraseAttempts: activeUser.failedPassPhraseAttempts,
+            lastUnsuccessfulPassPhraseAttempt: activeUser.lastUnsuccessfulPassPhraseAttempt,
+            title: title,
+            message: nil
+        )
+        alertNode.onOkay = { passPhrase in
+            guard let passPhrase, passPhrase.isNotEmpty
             else {
-                alert.dismiss(animated: true, completion: nil)
                 return
             }
-
-            alert.dismiss(animated: true) {
+            viewController.dismiss(animated: true) {
                 onCompletion(passPhrase)
             }
         }
-        let cancelAction = UIAlertAction(
-            title: "cancel".localized,
-            style: .destructive
-        ) { _ in
-            alert.dismiss(animated: true) {
-                onCancel()
-            }
+        alertNode.onCancel = {
+            viewController.dismiss(animated: true)
+            onCancel()
         }
+        alertNode.resetFailedPassphraseAttempts = {
+            activeUser.failedPassPhraseAttempts = 0
+            try? self.encryptedStorage.saveActiveUser(with: activeUser)
+        }
+        let alertViewController = ASDKViewController(node: alertNode)
+        alertViewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+        alertViewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
 
-        alert.addAction(cancelAction)
-        alert.addAction(saveAction)
-
-        return alert
+        viewController.present(alertViewController, animated: true, completion: nil)
     }
 }
 

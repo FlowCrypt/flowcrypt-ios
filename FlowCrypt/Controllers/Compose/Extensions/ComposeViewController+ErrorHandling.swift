@@ -11,7 +11,8 @@ import UIKit
 // MARK: - Error handling
 extension ComposeViewController {
     func requestMissingPassPhraseWithModal(for signingKey: Keypair, isDraft: Bool = false) {
-        let alert = alertsFactory.makePassPhraseAlert(
+        alertsFactory.makePassPhraseAlert(
+            viewController: self,
             onCancel: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             },
@@ -26,8 +27,10 @@ extension ComposeViewController {
                         )
 
                         if matched {
+                            self.alertsFactory.passphraseCheckSucceed()
                             self.handleMatchedPassphrase(isDraft: isDraft)
                         } else {
+                            self.alertsFactory.passphraseCheckFailed()
                             self.handle(error: ComposeMessageError.passPhraseNoMatch)
                         }
                     } catch {
@@ -36,7 +39,6 @@ extension ComposeViewController {
                 }
             }
         )
-        present(alert, animated: true, completion: nil)
     }
 
     private func handleMatchedPassphrase(isDraft: Bool) {

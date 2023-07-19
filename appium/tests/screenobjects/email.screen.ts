@@ -4,10 +4,9 @@ import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
-  ENTER_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
-  OK_BUTTON: '~Ok',
-  WRONG_PASS_PHRASE_MESSAGE:
-    '-ios class chain:**/XCUIElementTypeStaticText[`label == "Wrong pass phrase, please try again"`]',
+  ENTER_PASS_PHRASE_FIELD: '~aid-message-passphrase-textfield',
+  OK_BUTTON: '~aid-ok-button',
+  ENTR_PASSPHRASE_TITLE_LABEL: '~aid-enter-passphrase-title-label',
   ATTACHMENT_CELL: '~aid-attachment-cell-0',
   ATTACHMENT_TITLE: '~aid-attachment-title-label-0',
   REPLY_BUTTON: '~aid-reply-button',
@@ -16,6 +15,7 @@ const SELECTORS = {
   RECIPIENTS_CC_LABEL: '~aid-cc-0-label',
   RECIPIENTS_BCC_LABEL: '~aid-bcc-0-label',
   MENU_BUTTON: '~aid-message-menu-button',
+  ANTI_BRUTE_FORCE_INTRODUCE_LABEL: '~aid-anti-brute-force-introduce-label',
   FORWARD_BUTTON: '~aid-forward-button',
   REPLY_ALL_BUTTON: '~aid-reply-all-button',
   HELP_BUTTON: '~aid-help-button',
@@ -49,8 +49,8 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.OK_BUTTON);
   }
 
-  get wrongPassPhraseMessage() {
-    return $(SELECTORS.WRONG_PASS_PHRASE_MESSAGE);
+  get enterPassPhraseTitleLabel() {
+    return $(SELECTORS.ENTR_PASSPHRASE_TITLE_LABEL);
   }
 
   get attachmentCell() {
@@ -79,6 +79,10 @@ class EmailScreen extends BaseScreen {
 
   get recipientsBccLabel() {
     return $(SELECTORS.RECIPIENTS_BCC_LABEL);
+  }
+
+  get antiBruteForceIntroduceLabel() {
+    return $(SELECTORS.ANTI_BRUTE_FORCE_INTRODUCE_LABEL);
   }
 
   get menuButton() {
@@ -227,11 +231,18 @@ class EmailScreen extends BaseScreen {
   };
 
   enterPassPhrase = async (text: string = CommonData.account.passPhrase) => {
+    await ElementHelper.waitElementVisible(await this.enterPassPhraseField);
     await (await this.enterPassPhraseField).setValue(text);
   };
 
-  checkWrongPassPhraseErrorMessage = async () => {
-    await ElementHelper.waitElementVisible(await this.wrongPassPhraseMessage);
+  checkAntiBruteForceIntroduceLabel = async (expectedValue: string) => {
+    await ElementHelper.waitElementVisible(await this.antiBruteForceIntroduceLabel);
+    const introduceLabel = await (await this.antiBruteForceIntroduceLabel).getValue();
+    expect(introduceLabel.includes(expectedValue)).toEqual(true);
+  };
+
+  checkPassPhraseModalTitle = async (value = 'Wrong pass phrase, please try again') => {
+    await ElementHelper.waitForText(await this.enterPassPhraseTitleLabel, value);
   };
 
   checkAttachment = async (name: string) => {

@@ -22,7 +22,6 @@ const SELECTORS = {
   SEND_BUTTON: '~aid-compose-send',
   SEND_PLAIN_MESSAGE_BUTTON: '~aid-compose-send-plain',
   CONFIRM_DELETING: '~aid-confirm-button',
-  MESSAGE_PASSPHRASE_TEXTFIELD: '~aid-message-passphrase-textfield',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
   RECIPIENT_POPUP_EMAIL_NODE: '~aid-recipient-popup-email-node',
@@ -109,10 +108,6 @@ class NewMessageScreen extends BaseScreen {
 
   get currentModal() {
     return $(SELECTORS.ALERT);
-  }
-
-  get passphraseTextField() {
-    return $(SELECTORS.MESSAGE_PASSPHRASE_TEXTFIELD);
   }
 
   get passwordTextField() {

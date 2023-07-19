@@ -69,9 +69,8 @@ public class TextFieldCellNode: CellNode {
 
     public init(input: Input, action: TextFieldAction? = nil) {
         textField = TextFieldNode(
-            preferredHeight: input.height,
-            action: action,
-            accessibilityIdentifier: input.accessibilityIdentifier
+            accessibilityIdentifier: input.accessibilityIdentifier,
+            action: action
         )
         self.input = input
         super.init()

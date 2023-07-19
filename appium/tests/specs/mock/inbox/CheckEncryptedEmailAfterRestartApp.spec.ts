@@ -45,7 +45,7 @@ describe('INBOX: ', () => {
       // try to see encrypted message with wrong pass phrase
       await EmailScreen.enterPassPhrase(wrongPassPhrase);
       await EmailScreen.clickOkButton();
-      await EmailScreen.checkWrongPassPhraseErrorMessage();
+      await EmailScreen.checkPassPhraseModalTitle();
 
       // check email after setting correct pass phrase
       await EmailScreen.enterPassPhrase(correctPassPhrase);
