@@ -117,10 +117,17 @@ class SplashScreen extends BaseScreen {
   };
 
   changeLanguage = async (language = '‪English (United States)‬') => {
-    const langSelector = `-ios class chain:**/XCUIElementTypeOther[\`label == "${language}"\`]`;
     await ElementHelper.waitAndClick(await this.languageDropdown, 500);
-    //await browser.pause(10000000);
-    await ElementHelper.waitAndClick(await $(langSelector));
+    const selector = `~${language}`;
+    const langEl = await $(selector);
+    await langEl.waitForDisplayed({ timeout: 15000 });
+    if (await langEl.isDisplayed()) {
+      await ElementHelper.waitAndClick(langEl);
+    } else {
+      // eslint-disable-next-line no-irregular-whitespace
+      const newLangEl = await $(`"​ ‪English (United States)‬`);
+      await ElementHelper.waitAndClick(newLangEl);
+    }
   };
 
   fillEmail = async (email: string) => {
