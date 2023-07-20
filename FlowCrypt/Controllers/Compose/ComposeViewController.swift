@@ -72,7 +72,7 @@ final class ComposeViewController: TableNodeViewController {
     var composedLatestDraft: ComposedDraft?
 
     var messagePasswordAlertController: UIAlertController?
-    lazy var alertsFactory = AlertsFactory()
+    let alertsFactory: AlertsFactory
 
     var didFinishSetup = false {
         didSet {
@@ -132,6 +132,7 @@ final class ComposeViewController: TableNodeViewController {
             )
         }
 
+        self.alertsFactory = AlertsFactory(encryptedStorage: appContext.encryptedStorage)
         self.filesManager = filesManager
         self.photosManager = photosManager
         self.pubLookup = PubLookup(

@@ -13,6 +13,8 @@ final class UserRealmObject: Object {
     @Persisted var isActive: Bool
     @Persisted var name: String
     @Persisted var imap: SessionRealmObject?
+    @Persisted var lastUnsuccessfulPassPhraseAttempt: Date?
+    @Persisted var failedPassPhraseAttempts: Int?
     @Persisted var smtp: SessionRealmObject?
 }
 
@@ -35,5 +37,7 @@ extension UserRealmObject {
         self.name = user.name
         self.imap = user.imap.flatMap(SessionRealmObject.init)
         self.smtp = user.smtp.flatMap(SessionRealmObject.init)
+        self.lastUnsuccessfulPassPhraseAttempt = user.lastUnsuccessfulPassPhraseAttempt
+        self.failedPassPhraseAttempts = user.failedPassPhraseAttempts
     }
 }

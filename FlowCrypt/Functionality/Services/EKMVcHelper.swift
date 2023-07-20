@@ -17,11 +17,12 @@ final class EKMVcHelper: EKMVcHelperType {
     private let appContext: AppContextWithUser
     private let keyMethods: KeyMethodsType
 
-    private lazy var alertsFactory = AlertsFactory()
+    private let alertsFactory: AlertsFactory
 
     init(appContext: AppContextWithUser) {
         self.appContext = appContext
         self.keyMethods = KeyMethods()
+        self.alertsFactory = AlertsFactory(encryptedStorage: appContext.encryptedStorage)
     }
 
     func refreshKeysFromEKMIfNeeded(in viewController: UIViewController) {
@@ -146,7 +147,8 @@ final class EKMVcHelper: EKMVcHelperType {
     @MainActor
     private func requestPassPhraseWithModal(in viewController: UIViewController) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
-            let alert = alertsFactory.makePassPhraseAlert(
+            alertsFactory.makePassPhraseAlert(
+                viewController: viewController,
                 title: "refresh_key_alert_title".localized,
                 onCancel: {
                     return continuation.resume(returning: "")
@@ -165,8 +167,10 @@ final class EKMVcHelper: EKMVcHelperType {
                                 passPhrase
                             )
                             if matched {
+                                self.alertsFactory.passphraseCheckSucceed()
                                 return continuation.resume(returning: passPhrase)
                             }
+                            self.alertsFactory.passphraseCheckFailed()
                             // Pass phrase mismatch, display error alert and ask again
                             try await viewController.showAsyncAlert(message: "refresh_key_invalid_pass_phrase".localized)
                             let newPassPhrase = try await self.requestPassPhraseWithModal(in: viewController)
@@ -177,7 +181,6 @@ final class EKMVcHelper: EKMVcHelperType {
                     }
                 }
             )
-            viewController.present(alert, animated: true, completion: nil)
         }
     }
 
