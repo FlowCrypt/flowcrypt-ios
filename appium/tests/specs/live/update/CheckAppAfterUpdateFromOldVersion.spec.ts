@@ -42,6 +42,7 @@ describe('UPDATE: ', () => {
     //login and check user
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await browser.pause(5000);
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickSearchButton();

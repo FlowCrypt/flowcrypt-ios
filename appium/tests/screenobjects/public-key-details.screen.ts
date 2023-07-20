@@ -78,7 +78,9 @@ class PublicKeyDetailsScreen extends BaseScreen {
     await (await this.keyLabel).waitForDisplayed();
     await TouchHelper.scrollDownToElement(await this.signatureLabel);
     await (await this.signatureLabel).waitForDisplayed();
+    await TouchHelper.scrollDownToElement(await this.lastFetchedDateLabel);
     await (await this.lastFetchedDateLabel).waitForDisplayed();
+    await TouchHelper.scrollDownToElement(await this.fingerprintsLabel);
     await (await this.fingerprintsLabel).waitForDisplayed();
   };
 

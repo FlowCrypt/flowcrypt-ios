@@ -16,7 +16,6 @@ const SELECTORS = {
   LOGIN_FIELD: '~Email or phone',
   NEXT_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Next"`][1]',
   PASSWORD_FIELD: '~Enter your password',
-  DONE_BTN: '~Done',
   LANGUAGE_DROPDOWN:
     '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
   SIGN_IN_WITH_GMAIL: '-ios class chain:**/XCUIElementTypeOther[`label == "Sign in - Google Accounts"`]',
@@ -72,10 +71,6 @@ class SplashScreen extends BaseScreen {
     return $(SELECTORS.NEXT_BTN);
   }
 
-  get doneButton() {
-    return $(SELECTORS.DONE_BTN);
-  }
-
   get languageDropdown() {
     return $(SELECTORS.LANGUAGE_DROPDOWN);
   }
@@ -124,22 +119,18 @@ class SplashScreen extends BaseScreen {
 
   fillEmail = async (email: string) => {
     await ElementHelper.waitClickAndType(await this.loginField, email);
-    await this.clickDoneBtn();
-    await browser.pause(500); // stability sleep
+    await (await this.loginField).sendKeys(['\uE007']);
+    await browser.pause(3000);
   };
 
   fillPassword = async (password: string) => {
     await ElementHelper.waitClickAndType(await this.passwordField, password);
-    await this.clickDoneBtn();
-    await browser.pause(500); // stability sleep
+    await (await this.passwordField).sendKeys(['\uE007']);
+    await browser.pause(3000);
   };
 
   clickNextBtn = async () => {
     await ElementHelper.waitAndClick(await this.nextButton);
-  };
-
-  clickDoneBtn = async () => {
-    await ElementHelper.waitAndClick(await this.doneButton);
   };
 
   gmailLogin = async (email: string, password: string) => {
