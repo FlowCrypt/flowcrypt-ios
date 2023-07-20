@@ -14,7 +14,6 @@ const SELECTORS = {
   CONTINUE_BTN: '~Continue',
   CANCEL_BTN: '~Cancel',
   LOGIN_FIELD: '~Email or phone',
-  NEXT_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Next"`][1]',
   PASSWORD_FIELD: '~Enter your password',
   LANGUAGE_DROPDOWN:
     '-ios class chain:**/XCUIElementTypeOther[`label == "content information"`]/XCUIElementTypeOther[1]',
@@ -65,10 +64,6 @@ class SplashScreen extends BaseScreen {
 
   get passwordField() {
     return $(SELECTORS.PASSWORD_FIELD);
-  }
-
-  get nextButton() {
-    return $(SELECTORS.NEXT_BTN);
   }
 
   get languageDropdown() {
@@ -129,10 +124,6 @@ class SplashScreen extends BaseScreen {
     await browser.pause(3000);
   };
 
-  clickNextBtn = async () => {
-    await ElementHelper.waitAndClick(await this.nextButton);
-  };
-
   gmailLogin = async (email: string, password: string) => {
     const emailSelector = `-ios class chain:**/XCUIElementTypeLink/XCUIElementTypeStaticText[\`label == "${email}"\`]`;
     await (await this.signInAsGoogleAccounLabel).waitForDisplayed();
@@ -142,13 +133,10 @@ class SplashScreen extends BaseScreen {
       await (await this.useAnotherAccount).waitForDisplayed({ timeout: 5000, reverse: true });
       if (await (await this.passwordField).isDisplayed()) {
         await this.fillPassword(password);
-        await this.clickNextBtn();
       }
     } else {
       await this.fillEmail(email);
-      await this.clickNextBtn();
       await this.fillPassword(password);
-      await this.clickNextBtn();
     }
   };
 
