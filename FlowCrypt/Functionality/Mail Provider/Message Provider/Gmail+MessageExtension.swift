@@ -103,7 +103,7 @@ private extension GTLRGmail_Message {
 
     func parseMessageBody() -> MessageBody {
         let html = body(type: .textHtml)
-        let text = body(type: .textPlain) ?? html?.removingHtmlTags() ?? ""
+        let text = (body(type: .textPlain) ?? "").removingHtmlTags() ?? ""
         let bodyAttachment = text.isEmpty ? parseBodyAttachment() : nil
 
         return MessageBody(text: text, html: html, attachment: bodyAttachment)
