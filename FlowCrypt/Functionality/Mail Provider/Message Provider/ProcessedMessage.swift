@@ -96,7 +96,6 @@ extension ProcessedMessage {
     ) {
         self.message = message
         (self.text, self.quote) = Self.parseQuote(text: text)
-        self.text = self.text.removingHtmlTags() ?? self.text
         self.type = type
         self.attachments = attachments
         self.signature = signature
@@ -105,7 +104,6 @@ extension ProcessedMessage {
     init(message: Message) {
         self.message = message
         (self.text, self.quote) = Self.parseQuote(text: message.body.text)
-        self.text = self.text.removingHtmlTags() ?? self.text
         self.type = .plain
         self.attachments = message.attachments
         self.signature = .unsigned
@@ -134,7 +132,7 @@ extension ProcessedMessage {
         let hasQuote = quoteLines.contains { !$0.isEmpty }
         let quote = hasQuote ? quoteLines.joined(separator: "\n") : nil
         let message = lines.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
-        return (message, quote)
+        return (message.removingHtmlTags() ?? "", quote?.removingHtmlTags() ?? "")
     }
 
     var fullText: String {
