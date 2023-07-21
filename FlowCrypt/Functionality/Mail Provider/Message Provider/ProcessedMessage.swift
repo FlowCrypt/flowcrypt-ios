@@ -132,7 +132,7 @@ extension ProcessedMessage {
         let hasQuote = quoteLines.contains { !$0.isEmpty }
         let quote = hasQuote ? quoteLines.joined(separator: "\n") : nil
         let message = lines.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
-        return (message.removingHtmlTags() ?? "", quote?.removingHtmlTags() ?? "")
+        return (message.removingHtmlTags() ?? "", quote?.removingHtmlTags())
     }
 
     var fullText: String {
