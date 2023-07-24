@@ -95,6 +95,13 @@ public extension String {
         ).string
     }
 
+    func isHTMLString() -> Bool {
+        if let _ = self.range(of: "^\\s*(<!doctype html>)?\\s*<[a-z][\\s\\S]*>\\s*$", options: .regularExpression) {
+            return true
+        }
+        return false
+    }
+
     func removingMailThreadQuote() -> String {
         guard let range = range(
             of: "On [a-zA-Z0-9, ]*, at [a-zA-Z0-9: ]*, .* wrote:",
