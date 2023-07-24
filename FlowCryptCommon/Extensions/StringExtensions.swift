@@ -96,10 +96,7 @@ public extension String {
     }
 
     func isHTMLString() -> Bool {
-        if let _ = self.range(of: "^\\s*(<!doctype html[\\s\\S]*>)?\\s*<[a-z][\\s\\S]*>\\s*$", options: [.regularExpression, .caseInsensitive]) {
-            return true
-        }
-        return false
+        return self.range(of: "^\\s*(<!doctype html[\\s\\S]*>)?\\s*<[a-z][\\s\\S]*>\\s*$", options: [.regularExpression, .caseInsensitive]) != nil
     }
 
     func removingMailThreadQuote() -> String {
