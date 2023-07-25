@@ -14,7 +14,6 @@ class GmailService: MailServiceProvider {
     let currentUserEmail: String
     let mailServiceProviderType = MailServiceProviderType.gmail
     let googleAuthManager: GoogleAuthManagerType
-    let backupSearchQueryProvider: GmailBackupSearchQueryProviderType
 
     let logger = Logger.nested("GmailService")
     var gmailService: GTLRService {
@@ -43,12 +42,10 @@ class GmailService: MailServiceProvider {
 
     init(
         currentUserEmail: String,
-        googleAuthManager: GoogleAuthManagerType,
-        backupSearchQueryProvider: GmailBackupSearchQueryProviderType = GmailBackupSearchQueryProvider()
+        googleAuthManager: GoogleAuthManagerType
     ) {
         self.currentUserEmail = currentUserEmail
         self.googleAuthManager = googleAuthManager
-        self.backupSearchQueryProvider = backupSearchQueryProvider
     }
 }
 
