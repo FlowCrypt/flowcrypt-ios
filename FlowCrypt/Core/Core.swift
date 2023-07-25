@@ -42,10 +42,6 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let data: Data
     }
 
-    private struct GmailBackupSearchResponse: Decodable {
-        let query: String
-    }
-
     private struct AttachmentTreatAsResponse: Decodable {
         let atts: [CoreRes.AttachmentTreatAs]
     }
@@ -248,12 +244,6 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
             params: ["value": passPhrase, "purpose": "passphrase"]
         )
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
-    }
-
-    func gmailBackupSearch(for email: String) async throws -> String {
-        let response = try await call("gmailBackupSearch", params: ["acctEmail": email])
-        let result = try response.json.decodeJson(as: GmailBackupSearchResponse.self)
-        return result.query
     }
 
     // MARK: Private calls

@@ -19,8 +19,8 @@ enum GmailApiError: Error {
     case missingMessageInfo(String)
     /// Provider Error
     case providerError(Error)
-    /// Empty or invalid backup search query
-    case missingBackupQuery(Error)
+    /// Search backup error
+    case searchBackup(Error)
     /// Pagination Error
     case paginationError(MessagesListPagination?)
     /// Invalid auth grant
@@ -42,8 +42,8 @@ extension GmailApiError: LocalizedError {
             return "gmail_service_provider_error_error_message".localizeWithArguments(error.localizedDescription)
         case let .paginationError(pagination):
             return "gmail_service_pagination_error".localizeWithArguments(String(describing: pagination))
-        case let .missingBackupQuery(error):
-            return "gmail_service_missing_back_query_error_message".localizeWithArguments(error.localizedDescription)
+        case let .searchBackup(error):
+            return "gmail_service_search_backup_error_message".localizeWithArguments(error.localizedDescription)
         case .invalidGrant:
             return "gmail_service_invalid_grant_error_message".localized
         }

@@ -466,18 +466,6 @@ for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && n
   });
 }
 
-test('gmailBackupSearch', async t => {
-  const { data, json } = await endpoints.gmailBackupSearch({ acctEmail: 'test@acct.com' });
-  expect(json).to.deep.equal({
-    query:
-      'from:test@acct.com to:test@acct.com (subject:"Your FlowCrypt Backup" OR subject: ' +
-      '"Your CryptUp Backup" OR subject: "All you need to know about CryptUP (contains a backup)"' +
-      ' OR subject: "CryptUP Account Backup") -is:spam',
-  });
-  expectNoData(data);
-  t.pass();
-});
-
 test('isEmailValid - true', async t => {
   const { data, json } = await endpoints.isEmailValid({ email: 'test@acct.com' });
   expect(json).to.deep.equal({ valid: true });
