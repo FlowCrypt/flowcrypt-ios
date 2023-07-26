@@ -17,7 +17,6 @@ import { Str } from '../core/common';
 import { VERSION } from '../core/const';
 import { ValidateInput, readArmoredKeyOrThrow, NodeRequest } from './validate-input';
 import { Xss } from '../platform/xss';
-import { gmailBackupSearchQuery } from '../core/const';
 import { config, encryptKey, Key, PrivateKey, readKey, readKeys } from 'openpgp';
 
 export class Endpoints {
@@ -352,11 +351,6 @@ export class Endpoints {
     } else {
       throw new Error(`Unknown purpose: ${r.purpose}`);
     }
-  };
-
-  public gmailBackupSearch = async (uncheckedReq: unknown): Promise<EndpointRes> => {
-    const { acctEmail } = ValidateInput.gmailBackupSearch(uncheckedReq);
-    return fmtRes({ query: gmailBackupSearchQuery(acctEmail) });
   };
 
   public parseKeys = async (_uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {

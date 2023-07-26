@@ -13,6 +13,12 @@ enum GeneralConstants {
         static let trashLabelPath = "TRASH"
         // Empty pass is For All MAIL
         static let standardGmailPaths = ["INBOX", "CHAT", "SENT", "IMPORTANT", trashLabelPath, "DRAFT", "SPAM", "STARRED", "UNREAD", ""]
+        static let gmailRecoveryEmailSubjects = [
+            "Your FlowCrypt Backup",
+            "Your CryptUp Backup",
+            "All you need to know about CryptUP (contains a backup)",
+            "CryptUP Account Backup"
+        ]
     }
 
     enum Global {

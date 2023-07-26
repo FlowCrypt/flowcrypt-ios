@@ -373,7 +373,7 @@
 "gmail_service_provider_error_error_message" = "Gmail provider error:\n%@";
 "gmail_service_invalid_grant_error_message" = "Access to %@ account was revoked.\n\nPlease reconnect the app to Gmail";
 "gmail_service_pagination_error" = "Pagination %@ is not supported for this provider";
-"gmail_service_missing_back_query_error_message" = "Missing backup query: %@";
+"gmail_service_search_backup_error_message" = "Error while fetching backups. Error: %@";
 "gmail_service_no_access_to_account_message" = "Google login successful.\nNow connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
 // Google User Service errors

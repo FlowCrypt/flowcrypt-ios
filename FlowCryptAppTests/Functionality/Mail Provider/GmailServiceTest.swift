@@ -14,31 +14,25 @@ class GmailServiceTest: XCTestCase {
 
     var sut: GmailService!
     var authManager: GoogleAuthManagerMock!
-    var backupSearchQueryProvider: GmailBackupSearchQueryProviderMock!
 
     override func setUp() {
         authManager = GoogleAuthManagerMock()
-        backupSearchQueryProvider = GmailBackupSearchQueryProviderMock()
         sut = GmailService(
             currentUserEmail: "user@example.test",
-            googleAuthManager: authManager,
-            backupSearchQueryProvider: backupSearchQueryProvider
+            googleAuthManager: authManager
         )
     }
 
-    func testSearchBackupsWhenErrorInQuery() async {
-        backupSearchQueryProvider.makeBackupQueryResult = .failure(MockError())
-
-        do {
-            _ = try await sut.searchBackups(for: "james.bond@gmail.com")
-        } catch {
-            switch error as? GmailApiError {
-            case let .missingBackupQuery(underliningError):
-                XCTAssertTrue(underliningError is MockError)
-            default:
-                XCTFail()
-            }
-        }
+    func testMakeBackupQuery() async {
+        let backupQuery = sut.makeBackupQuery(acctEmail: "james.bond@gmail.com")
+        let expectedQuery =
+            "from:james.bond@gmail.com to:james.bond@gmail.com " +
+            "subject:\"Your FlowCrypt Backup\" OR " +
+            "subject:\"Your CryptUp Backup\" OR " +
+            "subject:\"All you need to know about CryptUP (contains a backup)\" OR " +
+            "subject:\"CryptUP Account Backup\" " +
+            "-is:spam"
+        XCTAssertEqual(backupQuery, expectedQuery)
     }
 }
 
@@ -51,12 +45,5 @@ class GoogleAuthManagerMock: GoogleAuthManagerType {
     var isContactsScopeEnabled = true
     func searchContacts(query: String) async throws -> [Recipient] {
         return []
-    }
-}
-
-class GmailBackupSearchQueryProviderMock: GmailBackupSearchQueryProviderType {
-    var makeBackupQueryResult: Result<String, MockError> = .success("query")
-    func makeBackupQuery(for email: String) throws -> String {
-        try makeBackupQueryResult.get()
     }
 }
