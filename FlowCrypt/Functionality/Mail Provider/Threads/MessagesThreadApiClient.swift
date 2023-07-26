@@ -72,7 +72,13 @@ extension GmailService: MessagesThreadApiClient {
                         return continuation.resume(throwing: AppErr.cast("GTLRGmail_Thread"))
                     }
 
-                    let messages = gmailThread.messages?.compactMap { try? Message(gmailMessage: $0) } ?? []
+                    var messages = gmailThread.messages?.compactMap { try? Message(gmailMessage: $0) } ?? []
+
+                    // For trash folder: Only display deleted messages in thread
+                    // For othr folders: Exclude deleted messages in thread
+                    // https://github.com/FlowCrypt/flowcrypt-ios/issues/2292
+                    let isTrashFolder = path == GeneralConstants.Gmail.trashLabelPath
+                    messages = messages.filter { $0.labels.contains(.trash) == isTrashFolder }
 
                     let thread = MessageThread(
                         identifier: gmailThread.identifier,

@@ -10,8 +10,9 @@ enum GeneralConstants {
         static let redirectURL = URL(string: "com.googleusercontent.apps.679326713487-5r16ir2f57bpmuh2d6dal1bcm9m1ffqc:/oauthredirect")!
         static let mailScope: [GoogleScope] = [.userInfo, .userEmail, .mail]
         static let contactsScope: [GoogleScope] = mailScope + [.contacts, .otherContacts]
+        static let trashLabelPath = "TRASH"
         // Empty pass is For All MAIL
-        static let standardGmailPaths = ["INBOX", "CHAT", "SENT", "IMPORTANT", "TRASH", "DRAFT", "SPAM", "STARRED", "UNREAD", ""]
+        static let standardGmailPaths = ["INBOX", "CHAT", "SENT", "IMPORTANT", trashLabelPath, "DRAFT", "SPAM", "STARRED", "UNREAD", ""]
         static let gmailRecoveryEmailSubjects = [
             "Your FlowCrypt Backup",
             "Your CryptUp Backup",
