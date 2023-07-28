@@ -255,11 +255,11 @@ extension ComposeViewDecorator {
 
     private static var selectedStateContext: RecipientStateContext {
         RecipientStateContext(
-            backgroundColor: .gray,
-            borderColor: .borderColor,
-            textColor: .white,
+            backgroundColor: UIColor(hex: "E8F0FE") ?? .gray,
+            borderColor: UIColor(hex: "669EF6") ?? .borderColor,
+            textColor: UIColor(hex: "1867D2") ?? .white,
             image: nil,
-            accessibilityIdentifier: "gray"
+            accessibilityIdentifier: "selected"
         )
     }
 
