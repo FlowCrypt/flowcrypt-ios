@@ -14,6 +14,7 @@ protocol ComposeRecipientPopupViewControllerProtocol {
     func removeRecipient(email: String, type: RecipientType)
     func editRecipient(email: String, type: RecipientType)
     func enableRecipientEditing()
+    func deselectRecipients(type: RecipientType)
 }
 
 /**
@@ -94,6 +95,7 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
             self.dismiss(animated: true, completion: nil)
         case .copy:
             UIPasteboard.general.string = recipient.email
+            self.delegate?.deselectRecipients(type: type)
             self.dismiss(animated: true, completion: nil)
         default:
             break
