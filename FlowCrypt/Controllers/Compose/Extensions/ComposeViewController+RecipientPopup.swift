@@ -43,12 +43,15 @@ extension ComposeViewController: UIPopoverPresentationControllerDelegate {
     public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         guard let popoverVC = presentationController.presentedViewController as? ComposeRecipientPopupViewController
         else { return }
+        toggleRecipientTextField(isEnabled: true)
         let recipients = contextToSend.recipients(type: popoverVC.type)
         let selectedRecipients = recipients.filter(\.state.isSelected)
         // Deselect previous selected receipients
         for recipient in selectedRecipients {
-            contextToSend.update(recipient: recipient.email, type: popoverVC.type, state: decorator.recipientIdleState)
-            evaluate(recipient: recipient)
+            var state = recipient.state
+            state.isSelected.toggle()
+            contextToSend.update(recipient: recipient.email, type: popoverVC.type, state: state)
+            refreshRecipient(for: recipient.email, type: popoverVC.type, refreshType: .reload)
         }
     }
 }

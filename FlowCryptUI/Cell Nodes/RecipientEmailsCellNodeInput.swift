@@ -56,6 +56,9 @@ public extension RecipientEmailsCellNode {
             }
 
             var alpha: CGFloat {
+                if case .keyNotFound = self { // Increase opacity for keyNotFound state when selected
+                    return stateContext.isSelected ? 2.0 : 1.0
+                }
                 return stateContext.isSelected ? 0.5 : 1.0
             }
 

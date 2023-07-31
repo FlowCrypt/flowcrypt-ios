@@ -234,9 +234,20 @@ extension ComposeViewController {
             case let .imageTap(indexPath):
                 self.handleRecipientAction(with: indexPath, type: type)
             case let .select(indexPath, sender):
+                self.toggleRecipientTextField(isEnabled: false)
                 self.handleRecipientSelection(with: indexPath, type: type)
                 self.displayRecipientPopOver(with: indexPath, type: type, sender: sender)
             }
+        }
+    }
+
+    func toggleRecipientTextField(isEnabled: Bool) {
+        let types: [RecipientType] = [.to, .cc, .bcc]
+        for type in types {
+            self.recipientsTextField(type: type)?.isUserInteractionEnabled = isEnabled
+        }
+        if let type = selectedRecipientType, let textField = recipientsTextField(type: type) {
+            textField.becomeFirstResponder()
         }
     }
 
