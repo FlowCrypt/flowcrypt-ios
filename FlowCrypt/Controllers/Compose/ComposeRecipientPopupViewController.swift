@@ -13,6 +13,7 @@ import FlowCryptUI
 protocol ComposeRecipientPopupViewControllerProtocol {
     func removeRecipient(email: String, type: RecipientType)
     func editRecipient(email: String, type: RecipientType)
+    func enableRecipientEditing()
 }
 
 /**
@@ -97,6 +98,7 @@ extension ComposeRecipientPopupViewController: ASTableDelegate, ASTableDataSourc
         default:
             break
         }
+        self.delegate?.enableRecipientEditing()
     }
 }
 

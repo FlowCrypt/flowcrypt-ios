@@ -75,4 +75,8 @@ extension ComposeViewController: ComposeRecipientPopupViewControllerProtocol {
             }
         }
     }
+
+    func enableRecipientEditing() {
+        toggleRecipientTextField(isEnabled: true)
+    }
 }
