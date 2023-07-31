@@ -165,7 +165,7 @@ extension ComposeViewController {
 
         if var lastRecipient = recipients.popLast() {
             // select last recipient in a list
-            lastRecipient.state = decorator.recipientSelectedState
+            lastRecipient.state.isSelected = true
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
 

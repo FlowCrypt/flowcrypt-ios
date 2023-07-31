@@ -136,13 +136,12 @@ extension ComposeViewController {
     }
 
     func handleRecipientSelection(with indexPath: IndexPath, type: RecipientType) {
-        guard let recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
+        guard var recipient = contextToSend.recipient(at: indexPath.row, type: type) else { return }
 
-        let isSelected = recipient.state.isSelected
-        let state = isSelected ? decorator.recipientIdleState : decorator.recipientSelectedState
-        contextToSend.update(recipient: recipient.email, type: type, state: state)
+        recipient.state.isSelected.toggle()
+        contextToSend.update(recipient: recipient.email, type: type, state: recipient.state)
 
-        if isSelected {
+        if !recipient.state.isSelected {
             evaluate(recipient: recipient)
         }
 
@@ -161,7 +160,7 @@ extension ComposeViewController {
         switch recipient.state {
         case .idle:
             handleRecipientSelection(with: indexPath, type: type)
-        case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .selected:
+        case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail:
             break
         case let .error(_, isRetryError):
             if isRetryError {
