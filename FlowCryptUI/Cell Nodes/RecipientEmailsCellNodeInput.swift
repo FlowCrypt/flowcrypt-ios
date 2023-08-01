@@ -15,6 +15,7 @@ public extension RecipientEmailsCellNode {
             let backgroundColor, borderColor, textColor: UIColor
             let image: UIImage?
             let accessibilityIdentifier: String?
+            var isSelected: Bool
 
             public init(
                 backgroundColor: UIColor,
@@ -28,12 +29,12 @@ public extension RecipientEmailsCellNode {
                 self.textColor = textColor
                 self.image = image
                 self.accessibilityIdentifier = accessibilityIdentifier
+                self.isSelected = false
             }
         }
 
         public enum State: CustomStringConvertible, Equatable {
             case idle(StateContext)
-            case selected(StateContext)
             case keyFound(StateContext)
             case keyExpired(StateContext)
             case keyRevoked(StateContext)
@@ -44,7 +45,6 @@ public extension RecipientEmailsCellNode {
             private var stateContext: StateContext {
                 switch self {
                 case let .idle(context),
-                     let .selected(context),
                      let .keyFound(context),
                      let .keyExpired(context),
                      let .keyRevoked(context),
@@ -55,12 +55,19 @@ public extension RecipientEmailsCellNode {
                 }
             }
 
+            var alpha: CGFloat {
+                if case .keyNotFound = self { // Increase opacity for keyNotFound state when selected
+                    return stateContext.isSelected ? 2.0 : 1.0
+                }
+                return stateContext.isSelected ? 0.5 : 1.0
+            }
+
             var backgroundColor: UIColor {
-                stateContext.backgroundColor
+                stateContext.backgroundColor.scaleAlpha(by: alpha)
             }
 
             var borderColor: UIColor {
-                stateContext.borderColor
+                stateContext.borderColor.scaleAlpha(by: alpha)
             }
 
             public var textColor: UIColor {
@@ -76,16 +83,39 @@ public extension RecipientEmailsCellNode {
             }
 
             public var isSelected: Bool {
-                switch self {
-                case .selected: return true
-                default: return false
+                get {
+                    stateContext.isSelected
+                }
+                set {
+                    switch self {
+                    case var .idle(context):
+                        context.isSelected = newValue
+                        self = .idle(context)
+                    case var .keyFound(context):
+                        context.isSelected = newValue
+                        self = .keyFound(context)
+                    case var .keyExpired(context):
+                        context.isSelected = newValue
+                        self = .keyExpired(context)
+                    case var .keyRevoked(context):
+                        context.isSelected = newValue
+                        self = .keyRevoked(context)
+                    case var .keyNotFound(context):
+                        context.isSelected = newValue
+                        self = .keyNotFound(context)
+                    case var .invalidEmail(context):
+                        context.isSelected = newValue
+                        self = .invalidEmail(context)
+                    case var .error(context, flag):
+                        context.isSelected = newValue
+                        self = .error(context, flag)
+                    }
                 }
             }
 
             public var description: String {
                 switch self {
                 case .idle: return "idle"
-                case .selected: return "selected"
                 case .keyFound: return "keyFound"
                 case .keyExpired: return "keyExpired"
                 case .keyRevoked: return "keyRevoked"

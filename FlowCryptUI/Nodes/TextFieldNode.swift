@@ -73,6 +73,14 @@ public final class TextFieldNode: ASDisplayNode {
         }
     }
 
+    override public var isUserInteractionEnabled: Bool {
+        didSet {
+            DispatchQueue.main.async {
+                self.textField.isUserInteractionEnabled = self.isUserInteractionEnabled
+            }
+        }
+    }
+
     public var textInsets: CGFloat = -7 {
         didSet {
             DispatchQueue.main.async {

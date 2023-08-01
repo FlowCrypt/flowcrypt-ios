@@ -320,11 +320,6 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitElementInvisible(addedRecipientEl);
   };
 
-  deleteAddedRecipientWithBackspace = async (order: number, type = 'to') => {
-    await this.showRecipientPopup(order, type);
-    await driver.sendKeys(['\b']); // backspace
-  };
-
   deleteAddedRecipientWithDoubleBackspace = async () => {
     await this.showRecipientInputIfNeeded();
     await driver.sendKeys(['\b']); // backspace

@@ -19,6 +19,10 @@ extension ComposeViewController {
 
         guard let text = textField.text else { nextResponder(); return true }
 
+        if !character.isEmpty {
+            deselectRecipients(type: recipientType)
+        }
+
         if text.isEmpty, character.count > 1 {
             // Pasted string
             let characterSet = CharacterSet(charactersIn: Constants.endTypingCharacters.joined())
@@ -165,7 +169,7 @@ extension ComposeViewController {
 
         if var lastRecipient = recipients.popLast() {
             // select last recipient in a list
-            lastRecipient.state = decorator.recipientSelectedState
+            lastRecipient.state.isSelected = true
             recipients.append(lastRecipient)
             contextToSend.set(recipients: recipients, for: recipientType)
 

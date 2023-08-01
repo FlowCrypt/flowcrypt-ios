@@ -13,7 +13,6 @@ typealias RecipientStateContext = RecipientEmailsCellNode.Input.StateContext
 
 struct ComposeViewDecorator {
     let recipientIdleState: RecipientState = .idle(idleStateContext)
-    let recipientSelectedState: RecipientState = .selected(selectedStateContext)
     let recipientKeyFoundState: RecipientState = .keyFound(keyFoundStateContext)
     let recipientKeyExpiredState: RecipientState = .keyExpired(keyExpiredStateContext)
     let recipientKeyRevokedState: RecipientState = .keyRevoked(keyRevokedStateContext)
@@ -249,16 +248,6 @@ extension ComposeViewDecorator {
             borderColor: .borderColor,
             textColor: .mainTextColor,
             image: UIImage(named: "retry"),
-            accessibilityIdentifier: "gray"
-        )
-    }
-
-    private static var selectedStateContext: RecipientStateContext {
-        RecipientStateContext(
-            backgroundColor: .gray,
-            borderColor: .borderColor,
-            textColor: .white,
-            image: nil,
             accessibilityIdentifier: "gray"
         )
     }
