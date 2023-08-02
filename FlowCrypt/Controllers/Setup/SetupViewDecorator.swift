@@ -80,7 +80,7 @@ struct SetupViewDecorator {
         case .common:
             subtitle = "setup_description".localized
         case .choosingPassPhrase:
-            subtitle = "" // "create_pass_phrase_description".localized https://github.com/FlowCrypt/flowcrypt-ios/issues/497
+            subtitle = "create_pass_phrase_description".localized
         case .noBackups:
             subtitle = "setup_no_backups".localized // todo - edit
         }
