@@ -4,8 +4,9 @@
   -->
 <style>
     body {
-        font-size: 30px;
+        font-size: 60px;
         padding: 15px;
+        font-family: system-ui;
     }
    .featherlight-content {
        text-align: justify;
@@ -20,20 +21,23 @@
 
    /* contains the content */
    .featherlight-inner {
-       /* make sure its visible */
-       display: block;
+       display: flex;
+       flex-direction: column;
    }
 
-   .good { color: #088447; }
+    .good_passphrase {
+        color: #088447;
+        margin-bottom: 30px;
+    }
    .bad { color: #A44; }
 
 </style>
 <div class="featherlight-content">
     <div class="lightboxed featherlight-inner">
         <p>Choose a VERY long passphrase. For example, combine uncommon words like this:</p>
-        <pre class="good">cheesy pod unlike any other
-semi automated shiseido mask
-icelanders prefer real sauna</pre>
+        <span class="good_passphrase">cheesy pod unlike any other</span>
+        <span class="good_passphrase">semi automated shiseido mask</span>
+        <span class="good_passphrase">icelanders prefer real sauna</span>
         <p>Combinations like that are memorable, easy to type and the most secure.</p>
         <p>In contrast, pass phrases like <code class="bad">@ut0m4t3d</code>, <code class="bad">Honey167!</code> or
             <code class="bad">lA45pf8$d</code> are a poor choice when it comes to security. Because they are so short,
