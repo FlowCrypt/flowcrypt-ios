@@ -80,7 +80,7 @@ struct SetupViewDecorator {
         case .common:
             subtitle = "setup_description".localized
         case .choosingPassPhrase:
-            subtitle = "create_pass_phrase_description".localized
+            subtitle = "create_pass_phrase_tips".localized
         case .noBackups:
             subtitle = "setup_no_backups".localized // todo - edit
         }
