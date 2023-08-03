@@ -176,6 +176,7 @@
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
 		9547EF212A5F106E00A048FF /* PassPhraseAlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */; };
 		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
+		9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */ = {isa = PBXBuildFile; fileRef = 9582BC592A782DA700439728 /* pass_phrase_hint.html */; };
 		958566B72A6126DE001C84D3 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		958566B92A612822001C84D3 /* ASButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958566B82A612822001C84D3 /* ASButtonNode.swift */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
@@ -638,6 +639,7 @@
 		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseAlertNode.swift; sourceTree = "<group>"; };
 		9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSeparatorCellNode.swift; sourceTree = "<group>"; };
+		9582BC592A782DA700439728 /* pass_phrase_hint.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = pass_phrase_hint.html; sourceTree = "<group>"; };
 		958566B82A612822001C84D3 /* ASButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASButtonNode.swift; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
@@ -1872,6 +1874,7 @@
 				51E8181B29081D2B00FD428D /* generated */,
 				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
+				9582BC592A782DA700439728 /* pass_phrase_hint.html */,
 				51E1673C270DAFF900D27C52 /* Localizable.stringsdict */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
 				D269E025240EAD9A000495C3 /* Naming Convention.md */,
@@ -2509,6 +2512,7 @@
 				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */,
+				9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
