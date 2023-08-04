@@ -15,6 +15,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
         static let blockingTimeInSeconds: Double = 5 * 60
         static let textColor = UIColor.colorFor(darkStyle: .white, lightStyle: .black)
         static let okayButtonColor = UIColor(hex: "4591FC") ?? .blue
+        static let buttonFont = UIFont.boldSystemFont(ofSize: 16)
     }
 
     private lazy var overlayNode = createOverlayNode()
@@ -125,14 +126,14 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
         okayButton.isEnabled = false
         let minuteSecondStr = convertToMinuteSecondFormat(seconds: Int(remainingTimeInSeconds))
-        okayButton.setTitle(minuteSecondStr, with: .boldSystemFont(ofSize: 16), with: .gray, for: .normal)
+        okayButton.setTitle(minuteSecondStr, with: Constants.buttonFont, with: .gray, for: .normal)
     }
 
     private func dismissBruteForceProtectionAlert() {
         if failedPassPhraseAttempts == 0 {
             introduction = nil
         }
-        okayButton.setTitle("Ok", with: UIFont.boldSystemFont(ofSize: 16), with: Constants.okayButtonColor, for: .normal)
+        okayButton.setTitle("Ok", with: Constants.buttonFont, with: Constants.okayButtonColor, for: .normal)
         okayButton.isEnabled = true
     }
 
@@ -199,7 +200,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
     private func createButtonNode(title: String, color: UIColor, identifier: String, action: Selector) -> ASButtonNode {
         let node = ASButtonNode()
-        node.setTitle(title, with: UIFont.boldSystemFont(ofSize: 16), with: color, for: .normal)
+        node.setTitle(title, with: Constants.buttonFont, with: color, for: .normal)
         node.style.flexGrow = 1
         node.style.preferredSize.height = 35
         node.addTarget(self, action: action, forControlEvents: .touchUpInside)
