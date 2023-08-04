@@ -13,6 +13,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
     enum Constants {
         static let antiBruteForceProtectionAttemptsMaxValue = 5
         static let blockingTimeInSeconds: Double = 5 * 60
+        static let textColor = UIColor.colorFor(darkStyle: .white, lightStyle: .darkGray)
     }
 
     private lazy var overlayNode = createOverlayNode()
@@ -23,7 +24,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
     private lazy var introductionLabel = createTextNode(text: "", isBold: false, fontSize: 13, identifier: "aid-anti-brute-force-introduce-label")
     private lazy var passPhraseTextField = createPassPhraseTextField()
     private lazy var cancelButton = createButtonNode(title: "Cancel", color: .red, identifier: "aid-cancel-button", action: #selector(cancelButtonTapped))
-    private lazy var okayButton = createButtonNode(title: "Ok", color: .blue, identifier: "aid-ok-button", action: #selector(okayButtonTapped))
+    private lazy var okayButton = createButtonNode(title: "Ok", color: UIColor(hex: "4591FC") ?? .blue, identifier: "aid-ok-button", action: #selector(okayButtonTapped))
     private weak var alertTimer: Timer?
 
     private var introduction: String? { didSet { updateIntroduction() } }
@@ -154,7 +155,10 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
     private func createContentView() -> ASDisplayNode {
         let node = ASDisplayNode()
-        node.backgroundColor = UIColor(hex: "F0F0F0")
+        node.backgroundColor = UIColor.colorFor(
+            darkStyle: UIColor(hex: "282828") ?? .black,
+            lightStyle: UIColor(hex: "F0F0F0") ?? .white
+        )
         node.clipsToBounds = true
         node.cornerRadius = 13
         node.shadowColor = UIColor.black.cgColor
@@ -182,26 +186,30 @@ public class PassPhraseAlertNode: ASDisplayNode {
         let font = isBold ? UIFont.boldSystemFont(ofSize: fontSize) : UIFont.systemFont(ofSize: fontSize)
         node.attributedText = NSAttributedString(
             string: text,
-            attributes: [NSAttributedString.Key.font: font]
+            attributes: [
+                .font: font,
+                .foregroundColor: Constants.textColor
+            ]
         )
+
         node.accessibilityIdentifier = identifier
         return node
     }
 
     private func createButtonNode(title: String, color: UIColor, identifier: String, action: Selector) -> ASButtonNode {
         let node = ASButtonNode()
-        node.setTitle(title, with: UIFont.systemFont(ofSize: 15), with: color, for: .normal)
+        node.setTitle(title, with: UIFont.boldSystemFont(ofSize: 16), with: color, for: .normal)
         node.style.flexGrow = 1
         node.style.preferredSize.height = 35
         node.addTarget(self, action: action, forControlEvents: .touchUpInside)
         node.accessibilityIdentifier = identifier
-        node.setBackgroundColor(.lightGray, forState: .highlighted)
+        node.setBackgroundColor(UIColor.colorFor(darkStyle: .darkGray, lightStyle: .lightGray), forState: .highlighted)
         return node
     }
 
     private func updateIntroduction() {
         if let introduction, !introduction.isEmpty {
-            introductionLabel.attributedText = NSAttributedString(string: introduction)
+            introductionLabel.attributedText = NSAttributedString(string: introduction, attributes: [.foregroundColor: Constants.textColor])
             introductionLabel.isHidden = false
         } else {
             introductionLabel.isHidden = true
@@ -220,9 +228,15 @@ public class PassPhraseAlertNode: ASDisplayNode {
             self.submitPassphrase(text: textField.text)
             return true
         }
-        node.borderColor = .init(gray: 0.2, alpha: 1.0)
+        node.borderColor = UIColor.colorFor(
+            darkStyle: .init(white: 0.8, alpha: 1.0),
+            lightStyle: .init(white: 0.2, alpha: 1.0)
+        ).cgColor
         node.borderWidth = 0.1
-        node.backgroundColor = .white
+        node.backgroundColor = UIColor.colorFor(
+            darkStyle: UIColor(hex: "1D1D1E") ?? .black,
+            lightStyle: .white
+        )
         node.cornerRadius = 6
         node.style.width = ASDimension(unit: .fraction, value: 1.0)
         node.style.preferredSize.height = 35
