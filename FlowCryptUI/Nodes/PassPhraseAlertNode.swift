@@ -14,6 +14,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
         static let antiBruteForceProtectionAttemptsMaxValue = 5
         static let blockingTimeInSeconds: Double = 5 * 60
         static let textColor = UIColor.colorFor(darkStyle: .white, lightStyle: .darkGray)
+        static let okayButtonColor = UIColor(hex: "4591FC") ?? .blue
     }
 
     private lazy var overlayNode = createOverlayNode()
@@ -24,7 +25,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
     private lazy var introductionLabel = createTextNode(text: "", isBold: false, fontSize: 13, identifier: "aid-anti-brute-force-introduce-label")
     private lazy var passPhraseTextField = createPassPhraseTextField()
     private lazy var cancelButton = createButtonNode(title: "Cancel", color: .red, identifier: "aid-cancel-button", action: #selector(cancelButtonTapped))
-    private lazy var okayButton = createButtonNode(title: "Ok", color: UIColor(hex: "4591FC") ?? .blue, identifier: "aid-ok-button", action: #selector(okayButtonTapped))
+    private lazy var okayButton = createButtonNode(title: "Ok", color: Constants.okayButtonColor, identifier: "aid-ok-button", action: #selector(okayButtonTapped))
     private weak var alertTimer: Timer?
 
     private var introduction: String? { didSet { updateIntroduction() } }
@@ -131,7 +132,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
         if failedPassPhraseAttempts == 0 {
             introduction = nil
         }
-        okayButton.setTitle("Ok", with: UIFont.systemFont(ofSize: 15), with: .blue, for: .normal)
+        okayButton.setTitle("Ok", with: UIFont.boldSystemFont(ofSize: 15), with: Constants.okayButtonColor, for: .normal)
         okayButton.isEnabled = true
     }
 
