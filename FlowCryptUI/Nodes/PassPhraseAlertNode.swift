@@ -125,14 +125,14 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
         okayButton.isEnabled = false
         let minuteSecondStr = convertToMinuteSecondFormat(seconds: Int(remainingTimeInSeconds))
-        okayButton.setTitle(minuteSecondStr, with: .systemFont(ofSize: 15), with: .gray, for: .normal)
+        okayButton.setTitle(minuteSecondStr, with: .boldSystemFont(ofSize: 16), with: .gray, for: .normal)
     }
 
     private func dismissBruteForceProtectionAlert() {
         if failedPassPhraseAttempts == 0 {
             introduction = nil
         }
-        okayButton.setTitle("Ok", with: UIFont.boldSystemFont(ofSize: 15), with: Constants.okayButtonColor, for: .normal)
+        okayButton.setTitle("Ok", with: UIFont.boldSystemFont(ofSize: 16), with: Constants.okayButtonColor, for: .normal)
         okayButton.isEnabled = true
     }
 
