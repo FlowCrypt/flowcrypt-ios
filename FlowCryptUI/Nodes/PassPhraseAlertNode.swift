@@ -13,7 +13,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
     enum Constants {
         static let antiBruteForceProtectionAttemptsMaxValue = 5
         static let blockingTimeInSeconds: Double = 5 * 60
-        static let textColor = UIColor.colorFor(darkStyle: .white, lightStyle: .darkGray)
+        static let textColor = UIColor.colorFor(darkStyle: .white, lightStyle: .black)
         static let okayButtonColor = UIColor(hex: "4591FC") ?? .blue
     }
 
