@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/FlowCrypt/flowcrypt-ios#readme",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.46.0",
     "eslint-config-prettier": "^8.10.0",
