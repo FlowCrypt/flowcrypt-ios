@@ -9,6 +9,7 @@
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
 "ok" = "Ok";
+"submit" = "Submit";
 "cancel" = "Cancel";
 "delete" = "Delete";
 "download" = "Download";
