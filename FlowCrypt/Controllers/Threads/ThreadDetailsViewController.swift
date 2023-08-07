@@ -412,6 +412,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
                     alertsFactory.passphraseCheckSucceed()
                     handle(processedMessage: processedMessage, at: indexPath)
                 } else {
+                    hideSpinner()
                     alertsFactory.passphraseCheckFailed()
                     handleWrongPassPhrase(passPhrase, indexPath: indexPath)
                 }
@@ -443,11 +444,11 @@ final class ThreadDetailsViewController: TableNodeViewController {
     func handleFetchProgress(state: MessageFetchState) {
         switch state {
         case .fetch:
-            showSpinner("loading_title".localized, isUserInteractionEnabled: true)
+            showSpinner(isUserInteractionEnabled: true)
         case let .download(progress):
-            updateSpinner(label: "downloading_title".localized, progress: progress)
+            showSpinnerWithProgress("downloading_title".localized, progress: progress)
         case .decrypt:
-            updateSpinner(label: "processing_title".localized)
+            showSpinner("processing_title".localized)
         }
     }
 }
