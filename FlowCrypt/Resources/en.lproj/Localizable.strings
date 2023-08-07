@@ -9,6 +9,7 @@
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
 "ok" = "Ok";
+"submit" = "Submit";
 "cancel" = "Cancel";
 "delete" = "Delete";
 "download" = "Download";
@@ -246,7 +247,7 @@
 "import_key_add_update" = "Keys updated: %@";
 
 // Key Create
-"create_pass_phrase_description" = "See choosing secure pass phrase ?";
+"create_pass_phrase_tips" = "Tap to see tips for choosing secure pass phrase";
 "create_pass_phrase_set_title" = "Set pass phrase";
 "create_pass_phrase_lost" = "Lost pass phrase cannot be recovered";
 

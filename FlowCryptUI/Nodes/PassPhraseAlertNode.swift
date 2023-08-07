@@ -13,17 +13,20 @@ public class PassPhraseAlertNode: ASDisplayNode {
     enum Constants {
         static let antiBruteForceProtectionAttemptsMaxValue = 5
         static let blockingTimeInSeconds: Double = 5 * 60
+        static let buttonFont = UIFont.systemFont(ofSize: 16)
+        static let submitButtonText = "submit".localized
+        static let cancelButtonText = "cancel".localized
     }
 
-    private lazy var overlayNode = createOverlayNode()
-    private lazy var contentView = createContentView()
-    private lazy var separatorNode = createSeparatorNode()
-    private lazy var titleLabel = createTextNode(text: title, isBold: true, fontSize: 17, identifier: "aid-enter-passphrase-title-label")
-    private lazy var messageLabel = createTextNode(text: message ?? "", isBold: false, fontSize: 13)
-    private lazy var introductionLabel = createTextNode(text: "", isBold: false, fontSize: 13, identifier: "aid-anti-brute-force-introduce-label")
-    private lazy var passPhraseTextField = createPassPhraseTextField()
-    private lazy var cancelButton = createButtonNode(title: "Cancel", color: .red, identifier: "aid-cancel-button", action: #selector(cancelButtonTapped))
-    private lazy var okayButton = createButtonNode(title: "Ok", color: .blue, identifier: "aid-ok-button", action: #selector(okayButtonTapped))
+    private var overlayNode: ASDisplayNode!
+    private var contentView: ASDisplayNode!
+    private var separatorNode: ASDisplayNode!
+    private var titleLabel: ASTextNode!
+    private var messageLabel: ASTextNode!
+    private var introductionLabel: ASTextNode!
+    private var passPhraseTextField: TextFieldNode!
+    private var cancelButton: ASButtonNode!
+    private var okayButton: ASButtonNode!
     private weak var alertTimer: Timer?
 
     private var introduction: String? { didSet { updateIntroduction() } }
@@ -60,7 +63,30 @@ public class PassPhraseAlertNode: ASDisplayNode {
         alertTimer = nil
     }
 
+    private func createNodes() {
+        overlayNode = createOverlayNode()
+        contentView = createContentView()
+        separatorNode = createSeparatorNode()
+        titleLabel = createTextNode(text: title, isBold: true, fontSize: 17, identifier: "aid-enter-passphrase-title-label")
+        messageLabel = createTextNode(text: message ?? "", isBold: false, fontSize: 13)
+        introductionLabel = createTextNode(text: "", isBold: false, fontSize: 13, identifier: "aid-anti-brute-force-introduce-label")
+        passPhraseTextField = createPassPhraseTextField()
+        cancelButton = createButtonNode(
+            title: Constants.cancelButtonText,
+            color: .systemRed,
+            identifier: "aid-cancel-button",
+            action: #selector(cancelButtonTapped)
+        )
+        okayButton = createButtonNode(
+            title: Constants.submitButtonText,
+            color: .systemBlue,
+            identifier: "aid-ok-button",
+            action: #selector(okayButtonTapped)
+        )
+    }
+
     private func setupNodes() {
+        createNodes()
         contentView.addSubnode(titleLabel)
         if message != nil {
             contentView.addSubnode(messageLabel)
@@ -123,14 +149,14 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
         okayButton.isEnabled = false
         let minuteSecondStr = convertToMinuteSecondFormat(seconds: Int(remainingTimeInSeconds))
-        okayButton.setTitle(minuteSecondStr, with: .systemFont(ofSize: 15), with: .gray, for: .normal)
+        okayButton.setTitle(minuteSecondStr, with: Constants.buttonFont, with: .gray, for: .normal)
     }
 
     private func dismissBruteForceProtectionAlert() {
         if failedPassPhraseAttempts == 0 {
             introduction = nil
         }
-        okayButton.setTitle("Ok", with: UIFont.systemFont(ofSize: 15), with: .blue, for: .normal)
+        okayButton.setTitle(Constants.submitButtonText, with: Constants.buttonFont, with: .systemBlue, for: .normal)
         okayButton.isEnabled = true
     }
 
@@ -154,7 +180,10 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
     private func createContentView() -> ASDisplayNode {
         let node = ASDisplayNode()
-        node.backgroundColor = UIColor(hex: "F0F0F0")
+        node.backgroundColor = UIColor.colorFor(
+            darkStyle: UIColor(hex: "282828") ?? .black,
+            lightStyle: UIColor(hex: "F0F0F0") ?? .white
+        )
         node.clipsToBounds = true
         node.cornerRadius = 13
         node.shadowColor = UIColor.black.cgColor
@@ -172,7 +201,7 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
     private func createSeparatorNode() -> ASDisplayNode {
         let node = ASDisplayNode()
-        node.backgroundColor = UIColor.lightGray
+        node.backgroundColor = UIColor.separator
         node.style.height = ASDimension(unit: .points, value: 0.5)
         return node
     }
@@ -182,26 +211,30 @@ public class PassPhraseAlertNode: ASDisplayNode {
         let font = isBold ? UIFont.boldSystemFont(ofSize: fontSize) : UIFont.systemFont(ofSize: fontSize)
         node.attributedText = NSAttributedString(
             string: text,
-            attributes: [NSAttributedString.Key.font: font]
+            attributes: [
+                .font: font,
+                .foregroundColor: UIColor.mainTextColor
+            ]
         )
+
         node.accessibilityIdentifier = identifier
         return node
     }
 
     private func createButtonNode(title: String, color: UIColor, identifier: String, action: Selector) -> ASButtonNode {
         let node = ASButtonNode()
-        node.setTitle(title, with: UIFont.systemFont(ofSize: 15), with: color, for: .normal)
+        node.setTitle(title, with: Constants.buttonFont, with: color, for: .normal)
         node.style.flexGrow = 1
         node.style.preferredSize.height = 35
         node.addTarget(self, action: action, forControlEvents: .touchUpInside)
         node.accessibilityIdentifier = identifier
-        node.setBackgroundColor(.lightGray, forState: .highlighted)
+        node.setBackgroundColor(UIColor.colorFor(darkStyle: .darkGray, lightStyle: .lightGray), forState: .highlighted)
         return node
     }
 
     private func updateIntroduction() {
         if let introduction, !introduction.isEmpty {
-            introductionLabel.attributedText = NSAttributedString(string: introduction)
+            introductionLabel.attributedText = NSAttributedString(string: introduction, attributes: [.foregroundColor: UIColor.mainTextColor])
             introductionLabel.isHidden = false
         } else {
             introductionLabel.isHidden = true
@@ -220,9 +253,15 @@ public class PassPhraseAlertNode: ASDisplayNode {
             self.submitPassphrase(text: textField.text)
             return true
         }
-        node.borderColor = .init(gray: 0.2, alpha: 1.0)
+        node.borderColor = UIColor.colorFor(
+            darkStyle: .init(white: 0.8, alpha: 1.0),
+            lightStyle: .init(white: 0.2, alpha: 1.0)
+        ).cgColor
         node.borderWidth = 0.1
-        node.backgroundColor = .white
+        node.backgroundColor = UIColor.colorFor(
+            darkStyle: UIColor(hex: "1D1D1E") ?? .black,
+            lightStyle: .white
+        )
         node.cornerRadius = 6
         node.style.width = ASDimension(unit: .fraction, value: 1.0)
         node.style.preferredSize.height = 35

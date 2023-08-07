@@ -158,7 +158,11 @@ extension SetupCreatePassphraseAbstractViewController {
     }
 
     private func showChoosingOptions() {
-        showToast("Not implemented yet")
+        if let url = Bundle.main.url(forResource: "pass_phrase_hint", withExtension: "html") {
+            let request = URLRequest(url: url)
+            let vc = WebViewController(url: url)
+            present(vc, animated: true, completion: nil)
+        }
     }
 
     private func handleButtonAction() {
