@@ -21,6 +21,7 @@ extension ComposeViewController {
 
                 Task {
                     do {
+                        self.showSpinner()
                         let matched = try await self.composeMessageHelper.handlePassPhraseEntry(
                             passPhrase,
                             for: signingKey
@@ -34,6 +35,7 @@ extension ComposeViewController {
                             self.handle(error: ComposeMessageError.passPhraseNoMatch)
                         }
                     } catch {
+                        self.hideSpinner()
                         self.handle(error: error)
                     }
                 }
@@ -63,29 +65,24 @@ extension ComposeViewController {
             return
         }
 
-        let hideSpinnerAnimationDuration: TimeInterval = 1
-        DispatchQueue.main.asyncAfter(deadline: .now() + hideSpinnerAnimationDuration) { [weak self] in
-            guard let self else { return }
-
-            switch error {
-            case MessageValidationError.noPubRecipients:
-                guard self.isMessagePasswordSupported else {
-                    self.showPlainMessageConfirmationAlert()
-                    return
-                }
-
-                if Bundle.isEnterprise {
-                    self.setMessagePassword()
-                } else {
-                    self.showPlainMessageAlert()
-                }
-            case MessageValidationError.notUniquePassword,
-                 MessageValidationError.subjectContainsPassword,
-                 MessageValidationError.weakPassword:
-                self.showAlert(message: error.errorMessage)
-            default:
-                self.showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+        switch error {
+        case MessageValidationError.noPubRecipients:
+            guard isMessagePasswordSupported else {
+                showPlainMessageConfirmationAlert()
+                return
             }
+
+            if Bundle.isEnterprise {
+                setMessagePassword()
+            } else {
+                showPlainMessageAlert()
+            }
+        case MessageValidationError.notUniquePassword,
+             MessageValidationError.subjectContainsPassword,
+             MessageValidationError.weakPassword:
+            showAlert(message: error.errorMessage)
+        default:
+            showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
         }
     }
 

@@ -168,7 +168,6 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
 // MARK: - Folders functionality
 extension MyMenuViewController {
     private func fetchFolders() {
-        showSpinner()
         Task {
             do {
                 let folders = try await foldersManager.fetchFolders(isForceReload: false, for: appContext.user)

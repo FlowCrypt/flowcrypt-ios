@@ -244,15 +244,12 @@ final class ComposeViewController: TableNodeViewController {
         switch state {
         case let .progressChanged(progress):
             if progress < 1 {
-                showProgressHUD(
-                    progress: progress,
-                    label: state.message ?? "\(progress)"
-                )
+                showSpinnerWithProgress(state.message ?? "\(progress)", progress: progress)
             } else {
-                showIndeterminateHUD(with: "sending_title".localized)
+                showSpinner("sending_title".localized)
             }
         case .startComposing, .validatingMessage:
-            showIndeterminateHUD(with: state.message ?? "")
+            showSpinner(state.message ?? "")
         case .idle, .messageSent:
             hideSpinner()
         }
