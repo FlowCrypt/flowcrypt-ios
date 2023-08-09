@@ -123,11 +123,20 @@ class ElementHelper {
   };
 
   //wait for value in element during 15 seconds (if the value doesn't appear during 15s, it will show the error)
-  static waitForValue = async (element: WebdriverIO.Element, value: string, timeout: number = DEFAULT_TIMEOUT) => {
+  static waitForValue = async (
+    element: WebdriverIO.Element,
+    value: string,
+    timeout: number = DEFAULT_TIMEOUT,
+    checkContains = false,
+  ) => {
     await this.waitElementVisible(element);
     await element.waitUntil(
       async function () {
-        return (await element.getValue()) === value;
+        const elementValue = await element.getValue();
+        if (checkContains) {
+          return elementValue.includes(value);
+        }
+        return elementValue === value;
       },
       {
         timeout: timeout,
