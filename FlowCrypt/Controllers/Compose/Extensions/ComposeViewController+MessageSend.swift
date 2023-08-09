@@ -21,10 +21,6 @@ extension ComposeViewController {
         showSendingSpinner()
         evaluateSelectedRecipients()
 
-        // TODO: - fix for spinner
-        // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
-        try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100ms
-
         let messageIdentifier = try await sendMessage(isPlain: shouldSendPlainMessage)
         handleAction?(.sent(messageIdentifier))
 

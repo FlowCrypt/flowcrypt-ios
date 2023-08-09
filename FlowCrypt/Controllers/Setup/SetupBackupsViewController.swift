@@ -144,11 +144,8 @@ extension SetupBackupsViewController {
 
         showSpinner()
 
-        // TODO: - fix for spinner
-        // https://github.com/FlowCrypt/flowcrypt-ios/issues/291
         Task {
             do {
-                try await Task.sleep(nanoseconds: 100 * 1_000_000) // 100 ms
                 try await self.recoverAccount(with: self.fetchedEncryptedKeys, and: passPhrase)
             } catch {
                 hideSpinner()

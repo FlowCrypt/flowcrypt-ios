@@ -179,6 +179,7 @@
 		9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */ = {isa = PBXBuildFile; fileRef = 9582BC592A782DA700439728 /* pass_phrase_hint.html */; };
 		958566B72A6126DE001C84D3 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		958566B92A612822001C84D3 /* ASButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958566B82A612822001C84D3 /* ASButtonNode.swift */; };
+		95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 95F55F9E2A7B8A720000E50F /* ProgressHUD */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */; };
@@ -279,7 +280,6 @@
 		9FBD69EE27775086002FC602 /* ErrorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E4F0B427348E310017DABB /* ErrorExtensions.swift */; };
 		9FBD69F0277B126F002FC602 /* URLSessionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA7E0AFE19FACB0F233ED /* URLSessionExtensions.swift */; };
 		9FBD69F6277B1E20002FC602 /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */; };
-		9FBD69F8277B1E66002FC602 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 9FBD69F7277B1E66002FC602 /* MBProgressHUD */; };
 		9FBD69FA277B1E6C002FC602 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 9FBD69F9277B1E6C002FC602 /* Toast */; };
 		9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */; };
 		9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D254733324C597CD00DEE698 /* CoreTypesTest.swift */; };
@@ -912,7 +912,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FBD69FA277B1E6C002FC602 /* Toast in Frameworks */,
-				9FBD69F8277B1E66002FC602 /* MBProgressHUD in Frameworks */,
+				95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1367,6 +1367,13 @@
 				513DC086284F15F600FAD5F2 /* Remote Private Key Apis */,
 			);
 			path = Apis;
+			sourceTree = "<group>";
+		};
+		95F55F9B2A7B8A470000E50F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		9F0C3C1F23191F2000299985 /* Services */ = {
@@ -1893,6 +1900,7 @@
 				D2531F2C23FEEF52007E5198 /* FlowCryptCommon */,
 				9F2AC5C7267BE99E00F6149B /* FlowCryptAppTests */,
 				C132B9B11EC2DBD800763715 /* Products */,
+				95F55F9B2A7B8A470000E50F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2400,8 +2408,8 @@
 			);
 			name = FlowCryptCommon;
 			packageProductDependencies = (
-				9FBD69F7277B1E66002FC602 /* MBProgressHUD */,
 				9FBD69F9277B1E6C002FC602 /* Toast */,
+				95F55F9E2A7B8A720000E50F /* ProgressHUD */,
 			);
 			productName = FlowCryptCommon;
 			productReference = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */;
@@ -2470,11 +2478,11 @@
 				51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */,
 				51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */,
-				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
 				95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */,
+				95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -3844,14 +3852,6 @@
 				minimumVersion = 0.13.0;
 			};
 		};
-		51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jdg/MBProgressHUD";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
-			};
-		};
 		51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/google-api-objectivec-client-for-rest";
@@ -3882,6 +3882,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.52.4;
+			};
+		};
+		95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/relatedcode/ProgressHUD.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -3937,10 +3945,10 @@
 			package = 95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */;
 			productName = "plugin:SwiftLintPlugin";
 		};
-		9FBD69F7277B1E66002FC602 /* MBProgressHUD */ = {
+		95F55F9E2A7B8A720000E50F /* ProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
-			productName = MBProgressHUD;
+			package = 95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */;
+			productName = ProgressHUD;
 		};
 		9FBD69F9277B1E6C002FC602 /* Toast */ = {
 			isa = XCSwiftPackageProductDependency;
