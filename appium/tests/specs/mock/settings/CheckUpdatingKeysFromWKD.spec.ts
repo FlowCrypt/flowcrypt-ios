@@ -28,7 +28,7 @@ describe('SETTINGS: ', () => {
       // stage 1: load recipient and check contact
       await PublicKeyHelper.loadRecipientInComposeThenCheckKeyDetails(recipient.email, true, {
         recipientName: recipient.name,
-        expiryDate: 'Aug 14, 2023',
+        expiryDate: 'Aug 10, 2023',
       });
       // stage 2: updated WKD to return newer version of the key and check if it's updated correctly
       mockApi.wkdConfig = {
@@ -38,7 +38,7 @@ describe('SETTINGS: ', () => {
       };
       await PublicKeyHelper.loadRecipientInComposeThenCheckKeyDetails(recipient.email, true, {
         recipientName: recipient.name,
-        expiryDate: 'Aug 6, 2024',
+        expiryDate: 'Aug 16, 2026',
       });
       // stage 3: updated WKD to return 1 more key(this key doesn't expire) and check if it's added correctly
       mockApi.wkdConfig = {
