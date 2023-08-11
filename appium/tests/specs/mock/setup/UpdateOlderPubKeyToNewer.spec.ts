@@ -1,18 +1,9 @@
 import { MockApi } from 'api-mocks/mock';
-import {
-  SplashScreen,
-  SetupKeyScreen,
-  PublicKeyDetailsScreen,
-  ContactPublicKeyScreen,
-  MenuBarScreen,
-  SettingsScreen,
-  ContactScreen,
-} from '../../../screenobjects/all-screens';
+import { MockApiConfig } from 'api-mocks/mock-config';
 import { attesterPublicKeySamples } from '../../../../api-mocks/apis/attester/attester-endpoints';
 import { CommonData } from '../../../data';
-import DataHelper from '../../../helpers/DataHelper';
 import PublicKeyHelper from '../../../helpers/PublicKeyHelper';
-import { MockApiConfig } from 'api-mocks/mock-config';
+import { SetupKeyScreen, SplashScreen } from '../../../screenobjects/all-screens';
 
 describe('SETUP: ', () => {
   it('app updates older public keys to newer but not vice versa', async () => {
@@ -40,88 +31,42 @@ describe('SETUP: ', () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
 
-      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
-        userEmail,
-        oldSignatureDate,
-        oldFingerprintsValue,
-        userName,
-      );
-      firstFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
-
-      await PublicKeyDetailsScreen.clickBackButton();
-      await ContactPublicKeyScreen.checkPgpUserId(userEmail);
-      await ContactPublicKeyScreen.clickBackButton();
-
-      await ContactScreen.checkContactScreen();
-      await ContactScreen.clickBackButton();
-      await SettingsScreen.checkSettingsScreen();
-
-      await MenuBarScreen.clickMenuBtn();
-      await MenuBarScreen.clickInboxButton();
+      firstFetchedDate = await PublicKeyHelper.loadRecipientInComposeThenCheckKeyDetails(userEmail, true, {
+        signatureDate: oldSignatureDate,
+        fingerprintsValue: oldFingerprintsValue,
+        recipientName: userName,
+      });
       //stage 2
       mockApi.attesterConfig = {
         servedPubkeys: {
           'updating.key@example.test': attesterPublicKeySamples.keyNewerVersion,
         },
       };
-      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
-        userEmail,
-        newSignatureDate,
-        newFingerprintsValue,
-        userName,
-      );
-
-      secondFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
-
+      secondFetchedDate = await PublicKeyHelper.loadRecipientInComposeThenCheckKeyDetails(userEmail, true, {
+        signatureDate: newSignatureDate,
+        fingerprintsValue: newFingerprintsValue,
+        recipientName: userName,
+      });
       expect(firstFetchedDate).toBeLessThan(secondFetchedDate);
-
-      await PublicKeyDetailsScreen.clickBackButton();
-      await ContactPublicKeyScreen.checkPgpUserId(userEmail);
-      await ContactPublicKeyScreen.clickBackButton();
-
-      await ContactScreen.checkContactScreen();
-      await ContactScreen.clickBackButton();
-      await SettingsScreen.checkSettingsScreen();
-
-      await MenuBarScreen.clickMenuBtn();
-      await MenuBarScreen.clickInboxButton();
       //stage 3
       mockApi.attesterConfig = {
         servedPubkeys: {
           'updating.key@example.test': attesterPublicKeySamples.keyOlderVersion,
         },
       };
-      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
-        userEmail,
-        newSignatureDate,
-        newFingerprintsValue,
-        userName,
-      );
-
-      thirdFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
+      thirdFetchedDate = await PublicKeyHelper.loadRecipientInComposeThenCheckKeyDetails(userEmail, true, {
+        signatureDate: newSignatureDate,
+        fingerprintsValue: newFingerprintsValue,
+        recipientName: userName,
+        shouldDeleteKey: true,
+      });
       expect(secondFetchedDate).toBeLessThan(thirdFetchedDate);
       //stage 4
-      await PublicKeyDetailsScreen.clickBackButton();
-      await ContactPublicKeyScreen.checkPgpUserId(userEmail);
-      await ContactPublicKeyScreen.clickTrashButton();
-      await ContactScreen.checkContactScreen();
-      await ContactScreen.checkEmptyList();
-
-      await ContactScreen.clickBackButton();
-      await SettingsScreen.checkSettingsScreen();
-
-      await MenuBarScreen.clickMenuBtn();
-      await MenuBarScreen.clickInboxButton();
-
-      await PublicKeyHelper.loadRecipientInComposeThenCheckSignatureAndFingerprints(
-        userEmail,
-        oldSignatureDate,
-        oldFingerprintsValue,
-        userName,
-      );
-
-      fourthFetchedDate = DataHelper.convertDateToMSec(await PublicKeyDetailsScreen.getLastFetchedDateValue());
-
+      fourthFetchedDate = await PublicKeyHelper.loadRecipientInComposeThenCheckKeyDetails(userEmail, false, {
+        signatureDate: oldSignatureDate,
+        fingerprintsValue: oldFingerprintsValue,
+        recipientName: userName,
+      });
       expect(thirdFetchedDate).toBeLessThan(fourthFetchedDate);
     });
   });

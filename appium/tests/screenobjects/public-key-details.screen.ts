@@ -1,7 +1,7 @@
 import BaseScreen from './base.screen';
 import ElementHelper from '../helpers/ElementHelper';
 import TouchHelper from '../helpers/TouchHelper';
-import moment from 'moment';
+import DataHelper from 'tests/helpers/DataHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -15,6 +15,7 @@ const SELECTORS = {
   LAST_FETCHED_DATE_LABEL: '~aid-signature-fetched-date-label',
   LAST_FETCHED_DATE_VALUE: '~aid-signature-fetched-date',
   FINGERPRINTS_VALUE: '~aid-signature-fingerprints',
+  EXPIRED_VALUE: '~aid-signature-expires-date',
   FINGERPRINTS_LABEL: '~aid-signature-fingerprints-label',
 };
 
@@ -71,12 +72,16 @@ class PublicKeyDetailsScreen extends BaseScreen {
     return $(SELECTORS.FINGERPRINTS_VALUE);
   }
 
+  get expiredValue() {
+    return $(SELECTORS.EXPIRED_VALUE);
+  }
+
   checkPublicKeyDetailsScreen = async () => {
     await (await this.trashButton).waitForDisplayed();
     await (await this.copyButton).waitForDisplayed();
     await (await this.shareButton).waitForDisplayed();
     await (await this.keyLabel).waitForDisplayed();
-    await TouchHelper.scrollDown();
+    await TouchHelper.scrollDownToElement(await this.fingerprintsLabel);
     await (await this.signatureLabel).waitForDisplayed();
     await (await this.lastFetchedDateLabel).waitForDisplayed();
     await (await this.fingerprintsLabel).waitForDisplayed();
@@ -85,25 +90,27 @@ class PublicKeyDetailsScreen extends BaseScreen {
   checkPublicKeyNotEmpty = async () => {
     const pubkeyEl = await this.publicKeyValue;
     await pubkeyEl.waitForExist();
-    expect(await pubkeyEl.getAttribute('value')).toBeTruthy();
+    expect(await pubkeyEl.getValue()).toBeTruthy();
   };
 
   checkSignatureDateValue = async (value: string) => {
     const signatureValue = await this.signatureValue.getValue();
-    const convertedToUTC = moment(signatureValue.replace('at', '')).utcOffset(0).format('D MMM yyyy, hh:mm:ss A');
+    const convertedToUTC = DataHelper.convertStringToDate(signatureValue).format('D MMM yyyy, hh:mm:ss A');
     expect(convertedToUTC).toEqual(value);
   };
 
   getLastFetchedDateValue = async () => {
-    await (await this.lastFetchedDateLabel).waitForDisplayed();
     const lastFetchedDate = await this.lastFetchedDateValue;
-    return await lastFetchedDate.getAttribute('value');
+    await ElementHelper.waitElementVisible(lastFetchedDate);
+    return await lastFetchedDate.getValue();
   };
 
   checkFingerPrintsValue = async (value: string) => {
-    const fingerprints = await this.fingerprintsValue;
-    await fingerprints.waitForExist();
-    expect(await fingerprints.getAttribute('value')).toEqual(value);
+    await ElementHelper.waitForValue(await this.fingerprintsValue, value, 10000, true);
+  };
+
+  checkExpiredValue = async (value: string) => {
+    await ElementHelper.waitForValue(await this.expiredValue, value, 10000, true);
   };
 
   clickBackButton = async () => {

@@ -35,6 +35,10 @@ class ContactPublicKeyScreen extends BaseScreen {
     return $(SELECTORS.FINGERPRINT_VALUE);
   }
 
+  get fingerPrintList() {
+    return $$(SELECTORS.FINGERPRINT_VALUE);
+  }
+
   get createdLabel() {
     return $(SELECTORS.CREATED_LABEL);
   }
@@ -86,6 +90,11 @@ class ContactPublicKeyScreen extends BaseScreen {
 
   clickOnFingerPrint = async () => {
     await ElementHelper.waitAndClick(await this.fingerPrintValue);
+  };
+
+  checkPublicKeyCount = async (value: number) => {
+    const fingerprintList = await this.fingerPrintList;
+    expect(fingerprintList.length).toEqual(value);
   };
 
   clickBackButton = async () => {
