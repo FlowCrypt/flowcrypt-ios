@@ -173,6 +173,8 @@
 		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
+		952687432A8A21060005694B /* LetterAvatarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 952687422A8A21060005694B /* LetterAvatarKit */; };
+		952687452A8A24C60005694B /* LetterAvatarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 952687442A8A24C60005694B /* LetterAvatarKit */; };
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
 		9547EF212A5F106E00A048FF /* PassPhraseAlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */; };
 		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
@@ -895,6 +897,7 @@
 				040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
+				952687432A8A21060005694B /* LetterAvatarKit in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -903,6 +906,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				952687452A8A24C60005694B /* LetterAvatarKit in Frameworks */,
 				D28655982424D1BD0066F52E /* FlowCryptCommon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2370,6 +2374,7 @@
 				51C0C1EE271982A1000C9738 /* MailCore */,
 				040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */,
 				51A1A12729070CDF007F1188 /* AsyncDisplayKit */,
+				952687422A8A21060005694B /* LetterAvatarKit */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -2389,6 +2394,9 @@
 			dependencies = (
 			);
 			name = FlowCryptUI;
+			packageProductDependencies = (
+				952687442A8A24C60005694B /* LetterAvatarKit */,
+			);
 			productName = FlowCryptUI;
 			productReference = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */;
 			productType = "com.apple.product-type.framework";
@@ -2483,6 +2491,7 @@
 				51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
 				95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 				95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */,
+				952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -3876,6 +3885,14 @@
 				minimumVersion = 10.0.0;
 			};
 		};
+		952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vpeschenkov/LetterAvatarKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/SwiftLint";
@@ -3939,6 +3956,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
 			productName = RealmSwift;
+		};
+		952687422A8A21060005694B /* LetterAvatarKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */;
+			productName = LetterAvatarKit;
+		};
+		952687442A8A24C60005694B /* LetterAvatarKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */;
+			productName = LetterAvatarKit;
 		};
 		95D83FBA2A5D4BED006FDC33 /* SwiftLintPlugin */ = {
 			isa = XCSwiftPackageProductDependency;

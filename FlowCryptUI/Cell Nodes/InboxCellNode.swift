@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import LetterAvatarKit
 import UIKit
 
 public final class InboxCellNode: CellNode {
@@ -33,6 +34,18 @@ public final class InboxCellNode: CellNode {
     }
 
     private let input: Input
+
+    private lazy var avatarNode: ASImageNode = {
+        let node = ASImageNode()
+        let avatarImage = LetterAvatarMaker()
+            .setCircle(true)
+            .setUsername(input.emailText.string)
+            .build()
+        node.image = avatarImage
+        node.style.preferredSize.width = 50
+        node.style.preferredSize.height = 50
+        return node
+    }()
 
     private let emailNode = ASTextNode2()
     private let countNode: ASTextNode2?
@@ -110,7 +123,7 @@ public final class InboxCellNode: CellNode {
             spacing: 8,
             justifyContent: .start,
             alignItems: .start,
-            children: [nameLocationStack, dateNode]
+            children: [avatarNode, nameLocationStack, dateNode]
         )
 
         let finalSpec = ASStackLayoutSpec.vertical()
