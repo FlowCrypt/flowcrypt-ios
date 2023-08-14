@@ -35,17 +35,7 @@ public final class InboxCellNode: CellNode {
 
     private let input: Input
 
-    private lazy var avatarNode: ASImageNode = {
-        let node = ASImageNode()
-        let avatarImage = LetterAvatarMaker()
-            .setCircle(true)
-            .setUsername(input.emailText.string)
-            .build()
-        node.image = avatarImage
-        node.style.preferredSize.width = 50
-        node.style.preferredSize.height = 50
-        return node
-    }()
+    private lazy var avatarNode: ASImageNode = getAvatarImage(text: input.emailText.string)
 
     private let emailNode = ASTextNode2()
     private let countNode: ASTextNode2?
