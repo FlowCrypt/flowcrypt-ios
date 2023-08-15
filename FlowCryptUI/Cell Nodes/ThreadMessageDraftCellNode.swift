@@ -14,8 +14,11 @@ public final class ThreadMessageDraftCellNode: CellNode {
 
     private lazy var avatarNode: ASImageNode = {
         let node = ASImageNode()
-        let configuration = UIImage.SymbolConfiguration(pointSize: .Avatar.width)
-        node.image = UIImage(systemName: "envelope.open.fill", withConfiguration: configuration)?.tinted(.main)
+        let configuration = UIImage.SymbolConfiguration(pointSize: 20)
+        node.image = UIImage(systemName: "envelope.open", withConfiguration: configuration)?.tinted(.white)
+        node.cornerRadius = .Avatar.width / 2
+        node.backgroundColor = .main
+        node.contentMode = .center
         node.style.preferredSize = CGSize(width: .Avatar.width, height: .Avatar.height)
         return node
     }()
