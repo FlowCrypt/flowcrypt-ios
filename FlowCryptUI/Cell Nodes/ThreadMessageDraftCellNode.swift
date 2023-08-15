@@ -12,7 +12,14 @@ import UIKit
 
 public final class ThreadMessageDraftCellNode: CellNode {
 
-    private lazy var avatarNode: ASImageNode = getAvatarImage(text: sender)
+    private lazy var avatarNode: ASImageNode = {
+        let node = ASImageNode()
+        let configuration = UIImage.SymbolConfiguration(pointSize: .Avatar.width)
+        node.image = UIImage(systemName: "envelope.circle.fill", withConfiguration: configuration)?.tinted(.main)
+        node.style.preferredSize = CGSize(width: .Avatar.width, height: .Avatar.height)
+        return node
+    }()
+
     private let draftBody: String
     private let messageIndex: Int
     private let sender: String

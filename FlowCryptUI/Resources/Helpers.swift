@@ -28,7 +28,7 @@ public func getAvatarImage(text: String) -> ASImageNode {
         .setUsername(text.capitalized)
         .build()
     node.image = avatarImage
-    node.style.preferredSize.width = 50
-    node.style.preferredSize.height = 50
+    node.style.preferredSize.width = .Avatar.width
+    node.style.preferredSize.height = .Avatar.height
     return node
 }
