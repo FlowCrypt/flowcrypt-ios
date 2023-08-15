@@ -6,6 +6,8 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import AsyncDisplayKit
+import LetterAvatarKit
 import UIKit
 
 public func testAttributedText() -> NSAttributedString {
@@ -17,4 +19,16 @@ public func testAttributedText() -> NSAttributedString {
             NSAttributedString.Key.foregroundColor: UIColor.black
         ]
     )
+}
+
+public func getAvatarImage(text: String) -> ASImageNode {
+    let node = ASImageNode()
+    let avatarImage = LetterAvatarMaker()
+        .setCircle(true)
+        .setUsername(text.capitalized)
+        .build()
+    node.image = avatarImage
+    node.style.preferredSize.width = .Avatar.width
+    node.style.preferredSize.height = .Avatar.height
+    return node
 }

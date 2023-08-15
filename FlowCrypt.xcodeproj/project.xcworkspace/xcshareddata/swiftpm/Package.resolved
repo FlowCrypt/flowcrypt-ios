@@ -73,6 +73,15 @@
       }
     },
     {
+      "identity" : "letteravatarkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/vpeschenkov/LetterAvatarKit",
+      "state" : {
+        "revision" : "fe5af34383384668dcd28525bd62934eab229d4a",
+        "version" : "1.2.5"
+      }
+    },
+    {
       "identity" : "mailcore2",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/FlowCrypt/mailcore2",

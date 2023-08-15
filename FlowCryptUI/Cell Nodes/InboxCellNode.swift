@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import LetterAvatarKit
 import UIKit
 
 public final class InboxCellNode: CellNode {
@@ -33,6 +34,16 @@ public final class InboxCellNode: CellNode {
     }
 
     private let input: Input
+
+    private lazy var avatarNode: ASImageNode = {
+        var emailString = input.emailText.string
+        // extract the text that comes after "To:" because in `Sent` folder, emailText becomes `To: xx`
+        // https://github.com/FlowCrypt/flowcrypt-ios/pull/2320#discussion_r1294448818
+        if let range = emailString.range(of: "To: ") {
+            emailString = String(emailString[range.upperBound...])
+        }
+        return getAvatarImage(text: emailString)
+    }()
 
     private let emailNode = ASTextNode2()
     private let countNode: ASTextNode2?
@@ -110,7 +121,7 @@ public final class InboxCellNode: CellNode {
             spacing: 8,
             justifyContent: .start,
             alignItems: .start,
-            children: [nameLocationStack, dateNode]
+            children: [avatarNode, nameLocationStack, dateNode]
         )
 
         let finalSpec = ASStackLayoutSpec.vertical()
