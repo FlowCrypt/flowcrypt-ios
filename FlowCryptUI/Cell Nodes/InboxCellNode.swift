@@ -10,6 +10,10 @@ import AsyncDisplayKit
 import LetterAvatarKit
 import UIKit
 
+public protocol InboxCellNodeDelegate: AnyObject {
+    func inboxCellNodeDidToggleSelection(_ node: InboxCellNode, isSelected: Bool)
+}
+
 public final class InboxCellNode: CellNode {
     public struct Input {
         public let emailText: NSAttributedString
@@ -34,10 +38,31 @@ public final class InboxCellNode: CellNode {
     }
 
     private let input: Input
+    // Use custom isCellSelected rather than default isSelected
+    // Because we have different behavior than default
+    public var isCellSelected: Bool = false {
+        didSet {
+            updateSelectionAppearance()
+        }
+    }
 
     private lazy var avatarCheckboxNode: AvatarCheckboxNode = {
         let node = AvatarCheckboxNode(emailText: input.emailText.string)
         node.style.preferredSize = CGSize(width: .Avatar.width, height: .Avatar.height)
+
+        node.onSelectionChange = { [weak self] isSelected in
+            self?.delegate?.inboxCellNodeDidToggleSelection(self!, isSelected: isSelected)
+        }
+        return node
+    }()
+
+    // Use selected background solution to avoid darkening when changing the cell's background color with opacity,
+    // especially when the user scrolls the screen.
+    private lazy var selectedBackgroundNode: ASDisplayNode = {
+        let node = ASDisplayNode()
+        node.backgroundColor = .main.withAlphaComponent(0.2) // Set your color with desired opacity
+        node.isHidden = true // Initially hidden
+        node.isUserInteractionEnabled = false
         return node
     }()
 
@@ -48,6 +73,7 @@ public final class InboxCellNode: CellNode {
 
     private lazy var messageNode = ASTextNode2()
     private lazy var badgeNode = ASTextNode()
+    public weak var delegate: InboxCellNodeDelegate?
 
     public init(input: Input) {
         countNode = input.countText.map {
@@ -81,6 +107,10 @@ public final class InboxCellNode: CellNode {
         emailNode.truncationMode = .byTruncatingTail
         separatorNode.backgroundColor = .separator
         accessibilityIdentifier = "aid-inbox-item"
+    }
+
+    private func updateSelectionAppearance() {
+        selectedBackgroundNode.isHidden = !isCellSelected
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
@@ -123,9 +153,13 @@ public final class InboxCellNode: CellNode {
         let finalSpec = ASStackLayoutSpec.vertical()
         finalSpec.children = [headerStackSpec, separatorNode]
         finalSpec.spacing = 10
-        return ASInsetLayoutSpec(
+
+        let spec = ASInsetLayoutSpec(
             insets: .deviceSpecificTextInsets(top: 12, bottom: 0),
             child: finalSpec
         )
+        let overlayLayout = ASOverlayLayoutSpec(child: spec, overlay: selectedBackgroundNode)
+
+        return overlayLayout
     }
 }

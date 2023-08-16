@@ -66,8 +66,11 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
                     return TextCellNode.loading
                 }
 
-                return InboxCellNode(input: .init(inboxItem))
+                let node = InboxCellNode(input: .init(inboxItem))
                     .then { $0.backgroundColor = .backgroundColor }
+                node.delegate = self
+                node.isCellSelected = inboxItem.isSelected
+                return node
             case .fetching:
                 guard let input = self.inboxInput[safe: indexPath.row] else {
                     return TextCellNode.loading
@@ -392,4 +395,27 @@ extension InboxViewController {
             }
         }
     }
+}
+
+extension InboxViewController: InboxCellNodeDelegate {
+    func inboxCellNodeDidToggleSelection(_ node: InboxCellNode, isSelected: Bool) {
+        inboxInput[node.indexPath!.row].isSelected = isSelected // Update the inboxItem
+        node.isCellSelected = isSelected
+//        updateNavigationBar()
+    }
+
+//    func updateNavigationBar() {
+//        let selectedItems = inboxInput.filter { $0.isSelected }
+//        if selectedItems.count > 1 {
+//            // Show navigation bar with required buttons
+//        } else {
+//            // Show initial navigation bar
+//            navigationItem.leftBarButtonItem = nil
+//            navigationItem.rightBarButtonItems = nil
+//            // Optional: Restore title or other initial navigation bar properties
+//            UIView.animate(withDuration: 0.3) {
+//                self.navigationController?.navigationBar.layoutIfNeeded()
+//            }
+//        }
+//    }
 }

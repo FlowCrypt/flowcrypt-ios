@@ -30,6 +30,7 @@ class AvatarCheckboxNode: ASDisplayNode {
         return node
     }()
 
+    var onSelectionChange: ((Bool) -> Void)?
     private var isSelected = false
     private let emailText: String
 
@@ -58,5 +59,6 @@ class AvatarCheckboxNode: ASDisplayNode {
         UIView.transition(with: self.view, duration: 0.3, options: .transitionFlipFromLeft) {
             self.setNeedsLayout()
         }
+        onSelectionChange?(isSelected)
     }
 }
