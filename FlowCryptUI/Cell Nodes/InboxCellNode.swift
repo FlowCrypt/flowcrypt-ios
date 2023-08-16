@@ -35,14 +35,10 @@ public final class InboxCellNode: CellNode {
 
     private let input: Input
 
-    private lazy var avatarNode: ASImageNode = {
-        var emailString = input.emailText.string
-        // extract the text that comes after "To:" because in `Sent` folder, emailText becomes `To: xx`
-        // https://github.com/FlowCrypt/flowcrypt-ios/pull/2320#discussion_r1294448818
-        if let range = emailString.range(of: "To: ") {
-            emailString = String(emailString[range.upperBound...])
-        }
-        return getAvatarImage(text: emailString)
+    private lazy var avatarCheckboxNode: AvatarCheckboxNode = {
+        let node = AvatarCheckboxNode(emailText: input.emailText.string)
+        node.style.preferredSize = CGSize(width: .Avatar.width, height: .Avatar.height)
+        return node
     }()
 
     private let emailNode = ASTextNode2()
@@ -121,7 +117,7 @@ public final class InboxCellNode: CellNode {
             spacing: 8,
             justifyContent: .start,
             alignItems: .start,
-            children: [avatarNode, nameLocationStack, dateNode]
+            children: [avatarCheckboxNode, nameLocationStack, dateNode]
         )
 
         let finalSpec = ASStackLayoutSpec.vertical()
