@@ -80,6 +80,8 @@ class InboxViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(_:)))
+        tableNode.view.addGestureRecognizer(longPressGesture)
         if !self.isSearch {
             setupUI()
             setupNavigationBar()
@@ -121,7 +123,6 @@ class InboxViewController: ViewController {
 extension InboxViewController {
     private func setupUI() {
         title = inboxTitle
-        navigationItem.setAccessibility(id: inboxTitle)
 
         setupTableNode()
         node.addSubnode(composeButton)
@@ -139,7 +140,8 @@ extension InboxViewController {
         }
     }
 
-    private func setupNavigationBar() {
+    func setupNavigationBar() {
+        navigationItem.setAccessibility(id: inboxTitle)
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(
@@ -152,6 +154,37 @@ extension InboxViewController {
                 ) { [weak self] in self?.handleSearchTap() }
             ]
         )
+    }
+
+    func setupThreadSelectNavigationBar() {
+        let selectedThreads = inboxInput.filter(\.isSelected)
+        navigationItem.setAccessibility(id: "\(selectedThreads.count)")
+        // For normal folders (not Spam and trash folder), display moveToTrash
+        var actions: [MessageAction] = shouldShowEmptyView ? [.permanentlyDelete] : [.moveToTrash]
+        if selectedThreads.contains(where: \.isInbox) {
+            if !shouldShowEmptyView {
+                actions.append(.archive)
+            }
+        } else {
+            actions.append(.moveToInbox)
+        }
+        if selectedThreads.contains(where: { !$0.isRead }) {
+            actions.append(.markAsRead)
+        } else {
+            actions.append(.markAsUnread)
+        }
+        let items = actions.map { createNavigationBarButton(action: $0) }
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
+    }
+
+    private func createNavigationBarButton(action: MessageAction) -> NavigationBarItemsView.Input {
+        .init(
+            image: action.image,
+            accessibilityId: action.accessibilityIdentifier
+        ) { [weak self] in
+            guard let self else { return }
+            perform(action: action, inboxItems: inboxInput.filter(\.isSelected))
+        }
     }
 
     private func setupElements() {
@@ -258,6 +291,11 @@ extension InboxViewController {
 
     func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
         if !shouldBeginFetch {
+            context.completeBatchFetching(true)
+            return
+        }
+        // Due to the inability to combine boolean and case checks, the following code is separated
+        if case .empty = state {
             context.completeBatchFetching(true)
             return
         }

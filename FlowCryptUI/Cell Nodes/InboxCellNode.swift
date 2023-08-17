@@ -113,6 +113,10 @@ public final class InboxCellNode: CellNode {
         selectedBackgroundNode.isHidden = !isCellSelected
     }
 
+    public func toggleCheckBox() {
+        avatarCheckboxNode.toggleNode()
+    }
+
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let emailElement: ASLayoutElement = {
             guard let countNode else { return emailNode }

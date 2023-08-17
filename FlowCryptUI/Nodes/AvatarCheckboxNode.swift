@@ -45,7 +45,7 @@ class AvatarCheckboxNode: ASDisplayNode {
 
     @MainActor
     private func setupTapGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleNode))
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(toggleCheckBox))
         view.addGestureRecognizer(tapGesture)
     }
 
@@ -54,11 +54,15 @@ class AvatarCheckboxNode: ASDisplayNode {
         return ASInsetLayoutSpec(insets: .zero, child: childNode)
     }
 
-    @objc private func toggleNode() {
+    public func toggleNode() {
         isSelected.toggle()
         UIView.transition(with: self.view, duration: 0.3, options: .transitionFlipFromLeft) {
             self.setNeedsLayout()
         }
+    }
+
+    @objc private func toggleCheckBox() {
+        toggleNode()
         onSelectionChange?(isSelected)
     }
 }

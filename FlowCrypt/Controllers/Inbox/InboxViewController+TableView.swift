@@ -149,7 +149,8 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
     private func tableSwipeAction(for action: MessageAction, indexPath: IndexPath) -> UIContextualAction {
         let swipeAction = UIContextualAction(style: action.actionStyle, title: nil) { [weak self] _, _, completion in
-            self?.perform(action: action, at: indexPath)
+            guard let self, let inboxItem = inboxItem(at: indexPath) else { return }
+            perform(action: action, inboxItems: [inboxItem])
             completion(true)
         }
         swipeAction.backgroundColor = action.color
@@ -163,24 +164,30 @@ extension InboxViewController {
         let index = inboxInput.firstIndex(where: {
             $0.title == inboxItem.title && $0.subtitle == inboxItem.subtitle && $0.type == inboxItem.type
         })
-        logger.logInfo("Try to update inbox item at \(String(describing: index))")
+        logger.logInfo("Try to update inbox item at \(index ?? -1)")
         return index
     }
 
-    func updateMessage(isRead: Bool, at index: Int) {
+    func updateMessage(isRead: Bool, at index: Int, resetThreadSelect: Bool = true) {
         guard inboxInput.count > index else { return }
 
         logger.logInfo("Mark as read \(isRead) at \(index)")
 
         // Mark wrapped message/thread(all mails in thread) as read/unread
         inboxInput[index].markAsRead(isRead)
+        if resetThreadSelect {
+            inboxInput[index].isSelected = false
+        }
         reloadMessage(index: index)
     }
 
-    func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int) {
+    func updateMessage(labelsToAdd: [MessageLabel], labelsToRemove: [MessageLabel], at index: Int, resetThreadSelect: Bool = true) {
         guard inboxInput.count > index else { return }
 
         inboxInput[index].update(labelsToAdd: labelsToAdd, labelsToRemove: labelsToRemove)
+        if resetThreadSelect {
+            inboxInput[index].isSelected = false
+        }
         reloadMessage(index: index)
     }
 
@@ -256,7 +263,7 @@ extension InboxViewController {
                             }
                         },
                         onComplete: { [weak self] action, inboxItem in
-                            self?.handleOperation(inboxItem: inboxItem, action: action)
+                            self?.handleOperation(inboxItem: inboxItem, action: action, resetThreadSelect: false)
                         }
                     )
                     navigationController?.pushViewController(viewController, animated: true)
@@ -344,33 +351,46 @@ extension InboxViewController {
         return inboxInput[safe: index]
     }
 
-    func perform(action: MessageAction, at indexPath: IndexPath) {
-        guard let inboxItem = inboxItem(at: indexPath) else { return }
+    private func performPermanentDeleteAction(on inboxItems: [InboxItem]) {
+        showPermanentDeleteThreadAlert(onAction: { [weak self] _ in
+            guard let self else { return }
+            for inboxItem in inboxItems {
+                self.handleOperation(inboxItem: inboxItem, action: .permanentlyDelete)
+                Task {
+                    try? await self.threadOperationsApiClient.delete(id: inboxItem.threadId)
+                }
+            }
+            updateNavigationBar()
+        })
+    }
 
-        Task {
-            do {
-                try await messageActionsHelper.perform(
+    private func performOtherAction(on inboxItems: [InboxItem], action: MessageAction) {
+        for inboxItem in inboxItems {
+            handleOperation(inboxItem: inboxItem, action: action)
+            Task {
+                try? await messageActionsHelper.perform(
                     action: action,
                     with: inboxItem,
-                    viewController: self
+                    viewController: self,
+                    showSpinner: false
                 )
-                handleOperation(inboxItem: inboxItem, action: action)
-            } catch AppErr.silentAbort { // don't show any alert
-                return
-            } catch {
-                handleOperation(inboxItem: inboxItem, action: action, error: error)
             }
+        }
+        updateNavigationBar()
+    }
+
+    func perform(action: MessageAction, inboxItems: [InboxItem]) {
+        // For permanently delete, a distinct mechanism is required. An alert must be displayed first,
+        // followed by iterating through the selected threads for deletion.
+        if action == .permanentlyDelete {
+            performPermanentDeleteAction(on: inboxItems)
+        } else {
+            performOtherAction(on: inboxItems, action: action)
         }
     }
 
-    private func handleOperation(inboxItem: InboxItem, action: MessageAction, error: Error? = nil) {
+    private func handleOperation(inboxItem: InboxItem, action: MessageAction, resetThreadSelect: Bool = true) {
         hideSpinner()
-
-        if let error {
-            logger.logError("\(action.error ?? "Error: ") \(error)")
-            showAlert(message: error.errorMessage)
-            return
-        }
 
         guard let indexToUpdate = getUpdatedIndex(for: inboxItem) else {
             return
@@ -378,9 +398,9 @@ extension InboxViewController {
 
         switch action {
         case .markAsRead:
-            updateMessage(isRead: true, at: indexToUpdate)
+            updateMessage(isRead: true, at: indexToUpdate, resetThreadSelect: resetThreadSelect)
         case .markAsUnread:
-            updateMessage(isRead: false, at: indexToUpdate)
+            updateMessage(isRead: false, at: indexToUpdate, resetThreadSelect: resetThreadSelect)
         case .moveToTrash, .permanentlyDelete:
             removeMessage(at: indexToUpdate)
         case .archive, .moveToInbox:
@@ -388,7 +408,8 @@ extension InboxViewController {
                 updateMessage(
                     labelsToAdd: action == .moveToInbox ? [.inbox] : [],
                     labelsToRemove: action == .archive ? [.inbox] : [],
-                    at: indexToUpdate
+                    at: indexToUpdate,
+                    resetThreadSelect: resetThreadSelect
                 )
             } else {
                 removeMessage(at: indexToUpdate)
@@ -398,24 +419,35 @@ extension InboxViewController {
 }
 
 extension InboxViewController: InboxCellNodeDelegate {
-    func inboxCellNodeDidToggleSelection(_ node: InboxCellNode, isSelected: Bool) {
-        inboxInput[node.indexPath!.row].isSelected = isSelected // Update the inboxItem
-        node.isCellSelected = isSelected
-//        updateNavigationBar()
+    private func updateInboxSelection(row: Int, isSelected: Bool) {
+        var adjustedRow = row
+        if shouldShowEmptyView { // Adjust the row index for views that show an empty row
+            adjustedRow -= 1
+        }
+        inboxInput[adjustedRow].isSelected = isSelected
     }
 
-//    func updateNavigationBar() {
-//        let selectedItems = inboxInput.filter { $0.isSelected }
-//        if selectedItems.count > 1 {
-//            // Show navigation bar with required buttons
-//        } else {
-//            // Show initial navigation bar
-//            navigationItem.leftBarButtonItem = nil
-//            navigationItem.rightBarButtonItems = nil
-//            // Optional: Restore title or other initial navigation bar properties
-//            UIView.animate(withDuration: 0.3) {
-//                self.navigationController?.navigationBar.layoutIfNeeded()
-//            }
-//        }
-//    }
+    @objc func handleLongPressGesture(_ recognizer: UILongPressGestureRecognizer) {
+        guard recognizer.state == .began,
+              let indexPath = tableNode.indexPathForRow(at: recognizer.location(in: tableNode.view)),
+              let inboxCellNode = tableNode.nodeForRow(at: indexPath) as? InboxCellNode else { return }
+        inboxCellNode.isCellSelected.toggle()
+        updateInboxSelection(row: indexPath.row, isSelected: inboxCellNode.isCellSelected)
+        inboxCellNode.toggleCheckBox()
+        updateNavigationBar()
+    }
+
+    func inboxCellNodeDidToggleSelection(_ node: InboxCellNode, isSelected: Bool) {
+        updateInboxSelection(row: node.indexPath!.row, isSelected: isSelected)
+        node.isCellSelected = isSelected
+        updateNavigationBar()
+    }
+
+    func updateNavigationBar() {
+        if inboxInput.contains(where: \.isSelected) {
+            setupThreadSelectNavigationBar()
+        } else {
+            setupNavigationBar()
+        }
+    }
 }

@@ -28,6 +28,10 @@ extension Imap: MessagesThreadOperationsApiClient {
         throw error
     }
 
+    func markThreadAsRead(id: String?, folder: String) async throws {
+        throw error
+    }
+
     func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws {
         throw error
     }
