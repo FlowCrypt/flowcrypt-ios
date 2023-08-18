@@ -32,19 +32,30 @@ public final class InfoCellNode: CellNode {
         }
     }
 
-    private let textNode = ASTextNode2()
-    private let imageNode = ASImageNode()
+    private lazy var textNode: ASTextNode2 = {
+        let node = ASTextNode2()
+        node.attributedText = input?.attributedText
+        node.isAccessibilityElement = true
+        node.style.flexGrow = 1.0
+        node.style.flexShrink = 1.0
+        node.accessibilityIdentifier = input?.accessibilityIdentifier
+        return node
+    }()
+
+    private lazy var imageNode: ASImageNode = {
+        let node = ASImageNode()
+        node.image = input?.image
+        node.contentMode = .scaleAspectFit
+        node.style.preferredSize = CGSize(width: 24, height: 24)
+        return node
+    }()
+
     private let input: Input?
 
     public init(input: Input?) {
         self.input = input
         super.init()
-        self.textNode.attributedText = input?.attributedText
-        self.textNode.isAccessibilityElement = true
-        self.textNode.accessibilityIdentifier = input?.accessibilityIdentifier
 
-        self.imageNode.image = input?.image
-        self.imageNode.contentMode = .scaleAspectFit
         self.automaticallyManagesSubnodes = true
 
         if let backgroundColor = input?.backgroundColor {
@@ -60,7 +71,6 @@ public final class InfoCellNode: CellNode {
             )
         }
 
-        imageNode.style.preferredSize = CGSize(width: 24, height: 24)
         return ASInsetLayoutSpec(
             insets: input?.insets ?? .zero,
             child: ASStackLayoutSpec.horizontal().then {
