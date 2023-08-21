@@ -145,6 +145,7 @@ extension TextFieldCellNode.Input {
         isSecureTextEntry: true,
         textInsets: 0,
         textAlignment: .center,
-        insets: .deviceSpecificInsets(top: 0, bottom: 0)
+        insets: .deviceSpecificInsets(top: 0, bottom: 0),
+        accessibilityIdentifier: "aid-enter-passphrase-input"
     )
 }

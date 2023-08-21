@@ -40,7 +40,7 @@ class InboxViewController: ViewController {
 
     // Search related variables
     private var isSearch = false
-    private var shouldBeginFetch = true
+    var shouldBeginFetch = true
     var searchedExpression = ""
 
     private var isVisible = false
@@ -140,7 +140,7 @@ extension InboxViewController {
         }
     }
 
-    func setupNavigationBar() {
+    @objc public func setupNavigationBar() {
         navigationItem.setAccessibility(id: inboxTitle)
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
@@ -154,27 +154,41 @@ extension InboxViewController {
                 ) { [weak self] in self?.handleSearchTap() }
             ]
         )
+        navigationItem.leftBarButtonItem = getSideMenuNavButton()
     }
 
     func setupThreadSelectNavigationBar() {
         let selectedThreads = inboxInput.filter(\.isSelected)
         navigationItem.setAccessibility(id: "\(selectedThreads.count)")
+
         // For normal folders (not Spam and trash folder), display moveToTrash
         var actions: [MessageAction] = shouldShowEmptyView ? [.permanentlyDelete] : [.moveToTrash]
-        if selectedThreads.contains(where: \.isInbox) {
-            if !shouldShowEmptyView {
-                actions.append(.archive)
-            }
-        } else {
+        let selectedInInbox = inboxInput.contains { $0.isSelected && $0.isInbox }
+        let selectedUnread = inboxInput.contains { $0.isSelected && !$0.isRead }
+
+        if selectedInInbox, !shouldShowEmptyView {
+            actions.append(.archive)
+        } else if !selectedInInbox {
             actions.append(.moveToInbox)
         }
-        if selectedThreads.contains(where: { !$0.isRead }) {
-            actions.append(.markAsRead)
-        } else {
-            actions.append(.markAsUnread)
-        }
+        actions.append(selectedUnread ? .markAsRead : .markAsUnread)
+
         let items = actions.map { createNavigationBarButton(action: $0) }
         navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
+        navigationItem.leftBarButtonItem = .defaultBackButton { [weak self] in
+            guard let self else { return }
+            resetSelectedThreads()
+            setupNavigationBar()
+        }
+    }
+
+    private func resetSelectedThreads() {
+        inboxInput.indices
+            .filter { inboxInput[$0].isSelected }
+            .forEach { index in
+                inboxInput[index].isSelected = false
+                reloadMessage(index: index, animationDuration: 0)
+            }
     }
 
     private func createNavigationBarButton(action: MessageAction) -> NavigationBarItemsView.Input {

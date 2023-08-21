@@ -54,10 +54,16 @@ class AvatarCheckboxNode: ASDisplayNode {
         return ASInsetLayoutSpec(insets: .zero, child: childNode)
     }
 
-    public func toggleNode() {
-        isSelected.toggle()
-        UIView.transition(with: self.view, duration: 0.3, options: .transitionFlipFromLeft) {
-            self.setNeedsLayout()
+    public func toggleNode(forceTrue: Bool = false) {
+        if forceTrue {
+            isSelected = true
+        } else {
+            isSelected.toggle()
+        }
+        DispatchQueue.main.async {
+            UIView.transition(with: self.view, duration: 0.3, options: .transitionFlipFromLeft) {
+                self.setNeedsLayout()
+            }
         }
     }
 

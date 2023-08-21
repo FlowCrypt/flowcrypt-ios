@@ -39,6 +39,19 @@ public enum ENSideMenuPosition: Int {
 
 public extension UIViewController {
     /**
+     Get navigation button for side menu toggle
+     */
+    func getSideMenuNavButton() -> NavigationBarActionButton {
+        return NavigationBarActionButton(
+            imageSystemName: "line.3.horizontal",
+            action: { [weak self] in
+                self?.toggleSideMenuView()
+            },
+            accessibilityIdentifier: "aid-menu-btn"
+        )
+    }
+
+    /**
      Changes current state of side menu view.
      */
     func toggleSideMenuView() {

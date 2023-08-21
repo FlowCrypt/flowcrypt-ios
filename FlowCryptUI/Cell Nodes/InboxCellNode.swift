@@ -48,6 +48,7 @@ public final class InboxCellNode: CellNode {
 
     private lazy var avatarCheckboxNode: AvatarCheckboxNode = {
         let node = AvatarCheckboxNode(emailText: input.emailText.string)
+        node.accessibilityIdentifier = "aid-avatar-checkbox"
         node.style.preferredSize = CGSize(width: .Avatar.width, height: .Avatar.height)
 
         node.onSelectionChange = { [weak self] isSelected in
@@ -113,8 +114,8 @@ public final class InboxCellNode: CellNode {
         selectedBackgroundNode.isHidden = !isCellSelected
     }
 
-    public func toggleCheckBox() {
-        avatarCheckboxNode.toggleNode()
+    public func toggleCheckBox(forceTrue: Bool = false) {
+        avatarCheckboxNode.toggleNode(forceTrue: forceTrue)
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {

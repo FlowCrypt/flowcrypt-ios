@@ -68,8 +68,11 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
 
                 let node = InboxCellNode(input: .init(inboxItem))
                     .then { $0.backgroundColor = .backgroundColor }
+                if inboxItem.isSelected {
+                    node.toggleCheckBox(forceTrue: true)
+                    node.isCellSelected = inboxItem.isSelected
+                }
                 node.delegate = self
-                node.isCellSelected = inboxItem.isSelected
                 return node
             case .fetching:
                 guard let input = self.inboxInput[safe: indexPath.row] else {
@@ -263,6 +266,12 @@ extension InboxViewController {
                             }
                         },
                         onComplete: { [weak self] action, inboxItem in
+                            // Set shouldBeginFetch to true after a 0.5-second delay
+                            // to prevent issue which willBeginBatchFetchWith is called right away when view appears
+                            self?.shouldBeginFetch = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                self?.shouldBeginFetch = true
+                            }
                             self?.handleOperation(inboxItem: inboxItem, action: action, resetThreadSelect: false)
                         }
                     )
@@ -341,7 +350,7 @@ extension InboxViewController {
     }
 
     // MARK: Operation
-    private func indexPathForMessage(at index: Int) -> IndexPath {
+    func indexPathForMessage(at index: Int) -> IndexPath {
         let row = shouldShowEmptyView ? index + 1 : index
         return IndexPath(row: row, section: 0)
     }
