@@ -73,6 +73,7 @@ public final class InboxCellNode: CellNode {
     private lazy var emailNode = {
         let node = ASTextNode2()
         node.attributedText = input.emailText
+        node.accessibilityIdentifier = input.messageIdentifier
         node.maximumNumberOfLines = 1
         node.truncationMode = .byTruncatingTail
         return node
@@ -102,7 +103,6 @@ public final class InboxCellNode: CellNode {
 
     private lazy var messageNode = {
         let node = ASTextNode2()
-        node.accessibilityIdentifier = input.messageIdentifier
         node.maximumNumberOfLines = 1
         node.truncationMode = .byTruncatingTail
         node.attributedText = input.messageText
