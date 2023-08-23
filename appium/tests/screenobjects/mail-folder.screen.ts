@@ -210,7 +210,6 @@ class MailFolderScreen extends BaseScreen {
 
   checkUnreadEmailMessage = async (count: number, message: string) => {
     const unreadEmailList = await this.unreadEmailMessageList;
-    console.log(await unreadEmailList[count].getText());
     await ElementHelper.waitForText(unreadEmailList[count], message);
   };
 
