@@ -20,6 +20,7 @@ public final class InboxCellNode: CellNode {
         public let countText: NSAttributedString?
         public let dateText: NSAttributedString
         public let messageText: NSAttributedString?
+        public let messageIdentifier: String?
         public let badgeText: NSAttributedString?
 
         public init(
@@ -27,12 +28,14 @@ public final class InboxCellNode: CellNode {
             countText: NSAttributedString?,
             dateText: NSAttributedString,
             messageText: NSAttributedString?,
+            messageIdentifier: String,
             badgeText: NSAttributedString?
         ) {
             self.emailText = emailText
             self.countText = countText
             self.dateText = dateText
             self.messageText = messageText
+            self.messageIdentifier = messageIdentifier
             self.badgeText = badgeText
         }
     }
@@ -67,46 +70,62 @@ public final class InboxCellNode: CellNode {
         return node
     }()
 
-    private let emailNode = ASTextNode2()
-    private let countNode: ASTextNode2?
-    private let dateNode = ASTextNode2()
-    private let separatorNode = ASDisplayNode()
+    private lazy var emailNode = {
+        let node = ASTextNode2()
+        node.attributedText = input.emailText
+        node.maximumNumberOfLines = 1
+        node.truncationMode = .byTruncatingTail
+        return node
+    }()
 
-    private lazy var messageNode = ASTextNode2()
-    private lazy var badgeNode = ASTextNode()
-    public weak var delegate: InboxCellNodeDelegate?
-
-    public init(input: Input) {
-        countNode = input.countText.map {
+    private lazy var countNode: ASTextNode2? = {
+        let node = input.countText.map {
             let node = ASTextNode2()
             node.attributedText = $0
             return node
         }
+        return node
+    }()
+
+    private lazy var dateNode = {
+        let node = ASTextNode2()
+        node.attributedText = input.dateText
+        node.maximumNumberOfLines = 1
+        return node
+    }()
+
+    private lazy var separatorNode = {
+        let node = ASDisplayNode()
+        node.backgroundColor = .separator
+        return node
+    }()
+
+    private lazy var messageNode = {
+        let node = ASTextNode2()
+        node.accessibilityIdentifier = input.messageIdentifier
+        node.maximumNumberOfLines = 1
+        node.truncationMode = .byTruncatingTail
+        node.attributedText = input.messageText
+        return node
+    }()
+
+    private lazy var badgeNode = {
+        let node = ASTextNode()
+        node.textContainerInset = .init(top: 1, left: 6, bottom: 1, right: 6)
+        node.attributedText = input.badgeText
+        node.cornerRadius = 6
+        node.clipsToBounds = true
+        node.backgroundColor = .main
+        return node
+    }()
+
+    public weak var delegate: InboxCellNodeDelegate?
+
+    public init(input: Input) {
         self.input = input
 
         super.init()
 
-        emailNode.attributedText = input.emailText
-        dateNode.attributedText = input.dateText
-
-        if let message = input.messageText {
-            messageNode.attributedText = message
-            messageNode.maximumNumberOfLines = 1
-            messageNode.truncationMode = .byTruncatingTail
-        }
-
-        if let badgeText = input.badgeText {
-            badgeNode.textContainerInset = .init(top: 1, left: 6, bottom: 1, right: 6)
-            badgeNode.attributedText = badgeText
-            badgeNode.cornerRadius = 6
-            badgeNode.clipsToBounds = true
-            badgeNode.backgroundColor = .main
-        }
-
-        emailNode.maximumNumberOfLines = 1
-        dateNode.maximumNumberOfLines = 1
-        emailNode.truncationMode = .byTruncatingTail
-        separatorNode.backgroundColor = .separator
         accessibilityIdentifier = "aid-inbox-item"
     }
 

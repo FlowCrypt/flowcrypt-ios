@@ -40,6 +40,9 @@ class SearchViewController: InboxViewController {
         title = "search_title".localized
         navigationItem.titleView = searchController.searchBar
         navigationItem.rightBarButtonItems = nil
+        navigationItem.leftBarButtonItem = .defaultBackButton {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     private func setupSearch() {

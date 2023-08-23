@@ -360,8 +360,8 @@ extension InboxViewController {
         return inboxInput[safe: index]
     }
 
-    private func performPermanentDeleteAction(on inboxItems: [InboxItem]) {
-        showPermanentDeleteThreadAlert(onAction: { [weak self] _ in
+    private func permanentlyDelete(inboxItems: [InboxItem]) {
+        showPermanentDeleteThreadAlert(threadCount: inboxItems.count, onAction: { [weak self] _ in
             guard let self else { return }
             for inboxItem in inboxItems {
                 self.handleOperation(inboxItem: inboxItem, action: .permanentlyDelete)
@@ -373,7 +373,7 @@ extension InboxViewController {
         })
     }
 
-    private func performOtherAction(on inboxItems: [InboxItem], action: MessageAction) {
+    private func performMessageAction(_ action: MessageAction, inboxItems: [InboxItem]) {
         for inboxItem in inboxItems {
             handleOperation(inboxItem: inboxItem, action: action)
             Task {
@@ -392,9 +392,9 @@ extension InboxViewController {
         // For permanently delete, a distinct mechanism is required. An alert must be displayed first,
         // followed by iterating through the selected threads for deletion.
         if action == .permanentlyDelete {
-            performPermanentDeleteAction(on: inboxItems)
+            permanentlyDelete(inboxItems: inboxItems)
         } else {
-            performOtherAction(on: inboxItems, action: action)
+            performMessageAction(action, inboxItems: inboxItems)
         }
     }
 

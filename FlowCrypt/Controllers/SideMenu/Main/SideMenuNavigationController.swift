@@ -155,37 +155,16 @@ extension SideMenuNavigationController {
 }
 
 extension SideMenuNavigationController: UINavigationControllerDelegate {
-    func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated _: Bool) {
-        viewController.navigationItem.hidesBackButton = true
-        let navigationButton: UIBarButtonItem
-        switch viewControllers.firstIndex(of: viewController) {
-        case 0:
-            navigationButton = getSideMenuNavButton()
-        default:
-            navigationButton = .defaultBackButton()
-        }
-
-        navigationItem.hidesBackButton = true
-        viewController.navigationItem.leftBarButtonItem = navigationButton
-    }
-
-    func navigationController(_: UINavigationController, didShow viewController: UIViewController, animated _: Bool) {
-        let navigationButton: UIBarButtonItem
-        switch viewControllers.firstIndex(of: viewController) {
-        case 0:
-            sideMenu?.allowPanGesture = true
-            sideMenu?.allowLeftSwipe = true
-            interactivePopGestureRecognizer?.isEnabled = false
-            navigationButton = getSideMenuNavButton()
-            // Hide side bar menu button for InboxViewContainerController
-            if viewController is InboxViewContainerController {
-                navigationButton.customView?.isHidden = true
+    func setLeftBarButtonItem(viewController: UIViewController) {
+        let isRootViewController = viewControllers.first == viewController
+        if isRootViewController {
+            // Do not replace left bar button for InboxViewController when there are selected threads
+            let shouldDisplaySideMenuNavButton = (viewController as? InboxViewController)?.selectedInboxItems.isEmpty != false
+            if shouldDisplaySideMenuNavButton {
+                viewController.navigationItem.leftBarButtonItem = getSideMenuNavButton()
             }
-        default:
-            sideMenu?.allowPanGesture = false
-            sideMenu?.allowLeftSwipe = false
-            interactivePopGestureRecognizer?.isEnabled = true
-            navigationButton = .defaultBackButton { [weak self] in
+        } else {
+            viewController.navigationItem.leftBarButtonItem = .defaultBackButton { [weak self] in
                 guard let self else { return }
                 if let viewController = self.viewControllers.compactMap({ $0 as? NavigationChildController }).last {
                     viewController.handleBackButtonTap()
@@ -194,8 +173,23 @@ extension SideMenuNavigationController: UINavigationControllerDelegate {
                 }
             }
         }
+    }
 
-        viewController.navigationItem.leftBarButtonItem = navigationButton
+    func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated _: Bool) {
+        viewController.navigationItem.hidesBackButton = true
+        setLeftBarButtonItem(viewController: viewController)
+    }
+
+    func navigationController(_: UINavigationController, didShow viewController: UIViewController, animated _: Bool) {
+        let isRootViewController = viewControllers.first == viewController
+        sideMenu?.allowPanGesture = isRootViewController
+        sideMenu?.allowLeftSwipe = isRootViewController
+        interactivePopGestureRecognizer?.isEnabled = !isRootViewController
+        setLeftBarButtonItem(viewController: viewController)
+        // Hide side bar menu button for InboxViewContainerController
+        if isRootViewController, viewController is InboxViewContainerController {
+            viewController.navigationItem.leftBarButtonItem?.customView?.isHidden = true
+        }
     }
 }
 

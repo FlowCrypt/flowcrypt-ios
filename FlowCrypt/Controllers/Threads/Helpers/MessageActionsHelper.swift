@@ -66,6 +66,7 @@ struct MessageActionsHelper {
         case .permanentlyDelete:
             try await withCheckedThrowingContinuation { continuation in
                 viewController.showPermanentDeleteThreadAlert(
+                    threadCount: 1,
                     onAction: { _ in
                         Task {
                             if showSpinner {

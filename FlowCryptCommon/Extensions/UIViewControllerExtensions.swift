@@ -124,12 +124,13 @@ public extension UIViewController {
 
     @MainActor
     func showPermanentDeleteThreadAlert(
+        threadCount: Int,
         onAction: ((UIAlertAction) -> Void)?,
         onCancel: ((UIAlertAction) -> Void)? = nil
     ) {
         showAlertWithAction(
             title: "message_permanently_delete_title".localized,
-            message: "message_permanently_delete".localized,
+            message: "message_permanently_delete".localizeWithArguments("%@ thread(s)".localizePluralsWithArguments(threadCount)),
             actionButtonTitle: "delete".localized,
             actionStyle: .destructive,
             onAction: onAction,

@@ -27,6 +27,10 @@ class InboxViewController: ViewController {
     let inboxDataApiClient: InboxDataApiClient
     let viewModel: InboxViewModel
     var inboxInput: [InboxItem] = []
+    var selectedInboxItems: [InboxItem] {
+        return inboxInput.filter(\.isSelected)
+    }
+
     var state: InboxViewController.State = .idle
     var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
@@ -80,7 +84,7 @@ class InboxViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(_:)))
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture))
         tableNode.view.addGestureRecognizer(longPressGesture)
         if !self.isSearch {
             setupUI()
@@ -158,8 +162,7 @@ extension InboxViewController {
     }
 
     func setupThreadSelectNavigationBar() {
-        let selectedThreads = inboxInput.filter(\.isSelected)
-        navigationItem.setAccessibility(id: "\(selectedThreads.count)")
+        navigationItem.setAccessibility(id: "x_selected".localizeWithArguments("\(selectedInboxItems.count)"))
 
         // For normal folders (not Spam and trash folder), display moveToTrash
         var actions: [MessageAction] = shouldShowEmptyView ? [.permanentlyDelete] : [.moveToTrash]
@@ -197,7 +200,7 @@ extension InboxViewController {
             accessibilityId: action.accessibilityIdentifier
         ) { [weak self] in
             guard let self else { return }
-            perform(action: action, inboxItems: inboxInput.filter(\.isSelected))
+            perform(action: action, inboxItems: selectedInboxItems)
         }
     }
 

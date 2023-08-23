@@ -21,6 +21,7 @@ const SELECTORS = {
   MOVE_TO_INBOX_BUTTON: '~aid-move-to-inbox-button',
   ARCHIVE_BUTTON: '~aid-archive-button',
   DELETE_BUTTON: '~aid-delete-button',
+  UNREAD_EMAIL_MESSAGE: `~aid-unread-email-message`,
   READ_BUTTON: '~aid-read-button',
   UNREAD_BUTTON: '~aid-unread-button',
 };
@@ -80,6 +81,10 @@ class MailFolderScreen extends BaseScreen {
 
   get deleteButton() {
     return $(SELECTORS.DELETE_BUTTON);
+  }
+
+  get unreadEmailMessageList() {
+    return $$(SELECTORS.UNREAD_EMAIL_MESSAGE);
   }
 
   get readButton() {
@@ -201,6 +206,17 @@ class MailFolderScreen extends BaseScreen {
 
   clickOnMoveToInboxButton = async () => {
     await ElementHelper.waitAndClick(await this.moveToInboxButton);
+  };
+
+  checkUnreadEmailMessage = async (count: number, message: string) => {
+    const unreadEmailList = await this.unreadEmailMessageList;
+    console.log(await unreadEmailList[count].getText());
+    await ElementHelper.waitForText(unreadEmailList[count], message);
+  };
+
+  checkUnreadEmailCount = async (count: number) => {
+    const unreadEmailList = await this.unreadEmailMessageList;
+    expect(unreadEmailList.length).toEqual(count);
   };
 
   clickOnReadButton = async () => {
