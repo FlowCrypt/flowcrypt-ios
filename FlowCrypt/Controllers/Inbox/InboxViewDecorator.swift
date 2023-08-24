@@ -38,7 +38,7 @@ extension InboxCellNode.Input {
             }(),
             dateText: NSAttributedString.text(from: date, style: style, color: dateColor),
             messageText: NSAttributedString.text(from: msg, style: style, color: textColor),
-            messageIdentifier: isMessageRead ? "aid-read-email-message" : "aid-unread-email-message",
+            accessibilityidentifier: isMessageRead ? "aid-inbox-read-item" : "aid-inbox-unread-item",
             badgeText: badge?.attributed(.regular(10), color: .white)
         )
     }

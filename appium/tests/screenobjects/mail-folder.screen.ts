@@ -13,7 +13,6 @@ const SELECTORS = {
   HELP_BTN: '~aid-help-btn',
   SEARCH_FIELD: '~aid-search-all-emails',
   EMPTY_FOLDER_BTN: '~aid-empty-folder-button',
-  // INBOX_ITEM: '~aid-inbox-item',
   // TODO: Couldn't use accessibility identifier because $$ selector returns only visible cells
   INBOX_ITEM: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
   IDLE_NODE: '~aid-inbox-idle-node',
@@ -21,7 +20,7 @@ const SELECTORS = {
   MOVE_TO_INBOX_BUTTON: '~aid-move-to-inbox-button',
   ARCHIVE_BUTTON: '~aid-archive-button',
   DELETE_BUTTON: '~aid-delete-button',
-  UNREAD_EMAIL_MESSAGE: `~aid-unread-email-message`,
+  INBOX_UNREAD_ITEM: `~aid-inbox-unread-item`,
   READ_BUTTON: '~aid-read-button',
   UNREAD_BUTTON: '~aid-unread-button',
 };
@@ -83,8 +82,8 @@ class MailFolderScreen extends BaseScreen {
     return $(SELECTORS.DELETE_BUTTON);
   }
 
-  get unreadEmailMessageList() {
-    return $$(SELECTORS.UNREAD_EMAIL_MESSAGE);
+  get unreadInboxItems() {
+    return $$(SELECTORS.INBOX_UNREAD_ITEM);
   }
 
   get readButton() {
@@ -208,13 +207,14 @@ class MailFolderScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.moveToInboxButton);
   };
 
-  checkUnreadEmailMessage = async (count: number, message: string) => {
-    const unreadEmailList = await this.unreadEmailMessageList;
-    await ElementHelper.waitForText(unreadEmailList[count], message);
+  checkUnreadEmailSubject = async (count: number, subject: string) => {
+    const unreadEmailList = await this.unreadInboxItems;
+    const subjectEl = await unreadEmailList[count].$(`~${subject}`);
+    await ElementHelper.waitElementVisible(subjectEl);
   };
 
   checkUnreadEmailCount = async (count: number) => {
-    const unreadEmailList = await this.unreadEmailMessageList;
+    const unreadEmailList = await this.unreadInboxItems;
     expect(unreadEmailList.length).toEqual(count);
   };
 

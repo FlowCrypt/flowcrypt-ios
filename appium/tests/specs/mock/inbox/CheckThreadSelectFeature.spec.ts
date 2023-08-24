@@ -26,8 +26,8 @@ describe('INBOX: ', () => {
       await MailFolderScreen.clickOnUnreadButton();
       await browser.pause(200);
       await MailFolderScreen.checkUnreadEmailCount(2);
-      await MailFolderScreen.checkUnreadEmailMessage(0, firstMessage);
-      await MailFolderScreen.checkUnreadEmailMessage(1, secondMessage);
+      await MailFolderScreen.checkUnreadEmailSubject(0, firstMessage);
+      await MailFolderScreen.checkUnreadEmailSubject(1, secondMessage);
       await MailFolderScreen.selectThread(0);
       await MailFolderScreen.selectThread(1);
       await MailFolderScreen.clickOnReadButton();

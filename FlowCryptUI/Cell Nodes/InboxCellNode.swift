@@ -20,7 +20,7 @@ public final class InboxCellNode: CellNode {
         public let countText: NSAttributedString?
         public let dateText: NSAttributedString
         public let messageText: NSAttributedString?
-        public let messageIdentifier: String?
+        public let accessibilityidentifier: String?
         public let badgeText: NSAttributedString?
 
         public init(
@@ -28,14 +28,14 @@ public final class InboxCellNode: CellNode {
             countText: NSAttributedString?,
             dateText: NSAttributedString,
             messageText: NSAttributedString?,
-            messageIdentifier: String,
+            accessibilityidentifier: String?,
             badgeText: NSAttributedString?
         ) {
             self.emailText = emailText
             self.countText = countText
             self.dateText = dateText
             self.messageText = messageText
-            self.messageIdentifier = messageIdentifier
+            self.accessibilityidentifier = accessibilityidentifier
             self.badgeText = badgeText
         }
     }
@@ -73,7 +73,6 @@ public final class InboxCellNode: CellNode {
     private lazy var emailNode = {
         let node = ASTextNode2()
         node.attributedText = input.emailText
-        node.accessibilityIdentifier = input.messageIdentifier
         node.maximumNumberOfLines = 1
         node.truncationMode = .byTruncatingTail
         return node
@@ -126,7 +125,7 @@ public final class InboxCellNode: CellNode {
 
         super.init()
 
-        accessibilityIdentifier = "aid-inbox-item"
+        accessibilityIdentifier = input.accessibilityidentifier
     }
 
     private func updateSelectionAppearance() {
