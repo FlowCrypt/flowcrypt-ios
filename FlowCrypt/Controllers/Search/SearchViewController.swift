@@ -19,6 +19,7 @@ class SearchViewController: InboxViewController {
 
         setupSearchUI()
         setupSearch()
+        setupNavigationBar()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -31,9 +32,17 @@ class SearchViewController: InboxViewController {
         view.backgroundColor = .backgroundColor
         view.accessibilityIdentifier = "aid-search-view-controller"
 
-        title = "search_title".localized
         state = .searchStart
         setupTableNode()
+    }
+
+    override func setupNavigationBar() {
+        title = "search_title".localized
+        navigationItem.titleView = searchController.searchBar
+        navigationItem.rightBarButtonItems = nil
+        navigationItem.leftBarButtonItem = .defaultBackButton {
+            self.navigationController?.popViewController(animated: true)
+        }
     }
 
     private func setupSearch() {
@@ -49,7 +58,6 @@ class SearchViewController: InboxViewController {
         }
         update(searchController: searchController)
         definesPresentationContext = true
-        navigationItem.titleView = searchController.searchBar
     }
 
     private func update(searchController: UISearchController) {

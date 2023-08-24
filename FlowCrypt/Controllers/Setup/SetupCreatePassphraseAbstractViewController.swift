@@ -136,16 +136,18 @@ extension SetupCreatePassphraseAbstractViewController {
 
                 alert.addTextField { [weak self] textField in
                     textField.isSecureTextEntry = true
-                    textField.accessibilityLabel = "textField"
+                    textField.accessibilityLabel = "aid-confirm-passphrase-input"
                     textField.delegate = self?.modalTextFieldDelegate
                 }
-                alert.addAction(UIAlertAction(title: "cancel".localized, style: .default) { _ in
+                let cancelAction = UIAlertAction(title: "cancel".localized, style: .cancel) { _ in
                     return continuation.resume(returning: nil)
-                })
-                alert.addAction(UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
+                }
+                let okAction = UIAlertAction(title: "ok".localized, style: .default) { [weak alert] _ in
                     return continuation.resume(returning: alert?.textFields?[0].text)
-                })
-
+                }
+                okAction.accessibilityIdentifier = "aid-ok-button"
+                alert.addAction(cancelAction)
+                alert.addAction(okAction)
                 self.present(alert, animated: true, completion: nil)
             }
         }

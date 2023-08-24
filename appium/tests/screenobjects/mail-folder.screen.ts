@@ -4,6 +4,7 @@ import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   TRASH_HEADER: '~aid-navigation-item-trash',
+  AVATAR_CHECKBOX: '~aid-avatar-checkbox',
   SENT_HEADER: '~aid-navigation-item-sent',
   CREATE_EMAIL_BUTTON: '~aid-compose-message-button',
   INBOX_HEADER: '~aid-navigation-item-inbox',
@@ -12,11 +13,16 @@ const SELECTORS = {
   HELP_BTN: '~aid-help-btn',
   SEARCH_FIELD: '~aid-search-all-emails',
   EMPTY_FOLDER_BTN: '~aid-empty-folder-button',
-  // INBOX_ITEM: '~aid-inbox-item',
   // TODO: Couldn't use accessibility identifier because $$ selector returns only visible cells
   INBOX_ITEM: '-ios class chain:**/XCUIElementTypeOther/XCUIElementTypeTable[2]/XCUIElementTypeCell',
   IDLE_NODE: '~aid-inbox-idle-node',
   EMPTY_CELL_NODE: '~aid-empty-cell-node',
+  MOVE_TO_INBOX_BUTTON: '~aid-move-to-inbox-button',
+  ARCHIVE_BUTTON: '~aid-archive-button',
+  DELETE_BUTTON: '~aid-delete-button',
+  INBOX_UNREAD_ITEM: `~aid-inbox-unread-item`,
+  READ_BUTTON: '~aid-read-button',
+  UNREAD_BUTTON: '~aid-unread-button',
 };
 
 class MailFolderScreen extends BaseScreen {
@@ -58,6 +64,34 @@ class MailFolderScreen extends BaseScreen {
 
   get inboxList() {
     return $$(SELECTORS.INBOX_ITEM);
+  }
+
+  get avatarCheckBoxes() {
+    return $$(SELECTORS.AVATAR_CHECKBOX);
+  }
+
+  get moveToInboxButton() {
+    return $(SELECTORS.MOVE_TO_INBOX_BUTTON);
+  }
+
+  get archiveButton() {
+    return $(SELECTORS.ARCHIVE_BUTTON);
+  }
+
+  get deleteButton() {
+    return $(SELECTORS.DELETE_BUTTON);
+  }
+
+  get unreadInboxItems() {
+    return $$(SELECTORS.INBOX_UNREAD_ITEM);
+  }
+
+  get readButton() {
+    return $(SELECTORS.READ_BUTTON);
+  }
+
+  get unreadButton() {
+    return $(SELECTORS.UNREAD_BUTTON);
   }
 
   get emptyFolderBtn() {
@@ -154,6 +188,42 @@ class MailFolderScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(await this.inboxHeader);
     await ElementHelper.waitElementVisible(await this.searchBtn);
     await ElementHelper.waitElementVisible(await this.helpBtn);
+  };
+
+  selectThread = async (index: number) => {
+    const avatarCheckBoxes = await this.avatarCheckBoxes;
+    await ElementHelper.waitAndClick(avatarCheckBoxes[index]);
+  };
+
+  clickOnDeleteButton = async () => {
+    await ElementHelper.waitAndClick(await this.deleteButton);
+  };
+
+  clickOnArchiveButton = async () => {
+    await ElementHelper.waitAndClick(await this.deleteButton);
+  };
+
+  clickOnMoveToInboxButton = async () => {
+    await ElementHelper.waitAndClick(await this.moveToInboxButton);
+  };
+
+  checkUnreadEmailSubject = async (count: number, subject: string) => {
+    const unreadEmailList = await this.unreadInboxItems;
+    const subjectEl = await unreadEmailList[count].$(`~${subject}`);
+    await ElementHelper.waitElementVisible(subjectEl);
+  };
+
+  checkUnreadEmailCount = async (count: number) => {
+    const unreadEmailList = await this.unreadInboxItems;
+    expect(unreadEmailList.length).toEqual(count);
+  };
+
+  clickOnReadButton = async () => {
+    await ElementHelper.waitAndClick(await this.readButton);
+  };
+
+  clickOnUnreadButton = async () => {
+    await ElementHelper.waitAndClick(await this.unreadButton);
   };
 
   checkDraftsScreen = async () => {

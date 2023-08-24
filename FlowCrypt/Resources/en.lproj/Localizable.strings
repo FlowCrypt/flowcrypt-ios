@@ -37,6 +37,7 @@
 "backup_subject" = "Your FlowCrypt Backup";
 "content_hidden" = "(content hidden for security)";
 "go_back" = "Go back";
+"x_selected" = "%@ selected";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -418,7 +419,7 @@
 
 "submit_key_error" = "Failed to submit Public Key";
 
-"message_permanently_delete" = "You're about to permanently delete a message";
+"message_permanently_delete" = "You're about to permanently delete %@";
 "message_permanently_delete_title" = "Are you sure?";
 "draft_delete_confirmation" = "Delete draft?";
 

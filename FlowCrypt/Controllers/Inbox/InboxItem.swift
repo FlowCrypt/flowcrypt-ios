@@ -12,6 +12,7 @@ struct InboxItem: Equatable {
     var messages: [Message]
     let folderPath: String
     let type: InboxItemType
+    var isSelected = false
 
     enum InboxItemType: Equatable {
         case message(Identifier), thread(Identifier)

@@ -13,6 +13,7 @@ protocol MessagesThreadOperationsApiClient {
     func moveThreadToTrash(id: String?, labels: Set<MessageLabel>) async throws
     func moveThreadToInbox(id: String?) async throws
     func markThreadAsUnread(id: String?, folder: String) async throws
+    func markThreadAsRead(id: String?, folder: String) async throws
     func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws
     func archive(messagesIds: [Identifier], in folder: String) async throws
 }
@@ -48,6 +49,10 @@ extension GmailService: MessagesThreadOperationsApiClient {
 
     func markThreadAsUnread(id: String?, folder: String) async throws {
         try await update(id: id, labelsToAdd: [.unread])
+    }
+
+    func markThreadAsRead(id: String?, folder: String) async throws {
+        try await update(id: id, labelsToRemove: [.unread])
     }
 
     func mark(messagesIds: [Identifier], asRead: Bool, in folder: String) async throws {
