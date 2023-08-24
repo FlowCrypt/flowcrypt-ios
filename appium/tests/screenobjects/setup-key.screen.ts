@@ -4,9 +4,9 @@ import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   SET_PASS_PHRASE_BUTTON: '~aid-set-pass-phrase-btn',
-  ENTER_YOUR_PASS_PHRASE_FIELD: '-ios class chain:**/XCUIElementTypeSecureTextField',
-  OK_BUTTON: '~Ok',
-  CONFIRM_PASS_PHRASE_FIELD: '~textField',
+  ENTER_YOUR_PASS_PHRASE_FIELD: '~aid-enter-passphrase-input',
+  OK_BUTTON: '~aid-ok-button',
+  CONFIRM_PASS_PHRASE_FIELD: '~aid-confirm-passphrase-input',
   LOAD_ACCOUNT_BUTTON: '~aid-load-account-btn',
   CREATE_NEW_KEY_BUTTON: '~aid-create-new-key-button',
   IMPORT_MY_KEY_BUTTON: '~aid-import-my-key-button',
@@ -46,17 +46,7 @@ class SetupKeyScreen extends BaseScreen {
   }
 
   setPassPhrase = async (withManualSubmit = true, text: string = CommonData.account.passPhrase) => {
-    // retrying several times because following login, we switch
-    //   from webview to our own view and then to another one several
-    //   times, which was causing flaky tests. Originally we did a 10s
-    //   delay but now instead we're retrying once per second until
-    //   we see what we expect.
-    let count = 0;
-    do {
-      await browser.pause(1000);
-      count++;
-    } while ((await (await this.enterPassPhraseField).isDisplayed()) !== true && count <= 15);
-
+    await ElementHelper.waitElementVisible(await this.enterPassPhraseField);
     if (withManualSubmit) {
       await this.fillPassPhraseManually(text);
       await this.clickSetPassPhraseBtn();

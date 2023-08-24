@@ -173,11 +173,16 @@
 		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
+		952687452A8A24C60005694B /* LetterAvatarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 952687442A8A24C60005694B /* LetterAvatarKit */; };
+		952687472A8A2EF70005694B /* ThreadMessageDraftCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */; };
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
 		9547EF212A5F106E00A048FF /* PassPhraseAlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */; };
 		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
+		9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */ = {isa = PBXBuildFile; fileRef = 9582BC592A782DA700439728 /* pass_phrase_hint.html */; };
 		958566B72A6126DE001C84D3 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		958566B92A612822001C84D3 /* ASButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958566B82A612822001C84D3 /* ASButtonNode.swift */; };
+		95E014CF2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */; };
+		95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 95F55F9E2A7B8A720000E50F /* ProgressHUD */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */; };
@@ -187,7 +192,6 @@
 		9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F17976C2368EEBD002BF770 /* SetupViewDecorator.swift */; };
 		9F23EA50237217140017DFED /* ComposeViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */; };
 		9F268891237DC55600428A94 /* SetupManuallyImportKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F268890237DC55600428A94 /* SetupManuallyImportKeyViewController.swift */; };
-		9F2AC5B1267BDED100F6149B /* GmailBackupSearchQueryProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F2AC5B0267BDED100F6149B /* GmailBackupSearchQueryProvider.swift */; };
 		9F31AB8C23298B3F00CF87EA /* Imap+retry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */; };
 		9F31AB8E23298BCF00CF87EA /* Imap+folders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB8D23298BCF00CF87EA /* Imap+folders.swift */; };
 		9F31AB91232993F500CF87EA /* Imap+session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F31AB90232993F500CF87EA /* Imap+session.swift */; };
@@ -279,7 +283,6 @@
 		9FBD69EE27775086002FC602 /* ErrorExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51E4F0B427348E310017DABB /* ErrorExtensions.swift */; };
 		9FBD69F0277B126F002FC602 /* URLSessionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32DCA7E0AFE19FACB0F233ED /* URLSessionExtensions.swift */; };
 		9FBD69F6277B1E20002FC602 /* UIViewControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FEED1B7230C08D700700F8E /* UIViewControllerExtensions.swift */; };
-		9FBD69F8277B1E66002FC602 /* MBProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 9FBD69F7277B1E66002FC602 /* MBProgressHUD */; };
 		9FBD69FA277B1E6C002FC602 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 9FBD69F9277B1E6C002FC602 /* Toast */; };
 		9FBEAE5525D41BFF009E98D4 /* UserMailSessionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FBEAE5425D41BFF009E98D4 /* UserMailSessionProvider.swift */; };
 		9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D254733324C597CD00DEE698 /* CoreTypesTest.swift */; };
@@ -636,10 +639,13 @@
 		756BB98F285A19C100F73140 /* EmptyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellNode.swift; sourceTree = "<group>"; };
 		75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMessageDraftCellNode.swift; sourceTree = "<group>"; };
 		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseAlertNode.swift; sourceTree = "<group>"; };
 		9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSeparatorCellNode.swift; sourceTree = "<group>"; };
+		9582BC592A782DA700439728 /* pass_phrase_hint.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = pass_phrase_hint.html; sourceTree = "<group>"; };
 		958566B82A612822001C84D3 /* ASButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASButtonNode.swift; sourceTree = "<group>"; };
+		95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCheckboxNode.swift; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
@@ -656,7 +662,6 @@
 		9F23EA4D237216FA0017DFED /* TextViewCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewCellNode.swift; sourceTree = "<group>"; };
 		9F23EA4F237217140017DFED /* ComposeViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewDecorator.swift; sourceTree = "<group>"; };
 		9F268890237DC55600428A94 /* SetupManuallyImportKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupManuallyImportKeyViewController.swift; sourceTree = "<group>"; };
-		9F2AC5B0267BDED100F6149B /* GmailBackupSearchQueryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GmailBackupSearchQueryProvider.swift; sourceTree = "<group>"; };
 		9F2AC5C6267BE99E00F6149B /* FlowCryptAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlowCryptAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F2AC5CA267BE99E00F6149B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F31AB8B23298B3F00CF87EA /* Imap+retry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Imap+retry.swift"; sourceTree = "<group>"; };
@@ -903,6 +908,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				952687452A8A24C60005694B /* LetterAvatarKit in Frameworks */,
 				D28655982424D1BD0066F52E /* FlowCryptCommon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -912,7 +918,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FBD69FA277B1E6C002FC602 /* Toast in Frameworks */,
-				9FBD69F8277B1E66002FC602 /* MBProgressHUD in Frameworks */,
+				95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1369,6 +1375,13 @@
 			path = Apis;
 			sourceTree = "<group>";
 		};
+		95F55F9B2A7B8A470000E50F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		9F0C3C1F23191F2000299985 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -1716,7 +1729,6 @@
 				9FC411202595EA12001180A8 /* MessageSearchApiClient.swift */,
 				9FC4112D2595EA8B001180A8 /* Gmail+Search.swift */,
 				9FC411342595EA94001180A8 /* Imap+Search.swift */,
-				9F2AC5B0267BDED100F6149B /* GmailBackupSearchQueryProvider.swift */,
 			);
 			path = "SearchMessage Provider";
 			sourceTree = "<group>";
@@ -1875,6 +1887,7 @@
 				51E8181B29081D2B00FD428D /* generated */,
 				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
+				9582BC592A782DA700439728 /* pass_phrase_hint.html */,
 				51E1673C270DAFF900D27C52 /* Localizable.stringsdict */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
 				D269E025240EAD9A000495C3 /* Naming Convention.md */,
@@ -1893,6 +1906,7 @@
 				D2531F2C23FEEF52007E5198 /* FlowCryptCommon */,
 				9F2AC5C7267BE99E00F6149B /* FlowCryptAppTests */,
 				C132B9B11EC2DBD800763715 /* Products */,
+				95F55F9B2A7B8A470000E50F /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -2199,6 +2213,7 @@
 				511D07E02769FBBA0050417B /* MessageActionCellNode.swift */,
 				5180CB96273724E9001FC7EF /* ThreadMessageInfoCellNode.swift */,
 				9F56BD3123438B5B00A7371A /* InboxCellNode.swift */,
+				952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */,
 				9F56BD3523438B9D00A7371A /* TextCellNode.swift */,
 				D24ABA6223FDB4FF002EE9DD /* RecipientEmailsCellNode.swift */,
 				D26F132624509EB6009175BA /* RecipientEmailsCellNodeInput.swift */,
@@ -2248,6 +2263,7 @@
 				51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */,
 				51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */,
 				9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */,
+				95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -2381,6 +2397,9 @@
 			dependencies = (
 			);
 			name = FlowCryptUI;
+			packageProductDependencies = (
+				952687442A8A24C60005694B /* LetterAvatarKit */,
+			);
 			productName = FlowCryptUI;
 			productReference = D204DB9E23FB35700083B9D6 /* FlowCryptUI.framework */;
 			productType = "com.apple.product-type.framework";
@@ -2400,8 +2419,8 @@
 			);
 			name = FlowCryptCommon;
 			packageProductDependencies = (
-				9FBD69F7277B1E66002FC602 /* MBProgressHUD */,
 				9FBD69F9277B1E6C002FC602 /* Toast */,
+				95F55F9E2A7B8A720000E50F /* ProgressHUD */,
 			);
 			productName = FlowCryptCommon;
 			productReference = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */;
@@ -2470,11 +2489,12 @@
 				51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */,
 				51E13F10270F92BA00F287CA /* XCRemoteSwiftPackageReference "IDZSwiftCommonCrypto" */,
-				51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */,
 				51C0C1ED271982A1000C9738 /* XCRemoteSwiftPackageReference "mailcore2" */,
 				51C0C1F0271987DB000C9738 /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */,
 				95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */,
+				95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */,
+				952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -2512,6 +2532,7 @@
 				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */,
+				9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */,
 				9F716308234FC73E0031645E /* Localizable.strings in Resources */,
 				D2F6D13E2434FF1400DB4065 /* providers_custom.json in Resources */,
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
@@ -2827,7 +2848,6 @@
 				2CAF25322756C37E005C7C7C /* AppContext.swift in Sources */,
 				514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */,
 				2CAF25342756C3A6005C7C7C /* ImapSessionProvider.swift in Sources */,
-				9F2AC5B1267BDED100F6149B /* GmailBackupSearchQueryProvider.swift in Sources */,
 				040FDF1227EDFC5C00CB936A /* IdTokenUtils.swift in Sources */,
 				9F953E09238310D500AEB98B /* KeyMethods.swift in Sources */,
 				5137CB1427F8E0A900AEF895 /* EnterpriseServerApiHelper.swift in Sources */,
@@ -2849,6 +2869,7 @@
 				5180CB9127356D48001FC7EF /* MessageSubjectNode.swift in Sources */,
 				D28655952423BFF60066F52E /* SideMenuOptionalView.swift in Sources */,
 				D2717754242568A600BDA9A9 /* NavigationBarActionButton.swift in Sources */,
+				952687472A8A2EF70005694B /* ThreadMessageDraftCellNode.swift in Sources */,
 				D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */,
 				5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
@@ -2890,6 +2911,7 @@
 				D23C46F623FB44D8008211FB /* DividerCellNode.swift in Sources */,
 				040CF0DA2809A25D00D79739 /* RecipientEmailCollectionViewFlowLayout.swift in Sources */,
 				756BB990285A19C100F73140 /* EmptyCellNode.swift in Sources */,
+				95E014CF2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift in Sources */,
 				D27177512425678F00BDA9A9 /* KeySettingCellNode.swift in Sources */,
 				5109A77C272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift in Sources */,
 				75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */,
@@ -3844,14 +3866,6 @@
 				minimumVersion = 0.13.0;
 			};
 		};
-		51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jdg/MBProgressHUD";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
-			};
-		};
 		51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/google-api-objectivec-client-for-rest";
@@ -3876,12 +3890,28 @@
 				minimumVersion = 10.0.0;
 			};
 		};
+		952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/vpeschenkov/LetterAvatarKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/SwiftLint";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.52.4;
+			};
+		};
+		95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/relatedcode/ProgressHUD.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 13.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -3932,15 +3962,20 @@
 			package = 51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
 			productName = RealmSwift;
 		};
+		952687442A8A24C60005694B /* LetterAvatarKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */;
+			productName = LetterAvatarKit;
+		};
 		95D83FBA2A5D4BED006FDC33 /* SwiftLintPlugin */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */;
 			productName = "plugin:SwiftLintPlugin";
 		};
-		9FBD69F7277B1E66002FC602 /* MBProgressHUD */ = {
+		95F55F9E2A7B8A720000E50F /* ProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 51E13F16270F934C00F287CA /* XCRemoteSwiftPackageReference "MBProgressHUD" */;
-			productName = MBProgressHUD;
+			package = 95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */;
+			productName = ProgressHUD;
 		};
 		9FBD69F9277B1E6C002FC602 /* Toast */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -28,6 +28,15 @@ public extension UIColor {
         )
     }
 
+    func scaleAlpha(by factor: CGFloat) -> UIColor {
+        guard let components = cgColor.components, let alpha = components.last else {
+            return withAlphaComponent(factor)
+        }
+
+        let newAlpha = alpha * factor
+        return withAlphaComponent(newAlpha)
+    }
+
     static var main: UIColor {
         UIColor(r: 36, g: 156, b: 6, alpha: 1)
     }

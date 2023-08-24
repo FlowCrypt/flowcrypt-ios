@@ -25,12 +25,3 @@ export const GMAIL_RECOVERY_EMAIL_SUBJECTS = [
   'All you need to know about CryptUP (contains a backup)',
   'CryptUP Account Backup',
 ];
-
-export const gmailBackupSearchQuery = (acctEmail: string) => {
-  return [
-    'from:' + acctEmail,
-    'to:' + acctEmail,
-    '(subject:"' + GMAIL_RECOVERY_EMAIL_SUBJECTS.join('" OR subject: "') + '")',
-    '-is:spam',
-  ].join(' ');
-};

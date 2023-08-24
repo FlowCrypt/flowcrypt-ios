@@ -45,7 +45,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.checkEditRecipient(0, 'to', recipient1.name, 3);
 
       await NewMessageScreen.deleteAddedRecipient(2);
-      await NewMessageScreen.deleteAddedRecipientWithBackspace(1);
+      await NewMessageScreen.deleteAddedRecipient(1);
       await NewMessageScreen.deleteAddedRecipient(0);
     });
   });

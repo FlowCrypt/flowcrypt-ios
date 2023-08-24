@@ -127,19 +127,9 @@ extension ThreadDetailsViewController {
             body = data.rawMessage.body.text
         }
 
-        return LabelCellNode(
-            input: .init(
-                title: "draft".localized.attributed(color: .systemRed),
-                text: body.removingMailThreadQuote().attributed(color: .secondaryLabel),
-                accessibilityIdentifier: "aid-draft-body-\(messageIndex)",
-                labelAccessibilityIdentifier: "aid-draft-label-\(messageIndex)",
-                buttonAccessibilityIdentifier: "aid-draft-delete-button-\(messageIndex)",
-                actionButtonImageName: "trash",
-                action: { [weak self] in
-                    self?.deleteDraft(id: data.rawMessage.identifier)
-                }
-            )
-        )
+        return ThreadMessageDraftCellNode(sender: appContext.user.name, draftBody: body, messageIndex: messageIndex, action: {
+            self.deleteDraft(id: data.rawMessage.identifier)
+        })
     }
 
     private func deleteDraft(id: Identifier) {

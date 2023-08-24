@@ -39,4 +39,9 @@ public extension CGFloat {
             UIDevice.isIpad ? 24 : 16
         }
     }
+
+    enum Avatar {
+        static var width: CGFloat = 44
+        static var height: CGFloat = 44
+    }
 }

@@ -69,7 +69,6 @@ export namespace NodeRequest {
         guesses: undefined;
         // eslint-disable-next-line @typescript-eslint/indent
       };
-  export type gmailBackupSearch = { acctEmail: string };
   export type isEmailValid = { email: string };
   export type decryptKey = { armored: string; passphrases: string[] };
   export type encryptKey = { armored: string; passphrase: string };
@@ -184,13 +183,6 @@ export class ValidateInput {
       return v as NodeRequest.zxcvbnStrengthBar;
     }
     throw new Error('Wrong request structure for NodeRequest.zxcvbnStrengthBar');
-  };
-
-  public static gmailBackupSearch = (v: unknown): NodeRequest.gmailBackupSearch => {
-    if (isObj(v) && hasProp(v, 'acctEmail', 'string')) {
-      return v as NodeRequest.gmailBackupSearch;
-    }
-    throw new Error('Wrong request structure for NodeRequest.gmailBackupSearchQuery');
   };
 
   public static isEmailValid = (v: unknown): NodeRequest.isEmailValid => {

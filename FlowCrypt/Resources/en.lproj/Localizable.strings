@@ -9,6 +9,7 @@
 "unknown_title" = "(unknown)";
 "retry_title" = "Retry";
 "ok" = "Ok";
+"submit" = "Submit";
 "cancel" = "Cancel";
 "delete" = "Delete";
 "download" = "Download";
@@ -36,6 +37,7 @@
 "backup_subject" = "Your FlowCrypt Backup";
 "content_hidden" = "(content hidden for security)";
 "go_back" = "Go back";
+"x_selected" = "%@ selected";
 
 // EMAIL
 "email_removed" = "Email moved to Trash";
@@ -246,7 +248,7 @@
 "import_key_add_update" = "Keys updated: %@";
 
 // Key Create
-"create_pass_phrase_description" = "See choosing secure pass phrase ?";
+"create_pass_phrase_tips" = "Tap to see tips for choosing secure pass phrase";
 "create_pass_phrase_set_title" = "Set pass phrase";
 "create_pass_phrase_lost" = "Lost pass phrase cannot be recovered";
 
@@ -373,7 +375,7 @@
 "gmail_service_provider_error_error_message" = "Gmail provider error:\n%@";
 "gmail_service_invalid_grant_error_message" = "Access to %@ account was revoked.\n\nPlease reconnect the app to Gmail";
 "gmail_service_pagination_error" = "Pagination %@ is not supported for this provider";
-"gmail_service_missing_back_query_error_message" = "Missing backup query: %@";
+"gmail_service_search_backup_error_message" = "Error while fetching backups. Error: %@";
 "gmail_service_no_access_to_account_message" = "Google login successful.\nNow connect your inbox on the next screen. The grant is stored locally on your device, never shared with anyone.";
 
 // Google User Service errors
@@ -417,7 +419,7 @@
 
 "submit_key_error" = "Failed to submit Public Key";
 
-"message_permanently_delete" = "You're about to permanently delete a message";
+"message_permanently_delete" = "You're about to permanently delete %@";
 "message_permanently_delete_title" = "Are you sure?";
 "draft_delete_confirmation" = "Delete draft?";
 

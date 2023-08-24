@@ -27,8 +27,15 @@ struct MessageActionsHelper {
     }
 
     @MainActor
-    func perform(action: MessageAction, with inboxItem: InboxItem, viewController: UIViewController) async throws {
-        viewController.showSpinner()
+    func perform(
+        action: MessageAction,
+        with inboxItem: InboxItem,
+        viewController: UIViewController,
+        showSpinner: Bool = true
+    ) async throws {
+        if showSpinner {
+            viewController.showSpinner()
+        }
         switch action {
         case .archive:
             try await threadOperationsApiClient.archive(
@@ -43,7 +50,12 @@ struct MessageActionsHelper {
                 )
             }
         case .markAsRead:
-            break
+            Task { // Run mark as read operation in another thread
+                try await threadOperationsApiClient.markThreadAsRead(
+                    id: inboxItem.threadId,
+                    folder: inboxItem.folderPath
+                )
+            }
         case .moveToTrash:
             try await threadOperationsApiClient.moveThreadToTrash(
                 id: inboxItem.threadId,
@@ -53,15 +65,13 @@ struct MessageActionsHelper {
             try await threadOperationsApiClient.moveThreadToInbox(id: inboxItem.threadId)
         case .permanentlyDelete:
             try await withCheckedThrowingContinuation { continuation in
-                viewController.showAlertWithAction(
-                    title: "message_permanently_delete_title".localized,
-                    message: "message_permanently_delete".localized,
-                    actionButtonTitle: "delete".localized,
-                    actionStyle: .destructive,
+                viewController.showPermanentDeleteThreadAlert(
+                    threadCount: 1,
                     onAction: { _ in
                         Task {
-                            viewController.showSpinner()
-
+                            if showSpinner {
+                                viewController.showSpinner()
+                            }
                             do {
                                 try await self.threadOperationsApiClient.delete(id: inboxItem.threadId)
                                 continuation.resume()

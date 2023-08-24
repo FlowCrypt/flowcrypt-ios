@@ -56,7 +56,7 @@ final class RecipientEmailNode: CellNode {
             switch input.recipient.state {
             case .idle: self.animateImageRotation()
             case .error: self.animateImageScaling()
-            case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .selected:
+            case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail:
                 break
             }
         }

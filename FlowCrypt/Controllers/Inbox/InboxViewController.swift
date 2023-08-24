@@ -27,6 +27,10 @@ class InboxViewController: ViewController {
     let inboxDataApiClient: InboxDataApiClient
     let viewModel: InboxViewModel
     var inboxInput: [InboxItem] = []
+    var selectedInboxItems: [InboxItem] {
+        return inboxInput.filter(\.isSelected)
+    }
+
     var state: InboxViewController.State = .idle
     var inboxTitle: String {
         viewModel.folderName.isEmpty ? "Inbox" : viewModel.folderName
@@ -40,7 +44,7 @@ class InboxViewController: ViewController {
 
     // Search related variables
     private var isSearch = false
-    private var shouldBeginFetch = true
+    var shouldBeginFetch = true
     var searchedExpression = ""
 
     private var isVisible = false
@@ -80,6 +84,8 @@ class InboxViewController: ViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture))
+        tableNode.view.addGestureRecognizer(longPressGesture)
         if !self.isSearch {
             setupUI()
             setupNavigationBar()
@@ -121,7 +127,6 @@ class InboxViewController: ViewController {
 extension InboxViewController {
     private func setupUI() {
         title = inboxTitle
-        navigationItem.setAccessibility(id: inboxTitle)
 
         setupTableNode()
         node.addSubnode(composeButton)
@@ -139,7 +144,8 @@ extension InboxViewController {
         }
     }
 
-    private func setupNavigationBar() {
+    @objc public func setupNavigationBar() {
+        navigationItem.setAccessibility(id: inboxTitle)
         navigationItem.rightBarButtonItem = NavigationBarItemsView(
             with: [
                 NavigationBarItemsView.Input(
@@ -152,6 +158,50 @@ extension InboxViewController {
                 ) { [weak self] in self?.handleSearchTap() }
             ]
         )
+        navigationItem.leftBarButtonItem = getSideMenuNavButton()
+    }
+
+    func setupThreadSelectNavigationBar() {
+        navigationItem.setAccessibility(id: "x_selected".localizeWithArguments("\(selectedInboxItems.count)"))
+
+        // For normal folders (not Spam and trash folder), display moveToTrash
+        var actions: [MessageAction] = shouldShowEmptyView ? [.permanentlyDelete] : [.moveToTrash]
+        let selectedInInbox = inboxInput.contains { $0.isSelected && $0.isInbox }
+        let selectedUnread = inboxInput.contains { $0.isSelected && !$0.isRead }
+
+        if selectedInInbox, !shouldShowEmptyView {
+            actions.append(.archive)
+        } else if !selectedInInbox {
+            actions.append(.moveToInbox)
+        }
+        actions.append(selectedUnread ? .markAsRead : .markAsUnread)
+
+        let items = actions.map { createNavigationBarButton(action: $0) }
+        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
+        navigationItem.leftBarButtonItem = .defaultBackButton { [weak self] in
+            guard let self else { return }
+            resetSelectedThreads()
+            setupNavigationBar()
+        }
+    }
+
+    private func resetSelectedThreads() {
+        inboxInput.indices
+            .filter { inboxInput[$0].isSelected }
+            .forEach { index in
+                inboxInput[index].isSelected = false
+                reloadMessage(index: index, animationDuration: 0)
+            }
+    }
+
+    private func createNavigationBarButton(action: MessageAction) -> NavigationBarItemsView.Input {
+        .init(
+            image: action.image,
+            accessibilityId: action.accessibilityIdentifier
+        ) { [weak self] in
+            guard let self else { return }
+            perform(action: action, inboxItems: selectedInboxItems)
+        }
     }
 
     private func setupElements() {
@@ -258,6 +308,11 @@ extension InboxViewController {
 
     func tableNode(_: ASTableNode, willBeginBatchFetchWith context: ASBatchContext) {
         if !shouldBeginFetch {
+            context.completeBatchFetching(true)
+            return
+        }
+        // Due to the inability to combine boolean and case checks, the following code is separated
+        if case .empty = state {
             context.completeBatchFetching(true)
             return
         }

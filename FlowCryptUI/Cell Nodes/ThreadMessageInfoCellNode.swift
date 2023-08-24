@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+import LetterAvatarKit
 import UIKit
 
 public final class ThreadMessageInfoCellNode: CellNode {
@@ -81,8 +82,21 @@ public final class ThreadMessageInfoCellNode: CellNode {
             spacing: 2,
             justifyContent: .spaceBetween,
             alignItems: .start,
-            children: [infoSpec, replyNode, menuNode]
+            children: [infoWithAvatarSpec, replyNode, menuNode]
         )
+    }()
+
+    private lazy var infoWithAvatarSpec: ASStackLayoutSpec = {
+        let node = ASStackLayoutSpec(
+            direction: .horizontal,
+            spacing: 10,
+            justifyContent: .start,
+            alignItems: .notSet,
+            children: [avatarNode, infoSpec]
+        )
+        node.style.flexGrow = 1
+        node.style.flexShrink = 1
+        return node
     }()
 
     private lazy var infoSpec: ASStackLayoutSpec = {
@@ -133,6 +147,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
     }()
 
     // MARK: - Nodes
+    private lazy var avatarNode: ASImageNode = getAvatarImage(text: input.sender.string)
     private let senderNode = ASTextNode2()
     private let recipientButtonNode = ASButtonNode()
     private let dateNode = ASTextNode2()
@@ -275,7 +290,7 @@ public final class ThreadMessageInfoCellNode: CellNode {
                 spacing: 4,
                 justifyContent: .spaceBetween,
                 alignItems: .start,
-                children: [infoSpec, expandNode]
+                children: [infoWithAvatarSpec, expandNode]
             )
         case .expanded, .expandedWithRecipients:
             let children = nodeState == .expanded ? [headerSpec, encryptionInfoSpec] : [headerSpec, recipientsSpec, encryptionInfoSpec]

@@ -12,7 +12,7 @@ extension GmailService: BackupApiClient {
     func searchBackups(for email: String) async throws -> Data {
         do {
             logger.logVerbose("will begin searching for backups")
-            let query = try await backupSearchQueryProvider.makeBackupQuery(for: email)
+            let query = makeBackupQuery(acctEmail: email)
             let backupMessages = try await searchExpression(using: MessageSearchContext(expression: query))
             logger.logVerbose("searching done, found \(backupMessages.count) backup messages")
             let uniqueMessages = Set(backupMessages)
@@ -36,8 +36,18 @@ extension GmailService: BackupApiClient {
             logger.logVerbose("downloaded \(attachments.count) attachments that contain \(data.count / 1024)kB of data")
             return data
         } catch {
-            throw GmailApiError.missingBackupQuery(error)
+            throw GmailApiError.searchBackup(error)
         }
+    }
+
+    func makeBackupQuery(acctEmail: String) -> String {
+        var subjectQueryComponents: [String] = []
+        for subject in GeneralConstants.Gmail.gmailRecoveryEmailSubjects {
+            subjectQueryComponents.append("subject:\"\(subject)\"")
+        }
+        let subjectQuery = subjectQueryComponents.joined(separator: " OR ")
+        let searchQuery = "from:\(acctEmail) to:\(acctEmail) \(subjectQuery) -is:spam"
+        return searchQuery
     }
 
     func findAttachment(_ context: (messageId: String, attachmentId: String)) async throws -> Data {

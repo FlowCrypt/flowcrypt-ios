@@ -6,7 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
-import MBProgressHUD
+import ProgressHUD
 import Toast
 import UIKit
 
@@ -123,6 +123,22 @@ public extension UIViewController {
     }
 
     @MainActor
+    func showPermanentDeleteThreadAlert(
+        threadCount: Int,
+        onAction: ((UIAlertAction) -> Void)?,
+        onCancel: ((UIAlertAction) -> Void)? = nil
+    ) {
+        showAlertWithAction(
+            title: "message_permanently_delete_title".localized,
+            message: "message_permanently_delete".localizeWithArguments("%@ thread(s)".localizePluralsWithArguments(threadCount)),
+            actionButtonTitle: "delete".localized,
+            actionStyle: .destructive,
+            onAction: onAction,
+            onCancel: onCancel
+        )
+    }
+
+    @MainActor
     func showRetryAlert(
         title: String? = "error".localized,
         message: String,
@@ -182,77 +198,17 @@ public extension UINavigationController {
     }
 }
 
-// MARK: - MBProgressHUD
+// MARK: - ProgressHUD
 public extension UIViewController {
-    private var currentProgressHUD: MBProgressHUD {
-        MBProgressHUD.forView(view) ?? MBProgressHUD.showAdded(to: view, animated: true)
-    }
-
-    @MainActor
     func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
-        guard !view.subviews.contains(where: { $0 is MBProgressHUD }) else {
-            // hud is already shown
-            return
-        }
-        view.isUserInteractionEnabled = isUserInteractionEnabled
-
-        let spinner = MBProgressHUD.showAdded(to: view, animated: true)
-        spinner.label.text = message
-        spinner.isUserInteractionEnabled = isUserInteractionEnabled
-        spinner.accessibilityIdentifier = "loadingSpinner"
+        ProgressHUD.show(message, interaction: isUserInteractionEnabled)
     }
 
-    @MainActor
-    func updateSpinner(
-        label: String = "compose_uploading".localized,
-        progress: Float? = nil,
-        systemImageName: String? = nil
-    ) {
-        guard let progress else {
-            showIndeterminateHUD(with: label)
-            return
-        }
-
-        if progress >= 1, let imageName = systemImageName {
-            updateSpinner(
-                label: "compose_sent".localized,
-                systemImageName: imageName
-            )
-        } else {
-            showProgressHUD(progress: progress, label: label)
-        }
+    func showSpinnerWithProgress(_ message: String = "loading_title".localized, progress: Float) {
+        ProgressHUD.showProgress(message, CGFloat(progress))
     }
 
-    @MainActor
     func hideSpinner() {
-        let subviews = view.subviews.compactMap { $0 as? MBProgressHUD }
-        for subview in subviews {
-            subview.hide(animated: true)
-        }
-        view.isUserInteractionEnabled = true
-    }
-
-    @MainActor
-    func showProgressHUD(progress: Float, label: String) {
-        let percent = Int(progress * 100)
-        currentProgressHUD.label.text = "\(label) \(percent)%"
-        currentProgressHUD.progress = progress
-        currentProgressHUD.mode = .annularDeterminate
-    }
-
-    @MainActor
-    func showProgressHUDWithCustomImage(imageName: String, label: String) {
-        let configuration = UIImage.SymbolConfiguration(pointSize: 36)
-        let imageView = UIImageView(image: .init(systemName: imageName, withConfiguration: configuration))
-        currentProgressHUD.minSize = CGSize(width: 150, height: 90)
-        currentProgressHUD.customView = imageView
-        currentProgressHUD.mode = .customView
-        currentProgressHUD.label.text = label
-    }
-
-    @MainActor
-    func showIndeterminateHUD(with title: String) {
-        currentProgressHUD.mode = .indeterminate
-        currentProgressHUD.label.text = title
+        ProgressHUD.dismiss()
     }
 }
