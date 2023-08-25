@@ -23,6 +23,9 @@ describe('COMPOSE EMAIL: ', () => {
         bcc: [],
       },
     };
+    mockApi.attesterConfig = {
+      servedPubkeys: {},
+    };
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
