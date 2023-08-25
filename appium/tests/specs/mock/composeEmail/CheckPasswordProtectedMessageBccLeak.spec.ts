@@ -2,7 +2,6 @@ import { MailFolderScreen, NewMessageScreen, SetupKeyScreen, SplashScreen } from
 
 import { MockApi } from 'api-mocks/mock';
 import { MockApiConfig } from 'api-mocks/mock-config';
-import { MockUserList } from 'api-mocks/mock-data';
 import { CommonData } from '../../../data';
 
 describe('COMPOSE EMAIL: ', () => {
@@ -24,18 +23,12 @@ describe('COMPOSE EMAIL: ', () => {
         bcc: [],
       },
     };
-    mockApi.attesterConfig = {
-      servedPubkeys: {
-        [MockUserList.e2e.email]: MockUserList.e2e.pub!,
-      },
-    };
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
 
-      // check if app shows modal for choosing between plain and password-protected message
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.composeEmail(recipient, emailSubject, emailText, undefined, bcc);
       await NewMessageScreen.checkFilledComposeEmailInfo({
