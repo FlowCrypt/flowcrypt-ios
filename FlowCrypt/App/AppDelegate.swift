@@ -5,7 +5,6 @@
 
 import AppAuth
 import Combine
-import GTMAppAuth
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSessionContainer {

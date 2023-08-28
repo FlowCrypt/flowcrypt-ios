@@ -146,7 +146,7 @@ struct Identifier: Equatable, Hashable {
         self.intId = intId
     }
 
-    static var random: Identifier {
+    static var random: Self {
         .init(stringId: UUID().uuidString, intId: nil)
     }
 }

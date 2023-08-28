@@ -1,5 +1,5 @@
 //
-//  Gmail_MessagesList.swift
+//  Gmail+MessagesList.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 17.11.2020.
@@ -14,8 +14,8 @@ import GoogleAPIClientForREST_Gmail
 extension GmailService: MessagesListApiClient {
     func fetchMessages(using context: FetchMessageContext) async throws -> MessageContext {
         return try await withThrowingTaskGroup(of: Message.self) { [weak self] taskGroup in
-            let list = try await fetchMessagesList(using: context)
-            let messageIdentifiers = list.messages?.compactMap(\.identifier) ?? []
+            let list = try await self?.fetchMessagesList(using: context)
+            let messageIdentifiers = list?.messages?.compactMap(\.identifier) ?? []
 
             var messages: [Message] = []
 
@@ -33,7 +33,7 @@ extension GmailService: MessagesListApiClient {
 
             return MessageContext(
                 messages: messages,
-                pagination: .byNextPage(token: list.nextPageToken)
+                pagination: .byNextPage(token: list?.nextPageToken)
             )
         }
     }
