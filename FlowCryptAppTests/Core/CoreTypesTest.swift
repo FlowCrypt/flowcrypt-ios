@@ -43,7 +43,7 @@ class CoreTypesTest: XCTestCase {
             body: copyBody,
             atts: copyAttachments,
             pubKeys: copyPubKeys,
-            bcc: msg.bcc
+            includeBcc: true
         )
 
         XCTAssertEqual(msgCopy.text, copyBody.text)

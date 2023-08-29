@@ -74,8 +74,8 @@ export const getMockFesEndpoints = (mockConfig: MockConfig, fesConfig: FesConfig
         if (!match) {
           throw new FesHttpErr('Bad request', Status.BAD_REQUEST);
         }
-        const contentType = JSON.parse(match[0]);
-        const { associateReplyToken, to, cc, bcc } = contentType;
+        const messageData = JSON.parse(match[0]);
+        const { associateReplyToken, to, cc, bcc } = messageData;
 
         expect(associateReplyToken).toBe('mock-fes-reply-token');
 
@@ -88,8 +88,6 @@ export const getMockFesEndpoints = (mockConfig: MockConfig, fesConfig: FesConfig
 
         return {
           url: `https://flowcrypt.com/shared-tenant-fes/message/6da5ea3c-d2d6-4714-b15e-f29c805e5c6a`,
-          externalId: 'FES-MOCK-EXTERNAL-ID',
-          emailToExternalIdAndUrl: {},
         };
       }
       throw new FesHttpErr('Not Found', Status.NOT_FOUND);
