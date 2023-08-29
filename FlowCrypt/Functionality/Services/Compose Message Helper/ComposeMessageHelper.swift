@@ -352,7 +352,8 @@ extension ComposeMessageHelper {
         let sendableMsg = message.copy(
             body: messageBody,
             atts: [encryptedBodyAttachment] + encryptedAttachments,
-            pubKeys: nil
+            pubKeys: nil,
+            includeBcc: true
         )
 
         return try await composeEmail(msg: sendableMsg)
@@ -404,7 +405,9 @@ extension ComposeMessageHelper {
         let msgWithReplyToken = message.copy(
             body: bodyWithReplyToken,
             atts: message.atts,
-            pubKeys: nil
+            pubKeys: nil,
+            // Fix blind carbon copy leak. ref: https://github.com/FlowCrypt/flowcrypt-ios/issues/2183
+            includeBcc: false
         )
         let pgpMimeWithAttachments = try await composeEmail(msg: msgWithReplyToken)
 
