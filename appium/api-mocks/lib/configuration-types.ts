@@ -32,8 +32,15 @@ type Fes$ClientConfiguration = {
   enforce_keygen_expire_months?: number;
 };
 
+type FesMessageUploadCheck = {
+  to?: string[];
+  cc?: string[];
+  bcc?: string[];
+};
+
 export type FesConfig = {
   returnError?: { code: number; message: string; format?: 'wrong-json' | 'wrong-text' };
+  messageUploadCheck?: FesMessageUploadCheck;
   clientConfiguration?: Fes$ClientConfiguration;
 };
 

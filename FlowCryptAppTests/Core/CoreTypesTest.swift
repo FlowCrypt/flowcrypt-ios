@@ -42,7 +42,8 @@ class CoreTypesTest: XCTestCase {
         let msgCopy = msg.copy(
             body: copyBody,
             atts: copyAttachments,
-            pubKeys: copyPubKeys
+            pubKeys: copyPubKeys,
+            includeBcc: true
         )
 
         XCTAssertEqual(msgCopy.text, copyBody.text)

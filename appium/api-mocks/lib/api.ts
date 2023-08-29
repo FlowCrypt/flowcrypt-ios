@@ -262,6 +262,7 @@ export class Api<REQ, RES> {
         req.url!.startsWith('/api/message/upload') || // flowcrypt.com/api pwd msg
         (req.url!.startsWith('/attester/pub/') && req.method === 'POST') || // attester submit
         req.url!.startsWith('/api/v1/message') || // FES pwd msg
+        req.url!.startsWith('/fes/api/v1/message') || // Shared TENANT FES pwd msg
         req.url!.startsWith('/token') // gmail auth token
       ) {
         parsedBody = body.toString();
