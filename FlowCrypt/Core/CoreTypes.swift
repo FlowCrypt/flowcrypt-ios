@@ -139,13 +139,13 @@ struct SendableMsg: Equatable {
 }
 
 extension SendableMsg {
-    func copy(body: SendableMsgBody, atts: [Attachment], pubKeys: [String]?) -> SendableMsg {
+    func copy(body: SendableMsgBody, atts: [Attachment], pubKeys: [String]?, includeBcc: Bool = true) -> SendableMsg {
         SendableMsg(
             text: body.text,
             html: body.html,
             to: self.to,
             cc: self.cc,
-            bcc: self.bcc,
+            bcc: includeBcc ? bcc : [],
             from: self.from,
             subject: self.subject,
             replyToMsgId: self.replyToMsgId,

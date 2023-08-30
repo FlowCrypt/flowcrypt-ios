@@ -41,7 +41,7 @@
     "openpgp": "5.9.0",
     "ts-node": "^10.5.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.1.6",
+    "typescript": "^5.2.2",
     "wdio-video-reporter": "^4.0.3",
     "webdriverio": "^8.13.4"
   }

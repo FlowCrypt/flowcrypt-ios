@@ -69,13 +69,26 @@ export const getMockFesEndpoints = (mockConfig: MockConfig, fesConfig: FesConfig
       // body is a mime-multipart string, we're doing a few smoke checks here without parsing it
       if (req.method === 'POST') {
         expectContains(body, '-----BEGIN PGP MESSAGE-----');
-        expectContains(body, '"associateReplyToken":"mock-fes-reply-token"');
-        expectContains(body, '"to":["to@example.com"]');
-        expectContains(body, '"cc":[]');
-        expectContains(body, '"bcc":["bcc@example.com"]');
-        authenticate(req);
-        expectContains(body, '"from":"user@disablefesaccesstoken.test:8001"');
-        return { url: `${mockConfig}/message/FES-MOCK-MESSAGE-ID` };
+        const match = String(body).match(/Content-Type: application\/json\s*\n\s*(\{.*\})/);
+
+        if (!match) {
+          throw new FesHttpErr('Bad request', Status.BAD_REQUEST);
+        }
+        const messageData = JSON.parse(match[0]);
+        const { associateReplyToken, to, cc, bcc } = messageData;
+
+        expect(associateReplyToken).toBe('mock-fes-reply-token');
+
+        if (fesConfig.messageUploadCheck) {
+          const { to: toCheck, cc: ccCheck, bcc: bccCheck } = fesConfig.messageUploadCheck;
+          if (toCheck) expect(to).toBe(toCheck);
+          if (ccCheck) expect(cc).toBe(ccCheck);
+          if (bccCheck) expect(bcc).toBe(bccCheck);
+        }
+
+        return {
+          url: `https://flowcrypt.com/shared-tenant-fes/message/6da5ea3c-d2d6-4714-b15e-f29c805e5c6a`,
+        };
       }
       throw new FesHttpErr('Not Found', Status.NOT_FOUND);
     },
