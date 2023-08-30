@@ -8,27 +8,13 @@
 
 import FlowCryptCommon
 
-enum ApiCall {}
+final class ApiCall: NSObject {
 
-extension ApiCall {
-    struct Request {
-        var apiName: String
-        var url: String
-        var method: HTTPMethod = .get
-        var body: Data?
-        var headers: [URLHeader] = []
-        var timeout: TimeInterval = 60.0
-        var tolerateStatus: [Int]?
-        weak var delegate: URLSessionTaskDelegate?
-    }
-}
+    private var progressHandler: ((Float) -> Void)?
+    static let shared = ApiCall()
 
-extension ApiCall.Request {
-    var description: String { [method.rawValue, url].joined(separator: " ") }
-}
-
-extension ApiCall {
-    static func call(_ request: Request) async throws -> HttpRes {
+    func call(_ request: Request) async throws -> HttpRes {
+        progressHandler = request.progressHandler
         guard let url = URL(string: request.url) else {
             throw HttpErr(
                 status: -2,
@@ -49,7 +35,7 @@ extension ApiCall {
             return try await URLSession.shared.call(
                 urlRequest,
                 tolerateStatus: request.tolerateStatus,
-                delegate: request.delegate
+                delegate: self
             )
         } catch {
             guard let httpError = error as? HttpErr else {
@@ -58,6 +44,55 @@ extension ApiCall {
 
             throw ApiError.create(from: httpError, request: request)
         }
+    }
+}
+
+extension ApiCall {
+    struct Request {
+        var apiName: String
+        var url: String
+        var method: HTTPMethod = .get
+        var body: Data?
+        var headers: [URLHeader] = []
+        var timeout: TimeInterval = 60.0
+        var tolerateStatus: [Int]?
+        var progressHandler: ((Float) -> Void)?
+    }
+}
+
+extension ApiCall.Request {
+    var description: String { [method.rawValue, url].joined(separator: " ") }
+}
+
+extension ApiCall: URLSessionTaskDelegate {
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        guard let serverTrust = challenge.protectionSpace.serverTrust, SecTrustGetCertificateCount(serverTrust) > 0 else {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+
+        guard let certChain = SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate],
+              let localCertURL = Bundle.main.url(forResource: "ISRG_Root_X1", withExtension: "cer"),
+              let localCertData = try? Data(contentsOf: localCertURL),
+              certChain.contains(where: { SecCertificateCopyData($0) as Data == localCertData }) else {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+            return
+        }
+        completionHandler(.useCredential, URLCredential(trust: serverTrust))
+    }
+
+    func urlSession(
+        _ session: URLSession,
+        task: URLSessionTask,
+        didSendBodyData bytesSent: Int64,
+        totalBytesSent: Int64,
+        totalBytesExpectedToSend: Int64
+    ) {
+        progressHandler?(Float(task.progress.fractionCompleted))
     }
 }
 

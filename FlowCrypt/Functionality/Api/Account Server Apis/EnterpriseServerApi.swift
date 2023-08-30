@@ -45,8 +45,6 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         return decoder
     }()
 
-    private var messageUploadProgressHandler: ((Float) -> Void)?
-
     private var helper: EnterpriseServerApiHelper?
 
     let email: String
@@ -97,8 +95,6 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
     }
 
     func upload(message: Data, details: MessageUploadDetails, progressHandler: ((Float) -> Void)?) async throws -> String {
-        self.messageUploadProgressHandler = progressHandler
-
         let detailsData = try details.toJsonData()
 
         let detailsDataItem = MultipartDataItem(
@@ -125,7 +121,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
             headers: [contentTypeHeader],
             method: .post,
             body: request.httpBody as Data,
-            delegate: self
+            progressHandler: progressHandler
         )
 
         return response.url
@@ -138,7 +134,7 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
         method: HTTPMethod = .post,
         body: Data? = nil,
         withAuthorization: Bool = true,
-        delegate: URLSessionTaskDelegate? = nil
+        progressHandler: ((Float) -> Void)? = nil
     ) async throws -> T {
         guard let fesUrl = try await fesUrl else {
             throw EnterpriseServerApiError.noActiveFesUrl
@@ -158,26 +154,14 @@ class EnterpriseServerApi: NSObject, EnterpriseServerApiType {
             method: method,
             body: body,
             headers: headers,
-            delegate: delegate
+            progressHandler: progressHandler
         )
 
-        let safeResponse = try await ApiCall.call(request)
+        let safeResponse = try await ApiCall.shared.call(request)
 
         guard let data = try? decoder.decode(T.self, from: safeResponse.data)
         else { throw EnterpriseServerApiError.parse }
 
         return data
-    }
-}
-
-extension EnterpriseServerApi: URLSessionTaskDelegate {
-    func urlSession(
-        _ session: URLSession,
-        task: URLSessionTask,
-        didSendBodyData bytesSent: Int64,
-        totalBytesSent: Int64,
-        totalBytesExpectedToSend: Int64
-    ) {
-        messageUploadProgressHandler?(Float(task.progress.fractionCompleted))
     }
 }

@@ -58,7 +58,7 @@ extension AttesterApi {
             timeout: Constants.lookupEmailRequestTimeout,
             tolerateStatus: [404]
         )
-        let res = try await ApiCall.call(request)
+        let res = try await ApiCall.shared.call(request)
         if res.status >= 200, res.status <= 299 {
             return try await core.parseKeys(armoredOrBinary: res.data).keyDetails
         }
@@ -92,7 +92,7 @@ extension AttesterApi {
             body: pubkey.data(),
             headers: [authHeader].compactMap { $0 }
         )
-        let res = try await ApiCall.call(request)
+        let res = try await ApiCall.shared.call(request)
         return res.data.toStr()
     }
 
@@ -107,6 +107,6 @@ extension AttesterApi {
                 URLHeader(value: "Bearer \(idToken)", httpHeaderField: "Authorization")
             ]
         )
-        _ = try await ApiCall.call(request) // will throw on non-200
+        _ = try await ApiCall.shared.call(request) // will throw on non-200
     }
 }
