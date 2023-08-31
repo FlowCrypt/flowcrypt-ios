@@ -70,6 +70,12 @@ extension ApiCall: URLSessionTaskDelegate {
         didReceive challenge: URLAuthenticationChallenge,
         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
+        guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+              !challenge.protectionSpace.host.contains("client3.google.com") else {
+            completionHandler(.performDefaultHandling, nil)
+            return
+        }
+
         guard let serverTrust = challenge.protectionSpace.serverTrust, SecTrustGetCertificateCount(serverTrust) > 0 else {
             completionHandler(.cancelAuthenticationChallenge, nil)
             return
