@@ -71,7 +71,7 @@ extension ApiCall: URLSessionTaskDelegate {
         completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
         guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-              !challenge.protectionSpace.host.contains("client3.google.com") else {
+              challenge.protectionSpace.host.contains("https://flowcrypt.com") else {
             completionHandler(.performDefaultHandling, nil)
             return
         }
