@@ -46,7 +46,7 @@ struct EnterpriseServerApiHelper {
                 timeout: Constants.getActiveFesTimeout,
                 tolerateStatus: [404] // 404 tells the app that FES is disabled
             )
-            let response = try await ApiCall.call(request)
+            let response = try await ApiCall.shared.call(request)
 
             if response.status == 404 {
                 return nil // FES is explicitly disabled
@@ -109,7 +109,7 @@ struct EnterpriseServerApiHelper {
             timeout: Constants.getActiveFesTimeout
         )
         do {
-            let response = try await ApiCall.call(request)
+            let response = try await ApiCall.shared.call(request)
             return response.status == 204
         } catch {
             return false

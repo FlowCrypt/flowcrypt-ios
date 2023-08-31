@@ -320,6 +320,7 @@ extension MyMenuViewController {
                 return
             }
             Task {
+                showSpinner()
                 do {
                     sideMenuController()?.setContentViewController(
                         try await SettingsViewController(appContext: appContext)
@@ -327,6 +328,7 @@ extension MyMenuViewController {
                 } catch {
                     showAlert(message: error.errorMessage)
                 }
+                hideSpinner()
             }
         case .logOut:
             Task {

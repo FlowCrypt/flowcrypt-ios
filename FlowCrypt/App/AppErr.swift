@@ -8,6 +8,7 @@ import UIKit
 enum AppErr: Error, CustomStringConvertible {
     // network
     case authentication
+    case sslCertMismatch
     case connection
     // code
     case nilSelf // guard let self = self else { throw AppErr.nilSelf }
@@ -25,6 +26,7 @@ enum AppErr: Error, CustomStringConvertible {
 
     var description: String {
         switch self {
+        case .sslCertMismatch: return "ssl_cert_mismatch".localized
         case .connection: return "error_app_connection".localized
         case .wrongMailProvider: return "error_wrong_mail_provider".localized
         case let .general(message), let .user(message), let .unexpected(message):

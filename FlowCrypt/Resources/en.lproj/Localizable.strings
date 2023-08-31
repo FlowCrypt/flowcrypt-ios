@@ -83,6 +83,7 @@
 "error_move_inbox" = "Unable to move message to Inbox";
 "error_archive" = "Unable to archive message";
 "error_permanently_delete" = "Unable to delete message";
+"ssl_cert_mismatch" = "SSL Certificate Mismatch";
 "error_app_connection" = "Cannot load inbox: connection error (offline)";
 "error_wrong_mail_provider" = "wrongly using mail provider when not logged in";
 "error_general_text" = "Something went wrong.";

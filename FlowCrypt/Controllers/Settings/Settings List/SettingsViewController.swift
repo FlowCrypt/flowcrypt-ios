@@ -116,12 +116,14 @@ extension SettingsViewController {
 
         switch setting {
         case .keys:
+            showSpinner()
             do {
                 viewController = try await KeySettingsViewController(appContext: appContext)
             } catch {
                 viewController = nil
                 showAlert(message: error.localizedDescription)
             }
+            hideSpinner()
         case .legal:
             viewController = LegalViewController()
         case .contacts:
