@@ -137,6 +137,13 @@
 		51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675E270F36A400D27C52 /* RealmSwift */; };
 		51E8181D29081D2B00FD428D /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 51E8181C29081D2B00FD428D /* flowcrypt-ios-prod.js.txt */; };
 		51EBC5702746A06600178DE8 /* TextWithIconNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */; };
+		51F1AA732AA5FB5800CDF4C0 /* PublicKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1AA6C2AA5FB5800CDF4C0 /* PublicKey.swift */; };
+		51F1AA742AA5FB5800CDF4C0 /* RSAMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1AA6D2AA5FB5800CDF4C0 /* RSAMessage.swift */; };
+		51F1AA752AA5FB5800CDF4C0 /* Asn1Parser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1AA6E2AA5FB5800CDF4C0 /* Asn1Parser.swift */; };
+		51F1AA762AA5FB5800CDF4C0 /* PrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1AA6F2AA5FB5800CDF4C0 /* PrivateKey.swift */; };
+		51F1AA772AA5FB5800CDF4C0 /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1AA702AA5FB5800CDF4C0 /* Key.swift */; };
+		51F1AA782AA5FB5800CDF4C0 /* SwiftyRSA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1AA712AA5FB5800CDF4C0 /* SwiftyRSA.swift */; };
+		51F1AA792AA5FB5800CDF4C0 /* SwiftyRSAError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51F1AA722AA5FB5800CDF4C0 /* SwiftyRSAError.swift */; };
 		51FC336128C236770098313D /* ComposeViewController+Contacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51FC336028C236770098313D /* ComposeViewController+Contacts.swift */; };
 		5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42C239EC321001F4607 /* SettingsViewController.swift */; };
 		5A39F430239EC396001F4607 /* SettingsViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */; };
@@ -596,6 +603,13 @@
 		51E4F0B427348E310017DABB /* ErrorExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorExtensions.swift; sourceTree = "<group>"; };
 		51E8181C29081D2B00FD428D /* flowcrypt-ios-prod.js.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "flowcrypt-ios-prod.js.txt"; sourceTree = "<group>"; };
 		51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextWithIconNode.swift; sourceTree = "<group>"; };
+		51F1AA6C2AA5FB5800CDF4C0 /* PublicKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublicKey.swift; sourceTree = "<group>"; };
+		51F1AA6D2AA5FB5800CDF4C0 /* RSAMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSAMessage.swift; sourceTree = "<group>"; };
+		51F1AA6E2AA5FB5800CDF4C0 /* Asn1Parser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asn1Parser.swift; sourceTree = "<group>"; };
+		51F1AA6F2AA5FB5800CDF4C0 /* PrivateKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateKey.swift; sourceTree = "<group>"; };
+		51F1AA702AA5FB5800CDF4C0 /* Key.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
+		51F1AA712AA5FB5800CDF4C0 /* SwiftyRSA.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyRSA.swift; sourceTree = "<group>"; };
+		51F1AA722AA5FB5800CDF4C0 /* SwiftyRSAError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyRSAError.swift; sourceTree = "<group>"; };
 		51FC336028C236770098313D /* ComposeViewController+Contacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ComposeViewController+Contacts.swift"; sourceTree = "<group>"; };
 		5A39F42C239EC321001F4607 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		5A39F42F239EC396001F4607 /* SettingsViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewDecorator.swift; sourceTree = "<group>"; };
@@ -1099,6 +1113,7 @@
 			isa = PBXGroup;
 			children = (
 				D212D36224C1AC1900035991 /* Models */,
+				51F1AA6B2AA5FB5800CDF4C0 /* RSA */,
 				32DCAC732B988D9704658812 /* CoreTypes.swift */,
 				32DCA0C3D34A69851A238E87 /* Core.swift */,
 			);
@@ -1211,6 +1226,20 @@
 				51E8181C29081D2B00FD428D /* flowcrypt-ios-prod.js.txt */,
 			);
 			path = generated;
+			sourceTree = "<group>";
+		};
+		51F1AA6B2AA5FB5800CDF4C0 /* RSA */ = {
+			isa = PBXGroup;
+			children = (
+				51F1AA6C2AA5FB5800CDF4C0 /* PublicKey.swift */,
+				51F1AA6D2AA5FB5800CDF4C0 /* RSAMessage.swift */,
+				51F1AA6E2AA5FB5800CDF4C0 /* Asn1Parser.swift */,
+				51F1AA6F2AA5FB5800CDF4C0 /* PrivateKey.swift */,
+				51F1AA702AA5FB5800CDF4C0 /* Key.swift */,
+				51F1AA712AA5FB5800CDF4C0 /* SwiftyRSA.swift */,
+				51F1AA722AA5FB5800CDF4C0 /* SwiftyRSAError.swift */,
+			);
+			path = RSA;
 			sourceTree = "<group>";
 		};
 		5A39F42E239EC32B001F4607 /* Settings */ = {
@@ -2596,6 +2625,7 @@
 				517D7B7D294D0A490001CA81 /* InboxViewController+TableView.swift in Sources */,
 				04B472951ECE29F600B8266F /* MyMenuViewController.swift in Sources */,
 				51B4AE5327144E590001F33B /* PubKey.swift in Sources */,
+				51F1AA772AA5FB5800CDF4C0 /* Key.swift in Sources */,
 				21623D1826FA860700A11B9A /* PhotosManager.swift in Sources */,
 				049E605927FDB6310089EE2A /* ComposeViewController+Attachment.swift in Sources */,
 				C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */,
@@ -2636,12 +2666,15 @@
 				D20D3C902520B68A00D4AA9A /* BackupOptionsViewDecorator.swift in Sources */,
 				9F5C2A99257E94E900DE9B4B /* Gmail+MessageOperations.swift in Sources */,
 				9F31AB932329950800CF87EA /* Imap+Backup.swift in Sources */,
+				51F1AA742AA5FB5800CDF4C0 /* RSAMessage.swift in Sources */,
 				9F589F15238C8249007FD759 /* StorageEncryptionKeyProvider.swift in Sources */,
 				2CC50FB12744167A0051629A /* Folder.swift in Sources */,
 				514C34DF276CE20700FCAB79 /* ComposeMessageHelper+State.swift in Sources */,
 				D2F41373243CC7990066AFB5 /* UserRealmObject.swift in Sources */,
 				51CE196728D8AC5300A5B200 /* ComposeMessageAction.swift in Sources */,
 				5A39F42D239EC321001F4607 /* SettingsViewController.swift in Sources */,
+				51F1AA732AA5FB5800CDF4C0 /* PublicKey.swift in Sources */,
+				51F1AA792AA5FB5800CDF4C0 /* SwiftyRSAError.swift in Sources */,
 				5ADEDCBC23A4329000EC495E /* PublicKeyDetailViewController.swift in Sources */,
 				21489B80267CC39E00BDE4AC /* ClientConfigurationProvider.swift in Sources */,
 				D28655932423B4EE0066F52E /* MyMenuViewDecorator.swift in Sources */,
@@ -2791,6 +2824,7 @@
 				D20D3C6E2520AB3900D4AA9A /* BackupViewDecorator.swift in Sources */,
 				9F268891237DC55600428A94 /* SetupManuallyImportKeyViewController.swift in Sources */,
 				D2E26F7024F266F300612AF1 /* ContactDetailViewController.swift in Sources */,
+				51F1AA752AA5FB5800CDF4C0 /* Asn1Parser.swift in Sources */,
 				21489B7A267CB4DF00BDE4AC /* ClientConfigurationRealmObject.swift in Sources */,
 				5180CB9327357B67001FC7EF /* RawClientConfiguration.swift in Sources */,
 				512C4BA1291152E500AAE52B /* ThreadDetailsViewController+TapActions.swift in Sources */,
@@ -2808,6 +2842,7 @@
 				9F9362062573D0C80009912F /* Gmail+MessagesList.swift in Sources */,
 				9F88391927270A1A00669B56 /* MessagesThreadOperationsApiClient.swift in Sources */,
 				9F53CB872555E7F300C0157A /* Imap+Other.swift in Sources */,
+				51F1AA782AA5FB5800CDF4C0 /* SwiftyRSA.swift in Sources */,
 				D2F6D1352433753B00DB4065 /* SMTPSession.swift in Sources */,
 				9F17976D2368EEBD002BF770 /* SetupViewDecorator.swift in Sources */,
 				5ADEDCC023A43B0800EC495E /* KeyDetailInfoViewDecorator.swift in Sources */,
@@ -2820,6 +2855,7 @@
 				5137CB1427F8E0A900AEF895 /* EnterpriseServerApiHelper.swift in Sources */,
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
 				9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */,
+				51F1AA762AA5FB5800CDF4C0 /* PrivateKey.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
