@@ -64,15 +64,6 @@
       }
     },
     {
-      "identity" : "idzswiftcommoncrypto",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/iosdevzone/IDZSwiftCommonCrypto",
-      "state" : {
-        "revision" : "47f9747d12137cd59d783ab376e3ccab7206319b",
-        "version" : "0.16.1"
-      }
-    },
-    {
       "identity" : "letteravatarkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/vpeschenkov/LetterAvatarKit",
