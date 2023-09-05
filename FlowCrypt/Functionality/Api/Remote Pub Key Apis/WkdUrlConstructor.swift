@@ -1,5 +1,5 @@
 //
-//  WKDURLsConstructor.swift
+//  WkdUrlConstructor.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 15.05.2021.
@@ -36,7 +36,8 @@ class WkdUrlConstructor: WkdUrlConstructorType {
         let domain = Bundle.shouldUseMockAttesterApi
             ? GeneralConstants.Mock.backendUrl.replacingOccurrences(of: "https://", with: "")
             : String(parts[1]).lowercased()
-        let hu = String(decoding: user.lowercased().data().SHA1.zBase32EncodedBytes(), as: Unicode.UTF8.self)
+        let hashedRecipient = Data(Insecure.SHA1.hash(data: user.lowercased().data()))
+        let hu = String(decoding: hashedRecipient.zBase32EncodedBytes(), as: Unicode.UTF8.self)
         let userPart = "hu/\(hu)?l=\(user)"
         let base = method == .direct
             ? "https://\(domain)/.well-known/openpgpkey/"
