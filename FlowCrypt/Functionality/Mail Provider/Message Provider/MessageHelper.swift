@@ -247,18 +247,32 @@ final class MessageHelper {
             )
         }
 
-        let attachments: [MessageAttachment]
+        var attachments: [MessageAttachment]
+        var pubkeys: [KeyDetails] = []
         if message.raw != nil || message.attachments.isEmpty {
             attachments = decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
         } else {
             attachments = message.attachments
         }
 
+        for (index, attachment) in attachments.enumerated() {
+            if attachment.treatAs == "publicKey", attachment.data == nil {
+                let fetchedAttachmentData = try await download(
+                    attachment: attachment,
+                    messageId: message.identifier,
+                    progressHandler: nil
+                )
+                let parsedKeys = try await Core.shared.parseKeys(armoredOrBinary: fetchedAttachmentData)
+                pubkeys.append(contentsOf: parsedKeys.keyDetails)
+                attachments[index].data = fetchedAttachmentData
+            }
+        }
         return ProcessedMessage(
             message: message,
             text: text,
             type: messageType,
             attachments: attachments,
+            pubkeys: pubkeys,
             signature: signature
         )
     }

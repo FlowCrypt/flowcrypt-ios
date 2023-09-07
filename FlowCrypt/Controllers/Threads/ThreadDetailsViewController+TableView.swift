@@ -24,16 +24,20 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             case thread, message, divider
         }
 
-        let attachmentsCount = input[section - 1].processedMessage?.attachments.count ?? 0
-        return Parts.allCases.count + attachmentsCount
+        let processedMessage = input[section - 1].processedMessage
+        let attachmentsCount = processedMessage?.attachments.count ?? 0
+        let pubkeysCount = processedMessage?.pubkeys.count ?? 0
+        return Parts.allCases.count + attachmentsCount + pubkeysCount
     }
 
+    // swiftlint:disable cyclomatic_complexity function_body_length
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self else { return ASCellNode() }
 
+            let row = indexPath.row
             guard indexPath.section > 0 else {
-                if indexPath.row == 0 {
+                if row == 0 {
                     let subject = self.inboxItem.subject ?? "no subject"
                     return MessageSubjectNode(subject.attributed(.medium(18)))
                 } else {
@@ -44,7 +48,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             let messageIndex = indexPath.section - 1
             let message = self.input[messageIndex]
 
-            if !message.rawMessage.isDraft, indexPath.row == 0 {
+            if !message.rawMessage.isDraft, row == 0 {
                 return ThreadMessageInfoCellNode(
                     input: .init(threadMessage: message, index: messageIndex),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
@@ -54,7 +58,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             if message.rawMessage.isDraft {
-                if indexPath.row == 0 {
+                if row == 0 {
                     return self.draftNode(messageIndex: messageIndex, isExpanded: message.isExpanded)
                 } else {
                     return self.dividerNode(indexPath: indexPath)
@@ -64,7 +68,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             guard message.isExpanded, let processedMessage = message.processedMessage
             else { return self.dividerNode(indexPath: indexPath) }
 
-            guard indexPath.row > 1 else {
+            guard row > 1 else {
                 return MessageTextSubjectNode(
                     input: .init(
                         message: processedMessage.attributedMessage,
@@ -74,7 +78,13 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 )
             }
 
-            let attachmentIndex = indexPath.row - 2
+            let pubkeysCount = processedMessage.pubkeys.count
+            let pubkeyIndex = row - 2
+            if pubkeysCount > 0, pubkeyIndex < pubkeysCount {
+                return PublicKeyDetailNode(input: getPublicKeyDetailInput(for: processedMessage.pubkeys[pubkeyIndex]))
+            }
+
+            let attachmentIndex = row - 2 - pubkeysCount
             if let attachment = processedMessage.attachments[safe: attachmentIndex] {
                 return AttachmentNode(
                     input: .init(
@@ -87,6 +97,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
         }
     }
+
+    // swiftlint:enable cyclomatic_complexity function_body_length
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         switch tableNode.nodeForRow(at: indexPath) {
@@ -109,6 +121,14 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             inset: .init(top: 0, left: 8, bottom: 0, right: 8),
             color: .borderColor,
             height: height
+        )
+    }
+
+    func getPublicKeyDetailInput(for pubkey: KeyDetails) -> PublicKeyDetailNode.Input {
+        return PublicKeyDetailNode.Input(
+            email: pubkey.pgpUserEmails.first ?? "N/A",
+            publicKey: pubkey.public,
+            fingerprint: pubkey.fingerprints.first ?? "N/A"
         )
     }
 }

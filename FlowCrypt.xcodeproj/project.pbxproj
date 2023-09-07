@@ -172,6 +172,7 @@
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
 		9547EF212A5F106E00A048FF /* PassPhraseAlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */; };
 		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
+		9577CEDD2AA7A4A40084AC62 /* PublicKeyDetailNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9577CEDC2AA7A4A40084AC62 /* PublicKeyDetailNode.swift */; };
 		9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */ = {isa = PBXBuildFile; fileRef = 9582BC592A782DA700439728 /* pass_phrase_hint.html */; };
 		958566B72A6126DE001C84D3 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		958566B92A612822001C84D3 /* ASButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958566B82A612822001C84D3 /* ASButtonNode.swift */; };
@@ -631,6 +632,7 @@
 		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseAlertNode.swift; sourceTree = "<group>"; };
 		9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSeparatorCellNode.swift; sourceTree = "<group>"; };
+		9577CEDC2AA7A4A40084AC62 /* PublicKeyDetailNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicKeyDetailNode.swift; sourceTree = "<group>"; };
 		9582BC592A782DA700439728 /* pass_phrase_hint.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = pass_phrase_hint.html; sourceTree = "<group>"; };
 		958566B82A612822001C84D3 /* ASButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASButtonNode.swift; sourceTree = "<group>"; };
 		95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCheckboxNode.swift; sourceTree = "<group>"; };
@@ -2237,6 +2239,7 @@
 				51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */,
 				9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */,
 				95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */,
+				9577CEDC2AA7A4A40084AC62 /* PublicKeyDetailNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -2887,6 +2890,7 @@
 				51B9EE6F27567B520080B2D5 /* MessageRecipientsNode.swift in Sources */,
 				D211CE6E23FC354200D1CE38 /* CellNode.swift in Sources */,
 				D24ABA6023FDB26C002EE9DD /* Helpers.swift in Sources */,
+				9577CEDD2AA7A4A40084AC62 /* PublicKeyDetailNode.swift in Sources */,
 				D211CE7323FC35AC00D1CE38 /* TextViewCellNode.swift in Sources */,
 				D2A9CA392426197400E1D898 /* SigninButtonNode.swift in Sources */,
 				D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */,
