@@ -11,33 +11,52 @@ import UIKit
 
 public final class PublicKeyDetailNode: CellNode {
 
+    public enum PublicKeyImportStatus {
+        case imported
+        case importedDifferent
+        case notImported
+    }
+
     public struct Input {
         let email: String
         let publicKey: String
         let fingerprint: String
+        let importStatus: PublicKeyImportStatus
 
         public init(
             email: String,
             publicKey: String,
-            fingerprint: String
+            fingerprint: String,
+            importStatus: PublicKeyImportStatus
         ) {
             self.email = email
             self.publicKey = publicKey
             self.fingerprint = fingerprint
+            self.importStatus = importStatus
         }
+    }
+
+    enum Constants {
+        static let fontStyle: NSAttributedString.Style = .regular(15)
     }
 
     private lazy var leftBorder = getThreadDetailLeftBorder(color: UIColor(hex: "989898"))
 
     private lazy var publicKeyLabelNode: ASTextNode = {
         let node = ASTextNode()
-        node.attributedText = "public_key_for".localizeWithArguments(input.email).attributed()
+        node.attributedText = "public_key_for".localizeWithArguments(input.email).attributed(Constants.fontStyle)
         return node
     }()
 
     private lazy var fingerprintNode: ASTextNode = {
         let node = ASTextNode()
-        node.attributedText = "fingerprint_label_value".localizeWithArguments(input.fingerprint).attributed()
+        node.attributedText = "fingerprint_label_value".localizeWithArguments(input.fingerprint).attributed(Constants.fontStyle)
+        return node
+    }()
+
+    private lazy var warningLabel: ASTextNode = {
+        let node = ASTextNode()
+        node.attributedText = "public_key_import_warning".localized.attributed(Constants.fontStyle, color: .warningColor)
         return node
     }()
 
@@ -46,7 +65,7 @@ public final class PublicKeyDetailNode: CellNode {
             isOn: false,
             attributedText: "show_public_key"
                 .localized
-                .attributed(.regular(17), color: .textColor),
+                .attributed(Constants.fontStyle, color: .textColor),
             backgroundColor: .clear,
             switchJustifyContent: .center
         )
@@ -58,13 +77,32 @@ public final class PublicKeyDetailNode: CellNode {
 
     private lazy var publicKeyValueNode: ASTextNode = {
         let node = ASTextNode()
-        node.attributedText = input.publicKey.attributed()
+        node.attributedText = input.publicKey.attributed(Constants.fontStyle, color: .main)
         return node
     }()
 
     private lazy var importKeyButtonNode: ASButtonNode = {
         let node = ASButtonNode()
-        node.setTitle("import_public_key", with: .boldSystemFont(ofSize: 16), with: .black, for: .normal)
+        var title: String
+        switch input.importStatus {
+        case .imported:
+            title = "already_imported"
+        case .importedDifferent:
+            title = "update_public_key"
+        case .notImported:
+            title = "import_public_key"
+        }
+        node.setTitle(title.localized, with: .boldSystemFont(ofSize: 16), with: .white, for: .normal)
+        node.isEnabled = false
+        if input.importStatus == .imported {
+            node.isEnabled = false
+            node.backgroundColor = .gray
+        } else {
+            node.backgroundColor = .warningColor
+        }
+        node.style.flexGrow = 1.0
+        node.style.flexShrink = 1.0
+        node.style.preferredSize.height = 40
         return node
     }()
 
@@ -88,11 +126,15 @@ public final class PublicKeyDetailNode: CellNode {
         verticalStack.style.flexShrink = 1.0
         verticalStack.style.flexGrow = 1.0
 
-        verticalStack.children = [publicKeyLabelNode, fingerprintNode, toggleNode, importKeyButtonNode]
+        verticalStack.children = [
+            publicKeyLabelNode,
+            fingerprintNode,
+            input.importStatus != .imported ? warningLabel : nil,
+            toggleNode,
+            shouldDisplayPublicKey ? publicKeyValueNode : nil,
+            importKeyButtonNode
+        ].compactMap { $0 }
 
-        if shouldDisplayPublicKey {
-            verticalStack.children?.insert(publicKeyValueNode, at: 3)
-        }
         let mainLayout = ASInsetLayoutSpec(
             insets: .deviceSpecificTextInsets(top: 15, bottom: 15),
             child: verticalStack

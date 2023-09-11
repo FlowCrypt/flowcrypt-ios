@@ -102,15 +102,29 @@ final class MessageHelper {
         var message = message
         try await parseAttachmentTypes(message: &message)
 
+        var pubkeys: [KeyDetails] = []
+        for (index, attachment) in message.attachments.enumerated() {
+            if attachment.treatAs == "publicKey", attachment.data == nil {
+                let fetchedAttachmentData = try await download(
+                    attachment: attachment,
+                    messageId: message.identifier,
+                    progressHandler: nil
+                )
+                let parsedKeys = try await Core.shared.parseKeys(armoredOrBinary: fetchedAttachmentData)
+                pubkeys.append(contentsOf: parsedKeys.keyDetails)
+                message.attachments[index].data = fetchedAttachmentData
+            }
+        }
         guard message.isPgp else {
-            return ProcessedMessage(message: message)
+            return ProcessedMessage(message: message, pubkeys: pubkeys)
         }
 
         return try await decryptAndProcess(
             message: message,
             onlyLocalKeys: onlyLocalKeys,
             userEmail: userEmail,
-            isUsingKeyManager: isUsingKeyManager
+            isUsingKeyManager: isUsingKeyManager,
+            pubkeys: pubkeys
         )
     }
 
@@ -162,7 +176,8 @@ final class MessageHelper {
         message: Message,
         onlyLocalKeys: Bool,
         userEmail: String,
-        isUsingKeyManager: Bool
+        isUsingKeyManager: Bool,
+        pubkeys: [KeyDetails] = []
     ) async throws -> ProcessedMessage {
         let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
 
@@ -190,7 +205,8 @@ final class MessageHelper {
 
         return try await process(
             message: message,
-            with: decrypted
+            with: decrypted,
+            pubkeys: pubkeys
         )
     }
 
@@ -211,7 +227,8 @@ final class MessageHelper {
 
     private func process(
         message: Message,
-        with decrypted: CoreRes.ParseDecryptMsg
+        with decrypted: CoreRes.ParseDecryptMsg,
+        pubkeys: [KeyDetails] = []
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
@@ -247,26 +264,13 @@ final class MessageHelper {
             )
         }
 
-        var attachments: [MessageAttachment]
-        var pubkeys: [KeyDetails] = []
+        let attachments: [MessageAttachment]
         if message.raw != nil || message.attachments.isEmpty {
             attachments = decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
         } else {
             attachments = message.attachments
         }
 
-        for (index, attachment) in attachments.enumerated() {
-            if attachment.treatAs == "publicKey", attachment.data == nil {
-                let fetchedAttachmentData = try await download(
-                    attachment: attachment,
-                    messageId: message.identifier,
-                    progressHandler: nil
-                )
-                let parsedKeys = try await Core.shared.parseKeys(armoredOrBinary: fetchedAttachmentData)
-                pubkeys.append(contentsOf: parsedKeys.keyDetails)
-                attachments[index].data = fetchedAttachmentData
-            }
-        }
         return ProcessedMessage(
             message: message,
             text: text,

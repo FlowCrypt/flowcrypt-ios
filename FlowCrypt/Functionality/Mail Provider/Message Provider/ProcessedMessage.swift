@@ -104,12 +104,13 @@ extension ProcessedMessage {
         self.signature = signature
     }
 
-    init(message: Message) {
+    init(message: Message, pubkeys: [KeyDetails] = []) {
         self.message = message
         (self.text, self.quote) = Self.parseQuote(text: message.body.text)
         self.type = .plain
         self.attachments = message.attachments
         self.signature = .unsigned
+        self.pubkeys = pubkeys
     }
 }
 

@@ -125,10 +125,21 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     }
 
     func getPublicKeyDetailInput(for pubkey: KeyDetails) -> PublicKeyDetailNode.Input {
+        let email = pubkey.pgpUserEmails.first ?? "N/A"
+        let localPublicKeys = (try? localContactsProvider.retrievePubKeys(for: email, shouldUpdateLastUsed: false)) ?? []
+        var importStatus: PublicKeyDetailNode.PublicKeyImportStatus = .notImported
+        if localPublicKeys.isNotEmpty {
+            if localPublicKeys.contains(pubkey.public) {
+                importStatus = .imported
+            } else {
+                importStatus = .importedDifferent
+            }
+        }
         return PublicKeyDetailNode.Input(
             email: pubkey.pgpUserEmails.first ?? "N/A",
             publicKey: pubkey.public,
-            fingerprint: pubkey.fingerprints.first ?? "N/A"
+            fingerprint: pubkey.fingerprints.first ?? "N/A",
+            importStatus: importStatus
         )
     }
 }
