@@ -32,3 +32,11 @@ public func getAvatarImage(text: String) -> ASImageNode {
     node.style.preferredSize.height = .Avatar.height
     return node
 }
+
+public func getThreadDetailLeftBorder(color: UIColor?) -> ASDisplayNode {
+    let node = ASDisplayNode()
+    node.backgroundColor = color
+    node.style.preferredSize.width = 10
+    node.style.height = ASDimension(unit: .fraction, value: 1)
+    return node
+}

@@ -27,27 +27,31 @@ public final class PublicKeyDetailNode: CellNode {
         }
     }
 
+    private lazy var leftBorder = getThreadDetailLeftBorder(color: UIColor(hex: "989898"))
+
     private lazy var publicKeyLabelNode: ASTextNode = {
         let node = ASTextNode()
-        node.attributedText = "Public key for \(input.email)".attributed()
+        node.attributedText = "public_key_for".localizeWithArguments(input.email).attributed()
         return node
     }()
 
     private lazy var fingerprintNode: ASTextNode = {
         let node = ASTextNode()
-        node.attributedText = "(Fingerprint: \(input.fingerprint)".attributed()
+        node.attributedText = "fingerprint_label_value".localizeWithArguments(input.fingerprint).attributed()
         return node
     }()
 
     private lazy var toggleNode: SwitchCellNode = {
         let input = SwitchCellNode.Input(
-            isOn: true,
+            isOn: false,
             attributedText: "show_public_key"
                 .localized
-                .attributed(.regular(17), color: .textColor)
+                .attributed(.regular(17), color: .textColor),
+            backgroundColor: .clear,
+            switchJustifyContent: .center
         )
         let node = SwitchCellNode(input: input) { isOn in
-            print(isOn)
+            self.shouldDisplayPublicKey = isOn
         }
         return node
     }()
@@ -60,14 +64,22 @@ public final class PublicKeyDetailNode: CellNode {
 
     private lazy var importKeyButtonNode: ASButtonNode = {
         let node = ASButtonNode()
-        node.setTitle("Import public key", with: .boldSystemFont(ofSize: 16), with: .black, for: .normal)
+        node.setTitle("import_public_key", with: .boldSystemFont(ofSize: 16), with: .black, for: .normal)
         return node
     }()
+
+    var shouldDisplayPublicKey = false {
+        didSet {
+            setNeedsLayout()
+        }
+    }
 
     let input: Input
 
     public init(input: Input) {
         self.input = input
+        super.init()
+        backgroundColor = UIColor(hex: "FAFAFA")
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
@@ -76,8 +88,26 @@ public final class PublicKeyDetailNode: CellNode {
         verticalStack.style.flexShrink = 1.0
         verticalStack.style.flexGrow = 1.0
 
-        verticalStack.children = [publicKeyLabelNode, fingerprintNode, toggleNode, publicKeyValueNode, importKeyButtonNode]
+        verticalStack.children = [publicKeyLabelNode, fingerprintNode, toggleNode, importKeyButtonNode]
 
-        return verticalStack
+        if shouldDisplayPublicKey {
+            verticalStack.children?.insert(publicKeyValueNode, at: 3)
+        }
+        let mainLayout = ASInsetLayoutSpec(
+            insets: .deviceSpecificTextInsets(top: 15, bottom: 15),
+            child: verticalStack
+        )
+        mainLayout.style.flexGrow = 1.0
+        mainLayout.style.flexShrink = 1.0
+        return ASInsetLayoutSpec(
+            insets: .threadMessageInsets,
+            child: ASStackLayoutSpec(
+                direction: .horizontal,
+                spacing: 0,
+                justifyContent: .spaceBetween,
+                alignItems: .stretch,
+                children: [leftBorder, mainLayout]
+            )
+        )
     }
 }

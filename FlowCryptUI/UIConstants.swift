@@ -22,6 +22,8 @@ public extension UIEdgeInsets {
         let top: CGFloat = UIDevice.isIpad ? 16 : 8
         return UIEdgeInsets.deviceSpecificInsets(top: top, bottom: top)
     }
+
+    static var threadMessageInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
 }
 
 public extension CGFloat {

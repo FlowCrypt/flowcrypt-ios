@@ -15,17 +15,20 @@ public final class SwitchCellNode: CellNode {
         let insets: UIEdgeInsets
         let backgroundColor: UIColor?
         let isOn: Bool
+        let switchJustifyContent: ASStackLayoutJustifyContent
 
         public init(
             isOn: Bool,
             attributedText: NSAttributedString,
             insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
-            backgroundColor: UIColor? = nil
+            backgroundColor: UIColor? = nil,
+            switchJustifyContent: ASStackLayoutJustifyContent = .start
         ) {
             self.attributedText = attributedText
             self.insets = insets
             self.backgroundColor = backgroundColor
             self.isOn = isOn
+            self.switchJustifyContent = switchJustifyContent
         }
     }
 
@@ -65,7 +68,7 @@ public final class SwitchCellNode: CellNode {
         return ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 8,
-            justifyContent: .start,
+            justifyContent: input?.switchJustifyContent ?? .start,
             alignItems: .center,
             children: [
                 ASInsetLayoutSpec(
