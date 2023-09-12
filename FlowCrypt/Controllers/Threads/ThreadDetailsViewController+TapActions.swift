@@ -275,7 +275,7 @@ extension ThreadDetailsViewController {
 
         let sectionIndex = indexPath.section - 1
         let section = input[sectionIndex]
-        let attachmentIndex = indexPath.row - 2
+        let attachmentIndex = indexPath.row - 2 - (section.processedMessage?.keyDetails.count ?? 0)
 
         guard let rawAttachment = section.processedMessage?.attachments[attachmentIndex] else {
             throw MessageHelperError.attachmentNotFound

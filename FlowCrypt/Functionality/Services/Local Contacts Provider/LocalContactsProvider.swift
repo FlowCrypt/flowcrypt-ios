@@ -23,6 +23,7 @@ protocol LocalContactsProviderType: PublicKeyProvider {
     func searchRecipients(query: String) throws -> [Recipient]
     func remove(recipient: RecipientWithSortedPubKeys) throws
     func updateKeys(for recipient: RecipientWithSortedPubKeys) throws
+    func updateKey(for email: String, pubKey: PubKey) throws
     func getAllRecipients() async throws -> [RecipientWithSortedPubKeys]
 }
 
@@ -86,6 +87,19 @@ extension LocalContactsProvider: LocalContactsProviderType {
             } else {
                 try add(pubKey: pubKey, to: recipientObject)
             }
+        }
+    }
+
+    func updateKey(for email: String, pubKey: PubKey) throws {
+        guard let recipientObject = try find(with: email) else {
+            try save(RecipientRealmObject(email: email, name: nil, lastUsed: nil, keys: [pubKey]))
+            return
+        }
+
+        if let storedPubKey = recipientObject.pubKeys.first(where: { $0.primaryFingerprint == pubKey.fingerprint }) {
+            try update(storedPubKey: storedPubKey, newPubKey: pubKey)
+        } else {
+            try add(pubKey: pubKey, to: recipientObject)
         }
     }
 

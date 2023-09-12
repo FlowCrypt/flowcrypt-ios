@@ -26,7 +26,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
         let processedMessage = input[section - 1].processedMessage
         let attachmentsCount = processedMessage?.attachments.count ?? 0
-        let pubkeysCount = processedMessage?.pubkeys.count ?? 0
+        let pubkeysCount = processedMessage?.keyDetails.count ?? 0
         return Parts.allCases.count + attachmentsCount + pubkeysCount
     }
 
@@ -78,13 +78,18 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 )
             }
 
-            let pubkeysCount = processedMessage.pubkeys.count
-            let pubkeyIndex = row - 2
-            if pubkeysCount > 0, pubkeyIndex < pubkeysCount {
-                return PublicKeyDetailNode(input: getPublicKeyDetailInput(for: processedMessage.pubkeys[pubkeyIndex]))
+            let keyCount = processedMessage.keyDetails.count
+            let keyIndex = row - 2
+            if keyCount > 0, keyIndex < keyCount {
+                let keyDetails = processedMessage.keyDetails[keyIndex]
+                let node = PublicKeyDetailNode(input: getPublicKeyDetailInput(for: keyDetails))
+                node.onImportKey = {
+                    self.importPublicKey(indexPath: indexPath, keyDetails: keyDetails)
+                }
+                return node
             }
 
-            let attachmentIndex = row - 2 - pubkeysCount
+            let attachmentIndex = row - 2 - keyCount
             if let attachment = processedMessage.attachments[safe: attachmentIndex] {
                 return AttachmentNode(
                     input: .init(
@@ -115,6 +120,13 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
+    private func importPublicKey(indexPath: IndexPath, keyDetails: KeyDetails) {
+        if let email = keyDetails.pgpUserEmails.first {
+            try? localContactsProvider.updateKey(for: email, pubKey: .init(keyDetails: keyDetails))
+            node.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+
     private func dividerNode(indexPath: IndexPath) -> ASCellNode {
         let height = indexPath.section < input.count ? 1 / UIScreen.main.nativeScale : 0
         return DividerCellNode(
@@ -124,21 +136,21 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         )
     }
 
-    func getPublicKeyDetailInput(for pubkey: KeyDetails) -> PublicKeyDetailNode.Input {
-        let email = pubkey.pgpUserEmails.first ?? "N/A"
+    func getPublicKeyDetailInput(for keyDetails: KeyDetails) -> PublicKeyDetailNode.Input {
+        let email = keyDetails.pgpUserEmails.first ?? "N/A"
         let localPublicKeys = (try? localContactsProvider.retrievePubKeys(for: email, shouldUpdateLastUsed: false)) ?? []
         var importStatus: PublicKeyDetailNode.PublicKeyImportStatus = .notImported
         if localPublicKeys.isNotEmpty {
-            if localPublicKeys.contains(pubkey.public) {
+            if localPublicKeys.contains(keyDetails.public) {
                 importStatus = .imported
             } else {
                 importStatus = .importedDifferent
             }
         }
         return PublicKeyDetailNode.Input(
-            email: pubkey.pgpUserEmails.first ?? "N/A",
-            publicKey: pubkey.public,
-            fingerprint: pubkey.fingerprints.first ?? "N/A",
+            email: keyDetails.pgpUserEmails.first ?? "N/A",
+            publicKey: keyDetails.public,
+            fingerprint: keyDetails.fingerprints.first ?? "N/A",
             importStatus: importStatus
         )
     }

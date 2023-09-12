@@ -23,7 +23,7 @@ public extension UIEdgeInsets {
         return UIEdgeInsets.deviceSpecificInsets(top: top, bottom: top)
     }
 
-    static var threadMessageInsets = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
+    static var threadMessageInsets = UIEdgeInsets(top: 15, left: .Insets.textSide + .threadLeftBorderWidth, bottom: 15, right: .Insets.textSide)
 }
 
 public extension CGFloat {
@@ -46,4 +46,6 @@ public extension CGFloat {
         static var width: CGFloat = 44
         static var height: CGFloat = 44
     }
+
+    static var threadLeftBorderWidth: CGFloat = 8
 }

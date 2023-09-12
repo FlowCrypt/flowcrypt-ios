@@ -42,6 +42,12 @@ public extension String {
         )
     }
 
+    func spaced(every n: Int) -> String {
+        return enumerated().reduce("") {
+            $0 + ($1.offset % n == 0 && $1.offset != 0 ? " " : "") + String($1.element)
+        }
+    }
+
     func slice(from: String, to: String) -> String? {
         (range(of: from)?.upperBound).flatMap { substringFrom in
             (range(of: to, range: substringFrom ..< endIndex)?.lowerBound).map { substringTo in

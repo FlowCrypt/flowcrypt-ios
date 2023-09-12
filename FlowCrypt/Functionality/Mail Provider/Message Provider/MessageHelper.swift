@@ -102,7 +102,7 @@ final class MessageHelper {
         var message = message
         try await parseAttachmentTypes(message: &message)
 
-        var pubkeys: [KeyDetails] = []
+        var keyDetails: [KeyDetails] = []
         for (index, attachment) in message.attachments.enumerated() {
             if attachment.treatAs == "publicKey", attachment.data == nil {
                 let fetchedAttachmentData = try await download(
@@ -111,12 +111,12 @@ final class MessageHelper {
                     progressHandler: nil
                 )
                 let parsedKeys = try await Core.shared.parseKeys(armoredOrBinary: fetchedAttachmentData)
-                pubkeys.append(contentsOf: parsedKeys.keyDetails)
+                keyDetails.append(contentsOf: parsedKeys.keyDetails)
                 message.attachments[index].data = fetchedAttachmentData
             }
         }
         guard message.isPgp else {
-            return ProcessedMessage(message: message, pubkeys: pubkeys)
+            return ProcessedMessage(message: message, keyDetails: keyDetails)
         }
 
         return try await decryptAndProcess(
@@ -124,7 +124,7 @@ final class MessageHelper {
             onlyLocalKeys: onlyLocalKeys,
             userEmail: userEmail,
             isUsingKeyManager: isUsingKeyManager,
-            pubkeys: pubkeys
+            keyDetails: keyDetails
         )
     }
 
@@ -177,7 +177,7 @@ final class MessageHelper {
         onlyLocalKeys: Bool,
         userEmail: String,
         isUsingKeyManager: Bool,
-        pubkeys: [KeyDetails] = []
+        keyDetails: [KeyDetails] = []
     ) async throws -> ProcessedMessage {
         let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
 
@@ -206,7 +206,7 @@ final class MessageHelper {
         return try await process(
             message: message,
             with: decrypted,
-            pubkeys: pubkeys
+            keyDetails: keyDetails
         )
     }
 
@@ -228,7 +228,7 @@ final class MessageHelper {
     private func process(
         message: Message,
         with decrypted: CoreRes.ParseDecryptMsg,
-        pubkeys: [KeyDetails] = []
+        keyDetails: [KeyDetails] = []
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
@@ -276,7 +276,7 @@ final class MessageHelper {
             text: text,
             type: messageType,
             attachments: attachments,
-            pubkeys: pubkeys,
+            keyDetails: keyDetails,
             signature: signature
         )
     }

@@ -83,7 +83,7 @@ struct ProcessedMessage {
     let quote: String?
     let type: MessageType
     var attachments: [MessageAttachment]
-    var pubkeys: [KeyDetails] = []
+    var keyDetails: [KeyDetails] = []
     var signature: MessageSignature?
 }
 
@@ -93,24 +93,24 @@ extension ProcessedMessage {
         text: String,
         type: MessageType,
         attachments: [MessageAttachment] = [],
-        pubkeys: [KeyDetails] = [],
+        keyDetails: [KeyDetails] = [],
         signature: MessageSignature? = nil
     ) {
         self.message = message
         (self.text, self.quote) = Self.parseQuote(text: text)
         self.type = type
         self.attachments = attachments
-        self.pubkeys = pubkeys
+        self.keyDetails = keyDetails
         self.signature = signature
     }
 
-    init(message: Message, pubkeys: [KeyDetails] = []) {
+    init(message: Message, keyDetails: [KeyDetails] = []) {
         self.message = message
         (self.text, self.quote) = Self.parseQuote(text: message.body.text)
         self.type = .plain
         self.attachments = message.attachments
         self.signature = .unsigned
-        self.pubkeys = pubkeys
+        self.keyDetails = keyDetails
     }
 }
 

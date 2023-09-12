@@ -23,11 +23,8 @@ public final class MessageTextSubjectNode: CellNode {
 
     private let input: MessageTextSubjectNode.Input
 
-    private lazy var leftBorder = getThreadDetailLeftBorder(color: .main)
     private let messageNode = ASEditableTextNode()
     private let quoteNode = ASEditableTextNode()
-
-    private let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 15, bottom: 15)
 
     private var shouldShowQuote = false
 
@@ -56,6 +53,7 @@ public final class MessageTextSubjectNode: CellNode {
         if let quote = input.quote {
             setupTextNode(quoteNode, text: quote, accessibilityIdentifier: "aid-message-\(input.index)-quote")
         }
+        addLeftBorder(width: .threadLeftBorderWidth, color: .main)
     }
 
     private func setupTextNode(_ node: ASEditableTextNode, text: NSAttributedString?, accessibilityIdentifier: String) {
@@ -95,21 +93,9 @@ public final class MessageTextSubjectNode: CellNode {
             specChild = messageNode
         }
 
-        let mainLayout = ASInsetLayoutSpec(
-            insets: insets,
-            child: specChild
-        )
-        mainLayout.style.flexGrow = 1.0
-        mainLayout.style.flexShrink = 1.0
         return ASInsetLayoutSpec(
             insets: .threadMessageInsets,
-            child: ASStackLayoutSpec(
-                direction: .horizontal,
-                spacing: 0,
-                justifyContent: .spaceBetween,
-                alignItems: .stretch,
-                children: [leftBorder, mainLayout]
-            )
+            child: specChild
         )
     }
 

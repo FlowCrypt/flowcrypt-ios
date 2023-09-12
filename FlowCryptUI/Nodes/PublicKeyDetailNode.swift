@@ -40,23 +40,30 @@ public final class PublicKeyDetailNode: CellNode {
         static let fontStyle: NSAttributedString.Style = .regular(15)
     }
 
-    private lazy var leftBorder = getThreadDetailLeftBorder(color: UIColor(hex: "989898"))
-
     private lazy var publicKeyLabelNode: ASTextNode = {
         let node = ASTextNode()
-        node.attributedText = "public_key_for".localizeWithArguments(input.email).attributed(Constants.fontStyle)
+        node.attributedText = "public_key_for"
+            .localizeWithArguments(input.email)
+            .attributed(Constants.fontStyle)
+        node.accessibilityIdentifier = "aid-public-key-label"
         return node
     }()
 
     private lazy var fingerprintNode: ASTextNode = {
         let node = ASTextNode()
-        node.attributedText = "fingerprint_label_value".localizeWithArguments(input.fingerprint).attributed(Constants.fontStyle)
+        node.attributedText = "fingerprint_label_value"
+            .localizeWithArguments(input.fingerprint.spaced(every: 4))
+            .attributed(Constants.fontStyle)
+        node.accessibilityIdentifier = "aid-fingerprint-value"
         return node
     }()
 
     private lazy var warningLabel: ASTextNode = {
         let node = ASTextNode()
-        node.attributedText = "public_key_import_warning".localized.attributed(Constants.fontStyle, color: .warningColor)
+        node.attributedText = "public_key_import_warning"
+            .localized
+            .attributed(Constants.fontStyle, color: .warningColor)
+        node.accessibilityIdentifier = "aid-warning-label"
         return node
     }()
 
@@ -72,12 +79,14 @@ public final class PublicKeyDetailNode: CellNode {
         let node = SwitchCellNode(input: input) { isOn in
             self.shouldDisplayPublicKey = isOn
         }
+        node.accessibilityIdentifier = "aid-toggle-public-key-node"
         return node
     }()
 
     private lazy var publicKeyValueNode: ASTextNode = {
         let node = ASTextNode()
         node.attributedText = input.publicKey.attributed(Constants.fontStyle, color: .main)
+        node.accessibilityIdentifier = "aid-public-key-value"
         return node
     }()
 
@@ -93,7 +102,8 @@ public final class PublicKeyDetailNode: CellNode {
             title = "import_public_key"
         }
         node.setTitle(title.localized, with: .boldSystemFont(ofSize: 16), with: .white, for: .normal)
-        node.isEnabled = false
+        node.accessibilityIdentifier = "aid-import-key-button"
+        node.addTarget(self, action: #selector(importKeyButtonTapped), forControlEvents: .touchUpInside)
         if input.importStatus == .imported {
             node.isEnabled = false
             node.backgroundColor = .gray
@@ -112,19 +122,24 @@ public final class PublicKeyDetailNode: CellNode {
         }
     }
 
+    public var onImportKey: (() -> Void)?
+
     let input: Input
 
     public init(input: Input) {
         self.input = input
         super.init()
         backgroundColor = UIColor(hex: "FAFAFA")
+        addLeftBorder(width: .threadLeftBorderWidth, color: UIColor(hex: "989898"))
+    }
+
+    @objc func importKeyButtonTapped() {
+        onImportKey?()
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let verticalStack = ASStackLayoutSpec.vertical()
-        verticalStack.spacing = 3
-        verticalStack.style.flexShrink = 1.0
-        verticalStack.style.flexGrow = 1.0
+        verticalStack.spacing = 10
 
         verticalStack.children = [
             publicKeyLabelNode,
@@ -135,21 +150,9 @@ public final class PublicKeyDetailNode: CellNode {
             importKeyButtonNode
         ].compactMap { $0 }
 
-        let mainLayout = ASInsetLayoutSpec(
-            insets: .deviceSpecificTextInsets(top: 15, bottom: 15),
-            child: verticalStack
-        )
-        mainLayout.style.flexGrow = 1.0
-        mainLayout.style.flexShrink = 1.0
         return ASInsetLayoutSpec(
             insets: .threadMessageInsets,
-            child: ASStackLayoutSpec(
-                direction: .horizontal,
-                spacing: 0,
-                justifyContent: .spaceBetween,
-                alignItems: .stretch,
-                children: [leftBorder, mainLayout]
-            )
+            child: verticalStack
         )
     }
 }
