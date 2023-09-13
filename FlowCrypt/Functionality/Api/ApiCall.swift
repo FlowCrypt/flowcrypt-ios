@@ -67,32 +67,6 @@ extension ApiCall.Request {
 extension ApiCall: URLSessionTaskDelegate {
     func urlSession(
         _ session: URLSession,
-        didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
-    ) {
-        guard challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
-              challenge.protectionSpace.host.contains("flowcrypt.com") else {
-            completionHandler(.performDefaultHandling, nil)
-            return
-        }
-
-        guard let serverTrust = challenge.protectionSpace.serverTrust, SecTrustGetCertificateCount(serverTrust) > 0 else {
-            completionHandler(.cancelAuthenticationChallenge, nil)
-            return
-        }
-
-        guard let certChain = SecTrustCopyCertificateChain(serverTrust) as? [SecCertificate],
-              let localCertURL = Bundle.main.url(forResource: "ISRG_Root_X1", withExtension: "cer"),
-              let localCertData = try? Data(contentsOf: localCertURL),
-              certChain.contains(where: { SecCertificateCopyData($0) as Data == localCertData }) else {
-            completionHandler(.cancelAuthenticationChallenge, nil)
-            return
-        }
-        completionHandler(.useCredential, URLCredential(trust: serverTrust))
-    }
-
-    func urlSession(
-        _ session: URLSession,
         task: URLSessionTask,
         didSendBodyData bytesSent: Int64,
         totalBytesSent: Int64,
