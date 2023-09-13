@@ -109,11 +109,20 @@ class ElementHelper {
   };
 
   //wait for text in element during 15 seconds (if the text doesn't appear during 15s, it will show the error)
-  static waitForText = async (element: WebdriverIO.Element, text: string, timeout: number = DEFAULT_TIMEOUT) => {
+  static waitForText = async (
+    element: WebdriverIO.Element,
+    text: string,
+    timeout: number = DEFAULT_TIMEOUT,
+    checkContains = false,
+  ) => {
     await this.waitElementVisible(element);
     await element.waitUntil(
       async function () {
-        return (await element.getText()) === text;
+        const elementText = await element.getText();
+        if (checkContains) {
+          return elementText.includes(text);
+        }
+        return elementText === text;
       },
       {
         timeout: timeout,

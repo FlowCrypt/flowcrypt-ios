@@ -93,6 +93,17 @@ final class MessageHelper {
         )
     }
 
+    func getKeyDetailsFromAttachment(attachments: inout [MessageAttachment], messageId: Identifier) async throws -> [KeyDetails] {
+        var keyDetailsList: [KeyDetails] = []
+        for (index, attachment) in attachments.enumerated() where attachment.treatAs == "publicKey" {
+            let attachmentData = try await fetchOrDownloadData(for: attachment, messageId: messageId)
+            let parsedKeys = try await Core.shared.parseKeys(armoredOrBinary: attachmentData)
+            keyDetailsList += parsedKeys.keyDetails
+            attachments[index].data = attachmentData
+        }
+        return keyDetailsList
+    }
+
     func process(
         message: Message,
         onlyLocalKeys: Bool,
@@ -102,19 +113,10 @@ final class MessageHelper {
         var message = message
         try await parseAttachmentTypes(message: &message)
 
-        var keyDetails: [KeyDetails] = []
-        for (index, attachment) in message.attachments.enumerated() {
-            if attachment.treatAs == "publicKey", attachment.data == nil {
-                let fetchedAttachmentData = try await download(
-                    attachment: attachment,
-                    messageId: message.identifier,
-                    progressHandler: nil
-                )
-                let parsedKeys = try await Core.shared.parseKeys(armoredOrBinary: fetchedAttachmentData)
-                keyDetails.append(contentsOf: parsedKeys.keyDetails)
-                message.attachments[index].data = fetchedAttachmentData
-            }
-        }
+        let keyDetails: [KeyDetails] = try await getKeyDetailsFromAttachment(
+            attachments: &message.attachments,
+            messageId: message.identifier
+        )
         guard message.isPgp else {
             return ProcessedMessage(message: message, keyDetails: keyDetails)
         }
@@ -123,9 +125,13 @@ final class MessageHelper {
             message: message,
             onlyLocalKeys: onlyLocalKeys,
             userEmail: userEmail,
-            isUsingKeyManager: isUsingKeyManager,
-            keyDetails: keyDetails
+            isUsingKeyManager: isUsingKeyManager
         )
+    }
+
+    private func fetchOrDownloadData(for attachment: MessageAttachment, messageId: Identifier) async throws -> Data {
+        if let data = attachment.data { return data }
+        return try await download(attachment: attachment, messageId: messageId, progressHandler: nil)
     }
 
     private func getKeypairs(email: String, isUsingKeyManager: Bool) async throws -> [Keypair] {
@@ -176,8 +182,7 @@ final class MessageHelper {
         message: Message,
         onlyLocalKeys: Bool,
         userEmail: String,
-        isUsingKeyManager: Bool,
-        keyDetails: [KeyDetails] = []
+        isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
         let keys = try await getKeypairs(email: userEmail, isUsingKeyManager: isUsingKeyManager)
 
@@ -205,8 +210,7 @@ final class MessageHelper {
 
         return try await process(
             message: message,
-            with: decrypted,
-            keyDetails: keyDetails
+            with: decrypted
         )
     }
 
@@ -227,8 +231,7 @@ final class MessageHelper {
 
     private func process(
         message: Message,
-        with decrypted: CoreRes.ParseDecryptMsg,
-        keyDetails: [KeyDetails] = []
+        with decrypted: CoreRes.ParseDecryptMsg
     ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
@@ -264,12 +267,14 @@ final class MessageHelper {
             )
         }
 
-        let attachments: [MessageAttachment]
+        var attachments: [MessageAttachment]
         if message.raw != nil || message.attachments.isEmpty {
             attachments = decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
         } else {
             attachments = message.attachments
         }
+
+        let keyDetails: [KeyDetails] = try await getKeyDetailsFromAttachment(attachments: &attachments, messageId: message.identifier)
 
         return ProcessedMessage(
             message: message,

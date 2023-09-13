@@ -27,4 +27,6 @@ export type GoogleMockMessage =
   | 'rich text message with empty body and attachment'
   | 'message with kdbx file'
   | 'mime message with large attachment'
-  | 'Test forward message with attached pub key';
+  | 'Test forward message with attached pub key'
+  | 'Encrypted email with public key attached'
+  | 'Email with another user public key attached';

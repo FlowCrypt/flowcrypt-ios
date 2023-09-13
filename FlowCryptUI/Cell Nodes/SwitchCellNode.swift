@@ -12,6 +12,7 @@ import AsyncDisplayKit
 public final class SwitchCellNode: CellNode {
     public struct Input {
         let attributedText: NSAttributedString
+        let accessibilityIdentifier: String?
         let insets: UIEdgeInsets
         let backgroundColor: UIColor?
         let isOn: Bool
@@ -20,11 +21,13 @@ public final class SwitchCellNode: CellNode {
         public init(
             isOn: Bool,
             attributedText: NSAttributedString,
+            accessibilityIdentifier: String? = nil,
             insets: UIEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
             backgroundColor: UIColor? = nil,
             switchJustifyContent: ASStackLayoutJustifyContent = .start
         ) {
             self.attributedText = attributedText
+            self.accessibilityIdentifier = accessibilityIdentifier
             self.insets = insets
             self.backgroundColor = backgroundColor
             self.isOn = isOn
@@ -36,6 +39,7 @@ public final class SwitchCellNode: CellNode {
     private lazy var switchNode = ASDisplayNode { () -> UIView in
         let view = UISwitch()
         view.isOn = self.input?.isOn ?? false
+        view.accessibilityIdentifier = self.input?.accessibilityIdentifier
         view.addTarget(self, action: #selector(self.handleAction(_:)), for: .valueChanged)
         return view
     }

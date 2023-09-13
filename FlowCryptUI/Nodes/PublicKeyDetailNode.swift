@@ -12,9 +12,9 @@ import UIKit
 public final class PublicKeyDetailNode: CellNode {
 
     public enum PublicKeyImportStatus {
-        case imported
-        case importedDifferent
-        case notImported
+        case alreadyImported
+        case differentKeyImported
+        case notYetImported
     }
 
     public struct Input {
@@ -73,13 +73,13 @@ public final class PublicKeyDetailNode: CellNode {
             attributedText: "show_public_key"
                 .localized
                 .attributed(Constants.fontStyle, color: .textColor),
+            accessibilityIdentifier: "aid-toggle-public-key-node",
             backgroundColor: .clear,
             switchJustifyContent: .center
         )
         let node = SwitchCellNode(input: input) { isOn in
             self.shouldDisplayPublicKey = isOn
         }
-        node.accessibilityIdentifier = "aid-toggle-public-key-node"
         return node
     }()
 
@@ -93,26 +93,30 @@ public final class PublicKeyDetailNode: CellNode {
     private lazy var importKeyButtonNode: ASButtonNode = {
         let node = ASButtonNode()
         var title: String
+        var isEnabled = true
+        var bgColor: UIColor = .warningColor
+
         switch input.importStatus {
-        case .imported:
+        case .alreadyImported:
             title = "already_imported"
-        case .importedDifferent:
+            isEnabled = false
+            bgColor = .gray
+        case .differentKeyImported:
             title = "update_public_key"
-        case .notImported:
+        case .notYetImported:
             title = "import_public_key"
         }
+
         node.setTitle(title.localized, with: .boldSystemFont(ofSize: 16), with: .white, for: .normal)
         node.accessibilityIdentifier = "aid-import-key-button"
         node.addTarget(self, action: #selector(importKeyButtonTapped), forControlEvents: .touchUpInside)
-        if input.importStatus == .imported {
-            node.isEnabled = false
-            node.backgroundColor = .gray
-        } else {
-            node.backgroundColor = .warningColor
-        }
+
+        node.isEnabled = isEnabled
+        node.backgroundColor = bgColor
         node.style.flexGrow = 1.0
         node.style.flexShrink = 1.0
         node.style.preferredSize.height = 40
+
         return node
     }()
 
@@ -144,7 +148,7 @@ public final class PublicKeyDetailNode: CellNode {
         verticalStack.children = [
             publicKeyLabelNode,
             fingerprintNode,
-            input.importStatus != .imported ? warningLabel : nil,
+            input.importStatus != .alreadyImported ? warningLabel : nil,
             toggleNode,
             shouldDisplayPublicKey ? publicKeyValueNode : nil,
             importKeyButtonNode

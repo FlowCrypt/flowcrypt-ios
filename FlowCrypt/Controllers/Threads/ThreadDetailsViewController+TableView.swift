@@ -80,7 +80,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
             let keyCount = processedMessage.keyDetails.count
             let keyIndex = row - 2
-            if keyCount > 0, keyIndex < keyCount {
+            if keyIndex < keyCount {
                 let keyDetails = processedMessage.keyDetails[keyIndex]
                 let node = PublicKeyDetailNode(input: getPublicKeyDetailInput(for: keyDetails))
                 node.onImportKey = {
@@ -139,16 +139,12 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
     func getPublicKeyDetailInput(for keyDetails: KeyDetails) -> PublicKeyDetailNode.Input {
         let email = keyDetails.pgpUserEmails.first ?? "N/A"
         let localPublicKeys = (try? localContactsProvider.retrievePubKeys(for: email, shouldUpdateLastUsed: false)) ?? []
-        var importStatus: PublicKeyDetailNode.PublicKeyImportStatus = .notImported
-        if localPublicKeys.isNotEmpty {
-            if localPublicKeys.contains(keyDetails.public) {
-                importStatus = .imported
-            } else {
-                importStatus = .importedDifferent
-            }
-        }
+        let importStatus: PublicKeyDetailNode.PublicKeyImportStatus = {
+            if localPublicKeys.contains(keyDetails.public) { return .alreadyImported }
+            return localPublicKeys.isNotEmpty ? .differentKeyImported : .notYetImported
+        }()
         return PublicKeyDetailNode.Input(
-            email: keyDetails.pgpUserEmails.first ?? "N/A",
+            email: email,
             publicKey: keyDetails.public,
             fingerprint: keyDetails.fingerprints.first ?? "N/A",
             importStatus: importStatus

@@ -30,6 +30,12 @@ const SELECTORS = {
   ENCRYPTION_BADGE: '~aid-encryption-badge',
   SIGNATURE_BADGE: '~aid-signature-badge',
   ATTACHMENT_TEXT_VIEW: '~aid-attachment-text-view',
+  PUBLIC_KEY_LABEL: '~aid-public-key-label',
+  FINGEPRINT_LABEL_VALUE: '~aid-fingerprint-value',
+  PUBLIC_KEY_IMPORT_WARNING: '~aid-warning-label',
+  TOGGLE_PUBLIC_KEY_NODE: '~aid-toggle-public-key-node',
+  PUBLIC_KEY_VALUE: '~aid-public-key-value',
+  IMPORT_PUBLIC_KEY_BUTTON: '~aid-import-key-button',
 };
 
 class EmailScreen extends BaseScreen {
@@ -135,6 +141,30 @@ class EmailScreen extends BaseScreen {
 
   get signatureBadge() {
     return $(SELECTORS.SIGNATURE_BADGE);
+  }
+
+  get publicKeyLabel() {
+    return $(SELECTORS.PUBLIC_KEY_LABEL);
+  }
+
+  get fingerprintLabelValue() {
+    return $(SELECTORS.FINGEPRINT_LABEL_VALUE);
+  }
+
+  get publicKeyImportWarningLabel() {
+    return $(SELECTORS.PUBLIC_KEY_IMPORT_WARNING);
+  }
+
+  get publicKeyToggle() {
+    return $(SELECTORS.TOGGLE_PUBLIC_KEY_NODE);
+  }
+
+  get publicKeyValueLabel() {
+    return $(SELECTORS.PUBLIC_KEY_VALUE);
+  }
+
+  get importPublicKeyButton() {
+    return $(SELECTORS.IMPORT_PUBLIC_KEY_BUTTON);
   }
 
   get attachmentTextView() {
@@ -327,6 +357,26 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(el);
     const text = await el.getText();
     expect(text.includes(value)).toBeTruthy();
+  };
+
+  checkPublicKeyImportView = async (email: string, fingerprint: string, isAlreadyImported = false) => {
+    await ElementHelper.waitForText(await this.publicKeyLabel, email, 3000, true);
+    await ElementHelper.waitForText(await this.fingerprintLabelValue, fingerprint, 3000, true);
+    await ElementHelper.waitElementVisible(await this.importPublicKeyButton);
+    if (!isAlreadyImported) {
+      await ElementHelper.waitElementVisible(await this.publicKeyImportWarningLabel);
+    }
+    // Check if public key toggle works correctly (should show/hide public key value label)
+    await ElementHelper.waitAndClick(await this.publicKeyToggle);
+    await ElementHelper.waitElementVisible(await this.publicKeyValueLabel);
+    await ElementHelper.waitAndClick(await this.publicKeyToggle);
+    await ElementHelper.waitElementInvisible(await this.publicKeyValueLabel);
+  };
+
+  importPublicKey = async () => {
+    await ElementHelper.waitAndClick(await this.importPublicKeyButton);
+    await ElementHelper.waitForText(await this.importPublicKeyButton, 'Already imported');
+    await ElementHelper.waitElementInvisible(await this.publicKeyImportWarningLabel);
   };
 
   draftBody = async (index: number) => {

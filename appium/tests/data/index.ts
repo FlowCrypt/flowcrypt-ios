@@ -97,6 +97,16 @@ export const CommonData = {
     attachmentName: 'simple.txt',
     encryptedAttachmentName: 'simple.txt.pgp',
   },
+  encryptedEmailWithPublicKey: {
+    subject: 'Encrypted email with public key attached',
+    publicKeyEmail: 'flowcrypt.compatibility@gmail.com',
+    publicKeyFingerPrint: 'E8F0 517B A6D7 DAB6 081C 96E4 ADAC 279C 9509 3207',
+  },
+  emailWithAnotherUserPublicKey: {
+    subject: 'Email with another user public key attached',
+    publicKeyEmail: 'demo@flowcrypt.com',
+    publicKeyFingerPrint: 'A0D5 9CF1 5045 523C 67B2 C1EA 6AC1 4D76 82BD 5F7C',
+  },
   encryptedEmailWithAttachmentWithoutPreview: {
     sender: 'flowcrypt.compatibility@gmail.com',
     subject: 'message with kdbx file',
