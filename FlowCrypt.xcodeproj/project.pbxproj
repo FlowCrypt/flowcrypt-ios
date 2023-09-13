@@ -165,8 +165,6 @@
 		759739C02833E9E7004867CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A1D3B923FD64AB00D626D6 /* AppDelegate.swift */; };
 		75DCE6A02869EBC0003435F1 /* EmptyFolderCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */; };
 		949ED9422303E3B400530579 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 949ED9412303E3B400530579 /* Colors.xcassets */; };
-		951710B52A9F3BD1001711D2 /* ISRG_Root_X1.cer in Resources */ = {isa = PBXBuildFile; fileRef = 951710B42A9F3BD1001711D2 /* ISRG_Root_X1.cer */; };
-		951710B62A9F3BDD001711D2 /* ISRG_Root_X1.cer in Resources */ = {isa = PBXBuildFile; fileRef = 951710B42A9F3BD1001711D2 /* ISRG_Root_X1.cer */; };
 		952687452A8A24C60005694B /* LetterAvatarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 952687442A8A24C60005694B /* LetterAvatarKit */; };
 		952687472A8A2EF70005694B /* ThreadMessageDraftCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */; };
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
@@ -627,7 +625,6 @@
 		756BB98F285A19C100F73140 /* EmptyCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyCellNode.swift; sourceTree = "<group>"; };
 		75DCE69F2869EBC0003435F1 /* EmptyFolderCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyFolderCellNode.swift; sourceTree = "<group>"; };
 		949ED9412303E3B400530579 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		951710B42A9F3BD1001711D2 /* ISRG_Root_X1.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = ISRG_Root_X1.cer; sourceTree = "<group>"; };
 		952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMessageDraftCellNode.swift; sourceTree = "<group>"; };
 		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseAlertNode.swift; sourceTree = "<group>"; };
@@ -1861,7 +1858,6 @@
 				51E8181B29081D2B00FD428D /* generated */,
 				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
-				951710B42A9F3BD1001711D2 /* ISRG_Root_X1.cer */,
 				9582BC592A782DA700439728 /* pass_phrase_hint.html */,
 				51E1673C270DAFF900D27C52 /* Localizable.stringsdict */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
@@ -2500,7 +2496,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				951710B62A9F3BDD001711D2 /* ISRG_Root_X1.cer in Resources */,
 				D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */,
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				51E8181D29081D2B00FD428D /* flowcrypt-ios-prod.js.txt in Resources */,
@@ -2527,7 +2522,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				951710B52A9F3BD1001711D2 /* ISRG_Root_X1.cer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
