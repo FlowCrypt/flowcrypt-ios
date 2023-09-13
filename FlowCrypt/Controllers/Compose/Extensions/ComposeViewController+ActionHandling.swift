@@ -84,6 +84,9 @@ extension ComposeViewController {
     }
 
     func handleEvaluation(error: Error, with email: String, contact: RecipientWithSortedPubKeys?) {
+        if let apiError = error as? ApiError, let nsError = apiError.internalError as NSError?, nsError.domain == NSURLErrorDomain {
+            showAlert(message: error.localizedDescription)
+        }
         let recipientState: RecipientState = {
             if let contact, contact.keyState == .active {
                 return getRecipientState(from: contact)
