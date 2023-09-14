@@ -47,5 +47,5 @@ public extension CGFloat {
         static var height: CGFloat = 44
     }
 
-    static var threadLeftBorderWidth: CGFloat = 8
+    static var threadLeftBorderWidth: CGFloat = 4
 }
