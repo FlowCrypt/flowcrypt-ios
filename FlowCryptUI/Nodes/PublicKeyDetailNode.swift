@@ -133,7 +133,7 @@ public final class PublicKeyDetailNode: CellNode {
     public init(input: Input) {
         self.input = input
         super.init()
-        backgroundColor = UIColor(hex: "FAFAFA")
+        backgroundColor = UIColor.colorFor(darkStyle: UIColor(hex: "303030")!, lightStyle: UIColor(hex: "FAFAFA")!)
         addLeftBorder(width: .threadLeftBorderWidth, color: UIColor(hex: "989898"))
     }
 

@@ -73,7 +73,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                     input: .init(
                         message: processedMessage.attributedMessage,
                         quote: processedMessage.attributedQuote,
-                        index: messageIndex
+                        index: messageIndex,
+                        isEncrypted: processedMessage.type == .encrypted
                     )
                 )
             }
