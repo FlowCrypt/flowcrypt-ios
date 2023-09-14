@@ -429,3 +429,12 @@
 "contacts_created" = "Created:";
 "contacts_expires" = "Expires:";
 "contacts_user" = "User:";
+
+// Public Key Detail Node
+"show_public_key" = "Show Public Key";
+"public_key_for" = "Public key for %@";
+"fingerprint_label_value" = "(Fingerprint: %@)";
+"import_public_key" = "Import Public Key";
+"update_public_key" = "Update Public Key";
+"already_imported" = "Already imported";
+"public_key_import_warning" = "Manually importing Public Keys received over email can be dangerous.\nContact the sender to verify that the fingerprint matches.";

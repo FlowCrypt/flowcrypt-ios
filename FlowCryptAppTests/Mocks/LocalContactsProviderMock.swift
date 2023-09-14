@@ -26,4 +26,6 @@ final class LocalContactsProviderMock: LocalContactsProviderType {
     }
 
     func removePubKey(with fingerprint: String, for email: String) {}
+
+    func updateKey(for email: String, pubKey: FlowCrypt.PubKey) throws {}
 }

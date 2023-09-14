@@ -93,6 +93,17 @@ final class MessageHelper {
         )
     }
 
+    func getKeyDetailsFromAttachment(attachments: inout [MessageAttachment], messageId: Identifier) async throws -> [KeyDetails] {
+        var keyDetailsList: [KeyDetails] = []
+        for (index, attachment) in attachments.enumerated() where attachment.treatAs == "publicKey" {
+            let attachmentData = try await fetchOrDownloadData(for: attachment, messageId: messageId)
+            let parsedKeys = try await Core.shared.parseKeys(armoredOrBinary: attachmentData)
+            keyDetailsList += parsedKeys.keyDetails
+            attachments[index].data = attachmentData
+        }
+        return keyDetailsList
+    }
+
     func process(
         message: Message,
         onlyLocalKeys: Bool,
@@ -102,8 +113,12 @@ final class MessageHelper {
         var message = message
         try await parseAttachmentTypes(message: &message)
 
+        let keyDetails: [KeyDetails] = try await getKeyDetailsFromAttachment(
+            attachments: &message.attachments,
+            messageId: message.identifier
+        )
         guard message.isPgp else {
-            return ProcessedMessage(message: message)
+            return ProcessedMessage(message: message, keyDetails: keyDetails)
         }
 
         return try await decryptAndProcess(
@@ -112,6 +127,11 @@ final class MessageHelper {
             userEmail: userEmail,
             isUsingKeyManager: isUsingKeyManager
         )
+    }
+
+    private func fetchOrDownloadData(for attachment: MessageAttachment, messageId: Identifier) async throws -> Data {
+        if let data = attachment.data { return data }
+        return try await download(attachment: attachment, messageId: messageId, progressHandler: nil)
     }
 
     private func getKeypairs(email: String, isUsingKeyManager: Bool) async throws -> [Keypair] {
@@ -247,18 +267,21 @@ final class MessageHelper {
             )
         }
 
-        let attachments: [MessageAttachment]
+        var attachments: [MessageAttachment]
         if message.raw != nil || message.attachments.isEmpty {
             attachments = decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
         } else {
             attachments = message.attachments
         }
 
+        let keyDetails: [KeyDetails] = try await getKeyDetailsFromAttachment(attachments: &attachments, messageId: message.identifier)
+
         return ProcessedMessage(
             message: message,
             text: text,
             type: messageType,
             attachments: attachments,
+            keyDetails: keyDetails,
             signature: signature
         )
     }

@@ -13,11 +13,13 @@ public final class MessageTextSubjectNode: CellNode {
         let message: NSAttributedString?
         let quote: NSAttributedString?
         let index: Int
+        let isEncrypted: Bool
 
-        public init(message: NSAttributedString?, quote: NSAttributedString?, index: Int) {
+        public init(message: NSAttributedString?, quote: NSAttributedString?, index: Int, isEncrypted: Bool) {
             self.message = message
             self.quote = quote
             self.index = index
+            self.isEncrypted = isEncrypted
         }
     }
 
@@ -25,8 +27,6 @@ public final class MessageTextSubjectNode: CellNode {
 
     private let messageNode = ASEditableTextNode()
     private let quoteNode = ASEditableTextNode()
-
-    private let insets = UIEdgeInsets.deviceSpecificTextInsets(top: 8, bottom: 8)
 
     private var shouldShowQuote = false
 
@@ -55,6 +55,7 @@ public final class MessageTextSubjectNode: CellNode {
         if let quote = input.quote {
             setupTextNode(quoteNode, text: quote, accessibilityIdentifier: "aid-message-\(input.index)-quote")
         }
+        addLeftBorder(width: .threadLeftBorderWidth, color: input.isEncrypted ? .main : UIColor(hex: "777777"))
     }
 
     private func setupTextNode(_ node: ASEditableTextNode, text: NSAttributedString?, accessibilityIdentifier: String) {
@@ -95,7 +96,7 @@ public final class MessageTextSubjectNode: CellNode {
         }
 
         return ASInsetLayoutSpec(
-            insets: insets,
+            insets: .threadMessageInsets,
             child: specChild
         )
     }

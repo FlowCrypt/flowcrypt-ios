@@ -24,16 +24,20 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             case thread, message, divider
         }
 
-        let attachmentsCount = input[section - 1].processedMessage?.attachments.count ?? 0
-        return Parts.allCases.count + attachmentsCount
+        let processedMessage = input[section - 1].processedMessage
+        let attachmentsCount = processedMessage?.attachments.count ?? 0
+        let pubkeysCount = processedMessage?.keyDetails.count ?? 0
+        return Parts.allCases.count + attachmentsCount + pubkeysCount
     }
 
+    // swiftlint:disable cyclomatic_complexity function_body_length
     func tableNode(_ tableNode: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self else { return ASCellNode() }
 
+            let row = indexPath.row
             guard indexPath.section > 0 else {
-                if indexPath.row == 0 {
+                if row == 0 {
                     let subject = self.inboxItem.subject ?? "no subject"
                     return MessageSubjectNode(subject.attributed(.medium(18)))
                 } else {
@@ -44,7 +48,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             let messageIndex = indexPath.section - 1
             let message = self.input[messageIndex]
 
-            if !message.rawMessage.isDraft, indexPath.row == 0 {
+            if !message.rawMessage.isDraft, row == 0 {
                 return ThreadMessageInfoCellNode(
                     input: .init(threadMessage: message, index: messageIndex),
                     onReplyTap: { [weak self] _ in self?.handleReplyTap(at: indexPath) },
@@ -54,7 +58,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             if message.rawMessage.isDraft {
-                if indexPath.row == 0 {
+                if row == 0 {
                     return self.draftNode(messageIndex: messageIndex, isExpanded: message.isExpanded)
                 } else {
                     return self.dividerNode(indexPath: indexPath)
@@ -64,17 +68,29 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             guard message.isExpanded, let processedMessage = message.processedMessage
             else { return self.dividerNode(indexPath: indexPath) }
 
-            guard indexPath.row > 1 else {
+            guard row > 1 else {
                 return MessageTextSubjectNode(
                     input: .init(
                         message: processedMessage.attributedMessage,
                         quote: processedMessage.attributedQuote,
-                        index: messageIndex
+                        index: messageIndex,
+                        isEncrypted: processedMessage.type == .encrypted
                     )
                 )
             }
 
-            let attachmentIndex = indexPath.row - 2
+            let keyCount = processedMessage.keyDetails.count
+            let keyIndex = row - 2
+            if keyIndex < keyCount {
+                let keyDetails = processedMessage.keyDetails[keyIndex]
+                let node = PublicKeyDetailNode(input: getPublicKeyDetailInput(for: keyDetails))
+                node.onImportKey = {
+                    self.importPublicKey(indexPath: indexPath, keyDetails: keyDetails)
+                }
+                return node
+            }
+
+            let attachmentIndex = row - 2 - keyCount
             if let attachment = processedMessage.attachments[safe: attachmentIndex] {
                 return AttachmentNode(
                     input: .init(
@@ -87,6 +103,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
         }
     }
+
+    // swiftlint:enable cyclomatic_complexity function_body_length
 
     func tableNode(_ tableNode: ASTableNode, didSelectRowAt indexPath: IndexPath) {
         switch tableNode.nodeForRow(at: indexPath) {
@@ -103,12 +121,34 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         }
     }
 
+    private func importPublicKey(indexPath: IndexPath, keyDetails: KeyDetails) {
+        if let email = keyDetails.pgpUserEmails.first {
+            try? localContactsProvider.updateKey(for: email, pubKey: .init(keyDetails: keyDetails))
+            node.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+
     private func dividerNode(indexPath: IndexPath) -> ASCellNode {
         let height = indexPath.section < input.count ? 1 / UIScreen.main.nativeScale : 0
         return DividerCellNode(
             inset: .init(top: 0, left: 8, bottom: 0, right: 8),
             color: .borderColor,
             height: height
+        )
+    }
+
+    func getPublicKeyDetailInput(for keyDetails: KeyDetails) -> PublicKeyDetailNode.Input {
+        let email = keyDetails.pgpUserEmails.first ?? "N/A"
+        let localPublicKeys = (try? localContactsProvider.retrievePubKeys(for: email, shouldUpdateLastUsed: false)) ?? []
+        let importStatus: PublicKeyDetailNode.PublicKeyImportStatus = {
+            if localPublicKeys.contains(keyDetails.public) { return .alreadyImported }
+            return localPublicKeys.isNotEmpty ? .differentKeyImported : .notYetImported
+        }()
+        return PublicKeyDetailNode.Input(
+            email: email,
+            publicKey: keyDetails.public,
+            fingerprint: keyDetails.fingerprints.first ?? "N/A",
+            importStatus: importStatus
         )
     }
 }

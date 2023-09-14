@@ -32,6 +32,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     )
 
     let appContext: AppContextWithUser
+    let localContactsProvider: LocalContactsProviderType
     let messageOperationsApiClient: MessageOperationsApiClient
     let threadOperationsApiClient: MessagesThreadOperationsApiClient
     var inboxItem: InboxItem
@@ -58,7 +59,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
     ) async throws {
         self.appContext = appContext
         let clientConfiguration = try await appContext.clientConfigurationProvider.configuration
-        let localContactsProvider = LocalContactsProvider(
+        self.localContactsProvider = LocalContactsProvider(
             encryptedStorage: appContext.encryptedStorage
         )
         let mailProvider = try appContext.getRequiredMailProvider()
