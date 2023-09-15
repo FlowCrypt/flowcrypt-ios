@@ -111,7 +111,7 @@ final class MessageHelper {
         isUsingKeyManager: Bool
     ) async throws -> ProcessedMessage {
         var message = message
-        try await parseAttachmentTypes(message: &message)
+        try await Self.parseAttachmentTypes(message: &message)
 
         let keyDetails: [KeyDetails] = try await getKeyDetailsFromAttachment(
             attachments: &message.attachments,
@@ -192,7 +192,7 @@ final class MessageHelper {
         )
 
         var message = message
-        try await parseAttachmentTypes(message: &message)
+        try await Self.parseAttachmentTypes(message: &message)
         if message.hasSignatureAttachment || message.hasEncryptedMsgAttachment {
             // raw data is needed for verification of detached signature
             // and decrypting pgp/mime attachment
@@ -214,10 +214,10 @@ final class MessageHelper {
         )
     }
 
-    private func parseAttachmentTypes(message: inout Message) async throws {
-        guard !message.attachments.isEmpty else { return }
+    static func parseAttachmentTypes(message: inout Message) async throws {
+        guard message.attachments.isNotEmpty else { return }
 
-        let attachmentsTreatAs = try await core.parseAttachmentType(
+        let attachmentsTreatAs = try await Core.shared.parseAttachmentType(
             msgId: message.identifier,
             atts: message.attachments
         )

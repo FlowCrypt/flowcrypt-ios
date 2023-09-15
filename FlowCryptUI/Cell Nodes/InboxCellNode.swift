@@ -22,6 +22,9 @@ public final class InboxCellNode: CellNode {
         public let messageText: NSAttributedString?
         public let accessibilityidentifier: String?
         public let badgeText: NSAttributedString?
+        public let isEncrypted: Bool
+        public let hasAttachment: Bool
+        public let hasPublicKey: Bool
 
         public init(
             emailText: NSAttributedString,
@@ -29,7 +32,10 @@ public final class InboxCellNode: CellNode {
             dateText: NSAttributedString,
             messageText: NSAttributedString?,
             accessibilityidentifier: String?,
-            badgeText: NSAttributedString?
+            badgeText: NSAttributedString?,
+            isEncrypted: Bool,
+            hasAttachment: Bool,
+            hasPublicKey: Bool
         ) {
             self.emailText = emailText
             self.countText = countText
@@ -37,7 +43,15 @@ public final class InboxCellNode: CellNode {
             self.messageText = messageText
             self.accessibilityidentifier = accessibilityidentifier
             self.badgeText = badgeText
+            self.isEncrypted = isEncrypted
+            self.hasAttachment = hasAttachment
+            self.hasPublicKey = hasPublicKey
         }
+    }
+
+    private enum Constants {
+        static let iconSize: CGFloat = 25
+        static let topBottomVerticalSpacing: CGFloat = 5
     }
 
     private let input: Input
@@ -75,6 +89,7 @@ public final class InboxCellNode: CellNode {
         node.attributedText = input.emailText
         node.maximumNumberOfLines = 1
         node.truncationMode = .byTruncatingTail
+        node.style.flexShrink = 1.0
         return node
     }()
 
@@ -100,11 +115,36 @@ public final class InboxCellNode: CellNode {
         return node
     }()
 
+    private lazy var encryptedIcon: ASImageNode = {
+        let node = ASImageNode()
+        node.image = UIImage(systemName: "lock.shield")?.tinted(.main)
+        node.style.preferredSize.width = Constants.iconSize
+        node.style.preferredSize.height = Constants.iconSize
+        return node
+    }()
+
+    private lazy var publicKeyIcon: ASImageNode = {
+        let node = ASImageNode()
+        node.image = UIImage(systemName: "person.badge.key")?.tinted(.lightGray)
+        node.style.preferredSize.width = Constants.iconSize
+        node.style.preferredSize.height = Constants.iconSize
+        return node
+    }()
+
+    private lazy var attachmentIcon: ASImageNode = {
+        let node = ASImageNode()
+        node.image = UIImage(systemName: "paperclip")?.tinted(.lightGray)
+        node.style.preferredSize.width = Constants.iconSize
+        node.style.preferredSize.height = Constants.iconSize
+        return node
+    }()
+
     private lazy var messageNode = {
         let node = ASTextNode2()
         node.maximumNumberOfLines = 1
         node.truncationMode = .byTruncatingTail
         node.attributedText = input.messageText
+        node.style.flexShrink = 1.0
         return node
     }()
 
@@ -137,52 +177,62 @@ public final class InboxCellNode: CellNode {
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        let emailElement: ASLayoutElement = {
-            guard let countNode else { return emailNode }
-            emailNode.style.flexShrink = 1.0
-            let spec = ASStackLayoutSpec.horizontal()
-            spec.children = [emailNode, countNode]
-            spec.spacing = 5
-            return spec
-        }()
+        let emailElement = ASStackLayoutSpec.horizontal()
+        emailElement.spacing = 5
+        emailElement.children = countNode == nil ? [emailNode] : [emailNode, countNode!]
 
+        // Create Name-Location Stack
         let nameLocationStack = ASStackLayoutSpec.vertical()
-        nameLocationStack.spacing = 4
+        nameLocationStack.spacing = Constants.topBottomVerticalSpacing
         nameLocationStack.style.flexShrink = 1.0
         nameLocationStack.style.flexGrow = 1.0
-        separatorNode.style.flexGrow = 1.0
+
+        let messageBadgeStack = ASStackLayoutSpec.horizontal()
+        messageBadgeStack.children = [messageNode, badgeNode]
+        messageBadgeStack.alignItems = .center
+        messageBadgeStack.spacing = 6
+
+        // Configure message and badge
+        nameLocationStack.children = input.badgeText == nil
+            ? [emailElement, messageNode]
+            : [emailElement, messageBadgeStack]
+
+        // Setup separator
         separatorNode.style.preferredSize.height = 0.5
 
-        if input.badgeText != nil {
-            messageNode.style.flexShrink = 1.0
-            let messageStack = ASStackLayoutSpec.horizontal()
-            messageStack.style.flexShrink = 1.0
-            messageStack.alignItems = .center
-            messageStack.spacing = 6
-            messageStack.children = [messageNode, badgeNode]
-            nameLocationStack.children = [emailElement, messageStack]
-        } else {
-            nameLocationStack.children = [emailElement, messageNode]
-        }
+        let iconsSpec = ASStackLayoutSpec.horizontal()
+        iconsSpec.spacing = 3
+        iconsSpec.children = [
+            input.hasAttachment ? attachmentIcon : nil,
+            input.hasPublicKey ? publicKeyIcon : nil,
+            input.isEncrypted ? encryptedIcon : nil
+        ].compactMap { $0 }
 
+        let headerRightSpec = ASStackLayoutSpec.vertical()
+        headerRightSpec.spacing = Constants.topBottomVerticalSpacing
+        headerRightSpec.alignItems = .end
+        headerRightSpec.children = [dateNode, iconsSpec]
+
+        // Create Header Stack
         let headerStackSpec = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 8,
             justifyContent: .start,
-            alignItems: .start,
-            children: [avatarCheckboxNode, nameLocationStack, dateNode]
+            alignItems: .center,
+            children: [avatarCheckboxNode, nameLocationStack, headerRightSpec]
         )
 
+        // Final Vertical Stack
         let finalSpec = ASStackLayoutSpec.vertical()
-        finalSpec.children = [headerStackSpec, separatorNode]
         finalSpec.spacing = 10
+        finalSpec.children = [headerStackSpec, separatorNode]
 
+        // Create Inset Layout
         let spec = ASInsetLayoutSpec(
             insets: .deviceSpecificTextInsets(top: 12, bottom: 0),
             child: finalSpec
         )
-        let overlayLayout = ASOverlayLayoutSpec(child: spec, overlay: selectedBackgroundNode)
 
-        return overlayLayout
+        return ASOverlayLayoutSpec(child: spec, overlay: selectedBackgroundNode)
     }
 }

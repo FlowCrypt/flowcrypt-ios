@@ -52,6 +52,10 @@ struct Message: Hashable {
         attachments.contains(where: { $0.treatAs == "signature" })
     }
 
+    var hasPublicKeyAttachment: Bool {
+        attachments.contains(where: { $0.treatAs == "publicKey" })
+    }
+
     var hasEncryptedMsgAttachment: Bool {
         attachments.contains(where: { $0.treatAs == "encryptedMsg" })
     }
