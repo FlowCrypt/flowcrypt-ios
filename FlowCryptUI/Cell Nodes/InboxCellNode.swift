@@ -24,7 +24,7 @@ public final class InboxCellNode: CellNode {
         public let badgeText: NSAttributedString?
         public let isEncrypted: Bool
         public let hasAttachment: Bool
-        public let hasPublicKey: Bool
+        public let onlyHavePublicKey: Bool
 
         public init(
             emailText: NSAttributedString,
@@ -35,7 +35,7 @@ public final class InboxCellNode: CellNode {
             badgeText: NSAttributedString?,
             isEncrypted: Bool,
             hasAttachment: Bool,
-            hasPublicKey: Bool
+            onlyHavePublicKey: Bool
         ) {
             self.emailText = emailText
             self.countText = countText
@@ -45,12 +45,12 @@ public final class InboxCellNode: CellNode {
             self.badgeText = badgeText
             self.isEncrypted = isEncrypted
             self.hasAttachment = hasAttachment
-            self.hasPublicKey = hasPublicKey
+            self.onlyHavePublicKey = onlyHavePublicKey
         }
     }
 
     private enum Constants {
-        static let iconSize: CGFloat = 25
+        static let iconSize: CGFloat = 20
         static let topBottomVerticalSpacing: CGFloat = 5
     }
 
@@ -203,8 +203,8 @@ public final class InboxCellNode: CellNode {
         let iconsSpec = ASStackLayoutSpec.horizontal()
         iconsSpec.spacing = 3
         iconsSpec.children = [
-            input.hasAttachment ? attachmentIcon : nil,
-            input.hasPublicKey ? publicKeyIcon : nil,
+            input.hasAttachment && !input.onlyHavePublicKey ? attachmentIcon : nil,
+            input.onlyHavePublicKey ? publicKeyIcon : nil,
             input.isEncrypted ? encryptedIcon : nil
         ].compactMap { $0 }
 

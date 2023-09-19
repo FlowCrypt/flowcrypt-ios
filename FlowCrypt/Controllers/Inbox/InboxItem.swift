@@ -22,6 +22,10 @@ struct InboxItem: Equatable {
         return messages.contains(where: \.attachments.isNotEmpty)
     }
 
+    var onlyHavePublicKey: Bool {
+        return messages.count == 1 && messages.contains(where: \.hasPublicKeyAttachment)
+    }
+
     var hasPublicKey: Bool {
         return messages.contains(where: \.hasPublicKeyAttachment)
     }

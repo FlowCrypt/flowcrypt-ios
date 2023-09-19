@@ -42,7 +42,7 @@ extension InboxCellNode.Input {
             badgeText: badge?.attributed(.regular(10), color: .white),
             isEncrypted: element.isEncrypted,
             hasAttachment: element.hasAttachment,
-            hasPublicKey: element.hasPublicKey
+            onlyHavePublicKey: element.onlyHavePublicKey
         )
     }
 }
