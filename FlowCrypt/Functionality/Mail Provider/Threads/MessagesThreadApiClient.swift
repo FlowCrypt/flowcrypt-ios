@@ -60,7 +60,15 @@ extension GmailService: MessagesThreadApiClient {
 
     func fetchThread(identifier: String, path: String) async throws -> MessageThread {
         let query = GTLRGmailQuery_UsersThreadsGet.query(withUserId: .me, identifier: identifier)
-        query.format = kGTLRGmailFormatMetadata
+        query.format = kGTLRGmailFormatFull
+        var thread = try await fetchThread(with: query, in: path)
+        for index in thread.messages.indices {
+            try await MessageHelper.parseAttachmentTypes(message: &thread.messages[index])
+        }
+        return thread
+    }
+
+    private func fetchThread(with query: GTLRGmailQuery_UsersThreadsGet, in path: String) async throws -> MessageThread {
         return try await Task.retrying {
             try await withCheckedThrowingContinuation { continuation in
                 self.gmailService.executeQuery(query) { _, data, error in
