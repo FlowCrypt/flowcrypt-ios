@@ -14,6 +14,22 @@ struct InboxItem: Equatable {
     let type: InboxItemType
     var isSelected = false
 
+    var isEncrypted: Bool {
+        return messages.contains(where: \.isPgp)
+    }
+
+    var hasAttachment: Bool {
+        return messages.contains(where: \.attachments.isNotEmpty)
+    }
+
+    var onlyHavePublicKey: Bool {
+        return hasPublicKey && messages.flatMap(\.attachments).count == messages.flatMap(\.publicKeyAttachments).count
+    }
+
+    var hasPublicKey: Bool {
+        return messages.contains(where: \.hasPublicKeyAttachment)
+    }
+
     enum InboxItemType: Equatable {
         case message(Identifier), thread(Identifier)
     }
