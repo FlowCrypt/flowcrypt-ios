@@ -21,6 +21,9 @@ final class ContactsListViewController: TableNodeViewController {
     private var recipients: [RecipientWithSortedPubKeys] = []
     private var selectedIndexPath: IndexPath?
     private let appContext: AppContext
+    private lazy var addButton = AddButtonNode { [weak self] in
+        self?.addButtonTap()
+    }
 
     init(
         appContext: AppContext,
@@ -47,6 +50,17 @@ final class ContactsListViewController: TableNodeViewController {
         super.viewWillAppear(animated)
         reloadContacts()
     }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        setupAddButton()
+    }
+
+    private func addButtonTap() {
+        let contactAddViewController = ContactAddViewController(appContext: appContext)
+        navigationController?.pushViewController(contactAddViewController, animated: true)
+    }
 }
 
 extension ContactsListViewController {
@@ -54,6 +68,16 @@ extension ContactsListViewController {
         node.delegate = self
         node.dataSource = self
         title = decorator.title
+        node.addSubnode(addButton)
+    }
+
+    private func setupAddButton() {
+        let offset: CGFloat = 16
+
+        addButton.frame.origin = CGPoint(
+            x: node.bounds.maxX - offset - .addButtonSize,
+            y: node.bounds.maxY - offset - .addButtonSize - safeAreaWindowInsets.bottom
+        )
     }
 
     private func reloadContacts() {
@@ -63,7 +87,7 @@ extension ContactsListViewController {
         selectedIndexPath = nil
     }
 
-    private func fetchContacts() {
+    func fetchContacts() {
         Task {
             do {
                 self.recipients = try await localContactsProvider.getAllRecipients()

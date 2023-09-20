@@ -1,5 +1,5 @@
 //
-//  ComposeButtonNode.swift
+//  AddButtonNode.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 01.10.2019.
@@ -8,7 +8,7 @@
 
 import AsyncDisplayKit
 
-public final class ComposeButtonNode: ASButtonNode {
+public final class AddButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
 
     public init(_ action: (() -> Void)?) {
@@ -18,6 +18,8 @@ public final class ComposeButtonNode: ASButtonNode {
         accessibilityIdentifier = "aid-compose-message-button"
         setTitle("+", with: .boldSystemFont(ofSize: 30), with: .white, for: .normal)
         addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
+        frame.size = CGSize(width: .addButtonSize, height: .addButtonSize)
+        cornerRadius = .addButtonSize / 2
     }
 
     @objc private func onButtonTap() {

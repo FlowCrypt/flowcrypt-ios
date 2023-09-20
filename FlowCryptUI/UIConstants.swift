@@ -48,4 +48,6 @@ public extension CGFloat {
     }
 
     static var threadLeftBorderWidth: CGFloat = 4
+
+    static var addButtonSize: CGFloat = 50
 }

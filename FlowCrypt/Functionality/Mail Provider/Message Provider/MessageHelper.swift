@@ -338,7 +338,7 @@ extension MessageHelper {
     private func fetchVerificationPubKeys(for sender: Recipient?, onlyLocal: Bool) async throws -> [String] {
         guard let sender else { return [] }
 
-        let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email, shouldUpdateLastUsed: false)
+        let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email, shouldUpdateLastUsed: false).map(\.armored)
         if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
 
         // try? because we may ignore update remote result

@@ -438,3 +438,10 @@
 "update_public_key" = "Update Public Key";
 "already_imported" = "Already imported";
 "public_key_import_warning" = "Manually importing Public Keys received over email can be dangerous.\nContact the sender to verify that the fingerprint matches.";
+
+// Add contact
+"add_contact_introduce" = "Add public keys of your contacts to send them encrypted messages.";
+"add_contact_public_key_import_warning" = "Manually importing Public Keys received over email can be dangerous.";
+"load_from_file" = "Load from a file";
+"no_pubkeys_found" = "No public keys found";
+"load_from_clipboard" = "Load from clipboard";

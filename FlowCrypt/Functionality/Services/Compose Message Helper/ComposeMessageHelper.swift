@@ -208,7 +208,7 @@ final class ComposeMessageHelper {
             let armoredPubkeys = try localContactsProvider.retrievePubKeys(
                 for: recipient.email,
                 shouldUpdateLastUsed: true
-            ).joined(separator: "\n")
+            ).map(\.armored).joined(separator: "\n")
             let parsed = try await core.parseKeys(armoredOrBinary: armoredPubkeys.data())
             recipientsWithKeys.append(
                 try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
