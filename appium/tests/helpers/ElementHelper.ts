@@ -94,9 +94,13 @@ class ElementHelper {
     await driver.sendKeys(['\b']); // backspace
   };
 
-  static async waitAndPasteString(element: WebdriverIO.Element, text: string) {
+  static async copyStringIntoClipboard(text: string) {
     const base64Encoded = Buffer.from(text).toString('base64');
     await driver.setClipboard(base64Encoded);
+  }
+
+  static async waitAndPasteString(element: WebdriverIO.Element, text: string) {
+    await ElementHelper.copyStringIntoClipboard(text);
     await browser.pause(100);
     await ElementHelper.waitAndClick(element);
     const pasteEl = await $('~Paste');

@@ -4,7 +4,8 @@ import ElementHelper from '../helpers/ElementHelper';
 const SELECTORS = {
   CONTACTS_HEADER: '~aid-navigation-item-contacts',
   BACK_BUTTON: '~aid-back-button',
-  EMPTY_CONTACTS_LIST: '~Empty list',
+  ADD_CONTACT_BUTTON: '~aid-add-contact-button',
+  CONTACT_ITEM: '~aid-contact-item',
   NO_PUBLIC_KEY_LABEL: '~(No public keys)', // Can't use `aid` identifier because string is generated dynamically depends on public key count
 };
 
@@ -17,12 +18,16 @@ class ContactsScreen extends BaseScreen {
     return $(SELECTORS.CONTACTS_HEADER);
   }
 
-  get backButton() {
-    return $(SELECTORS.BACK_BUTTON);
+  get contactItems() {
+    return $$(SELECTORS.CONTACT_ITEM);
   }
 
-  get emptyContactsList() {
-    return $(SELECTORS.EMPTY_CONTACTS_LIST);
+  get addContactButton() {
+    return $(SELECTORS.ADD_CONTACT_BUTTON);
+  }
+
+  get backButton() {
+    return $(SELECTORS.BACK_BUTTON);
   }
 
   get noPublicKeyLabel() {
@@ -38,7 +43,7 @@ class ContactsScreen extends BaseScreen {
   };
 
   checkEmptyList = async () => {
-    await (await this.emptyContactsList).waitForDisplayed();
+    expect((await this.contactItems).length).toBe(0);
   };
 
   clickBackButton = async () => {
@@ -57,6 +62,10 @@ class ContactsScreen extends BaseScreen {
 
   clickOnContact = async (name: string) => {
     await ElementHelper.waitAndClick(await this.contactName(name));
+  };
+
+  clickOnAddContactButton = async () => {
+    await ElementHelper.waitAndClick(await this.addContactButton);
   };
 
   checkContactOrder = async (email: string, order: number) => {

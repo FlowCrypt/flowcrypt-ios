@@ -20,7 +20,7 @@ class InboxViewController: ViewController {
     let threadOperationsApiClient: MessagesThreadOperationsApiClient
     let messageActionsHelper: MessageActionsHelper
     private let refreshControl = UIRefreshControl()
-    private lazy var composeButton = ComposeButtonNode { [weak self] in
+    private lazy var composeButton = AddButtonNode(identifier: "aid-compose-message-button") { [weak self] in
         self?.btnComposeTap()
     }
 
@@ -210,15 +210,11 @@ extension InboxViewController {
         if isSearch { return }
 
         let offset: CGFloat = 16
-        let size = CGSize(width: 50, height: 50)
 
-        composeButton.frame = CGRect(
-            x: node.bounds.maxX - offset - size.width,
-            y: node.bounds.maxY - offset - size.height - safeAreaWindowInsets.bottom,
-            width: size.width,
-            height: size.height
+        composeButton.frame.origin = CGPoint(
+            x: node.bounds.maxX - offset - .addButtonSize,
+            y: node.bounds.maxY - offset - .addButtonSize - safeAreaWindowInsets.bottom
         )
-        composeButton.cornerRadius = size.width / 2
     }
 }
 

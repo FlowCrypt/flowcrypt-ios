@@ -43,6 +43,7 @@ public final class ContactCellNode: CellNode {
         self.input = input
         super.init()
 
+        accessibilityIdentifier = "aid-contact-item"
         nameNode.attributedText = input.name
         emailNode.attributedText = input.email
         keysNode.attributedText = input.keys
