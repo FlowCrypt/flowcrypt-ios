@@ -1,5 +1,5 @@
 //
-//  ContatAddViewController.swift
+//  ContactAddViewController.swift
 //  FlowCrypt
 //
 //  Created by Ioan Moldovan on 9/18/23
