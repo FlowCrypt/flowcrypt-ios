@@ -11,11 +11,11 @@ import AsyncDisplayKit
 public final class AddButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
 
-    public init(_ action: (() -> Void)?) {
+    public init(identifier: String, _ action: (() -> Void)?) {
         super.init()
         onTap = action
         backgroundColor = .main
-        accessibilityIdentifier = "aid-compose-message-button"
+        accessibilityIdentifier = identifier
         setTitle("+", with: .boldSystemFont(ofSize: 30), with: .white, for: .normal)
         addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
         frame.size = CGSize(width: .addButtonSize, height: .addButtonSize)

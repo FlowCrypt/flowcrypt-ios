@@ -21,7 +21,7 @@ final class ContactsListViewController: TableNodeViewController {
     private var recipients: [RecipientWithSortedPubKeys] = []
     private var selectedIndexPath: IndexPath?
     private let appContext: AppContext
-    private lazy var addButton = AddButtonNode { [weak self] in
+    private lazy var addButton = AddButtonNode(identifier: "aid-add-contact-button") { [weak self] in
         self?.addButtonTap()
     }
 

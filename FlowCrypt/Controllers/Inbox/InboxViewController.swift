@@ -20,7 +20,7 @@ class InboxViewController: ViewController {
     let threadOperationsApiClient: MessagesThreadOperationsApiClient
     let messageActionsHelper: MessageActionsHelper
     private let refreshControl = UIRefreshControl()
-    private lazy var composeButton = AddButtonNode { [weak self] in
+    private lazy var composeButton = AddButtonNode(identifier: "aid-compose-message-button") { [weak self] in
         self?.btnComposeTap()
     }
 
