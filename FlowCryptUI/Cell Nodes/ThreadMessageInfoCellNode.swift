@@ -137,6 +137,8 @@ public final class ThreadMessageInfoCellNode: CellNode {
         let spacer = ASLayoutSpec()
         spacer.style.flexGrow = 1.0
 
+        signatureNode?.style.flexShrink = 1.0
+
         return ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 4,
