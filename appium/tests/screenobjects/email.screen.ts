@@ -29,6 +29,7 @@ const SELECTORS = {
   SENDER_EMAIL: '~aid-message-sender-label',
   ENCRYPTION_BADGE: '~aid-encryption-badge',
   SIGNATURE_BADGE: '~aid-signature-badge',
+  SIGNATURE_ADDITIONAL_TEXT_BADGE: '~aid-signature-additional-text',
   ATTACHMENT_TEXT_VIEW: '~aid-attachment-text-view',
   PUBLIC_KEY_LABEL: '~aid-public-key-label',
   FINGEPRINT_LABEL_VALUE: '~aid-fingerprint-value',
@@ -141,6 +142,10 @@ class EmailScreen extends BaseScreen {
 
   get signatureBadge() {
     return $(SELECTORS.SIGNATURE_BADGE);
+  }
+
+  get additionalSignatureTextBadge() {
+    return $(SELECTORS.SIGNATURE_ADDITIONAL_TEXT_BADGE);
   }
 
   get publicKeyLabel() {
@@ -348,8 +353,13 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.checkStaticText(await this.encryptionBadge, value);
   };
 
-  checkSignatureBadge = async (value: string) => {
+  checkSignatureBadge = async (value: string, additionalText?: string) => {
+    const signatureBadge = await this.signatureBadge;
     await ElementHelper.checkStaticText(await this.signatureBadge, value);
+    if (additionalText) {
+      await ElementHelper.waitAndClick(signatureBadge);
+      await ElementHelper.checkStaticText(await this.additionalSignatureTextBadge, additionalText);
+    }
   };
 
   checkAttachmentTextView = async (value: string) => {

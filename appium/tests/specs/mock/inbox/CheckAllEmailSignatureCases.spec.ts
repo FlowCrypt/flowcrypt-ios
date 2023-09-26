@@ -63,13 +63,13 @@ describe('INBOX: ', () => {
       await MailFolderScreen.clickOnEmailBySubject('Signed only message where the pubkey is not available');
 
       await EmailScreen.checkEncryptionBadge('not encrypted');
-      await EmailScreen.checkSignatureBadge('cannot verify signature: no public key A54D82BE1521D20E');
+      await EmailScreen.checkSignatureBadge('cannot verify signature', 'no public key A54D 82BE 1521 D20E');
       await EmailScreen.clickBackButton();
 
       // signed only message that was tempered during transit
       await MailFolderScreen.clickOnEmailBySubject('Signed only message that was tempered during transit');
       await EmailScreen.checkEncryptionBadge('not encrypted');
-      await EmailScreen.checkSignatureBadge('cannot verify signature: signed digest did not match');
+      await EmailScreen.checkSignatureBadge('cannot verify signature', 'signed digest did not match');
       await EmailScreen.clickBackButton();
 
       // partially signed only message

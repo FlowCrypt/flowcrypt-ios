@@ -80,11 +80,14 @@ extension ThreadMessageInfoCellNode.Input {
             return nil
         }
 
+        let components = signature.message.components(separatedBy: GeneralConstants.Global.signatureSeparator)
         return BadgeNode.Input(
             icon: signature.icon,
-            text: NSAttributedString.text(from: signature.message, style: .regular(12), color: .white),
+            text: components[safe: 0]?.attributed(.regular(12), color: .white),
+            additionalText: components[safe: 1]?.attributed(.regular(12), color: .white),
             color: signature.color,
-            textAccessibilityIdentifier: "aid-signature-badge"
+            textAccessibilityIdentifier: "aid-signature-badge",
+            additionalTextAccessibilityIdentifier: "aid-signature-additional-text"
         )
     }
 }

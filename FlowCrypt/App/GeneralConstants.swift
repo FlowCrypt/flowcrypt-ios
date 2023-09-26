@@ -23,6 +23,7 @@ enum GeneralConstants {
 
     enum Global {
         static let attachmentSizeLimit = 10_000_000
+        static let signatureSeparator = "______"
     }
 
     enum Mock {
