@@ -36,12 +36,13 @@ struct ProcessedMessage {
             case .unsigned:
                 return "message_not_signed".localized
             case let .error(message):
-                let signaturErrorString = "message_signature_verify_error".localized
-                return signaturErrorString + GeneralConstants.Global.signatureSeparator + message.lowercasingFirstLetter()
+                let signatureErrorString = "message_signature_verify_error".localized
+                return signatureErrorString + GeneralConstants.Global.signatureSeparator + message.lowercasingFirstLetter()
             case let .missingPubkey(longid):
-                let missigngPubKeyString = "message_missing_pubkey".localizeWithArguments(longid.spaced(every: 4))
-                let signaturErrorString = "message_signature_verify_error".localized
-                return signaturErrorString + GeneralConstants.Global.signatureSeparator + missigngPubKeyString
+//                let missingPubKeyString = "message_missing_pubkey".localizeWithArguments(longid.spaced(every: 4))
+                let signatureErrorString = "message_signature_verify_error".localized
+                let missingPubKeyString = "I have reviewed that this PR... (tick whichever items you personally focused on "
+                return signatureErrorString + GeneralConstants.Global.signatureSeparator + missingPubKeyString
             case .partial:
                 return "message_signature_partial".localized
             case .bad:

@@ -41,8 +41,20 @@ public final class BadgeNode: ASDisplayNode {
         return imageNode
     }()
 
-    private let textNode = ASTextNode2()
-    private let additionalTextNode = ASTextNode2()
+    private lazy var textNode: ASTextNode2 = {
+        let node = ASTextNode2()
+        node.attributedText = input.text
+        node.accessibilityIdentifier = input.textAccessibilityIdentifier
+        return node
+    }()
+
+    private lazy var additionalTextNode: ASTextNode2 = {
+        let node = ASTextNode2()
+        node.attributedText = input.additionalText
+        node.accessibilityIdentifier = input.additionalTextAccessibilityIdentifier
+        return node
+    }()
+
     private let input: BadgeNode.Input
     private var showAdditionalText = false
 
@@ -51,11 +63,6 @@ public final class BadgeNode: ASDisplayNode {
         super.init()
 
         automaticallyManagesSubnodes = true
-
-        textNode.attributedText = input.text
-        additionalTextNode.attributedText = input.additionalText
-        textNode.accessibilityIdentifier = input.textAccessibilityIdentifier
-        additionalTextNode.accessibilityIdentifier = input.additionalTextAccessibilityIdentifier
         backgroundColor = input.color
         cornerRadius = 4
         DispatchQueue.main.async {
@@ -70,10 +77,11 @@ public final class BadgeNode: ASDisplayNode {
         }
     }
 
-    override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
+    override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        additionalTextNode.style.maxWidth = ASDimension(unit: .points, value: constrainedSize.max.width - 16)
         let textSpec = ASStackLayoutSpec(
             direction: .vertical,
-            spacing: 5.0,
+            spacing: 3.0,
             justifyContent: .start,
             alignItems: .start,
             children: showAdditionalText ? [textNode, additionalTextNode] : [textNode]
