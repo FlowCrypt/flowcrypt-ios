@@ -27,7 +27,7 @@ struct ProcessedMessage {
     enum MessageSignature: Hashable {
         case good, goodMixed, unsigned, error(String), missingPubkey(String), partial, bad, pending
 
-        var message: String {
+        func message(email: String) -> String {
             switch self {
             case .good:
                 return "message_signed".localized
@@ -39,7 +39,7 @@ struct ProcessedMessage {
                 let signatureErrorString = "message_signature_verify_error".localized
                 return signatureErrorString + GeneralConstants.Global.signatureSeparator + message.lowercasingFirstLetter()
             case let .missingPubkey(longid):
-                let missingPubKeyString = "message_missing_pubkey".localizeWithArguments(longid.spaced(every: 4))
+                let missingPubKeyString = "message_missing_pubkey".localizeWithArguments(longid.spaced(every: 4), email)
                 let signatureErrorString = "message_signature_verify_error".localized
                 return signatureErrorString + GeneralConstants.Global.signatureSeparator + missingPubKeyString
             case .partial:
