@@ -79,8 +79,9 @@ extension ThreadMessageInfoCellNode.Input {
         guard let signature = input.processedMessage?.signature else {
             return nil
         }
+        let email = input.processedMessage?.message.sender?.email ?? ""
 
-        let components = signature.message.components(separatedBy: GeneralConstants.Global.signatureSeparator)
+        let components = signature.message(email: email).components(separatedBy: GeneralConstants.Global.signatureSeparator)
         return BadgeNode.Input(
             icon: signature.icon,
             text: components[safe: 0]?.attributed(.regular(12), color: .white),
