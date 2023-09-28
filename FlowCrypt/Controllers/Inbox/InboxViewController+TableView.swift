@@ -404,7 +404,8 @@ extension InboxViewController {
         guard let indexToUpdate = getUpdatedIndex(for: inboxItem) else {
             // Just reload data when index was not found in rare cases.
             // https://github.com/FlowCrypt/flowcrypt-ios/issues/2366
-            tableNode.reloadData()
+            state = .refresh
+            handleBeginFetching(nil)
             return
         }
 

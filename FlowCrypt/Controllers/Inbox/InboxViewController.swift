@@ -316,7 +316,7 @@ extension InboxViewController {
         handleBeginFetching(context)
     }
 
-    private func handleBeginFetching(_ context: ASBatchContext?) {
+    func handleBeginFetching(_ context: ASBatchContext?) {
         switch state {
         case .idle:
             fetchAndRenderEmails(context)
