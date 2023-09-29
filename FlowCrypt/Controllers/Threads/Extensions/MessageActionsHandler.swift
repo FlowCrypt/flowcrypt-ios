@@ -63,11 +63,7 @@ extension MessageActionsHandler where Self: UIViewController {
             actions = [.moveToTrash]
         default:
             actions = [.moveToTrash, .markAsUnread]
-            if inboxItem.isInbox {
-                actions.insert(.archive, at: 0)
-            } else if inboxItem.shouldShowMoveToInboxButton {
-                actions.insert(.moveToInbox, at: 0)
-            }
+            actions.insert(inboxItem.isInbox ? .archive : .moveToInbox, at: 0)
         }
 
         let items = [helpButton] + actions.map { createNavigationBarButton(action: $0) }
