@@ -59,6 +59,13 @@ extension InboxItem {
         labels.contains(.inbox)
     }
 
+    var isSentItem: Bool {
+        guard let firstMessageLabels = messages.first?.labels else {
+            return false
+        }
+        return !isInbox && !firstMessageLabels.contains(.sent)
+    }
+
     var isTrash: Bool {
         labels.contains(.trash)
     }

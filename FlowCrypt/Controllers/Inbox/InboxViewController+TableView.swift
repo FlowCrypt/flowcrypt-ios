@@ -417,7 +417,7 @@ extension InboxViewController {
         case .moveToTrash, .permanentlyDelete:
             removeMessage(at: indexToUpdate)
         case .archive, .moveToInbox:
-            if path.isEmpty { // no need to remove in 'All Mail' folder
+            if path.isEmpty || path == "SENT" { // no need to remove in 'All Mail' folder
                 updateMessage(
                     labelsToAdd: action == .moveToInbox ? [.inbox] : [],
                     labelsToRemove: action == .archive ? [.inbox] : [],
