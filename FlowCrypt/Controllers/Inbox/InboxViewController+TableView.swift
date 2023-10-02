@@ -417,15 +417,15 @@ extension InboxViewController {
         case .moveToTrash, .permanentlyDelete:
             removeMessage(at: indexToUpdate)
         case .archive, .moveToInbox:
-            if path.isEmpty { // no need to remove in 'All Mail' folder
+            if path == "INBOX" { // Remove messages in inbox folder
+                removeMessage(at: indexToUpdate)
+            } else {
                 updateMessage(
                     labelsToAdd: action == .moveToInbox ? [.inbox] : [],
                     labelsToRemove: action == .archive ? [.inbox] : [],
                     at: indexToUpdate,
                     resetThreadSelect: resetThreadSelect
                 )
-            } else {
-                removeMessage(at: indexToUpdate)
             }
         }
     }
