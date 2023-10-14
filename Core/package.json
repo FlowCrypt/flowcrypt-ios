@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/chai": "4.3.6",
     "@types/encoding-japanese": "^2.0.2",
-    "@types/node": "^20.8.3",
+    "@types/node": "^20.8.6",
     "@types/node-cleanup": "2.1.2",
     "@types/sanitize-html": "^2.9.1",
     "ava": "5.3.1",
