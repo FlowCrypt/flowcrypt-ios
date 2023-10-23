@@ -102,7 +102,7 @@ extension ComposeViewController {
                     showToast(
                         "draft_error".localizeWithArguments(error.errorMessage),
                         position: .top,
-                        view: self.navigationController?.navigationBar,
+                        view: self.navigationController?.navigationBar.superview,
                         maxHeightPercentage: 1.0
                     )
                 }
