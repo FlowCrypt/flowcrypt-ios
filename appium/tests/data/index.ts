@@ -1,4 +1,6 @@
 import * as path from 'path';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export const CommonData = {
   account: {
@@ -74,6 +76,10 @@ export const CommonData = {
   sender: {
     email: 'dmitry@flowcrypt.com',
     name: 'Dmitry at FlowCrypt',
+  },
+  compatibilitySender: {
+    email: 'flowcrypt.compatibility@gmail.com',
+    name: 'FlowCrypt Compatibility',
   },
   contact: {
     contactName: 'Dima Flowcrypt',

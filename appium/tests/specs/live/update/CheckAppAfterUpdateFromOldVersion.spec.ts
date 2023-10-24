@@ -22,9 +22,8 @@ describe('UPDATE: ', () => {
     const newAppPath = CommonData.appPath.new;
     const bundleId = CommonData.bundleId.id;
     const correctPassPhrase = CommonData.account.passPhrase;
-    const firstContactItemName = CommonData.contact.name;
-    const firstContactEmail = CommonData.contact.email;
-    const senderName = CommonData.sender.name;
+    const senderName = CommonData.compatibilitySender.name;
+    const senderEmail = CommonData.compatibilitySender.email;
     const emailSubject = CommonData.encryptedEmail.subject;
     const emailText = CommonData.encryptedEmail.message;
     const liveKeys = [ekmKeySamples.e2e, ekmKeySamples.flowcryptCompabilityOther, ekmKeySamples.flowcryptCompability];
@@ -43,6 +42,7 @@ describe('UPDATE: ', () => {
     //login and check user
     await SplashScreen.login();
     await SetupKeyScreen.setPassPhrase();
+    await browser.pause(5000);
     await MailFolderScreen.checkInboxScreen();
 
     await MailFolderScreen.clickSearchButton();
@@ -59,11 +59,11 @@ describe('UPDATE: ', () => {
     await SettingsScreen.checkSettingsScreen();
     await SettingsScreen.clickOnSettingItem('Contacts');
     await ContactScreen.checkContactScreen();
-    await ContactScreen.checkContact(firstContactItemName);
+    await ContactScreen.checkContact(senderName);
 
-    await ContactScreen.clickOnContact(firstContactItemName);
+    await ContactScreen.clickOnContact(senderName);
 
-    await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
+    await ContactPublicKeyScreen.checkPgpUserId(senderEmail);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
     await PublicKeyDetailsScreen.checkPublicKeyDetailsScreen();
@@ -84,19 +84,19 @@ describe('UPDATE: ', () => {
     await SettingsScreen.checkSettingsScreen();
     await SettingsScreen.clickOnSettingItem('Contacts');
     await ContactScreen.checkContactScreen();
-    await ContactScreen.checkContact(firstContactItemName);
+    await ContactScreen.checkContact(senderName);
 
-    await ContactScreen.clickOnContact(firstContactItemName);
+    await ContactScreen.clickOnContact(senderName);
 
-    await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
+    await ContactPublicKeyScreen.checkPgpUserId(senderEmail);
     await ContactPublicKeyScreen.checkPublicKeyDetailsNotEmpty();
     await ContactPublicKeyScreen.clickOnFingerPrint();
     await PublicKeyDetailsScreen.checkPublicKeyNotEmpty();
 
     await ContactPublicKeyScreen.clickBackButton();
-    await ContactPublicKeyScreen.checkPgpUserId(firstContactEmail);
+    await ContactPublicKeyScreen.checkPgpUserId(senderEmail);
     await ContactPublicKeyScreen.clickBackButton();
-    await ContactScreen.checkContact(firstContactItemName);
+    await ContactScreen.checkContact(senderName);
     await ContactScreen.clickBackButton();
     await SettingsScreen.checkSettingsScreen();
 
