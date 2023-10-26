@@ -210,10 +210,15 @@ final class ComposeMessageHelper {
                 shouldUpdateLastUsed: true
             ).map(\.armored).joined(separator: "\n")
             let parsed = try await core.parseKeys(armoredOrBinary: armoredPubkeys.data())
+            // Fetch public keys which are usableForEncryption
+            // https://github.com/FlowCrypt/flowcrypt-ios/issues/2396
+            // Also fetch revoked or expired keys so that we can display correct error message
+            // UI Test title: sending message to user with expired/revoked public key produces modal
+            let keyDetails = parsed.keyDetails.filter {
+                $0.usableForEncryption || $0.revoked || !$0.isNotExpired
+            }
             recipientsWithKeys.append(
-                // Fetch public keys which are usableForEncryption
-                // https://github.com/FlowCrypt/flowcrypt-ios/issues/2396
-                try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails.filter(\.usableForEncryption))
+                try RecipientWithSortedPubKeys(recipient, keyDetails: keyDetails)
             )
         }
         return recipientsWithKeys
