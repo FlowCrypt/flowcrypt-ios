@@ -211,7 +211,9 @@ final class ComposeMessageHelper {
             ).map(\.armored).joined(separator: "\n")
             let parsed = try await core.parseKeys(armoredOrBinary: armoredPubkeys.data())
             recipientsWithKeys.append(
-                try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
+                // Fetch public keys which are usableForEncryption
+                // https://github.com/FlowCrypt/flowcrypt-ios/issues/2396
+                try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails.filter(\.usableForEncryption))
             )
         }
         return recipientsWithKeys
