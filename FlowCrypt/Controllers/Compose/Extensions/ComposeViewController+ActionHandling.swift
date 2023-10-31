@@ -76,6 +76,10 @@ extension ComposeViewController {
             return decorator.recipientKeyFoundState
         case .expired:
             return decorator.recipientKeyExpiredState
+        case .unUsableForEncryption:
+            return decorator.recipientKeyUnUsuableForEncryptionState
+        case .unUsableForSigning:
+            return decorator.recipientKeyUnUsuableForSigningState
         case .revoked:
             return decorator.recipientKeyRevokedState
         case .empty:
@@ -163,7 +167,7 @@ extension ComposeViewController {
         switch recipient.state {
         case .idle:
             handleRecipientSelection(with: indexPath, type: type)
-        case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail:
+        case .keyFound, .keyExpired, .keyRevoked, .keyNotFound, .invalidEmail, .keyNotUsableForEncryption, .keyNotUsableForSigning:
             break
         case let .error(_, isRetryError):
             if isRetryError {

@@ -9,5 +9,5 @@
 import Foundation
 
 enum PubKeyState {
-    case active, expired, revoked, empty
+    case active, expired, revoked, empty, unUsableForEncryption, unUsableForSigning
 }

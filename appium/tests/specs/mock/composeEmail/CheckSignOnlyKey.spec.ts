@@ -8,21 +8,24 @@ import {
   SetupKeyScreen,
   SplashScreen,
 } from '../../../screenobjects/all-screens';
+import BaseScreen from 'tests/screenobjects/base.screen';
+import { CommonData } from 'tests/data';
 
 describe('COMPOSE EMAIL: ', () => {
   it('check encrypting message for user which contains sign only key', async () => {
     const mockApi = new MockApi();
 
-    const recipient = MockUserList.signOnlyKey;
+    const recipient = MockUserList.robot;
     const subject = 'sign only key subject';
     const message = 'sign only key message';
+    const unUsuableEncryptionPublicKeyError = CommonData.errors.unUsuableEncryptionPublicKey;
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com');
     mockApi.attesterConfig = {
       servedPubkeys: {
-        [MockUserList.signOnlyKey.email]: MockUserList.signOnlyKey.pub!,
+        [recipient.email]: recipient.pubSignOnly!,
       },
     };
 
@@ -32,21 +35,25 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickCreateEmail();
 
-      // Compose draft
+      // Stage1: Try to compose message with sign only key and check if proper error message is shown
       await NewMessageScreen.composeEmail(recipient.email, subject, message);
-      await NewMessageScreen.clickBackButton();
+      await NewMessageScreen.clickSendButton();
+      await BaseScreen.checkModalMessage(unUsuableEncryptionPublicKeyError);
+      await BaseScreen.clickOkButtonOnError();
 
-      // Go to draft folder
+      // Stage2: Now try to encrypt & send message for user which contains sign only key & normal key and check if message is sent correctly
+      mockApi.attesterConfig = {
+        servedPubkeys: {
+          [recipient.email]: `${recipient.pub!}\n${recipient.pubSignOnly}`,
+        },
+      };
+      await NewMessageScreen.deleteAddedRecipient(0);
+      await NewMessageScreen.setAddRecipient(recipient.email);
+      await NewMessageScreen.clickSendButton();
       await MenuBarScreen.clickMenuBtn();
-      await MenuBarScreen.clickDraftsButton();
-
-      // Open draft and see if draft is saved correctly
+      await MenuBarScreen.clickSentButton();
+      await MailFolderScreen.checkSentScreen();
       await MailFolderScreen.clickOnEmailBySubject(subject);
-      await NewMessageScreen.checkFilledComposeEmailInfo({
-        recipients: [recipient.name],
-        subject: subject,
-        message: message,
-      });
     });
   });
 });

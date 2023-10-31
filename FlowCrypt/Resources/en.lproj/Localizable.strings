@@ -124,6 +124,7 @@
 "compose_recipient_no_pub" = "One or more of your recipients are missing a public key (marked in gray).\n\nPlease ask them to share it with you, or ask them to also set up FlowCrypt.";
 "compose_recipient_revoked" = "One or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.";
 "compose_recipient_expired" = "One or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.";
+"compose_recipient_unusuable_for_encryption" = "One or more of your recipients have sign-only public keys (marked in yellow).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.";
 "compose_recipient_invalid_email" = "One or more of your recipients have invalid email address (marked in red)";
 "compose_password_weak" = "Password didn't comply with company policy, which requires at least:\n\n- one uppercase\n- one lowercase\n- one number\n- one special character eg &/#\"-'_%-@,;:!*()\n- 8 characters length\n\nPlease update the password and re-send.";
 "compose_password_passphrase_error" = "Please do not use your private key pass phrase as a password for this message.\n\nYou should come up with some other unique password that you can share with recipient.";
