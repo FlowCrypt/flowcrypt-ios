@@ -76,10 +76,10 @@ extension ComposeViewController {
             return decorator.recipientKeyFoundState
         case .expired:
             return decorator.recipientKeyExpiredState
-        case .unUsableForEncryption:
-            return decorator.recipientKeyUnUsuableForEncryptionState
-        case .unUsableForSigning:
-            return decorator.recipientKeyUnUsuableForSigningState
+        case .notUsableForEncryption:
+            return decorator.recipientKeyNotUsableForEncryptionState
+        case .notUsableForSigning:
+            return decorator.recipientKeyNotUsableForSigningState
         case .revoked:
             return decorator.recipientKeyRevokedState
         case .empty:

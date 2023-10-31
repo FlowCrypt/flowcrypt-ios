@@ -46,10 +46,10 @@ extension PubKey {
             return .revoked
         }
         if !usableForEncryption {
-            return .unUsableForEncryption
+            return .notUsableForEncryption
         }
         if !usableForSigning {
-            return .unUsableForSigning
+            return .notUsableForSigning
         }
         guard let expiresOn,
               expiresOn.timeIntervalSinceNow.sign == .minus

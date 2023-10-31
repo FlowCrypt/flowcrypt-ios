@@ -229,7 +229,7 @@ export const CommonData = {
       'Please ask them to share it with you, or ask them to also set up FlowCrypt.',
     wrongPassPhrase:
       'Error\n' + 'Could not compose message\n' + '\n' + 'This pass phrase did not match your signing private key.',
-    unUsuableEncryptionPublicKey:
+    notUsableEncryptionPublicKey:
       'Error\n' +
       'Could not compose message\n' +
       '\n' +

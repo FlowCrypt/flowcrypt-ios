@@ -18,7 +18,7 @@ describe('COMPOSE EMAIL: ', () => {
     const recipient = MockUserList.robot;
     const subject = 'sign only key subject';
     const message = 'sign only key message';
-    const unUsuableEncryptionPublicKeyError = CommonData.errors.unUsuableEncryptionPublicKey;
+    const notUsableEncryptionPublicKeyError = CommonData.errors.notUsableEncryptionPublicKey;
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
@@ -38,7 +38,7 @@ describe('COMPOSE EMAIL: ', () => {
       // Stage1: Try to compose message with sign only key and check if proper error message is shown
       await NewMessageScreen.composeEmail(recipient.email, subject, message);
       await NewMessageScreen.clickSendButton();
-      await BaseScreen.checkModalMessage(unUsuableEncryptionPublicKeyError);
+      await BaseScreen.checkModalMessage(notUsableEncryptionPublicKeyError);
       await BaseScreen.clickOkButtonOnError();
 
       // Stage2: Now try to encrypt & send message for user which contains sign only key & normal key and check if message is sent correctly
