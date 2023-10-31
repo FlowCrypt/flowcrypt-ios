@@ -37,6 +37,8 @@ public extension RecipientEmailsCellNode {
             case idle(StateContext)
             case keyFound(StateContext)
             case keyExpired(StateContext)
+            case keyNotUsableForEncryption(StateContext)
+            case keyNotUsableForSigning(StateContext)
             case keyRevoked(StateContext)
             case keyNotFound(StateContext)
             case invalidEmail(StateContext)
@@ -47,6 +49,8 @@ public extension RecipientEmailsCellNode {
                 case let .idle(context),
                      let .keyFound(context),
                      let .keyExpired(context),
+                     let .keyNotUsableForEncryption(context),
+                     let .keyNotUsableForSigning(context),
                      let .keyRevoked(context),
                      let .keyNotFound(context),
                      let .invalidEmail(context),
@@ -97,6 +101,12 @@ public extension RecipientEmailsCellNode {
                     case var .keyExpired(context):
                         context.isSelected = newValue
                         self = .keyExpired(context)
+                    case var .keyNotUsableForEncryption(context):
+                        context.isSelected = newValue
+                        self = .keyNotUsableForEncryption(context)
+                    case var .keyNotUsableForSigning(context):
+                        context.isSelected = newValue
+                        self = .keyNotUsableForSigning(context)
                     case var .keyRevoked(context):
                         context.isSelected = newValue
                         self = .keyRevoked(context)
@@ -118,6 +128,8 @@ public extension RecipientEmailsCellNode {
                 case .idle: return "idle"
                 case .keyFound: return "keyFound"
                 case .keyExpired: return "keyExpired"
+                case .keyNotUsableForEncryption: return "keyNotUsableForEncryption"
+                case .keyNotUsableForSigning: return "keyNotUsableForSigning"
                 case .keyRevoked: return "keyRevoked"
                 case .keyNotFound: return "keyNotFound"
                 case .invalidEmail: return "invalidEmail"

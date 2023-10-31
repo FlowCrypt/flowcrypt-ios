@@ -232,6 +232,9 @@ final class ComposeMessageHelper {
             throw MessageValidationError.noPubRecipients
         }
 
+        guard !contains(keyState: .notUsableForEncryption) else {
+            throw MessageValidationError.notUsableForEncryptionKeyRecipients
+        }
         guard !contains(keyState: .expired) else {
             throw MessageValidationError.expiredKeyRecipients
         }

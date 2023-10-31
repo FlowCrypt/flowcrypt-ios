@@ -4,6 +4,7 @@ export type MockUser = {
   pub?: string;
   pubNew?: string;
   pubOther?: string;
+  pubSignOnly?: string;
 };
 
 export type MockUserAlias = {
@@ -26,7 +27,8 @@ export type MockUserName =
   | 'expired'
   | 'revoked'
   | 'sunit'
-  | 'ioan';
+  | 'ioan'
+  | 'signOnlyKey';
 
 export const MockUserList: Record<MockUserName, MockUser> = {
   e2e: {
@@ -349,6 +351,25 @@ i0Bd7uutnnkRdCDPTvY5ub4ZDrHGAQCFIYc+Mp6zZdR1s/3kIpjrcg6mOtmj
 7Xox/a0FLLQsCQ==
 =+AGT
 -----END PGP PUBLIC KEY BLOCK-----`,
+    pubSignOnly: `-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQENBGU/ys4BCADvxv0RSWGalR4/xD+axR4tLlgUxaZWYg6Yd6s8xAWsZ/ygZCAW
+RaLplLa33uqbtuK2KLZMk8VdtmkmlAN3L9qMLwG9eVPlqjVAROsbJNTil5jBKeTI
+OaK98Lx2WML/J7lZHZZmlDWQsWBZUDKagQKn2uqVhI/A+uzDy0SLBZAqhgBBM44P
+iwJiIx0TJJ/CBEjZDJ8yzg+Aa0oEGh9uULwwA21wES9t8UZ/s0FxyPbpL3Th1ovN
+Cs3cpLPqkbOY6REMMAb5pdDLM0KtXjTST34bHNvFdDLhldY69XL1x7D4wvVvUFpc
+u7wrwnTqPgb8SC+GF3SH3nVJjQQ5Qnolc6VlABEBAAG0JUZsb3dDcnlwdCBSb2Jv
+dCA8cm9ib3RAZmxvd2NyeXB0LmNvbT6JAVQEEwEIAD4WIQTT3thevVcV8N5aA7W0
+KflQf/+crQUCZT/KzgIbAwUJB4YfXAULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAK
+CRC0KflQf/+crS8JCAC44zw7JkyYPjBW17NDdq+VeiD8qasO6qOzmt+y1wI0a/Ve
+cpk4jGZO5XoWGgRrDuppS4bPumXcMzQVO6z0YKain51j51Rah4WC0eS6fJU6+vLZ
+foKw1nKVgfp4ezwCZp3fL2/J66F3lqpM5Shj4u3kd9qeumh/CqJzgE1ld0Urk/lc
+9fkM4BBBf5enQ4mT0wHZfi/nawg7zfy7moJNqRkGp+TNmK3N4I0RMA+fPl4OPdv7
+H6xmypVPdCZmZCDBeGr3n9cR/qz5OEvrDUb0fTdvpf2NGYW0Mco5bprtOIvtRhje
+/s+m3hBbMBOaM6v+JFPtm8SjqjvLMuYVnvnXwyFp
+=kQbU
+-----END PGP PUBLIC KEY BLOCK-----
+`,
   },
   expired: {
     email: 'expired@flowcrypt.com',

@@ -27,6 +27,10 @@ struct PubKey {
     let algo: KeyAlgo?
     /// is key revoked
     let isRevoked: Bool
+    /// key usable for encryption
+    let usableForEncryption: Bool
+    /// key usable for signing
+    let usableForSigning: Bool
     /// user emails
     let emails: [String]
 }
@@ -38,8 +42,15 @@ extension PubKey {
     var fingerprint: String? { fingerprints.first }
 
     var keyState: PubKeyState {
-        guard !isRevoked else { return .revoked }
-
+        if isRevoked {
+            return .revoked
+        }
+        if !usableForEncryption {
+            return .notUsableForEncryption
+        }
+        if !usableForSigning {
+            return .notUsableForSigning
+        }
         guard let expiresOn,
               expiresOn.timeIntervalSinceNow.sign == .minus
         else { return .active }
@@ -65,6 +76,8 @@ extension PubKey {
             created: Date(timeIntervalSince1970: Double(keyDetails.created)),
             algo: keyDetails.algo,
             isRevoked: keyDetails.revoked,
+            usableForEncryption: keyDetails.usableForEncryption,
+            usableForSigning: keyDetails.usableForSigning,
             emails: keyDetails.pgpUserEmails
         )
     }
@@ -82,7 +95,9 @@ extension PubKey {
         self.created = object.created
 
         self.algo = nil
-        self.isRevoked = false
+        self.isRevoked = object.isRevoked
+        self.usableForEncryption = object.usableForEncryption
+        self.usableForSigning = object.usableForSigning
         self.emails = []
     }
 }

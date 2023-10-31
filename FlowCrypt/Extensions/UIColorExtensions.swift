@@ -48,6 +48,10 @@ public extension UIColor {
         )
     }
 
+    static var darkYellowColor: UIColor {
+        UIColor(r: 191, g: 181, b: 0)
+    }
+
     static var warningColor: UIColor {
         UIColor(r: 194, g: 126, b: 35)
     }
