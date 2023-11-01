@@ -22,6 +22,8 @@ final class PubKeyRealmObject: Object {
     @Persisted var fingerprints: List<String>
     @Persisted var created: Date?
     @Persisted var isRevoked = false
+    @Persisted var usableForEncryption = false
+    @Persisted var usableForSigning = false
 }
 
 extension PubKeyRealmObject {
@@ -32,7 +34,9 @@ extension PubKeyRealmObject {
                      longids: [String] = [],
                      fingerprints: [String] = [],
                      created: Date? = nil,
-                     isRevoked: Bool) throws {
+                     isRevoked: Bool,
+                     usableForEncryption: Bool,
+                     usableForSigning: Bool) throws {
         self.init()
 
         self.armored = armored
@@ -41,6 +45,8 @@ extension PubKeyRealmObject {
         self.expiresOn = expiresOn
         self.created = created
         self.isRevoked = isRevoked
+        self.usableForEncryption = usableForEncryption
+        self.usableForSigning = usableForSigning
 
         self.longids.append(objectsIn: longids)
         self.fingerprints.append(objectsIn: fingerprints)
@@ -63,7 +69,9 @@ extension PubKeyRealmObject {
             longids: key.longids,
             fingerprints: key.fingerprints,
             created: key.created,
-            isRevoked: key.isRevoked
+            isRevoked: key.isRevoked,
+            usableForEncryption: key.usableForEncryption,
+            usableForSigning: key.usableForSigning
         )
     }
 }
@@ -75,6 +83,9 @@ extension PubKeyRealmObject {
         self.lastChecked = key.lastChecked
         self.expiresOn = key.expiresOn
         self.created = key.created
+        self.isRevoked = key.isRevoked
+        self.usableForEncryption = key.usableForEncryption
+        self.usableForSigning = key.usableForSigning
 
         let longids = List<String>()
         longids.append(objectsIn: key.longids)

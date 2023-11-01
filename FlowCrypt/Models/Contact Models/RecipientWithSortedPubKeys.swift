@@ -48,6 +48,14 @@ extension RecipientWithSortedPubKeys {
                 guard !key1.isRevoked else { return false }
                 // check if key2 is revoked
                 guard !key2.isRevoked else { return true }
+                // check if key1 is usable for encryption
+                guard key1.usableForEncryption else { return false }
+                // check if key2 is usable for encryption
+                guard key2.usableForEncryption else { return true }
+                // check if key1 is usable for signing
+                guard key1.usableForSigning else { return false }
+                // check if key2 is usable for signing
+                guard key2.usableForSigning else { return true }
                 // check if key1 never expires
                 guard let expire1 = key1.expiresOn else { return true }
                 // check if key2 never expires

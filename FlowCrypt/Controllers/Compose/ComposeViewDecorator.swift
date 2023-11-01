@@ -15,6 +15,8 @@ struct ComposeViewDecorator {
     let recipientIdleState: RecipientState = .idle(idleStateContext)
     let recipientKeyFoundState: RecipientState = .keyFound(keyFoundStateContext)
     let recipientKeyExpiredState: RecipientState = .keyExpired(keyExpiredStateContext)
+    let recipientKeyNotUsableForEncryptionState: RecipientState = .keyNotUsableForEncryption(keyNotUsableForEncryptionStateContext)
+    let recipientKeyNotUsableForSigningState: RecipientState = .keyNotUsableForSigning(keyNotUsableForSigningStateContext)
     let recipientKeyRevokedState: RecipientState = .keyRevoked(keyRevokedStateContext)
     let recipientKeyNotFoundState: RecipientState = .keyNotFound(keyNotFoundStateContext)
     let recipientInvalidEmailState: RecipientState = .invalidEmail(invalidEmailStateContext)
@@ -259,6 +261,26 @@ extension ComposeViewDecorator {
             textColor: .white,
             image: nil,
             accessibilityIdentifier: "green"
+        )
+    }
+
+    private static var keyNotUsableForEncryptionStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .darkYellowColor,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil,
+            accessibilityIdentifier: "yellow"
+        )
+    }
+
+    private static var keyNotUsableForSigningStateContext: RecipientStateContext {
+        RecipientStateContext(
+            backgroundColor: .darkYellowColor,
+            borderColor: .borderColor,
+            textColor: .white,
+            image: nil,
+            accessibilityIdentifier: "yellow"
         )
     }
 
