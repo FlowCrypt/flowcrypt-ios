@@ -182,6 +182,24 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         ).data
     }
 
+    func sanitizeHtml(html: String) async throws -> String {
+        struct SanitizeHtmlRaw: Decodable {
+            let sanitizedHtml: String
+        }
+        let params: [String: String] = [
+            "html": html
+        ]
+
+        let parsed = try await call(
+            "sanitizeHtml",
+            params: params
+        )
+
+        let res = try parsed.json.decodeJson(as: SanitizeHtmlRaw.self)
+
+        return res.sanitizedHtml
+    }
+
     func parseDecryptMsg(
         encrypted: Data,
         keys: [Keypair],

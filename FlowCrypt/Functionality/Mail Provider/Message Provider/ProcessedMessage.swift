@@ -84,6 +84,8 @@ struct ProcessedMessage {
     var text: String
     let quote: String?
     let type: MessageType
+    // Couldn't use getter because when we tried to convert html to nsattributedstring in getter, it takes forever
+    let attributedMessage: NSAttributedString?
     var attachments: [MessageAttachment]
     var keyDetails: [KeyDetails] = []
     var signature: MessageSignature?
@@ -100,16 +102,22 @@ extension ProcessedMessage {
     ) {
         self.message = message
         (self.text, self.quote) = Self.parseQuote(text: text)
+        attributedMessage = String(text.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
         self.type = type
         self.attachments = attachments
         self.keyDetails = keyDetails
         self.signature = signature
     }
 
-    init(message: Message, keyDetails: [KeyDetails] = []) {
+    init(message: Message, keyDetails: [KeyDetails] = []) async throws {
         self.message = message
-        (self.text, self.quote) = Self.parseQuote(text: message.body.text)
+        var body = message.body.text
+        if let html = message.body.html {
+            body = try await Core.shared.sanitizeHtml(html: html)
+        }
+        (self.text, self.quote) = Self.parseQuote(text: body)
         self.type = .plain
+        attributedMessage = String(text.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
         self.attachments = message.attachments
         self.signature = .unsigned
         self.keyDetails = keyDetails
@@ -145,9 +153,10 @@ extension ProcessedMessage {
         [text, quote].compactMap { $0 }.joined(separator: "\n")
     }
 
-    var attributedMessage: NSAttributedString {
-        String(text.prefix(maxLength)).attributed(color: type.textColor)
-    }
+//
+//    var attributedMessage: NSAttributedString {
+//        String(text.prefix(maxLength)).attributed(color: type.textColor)
+//    }
 
     var attributedQuote: NSAttributedString? {
         guard let quote else { return nil }

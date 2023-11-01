@@ -48,6 +48,9 @@ export namespace NodeRequest {
   export type composeEmail = ComposeEmailPlain | ComposeEmailEncrypted;
   export type encryptMsg = { pubKeys: string[]; msgPwd?: string };
   export type encryptFile = { pubKeys: string[]; name: string };
+  export type sanitizeHtml = {
+    html: string;
+  };
   export type parseDecryptMsg = {
     keys: PrvKeyInfo[];
     msgPwd?: string;
@@ -152,6 +155,13 @@ export class ValidateInput {
       return v as NodeRequest.parseDecryptMsg;
     }
     throw new Error('Wrong request structure for NodeRequest.parseDecryptMsg');
+  };
+
+  public static sanitizeHtml = (v: unknown): NodeRequest.sanitizeHtml => {
+    if (isObj(v) && hasProp(v, 'html', 'string')) {
+      return v as NodeRequest.sanitizeHtml;
+    }
+    throw new Error('Wrong request structure for NodeRequest.sanitizeHtml');
   };
 
   public static encryptFile = (v: unknown): NodeRequest.encryptFile => {
