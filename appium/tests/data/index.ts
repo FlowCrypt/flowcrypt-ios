@@ -50,6 +50,11 @@ export const CommonData = {
     updatedText1: 'Some new text',
     text2: 'Another draft',
   },
+  remoteImageRendering: {
+    subject: 'Test remote images #2414',
+    sender: 'flowcrypt.compatibility@gmail.com',
+    message: 'Test remote images #2414',
+  },
   richTextMessage: {
     subject: 'Rich text message with attachment',
     sender: 'flowcrypt.compatibility@gmail.com',

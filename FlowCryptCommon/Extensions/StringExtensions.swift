@@ -96,7 +96,7 @@ public extension String {
 
     func convertToNSAttributedString(color: UIColor? = nil, font: UIFont = UIFont.systemFont(ofSize: 15, weight: .medium)) -> NSAttributedString? {
         // Convert \n to <br> because native HTML to NSAttributedString conversion in iOS doesn't handle \n
-        let formattedString = self.replacingOccurrences(of: "\n", with: "<br>")
+        let formattedString = "<meta charset=\"UTF-8\">\(self.replacingOccurrences(of: "\n", with: "<br>"))"
         let attributedString = try? NSAttributedString(
             data: formattedString.data(using: .utf8)!,
             options: [.documentType: NSAttributedString.DocumentType.html],

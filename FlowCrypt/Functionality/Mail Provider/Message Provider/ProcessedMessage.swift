@@ -102,7 +102,7 @@ extension ProcessedMessage {
     ) {
         self.message = message
         (self.text, self.quote) = Self.parseQuote(text: text)
-        attributedMessage = String(text.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
+        attributedMessage = String(self.text.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
         self.type = type
         self.attachments = attachments
         self.keyDetails = keyDetails
@@ -117,7 +117,7 @@ extension ProcessedMessage {
         }
         (self.text, self.quote) = Self.parseQuote(text: body)
         self.type = .plain
-        attributedMessage = String(text.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
+        attributedMessage = String(self.text.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
         self.attachments = message.attachments
         self.signature = .unsigned
         self.keyDetails = keyDetails
