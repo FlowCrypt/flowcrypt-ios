@@ -29,7 +29,7 @@ extension ComposeViewController: ASTableDelegate, ASTableDataSource {
         case (.main, .recipients(.cc)), (.main, .recipients(.bcc)):
             return !shouldShowEmailRecipientsLabel && shouldShowAllRecipientTypes ? 1 : 0
         case (.main, .password):
-            return isMessagePasswordSupported && contextToSend.hasRecipientsWithoutPubKey ? 1 : 0
+            return isMessagePasswordSupported && contextToSend.hasRecipientWithInvalidKey ? 1 : 0
         case (.main, .compose):
             return ComposePart.allCases.count
         case (.main, .attachments):

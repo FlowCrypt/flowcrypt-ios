@@ -195,8 +195,8 @@ class NewMessageScreen extends BaseScreen {
     }
     await ElementHelper.waitElementInvisible(await this.recipientSpinner);
     await this.showRecipientLabelIfNeeded();
-    await this.setComposeSecurityMessage(message);
     await this.setSubject(subject);
+    await this.setComposeSecurityMessage(message);
   };
 
   changeFromEmail = async (email: string) => {

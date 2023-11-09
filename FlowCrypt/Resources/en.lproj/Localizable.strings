@@ -137,7 +137,7 @@
 "compose_sign_passphrase_required" = "Passphrase is required for message signing.";
 "compose_sign_passphrase_no_match" = "This pass phrase did not match your signing private key.";
 "compose_sign_no_keys" = "Cannot sign message: none of your %@ account keys can be used for sending address %@";
-"compose_password_placeholder" = "Tap to add password for recipients who don't have encryption set up.";
+"compose_password_placeholder" = "Tap to add password for recipients without encryption or those with an invalid public key.";
 "compose_password_set_message" = "Web portal password added";
 "compose_password_modal_title" = "Set web portal password";
 "compose_password_modal_message" = "The recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)\n\nPassword should include:\n- one uppercase\n- one lowercase\n- one number\n- one special character eg &/#\"-'_%-@,;:!*()\n- min 8 characters length";

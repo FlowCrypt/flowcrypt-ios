@@ -46,7 +46,7 @@ describe('COMPOSE EMAIL: ', () => {
 
       await BaseScreen.checkModalMessage(expiredPublicKeyError);
 
-      await BaseScreen.clickOkButtonOnError();
+      await BaseScreen.clickCancelButton();
       await NewMessageScreen.clickBackButton();
       await MailFolderScreen.checkInboxScreen();
 
