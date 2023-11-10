@@ -204,7 +204,7 @@ export const CommonData = {
     password: 'abcABC1*',
     modalMessage: `Set web portal password\nThe recipients will receive a link to read your message on a web portal, where they will need to enter this password.\n\nYou are responsible for sharing this password with recipients (use other medium to share the password - not email)\n\nPassword should include: - one uppercase - one lowercase - one number - one special character eg &/#"-'_%-@,;:!*() - min 8 characters length`,
     plainMessageModal:
-      'Message Encryption\n One or more of your recipients are missing a public key (marked in gray).\n\nPlease ask them to share it with you, or ask them to also set up FlowCrypt.',
+      'Message Encryption\nOne or more of your recipients are missing a public key (marked in gray).\n\nPlease ask them to share it with you, or ask them to also set up FlowCrypt.',
     emptyPasswordMessage: 'Tap to add password for recipients without encryption or those with an invalid public key.',
     addedPasswordMessage: 'Web portal password added',
     weakPasswordMessage:
@@ -222,9 +222,9 @@ export const CommonData = {
   errors: {
     wrongPassPhrase:
       'Error\n' + 'Could not compose message\n' + '\n' + 'This pass phrase did not match your signing private key.',
-    notUsableEncryptionPublicKey: `Message Encryption\n One or more of your recipients have sign-only public keys (marked in yellow).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.`,
-    expiredPublicKey: `Message Encryption\n One or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.`,
-    revokedPublicKey: `Message Encryption\n One or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.`,
+    notUsableEncryptionPublicKey: `Message Encryption\nOne or more of your recipients have sign-only public keys (marked in yellow).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.`,
+    expiredPublicKey: `Message Encryption\nOne or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.`,
+    revokedPublicKey: `Message Encryption\nOne or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.`,
     wrongPassPhraseOnLogin: 'Error\n' + 'Wrong pass phrase, please try again',
     attachmentDecryptKeyMismatchError:
       'Error decrypting attachment\n' +
