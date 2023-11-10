@@ -101,7 +101,7 @@ extension ComposeViewController {
                 self?.setMessagePassword()
             }
         )
-        sendUnEncryptedAction.accessibilityIdentifier = "aid-compose-send-message-password"
+        sendPasswordProtectedAction.accessibilityIdentifier = "aid-compose-send-message-password"
         let cancelAction = UIAlertAction(
             title: "cancel".localized,
             style: .cancel
