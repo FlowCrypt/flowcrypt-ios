@@ -24,7 +24,7 @@
     "@types/jest": "^29.5.5",
     "@types/mailparser": "^3.4.1",
     "@types/node": "^20.8.10",
-    "@wdio/allure-reporter": "^8.20.0",
+    "@wdio/allure-reporter": "^8.21.0",
     "@wdio/appium-service": "^8.21.0",
     "@wdio/cli": "^8.20.5",
     "@wdio/jasmine-framework": "^8.16.10",
