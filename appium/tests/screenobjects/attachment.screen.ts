@@ -3,7 +3,7 @@ import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
-  SYSTEM_BACK_BTN: '~Back',
+  SYSTEM_BACK_BTN: '~Browse', // Back button is named to Browse
   SAVE_BTN: '~aid-save-attachment-to-device',
   CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController
 };
