@@ -107,7 +107,9 @@ extension ComposeViewController {
             style: .cancel
         )
         cancelAction.accessibilityIdentifier = "aid-cancel-button"
-        alert.addAction(sendUnEncryptedAction)
+        if !Bundle.isEnterprise {
+            alert.addAction(sendUnEncryptedAction) // Disallow sending plain message for enterprise
+        }
         if isMessagePasswordSupported {
             alert.addAction(sendPasswordProtectedAction)
         }

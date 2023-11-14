@@ -395,6 +395,10 @@ class NewMessageScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.sendButton);
   };
 
+  checkSendPlainMessageButtonNotPresent = async () => {
+    await ElementHelper.waitElementInvisible(await this.sendPlainMessageButton);
+  };
+
   clickSendPlainMessageButton = async () => {
     await ElementHelper.waitAndClick(await this.sendPlainMessageButton);
   };
