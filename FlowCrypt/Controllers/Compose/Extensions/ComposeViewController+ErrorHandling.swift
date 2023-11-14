@@ -66,17 +66,11 @@ extension ComposeViewController {
         }
 
         switch error {
-        case MessageValidationError.noPubRecipients:
-            guard isMessagePasswordSupported else {
-                showPlainMessageConfirmationAlert()
-                return
-            }
-
-            if Bundle.isEnterprise {
-                setMessagePassword()
-            } else {
-                showPlainMessageAlert()
-            }
+        case MessageValidationError.noPubRecipients,
+             MessageValidationError.revokedKeyRecipients,
+             MessageValidationError.expiredKeyRecipients,
+             MessageValidationError.notUsableForEncryptionKeyRecipients:
+            processSendMessageWithNoValidKeys(error: error)
         case MessageValidationError.notUniquePassword,
              MessageValidationError.subjectContainsPassword,
              MessageValidationError.weakPassword:
@@ -86,26 +80,41 @@ extension ComposeViewController {
         }
     }
 
-    private func showPlainMessageConfirmationAlert() {
-        showAlertWithAction(
+    private func processSendMessageWithNoValidKeys(error: Error) {
+        let alert = UIAlertController(
             title: "compose_message_encryption".localized,
-            message: "compose_plain_message_confirmation".localized,
-            actionButtonTitle: "compose_send_unencrypted".localized,
-            actionAccessibilityIdentifier: "aid-compose-send-plain",
-            onAction: { [weak self] _ in self?.handleSendTap(shouldSendPlainMessage: true) }
+            message: error.errorMessage,
+            preferredStyle: .alert
         )
-    }
-
-    private func showPlainMessageAlert() {
-        showAlertWithAction(
-            title: "compose_message_encryption".localized,
-            message: "compose_plain_message_alert".localized,
-            cancelButtonTitle: "compose_add_message_password".localized,
-            actionButtonTitle: "compose_send_unencrypted".localized,
-            actionAccessibilityIdentifier: "aid-compose-send-plain",
-            onAction: { [weak self] _ in self?.handleSendTap(shouldSendPlainMessage: true) },
-            onCancel: { [weak self] _ in self?.setMessagePassword() }
+        let sendUnEncryptedAction = UIAlertAction(
+            title: "compose_send_unencrypted".localized,
+            style: .default,
+            handler: { [weak self] _ in
+                self?.handleSendTap(shouldSendPlainMessage: true)
+            }
         )
+        sendUnEncryptedAction.accessibilityIdentifier = "aid-compose-send-plain"
+        let sendPasswordProtectedAction = UIAlertAction(
+            title: "compose_add_message_password".localized,
+            style: .default,
+            handler: { [weak self] _ in
+                self?.setMessagePassword()
+            }
+        )
+        sendPasswordProtectedAction.accessibilityIdentifier = "aid-compose-send-message-password"
+        let cancelAction = UIAlertAction(
+            title: "cancel".localized,
+            style: .cancel
+        )
+        cancelAction.accessibilityIdentifier = "aid-cancel-button"
+        if !Bundle.isEnterprise {
+            alert.addAction(sendUnEncryptedAction) // Disallow sending plain message for enterprise
+        }
+        if isMessagePasswordSupported {
+            alert.addAction(sendPasswordProtectedAction)
+        }
+        alert.addAction(cancelAction)
+        present(alert, animated: true, completion: nil)
     }
 
     private func reEnableSendButton() {

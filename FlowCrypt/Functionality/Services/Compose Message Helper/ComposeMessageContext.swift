@@ -55,6 +55,10 @@ extension ComposeMessageContext {
         recipients.contains(where: { $0.keyState == .active })
     }
 
+    var hasRecipientWithInvalidKey: Bool {
+        recipients.contains(where: { $0.keyState != .active })
+    }
+
     var hasRecipientsWithoutPubKey: Bool {
         recipients.contains(where: { $0.keyState == .empty })
     }

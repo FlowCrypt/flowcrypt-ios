@@ -59,8 +59,12 @@ class TouchHelper {
         pressOptions = { x: width, y: height };
         break;
     }
+    await TouchHelper.tapScreenAt(pressOptions);
+  };
+
+  static tapScreenAt = async ({ x, y }: { x: number; y: number }) => {
     await driver.touchPerform([
-      { action: 'press', options: pressOptions },
+      { action: 'press', options: { x, y } },
       { action: 'wait', options: { ms: 100 } },
       { action: 'release', options: {} },
     ]);

@@ -39,7 +39,7 @@ describe('COMPOSE EMAIL: ', () => {
       await NewMessageScreen.composeEmail(recipient.email, subject, message);
       await NewMessageScreen.clickSendButton();
       await BaseScreen.checkModalMessage(notUsableEncryptionPublicKeyError);
-      await BaseScreen.clickOkButtonOnError();
+      await BaseScreen.clickCancelButton();
 
       // Stage2: Now try to encrypt & send message for user which contains sign only key & normal key and check if message is sent correctly
       mockApi.attesterConfig = {
