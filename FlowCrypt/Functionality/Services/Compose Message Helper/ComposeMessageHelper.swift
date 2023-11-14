@@ -232,13 +232,13 @@ final class ComposeMessageHelper {
             throw MessageValidationError.noPubRecipients
         }
 
-        guard !contains(keyState: .notUsableForEncryption) else {
+        guard hasMessagePassword || !contains(keyState: .notUsableForEncryption) else {
             throw MessageValidationError.notUsableForEncryptionKeyRecipients
         }
-        guard !contains(keyState: .expired) else {
+        guard hasMessagePassword || !contains(keyState: .expired) else {
             throw MessageValidationError.expiredKeyRecipients
         }
-        guard !contains(keyState: .revoked) else {
+        guard hasMessagePassword || !contains(keyState: .revoked) else {
             throw MessageValidationError.revokedKeyRecipients
         }
     }

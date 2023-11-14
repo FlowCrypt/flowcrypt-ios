@@ -177,6 +177,10 @@ class NewMessageScreen extends BaseScreen {
   setComposeSecurityMessage = async (message: string) => {
     await browser.pause(500);
     const el = await this.composeSecurityMessage;
+    // click message field so that message field is focused
+    // https://github.com/FlowCrypt/flowcrypt-ios/pull/2429#discussion_r1389511041
+    const location = await el.getLocation();
+    await TouchHelper.tapScreenAt({ x: location.x + 5, y: location.y + 5 });
     await ElementHelper.clearInput(el);
     await ElementHelper.waitClickAndType(el, message);
   };
@@ -389,6 +393,10 @@ class NewMessageScreen extends BaseScreen {
 
   clickSendButton = async () => {
     await ElementHelper.waitAndClick(await this.sendButton);
+  };
+
+  checkSendPlainMessageButtonNotPresent = async () => {
+    await ElementHelper.waitElementInvisible(await this.sendPlainMessageButton);
   };
 
   clickSendPlainMessageButton = async () => {
