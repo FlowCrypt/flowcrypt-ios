@@ -7,15 +7,16 @@
 //
 
 import AsyncDisplayKit
+import WebKit
 
 public final class MessageTextSubjectNode: CellNode {
     public struct Input {
-        let message: NSAttributedString?
+        let message: String?
         let quote: NSAttributedString?
         let index: Int
         let isEncrypted: Bool
 
-        public init(message: NSAttributedString?, quote: NSAttributedString?, index: Int, isEncrypted: Bool) {
+        public init(message: String?, quote: NSAttributedString?, index: Int, isEncrypted: Bool) {
             self.message = message
             self.quote = quote
             self.index = index
@@ -25,7 +26,7 @@ public final class MessageTextSubjectNode: CellNode {
 
     private let input: MessageTextSubjectNode.Input
 
-    private let messageNode = ASEditableTextNode()
+    private let messageNode = ASDisplayNode()
     private let quoteNode = ASEditableTextNode()
 
     private var shouldShowQuote = false
@@ -50,7 +51,12 @@ public final class MessageTextSubjectNode: CellNode {
 
         super.init()
 
-        setupTextNode(messageNode, text: input.message, accessibilityIdentifier: "aid-message-\(input.index)")
+        DispatchQueue.main.async {
+            let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: 300, height: 300))
+            webView.loadHTMLString(input.message ?? "", baseURL: nil)
+            self.messageNode.view.addSubview(webView)
+        }
+        messageNode.accessibilityIdentifier = "aid-message-\(input.index)"
 
         if let quote = input.quote {
             setupTextNode(quoteNode, text: quote, accessibilityIdentifier: "aid-message-\(input.index)-quote")
