@@ -86,9 +86,13 @@ class ElementHelper {
     }
 
     await this.waitAndClick(element);
-    await this.waitAndClick(element);
-
+    await browser.pause(200);
     const selectAllButton = await $('~Select All');
+    // Check if 'Select All' is not displayed, if so, click the element again.
+    if (!(await selectAllButton.isDisplayed())) {
+      await this.waitAndClick(element);
+    }
+
     await this.waitAndClick(selectAllButton);
 
     await driver.sendKeys(['\b']); // backspace

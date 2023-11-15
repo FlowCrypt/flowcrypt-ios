@@ -3,7 +3,6 @@ import ElementHelper from '../helpers/ElementHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
-  SYSTEM_BACK_BTN: '~Back',
   SAVE_BTN: '~aid-save-attachment-to-device',
   CANCEL_BTN: '~Cancel', // can't change aid for UIDocumentPickerViewController
 };
@@ -15,10 +14,6 @@ class AttachmentScreen extends BaseScreen {
 
   get backButton() {
     return $(SELECTORS.BACK_BTN);
-  }
-
-  get systemBackButton() {
-    return $(SELECTORS.SYSTEM_BACK_BTN);
   }
 
   get saveButton() {
@@ -42,7 +37,17 @@ class AttachmentScreen extends BaseScreen {
   clickSystemBackButton = async () => {
     // Due to a issue in SemaphoreCI environment, a single back button click does not yield the expected behavior.
     // Therefore, we have implemented a mechanism to continuously click the system back button until cancel button appears.
-    await ElementHelper.clickUntilExpectedElementAppears(await this.systemBackButton, await this.cancelButton, 10);
+    await browser.pause(1000);
+    let systemBackButton = await $('~Back');
+    if (!(await systemBackButton.isDisplayed())) {
+      const browseButton = await $('~Browse'); // Back button is renamed to Browse in newer iOS versions
+      if (await browseButton.isDisplayed()) {
+        systemBackButton = browseButton;
+      } else {
+        throw new Error('System backup button is not displayed either using Back or Browse selector');
+      }
+    }
+    await ElementHelper.clickUntilExpectedElementAppears(systemBackButton, await this.cancelButton, 10);
   };
 
   clickCancelButton = async () => {
