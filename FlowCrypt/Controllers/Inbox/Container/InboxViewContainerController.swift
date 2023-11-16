@@ -64,6 +64,12 @@ final class InboxViewContainerController: TableNodeViewController {
         super.viewDidLoad()
         fetchSendAsList()
         fetchInboxFolder()
+        setAppDelegateEKMVCHelper()
+    }
+
+    private func setAppDelegateEKMVCHelper() {
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        appDelegate?.setUpEKMVcHelper(ekmVcHelper: ekmVcHelper)
     }
 
     private func fetchSendAsList() {
@@ -120,7 +126,7 @@ final class InboxViewContainerController: TableNodeViewController {
                         viewModel: input
                     )
                     navigationController?.setViewControllers([inboxViewController], animated: false)
-                    ekmVcHelper.refreshKeysFromEKMIfNeeded(in: inboxViewController)
+                    ekmVcHelper.refreshKeysFromEKMIfNeeded(in: inboxViewController, forceRefresh: true)
                 } catch {
                     showAlert(message: error.errorMessage)
                 }
