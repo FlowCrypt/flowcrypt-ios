@@ -11,6 +11,7 @@ import GTMAppAuth
 class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSessionContainer {
     var blurViewController: BlurViewController?
     var googleAuthSession: OIDExternalUserAgentSession?
+    var ekmVcHelper: EKMVcHelper?
     let window = UIWindow(frame: UIScreen.main.bounds)
     private var waitingForProtectedDataCancellable = Set<AnyCancellable>()
 
@@ -42,6 +43,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, AppDelegateGoogleSessionC
         googleAuthSession = nil
         return true
     }
+
+    func setUpEKMVcHelper(ekmVcHelper: EKMVcHelper) {
+        self.ekmVcHelper = ekmVcHelper
+    }
 }
 
 extension AppDelegate: BlursTopView {
@@ -58,5 +63,21 @@ extension AppDelegate: BlursTopView {
         if isBlurViewShowing() {
             removeBlurView()
         }
+        if let topViewController = UIApplication.topViewController() {
+            ekmVcHelper?.refreshKeysFromEKMIfNeeded(in: topViewController)
+        }
+    }
+}
+
+extension UIApplication {
+    class func topViewController(base: UIViewController? = UIApplication.shared.currentWindow?.rootViewController) -> UIViewController? {
+        if let nav = base as? UINavigationController {
+            return topViewController(base: nav.visibleViewController)
+        } else if let tab = base as? UITabBarController, let selected = tab.selectedViewController {
+            return topViewController(base: selected)
+        } else if let presented = base?.presentedViewController {
+            return topViewController(base: presented)
+        }
+        return base
     }
 }
