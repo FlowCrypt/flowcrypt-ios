@@ -9,13 +9,14 @@
 import UIKit
 
 protocol EKMVcHelperType {
-    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController)
+    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController, forceRefresh: Bool)
 }
 
 final class EKMVcHelper: EKMVcHelperType {
 
     private let appContext: AppContextWithUser
     private let keyMethods: KeyMethodsType
+    private let LAST_EKM_UPDATE_TIME_KEY = "LAST_EKM_UPDATE_TIME"
 
     private let alertsFactory: AlertsFactory
 
@@ -25,9 +26,17 @@ final class EKMVcHelper: EKMVcHelperType {
         self.alertsFactory = AlertsFactory(encryptedStorage: appContext.encryptedStorage)
     }
 
-    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController) {
+    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController, forceRefresh: Bool = false) {
         Task {
             do {
+                let lastUpdateTime = UserDefaults.standard.object(forKey: LAST_EKM_UPDATE_TIME_KEY) as? Date
+
+                // Only proceed if last update time is more than 8 hours ago or not set
+                // Or force refresh when forceRefresh is set
+                guard lastUpdateTime == nil || lastUpdateTime!.addingTimeInterval(8 * 60 * 60) < Date() || forceRefresh else {
+                    return
+                }
+
                 let configuration = try await appContext.clientConfigurationProvider.configuration
                 guard try configuration.checkUsesEKM() == .usesEKM else {
                     return
@@ -41,6 +50,8 @@ final class EKMVcHelper: EKMVcHelperType {
                 try removeLocalKeysIfNeeded(from: fetchedKeys, localKeys: localKeys)
 
                 let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
+                // Set last update time
+                UserDefaults.standard.set(Date(), forKey: LAST_EKM_UPDATE_TIME_KEY)
                 guard keysToUpdate.isNotEmpty else {
                     return
                 }
