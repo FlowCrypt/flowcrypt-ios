@@ -71,7 +71,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             guard row > 1 else {
                 return MessageTextSubjectNode(
                     input: .init(
-                        message: processedMessage.text,
+                        message: processedMessage.attributedMessage,
                         quote: processedMessage.attributedQuote,
                         index: messageIndex,
                         isEncrypted: processedMessage.type == .encrypted
