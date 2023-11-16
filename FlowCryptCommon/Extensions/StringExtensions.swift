@@ -94,28 +94,12 @@ public extension String {
         }
     }
 
-    func convertToNSAttributedString(color: UIColor? = nil, font: UIFont = UIFont.systemFont(ofSize: 15, weight: .medium)) -> NSAttributedString? {
-        // Convert \n to <br> because native HTML to NSAttributedString conversion in iOS doesn't handle \n
-        let formattedString = "<meta charset=\"UTF-8\">\(self.replacingOccurrences(of: "\n", with: "<br>"))"
-        let attributedString = try? NSAttributedString(
-            data: formattedString.data(using: .utf8)!,
+    func removingHtmlTags() -> String? {
+        try? NSAttributedString(
+            data: self.data(using: .utf8)!,
             options: [.documentType: NSAttributedString.DocumentType.html],
             documentAttributes: nil
-        )
-        if let color, let attributedString {
-            let mutableAttributedString = NSMutableAttributedString(attributedString: attributedString)
-            let attributes: [NSAttributedString.Key: Any] = [
-                .font: font,
-                .foregroundColor: color
-            ]
-            mutableAttributedString.addAttributes(attributes, range: NSRange(location: 0, length: attributedString.length))
-            return NSAttributedString(attributedString: mutableAttributedString)
-        }
-        return attributedString
-    }
-
-    func removingHtmlTags() -> String? {
-        convertToNSAttributedString()?.string
+        ).string
     }
 
     func isHTMLString() -> Bool {

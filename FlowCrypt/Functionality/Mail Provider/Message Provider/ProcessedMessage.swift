@@ -85,10 +85,6 @@ struct ProcessedMessage {
     var text: String
     let quote: String?
     let type: MessageType
-    // Couldn't use getter because when we tried to convert html to nsattributedstring in getter
-    // it takes forever because we use this getter in table node
-    let attributedMessage: NSAttributedString?
-    var attributedQuote: NSAttributedString?
     var attachments: [MessageAttachment]
     var keyDetails: [KeyDetails] = []
     var signature: MessageSignature?
@@ -105,10 +101,6 @@ extension ProcessedMessage {
     ) {
         self.message = message
         (self.text, self.quote) = Self.parseQuote(text: text)
-        attributedMessage = String(self.text.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
-        if let quote {
-            attributedQuote = String(quote.prefix(maxLength)).attributed(color: type.textColor.withAlphaComponent(0.8))
-        }
         self.type = type
         self.attachments = attachments
         self.keyDetails = keyDetails
@@ -117,22 +109,13 @@ extension ProcessedMessage {
 
     init(message: Message, keyDetails: [KeyDetails] = []) async throws {
         self.message = message
-        var body = message.body.text
         self.type = .plain
         if let html = message.body.html {
-            // First try to parse quote and main content because classnames will be cleared after sanitizeHtml call
-            let (mainContent, quotedContent) = Self.parseHtmlQuote(html: html)
-            self.text = try await Core.shared.sanitizeHtml(html: mainContent)
-            if let quotedContent {
-                self.quote = try await Core.shared.sanitizeHtml(html: quotedContent)
-                attributedQuote = String(quote!.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
-            } else {
-                self.quote = nil
-            }
+            self.text = try await Core.shared.sanitizeHtml(html: html)
+            self.quote = nil
         } else {
-            (self.text, self.quote) = Self.parseQuote(text: body)
+            (self.text, self.quote) = Self.parseQuote(text: message.body.text)
         }
-        attributedMessage = String(self.text.prefix(maxLength)).convertToNSAttributedString(color: type.textColor)
         self.attachments = message.attachments
         self.signature = .unsigned
         self.keyDetails = keyDetails
@@ -140,33 +123,7 @@ extension ProcessedMessage {
 }
 
 extension ProcessedMessage {
-    private static func parseHtmlQuote(html: String) -> (String, String?) {
-        let pattern = "<div class=\"gmail_quote\".*?</div>"
-        let logger = Logger.nested("ProcessedMessage")
-
-        do {
-            let regex = try NSRegularExpression(pattern: pattern, options: [])
-            let fullRange = NSRange(html.startIndex..., in: html)
-
-            let matchRange = regex.rangeOfFirstMatch(in: html, options: [], range: fullRange)
-            if matchRange.location != NSNotFound {
-                let mainContentEndIndex = html.index(html.startIndex, offsetBy: matchRange.lowerBound)
-                let mainContent = String(html[..<mainContentEndIndex])
-                let quoteContentStartIndex = html.index(html.startIndex, offsetBy: matchRange.location)
-                let quoteContent = String(html[quoteContentStartIndex...])
-                return (mainContent, quoteContent)
-            }
-        } catch {
-            Logger.logError("Failed to parse HTML quote: \(error.localizedDescription)")
-        }
-
-        return (html, nil)
-    }
-
     private static func parseQuote(text: String) -> (String, String?) {
-        if text.isHTMLString() {
-            return parseHtmlQuote(html: text)
-        }
         var lines = text.components(separatedBy: .newlines)
         var quoteLines: [String] = []
         while !lines.isEmpty {
@@ -191,6 +148,15 @@ extension ProcessedMessage {
     }
 
     var fullText: String {
-        [attributedMessage, attributedQuote].compactMap { $0?.string }.joined(separator: "\n")
+        [text, quote].compactMap { $0 }.joined(separator: "\n")
+    }
+
+    var attributedMessage: NSAttributedString {
+        String(text.prefix(maxLength)).attributed(color: type.textColor)
+    }
+
+    var attributedQuote: NSAttributedString? {
+        guard let quote else { return nil }
+        return String(quote.prefix(maxLength)).attributed(color: type.textColor.withAlphaComponent(0.8))
     }
 }
