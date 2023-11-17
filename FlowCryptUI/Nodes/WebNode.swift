@@ -54,9 +54,7 @@ class CustomWebViewNode: ASDisplayNode {
 
 extension CustomWebViewNode: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // Delay for content to stabilize
-            self.evaluateContentHeight(webView: webView)
-        }
+        self.evaluateContentHeight(webView: webView)
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
