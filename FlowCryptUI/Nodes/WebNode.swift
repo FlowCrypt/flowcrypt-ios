@@ -10,25 +10,82 @@ import AsyncDisplayKit
 import WebKit
 
 class CustomWebViewNode: ASDisplayNode {
-    private var webView: WKWebView!
+    private let webViewNode: ASDisplayNode
 
     override init() {
+        // Create a display node for the WKWebView
+        webViewNode = ASDisplayNode { () -> UIView in
+            if Thread.isMainThread {
+                return WKWebView()
+            } else {
+                var webView: WKWebView?
+                DispatchQueue.main.sync {
+                    webView = WKWebView()
+                }
+                return webView ?? UIView()
+            }
+        }
+
         super.init()
-        self.setViewBlock {
-            WKWebView()
+
+        // Add webViewNode as a subnode
+        self.addSubnode(webViewNode)
+
+        // Style properties for webViewNode
+        webViewNode.style.flexGrow = 1.0
+        webViewNode.style.flexShrink = 1.0
+    }
+
+    func setHtml(_ htmlContent: String) {
+        DispatchQueue.main.async {
+            // Load HTML content into the WKWebView
+            if let webView = self.webViewNode.view as? WKWebView {
+                webView.navigationDelegate = self
+                webView.loadHTMLString(htmlContent, baseURL: nil)
+            }
         }
     }
 
-    override func didLoad() {
-        super.didLoad()
-        guard let webView = self.view as? WKWebView else { return }
-        // Load HTML content
-        let htmlContent = "<html>Your HTML Content</html>"
-        webView.loadHTMLString(htmlContent, baseURL: nil)
+    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
+        // Use a simple layout spec to manage the webViewNode's size and position
+        return ASWrapperLayoutSpec(layoutElement: webViewNode)
+    }
+}
+
+extension CustomWebViewNode: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { // Delay for content to stabilize
+            self.evaluateContentHeight(webView: webView)
+        }
     }
 
-    override func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        // Layout spec for the web view
-        return ASWrapperLayoutSpec(layoutElement: self)
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if navigationAction.navigationType == .linkActivated {
+            if let url = navigationAction.request.url,
+               UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+                decisionHandler(.cancel)
+                return
+            }
+        }
+        decisionHandler(.allow)
+    }
+
+    private func evaluateContentHeight(webView: WKWebView) {
+        webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { [weak self] result, error in
+            guard let self, let height = result as? CGFloat else {
+                return
+            }
+
+            DispatchQueue.main.async {
+                self.updateNodeHeight(height)
+            }
+        })
+    }
+
+    private func updateNodeHeight(_ height: CGFloat) {
+        self.style.preferredSize = CGSize(width: self.calculatedSize.width, height: height)
+        self.setNeedsLayout()
+        self.supernode?.setNeedsLayout()
     }
 }
