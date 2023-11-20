@@ -69,13 +69,14 @@ export class Xss {
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ALLOWED_ATTRS = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '*': ['style'],
     a: ['href', 'name', 'target'],
     img: ['src', 'width', 'height', 'alt'],
     font: ['size', 'color', 'face'],
     span: ['color'],
     div: ['color'],
     p: ['color'],
-    em: ['style'], // tests rely on this, could potentially remove
     td: ['width', 'height'],
     hr: ['color', 'height'],
   };

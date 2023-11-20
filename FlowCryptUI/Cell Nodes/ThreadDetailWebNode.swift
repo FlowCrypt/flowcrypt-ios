@@ -28,7 +28,12 @@ public final class ThreadDetailWebNode: CellNode {
 
         super.init()
         addLeftBorder(width: .threadLeftBorderWidth, color: UIColor(hex: "777777"))
-        webViewNode.setHtml("<style>* {font-size: 20pt;} </style>" + (input.message ?? ""))
+        webViewNode.setHtml("""
+            <header>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+            </header>
+            \(input.message ?? "")
+        """)
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
