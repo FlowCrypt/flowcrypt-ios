@@ -17,6 +17,7 @@ declare const dereq_sanitize_html: (
     transformTags?: { [tagName: string]: string | Transformer };
     allowedAttributes?: { [tag: string]: string[] };
     allowedSchemes?: string[];
+    allowedStyles?: { [tag: string]: Record<string, string | RegExp[]> };
   },
 ) => string;
 
@@ -82,6 +83,16 @@ export class Xss {
   };
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
+  private static ALLOWED_STYLES = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    '*': {
+      // Existing rules...
+      // Exclude URLs in background property
+      background: [/^(?!.*url).+$/],
+    },
+  };
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ALLOWED_SCHEMES = ['data', 'http', 'https', 'mailto'];
 
   /**
@@ -140,6 +151,7 @@ export class Xss {
         allowedTags: Xss.ALLOWED_BASIC_TAGS,
         allowedAttributes: Xss.ALLOWED_ATTRS,
         allowedSchemes: Xss.ALLOWED_SCHEMES,
+        allowedStyles: Xss.ALLOWED_STYLES,
       });
     }
     cleanHtml = cleanHtml.replace(

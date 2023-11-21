@@ -40,6 +40,10 @@ class CustomWebViewNode: ASDisplayNode {
         DispatchQueue.main.async {
             // Load HTML content into the WKWebView
             if let webView = self.webViewNode.view as? WKWebView {
+                if #available(iOS 16.4, *) {
+                    webView.isInspectable = true
+                }
+                webView.accessibilityIdentifier = "aid-message-0"
                 webView.navigationDelegate = self
                 webView.loadHTMLString(htmlContent, baseURL: nil)
             }
