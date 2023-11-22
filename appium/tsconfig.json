@@ -5,7 +5,7 @@
   },
   "compilerOptions": {
     "outDir": "./.tsbuild/",
-    "lib": ["ES2022"],
+    "lib": ["ES2022", "DOM"],
     "module": "commonjs",
     "target": "ES2022",
     "types": [

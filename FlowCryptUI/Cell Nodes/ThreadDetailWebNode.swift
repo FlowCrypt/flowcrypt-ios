@@ -21,24 +21,27 @@ public final class ThreadDetailWebNode: CellNode {
 
     private let input: ThreadDetailWebNode.Input
 
-    private let webViewNode = CustomWebViewNode()
+    private lazy var webViewNode: CustomWebViewNode = {
+        let node = CustomWebViewNode()
+        node.setAccessibilityIdentifier(accessibilityIdentifier: "aid-message-\(input.index)")
+        node.setHtml("""
+            <header>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+            </header>
+            \(input.message ?? "")
+        """)
+        node.style.flexGrow = 1.0
+        return node
+    }()
 
     public init(input: ThreadDetailWebNode.Input) {
         self.input = input
 
         super.init()
         addLeftBorder(width: .threadLeftBorderWidth, color: UIColor(hex: "777777"))
-        webViewNode.setHtml("""
-            <header>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-            </header>
-            \(input.message ?? "")
-        """)
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
-        webViewNode.style.flexGrow = 1.0
-
         let specChild: ASLayoutElement
 
         specChild = webViewNode

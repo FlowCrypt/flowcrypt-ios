@@ -36,14 +36,21 @@ class CustomWebViewNode: ASDisplayNode {
         webViewNode.style.flexShrink = 1.0
     }
 
-    func setHtml(_ htmlContent: String) {
+    func setAccessibilityIdentifier(accessibilityIdentifier: String) {
         DispatchQueue.main.async {
-            // Load HTML content into the WKWebView
             if let webView = self.webViewNode.view as? WKWebView {
                 if #available(iOS 16.4, *) {
                     webView.isInspectable = true
                 }
-                webView.accessibilityIdentifier = "aid-message-0"
+                webView.accessibilityIdentifier = accessibilityIdentifier
+            }
+        }
+    }
+
+    func setHtml(_ htmlContent: String) {
+        DispatchQueue.main.async {
+            // Load HTML content into the WKWebView
+            if let webView = self.webViewNode.view as? WKWebView {
                 webView.navigationDelegate = self
                 webView.loadHTMLString(htmlContent, baseURL: nil)
             }
