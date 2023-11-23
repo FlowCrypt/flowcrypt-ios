@@ -31,10 +31,13 @@ public final class ThreadDetailWebNode: CellNode {
                     * { font-family: -apple-system, "Helvetica Neue", sans-serif; }
                     :root { color-scheme: light dark; supported-color-schemes: light dark; }
                     @media (prefers-color-scheme: dark) {
-                      :root {
-                        background-color: #2D2C2E;
-                        color: white;
-                      }
+                        :root {
+                            background-color: #2D2C2E;
+                            color: white;
+                        }
+                        a {
+                            color: #1783FD;
+                        }
                     }
                     html, body { padding: 0 !important; margin: 0 !important; }
                 </style>
@@ -49,7 +52,7 @@ public final class ThreadDetailWebNode: CellNode {
         self.input = input
 
         super.init()
-        addLeftBorder(width: .threadLeftBorderWidth, color: UIColor(hex: "777777"))
+        addLeftBorder(width: .threadLeftBorderWidth, color: .plainTextBorder)
     }
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {

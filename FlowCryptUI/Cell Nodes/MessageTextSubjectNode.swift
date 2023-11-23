@@ -55,7 +55,7 @@ public final class MessageTextSubjectNode: CellNode {
         if let quote = input.quote {
             setupTextNode(quoteNode, text: quote, accessibilityIdentifier: "aid-message-\(input.index)-quote")
         }
-        addLeftBorder(width: .threadLeftBorderWidth, color: input.isEncrypted ? .main : UIColor(hex: "777777"))
+        addLeftBorder(width: .threadLeftBorderWidth, color: input.isEncrypted ? .main : .plainTextBorder)
     }
 
     private func setupTextNode(_ node: ASEditableTextNode, text: NSAttributedString?, accessibilityIdentifier: String) {

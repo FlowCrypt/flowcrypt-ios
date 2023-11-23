@@ -1,7 +1,7 @@
 import BaseScreen from './base.screen';
 import { CommonData } from '../data';
 import ElementHelper from '../helpers/ElementHelper';
-import WebView from 'tests/helpers/WebView';
+import WebView from '../helpers/WebView';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
