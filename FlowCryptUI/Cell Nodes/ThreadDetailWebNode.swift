@@ -27,6 +27,17 @@ public final class ThreadDetailWebNode: CellNode {
         node.setHtml("""
             <header>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+                <style>
+                    * { font-family: -apple-system, "Helvetica Neue", sans-serif; }
+                    :root { color-scheme: light dark; supported-color-schemes: light dark; }
+                    @media (prefers-color-scheme: dark) {
+                      :root {
+                        background-color: #2D2C2E;
+                        color: white;
+                      }
+                    }
+                    html, body { padding: 0 !important; margin: 0 !important; }
+                </style>
             </header>
             \(input.message ?? "")
         """)
