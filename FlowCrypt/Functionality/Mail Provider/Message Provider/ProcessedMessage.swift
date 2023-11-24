@@ -6,6 +6,7 @@
 //  Copyright © 2017-present FlowCrypt a. s. All rights reserved.
 //
 
+import FlowCryptCommon
 import UIKit
 
 struct ProcessedMessage {
@@ -106,10 +107,15 @@ extension ProcessedMessage {
         self.signature = signature
     }
 
-    init(message: Message, keyDetails: [KeyDetails] = []) {
+    init(message: Message, keyDetails: [KeyDetails] = []) async throws {
         self.message = message
-        (self.text, self.quote) = Self.parseQuote(text: message.body.text)
         self.type = .plain
+        if let html = message.body.html {
+            self.text = try await Core.shared.sanitizeHtml(html: html)
+            self.quote = nil
+        } else {
+            (self.text, self.quote) = Self.parseQuote(text: message.body.text)
+        }
         self.attachments = message.attachments
         self.signature = .unsigned
         self.keyDetails = keyDetails

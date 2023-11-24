@@ -118,7 +118,7 @@ final class MessageHelper {
             messageId: message.identifier
         )
         guard message.isPgp else {
-            return ProcessedMessage(message: message, keyDetails: keyDetails)
+            return try await ProcessedMessage(message: message, keyDetails: keyDetails)
         }
 
         return try await decryptAndProcess(

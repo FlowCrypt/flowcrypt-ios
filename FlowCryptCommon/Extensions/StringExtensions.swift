@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 public extension String {
     var hasContent: Bool {

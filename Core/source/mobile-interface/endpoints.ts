@@ -120,6 +120,12 @@ export class Endpoints {
     return fmtRes({}, encrypted);
   };
 
+  public sanitizeHtml = async (uncheckedReq: unknown): Promise<EndpointRes> => {
+    const { html } = ValidateInput.sanitizeHtml(uncheckedReq);
+    const sanitizedHtml = Xss.htmlSanitizeKeepBasicTags(html);
+    return fmtRes({ sanitizedHtml });
+  };
+
   public parseDecryptMsg = async (uncheckedReq: unknown, data: Buffers): Promise<EndpointRes> => {
     const { keys: kisWithPp, msgPwd, isMime, verificationPubkeys } = ValidateInput.parseDecryptMsg(uncheckedReq);
     const rawBlocks: MsgBlock[] = []; // contains parsed, unprocessed / possibly encrypted data

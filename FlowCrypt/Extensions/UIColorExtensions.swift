@@ -40,6 +40,10 @@ public extension UIColor {
     static var main: UIColor {
         UIColor(r: 36, g: 156, b: 6, alpha: 1)
     }
+    
+    static var plainTextBorder: UIColor {
+        UIColor(hex: "777777") ?? .systemGray4
+    }
 
     static var textColor: UIColor {
         colorFor(

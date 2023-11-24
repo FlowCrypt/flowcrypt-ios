@@ -48,9 +48,9 @@ Tips for debugging:
  {
  "platformName": "iOS",
  "iosInstallPause": 5000,
- "deviceName": "iPhone 13",
+ "deviceName": "iPhone 15",
  "app": "*path to already buil app/FlowCrypt.app*",
- "platformVersion": "15.0",
+ "platformVersion": "17.0",
  "automationName": "XCUITest",
  "newCommandTimeout": 10000,
  "wdaLaunchTimeout": 300000,

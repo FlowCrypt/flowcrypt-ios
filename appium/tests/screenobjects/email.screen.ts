@@ -1,6 +1,7 @@
 import BaseScreen from './base.screen';
 import { CommonData } from '../data';
 import ElementHelper from '../helpers/ElementHelper';
+import WebView from '../helpers/WebView';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -191,10 +192,15 @@ class EmailScreen extends BaseScreen {
     await ElementHelper.waitElementVisible(subjectElement);
   };
 
-  checkEmailText = async (text: string, index = 0) => {
-    const messageEl = await $(`~aid-message-${index}`);
-    await ElementHelper.waitElementVisible(messageEl);
-    const messageElValue = await messageEl.getValue();
+  checkEmailText = async (text: string, index = 0, isHtml = false) => {
+    let messageElValue;
+    if (isHtml) {
+      messageElValue = await WebView.getDocumentContent();
+    } else {
+      const messageEl = await $(`~aid-message-${index}`);
+      await ElementHelper.waitElementVisible(messageEl);
+      messageElValue = await messageEl.getValue();
+    }
     if (text.length > 0) {
       expect(messageElValue).toContain(text);
     } else {
@@ -202,10 +208,10 @@ class EmailScreen extends BaseScreen {
     }
   };
 
-  checkOpenedEmail = async (email: string, subject: string, text: string) => {
+  checkOpenedEmail = async (email: string, subject: string, text: string, isHtml = false) => {
     await this.checkEmailSender(email);
     await this.checkEmailSubject(subject);
-    await this.checkEmailText(text);
+    await this.checkEmailText(text, 0, isHtml);
   };
 
   checkThreadMessage = async (email: string, subject: string, text: string, index = 0, date?: string) => {
