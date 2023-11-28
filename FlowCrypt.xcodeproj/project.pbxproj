@@ -179,6 +179,7 @@
 		9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */ = {isa = PBXBuildFile; fileRef = 9582BC592A782DA700439728 /* pass_phrase_hint.html */; };
 		958566B72A6126DE001C84D3 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		958566B92A612822001C84D3 /* ASButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958566B82A612822001C84D3 /* ASButtonNode.swift */; };
+		958A45A32B10E77F00FFBA56 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 958A45A22B10E77F00FFBA56 /* SwiftSoup */; };
 		95E014CF2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */; };
 		95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 95F55F9E2A7B8A720000E50F /* ProgressHUD */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
@@ -915,6 +916,7 @@
 			files = (
 				9FBD69FA277B1E6C002FC602 /* Toast in Frameworks */,
 				95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */,
+				958A45A32B10E77F00FFBA56 /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2415,6 +2417,7 @@
 			packageProductDependencies = (
 				9FBD69F9277B1E6C002FC602 /* Toast */,
 				95F55F9E2A7B8A720000E50F /* ProgressHUD */,
+				958A45A22B10E77F00FFBA56 /* SwiftSoup */,
 			);
 			productName = FlowCryptCommon;
 			productReference = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */;
@@ -2488,6 +2491,7 @@
 				95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 				95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */,
 				952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */,
+				958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -3882,6 +3886,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.1;
+			};
+		};
 		95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/SwiftLint";
@@ -3945,6 +3957,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */;
 			productName = LetterAvatarKit;
+		};
+		958A45A22B10E77F00FFBA56 /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
 		};
 		95D83FBA2A5D4BED006FDC33 /* SwiftLintPlugin */ = {
 			isa = XCSwiftPackageProductDependency;

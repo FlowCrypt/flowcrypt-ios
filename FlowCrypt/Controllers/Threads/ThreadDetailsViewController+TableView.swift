@@ -70,7 +70,9 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
 
             guard row > 1 else {
                 if processedMessage.text.isHTMLString() {
-                    return ThreadDetailWebNode(input: .init(message: processedMessage.text, index: messageIndex))
+                    return ThreadDetailWebNode(
+                        input: .init(message: processedMessage.text, quote: processedMessage.quote, index: messageIndex)
+                    )
                 }
                 return MessageTextSubjectNode(
                     input: .init(

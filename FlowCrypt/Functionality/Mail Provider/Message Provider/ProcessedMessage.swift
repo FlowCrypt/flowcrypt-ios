@@ -7,6 +7,7 @@
 //
 
 import FlowCryptCommon
+import SwiftSoup
 import UIKit
 
 struct ProcessedMessage {
@@ -111,8 +112,13 @@ extension ProcessedMessage {
         self.message = message
         self.type = .plain
         if let html = message.body.html {
-            self.text = try await Core.shared.sanitizeHtml(html: html)
-            self.quote = nil
+            let (text, quote) = Self.parseHtmlQuote(from: html)
+            self.text = try await Core.shared.sanitizeHtml(html: text)
+            if let quote {
+                self.quote = try await Core.shared.sanitizeHtml(html: quote)
+            } else {
+                self.quote = nil
+            }
         } else {
             (self.text, self.quote) = Self.parseQuote(text: message.body.text)
         }
@@ -123,6 +129,24 @@ extension ProcessedMessage {
 }
 
 extension ProcessedMessage {
+    private static func parseHtmlQuote(from html: String) -> (String, String?) {
+        do {
+            let doc = try SwiftSoup.parse(html)
+            let quotes = try doc.select("div.gmail_quote")
+
+            // Assuming the first div.gmail_quote is the start of the quoted section
+            if let firstQuote = quotes.first() {
+                try firstQuote.remove() // Remove the quote from the document
+                let mainContent = try doc.body()?.html() ?? ""
+                let quoteContent = try firstQuote.outerHtml()
+                return (mainContent, quoteContent)
+            }
+        } catch {
+            Logger.nested("ProceessedMessage").logError("Failed to parse HTML with SwiftSoup: \(error.localizedDescription)")
+        }
+        return (html, nil)
+    }
+
     private static func parseQuote(text: String) -> (String, String?) {
         var lines = text.components(separatedBy: .newlines)
         var quoteLines: [String] = []
