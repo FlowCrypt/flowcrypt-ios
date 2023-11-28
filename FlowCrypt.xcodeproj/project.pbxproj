@@ -170,6 +170,7 @@
 		950F27082AB84DAD0041595D /* ContactPublicKeyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950F27072AB84DAD0041595D /* ContactPublicKeyListViewController.swift */; };
 		952687452A8A24C60005694B /* LetterAvatarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 952687442A8A24C60005694B /* LetterAvatarKit */; };
 		952687472A8A2EF70005694B /* ThreadMessageDraftCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */; };
+		95464E3E2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95464E3D2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift */; };
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
 		9547EF212A5F106E00A048FF /* PassPhraseAlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */; };
 		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
@@ -635,6 +636,7 @@
 		950F27052AB833EA0041595D /* ContactAddNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAddNode.swift; sourceTree = "<group>"; };
 		950F27072AB84DAD0041595D /* ContactPublicKeyListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPublicKeyListViewController.swift; sourceTree = "<group>"; };
 		952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMessageDraftCellNode.swift; sourceTree = "<group>"; };
+		95464E3D2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleQuoteButtonNode.swift; sourceTree = "<group>"; };
 		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseAlertNode.swift; sourceTree = "<group>"; };
 		9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSeparatorCellNode.swift; sourceTree = "<group>"; };
@@ -2260,6 +2262,7 @@
 				95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */,
 				9577CEDC2AA7A4A40084AC62 /* PublicKeyDetailNode.swift */,
 				955475FA2B0650AC00F52076 /* WebNode.swift */,
+				95464E3D2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -2857,6 +2860,7 @@
 				511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */,
 				9F7ECCA7272C3FB4008A1770 /* TextImageNode.swift in Sources */,
 				D27177452424D44200BDA9A9 /* AddButtonNode.swift in Sources */,
+				95464E3E2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift in Sources */,
 				D24FAFAB2520BFAE00BF46C5 /* CheckBoxNode.swift in Sources */,
 				5180CB9127356D48001FC7EF /* MessageSubjectNode.swift in Sources */,
 				D28655952423BFF60066F52E /* SideMenuOptionalView.swift in Sources */,
