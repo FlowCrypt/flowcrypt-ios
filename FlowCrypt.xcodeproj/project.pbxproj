@@ -170,6 +170,7 @@
 		950F27082AB84DAD0041595D /* ContactPublicKeyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950F27072AB84DAD0041595D /* ContactPublicKeyListViewController.swift */; };
 		952687452A8A24C60005694B /* LetterAvatarKit in Frameworks */ = {isa = PBXBuildFile; productRef = 952687442A8A24C60005694B /* LetterAvatarKit */; };
 		952687472A8A2EF70005694B /* ThreadMessageDraftCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */; };
+		95464E3E2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95464E3D2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift */; };
 		95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95473C1A297E61DE006C8957 /* SequenceExtension.swift */; };
 		9547EF212A5F106E00A048FF /* PassPhraseAlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */; };
 		9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */; };
@@ -179,6 +180,7 @@
 		9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */ = {isa = PBXBuildFile; fileRef = 9582BC592A782DA700439728 /* pass_phrase_hint.html */; };
 		958566B72A6126DE001C84D3 /* EncryptedStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F92EE71236F165E009BE0D7 /* EncryptedStorage.swift */; };
 		958566B92A612822001C84D3 /* ASButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 958566B82A612822001C84D3 /* ASButtonNode.swift */; };
+		958A45A32B10E77F00FFBA56 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 958A45A22B10E77F00FFBA56 /* SwiftSoup */; };
 		95E014CF2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */; };
 		95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 95F55F9E2A7B8A720000E50F /* ProgressHUD */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
@@ -634,6 +636,7 @@
 		950F27052AB833EA0041595D /* ContactAddNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAddNode.swift; sourceTree = "<group>"; };
 		950F27072AB84DAD0041595D /* ContactPublicKeyListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPublicKeyListViewController.swift; sourceTree = "<group>"; };
 		952687462A8A2EF70005694B /* ThreadMessageDraftCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadMessageDraftCellNode.swift; sourceTree = "<group>"; };
+		95464E3D2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToggleQuoteButtonNode.swift; sourceTree = "<group>"; };
 		95473C1A297E61DE006C8957 /* SequenceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SequenceExtension.swift; sourceTree = "<group>"; };
 		9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassPhraseAlertNode.swift; sourceTree = "<group>"; };
 		9547EF232A5FBA2B00A048FF /* MenuSeparatorCellNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSeparatorCellNode.swift; sourceTree = "<group>"; };
@@ -915,6 +918,7 @@
 			files = (
 				9FBD69FA277B1E6C002FC602 /* Toast in Frameworks */,
 				95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */,
+				958A45A32B10E77F00FFBA56 /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2258,6 +2262,7 @@
 				95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */,
 				9577CEDC2AA7A4A40084AC62 /* PublicKeyDetailNode.swift */,
 				955475FA2B0650AC00F52076 /* WebNode.swift */,
+				95464E3D2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift */,
 			);
 			path = Nodes;
 			sourceTree = "<group>";
@@ -2415,6 +2420,7 @@
 			packageProductDependencies = (
 				9FBD69F9277B1E6C002FC602 /* Toast */,
 				95F55F9E2A7B8A720000E50F /* ProgressHUD */,
+				958A45A22B10E77F00FFBA56 /* SwiftSoup */,
 			);
 			productName = FlowCryptCommon;
 			productReference = D2531F2B23FEEF52007E5198 /* FlowCryptCommon.framework */;
@@ -2488,6 +2494,7 @@
 				95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */,
 				95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */,
 				952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */,
+				958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -2853,6 +2860,7 @@
 				511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */,
 				9F7ECCA7272C3FB4008A1770 /* TextImageNode.swift in Sources */,
 				D27177452424D44200BDA9A9 /* AddButtonNode.swift in Sources */,
+				95464E3E2B161DEC00B89F4E /* ToggleQuoteButtonNode.swift in Sources */,
 				D24FAFAB2520BFAE00BF46C5 /* CheckBoxNode.swift in Sources */,
 				5180CB9127356D48001FC7EF /* MessageSubjectNode.swift in Sources */,
 				D28655952423BFF60066F52E /* SideMenuOptionalView.swift in Sources */,
@@ -3882,6 +3890,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.6.1;
+			};
+		};
 		95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/SwiftLint";
@@ -3945,6 +3961,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */;
 			productName = LetterAvatarKit;
+		};
+		958A45A22B10E77F00FFBA56 /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
 		};
 		95D83FBA2A5D4BED006FDC33 /* SwiftLintPlugin */ = {
 			isa = XCSwiftPackageProductDependency;

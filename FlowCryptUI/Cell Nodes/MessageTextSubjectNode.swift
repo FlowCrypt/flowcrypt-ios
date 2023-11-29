@@ -30,19 +30,11 @@ public final class MessageTextSubjectNode: CellNode {
 
     private var shouldShowQuote = false
 
-    private lazy var toggleQuoteButtonNode: ASButtonNode = {
-        let configuration = UIImage.SymbolConfiguration(pointSize: 16, weight: .ultraLight)
-        let image = UIImage(systemName: "ellipsis", withConfiguration: configuration)
-        let button = ASButtonNode()
-        button.cornerRadius = 4
-        button.borderColor = UIColor.main.cgColor
-        button.borderWidth = 1
-        button.accessibilityIdentifier = "aid-message-\(input.index)-quote-toggle"
-        button.setImage(image, for: .normal)
-        button.contentEdgeInsets = .side(4)
-        button.imageNode.imageModificationBlock = ASImageNodeTintColorModificationBlock(.main)
-        button.addTarget(self, action: #selector(onToggleQuoteButtonTap), forControlEvents: .touchUpInside)
-        return button
+    private lazy var toggleQuoteButtonNode: ToggleQuoteButtonNode = {
+        let node = ToggleQuoteButtonNode(index: input.index) { [weak self] in
+            self?.onToggleQuoteButtonTap()
+        }
+        return node
     }()
 
     public init(input: MessageTextSubjectNode.Input) {
@@ -101,7 +93,7 @@ public final class MessageTextSubjectNode: CellNode {
         )
     }
 
-    @objc private func onToggleQuoteButtonTap() {
+    private func onToggleQuoteButtonTap() {
         shouldShowQuote.toggle()
         setNeedsLayout()
     }
