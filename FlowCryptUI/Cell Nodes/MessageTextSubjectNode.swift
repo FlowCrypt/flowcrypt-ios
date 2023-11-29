@@ -31,8 +31,8 @@ public final class MessageTextSubjectNode: CellNode {
     private var shouldShowQuote = false
 
     private lazy var toggleQuoteButtonNode: ToggleQuoteButtonNode = {
-        let node = ToggleQuoteButtonNode(index: input.index) {
-            self.onToggleQuoteButtonTap()
+        let node = ToggleQuoteButtonNode(index: input.index) { [weak self] in
+            self?.onToggleQuoteButtonTap()
         }
         return node
     }()
