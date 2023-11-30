@@ -87,6 +87,7 @@ final class ComposeViewController: TableNodeViewController {
 
     var selectedRecipientType: RecipientType? = .to
     var shouldShowAllRecipientTypes = false
+    var isKeyUpdatedFromEKM = false
     var popoverVC: ComposeRecipientPopupViewController!
 
     var sectionsList: [Section] = []
@@ -95,6 +96,7 @@ final class ComposeViewController: TableNodeViewController {
     var sendAsList: [SendAsModel] = []
 
     let handleAction: ((ComposeMessageAction) -> Void)?
+    let ekmVcHelper: EKMVcHelper
 
     init(
         appContext: AppContextWithUser,
@@ -141,6 +143,7 @@ final class ComposeViewController: TableNodeViewController {
         )
         self.router = appContext.globalRouter
         self.clientConfiguration = clientConfiguration
+        self.ekmVcHelper = EKMVcHelper(appContext: appContext)
 
         let mailProvider = try appContext.getRequiredMailProvider()
         self.messageHelper = try messageHelper ?? MessageHelper(
