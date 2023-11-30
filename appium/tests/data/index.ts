@@ -228,6 +228,7 @@ export const CommonData = {
     wrongPassPhrase:
       'Error\n' + 'Could not compose message\n' + '\n' + 'This pass phrase did not match your signing private key.',
     notUsableEncryptionPublicKey: `Message Encryption\nOne or more of your recipients have sign-only public keys (marked in yellow).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.`,
+    noPrivateKey: 'Error\n' + 'Could not compose message\n\n' + 'Your account keys are not usable for encryption.',
     expiredPublicKey: `Message Encryption\nOne or more of your recipients have expired public keys (marked in orange).\n\nPlease ask them to send you updated public key. If this is an enterprise installation, please ask your systems admin.`,
     revokedPublicKey: `Message Encryption\nOne or more of your recipients have revoked public keys (marked in red).\n\nPlease ask them to send you a new public key. If this is an enterprise installation, please ask your systems admin.`,
     wrongPassPhraseOnLogin: 'Error\n' + 'Wrong pass phrase, please try again',

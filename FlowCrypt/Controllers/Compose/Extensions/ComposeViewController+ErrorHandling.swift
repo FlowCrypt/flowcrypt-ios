@@ -71,12 +71,28 @@ extension ComposeViewController {
              MessageValidationError.expiredKeyRecipients,
              MessageValidationError.notUsableForEncryptionKeyRecipients:
             processSendMessageWithNoValidKeys(error: error)
+        case MessageValidationError.noUsableAccountKeys,
+             KeypairError.noAccountKeysAvailable:
+            if isKeyUpdatedFromEKM {
+                showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+                isKeyUpdatedFromEKM = false // Set to false so that it will be fetched next time
+            } else {
+                refreshEKMAndProceed(error: error)
+            }
         case MessageValidationError.notUniquePassword,
              MessageValidationError.subjectContainsPassword,
              MessageValidationError.weakPassword:
             showAlert(message: error.errorMessage)
         default:
             showAlert(message: "compose_error".localized + "\n\n" + error.errorMessage)
+        }
+    }
+
+    private func refreshEKMAndProceed(error: Error) {
+        Task {
+            isKeyUpdatedFromEKM = true
+            await ekmVcHelper.refreshKeysFromEKMIfNeeded(in: self, forceRefresh: true)
+            handleSendTap()
         }
     }
 

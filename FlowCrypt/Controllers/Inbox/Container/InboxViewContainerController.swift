@@ -126,7 +126,9 @@ final class InboxViewContainerController: TableNodeViewController {
                         viewModel: input
                     )
                     navigationController?.setViewControllers([inboxViewController], animated: false)
-                    ekmVcHelper.refreshKeysFromEKMIfNeeded(in: inboxViewController, forceRefresh: true)
+                    Task {
+                        await ekmVcHelper.refreshKeysFromEKMIfNeeded(in: inboxViewController, forceRefresh: true)
+                    }
                 } catch {
                     showAlert(message: error.errorMessage)
                 }
