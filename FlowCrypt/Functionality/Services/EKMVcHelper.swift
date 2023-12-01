@@ -9,7 +9,7 @@
 import UIKit
 
 protocol EKMVcHelperType {
-    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController, forceRefresh: Bool)
+    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController, forceRefresh: Bool) async
 }
 
 final class EKMVcHelper: EKMVcHelperType {
@@ -26,59 +26,57 @@ final class EKMVcHelper: EKMVcHelperType {
         self.alertsFactory = AlertsFactory(encryptedStorage: appContext.encryptedStorage)
     }
 
-    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController, forceRefresh: Bool = false) {
-        Task {
-            do {
-                let lastUpdateTime = UserDefaults.standard.object(forKey: LAST_EKM_UPDATE_TIME_KEY) as? Date
+    func refreshKeysFromEKMIfNeeded(in viewController: UIViewController, forceRefresh: Bool = false) async {
+        do {
+            let lastUpdateTime = UserDefaults.standard.object(forKey: LAST_EKM_UPDATE_TIME_KEY) as? Date
 
-                // Only proceed if last update time is more than 8 hours ago or not set
-                // Or force refresh when forceRefresh is set
-                guard lastUpdateTime == nil || lastUpdateTime!.addingTimeInterval(8 * 60 * 60) < Date() || forceRefresh else {
-                    return
-                }
+            // Only proceed if last update time is more than 8 hours ago or not set
+            // Or force refresh when forceRefresh is set
+            guard lastUpdateTime == nil || lastUpdateTime!.addingTimeInterval(8 * 60 * 60) < Date() || forceRefresh else {
+                return
+            }
 
-                let configuration = try await appContext.clientConfigurationProvider.configuration
-                guard try configuration.checkUsesEKM() == .usesEKM else {
-                    return
-                }
-                let passPhraseStorageMethod: PassPhraseStorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
-                let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
-                let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
-                let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
-                let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
+            let configuration = try await appContext.clientConfigurationProvider.configuration
+            guard try configuration.checkUsesEKM() == .usesEKM else {
+                return
+            }
+            let passPhraseStorageMethod: PassPhraseStorageMethod = configuration.forbidStoringPassPhrase ? .memory : .persistent
+            let emailKeyManagerApi = EmailKeyManagerApi(clientConfiguration: configuration)
+            let idToken = try await IdTokenUtils.getIdToken(userEmail: appContext.user.email)
+            let fetchedKeys = try await emailKeyManagerApi.getPrivateKeys(idToken: idToken)
+            let localKeys = try appContext.encryptedStorage.getKeypairs(by: appContext.user.email)
 
-                try removeLocalKeysIfNeeded(from: fetchedKeys, localKeys: localKeys)
+            try removeLocalKeysIfNeeded(from: fetchedKeys, localKeys: localKeys)
 
-                let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
-                // Set last update time
-                UserDefaults.standard.set(Date(), forKey: LAST_EKM_UPDATE_TIME_KEY)
-                guard keysToUpdate.isNotEmpty else {
-                    return
-                }
-                guard let passPhrase = try await getPassphrase(in: viewController), passPhrase.isNotEmpty else {
-                    return
-                }
+            let keysToUpdate = try findKeysToUpdate(from: fetchedKeys, localKeys: localKeys)
+            // Set last update time
+            UserDefaults.standard.set(Date(), forKey: LAST_EKM_UPDATE_TIME_KEY)
+            guard keysToUpdate.isNotEmpty else {
+                return
+            }
+            guard let passPhrase = try await getPassphrase(in: viewController), passPhrase.isNotEmpty else {
+                return
+            }
 
-                for keyDetail in keysToUpdate {
-                    try await saveKeyToLocal(
-                        context: appContext,
-                        keyDetail: keyDetail,
-                        passPhrase: passPhrase,
-                        passPhraseStorageMethod: passPhraseStorageMethod
-                    )
-                }
-
-                await viewController.showToast("refresh_key_success".localized)
-            } catch {
-                // since this is an update function that happens on every startup
-                // it's ok if it's skipped sometimes - keys will be updated next time
-                if error is ApiError {
-                    return
-                }
-                await viewController.showAlert(
-                    message: "refresh_key_error".localizeWithArguments(error.errorMessage)
+            for keyDetail in keysToUpdate {
+                try await saveKeyToLocal(
+                    context: appContext,
+                    keyDetail: keyDetail,
+                    passPhrase: passPhrase,
+                    passPhraseStorageMethod: passPhraseStorageMethod
                 )
             }
+
+            await viewController.showToast("refresh_key_success".localized)
+        } catch {
+            // since this is an update function that happens on every startup
+            // it's ok if it's skipped sometimes - keys will be updated next time
+            if error is ApiError {
+                return
+            }
+            await viewController.showAlert(
+                message: "refresh_key_error".localizeWithArguments(error.errorMessage)
+            )
         }
     }
 

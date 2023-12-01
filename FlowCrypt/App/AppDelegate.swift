@@ -64,7 +64,9 @@ extension AppDelegate: BlursTopView {
             removeBlurView()
         }
         if let topViewController = UIApplication.topViewController() {
-            ekmVcHelper?.refreshKeysFromEKMIfNeeded(in: topViewController)
+            Task {
+                await ekmVcHelper?.refreshKeysFromEKMIfNeeded(in: topViewController)
+            }
         }
     }
 }
