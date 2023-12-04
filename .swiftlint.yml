@@ -1,17 +1,16 @@
 ################### RULES https://realm.github.io/SwiftLint/
 
 disabled_rules:
-    - todo
-    - identifier_name
-    - nesting
-    - type_name
-    - cyclomatic_complexity
+  - todo
+  - identifier_name
+  - nesting
+  - type_name
+  - cyclomatic_complexity
 
 analyzer_rules:
   - unused_declaration
   - unused_import
 opt_in_rules:
-  - anyobject_protocol
   - array_init
   - attributes
   - closure_end_indentation
