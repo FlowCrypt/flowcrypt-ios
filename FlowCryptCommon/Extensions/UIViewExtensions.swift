@@ -12,7 +12,7 @@ public extension UIView {
         subview.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -insets.right).isActive = true
         subview.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: insets.left).isActive = true
         subview.topAnchor.constraint(equalTo: guide.topAnchor, constant: insets.top).isActive = true
-        subview.bottomAnchor.constraint(equalTo: guide.bottomAnchor, constant: -insets.bottom).isActive = true
+        subview.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -insets.bottom).isActive = true
     }
 }
 
