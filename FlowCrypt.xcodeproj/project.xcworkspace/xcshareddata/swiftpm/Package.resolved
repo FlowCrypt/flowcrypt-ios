@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzyzanowskim/CryptoSwift.git",
       "state" : {
-        "revision" : "32f641cf24fc7abc1c591a2025e9f2f572648b0f",
-        "version" : "1.7.2"
+        "revision" : "db51c407d3be4a051484a141bf0bff36c43d3b1e",
+        "version" : "1.8.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/google-api-objectivec-client-for-rest",
       "state" : {
-        "revision" : "40930b2c3add6234b8be1a780c08cf88b6a7a1f7",
-        "version" : "3.2.0"
+        "revision" : "cbfb18f77a3fd4eba2b76a9ff9c5decf98f29e43",
+        "version" : "3.3.0"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "d415594121c9e8a4f9d79cecee0965cf35e74dbd",
-        "version" : "3.1.1"
+        "revision" : "115f75e43851774934d695449a4836123c3246e1",
+        "version" : "3.2.0"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/relatedcode/ProgressHUD.git",
       "state" : {
-        "revision" : "01b56b31d61512d900b58cb7ac1479509bd7170f",
-        "version" : "13.7.2"
+        "revision" : "46792db49f80454879a939f9b2be31bb61c37b0c",
+        "version" : "13.8.6"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa",
       "state" : {
-        "revision" : "330a239712af77a3b0926b9ffa9582302a0b9923",
-        "version" : "10.42.1"
+        "revision" : "fd199ce07edb4db69e862f74151b95602aad3b43",
+        "version" : "10.44.0"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core.git",
       "state" : {
-        "revision" : "c04f5e401a1ec682e6b08b1ee157e19a0f834a5f",
-        "version" : "13.17.1"
+        "revision" : "c569bec4d04da84030d94f376437bc4efda3686b",
+        "version" : "13.23.1"
       }
     },
     {
@@ -131,8 +131,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-syntax.git",
       "state" : {
-        "revision" : "59ed009d2c4a5a6b78f75a25679b6417ac040dcf",
-        "version" : "509.0.0-swift-DEVELOPMENT-SNAPSHOT-2023-07-04-a"
+        "revision" : "6ad4ea24b01559dde0773e3d091f1b9e36175036",
+        "version" : "509.0.2"
       }
     },
     {
@@ -140,8 +140,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/SwiftLint",
       "state" : {
-        "revision" : "9eaecbedce469a51bd8487effbd4ab46ec8384ae",
-        "version" : "0.52.4"
+        "revision" : "f17a4f9dfb6a6afb0408426354e4180daaf49cee",
+        "version" : "0.54.0"
       }
     },
     {

@@ -1,5 +1,5 @@
 //
-//  UIViewControllerExtension.swift
+//  UIViewControllerExtensions.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 8/20/19.

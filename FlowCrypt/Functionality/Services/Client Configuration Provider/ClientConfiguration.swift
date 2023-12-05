@@ -1,5 +1,5 @@
 //
-//  OrganisationalRule.swift
+//  ClientConfiguration.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 20.05.2021.
@@ -7,6 +7,7 @@
 //
 
 import FlowCryptCommon
+import UIKit
 
 /// Organisational rules, set domain-wide, and delivered from FlowCrypt Backend
 /// These either enforce, alter or forbid various behavior to fit customer needs
@@ -45,11 +46,13 @@ class ClientConfiguration {
     /// Check if key manager url set properly
     var isKeyManagerUrlValid: Bool {
         // check for empty string
-        guard let urlString = raw.keyManagerUrl, urlString.isNotEmpty else {
+        guard let urlString = raw.keyManagerUrl,
+              let url = URL(string: urlString)
+        else {
             return false
         }
         // check is url can be configured
-        return URL(string: urlString) != nil
+        return UIApplication.shared.canOpenURL(url)
     }
 
     var isUsingFes: Bool {

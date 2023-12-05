@@ -151,7 +151,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         let email = keyDetails.pgpUserEmails.first ?? "N/A"
         let localPublicKeys = (try? localContactsProvider.retrievePubKeys(for: email, shouldUpdateLastUsed: false)) ?? []
         let importStatus: PublicKeyDetailNode.PublicKeyImportStatus = {
-            if let _ = localPublicKeys.first(where: { keyDetails.fingerprints.contains($0.primaryFingerprint) }) {
+            if localPublicKeys.contains(where: { keyDetails.fingerprints.contains($0.primaryFingerprint) }) {
                 return .alreadyImported
             }
             return localPublicKeys.isNotEmpty ? .differentKeyImported : .notYetImported
