@@ -8,52 +8,11 @@ public extension UIView {
     func constrainToEdges(_ subview: UIView, insets: UIEdgeInsets = .zero) {
         subview.translatesAutoresizingMaskIntoConstraints = false
 
-        let topConstraint = NSLayoutConstraint(
-            item: subview,
-            attribute: .top,
-            relatedBy: .equal,
-            toItem: self,
-            attribute: .top,
-            multiplier: 1.0,
-            constant: insets.top
-        )
-
-        let bottomConstraint = NSLayoutConstraint(
-            item: subview,
-            attribute: .bottom,
-            relatedBy: .equal,
-            toItem: self,
-            attribute: .bottom,
-            multiplier: 1.0,
-            constant: -insets.bottom
-        )
-
-        let leadingConstraint = NSLayoutConstraint(
-            item: subview,
-            attribute: .leading,
-            relatedBy: .equal,
-            toItem: self,
-            attribute: .leading,
-            multiplier: 1.0,
-            constant: insets.left
-        )
-
-        let trailingConstraint = NSLayoutConstraint(
-            item: subview,
-            attribute: .trailing,
-            relatedBy: .equal,
-            toItem: self,
-            attribute: .trailing,
-            multiplier: 1.0,
-            constant: -insets.right
-        )
-
-        addConstraints([
-            topConstraint,
-            bottomConstraint,
-            leadingConstraint,
-            trailingConstraint
-        ])
+        let guide = self.safeAreaLayoutGuide
+        subview.trailingAnchor.constraint(equalTo: guide.trailingAnchor, constant: -insets.right).isActive = true
+        subview.leadingAnchor.constraint(equalTo: guide.leadingAnchor, constant: insets.left).isActive = true
+        subview.topAnchor.constraint(equalTo: guide.topAnchor, constant: insets.top).isActive = true
+        subview.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -insets.bottom).isActive = true
     }
 }
 
