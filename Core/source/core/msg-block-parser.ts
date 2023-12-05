@@ -19,12 +19,12 @@ export class MsgBlockParser {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   private static ARMOR_HEADER_MAX_LENGTH = 50;
 
-  public static detectBlocks = (origText: string) => {
+  public static detectBlocks = (origText: string, completeOnly?: boolean) => {
     const blocks: MsgBlock[] = [];
     const normalized = Str.normalize(origText);
     let startAt = 0;
     while (true) {
-      const r = MsgBlockParser.detectBlockNext(normalized, startAt);
+      const r = MsgBlockParser.detectBlockNext(normalized, startAt, completeOnly);
       if (r.found) {
         blocks.push(...r.found);
       }
@@ -76,7 +76,7 @@ export class MsgBlockParser {
       blocks.push(); // escaped mime text as html
     }
     for (const att of decoded.atts) {
-      if (att.treatAs() === 'publicKey') {
+      if (att.treatAs(decoded.atts) === 'publicKey') {
         await MsgBlockParser.pushArmoredPubkeysToBlocks([att.getData().toUtfStr()], blocks);
       } else {
         const block = MsgBlock.fromAtt('decryptedAtt', '', {
@@ -92,26 +92,30 @@ export class MsgBlockParser {
     return { blocks, subject: decoded.subject, isRichText };
   };
 
-  private static detectBlockNext = (origText: string, startAt: number) => {
+  private static detectBlockNext = (origText: string, startAt: number, completeOnly?: boolean) => {
+    const armorHdrTypes = Object.keys(PgpArmor.ARMOR_HEADER_DICT) as ReplaceableMsgBlockType[];
     const result: { found: MsgBlock[]; continueAt?: number } = { found: [] as MsgBlock[] };
     const begin = origText.indexOf(PgpArmor.headers('null').begin, startAt);
     if (begin !== -1) {
       // found
-      const potentialBeginHeader = origText.substring(begin, begin + MsgBlockParser.ARMOR_HEADER_MAX_LENGTH);
-      for (const xType of Object.keys(PgpArmor.ARMOR_HEADER_DICT)) {
-        const type = xType as ReplaceableMsgBlockType;
-        const blockHeaderDef = PgpArmor.ARMOR_HEADER_DICT[type];
+      const potentialBeginHeader = origText.substr(begin, MsgBlockParser.ARMOR_HEADER_MAX_LENGTH);
+      for (const armorHdrType of armorHdrTypes) {
+        const blockHeaderDef = PgpArmor.ARMOR_HEADER_DICT[armorHdrType];
         if (blockHeaderDef.replace) {
           const indexOfConfirmedBegin = potentialBeginHeader.indexOf(blockHeaderDef.begin);
-          if (
-            indexOfConfirmedBegin === 0 ||
-            (type === 'encryptedMsgLink' && indexOfConfirmedBegin >= 0 && indexOfConfirmedBegin < 15)
-          ) {
-            // identified beginning of a specific block
+          if (indexOfConfirmedBegin === 0) {
+            let potentialTextBeforeBlockBegun = '';
             if (begin > startAt) {
-              const potentialTextBeforeBlockBegun = origText.substring(startAt, begin).trim();
-              if (potentialTextBeforeBlockBegun) {
-                result.found.push(MsgBlock.fromContent('plainText', potentialTextBeforeBlockBegun));
+              potentialTextBeforeBlockBegun = origText.substring(startAt, begin);
+              if (!potentialTextBeforeBlockBegun.endsWith('\n')) {
+                // only replace blocks if they begin on their own line
+                // contains deliberate block: `-----BEGIN PGP PUBLIC KEY BLOCK-----\n...`
+                // contains deliberate block: `Hello\n-----BEGIN PGP PUBLIC KEY BLOCK-----\n...`
+                // just plaintext (accidental block): `Hello -----BEGIN PGP PUBLIC KEY BLOCK-----\n...`
+                continue; // block treated as plaintext, not on dedicated line - considered accidental
+                // this will actually cause potential deliberate blocks that follow accidental block to be ignored
+                // but if the message already contains accidental (not on dedicated line) blocks,
+                // it's probably a good thing to ignore the rest
               }
             }
             let endIndex = -1;
@@ -128,34 +132,33 @@ export class MsgBlockParser {
                 foundBlockEndHeaderLength = matchEnd[0].length;
               }
             }
-            if (endIndex !== -1) {
-              // identified end of the same block
-              if (type !== 'encryptedMsgLink') {
-                result.found.push(
-                  MsgBlock.fromContent(type, origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim()),
-                );
-              } else {
-                const pwdMsgFullText = origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim();
-                const pwdMsgShortIdMatch = pwdMsgFullText.match(/[a-zA-Z0-9]{10}$/);
-                if (pwdMsgShortIdMatch) {
-                  result.found.push(MsgBlock.fromContent(type, pwdMsgShortIdMatch[0]));
-                } else {
-                  result.found.push(MsgBlock.fromContent('plainText', pwdMsgFullText));
-                }
+            if (endIndex !== -1 || !completeOnly) {
+              // flush the preceding plainText
+              potentialTextBeforeBlockBegun = potentialTextBeforeBlockBegun.trim();
+              if (potentialTextBeforeBlockBegun) {
+                result.found.push(MsgBlock.fromContent('plainText', potentialTextBeforeBlockBegun));
               }
-              result.continueAt = endIndex + foundBlockEndHeaderLength;
-            } else {
-              // corresponding end not found
-              result.found.push(MsgBlock.fromContent(type, origText.substring(begin), true));
+              if (endIndex !== -1) {
+                // identified end of the same block
+                result.found.push(
+                  MsgBlock.fromContent(
+                    armorHdrType,
+                    origText.substring(begin, endIndex + foundBlockEndHeaderLength).trim(),
+                  ),
+                );
+                result.continueAt = endIndex + foundBlockEndHeaderLength;
+              } else {
+                result.found.push(MsgBlock.fromContent(armorHdrType, origText.substr(begin), true));
+              }
+              break;
             }
-            break;
           }
         }
       }
     }
     if (origText && !result.found.length) {
       // didn't find any blocks, but input is non-empty
-      const potentialText = origText.substring(startAt).trim();
+      const potentialText = origText.substr(startAt).trim();
       if (potentialText) {
         result.found.push(MsgBlock.fromContent('plainText', potentialText));
       }

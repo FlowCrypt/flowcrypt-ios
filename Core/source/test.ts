@@ -771,6 +771,20 @@ test('parseDecryptMsg compat mime-email-plain', async t => {
   t.pass();
 });
 
+test('parseDecryptMsg parse PGP/MIME message with inline image', async t => {
+  const { keys } = getKeypairs('flowcrypt.compatibility2');
+  const { pubKeys } = getKeypairs('roma');
+  const { json: decryptJson } = await endpoints.parseDecryptMsg({ keys, isMime: true, verificationPubkeys: pubKeys }, [
+    await getCompatAsset('mime-email-encrypted-inline-image'),
+  ]);
+  expect(decryptJson).to.deep.equal({
+    text: '[neom-gBCMAENwknA-unsplash.jpg]',
+    replyType: 'encrypted',
+    subject: 'PGP/MIME message with inline image for flowcrypt-ios #2432',
+  });
+  t.pass();
+});
+
 test('parseDecryptMsg compat mime-email-plain-iso-2201-jp', async t => {
   const { keys } = getKeypairs('rsa1');
   const { data: blocks, json: decryptJson } = await endpoints.parseDecryptMsg({ keys, isMime: true }, [

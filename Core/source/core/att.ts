@@ -3,6 +3,7 @@
 'use strict';
 
 import { Buf } from './buf';
+import { Str } from './common';
 
 type Att$treatAs = 'publicKey' | 'privateKey' | 'encryptedMsg' | 'hidden' | 'signature' | 'encryptedFile' | 'plainFile';
 export type AttMeta = {
@@ -88,7 +89,7 @@ export class Att {
     throw new Error('Att has no data set');
   };
 
-  public treatAs = (): Att$treatAs => {
+  public treatAs = (attachments: Att[], isBodyEmpty = false): Att$treatAs => {
     if (this.treatAsValue) {
       // pre-set
       return this.treatAsValue;
@@ -99,6 +100,21 @@ export class Att {
     ) {
       return 'hidden'; // PGPexch.htm.pgp is html alternative of textual body content produced by PGP Desktop and GPG4o
     } else if (this.name === 'signature.asc' || this.type === 'application/pgp-signature') {
+      // this may be a signature for an attachment following these patterns:
+      // sample.name.sig for sample.name.pgp #3448
+      // or sample.name.sig for sample.name
+      if (attachments.length > 1) {
+        const nameWithoutExtension = Str.getFilenameWithoutExtension(this.name);
+        if (
+          attachments.some(
+            a =>
+              a !== this &&
+              (a.name === nameWithoutExtension || Str.getFilenameWithoutExtension(a.name) === nameWithoutExtension),
+          )
+        ) {
+          return 'hidden';
+        }
+      }
       return 'signature';
     } else if (!this.name && !this.type.startsWith('image/')) {
       // this.name may be '' or undefined - catch either
@@ -109,6 +125,9 @@ export class Att {
     } else if (
       ['message', 'msg.asc', 'message.asc', 'encrypted.asc', 'encrypted.eml.pgp', 'Message.pgp'].includes(this.name)
     ) {
+      return 'encryptedMsg';
+    } else if (this.name === 'message' && isBodyEmpty) {
+      // treat message as encryptedMsg when empty body for the 'message' attachment
       return 'encryptedMsg';
     } else if (this.name.match(/(\.pgp$)|(\.gpg$)|(\.[a-zA-Z0-9]{3,4}\.asc$)/g)) {
       // ends with one of .gpg, .pgp, .???.asc, .????.asc

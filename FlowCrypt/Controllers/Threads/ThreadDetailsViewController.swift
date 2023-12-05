@@ -137,7 +137,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
                 var processedMessage = try await getAndProcessMessage(
                     identifier: rawMessage.identifier,
-                    onlyLocalKeys: true,
+                    onlyLocalKeys: false,
                     forceFetch: false
                 )
 

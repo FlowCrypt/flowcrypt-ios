@@ -53,6 +53,10 @@ export class Str {
     return str.replace(/^—–|—–$/gm, '-----');
   };
 
+  public static getFilenameWithoutExtension = (filename: string): string => {
+    return filename.replace(/\.[^/.]+$/, '');
+  };
+
   public static normalize = (str: string) => {
     return Str.normalizeSpaces(Str.normalizeDashes(str));
   };
