@@ -142,7 +142,11 @@ export class Mime {
       }
     }
     const blocks = [...bodyBlocks, ...attachmentBlocks];
-    if (decoded.signature) {
+    if (
+      decoded.signature &&
+      decoded.signature.includes(PgpArmor.ARMOR_HEADER_DICT.signature.begin) &&
+      decoded.signature.includes(String(PgpArmor.ARMOR_HEADER_DICT.signature.end))
+    ) {
       for (const block of blocks) {
         if (block.type === 'plainText') {
           block.type = 'signedMsg';
