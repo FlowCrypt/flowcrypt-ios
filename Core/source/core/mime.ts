@@ -113,6 +113,7 @@ export class Mime {
             type: file.type,
             length: file.getData().length,
             data: file.getData(),
+            treatAs: file.treatAs(decoded.atts),
           }),
         );
       } else if (treatAs === 'plainFile') {

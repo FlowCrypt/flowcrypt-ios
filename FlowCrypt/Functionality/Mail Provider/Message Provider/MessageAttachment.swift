@@ -44,12 +44,13 @@ extension MessageAttachment {
         self.init(name: fileURL.lastPathComponent, data: data)
     }
 
-    init(name: String, data: Data, mimeType: String? = nil) {
+    init(name: String, data: Data, mimeType: String? = nil, treatAs: String? = nil) {
         self.id = .random
         self.name = name
         self.data = data
         self.estimatedSize = data.count
         self.mimeType = mimeType ?? name.mimeType
+        self.treatAs = treatAs
     }
 
     init?(attMeta: MsgBlock.AttMeta) {
@@ -57,7 +58,7 @@ extension MessageAttachment {
             return nil
         }
 
-        self.init(name: attMeta.name, data: data, mimeType: attMeta.type)
+        self.init(name: attMeta.name, data: data, mimeType: attMeta.type, treatAs: attMeta.treatAs)
     }
 }
 
@@ -82,7 +83,7 @@ extension MessageAttachment {
 private let mimeTypesWithPreview = [
     "application/excel", "application/vnd.ms-excel", "application/mspowerpoint", "application/vnd.ms-powerpoint",
     "application/powerpoint", "application/msword", "application/vnd.ms-word",
-    "application/json", "application/pdf", "application/rtf",
+    "application/json", "application/octet-stream", "application/pdf", "application/rtf",
     "application/vnd.apple.keynote", "application/vnd.apple.numbers", "application/vnd.apple.pages",
     "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
     "application/vnd.openxmlformats-officedocument.presentationml.presentation",

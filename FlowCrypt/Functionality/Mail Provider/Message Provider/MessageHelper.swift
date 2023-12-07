@@ -325,7 +325,7 @@ final class MessageHelper {
 
         return MessageAttachment(
             id: attachment.id,
-            name: decryptSuccess.name,
+            name: decryptSuccess.name.isNotEmpty ? decryptSuccess.name : attachment.name.replacingOccurrences(of: ".pgp", with: ""),
             estimatedSize: attachment.estimatedSize,
             mimeType: decryptSuccess.name.mimeType,
             data: decryptSuccess.data
