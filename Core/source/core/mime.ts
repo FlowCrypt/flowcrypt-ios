@@ -50,16 +50,14 @@ export type MimeProccesedMsg = {
 type SendingType = 'to' | 'cc' | 'bcc';
 
 export class Mime {
-  public static processDecoded = (decoded: MimeContent): MimeProccesedMsg => {
+  public static processBody = (decoded: MimeContent): MsgBlock[] => {
     const blocks: MsgBlock[] = [];
     if (decoded.text) {
-      const blocksFromTextPart = MsgBlockParser.detectBlocks(Str.normalize(decoded.text)).blocks;
+      const blocksFromTextPart = MsgBlockParser.detectBlocks(Str.normalize(decoded.text), true).blocks;
       // if there are some encryption-related blocks found in the text section,
       // which we can use, and not look at the html section
       if (
-        blocksFromTextPart.find(
-          b => b.type === 'encryptedMsg' || b.type === 'signedMsg' || b.type === 'publicKey' || b.type === 'privateKey',
-        )
+        blocksFromTextPart.find(b => ['pkcs7', 'encryptedMsg', 'signedMsg', 'publicKey', 'privateKey'].includes(b.type))
       ) {
         // because the html most likely containt the same thing,
         // just harder to parse pgp sections cause it's html
@@ -74,30 +72,52 @@ export class Mime {
     } else if (decoded.html) {
       blocks.push(MsgBlock.fromContent('plainHtml', decoded.html));
     }
+    return blocks;
+  };
+
+  public static isBodyEmpty = ({ text, html }: MimeContent) => {
+    return Mime.isBodyTextEmpty(text) && Mime.isBodyTextEmpty(html);
+  };
+
+  public static isBodyTextEmpty = (text: string | undefined) => {
+    return !(text && !/^(\r)?(\n)?$/.test(text));
+  };
+
+  public static processAttachments = (bodyBlocks: MsgBlock[], decoded: MimeContent): MimeProccesedMsg => {
+    const attachmentBlocks: MsgBlock[] = [];
+    const signatureAttachments: Att[] = [];
     for (const file of decoded.atts) {
-      const treatAs = file.treatAs();
+      let treatAs = file.treatAs(decoded.atts, Mime.isBodyEmpty(decoded));
+      if (['needChunk', 'maybePgp'].includes(treatAs)) {
+        // todo: attachments from MimeContent always have data set (so 'needChunk' should never happen),
+        // and we can perform whatever analysis is needed based on the actual data,
+        // but we don't want to reference MsgUtil and OpenPGP.js from this class,
+        // so I suggest to move this method to MessageRenderer for further refactoring
+        treatAs = 'encryptedMsg'; // publicKey?
+      }
       if (treatAs === 'encryptedMsg') {
         const armored = PgpArmor.clip(file.getData().toUtfStr());
         if (armored) {
-          blocks.push(MsgBlock.fromContent('encryptedMsg', armored));
+          attachmentBlocks.push(MsgBlock.fromContent('encryptedMsg', armored));
         }
       } else if (treatAs === 'signature') {
-        decoded.signature = decoded.signature || file.getData().toUtfStr();
+        signatureAttachments.push(file);
       } else if (treatAs === 'publicKey') {
-        blocks.push(...MsgBlockParser.detectBlocks(file.getData().toUtfStr()).blocks);
+        attachmentBlocks.push(...MsgBlockParser.detectBlocks(file.getData().toUtfStr(), true).blocks);
       } else if (treatAs === 'privateKey') {
-        blocks.push(...MsgBlockParser.detectBlocks(file.getData().toUtfStr()).blocks);
+        attachmentBlocks.push(...MsgBlockParser.detectBlocks(file.getData().toUtfStr(), true).blocks);
       } else if (treatAs === 'encryptedFile') {
-        blocks.push(
+        attachmentBlocks.push(
           MsgBlock.fromAtt('encryptedAtt', '', {
             name: file.name,
             type: file.type,
             length: file.getData().length,
             data: file.getData(),
+            treatAs: file.treatAs(decoded.atts),
           }),
         );
       } else if (treatAs === 'plainFile') {
-        blocks.push(
+        attachmentBlocks.push(
           MsgBlock.fromAtt('plainAtt', '', {
             name: file.name,
             type: file.type,
@@ -109,7 +129,25 @@ export class Mime {
         );
       }
     }
-    if (decoded.signature) {
+    if (signatureAttachments.length) {
+      // todo: if multiple signatures, figure out which fits what
+      // attachments from MimeContent always have data set
+      const signature = signatureAttachments[0].getData().toUtfStr();
+      if (
+        ![...bodyBlocks, ...attachmentBlocks].some(block =>
+          ['plainText', 'plainHtml', 'signedMsg'].includes(block.type),
+        )
+      ) {
+        // signed an empty message
+        attachmentBlocks.push(new MsgBlock('signedMsg', '', true, signature));
+      }
+    }
+    const blocks = [...bodyBlocks, ...attachmentBlocks];
+    if (
+      decoded.signature &&
+      decoded.signature.includes(PgpArmor.ARMOR_HEADER_DICT.signature.begin) &&
+      decoded.signature.includes(String(PgpArmor.ARMOR_HEADER_DICT.signature.end))
+    ) {
       for (const block of blocks) {
         if (block.type === 'plainText') {
           block.type = 'signedMsg';
@@ -139,6 +177,11 @@ export class Mime {
       to: decoded.to,
       rawSignedContent: decoded.rawSignedContent,
     };
+  };
+
+  public static processDecoded = (decoded: MimeContent): MimeProccesedMsg => {
+    const blocks = Mime.processBody(decoded);
+    return Mime.processAttachments(blocks, decoded);
   };
 
   public static process = async (mimeMsg: Uint8Array): Promise<MimeProccesedMsg> => {

@@ -312,7 +312,7 @@ export class Endpoints {
     const { atts } = ValidateInput.parseAttachmentType(uncheckedReq);
     const parsedAtts = atts.map(attData => {
       const att = new Att(attData);
-      return { id: att.id, treatAs: att.treatAs() };
+      return { id: att.id, treatAs: att.treatAs([att]) };
     });
     return fmtRes({ atts: parsedAtts });
   };

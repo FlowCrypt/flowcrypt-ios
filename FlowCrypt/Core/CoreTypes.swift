@@ -218,6 +218,7 @@ struct MsgBlock: Decodable {
         let data: String
         let type: String
         let length: Int
+        let treatAs: String?
     }
 
     enum BlockType: String, Decodable {

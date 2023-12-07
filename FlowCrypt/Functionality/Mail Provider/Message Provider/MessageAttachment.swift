@@ -44,12 +44,13 @@ extension MessageAttachment {
         self.init(name: fileURL.lastPathComponent, data: data)
     }
 
-    init(name: String, data: Data, mimeType: String? = nil) {
+    init(name: String, data: Data, mimeType: String? = nil, treatAs: String? = nil) {
         self.id = .random
         self.name = name
         self.data = data
         self.estimatedSize = data.count
         self.mimeType = mimeType ?? name.mimeType
+        self.treatAs = treatAs
     }
 
     init?(attMeta: MsgBlock.AttMeta) {
@@ -57,7 +58,7 @@ extension MessageAttachment {
             return nil
         }
 
-        self.init(name: attMeta.name, data: data, mimeType: attMeta.type)
+        self.init(name: attMeta.name, data: data, mimeType: attMeta.type, treatAs: attMeta.treatAs)
     }
 }
 
@@ -67,7 +68,7 @@ extension MessageAttachment {
     }
 
     var supportsPreview: Bool {
-        mimeTypesWithPreview.contains(type)
+        mimeTypesWithPreview.contains(type) || name.contains(".jpg")
     }
 
     func toDict(msgId: Identifier) -> [String: Any?] {

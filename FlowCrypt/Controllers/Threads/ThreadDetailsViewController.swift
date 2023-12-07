@@ -137,6 +137,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
                 var processedMessage = try await getAndProcessMessage(
                     identifier: rawMessage.identifier,
+                    // using only local keys for faster decryption. remote keys are fetched after decryption process is finished
                     onlyLocalKeys: true,
                     forceFetch: false
                 )
