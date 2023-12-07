@@ -68,7 +68,7 @@ extension MessageAttachment {
     }
 
     var supportsPreview: Bool {
-        mimeTypesWithPreview.contains(type)
+        mimeTypesWithPreview.contains(type) || name.contains(".jpg")
     }
 
     func toDict(msgId: Identifier) -> [String: Any?] {
@@ -83,7 +83,7 @@ extension MessageAttachment {
 private let mimeTypesWithPreview = [
     "application/excel", "application/vnd.ms-excel", "application/mspowerpoint", "application/vnd.ms-powerpoint",
     "application/powerpoint", "application/msword", "application/vnd.ms-word",
-    "application/json", "application/octet-stream", "application/pdf", "application/rtf",
+    "application/json", "application/pdf", "application/rtf",
     "application/vnd.apple.keynote", "application/vnd.apple.numbers", "application/vnd.apple.pages",
     "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
