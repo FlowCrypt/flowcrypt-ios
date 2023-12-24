@@ -30,7 +30,7 @@
     "@wdio/jasmine-framework": "^8.26.2",
     "@wdio/junit-reporter": "^8.27.0",
     "@wdio/local-runner": "^8.26.2",
-    "@wdio/spec-reporter": "^8.23.1",
+    "@wdio/spec-reporter": "^8.27.0",
     "appium": "^2.1.0",
     "appium-xcuitest-driver": "^5.9.0",
     "dotenv": "^16.3.1",
