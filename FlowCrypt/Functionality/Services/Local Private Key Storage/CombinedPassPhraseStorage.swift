@@ -31,7 +31,7 @@ struct PassPhrase: Codable, Hashable, Equatable {
         self.date = date
     }
 
-    func withUpdatedDate() -> PassPhrase {
+    func withUpdatedDate() -> Self {
         .init(
             value: self.value,
             email: self.email,
@@ -43,7 +43,7 @@ struct PassPhrase: Codable, Hashable, Equatable {
     // We still need == operator here because we use `withUpdatedDate` to set `date` field to up-to-date
     // Therfore, 2 passphrases might be treated differently even though
     // they are exactly same if we don't implement custom == operator
-    static func == (lhs: PassPhrase, rhs: PassPhrase) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.primaryFingerprintOfAssociatedKey == rhs.primaryFingerprintOfAssociatedKey
             && lhs.value == rhs.value
             && lhs.email == rhs.email

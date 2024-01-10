@@ -32,7 +32,7 @@ final class SettingsViewController: TableNodeViewController {
             }
         }
 
-        static func filtered(with rules: ClientConfiguration) -> [SettingsMenuItem] {
+        static func filtered(with rules: ClientConfiguration) -> [Self] {
             var cases = Self.allCases
 
             if !rules.canBackupKeys {
