@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Evgeny Nazarov. All rights reserved.
 //
 
+// swiftlint:disable file_length
+
 import UIKit
 
 public protocol ENSideMenuDelegate: AnyObject {

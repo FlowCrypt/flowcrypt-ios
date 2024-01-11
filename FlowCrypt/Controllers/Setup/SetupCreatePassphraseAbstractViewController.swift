@@ -185,7 +185,7 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
         parts.count
     }
 
-    // swiftlint:disable:next attributes
+    // swiftlint:disable:next function_body_length
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self else { return ASCellNode() }

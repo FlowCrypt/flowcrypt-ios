@@ -27,7 +27,7 @@ struct MessageActionsHelper {
     }
 
     @MainActor
-    func perform(
+    func perform( // swiftlint:disable:this function_body_length
         action: MessageAction,
         with inboxItem: InboxItem,
         viewController: UIViewController,

@@ -23,6 +23,7 @@ public extension UIEdgeInsets {
         return UIEdgeInsets.deviceSpecificInsets(top: top, bottom: top)
     }
 
+    // swiftlint:disable:next line_length
     static var threadMessageInsets = UIEdgeInsets(top: 15, left: .Insets.textSide + .threadLeftBorderWidth, bottom: 15, right: .Insets.textSide)
 }
 

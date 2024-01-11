@@ -14,10 +14,6 @@ open class ENSideMenuNavigationController: UINavigationController, ENSideMenuPro
     open var sideMenuAnimationType: ENSideMenuAnimation = .default
 
     // MARK: - Life cycle
-    override open func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
     public init(menuViewController: UIViewController, contentViewController: UIViewController?) {
         super.init(nibName: nil, bundle: nil)
 
@@ -31,11 +27,6 @@ open class ENSideMenuNavigationController: UINavigationController, ENSideMenuPro
 
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-    }
-
-    override open func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Navigation
