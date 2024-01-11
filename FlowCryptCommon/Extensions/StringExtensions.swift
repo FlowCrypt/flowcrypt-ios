@@ -103,7 +103,13 @@ public extension String {
     }
 
     func isHTMLString() -> Bool {
-        return self.range(of: "^\\s*(<!doctype html[\\s\\S]*>)?\\s*<[a-z][\\s\\S]*>\\s*$", options: [.regularExpression, .caseInsensitive]) != nil
+        do {
+            let regex = try NSRegularExpression(pattern: "<[a-z][\\s\\S]*>", options: .caseInsensitive)
+            let range = NSRange(startIndex..., in: self)
+            return regex.firstMatch(in: self, options: [], range: range) != nil
+        } catch {
+            return false
+        }
     }
 
     func removingMailThreadQuote() -> String {
