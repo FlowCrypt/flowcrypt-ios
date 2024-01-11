@@ -171,7 +171,7 @@ public extension Logger {
     }
 
     static func nested(in type: (some Any).Type, with logLabel: LogLabels) -> Logger {
-        Self.nested(in: type, with: logLabel.rawValue)
+        nested(in: type, with: logLabel.rawValue)
     }
 }
 

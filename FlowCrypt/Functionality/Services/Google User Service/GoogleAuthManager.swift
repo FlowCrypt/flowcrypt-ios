@@ -1,5 +1,5 @@
 //
-//  UserService.swift
+//  GoogleAuthManager.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 8/28/19.
@@ -110,8 +110,8 @@ extension GoogleAuthManager {
                 }
                 Task {
                     do {
-                        return continuation.resume(
-                            returning: try await self.handleGoogleAuthStateResult(
+                        return try await continuation.resume(
+                            returning: self.handleGoogleAuthStateResult(
                                 authState,
                                 scopes: scopes,
                                 userEmail: userEmail

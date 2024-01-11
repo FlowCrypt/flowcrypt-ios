@@ -1,5 +1,5 @@
 //
-//  ComposeDecorator.swift
+//  ComposeViewDecorator.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 05.11.2019.

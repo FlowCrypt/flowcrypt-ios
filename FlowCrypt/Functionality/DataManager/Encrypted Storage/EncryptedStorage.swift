@@ -1,5 +1,5 @@
 //
-//  StorageService.swift
+//  EncryptedStorage.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 03.11.2019.
@@ -324,7 +324,7 @@ extension EncryptedStorage {
 
     static var doesStorageFileExist: Bool {
         get throws {
-            FileManager.default.fileExists(atPath: try path)
+            try FileManager.default.fileExists(atPath: path)
         }
     }
 
@@ -336,6 +336,6 @@ extension EncryptedStorage {
     }
 
     static func removeStorageFile() throws {
-        try FileManager.default.removeItem(atPath: try path)
+        try FileManager.default.removeItem(atPath: path)
     }
 }

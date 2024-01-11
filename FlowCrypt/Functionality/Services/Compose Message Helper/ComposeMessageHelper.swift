@@ -184,7 +184,7 @@ final class ComposeMessageHelper {
     ) async throws -> [String] {
         let senderKeys = try await keyMethods.chooseSenderKeys(
             for: .encryption,
-            keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
+            keys: appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
             senderEmail: senderEmail
         ).map(\.public)
 
@@ -210,8 +210,8 @@ final class ComposeMessageHelper {
                 shouldUpdateLastUsed: true
             ).map(\.armored).joined(separator: "\n")
             let parsed = try await core.parseKeys(armoredOrBinary: armoredPubkeys.data())
-            recipientsWithKeys.append(
-                try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
+            try recipientsWithKeys.append(
+                RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
             )
         }
         return recipientsWithKeys
@@ -301,12 +301,10 @@ final class ComposeMessageHelper {
             onStateChanged?(.startComposing)
 
             let hasPassword = !message.password.isEmptyOrNil
-            let mime: Data
-
-            if hasPassword {
-                mime = try await composePasswordMessage(from: message)
+            let mime: Data = if hasPassword {
+                try await composePasswordMessage(from: message)
             } else {
-                mime = try await composeEmail(
+                try await composeEmail(
                     msg: message,
                     fmt: isPlain ? .plain : .encryptInline
                 )

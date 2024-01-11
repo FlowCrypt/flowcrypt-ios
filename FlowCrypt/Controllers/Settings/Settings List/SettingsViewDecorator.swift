@@ -1,5 +1,5 @@
 //
-//  SettingsViewControllerDecorator.swift
+//  SettingsViewDecorator.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 12/9/19.

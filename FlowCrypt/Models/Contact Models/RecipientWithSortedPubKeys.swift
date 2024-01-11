@@ -1,5 +1,5 @@
 //
-//  Contact.swift
+//  RecipientWithSortedPubKeys.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 21/08/2020.

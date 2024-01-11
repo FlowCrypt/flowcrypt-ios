@@ -1,5 +1,5 @@
 //
-//  HeaderNode.swift
+//  TextImageNode.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 18.10.2019.

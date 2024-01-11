@@ -289,7 +289,7 @@ final class FlowCryptCoreTests: XCTestCase {
             password: nil
         )
         let mime = try await core.composeEmail(msg: msg, fmt: .encryptInline)
-        let keys = [try Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")]
+        let keys = try [Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")]
         let decrypted = try await core.parseDecryptMsg(encrypted: mime.mimeEncoded, keys: keys, msgPwd: nil, isMime: true, verificationPubKeys: [])
         XCTAssertEqual(decrypted.text, text)
         XCTAssertEqual(decrypted.replyType, ReplyType.encrypted)

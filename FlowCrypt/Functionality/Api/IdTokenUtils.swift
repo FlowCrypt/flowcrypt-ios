@@ -8,7 +8,7 @@
 
 import Foundation
 
-class IdTokenUtils {
+enum IdTokenUtils {
     // Get id token from user or user email
     static func getIdToken(user: User? = nil, userEmail: String? = nil) async throws -> String {
         if let user, case .password = user.authType {

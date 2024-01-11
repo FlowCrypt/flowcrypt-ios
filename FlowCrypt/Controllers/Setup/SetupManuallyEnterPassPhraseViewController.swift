@@ -1,5 +1,5 @@
 //
-//  EnterPassPhraseViewController.swift
+//  SetupManuallyEnterPassPhraseViewController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 17.11.2019.

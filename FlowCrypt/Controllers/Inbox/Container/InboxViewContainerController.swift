@@ -1,5 +1,5 @@
 //
-//  InboxViewControllerContainer.swift
+//  InboxViewContainerController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 24.11.2020.

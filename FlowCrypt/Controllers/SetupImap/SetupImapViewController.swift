@@ -100,13 +100,12 @@ extension SetupImapViewController {
         }
 
         var indexPath: IndexPath {
-            let row: Int
-            switch self {
-            case let .account(part): row = part.rawValue
-            case let .imap(part): row = part.rawValue
-            case let .smtp(part): row = part.rawValue
-            case let .other(part): row = part.rawValue
-            case .connect: row = 0
+            let row: Int = switch self {
+            case let .account(part): part.rawValue
+            case let .imap(part): part.rawValue
+            case let .smtp(part): part.rawValue
+            case let .other(part): part.rawValue
+            case .connect: 0
             }
             return IndexPath(row: row, section: self.section)
         }

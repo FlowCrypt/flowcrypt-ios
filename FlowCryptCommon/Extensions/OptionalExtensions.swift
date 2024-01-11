@@ -12,7 +12,7 @@ public extension Optional {
     func ifNotNil<U>(_ transform: (Wrapped) throws -> U) rethrows -> U? {
         switch self {
         case let .some(value):
-            return .some(try transform(value))
+            return try .some(transform(value))
         case .none:
             return .none
         }

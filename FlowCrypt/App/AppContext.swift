@@ -38,9 +38,9 @@ class AppContext {
             encryptedStorage: encryptedStorage,
             combinedPassPhraseStorage: combinedPassPhraseStorage
         )
-        return AppContext(
+        return try AppContext(
             encryptedStorage: encryptedStorage,
-            sessionManager: try SessionManager(
+            sessionManager: SessionManager(
                 encryptedStorage: encryptedStorage,
                 googleAuthManager: GoogleAuthManager(
                     appDelegateGoogleSessionContainer: UIApplication.shared.delegate as? AppDelegate
@@ -89,25 +89,25 @@ class AppContext {
     @MainActor
     func getBackupsManager() throws -> BackupsManager {
         let mailProvider = try getRequiredMailProvider()
-        return BackupsManager(
-            backupApiClient: try mailProvider.backupApiClient,
-            messageGateway: try mailProvider.messageGateway
+        return try BackupsManager(
+            backupApiClient: mailProvider.backupApiClient,
+            messageGateway: mailProvider.messageGateway
         )
     }
 
     @MainActor
     func getFoldersManager() throws -> FoldersManager {
-        return FoldersManager(
+        return try FoldersManager(
             encryptedStorage: encryptedStorage,
-            remoteFoldersApiClient: try getRequiredMailProvider().remoteFoldersApiClient
+            remoteFoldersApiClient: getRequiredMailProvider().remoteFoldersApiClient
         )
     }
 
     @MainActor
     func getSendAsProvider() throws -> SendAsProvider {
-        return SendAsProvider(
+        return try SendAsProvider(
             encryptedStorage: encryptedStorage,
-            remoteSendAsApiClient: try getRequiredMailProvider().remoteSendAsApiClient
+            remoteSendAsApiClient: getRequiredMailProvider().remoteSendAsApiClient
         )
     }
 }

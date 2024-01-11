@@ -1,5 +1,5 @@
 //
-//  UIImageExtension.swift
+//  UIImageExtensions.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 06.11.2019.

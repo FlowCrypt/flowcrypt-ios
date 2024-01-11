@@ -1,5 +1,5 @@
 //
-//  KeySettingsDecorator.swift
+//  KeySettingsViewDecorator.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 12/13/19.

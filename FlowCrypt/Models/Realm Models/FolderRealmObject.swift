@@ -1,5 +1,5 @@
 //
-//  FolderPubKeyRealmObject.swift
+//  FolderRealmObject.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 31/08/2020.

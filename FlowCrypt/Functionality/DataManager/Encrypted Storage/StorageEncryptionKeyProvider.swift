@@ -40,7 +40,8 @@ struct StorageEncryptionKeyProvider {
         }
     }
 
-    @MainActor private func fetchLegacyEncryptionKey() throws -> Data? {
+    @MainActor
+    private func fetchLegacyEncryptionKey() throws -> Data? {
         let prefixKey = Constants.legacyKeychainIndexPrefixInUserDefaults
 
         guard let storedDynamicPart = UserDefaults.standard.string(forKey: prefixKey)
@@ -60,13 +61,15 @@ struct StorageEncryptionKeyProvider {
         return encryptionKey
     }
 
-    @MainActor private func removeLegacyEncryptionKey() {
+    @MainActor
+    private func removeLegacyEncryptionKey() {
         UserDefaults.standard.removeObject(
             forKey: Constants.legacyKeychainIndexPrefixInUserDefaults
         )
     }
 
-    @MainActor private func generateAndSaveStorageEncryptionKey() throws -> Data {
+    @MainActor
+    private func generateAndSaveStorageEncryptionKey() throws -> Data {
         logger.logInfo("generate storage encryption key")
 
         guard let randomBytes = getSecureRandomByteNumberArray(keyByteLen) else {
@@ -79,7 +82,8 @@ struct StorageEncryptionKeyProvider {
         return keyData
     }
 
-    @MainActor private func saveStorageEncryptionKey(data: Data) throws {
+    @MainActor
+    private func saveStorageEncryptionKey(data: Data) throws {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: Constants.keychainPropertyKey,
@@ -91,7 +95,8 @@ struct StorageEncryptionKeyProvider {
         }
     }
 
-    @MainActor private func fetchEncryptionKey(
+    @MainActor
+    private func fetchEncryptionKey(
         property: String = Constants.keychainPropertyKey
     ) throws -> Data? {
         let query: [CFString: Any] = [

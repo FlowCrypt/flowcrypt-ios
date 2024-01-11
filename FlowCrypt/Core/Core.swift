@@ -104,10 +104,10 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 
     func generateKey(passphrase: String, variant: KeyVariant, userIds: [UserId]) async throws -> CoreRes.GenerateKey {
-        let params: [String: Any] = [
+        let params: [String: Any] = try [
             "passphrase": passphrase,
             "variant": String(variant.rawValue),
-            "userIds": try userIds.map { try $0.toJsonEncodedDict() }
+            "userIds": userIds.map { try $0.toJsonEncodedDict() }
         ]
         let r = try await call("generateKey", params: params)
         return try r.json.decodeJson(as: CoreRes.GenerateKey.self)

@@ -116,7 +116,7 @@ public extension RecipientEmailsCellNode {
                     case var .invalidEmail(context):
                         context.isSelected = newValue
                         self = .invalidEmail(context)
-                    case var .error(context, flag):
+                    case .error(var context, let flag):
                         context.isSelected = newValue
                         self = .error(context, flag)
                     }

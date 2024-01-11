@@ -9,8 +9,8 @@
 import Photos
 import PhotosUI
 
-typealias PhotoPickerViewController = UIViewController & PHPickerViewControllerDelegate
-typealias TakePhotoViewController = UIViewController & UIImagePickerControllerDelegate & UINavigationControllerDelegate
+typealias PhotoPickerViewController = PHPickerViewControllerDelegate & UIViewController
+typealias TakePhotoViewController = UIImagePickerControllerDelegate & UINavigationControllerDelegate & UIViewController
 
 @MainActor
 protocol PhotosManagerType {

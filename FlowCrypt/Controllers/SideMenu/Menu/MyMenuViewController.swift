@@ -321,8 +321,8 @@ extension MyMenuViewController {
             }
             Task {
                 do {
-                    sideMenuController()?.setContentViewController(
-                        try await SettingsViewController(appContext: appContext)
+                    try await sideMenuController()?.setContentViewController(
+                        SettingsViewController(appContext: appContext)
                     )
                 } catch {
                     showAlert(message: error.errorMessage)

@@ -1,5 +1,5 @@
 //
-//  WKDURLsTests.swift
+//  WKDURLsConstructorTests.swift
 //  FlowCryptTests
 //
 //  Created by Yevhen Kyivskyi on 17.05.2021.
