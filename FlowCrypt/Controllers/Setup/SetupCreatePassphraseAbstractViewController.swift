@@ -78,6 +78,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
     }
 
+    // swiftlint:disable:next unavailable_function
     func setupAccount(with passphrase: String) {
         fatalError("This method has to be overriden")
     }
@@ -184,6 +185,7 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
         parts.count
     }
 
+    // swiftlint:disable:next attributes
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self else { return ASCellNode() }

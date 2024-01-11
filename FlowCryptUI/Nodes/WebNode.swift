@@ -81,7 +81,7 @@ extension CustomWebViewNode: WKNavigationDelegate {
     }
 
     private func evaluateContentHeight(webView: WKWebView) {
-        webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { [weak self] result, error in
+        webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { [weak self] result, _ in
             guard let self, let height = result as? CGFloat else {
                 return
             }

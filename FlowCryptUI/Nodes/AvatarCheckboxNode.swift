@@ -34,7 +34,7 @@ class AvatarCheckboxNode: ASDisplayNode {
     private var isSelected = false
     private let emailText: String
 
-    public init(emailText: String) {
+    init(emailText: String) {
         self.emailText = emailText
         super.init()
         automaticallyManagesSubnodes = true
@@ -54,7 +54,7 @@ class AvatarCheckboxNode: ASDisplayNode {
         return ASInsetLayoutSpec(insets: .zero, child: childNode)
     }
 
-    public func toggleNode(forceTrue: Bool = false) {
+    func toggleNode(forceTrue: Bool = false) {
         if forceTrue {
             isSelected = true
         } else {

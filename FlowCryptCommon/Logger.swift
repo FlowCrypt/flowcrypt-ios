@@ -91,7 +91,7 @@ public struct Logger {
     }
 
     private func log(
-        _ level: Logger.Level,
+        _ level: Self.Level,
         _ message: String,
         file: String = #file,
         function: String = #function,

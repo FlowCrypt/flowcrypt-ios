@@ -9,7 +9,7 @@
 import RealmSwift
 
 final class FolderRealmObject: Object {
-    @Persisted(primaryKey: true) var path: String
+    @Persisted(primaryKey: true) var path: String // swiftlint:disable:this attributes
     @Persisted var name: String
     @Persisted var image: Data?
     @Persisted var itemType: String

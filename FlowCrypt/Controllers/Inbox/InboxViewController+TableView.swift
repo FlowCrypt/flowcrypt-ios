@@ -34,6 +34,7 @@ extension InboxViewController: ASTableDataSource, ASTableDelegate {
         open(inboxItem: inboxItem, path: viewModel.path)
     }
 
+    // swiftlint:disable:next function_body_length
     private func cellNode(for indexPath: IndexPath, and size: CGSize) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self else { return ASCellNode() }

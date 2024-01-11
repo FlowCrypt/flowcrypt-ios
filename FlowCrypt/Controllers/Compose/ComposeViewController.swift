@@ -98,6 +98,7 @@ final class ComposeViewController: TableNodeViewController {
     let handleAction: ((ComposeMessageAction) -> Void)?
     let ekmVcHelper: EKMVcHelper
 
+    // swiftlint:disable:next function_body_length
     init(
         appContext: AppContextWithUser,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),

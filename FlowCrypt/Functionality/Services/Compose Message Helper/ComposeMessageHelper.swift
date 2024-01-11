@@ -97,6 +97,7 @@ final class ComposeMessageHelper {
     }
 
     // MARK: - Validation
+    // swiftlint:disable:next function_body_length
     func createSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,

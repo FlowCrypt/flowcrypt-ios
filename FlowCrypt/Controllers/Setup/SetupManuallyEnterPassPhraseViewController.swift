@@ -208,6 +208,7 @@ extension SetupManuallyEnterPassPhraseViewController {
         try importKeys(with: keyDetails, and: passPhrase)
     }
 
+    // swiftlint:disable:next function_body_length
     private func importKeys(with existingKeys: [KeyDetails], and passPhrase: String) throws {
         let keysToUpdate = existingKeys
             .getUniqueByFingerprintByPreferingLatestLastModified()

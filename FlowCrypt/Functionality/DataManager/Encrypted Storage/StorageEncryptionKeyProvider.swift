@@ -52,7 +52,7 @@ struct StorageEncryptionKeyProvider {
         guard let encryptionKey = try fetchEncryptionKey(property: storageKey) else {
             if try EncryptedStorage.doesStorageFileExist {
                 throw AppErr.general(
-                    "StorageEncryptionKeyProvider: got legacy dynamic prefix from user defaults but could not find entry in key chain based on it"
+                    "StorageEncryptionKeyProvider: got legacy dynamic prefix from user defaults but could not find entry in key chain based on it" // swiftlint:disable:this line_length
                 )
             }
             return nil

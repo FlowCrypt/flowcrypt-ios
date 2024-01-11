@@ -79,8 +79,8 @@ public final class TextCellNode: CellNode {
 }
 
 final class SpinnerNode: ASDisplayNode {
-    // swiftlint:disable force_cast
     var activityIndicatorView: UIActivityIndicatorView {
+        // swiftlint:disable:next force_cast
         return view as! UIActivityIndicatorView
     }
 

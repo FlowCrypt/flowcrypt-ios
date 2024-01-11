@@ -143,7 +143,10 @@ public class PassPhraseAlertNode: ASDisplayNode {
     private func renderBruteForceProtectionAlert() {
         guard let lastUnsuccessfulPassPhraseAttempt else { return }
         let now = Date()
-        let remainingTimeInSeconds = lastUnsuccessfulPassPhraseAttempt.addingTimeInterval(Constants.blockingTimeInSeconds).timeIntervalSince(now)
+
+        let remainingTimeInSeconds = lastUnsuccessfulPassPhraseAttempt
+            .addingTimeInterval(Constants.blockingTimeInSeconds)
+            .timeIntervalSince(now)
 
         introduction = "passphrase_anti_brute_force_protection_hint".localized
 
@@ -164,7 +167,9 @@ public class PassPhraseAlertNode: ASDisplayNode {
         let now = Date()
         // already passed anti-brute force 5 minute cooldown period
         // reset last unsuccessful count
-        if let lastUnsuccessfulPassPhraseAttempt, now.timeIntervalSince(lastUnsuccessfulPassPhraseAttempt) >= Constants.blockingTimeInSeconds, failedPassPhraseAttempts != 0 {
+        if let lastUnsuccessfulPassPhraseAttempt,
+           now.timeIntervalSince(lastUnsuccessfulPassPhraseAttempt) >= Constants.blockingTimeInSeconds,
+           failedPassPhraseAttempts != 0 {
             resetFailedPassphraseAttempts?()
             failedPassPhraseAttempts = 0
         }
@@ -234,7 +239,10 @@ public class PassPhraseAlertNode: ASDisplayNode {
 
     private func updateIntroduction() {
         if let introduction, !introduction.isEmpty {
-            introductionLabel.attributedText = NSAttributedString(string: introduction, attributes: [.foregroundColor: UIColor.mainTextColor])
+            introductionLabel.attributedText = NSAttributedString(
+                string: introduction,
+                attributes: [.foregroundColor: UIColor.mainTextColor]
+            )
             introductionLabel.isHidden = false
         } else {
             introductionLabel.isHidden = true

@@ -72,7 +72,7 @@ public final class BadgeNode: ASDisplayNode {
 
     @objc private func handleTap() {
         if input.additionalText != nil {
-            showAdditionalText = !showAdditionalText
+            showAdditionalText.toggle()
             setNeedsLayout()
         }
     }
