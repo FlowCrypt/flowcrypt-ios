@@ -25,11 +25,12 @@ blocks:
       prologue:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/
+          - bundle install
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - fastlane build
-            - fastlane test
+            - bundle exec fastlane build
+            - bundle exec fastlane test
       epilogue:
         always:
           commands:
