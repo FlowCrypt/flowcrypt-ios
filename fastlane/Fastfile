@@ -11,7 +11,7 @@ platform :ios do
       project: "FlowCrypt.xcodeproj",
       scheme: "Debug FlowCrypt",
       device: "iPhone 15",
-      derived_data_path: "/var/tmp/derived_data",
+      # derived_data_path: "/var/tmp/derived_data",
       build_for_testing: true,
       xcargs: "-skipPackagePluginValidation",
     )
