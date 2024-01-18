@@ -13,11 +13,12 @@ platform :ios do
       device: "iPhone 15",
       # derived_data_path: "/var/tmp/derived_data",
       skip_detect_devices: true,
-      clean: true,
+      # clean: true,
       build_for_testing: true,
-      deployment_target_version: '15.0',
-      prelaunch_simulator: false,
+      # deployment_target_version: '15.0',
+      # prelaunch_simulator: false,
       xcargs: "-skipPackagePluginValidation",
+      verbose: true
     )
   end
 
