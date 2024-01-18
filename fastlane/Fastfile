@@ -16,8 +16,8 @@ platform :ios do
       # clean: true,
       build_for_testing: true,
       # deployment_target_version: '15.0',
-      # prelaunch_simulator: false,
-      xcargs: "-skipPackagePluginValidation",
+      prelaunch_simulator: false,
+      xcargs: "-skipPackagePluginValidation -skipMacroValidation",
       verbose: true
     )
   end
