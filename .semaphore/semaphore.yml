@@ -24,7 +24,8 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - xcrun simctl runtime match list -j
+          - xcrun simctl list devices
+          - xcrun simctl list runtimes
           - checkout && cd ~/git/flowcrypt-ios/
           - bundle install
           - xcodebuild -downloadPlatform iOS
