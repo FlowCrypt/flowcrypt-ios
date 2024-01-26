@@ -3937,7 +3937,7 @@
 			repositoryURL = "https://github.com/relatedcode/ProgressHUD.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 14.1.0;
+				minimumVersion = 13.8.6;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
