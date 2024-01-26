@@ -418,7 +418,8 @@ class NewMessageScreen extends BaseScreen {
   };
 
   clickCancelButton = async () => {
-    await ElementHelper.waitAndClick(await this.cancelButton);
+    await browser.pause(50);
+    await driver.dismissAlert();
   };
 
   checkSetPasswordButton = async (isEnabled: boolean) => {
