@@ -21,46 +21,48 @@ struct ContactKeyDetailDecorator {
     }
 
     private func attributedTitle(for contactKeyPart: ContactKeyDetailViewController.Part) -> NSAttributedString {
-        let title = switch contactKeyPart {
+        let title: String
+        switch contactKeyPart {
         case .armored:
-            "contact_key_pub"
+            title = "contact_key_pub"
         case .signature:
-            "contact_key_signature"
+            title = "contact_key_signature"
         case .created:
-            "contact_key_created"
+            title = "contact_key_created"
         case .checked:
-            "contact_key_fetched"
+            title = "contact_key_fetched"
         case .expire:
-            "contact_key_expires"
+            title = "contact_key_expires"
         case .longids:
-            "contact_key_longids"
+            title = "contact_key_longids"
         case .fingerprints:
-            "contact_key_fingerprints"
+            title = "contact_key_fingerprints"
         case .algo:
-            "contact_key_algo"
+            title = "contact_key_algo"
         }
 
         return title.localized.attributed(.bold(16))
     }
 
     private func content(for pubKey: PubKey, part: ContactKeyDetailViewController.Part) -> NSAttributedString {
-        let result: String = switch part {
+        let result: String
+        switch part {
         case .armored:
-            pubKey.armored
+            result = pubKey.armored
         case .signature:
-            string(from: pubKey.lastSig)
+            result = string(from: pubKey.lastSig)
         case .created:
-            string(from: pubKey.created)
+            result = string(from: pubKey.created)
         case .checked:
-            string(from: pubKey.lastChecked)
+            result = string(from: pubKey.lastChecked)
         case .expire:
-            string(from: pubKey.expiresOn)
+            result = string(from: pubKey.expiresOn)
         case .longids:
-            pubKey.longids.joined(separator: ", ")
+            result = pubKey.longids.joined(separator: ", ")
         case .fingerprints:
-            pubKey.fingerprints.joined(separator: ", ")
+            result = pubKey.fingerprints.joined(separator: ", ")
         case .algo:
-            pubKey.algo?.algorithm ?? "-"
+            result = pubKey.algo?.algorithm ?? "-"
         }
         return result.attributed(.regular(14))
     }
