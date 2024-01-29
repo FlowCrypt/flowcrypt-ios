@@ -10,6 +10,9 @@ const SELECTORS = {
   CONTINUE_WITH_GOOGLE_BTN: '~aid-sign-in-gmail-btn',
   CONTINUE_WITH_OUTLOOK_BTN: '~aid-sign-in-outlook-btn',
   OTHER_EMAIL_PROVIDER_BTN: '~aid-sign-in-other-btn',
+  // We can't use aid identifier for below fields because belows fields are from google oauth popup
+  CONTINUE_BTN: '~Continue',
+  CANCEL_BTN: '~Cancel',
   LOGIN_FIELD: '~Email or phone',
   NEXT_BTN: '-ios class chain:**/XCUIElementTypeButton[`label == "Next"`][1]',
   PASSWORD_FIELD: '~Enter your password',
@@ -51,6 +54,14 @@ class SplashScreen extends BaseScreen {
 
   get loginField() {
     return $(SELECTORS.LOGIN_FIELD);
+  }
+
+  get continueButton() {
+    return $(SELECTORS.CONTINUE_BTN);
+  }
+
+  get cancelButton() {
+    return $(SELECTORS.CANCEL_BTN);
   }
 
   get passwordField() {
@@ -96,13 +107,11 @@ class SplashScreen extends BaseScreen {
   };
 
   clickContinueBtn = async () => {
-    await browser.pause(50);
-    await driver.acceptAlert();
+    await ElementHelper.waitAndClick(await this.continueButton);
   };
 
   clickCancelButton = async () => {
-    await browser.pause(50);
-    await driver.dismissAlert();
+    await ElementHelper.waitAndClick(await this.cancelButton);
   };
 
   changeLanguage = async (language = '‪English (United States)‬') => {
