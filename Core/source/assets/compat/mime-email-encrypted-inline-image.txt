@@ -25,7 +25,7 @@ ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc
          2fGw==
 ARC-Authentication-Results: i=1; mx.google.com;
        dkim=pass header.i=@protonmail.com header.s=protonmail3 header.b=dihPDIL5;
-       spf=pass (google.com: domain of user1@example.com designates 185.70.43.18 as permitted sender) smtp.mailfrom=roma.sosnovsuser1@example.com
+       spf=pass (google.com: domain of user1@example.com designates 185.70.43.18 as permitted sender) smtp.mailfrom=user1@example.com
        dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=protonmail.com
 Return-Path:
 Received: from mail-4318.protonmail.ch (mail-4318.protonmail.ch. [185.70.43.18])
@@ -36,7 +36,7 @@ Received: from mail-4318.protonmail.ch (mail-4318.protonmail.ch. [185.70.43.18])
 Received-SPF: pass (google.com: domain of user1@example.com designates 185.70.43.18 as permitted sender) client-ip=185.70.43.18;
 Authentication-Results: mx.google.com;
        dkim=pass header.i=@protonmail.com header.s=protonmail3 header.b=dihPDIL5;
-       spf=pass (google.com: domain of user1@example.com designates 185.70.43.18 as permitted sender) smtp.mailfrom=roma.sosnovsuser1@example.com
+       spf=pass (google.com: domain of user1@example.com designates 185.70.43.18 as permitted sender) smtp.mailfrom=user1@example.com
        dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=protonmail.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
 	s=protonmail3; t=1699733945; x=1699993145;
