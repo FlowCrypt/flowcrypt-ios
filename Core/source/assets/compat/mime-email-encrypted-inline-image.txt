@@ -25,18 +25,18 @@ ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc
          2fGw==
 ARC-Authentication-Results: i=1; mx.google.com;
        dkim=pass header.i=@protonmail.com header.s=protonmail3 header.b=dihPDIL5;
-       spf=pass (google.com: domain of roma.sosnovsky@protonmail.com designates 185.70.43.18 as permitted sender) smtp.mailfrom=roma.sosnovsky@protonmail.com;
+       spf=pass (google.com: domain of user1@example.com designates 185.70.43.18 as permitted sender) smtp.mailfrom=user1@example.com
        dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=protonmail.com
-Return-Path: 
+Return-Path:
 Received: from mail-4318.protonmail.ch (mail-4318.protonmail.ch. [185.70.43.18])
         by mx.google.com with ESMTPS id d2-20020a05620a240200b0076d7b5dd4bfsi2017318qkn.302.2023.11.11.12.19.06
-        for 
+        for
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Sat, 11 Nov 2023 12:19:06 -0800 (PST)
-Received-SPF: pass (google.com: domain of roma.sosnovsky@protonmail.com designates 185.70.43.18 as permitted sender) client-ip=185.70.43.18;
+Received-SPF: pass (google.com: domain of user1@example.com designates 185.70.43.18 as permitted sender) client-ip=185.70.43.18;
 Authentication-Results: mx.google.com;
        dkim=pass header.i=@protonmail.com header.s=protonmail3 header.b=dihPDIL5;
-       spf=pass (google.com: domain of roma.sosnovsky@protonmail.com designates 185.70.43.18 as permitted sender) smtp.mailfrom=roma.sosnovsky@protonmail.com;
+       spf=pass (google.com: domain of user1@example.com designates 185.70.43.18 as permitted sender) smtp.mailfrom=user1@example.com
        dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=protonmail.com
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
 	s=protonmail3; t=1699733945; x=1699993145;
@@ -50,10 +50,10 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
 	 JhQo8VNfpoynDvMLYo0mV1B5D8nWa+stym1QNXLsBtgzwiX5eihJq7M0J/PyaRpQRb
 	 oJ3sPYybPd81Q==
 Date: Sat, 11 Nov 2023 20:18:52 +0000
-To: "flowcrypt.compatibility@gmail.com" 
-From: Roma Sosnovsky 
+To: "flowcrypt.compatibility@gmail.com"
+From: Roma Sosnovsky
 Subject: PGP/MIME message with inline image for flowcrypt-ios #2432
-Message-ID: 
+Message-ID:
 Feedback-ID: 16803528:user:proton
 MIME-Version: 1.0
 Content-Type: multipart/mixed;
