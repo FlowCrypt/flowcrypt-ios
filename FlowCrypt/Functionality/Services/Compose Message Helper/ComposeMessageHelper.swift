@@ -302,10 +302,12 @@ final class ComposeMessageHelper {
             onStateChanged?(.startComposing)
 
             let hasPassword = !message.password.isEmptyOrNil
-            let mime: Data = if hasPassword {
-                try await composePasswordMessage(from: message)
+            let mime: Data
+
+            if hasPassword {
+                mime = try await composePasswordMessage(from: message)
             } else {
-                try await composeEmail(
+                mime = try await composeEmail(
                     msg: message,
                     fmt: isPlain ? .plain : .encryptInline
                 )

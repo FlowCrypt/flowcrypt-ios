@@ -267,10 +267,11 @@ final class MessageHelper {
             )
         }
 
-        var attachments: [MessageAttachment] = if message.raw != nil || message.attachments.isEmpty {
-            decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
+        var attachments: [MessageAttachment]
+        if message.raw != nil || message.attachments.isEmpty {
+            attachments = decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
         } else {
-            message.attachments
+            attachments = message.attachments
         }
 
         let keyDetails: [KeyDetails] = try await getKeyDetailsFromAttachment(attachments: &attachments, messageId: message.identifier)
