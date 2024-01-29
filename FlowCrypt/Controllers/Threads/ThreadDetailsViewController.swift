@@ -307,11 +307,10 @@ final class ThreadDetailsViewController: TableNodeViewController {
 
             let processedMessage = try await getAndProcessMessage(identifier: messageId)
 
-            let section: Int
-            if let index = input.firstIndex(where: { $0.rawMessage.identifier == identifier.draftMessageId }) {
-                section = index + 1
+            let section: Int = if let index = input.firstIndex(where: { $0.rawMessage.identifier == identifier.draftMessageId }) {
+                index + 1
             } else {
-                section = input.count + 1
+                input.count + 1
             }
 
             handle(processedMessage: processedMessage, at: IndexPath(row: 0, section: section))
