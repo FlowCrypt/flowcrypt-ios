@@ -170,12 +170,13 @@ extension ThreadDetailsViewController {
     private func draftNode(messageIndex: Int, isExpanded: Bool) -> ASCellNode {
         let data = input[messageIndex]
 
-        let body: String = if let processedMessage = data.processedMessage {
-            processedMessage.text
+        let body: String
+        if let processedMessage = data.processedMessage {
+            body = processedMessage.text
         } else if data.rawMessage.isPgp {
-            "Waiting for pass phrase to open draft..."
+            body = "Waiting for pass phrase to open draft..."
         } else {
-            data.rawMessage.body.text
+            body = data.rawMessage.body.text
         }
 
         return ThreadMessageDraftCellNode(sender: appContext.user.name, draftBody: body, messageIndex: messageIndex, action: {
