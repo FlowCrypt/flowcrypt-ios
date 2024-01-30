@@ -107,11 +107,13 @@ class SplashScreen extends BaseScreen {
   };
 
   clickContinueBtn = async () => {
-    await ElementHelper.waitAndClick(await this.continueButton);
+    await browser.pause(1000);
+    await browser.acceptAlert();
   };
 
   clickCancelButton = async () => {
-    await ElementHelper.waitAndClick(await this.cancelButton);
+    await browser.pause(1000);
+    await browser.dismissAlert();
   };
 
   changeLanguage = async (language = '‪English (United States)‬') => {
