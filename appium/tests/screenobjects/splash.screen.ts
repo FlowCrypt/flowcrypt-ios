@@ -107,12 +107,12 @@ class SplashScreen extends BaseScreen {
   };
 
   clickContinueBtn = async () => {
-    await browser.pause(1000);
+    await browser.pause(2000);
     await browser.acceptAlert();
   };
 
   clickCancelButton = async () => {
-    await browser.pause(1000);
+    await browser.pause(2000);
     await browser.dismissAlert();
   };
 
