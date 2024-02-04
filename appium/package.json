@@ -39,7 +39,7 @@
     "node-forge": "1.3.1",
     "node-gyp": "^10.0.1",
     "openpgp": "5.11.0",
-    "ts-node": "^10.5.0",
+    "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
     "wdio-video-reporter": "^4.0.5",
