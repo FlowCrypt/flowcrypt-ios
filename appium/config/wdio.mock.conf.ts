@@ -14,6 +14,7 @@ config.suites = {
 config.capabilities = [
   {
     platformName: 'iOS',
+    maxInstances: 1,
     hostname: '127.0.0.1',
     'appium:automationName': 'XCUITest',
     'appium:processArguments': {
@@ -21,7 +22,10 @@ config.capabilities = [
     },
     'appium:deviceName': 'iPhone 14',
     'appium:platformVersion': '16.4',
+    'appium:orientation': 'PORTRAIT',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
+    'appium:newCommandTimeout': 240,
+    'appium:webviewConnectTimeout': 5000,
   },
 ];
 
