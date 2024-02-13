@@ -1,5 +1,5 @@
 //
-//  MessageDraft.swift
+//  MessageIdentifier.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 20/09/22

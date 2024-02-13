@@ -42,12 +42,12 @@ class PubLookup: PubLookupType {
         let results: [LookupResult] = try await withThrowingTaskGroup(of: LookupResult.self) { tg in
             var results: [LookupResult] = []
             tg.addTask {
-                LookupResult(keys: try await self.wkd.lookup(email: recipient.email), source: .wkd)
+                try await LookupResult(keys: self.wkd.lookup(email: recipient.email), source: .wkd)
             }
             tg.addTask {
                 do {
-                    return LookupResult(
-                        keys: try await self.attesterApi.lookup(email: recipient.email),
+                    return try await LookupResult(
+                        keys: self.attesterApi.lookup(email: recipient.email),
                         source: .attester
                     )
                 } catch {

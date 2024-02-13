@@ -9,7 +9,7 @@
 import RealmSwift
 
 final class UserRealmObject: Object {
-    @Persisted(primaryKey: true) var email: String
+    @Persisted(primaryKey: true) var email: String // swiftlint:disable:this attributes
     @Persisted var isActive: Bool
     @Persisted var name: String
     @Persisted var imap: SessionRealmObject?

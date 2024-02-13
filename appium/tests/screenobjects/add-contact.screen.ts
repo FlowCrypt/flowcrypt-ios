@@ -41,7 +41,8 @@ class AddContactScreen extends BaseScreen {
   importPublicKey = async (publicKey: string) => {
     await ElementHelper.copyStringIntoClipboard(publicKey);
     await ElementHelper.waitAndClick(await this.importFromClipboardButton);
-    await ElementHelper.waitAndClick(await this.allowPasteButton);
+    await browser.pause(3000);
+    await driver.execute('mobile: alert', { action: 'accept', buttonLabel: 'Allow Paste' });
   };
 }
 

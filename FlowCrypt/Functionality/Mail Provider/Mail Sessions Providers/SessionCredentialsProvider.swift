@@ -1,5 +1,5 @@
 //
-//  MailProviders.swift
+//  SessionCredentialsProvider.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 01/04/2020.

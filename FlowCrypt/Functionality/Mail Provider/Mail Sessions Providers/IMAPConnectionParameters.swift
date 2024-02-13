@@ -1,5 +1,5 @@
 //
-//  IMAPSession.swift
+//  IMAPConnectionParameters.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 31/03/2020.

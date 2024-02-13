@@ -1,5 +1,5 @@
 //
-//  Localization.swift
+//  LocalizationExtensions.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 08.10.2019.

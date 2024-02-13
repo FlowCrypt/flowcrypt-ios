@@ -1,5 +1,5 @@
 //
-//  DataExtensions+Encoding.swift
+//  DataExtensions+ZBase32Encoding.swift
 //  FlowCryptCommon
 //
 //  Created by Yevhen Kyivskyi on 17.05.2021.

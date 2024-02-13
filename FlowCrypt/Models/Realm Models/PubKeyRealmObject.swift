@@ -13,7 +13,7 @@ enum PubKeyObjectError: Error {
 }
 
 final class PubKeyRealmObject: Object {
-    @Persisted(primaryKey: true) var primaryFingerprint: String
+    @Persisted(primaryKey: true) var primaryFingerprint: String // swiftlint:disable:this attributes
     @Persisted var armored: String
     @Persisted var lastSig: Date?
     @Persisted var lastChecked: Date?

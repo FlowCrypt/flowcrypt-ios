@@ -68,7 +68,11 @@ extension CustomWebViewNode: WKNavigationDelegate {
         self.evaluateContentHeight(webView: webView)
     }
 
-    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
         if navigationAction.navigationType == .linkActivated {
             if let url = navigationAction.request.url,
                UIApplication.shared.canOpenURL(url) {
@@ -81,7 +85,7 @@ extension CustomWebViewNode: WKNavigationDelegate {
     }
 
     private func evaluateContentHeight(webView: WKWebView) {
-        webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { [weak self] result, error in
+        webView.evaluateJavaScript("document.documentElement.scrollHeight", completionHandler: { [weak self] result, _ in
             guard let self, let height = result as? CGFloat else {
                 return
             }

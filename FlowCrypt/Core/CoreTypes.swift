@@ -4,7 +4,7 @@
 
 import RealmSwift
 
-struct CoreRes {
+enum CoreRes {
     struct Version: Decodable {
         let app_version: String
     }

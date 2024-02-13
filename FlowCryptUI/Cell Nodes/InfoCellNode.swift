@@ -1,5 +1,5 @@
 //
-//  MenuNode.swift
+//  InfoCellNode.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 18.10.2019.

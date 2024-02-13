@@ -1,5 +1,5 @@
 //
-//  CalendarExtension.swift
+//  CalendarExtensions.swift
 //  FlowCryptCommon
 //
 //  Created by Yevhen Kyivskyi on 01.06.2021.

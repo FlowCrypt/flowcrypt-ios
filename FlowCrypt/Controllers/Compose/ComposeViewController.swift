@@ -26,8 +26,8 @@ final class ComposeViewController: TableNodeViewController {
     enum Section: Hashable {
         case recipientsLabel, recipients(RecipientType), password, compose, attachments, searchResults, contacts
 
-        static var recipientsSections: [Section] {
-            RecipientType.allCases.map { Self.recipients($0) }
+        static var recipientsSections: [Self] {
+            RecipientType.allCases.map { recipients($0) }
         }
     }
 
@@ -98,6 +98,7 @@ final class ComposeViewController: TableNodeViewController {
     let handleAction: ((ComposeMessageAction) -> Void)?
     let ekmVcHelper: EKMVcHelper
 
+    // swiftlint:disable:next function_body_length
     init(
         appContext: AppContextWithUser,
         decorator: ComposeViewDecorator = ComposeViewDecorator(),
@@ -153,7 +154,7 @@ final class ComposeViewController: TableNodeViewController {
                 localContactsProvider: localContactsProvider
             ),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
-            messageProvider: try mailProvider.messageProvider,
+            messageProvider: mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
 

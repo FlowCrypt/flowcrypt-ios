@@ -1,5 +1,5 @@
 //
-//  SettingsCellNode.swift
+//  TitleCellNode.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 12/9/19.

@@ -1,5 +1,5 @@
 //
-//  CreatePrivateKeyViewController.swift
+//  SetupGenerateKeyViewController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23.05.2021.
@@ -24,8 +24,8 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
         appContext: AppContextWithUser,
         decorator: SetupViewDecorator = SetupViewDecorator()
     ) async throws {
-        self.attester = AttesterApi(
-            clientConfiguration: try await appContext.clientConfigurationProvider.configuration
+        self.attester = try await AttesterApi(
+            clientConfiguration: appContext.clientConfigurationProvider.configuration
         )
         super.init(
             appContext: appContext,
@@ -114,7 +114,7 @@ final class SetupGenerateKeyViewController: SetupCreatePassphraseAbstractViewCon
             _ = try await attester.submitPrimaryEmailPubkey(
                 email: user.email,
                 pubkey: publicKey,
-                idToken: try await IdTokenUtils.getIdToken(user: user)
+                idToken: IdTokenUtils.getIdToken(user: user)
             )
         } catch {
             throw CreateKeyError.submitKey(error)

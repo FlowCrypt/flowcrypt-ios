@@ -30,9 +30,9 @@ final class KeyMethods: KeyMethodsType {
             do {
                 _ = try await Core.shared.decryptKey(armoredPrv: privateKey, passphrase: passPhrase)
                 matching.append(key)
-                logger.logInfo("pass phrase matches for key: \(try key.primaryFingerprint)")
+                try logger.logInfo("pass phrase matches for key: \(key.primaryFingerprint)")
             } catch {
-                logger.logInfo("pass phrase does not match for key: \(try key.primaryFingerprint)")
+                try logger.logInfo("pass phrase does not match for key: \(key.primaryFingerprint)")
             }
         }
         return matching

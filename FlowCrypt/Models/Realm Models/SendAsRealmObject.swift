@@ -9,7 +9,7 @@
 import RealmSwift
 
 final class SendAsRealmObject: Object {
-    @Persisted(primaryKey: true) var sendAsEmail: String
+    @Persisted(primaryKey: true) var sendAsEmail: String // swiftlint:disable:this attributes
     @Persisted var displayName: String
     @Persisted var verificationStatus: String
     @Persisted var isDefault: Bool

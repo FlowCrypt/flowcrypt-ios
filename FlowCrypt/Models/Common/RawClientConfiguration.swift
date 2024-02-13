@@ -1,5 +1,5 @@
 //
-//  ClientConfiguration.swift
+//  RawClientConfiguration.swift
 //  FlowCrypt
 //
 //  Created by Yevhen Kyivskyi on 18.06.2021.

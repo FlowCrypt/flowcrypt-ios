@@ -76,15 +76,13 @@ public final class ThreadMessageInfoCellNode: CellNode {
     }
 
     // MARK: - Specs
-    private lazy var headerSpec: ASStackLayoutSpec = {
-        ASStackLayoutSpec(
-            direction: .horizontal,
-            spacing: 2,
-            justifyContent: .spaceBetween,
-            alignItems: .start,
-            children: [infoWithAvatarSpec, replyNode, menuNode]
-        )
-    }()
+    private lazy var headerSpec: ASStackLayoutSpec = .init(
+        direction: .horizontal,
+        spacing: 2,
+        justifyContent: .spaceBetween,
+        alignItems: .start,
+        children: [infoWithAvatarSpec, replyNode, menuNode]
+    )
 
     private lazy var infoWithAvatarSpec: ASStackLayoutSpec = {
         let node = ASStackLayoutSpec(
@@ -123,15 +121,13 @@ public final class ThreadMessageInfoCellNode: CellNode {
         }
     }
 
-    private lazy var recipientsSpec: ASStackLayoutSpec = {
-        ASStackLayoutSpec(
-            direction: .vertical,
-            spacing: 4,
-            justifyContent: .spaceBetween,
-            alignItems: .start,
-            children: [recipientsListNode, dateNode]
-        )
-    }()
+    private lazy var recipientsSpec: ASStackLayoutSpec = .init(
+        direction: .vertical,
+        spacing: 4,
+        justifyContent: .spaceBetween,
+        alignItems: .start,
+        children: [recipientsListNode, dateNode]
+    )
 
     private lazy var encryptionInfoSpec: ASStackLayoutSpec = {
         let spacer = ASLayoutSpec()

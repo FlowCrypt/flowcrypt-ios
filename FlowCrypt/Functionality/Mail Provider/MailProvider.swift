@@ -1,5 +1,5 @@
 //
-//  GlobalServices.swift
+//  MailProvider.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 04.11.2020.

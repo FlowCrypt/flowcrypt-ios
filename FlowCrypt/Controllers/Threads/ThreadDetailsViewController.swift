@@ -70,7 +70,7 @@ final class ThreadDetailsViewController: TableNodeViewController {
                 localContactsProvider: localContactsProvider
             ),
             keyAndPassPhraseStorage: appContext.keyAndPassPhraseStorage,
-            messageProvider: try mailProvider.messageProvider,
+            messageProvider: mailProvider.messageProvider,
             combinedPassPhraseStorage: appContext.combinedPassPhraseStorage
         )
         self.alertsFactory = AlertsFactory(encryptedStorage: appContext.encryptedStorage)

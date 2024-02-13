@@ -78,6 +78,7 @@ class SetupCreatePassphraseAbstractViewController: TableNodeViewController, Pass
         node.scrollToRow(at: IndexPath(item: Parts.passPhrase.rawValue, section: 0), at: .middle, animated: true)
     }
 
+    // swiftlint:disable:next unavailable_function
     func setupAccount(with passphrase: String) {
         fatalError("This method has to be overriden")
     }
@@ -161,7 +162,6 @@ extension SetupCreatePassphraseAbstractViewController {
 
     private func showChoosingOptions() {
         if let url = Bundle.main.url(forResource: "pass_phrase_hint", withExtension: "html") {
-            let request = URLRequest(url: url)
             let vc = WebViewController(url: url)
             present(vc, animated: true, completion: nil)
         }
@@ -185,6 +185,7 @@ extension SetupCreatePassphraseAbstractViewController: ASTableDelegate, ASTableD
         parts.count
     }
 
+    // swiftlint:disable:next function_body_length
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self else { return ASCellNode() }

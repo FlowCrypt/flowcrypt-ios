@@ -54,6 +54,7 @@ public final class ThreadDetailWebNode: CellNode {
     }
 
     private func getFormattedHtml(html: String?) -> String {
+        // swiftlint:disable line_length
         return """
             <header>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
@@ -74,6 +75,7 @@ public final class ThreadDetailWebNode: CellNode {
             </header>
             \(html ?? "")
         """
+        // swiftlint:enable line_length
     }
 
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {

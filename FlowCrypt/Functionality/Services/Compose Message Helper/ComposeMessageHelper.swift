@@ -97,6 +97,7 @@ final class ComposeMessageHelper {
     }
 
     // MARK: - Validation
+    // swiftlint:disable:next function_body_length
     func createSendableMsg(
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
@@ -184,7 +185,7 @@ final class ComposeMessageHelper {
     ) async throws -> [String] {
         let senderKeys = try await keyMethods.chooseSenderKeys(
             for: .encryption,
-            keys: try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
+            keys: appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: sender),
             senderEmail: senderEmail
         ).map(\.public)
 
@@ -210,8 +211,8 @@ final class ComposeMessageHelper {
                 shouldUpdateLastUsed: true
             ).map(\.armored).joined(separator: "\n")
             let parsed = try await core.parseKeys(armoredOrBinary: armoredPubkeys.data())
-            recipientsWithKeys.append(
-                try RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
+            try recipientsWithKeys.append(
+                RecipientWithSortedPubKeys(recipient, keyDetails: parsed.keyDetails)
             )
         }
         return recipientsWithKeys

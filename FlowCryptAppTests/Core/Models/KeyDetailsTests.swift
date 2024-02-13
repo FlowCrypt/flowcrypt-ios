@@ -32,8 +32,8 @@ class KeyDetailsTests: XCTestCase {
             revoked: false
         )
 
-        assert(
-            try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
+        try assert(
+            KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
             throws: KeypairError.missingPrivateKey("storing pubkey as private")
         )
     }
@@ -57,8 +57,8 @@ class KeyDetailsTests: XCTestCase {
             revoked: false
         )
 
-        assert(
-            try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
+        try assert(
+            KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
             throws: KeypairError.notEncrypted("Will not store Private Key that is not fully encrypted")
         )
     }
@@ -80,8 +80,8 @@ class KeyDetailsTests: XCTestCase {
             revoked: false
         )
 
-        assert(
-            try KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
+        try assert(
+            KeypairRealmObject(keyDetail, passphrase: nil, source: .backup, user: user),
             throws: KeypairError.missingKeyIds
         )
     }

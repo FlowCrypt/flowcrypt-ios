@@ -1,5 +1,5 @@
 //
-//  OrganisationalRulesTests.swift
+//  ClientConfigurationTests.swift
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 17.09.2021.

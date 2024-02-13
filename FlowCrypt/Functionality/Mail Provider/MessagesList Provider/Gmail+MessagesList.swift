@@ -1,5 +1,5 @@
 //
-//  Gmail_MessagesList.swift
+//  Gmail+MessagesList.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 17.11.2020.

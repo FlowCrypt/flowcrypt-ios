@@ -44,8 +44,8 @@ public extension String {
     }
 
     func spaced(every n: Int) -> String {
-        return enumerated().reduce("") {
-            $0 + ($1.offset % n == 0 && $1.offset != 0 ? " " : "") + String($1.element)
+        enumerated().reduce(into: "") {
+            $0 += ($1.offset.isMultiple(of: n) && $1.offset != 0 ? " " : "") + String($1.element)
         }
     }
 
@@ -103,13 +103,7 @@ public extension String {
     }
 
     func isHTMLString() -> Bool {
-        do {
-            let regex = try NSRegularExpression(pattern: "<[a-z][\\s\\S]*>", options: .caseInsensitive)
-            let range = NSRange(startIndex..., in: self)
-            return regex.firstMatch(in: self, options: [], range: range) != nil
-        } catch {
-            return false
-        }
+        range(of: "^\\s*(<!doctype html[\\s\\S]*>)?\\s*<[a-z][\\s\\S]*>\\s*$", options: [.regularExpression, .caseInsensitive]) != nil
     }
 
     func removingMailThreadQuote() -> String {

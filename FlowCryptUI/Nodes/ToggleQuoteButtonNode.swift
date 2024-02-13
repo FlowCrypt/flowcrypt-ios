@@ -7,6 +7,7 @@
 //
 
 import AsyncDisplayKit
+
 public final class ToggleQuoteButtonNode: ASButtonNode {
     private let onTap: (() -> Void)?
 

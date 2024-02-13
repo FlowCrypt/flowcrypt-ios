@@ -1,5 +1,5 @@
 //
-//  ImapNetService.swift
+//  MailSettingsCredentials.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 01/04/2020.

@@ -1,5 +1,5 @@
 //
-//  GmailService+folder.swift
+//  GmailService+folders.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 06.11.2020.

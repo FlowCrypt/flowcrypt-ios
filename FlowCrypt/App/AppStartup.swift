@@ -1,5 +1,5 @@
 //
-//  StartupChecks.swift
+//  AppStartup.swift
 //  FlowCrypt
 //
 //  Created by luke on 13/2/2020.

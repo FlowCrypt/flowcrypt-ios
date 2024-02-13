@@ -1,5 +1,5 @@
 //
-//  AppBundle.swift
+//  BundleExtensions.swift
 //  FlowCrypt
 //
 //  Created by Tom on 03.12.2021

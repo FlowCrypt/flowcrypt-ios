@@ -1,5 +1,5 @@
 //
-//  MessageKindProvider.swift
+//  MessageKindProviderType.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 8/29/19.

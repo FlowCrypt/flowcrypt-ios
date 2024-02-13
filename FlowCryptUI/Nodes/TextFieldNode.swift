@@ -36,8 +36,8 @@ public final class TextFieldNode: ASDisplayNode {
     var shouldReturn: ShouldReturnAction?
     var shouldChangeCharacters: ShouldChangeAction?
 
-    // swiftlint:disable force_cast
     private var textField: TextField {
+        // swiftlint:disable:next force_cast
         node.view as! TextField
     }
 

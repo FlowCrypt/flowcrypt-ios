@@ -2452,6 +2452,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1240;
 				LastUpgradeCheck = 1510;
+				LastUpgradeCheck = 1520;
 				ORGANIZATIONNAME = "FlowCrypt Limited";
 				TargetAttributes = {
 					9F2AC5C5267BE99E00F6149B = {

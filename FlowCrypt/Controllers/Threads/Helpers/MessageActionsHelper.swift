@@ -19,15 +19,15 @@ struct MessageActionsHelper {
     }
 
     init(appContext: AppContextWithUser) async throws {
-        self.trashFolderProvider = await TrashFolderProvider(
+        self.trashFolderProvider = try await TrashFolderProvider(
             user: appContext.user,
-            foldersManager: try appContext.getFoldersManager()
+            foldersManager: appContext.getFoldersManager()
         )
         self.threadOperationsApiClient = try await appContext.getRequiredMailProvider().threadOperationsApiClient
     }
 
     @MainActor
-    func perform(
+    func perform( // swiftlint:disable:this function_body_length
         action: MessageAction,
         with inboxItem: InboxItem,
         viewController: UIViewController,

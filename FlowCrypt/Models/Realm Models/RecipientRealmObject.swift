@@ -9,7 +9,7 @@
 import RealmSwift
 
 final class RecipientRealmObject: Object {
-    @Persisted(primaryKey: true) var email: String
+    @Persisted(primaryKey: true) var email: String // swiftlint:disable:this attributes
     @Persisted var name: String?
     @Persisted var lastUsed: Date?
     @Persisted var pubKeys: List<PubKeyRealmObject>

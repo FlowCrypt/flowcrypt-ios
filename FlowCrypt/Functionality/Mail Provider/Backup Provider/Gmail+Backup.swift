@@ -29,7 +29,7 @@ extension GmailService: BackupApiClient {
             var attachments: [Data] = []
             for attachmentContext in attachmentContexts {
                 // todo - parallelize withTaskGroup
-                attachments.append(try await findAttachment(attachmentContext))
+                try await attachments.append(findAttachment(attachmentContext))
             }
             logger.logVerbose("downloading \(attachments.count) attachments with possible backups in them")
             let data = attachments.joined
