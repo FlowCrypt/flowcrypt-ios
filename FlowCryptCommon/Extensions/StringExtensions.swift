@@ -44,8 +44,8 @@ public extension String {
     }
 
     func spaced(every n: Int) -> String {
-        return enumerated().reduce("") {
-            $0 + ($1.offset % n == 0 && $1.offset != 0 ? " " : "") + String($1.element)
+        enumerated().reduce(into: "") {
+            $0 += ($1.offset.isMultiple(of: n) && $1.offset != 0 ? " " : "") + String($1.element)
         }
     }
 
@@ -103,7 +103,7 @@ public extension String {
     }
 
     func isHTMLString() -> Bool {
-        return self.range(of: "^\\s*(<!doctype html[\\s\\S]*>)?\\s*<[a-z][\\s\\S]*>\\s*$", options: [.regularExpression, .caseInsensitive]) != nil
+        range(of: "^\\s*(<!doctype html[\\s\\S]*>)?\\s*<[a-z][\\s\\S]*>\\s*$", options: [.regularExpression, .caseInsensitive]) != nil
     }
 
     func removingMailThreadQuote() -> String {

@@ -1,5 +1,5 @@
 //
-//  ImportKeyViewController.swift
+//  SetupManuallyImportKeyViewController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 14.11.2019.

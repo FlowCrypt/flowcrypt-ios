@@ -1,5 +1,5 @@
 //
-//  SetupButtonNode.swift
+//  ButtonCellNode.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 29.10.2019.

@@ -1,5 +1,5 @@
 //
-//  LocalPassPhraseStorage.swift
+//  InMemoryPassPhraseStorage.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 07.06.2021.

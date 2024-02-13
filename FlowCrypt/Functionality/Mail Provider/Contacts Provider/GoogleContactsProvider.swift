@@ -1,5 +1,5 @@
 //
-//  ContactsProvider.swift
+//  GoogleContactsProvider.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 07.12.2022

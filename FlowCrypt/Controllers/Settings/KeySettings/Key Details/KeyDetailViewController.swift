@@ -1,5 +1,5 @@
 //
-//  KeyDetailScreen.swift
+//  KeyDetailViewController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 12/13/19.

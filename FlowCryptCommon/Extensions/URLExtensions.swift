@@ -1,5 +1,5 @@
 //
-//  URLExtension.swift
+//  URLExtensions.swift
 //  FlowCryptCommon
 //
 //  Created by Yevhen Kyivskyi on 24.06.2021.

@@ -1,5 +1,5 @@
 //
-//  DateFormatting.swift
+//  DateFormattingExtensions.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 01.10.2019.

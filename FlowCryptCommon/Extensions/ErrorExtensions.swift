@@ -1,5 +1,5 @@
 //
-//  Error+Extension.swift
+//  ErrorExtensions.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 04/11/21

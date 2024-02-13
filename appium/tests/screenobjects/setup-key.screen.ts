@@ -46,7 +46,7 @@ class SetupKeyScreen extends BaseScreen {
   }
 
   setPassPhrase = async (withManualSubmit = true, text: string = CommonData.account.passPhrase) => {
-    await ElementHelper.waitElementVisible(await this.enterPassPhraseField);
+    await ElementHelper.waitElementVisible(await this.enterPassPhraseField, 30000);
     if (withManualSubmit) {
       await this.fillPassPhraseManually(text);
       await this.clickSetPassPhraseBtn();

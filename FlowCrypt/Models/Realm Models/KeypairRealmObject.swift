@@ -13,7 +13,7 @@ enum KeySource: String {
 }
 
 final class KeypairRealmObject: Object {
-    @Persisted(primaryKey: true) var primaryKey: String
+    @Persisted(primaryKey: true) var primaryKey: String // swiftlint:disable:this attributes
     @Persisted var primaryFingerprint: String
     @Persisted var `private`: String
     @Persisted var `public`: String

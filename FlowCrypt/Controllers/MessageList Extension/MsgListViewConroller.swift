@@ -1,5 +1,5 @@
 //
-//  MessageHandlerViewConroller.swift
+//  MsgListViewConroller.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23/12/2019.

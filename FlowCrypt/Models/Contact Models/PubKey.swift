@@ -1,5 +1,5 @@
 //
-//  ContactKey.swift
+//  PubKey.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 11/10/21
@@ -65,8 +65,8 @@ extension PubKey {
         let longids = keyIds.map(\.longid)
         let fingerprints = keyIds.map(\.fingerprint)
 
-        self.init(
-            primaryFingerprint: try keyDetails.primaryFingerprint,
+        try self.init(
+            primaryFingerprint: keyDetails.primaryFingerprint,
             armored: keyDetails.public,
             lastSig: keyDetails.lastModified.map { Date(timeIntervalSince1970: TimeInterval($0)) },
             lastChecked: Date(),

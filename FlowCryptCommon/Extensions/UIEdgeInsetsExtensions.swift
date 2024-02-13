@@ -1,5 +1,5 @@
 //
-//  Extensions.swift
+//  UIEdgeInsetsExtensions.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 8/30/19.

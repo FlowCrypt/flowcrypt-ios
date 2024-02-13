@@ -1,5 +1,5 @@
 //
-//  EnterPassPhraseViewController.swift
+//  SetupManuallyEnterPassPhraseViewController.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 17.11.2019.
@@ -100,6 +100,7 @@ extension SetupManuallyEnterPassPhraseViewController: ASTableDelegate, ASTableDa
         Parts.allCases.count
     }
 
+    // swiftlint:disable:next function_body_length
     func tableNode(_: ASTableNode, nodeBlockForRowAt indexPath: IndexPath) -> ASCellNodeBlock {
         return { [weak self] in
             guard let self, let part = Parts(rawValue: indexPath.row) else { return ASCellNode() }
@@ -208,6 +209,7 @@ extension SetupManuallyEnterPassPhraseViewController {
         try importKeys(with: keyDetails, and: passPhrase)
     }
 
+    // swiftlint:disable:next function_body_length
     private func importKeys(with existingKeys: [KeyDetails], and passPhrase: String) throws {
         let keysToUpdate = existingKeys
             .getUniqueByFingerprintByPreferingLatestLastModified()

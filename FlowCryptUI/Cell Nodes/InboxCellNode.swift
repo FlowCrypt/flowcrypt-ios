@@ -57,7 +57,7 @@ public final class InboxCellNode: CellNode {
     private let input: Input
     // Use custom isCellSelected rather than default isSelected
     // Because we have different behavior than default
-    public var isCellSelected: Bool = false {
+    public var isCellSelected = false {
         didSet {
             updateSelectionAppearance()
         }

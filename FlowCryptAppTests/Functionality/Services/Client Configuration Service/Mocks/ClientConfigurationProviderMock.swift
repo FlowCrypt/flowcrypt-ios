@@ -1,5 +1,5 @@
 //
-//  LocalClientConfigurationMock.swift
+//  ClientConfigurationProviderMock.swift
 //  FlowCryptAppTests
 //
 //  Created by Anton Kharchevskyi on 21.09.2021.

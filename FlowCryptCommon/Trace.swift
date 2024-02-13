@@ -23,7 +23,7 @@ public final class Trace {
         }
         let endTime = CACurrentMediaTime()
 
-        return (endTime - startTime)
+        return endTime - startTime
     }
 
     public func finish(roundedTo: Int = 3) -> String {

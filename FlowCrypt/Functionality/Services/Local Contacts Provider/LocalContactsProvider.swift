@@ -120,7 +120,7 @@ extension LocalContactsProvider: LocalContactsProviderType {
             .map(Recipient.init)
         var recipients: [RecipientWithSortedPubKeys] = []
         for object in objects {
-            recipients.append(try await parseRecipient(from: object))
+            try await recipients.append(parseRecipient(from: object))
         }
         return recipients.sorted(by: { $0.email > $1.email })
     }

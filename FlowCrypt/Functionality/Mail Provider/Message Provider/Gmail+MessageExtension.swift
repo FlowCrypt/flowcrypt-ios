@@ -9,7 +9,7 @@
 import GoogleAPIClientForREST_Gmail
 
 extension Message {
-    // swiftlint:disable cyclomatic_complexity function_body_length
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     init(gmailMessage: GTLRGmail_Message) throws {
         guard let payload = gmailMessage.payload else {
             throw GmailApiError.missingMessagePayload
@@ -84,7 +84,6 @@ extension Message {
             inReplyTo: inReplyTo
         )
     }
-    // swiftlint:enable cyclomatic_complexity function_body_length
 }
 
 private enum MessageBodyType: String {

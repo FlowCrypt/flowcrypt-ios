@@ -1,5 +1,5 @@
 //
-//  UIApplicationExtension.swift
+//  UIApplicationExtensions.swift
 //  FlowCrypt
 //
 //  Created by Roma Sosnovsky on 25/10/21

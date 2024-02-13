@@ -1,5 +1,5 @@
 //
-//  EncryptedPassPhraseStorageMock.swift
+//  PassPhraseStorageMock.swift
 //  FlowCryptTests
 //
 //  Created by Anton Kharchevskyi on 07.06.2021.

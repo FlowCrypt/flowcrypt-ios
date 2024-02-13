@@ -52,16 +52,16 @@ class SplashScreen extends BaseScreen {
     return $(SELECTORS.OTHER_EMAIL_PROVIDER_BTN);
   }
 
+  get loginField() {
+    return $(SELECTORS.LOGIN_FIELD);
+  }
+
   get continueButton() {
     return $(SELECTORS.CONTINUE_BTN);
   }
 
   get cancelButton() {
     return $(SELECTORS.CANCEL_BTN);
-  }
-
-  get loginField() {
-    return $(SELECTORS.LOGIN_FIELD);
   }
 
   get passwordField() {
@@ -107,13 +107,13 @@ class SplashScreen extends BaseScreen {
   };
 
   clickContinueBtn = async () => {
-    // expect(await this.continueButton).toBeDisplayed();
-    // expect(await this.cancelButton).toBeDisplayed();
-    await ElementHelper.waitAndClick(await this.continueButton);
+    await browser.pause(2000);
+    await browser.acceptAlert();
   };
 
   clickCancelButton = async () => {
-    await ElementHelper.waitAndClick(await this.cancelButton);
+    await browser.pause(2000);
+    await browser.dismissAlert();
   };
 
   changeLanguage = async (language = '‪English (United States)‬') => {

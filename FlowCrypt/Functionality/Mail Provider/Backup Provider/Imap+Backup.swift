@@ -1,5 +1,5 @@
 //
-//  Imap+backup.swift
+//  Imap+Backup.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 9/11/19.
@@ -22,7 +22,7 @@ enum BackupError: Error {
 
 extension Imap: BackupApiClient {
     func searchBackups(for email: String) async throws -> Data {
-        var folderPaths = (try await fetchFolders()).map(\.path)
+        var folderPaths = try await (fetchFolders()).map(\.path)
 
         guard folderPaths.isNotEmpty else {
             throw BackupError.missingFolders
@@ -109,7 +109,7 @@ extension Imap: BackupApiClient {
             MCOIMAPSearchExpression.search(from: email),
             other: MCOIMAPSearchExpression.search(to: email)
         )
-        return MCOIMAPSearchExpression.searchAnd(fromToExpr, other: try subjectsExpr())
+        return try MCOIMAPSearchExpression.searchAnd(fromToExpr, other: subjectsExpr())
     }
 }
 

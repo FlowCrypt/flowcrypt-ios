@@ -4,7 +4,7 @@
 
 @testable import FlowCrypt
 
-struct TestData {
+enum TestData {
 
     static let k0 = Keypair(
         primaryFingerprint: "",

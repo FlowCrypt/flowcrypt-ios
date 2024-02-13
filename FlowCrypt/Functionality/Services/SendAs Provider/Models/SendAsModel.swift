@@ -1,5 +1,5 @@
 //
-//  FolderViewModel.swift
+//  SendAsModel.swift
 //  FlowCrypt
 //
 //  Created by Ioan Moldovan on 6/13/22.

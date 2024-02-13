@@ -91,7 +91,7 @@ public struct Logger {
     }
 
     private func log(
-        _ level: Logger.Level,
+        _ level: Self.Level,
         _ message: String,
         file: String = #file,
         function: String = #function,
@@ -171,7 +171,7 @@ public extension Logger {
     }
 
     static func nested(in type: (some Any).Type, with logLabel: LogLabels) -> Logger {
-        Self.nested(in: type, with: logLabel.rawValue)
+        nested(in: type, with: logLabel.rawValue)
     }
 }
 

@@ -9,6 +9,8 @@
 import AsyncDisplayKit
 import FlowCryptUI
 
+// swiftlint:disable file_length
+
 /**
  * Controller that gives a possibility for the user to enter information about his email provider like, account, imap/smtp information
  * - User redirects here from SignInViewController

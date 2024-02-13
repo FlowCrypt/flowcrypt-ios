@@ -1,10 +1,12 @@
 //
-//  SideMenu.swift
+//  ENSideMenu.swift
 //  SwiftSideMenu
 //
 //  Created by Evgeny on 24.07.14.
 //  Copyright (c) 2014 Evgeny Nazarov. All rights reserved.
 //
+
+// swiftlint:disable file_length
 
 import UIKit
 
@@ -330,10 +332,12 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
             if menuPosition == .left {
                 destFrame = CGRect(x: shouldOpen ? -2.0 : -menuWidth, y: 0, width: menuWidth, height: height)
             } else {
-                destFrame = CGRect(x: shouldOpen ? width - menuWidth : width + 2.0,
-                                   y: 0,
-                                   width: menuWidth,
-                                   height: height)
+                destFrame = CGRect(
+                    x: shouldOpen ? width - menuWidth : width + 2.0,
+                    y: 0,
+                    width: menuWidth,
+                    height: height
+                )
             }
 
             UIView.animate(
@@ -410,12 +414,12 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
         return true
     }
 
-    @objc internal func handleGesture(_ gesture: UISwipeGestureRecognizer) {
+    @objc func handleGesture(_ gesture: UISwipeGestureRecognizer) {
         toggleMenu((menuPosition == .right && gesture.direction == .left)
             || (menuPosition == .left && gesture.direction == .right))
     }
 
-    @objc internal func handlePan(_ recognizer: UIPanGestureRecognizer) {
+    @objc func handlePan(_ recognizer: UIPanGestureRecognizer) {
 
         let leftToRight = recognizer.velocity(in: recognizer.view).x > 0
 

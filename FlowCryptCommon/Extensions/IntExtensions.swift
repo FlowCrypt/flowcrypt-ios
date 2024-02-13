@@ -1,5 +1,5 @@
 //
-//  IntExtension.swift
+//  IntExtensions.swift
 //  FlowCrypt
 //
 //  Created by luke on 8/1/2020.

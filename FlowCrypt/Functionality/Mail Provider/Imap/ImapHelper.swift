@@ -1,5 +1,5 @@
 //
-//  Imap+Helpers.swift
+//  ImapHelper.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23/12/2019.

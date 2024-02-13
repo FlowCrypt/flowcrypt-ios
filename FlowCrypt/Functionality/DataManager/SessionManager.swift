@@ -1,5 +1,5 @@
 //
-//  UserAccountService.swift
+//  SessionManager.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 27.02.2021.
@@ -61,7 +61,7 @@ final class SessionManager {
         self.googleAuthManager = googleAuthManager
         // todo - the following User.empty may be wrong - unsure, untested
         // maybe should instead get user
-        self.imap = try imap ?? Imap(user: try encryptedStorage.activeUser ?? User.empty)
+        self.imap = try imap ?? Imap(user: encryptedStorage.activeUser ?? User.empty)
         self.encryptedStorage = encryptedStorage
         currentSession = try encryptedStorage.activeUser?.session
         self.localStorage = localStorage

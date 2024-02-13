@@ -1,5 +1,5 @@
 //
-//  OptionButtonNode.swift
+//  LinkButtonNode.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 23.10.2019.

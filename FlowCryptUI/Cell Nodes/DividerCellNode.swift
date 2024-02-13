@@ -1,5 +1,5 @@
 //
-//  DividerNode.swift
+//  DividerCellNode.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 31.10.2019.

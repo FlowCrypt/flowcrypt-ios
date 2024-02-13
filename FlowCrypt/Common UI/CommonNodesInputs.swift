@@ -1,5 +1,5 @@
 //
-//  CommonNodes.swift
+//  CommonNodesInputs.swift
 //  FlowCrypt
 //
 //  Created by Anton Kharchevskyi on 31.05.2021.
@@ -70,10 +70,10 @@ extension CheckBoxTextNode.Input {
     }
 
     static func passPhraseLocally(isSelected: Bool) -> CheckBoxTextNode.Input {
-        Self.common(with: "setup_save_pass_locally".localized, isSelected: isSelected)
+        common(with: "setup_save_pass_locally".localized, isSelected: isSelected)
     }
 
     static func passPhraseMemory(isSelected: Bool) -> CheckBoxTextNode.Input {
-        Self.common(with: "setup_save_pass_temporarily".localized, isSelected: isSelected)
+        common(with: "setup_save_pass_temporarily".localized, isSelected: isSelected)
     }
 }
