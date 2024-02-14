@@ -23,7 +23,7 @@ describe('INBOX: ', () => {
 
     const replySubject = `Re: ${emailSubject}`;
     const forwardSubject = `Fwd: ${emailSubject}`;
-    const quoteText = `${senderName} <${senderEmail}> wrote:\n > ${emailText}`;
+    const quoteText = `${senderName} <${senderEmail}> wrote:\n > ${emailText}\n > \n > --\n > signature`;
 
     const mockApi = new MockApi();
 
