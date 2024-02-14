@@ -1,6 +1,5 @@
 import { join } from 'path';
 import type { Options } from '@wdio/types';
-// const video = require('wdio-video-reporter');
 
 process.on('unhandledRejection', (reason, promise) => {
   // without this, after lib update to v7, whole test suite may pass even if no tests ran successfully
@@ -40,10 +39,6 @@ export const config: Options.Testrunner = {
         },
       },
     ],
-    // [video, {
-    //   saveAllVideos: false,       // If true, also saves videos for successful test cases
-    //   outputDir: './tmp/video',
-    // }]
   ],
   capabilities: [],
   services: [
