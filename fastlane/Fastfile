@@ -26,7 +26,9 @@ platform :ios do
       device: "iPhone 15",
       test_without_building: true,
       derived_data_path: "/var/tmp/derived_data",
-      xcargs: "-skipPackagePluginValidation",
+      xcargs: "-skipPackagePluginValidation -skipMacroValidation",
+      parallel_testing: false,
+      disable_concurrent_testing: true
     )
   end
 
