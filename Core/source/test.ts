@@ -451,20 +451,20 @@ test('composeEmail format:encryptInline with attachment', async t => {
   t.pass();
 });
 
-// for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && name !== 'revoked')) {
-//   test(`encryptFile -> decryptFile ${keypairName}`, async t => {
-//     const { pubKeys, keys } = getKeypairs(keypairName);
-//     const name = 'myfile.txt';
-//     const content = Buffer.from([10, 20, 40, 80, 160, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]);
-//     const { data: encryptedFile, json: encryptJson } = await endpoints.encryptFile({ pubKeys, name }, [content]);
-//     expectEmptyJson(encryptJson as JsonDict);
-//     expectData(encryptedFile);
-//     const { data: decryptedContent, json: decryptJson } = await endpoints.decryptFile({ keys }, [encryptedFile]);
-//     expect(decryptJson).to.deep.equal({ decryptSuccess: { name } });
-//     expectData(decryptedContent, 'binary', content);
-//     t.pass();
-//   });
-// }
+for (const keypairName of allKeypairNames.filter(name => name !== 'expired' && name !== 'revoked')) {
+  test(`encryptFile -> decryptFile ${keypairName}`, async t => {
+    const { pubKeys, keys } = getKeypairs(keypairName);
+    const name = 'myfile.txt';
+    const content = Buffer.from([10, 20, 40, 80, 160, 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250]);
+    const { data: encryptedFile, json: encryptJson } = await endpoints.encryptFile({ pubKeys, name }, [content]);
+    expectEmptyJson(encryptJson as JsonDict);
+    expectData(encryptedFile);
+    const { data: decryptedContent, json: decryptJson } = await endpoints.decryptFile({ keys }, [encryptedFile]);
+    expect(decryptJson).to.deep.equal({ decryptSuccess: { name } });
+    expectData(decryptedContent, 'binary', content);
+    t.pass();
+  });
+}
 
 test('isEmailValid - true', async t => {
   const { data, json } = await endpoints.isEmailValid({ email: 'test@acct.com' });
