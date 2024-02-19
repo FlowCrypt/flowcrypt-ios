@@ -55,7 +55,7 @@ blocks:
           - checkout && cd ~/git/flowcrypt-ios/
           - sem-version node 18
           - ( cache restore common-npm && npm install && cache store common-npm node_modules )
-          - ( cd Core && npm install && cache store core-npm node_modules )
+          - ( cd Core && cache restore core-npm && npm install && cache store core-npm node_modules )
           - ( cd appium && cache restore appium-npm && npm install && cache store appium-npm node_modules )
       jobs:
         - name: TypeScript tests + code quality
