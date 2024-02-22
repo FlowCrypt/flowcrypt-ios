@@ -426,7 +426,7 @@ extension InboxViewController {
 // MARK: - Action handlers
 extension InboxViewController {
     private func handleInfoTap() {
-        #warning("ToDo")
+        // todo - open compose screen with predefined human@flowcrypt.com recipient
         showToast("Email us at human@flowcrypt.com")
     }
 

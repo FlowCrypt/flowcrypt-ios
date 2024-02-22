@@ -69,7 +69,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             else { return self.dividerNode(indexPath: indexPath) }
 
             guard row > 1 else {
-                if processedMessage.text.isHTMLString() {
+                if processedMessage.text.isHTMLString {
                     return ThreadDetailWebNode(
                         input: .init(message: processedMessage.text, quote: processedMessage.quote, index: messageIndex)
                     )

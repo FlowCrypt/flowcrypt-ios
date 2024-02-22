@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "description": "TypeScript core for FlowCrypt iOS internal use",
   "dependencies": {
-    "@openpgp/web-stream-tools": "^0.0.13",
+    "@openpgp/web-stream-tools": "0.0.11-patch-0",
     "encoding-japanese": "^2.0.0",
-    "openpgp": "5.11.0",
+    "openpgp": "5.11.1",
     "sanitize-html": "^2.8.0",
     "zxcvbn": "4.4.2"
   },
@@ -19,7 +19,7 @@
     "chai": "4.3.10",
     "eslint-plugin-local-rules": "^2.0.0",
     "typescript": "^5.3.3",
-    "webpack": "^5.72.0",
+    "webpack": "^5.90.3",
     "webpack-cli": "5.1.4",
     "webpack-node-externals": "3.0.0"
   },
