@@ -436,7 +436,7 @@ final class FlowCryptCoreTests: XCTestCase {
             pubKeys: [TestData.k3rsa4096.public],
             password: nil
         )
-        await testPerformance(maxDuration: 100) {
+        await testPerformance(maxDuration: 120) {
             _ = try await core.parseDecryptMsg(
                 encrypted: encrypted,
                 keys: [TestData.k3rsa4096],

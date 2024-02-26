@@ -94,16 +94,18 @@ public extension String {
         }
     }
 
-    func removingHtmlTags() -> String? {
-        try? NSAttributedString(
-            data: self.data(using: .utf8)!,
-            options: [.documentType: NSAttributedString.DocumentType.html],
-            documentAttributes: nil
-        ).string
+    var isHTMLString: Bool {
+        do {
+            let regex = try NSRegularExpression(pattern: "<[a-z][\\s\\S]*>", options: .caseInsensitive)
+            let range = NSRange(startIndex..., in: self)
+            return regex.firstMatch(in: self, options: [], range: range) != nil
+        } catch {
+            return false
+        }
     }
 
-    func isHTMLString() -> Bool {
-        range(of: "^\\s*(<!doctype html[\\s\\S]*>)?\\s*<[a-z][\\s\\S]*>\\s*$", options: [.regularExpression, .caseInsensitive]) != nil
+    func removingHtmlTags() -> String {
+        replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
     }
 
     func removingMailThreadQuote() -> String {

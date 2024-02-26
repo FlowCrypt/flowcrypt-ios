@@ -63,10 +63,18 @@ class TouchHelper {
   };
 
   static tapScreenAt = async ({ x, y }: { x: number; y: number }) => {
-    await driver.touchPerform([
-      { action: 'press', options: { x, y } },
-      { action: 'wait', options: { ms: 100 } },
-      { action: 'release', options: {} },
+    await driver.performActions([
+      {
+        id: 'tapScreenAt',
+        type: 'pointer',
+        parameters: { pointerType: 'touch' },
+        actions: [
+          { duration: 0, x, y, type: 'pointerMove', origin: 'viewport' },
+          { button: 0, type: 'pointerDown' },
+          { type: 'pause', duration: 100 },
+          { button: 0, type: 'pointerUp' },
+        ],
+      },
     ]);
     await browser.pause(100);
   };
@@ -77,12 +85,21 @@ class TouchHelper {
     const startPoint = height * 0.3;
     const endPoint = height * 0.8;
     await browser.pause(1000); // due to scroll action which takes about second
-    await driver.touchPerform([
-      { action: 'press', options: { x: anchor, y: startPoint } },
-      { action: 'wait', options: { ms: 100 } },
-      { action: 'moveTo', options: { x: anchor, y: endPoint } },
-      { action: 'wait', options: { ms: 1000 } },
-      { action: 'release', options: {} },
+
+    await driver.performActions([
+      {
+        id: 'pullToRefresh',
+        type: 'pointer',
+        parameters: { pointerType: 'touch' },
+        actions: [
+          { duration: 0, x: anchor, y: startPoint, type: 'pointerMove', origin: 'viewport' },
+          { button: 0, type: 'pointerDown' },
+          { type: 'pause', duration: 100 },
+          { duration: 0, x: anchor, y: endPoint, type: 'pointerMove', origin: 'viewport' },
+          { type: 'pause', duration: 1000 },
+          { button: 0, type: 'pointerUp' },
+        ],
+      },
     ]);
   };
 
@@ -98,11 +115,19 @@ class TouchHelper {
       if (await element.isDisplayed()) {
         return;
       }
-      await driver.touchPerform([
-        { action: 'press', options: { x: anchor, y: startPoint } },
-        { action: 'wait', options: { ms: 100 } },
-        { action: 'moveTo', options: { x: anchor, y: endPoint } },
-        { action: 'release', options: {} },
+      await driver.performActions([
+        {
+          id: 'scrollDownToElement',
+          type: 'pointer',
+          parameters: { pointerType: 'touch' },
+          actions: [
+            { duration: 0, x: anchor, y: startPoint, type: 'pointerMove', origin: 'viewport' },
+            { button: 0, type: 'pointerDown' },
+            { type: 'pause', duration: 100 },
+            { duration: 0, x: anchor, y: endPoint, type: 'pointerMove', origin: 'viewport' },
+            { button: 0, type: 'pointerUp' },
+          ],
+        },
       ]);
       await browser.pause(1000); // due to scroll action which takes about second
     }
@@ -121,11 +146,19 @@ class TouchHelper {
       if (await element.isDisplayed()) {
         return;
       }
-      await driver.touchPerform([
-        { action: 'press', options: { x: anchor, y: startPoint } },
-        { action: 'wait', options: { ms: 100 } },
-        { action: 'moveTo', options: { x: anchor, y: endPoint } },
-        { action: 'release', options: {} },
+      await driver.performActions([
+        {
+          id: 'scrollUpToElement',
+          type: 'pointer',
+          parameters: { pointerType: 'touch' },
+          actions: [
+            { duration: 0, x: anchor, y: startPoint, type: 'pointerMove', origin: 'viewport' },
+            { button: 0, type: 'pointerDown' },
+            { type: 'pause', duration: 100 },
+            { duration: 0, x: anchor, y: endPoint, type: 'pointerMove', origin: 'viewport' },
+            { button: 0, type: 'pointerUp' },
+          ],
+        },
       ]);
       await browser.pause(1000); // due to scroll action which takes about second
     }
@@ -141,11 +174,31 @@ class TouchHelper {
 
     const targetX = side === 'leading' ? midX + 100 : midX - 100;
 
-    await driver.touchPerform([
-      { action: 'press', options: { x: midX, y: midY } },
-      { action: 'wait', options: { ms: 100 } },
-      { action: 'moveTo', options: { x: targetX, y: midY } },
-      { action: 'release', options: {} },
+    await driver.performActions([
+      {
+        id: 'swipeElement',
+        type: 'pointer',
+        parameters: { pointerType: 'touch' },
+        actions: [
+          {
+            duration: 0,
+            x: midX,
+            y: midY,
+            type: 'pointerMove',
+            origin: 'viewport',
+          },
+          { button: 1, type: 'pointerDown' },
+          { duration: 600, type: 'pause' },
+          {
+            duration: 600,
+            x: targetX,
+            y: midY,
+            type: 'pointerMove',
+            origin: 'viewport',
+          },
+          { button: 1, type: 'pointerUp' },
+        ],
+      },
     ]);
   };
 
@@ -157,10 +210,18 @@ class TouchHelper {
     const x = side === 'leading' ? 0 : window.width - 50;
     const y = location.y + size.height / 2;
 
-    await driver.touchPerform([
-      { action: 'press', options: { x, y } },
-      { action: 'wait', options: { ms: 100 } },
-      { action: 'release', options: {} },
+    await driver.performActions([
+      {
+        id: 'tapSwipeAction',
+        type: 'pointer',
+        parameters: { pointerType: 'touch' },
+        actions: [
+          { duration: 0, x, y, type: 'pointerMove', origin: 'viewport' },
+          { button: 0, type: 'pointerDown' },
+          { type: 'pause', duration: 100 },
+          { button: 0, type: 'pointerUp' },
+        ],
+      },
     ]);
   };
 }

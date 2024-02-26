@@ -209,7 +209,7 @@ extension ThreadDetailsViewController {
             sender: input.rawMessage.sender,
             subject: [quoteType.subjectPrefix, subject].joined(),
             sentDate: input.rawMessage.date,
-            text: processedMessage.fullText.removingHtmlTags() ?? "",
+            text: processedMessage.fullText.removingHtmlTags(),
             threadId: threadId,
             replyToMsgId: replyToMsgId,
             inReplyTo: input.rawMessage.inReplyTo,
