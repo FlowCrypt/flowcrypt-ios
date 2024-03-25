@@ -97,14 +97,13 @@ public final class MessageRecipientsNode: ASDisplayNode {
 
     override public func layoutSpecThatFits(_: ASSizeRange) -> ASLayoutSpec {
         let recipientsNodes: [ASStackLayoutSpec] = RecipientType.allCases.compactMap { type in
-            let recipients: [MessageRecipient]
-            switch type {
+            let recipients: [MessageRecipient] = switch type {
             case .to:
-                recipients = input.recipients
+                input.recipients
             case .cc:
-                recipients = input.ccRecipients
+                input.ccRecipients
             case .bcc:
-                recipients = input.bccRecipients
+                input.bccRecipients
             }
             return recipientList(label: type.rawValue, recipients: recipients)
         }

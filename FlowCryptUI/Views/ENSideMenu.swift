@@ -328,11 +328,10 @@ open class ENSideMenu: NSObject, UIGestureRecognizerDelegate {
             menuViewBehavior.elasticity = 0.25
             animator.addBehavior(menuViewBehavior)
         } else {
-            var destFrame: CGRect
-            if menuPosition == .left {
-                destFrame = CGRect(x: shouldOpen ? -2.0 : -menuWidth, y: 0, width: menuWidth, height: height)
+            var destFrame = if menuPosition == .left {
+                CGRect(x: shouldOpen ? -2.0 : -menuWidth, y: 0, width: menuWidth, height: height)
             } else {
-                destFrame = CGRect(
+                CGRect(
                     x: shouldOpen ? width - menuWidth : width + 2.0,
                     y: 0,
                     width: menuWidth,
