@@ -28,11 +28,10 @@ extension ComposeViewController {
 
             let deletedSectionsCount = previousSectionsCount - sectionsList.count
 
-            let sectionsToReload: [Section]
-            if let type = selectedRecipientType {
-                sectionsToReload = sectionsList.filter { $0 != .recipients(type) }
+            let sectionsToReload: [Section] = if let type = selectedRecipientType {
+                sectionsList.filter { $0 != .recipients(type) }
             } else {
-                sectionsToReload = sectionsList
+                sectionsList
             }
 
             node.performBatchUpdates {

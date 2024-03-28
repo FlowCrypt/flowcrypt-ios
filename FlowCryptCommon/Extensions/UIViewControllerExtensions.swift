@@ -201,11 +201,11 @@ public extension UINavigationController {
 // MARK: - ProgressHUD
 public extension UIViewController {
     func showSpinner(_ message: String = "loading_title".localized, isUserInteractionEnabled: Bool = false) {
-        ProgressHUD.show(message, interaction: isUserInteractionEnabled)
+        ProgressHUD.animate(message, interaction: isUserInteractionEnabled)
     }
 
     func showSpinnerWithProgress(_ message: String = "loading_title".localized, progress: Float) {
-        ProgressHUD.showProgress(message, CGFloat(progress))
+        ProgressHUD.progress(message, CGFloat(progress))
     }
 
     func hideSpinner() {

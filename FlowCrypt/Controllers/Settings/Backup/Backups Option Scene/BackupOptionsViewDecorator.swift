@@ -46,12 +46,10 @@ struct BackupOptionsViewDecorator: BackupOptionsViewDecoratorType {
         isSelected: Bool
     ) -> CheckBoxTextNode.Input {
 
-        let title: String
-
-        switch part {
-        case .email: title = "backup_option_screen_email"
-        case .download: title = "backup_option_screen_download"
-        default: title = ""
+        let title = switch part {
+        case .email: "backup_option_screen_email"
+        case .download: "backup_option_screen_download"
+        default: ""
         }
 
         return CheckBoxTextNode.Input.common(

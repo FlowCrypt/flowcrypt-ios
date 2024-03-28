@@ -1,12 +1,13 @@
 {
+  "originHash" : "930974f9ce515f09fa3552320baa442235c0c0ec32152803c76222b16efa82a4",
   "pins" : [
     {
       "identity" : "appauth-ios",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/openid/AppAuth-iOS.git",
       "state" : {
-        "revision" : "71cde449f13d453227e687458144bde372d30fc7",
-        "version" : "1.6.2"
+        "revision" : "7e2c09cbeb3bb799f26c268dbedb26325ea722a9",
+        "version" : "1.7.3"
       }
     },
     {
@@ -50,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "76135c9f4e1ac85459d5fec61b6f76ac47ab3a4c",
-        "version" : "3.3.1"
+        "revision" : "9534039303015a84837090d20fa21cae6e5eadb6",
+        "version" : "3.3.2"
       }
     },
     {
@@ -86,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/relatedcode/ProgressHUD.git",
       "state" : {
-        "revision" : "46792db49f80454879a939f9b2be31bb61c37b0c",
-        "version" : "13.8.6"
+        "revision" : "fd18c75d5f650a949e1da5fc725a1c1b523bbf8e",
+        "version" : "14.1.1"
       }
     },
     {
@@ -95,8 +96,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-cocoa",
       "state" : {
-        "revision" : "55466ae0fb29c5f21866792f05c1fc0c590d7c29",
-        "version" : "10.47.0"
+        "revision" : "e0c2fbb442979fbf1e4be80e01d142f310a9c762",
+        "version" : "10.49.1"
       }
     },
     {
@@ -104,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/realm-core.git",
       "state" : {
-        "revision" : "a5e87a39cffdcc591f3203c11cfca68100d0b9a6",
-        "version" : "13.26.0"
+        "revision" : "374dd672af357732dccc135fecc905406fec3223",
+        "version" : "14.4.1"
       }
     },
     {
@@ -149,8 +150,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/scinfu/SwiftSoup.git",
       "state" : {
-        "revision" : "1d39e56d364cba79ce43b341f9661b534cccb18d",
-        "version" : "2.7.1"
+        "revision" : "028487d4a8a291b2fe1b4392b5425b6172056148",
+        "version" : "2.7.2"
       }
     },
     {
@@ -194,10 +195,10 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jpsim/Yams.git",
       "state" : {
-        "revision" : "0d9ee7ea8c4ebd4a489ad7a73d5c6cad55d6fed3",
-        "version" : "5.0.6"
+        "revision" : "8a835d918245ca22f36663dd3862138805d7f707",
+        "version" : "5.1.0"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }
