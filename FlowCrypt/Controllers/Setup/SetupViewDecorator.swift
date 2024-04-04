@@ -33,13 +33,11 @@ struct SetupViewDecorator {
     }
 
     func title(for titleType: TitleType) -> NSAttributedString {
-        let text: String
-
-        switch titleType {
+        let text = switch titleType {
         case .setup, .createKey, .choosePassPhrase:
-            text = "setup_title"
+            "setup_title"
         case .enterPassPhrase, .importKey:
-            text = "import_key_description"
+            "import_key_description"
         }
 
         return text
@@ -70,19 +68,17 @@ struct SetupViewDecorator {
     }
 
     func subtitle(for subtitleType: SubtitleType) -> NSAttributedString {
-        let subtitle: String
-
-        switch subtitleType {
+        let subtitle = switch subtitleType {
         case let .fetchedKeys(count):
-            subtitle = "Found %@ key backup(s)".localizePluralsWithArguments(count)
+            "Found %@ key backup(s)".localizePluralsWithArguments(count)
         case let .fetchedEKMKeys(count):
-            subtitle = "Fetched %@ key(s) on EKM".localizePluralsWithArguments(count)
+            "Fetched %@ key(s) on EKM".localizePluralsWithArguments(count)
         case .common:
-            subtitle = "setup_description".localized
+            "setup_description".localized
         case .choosingPassPhrase:
-            subtitle = "create_pass_phrase_tips".localized
+            "create_pass_phrase_tips".localized
         case .noBackups:
-            subtitle = "setup_no_backups".localized // todo - edit
+            "setup_no_backups".localized // todo - edit
         }
 
         return subtitle
@@ -102,25 +98,23 @@ struct SetupViewDecorator {
     }
 
     func buttonTitle(for action: ButtonAction) -> NSAttributedString {
-        let buttonTitle: String
-
-        switch action {
+        let buttonTitle = switch action {
         case .createKey:
-            buttonTitle = "setup_initial_create_key"
+            "setup_initial_create_key"
         case .importKey:
-            buttonTitle = "setup_initial_import_key"
+            "setup_initial_import_key"
         case .loadAccount:
-            buttonTitle = "setup_load"
+            "setup_load"
         case .setPassPhrase:
-            buttonTitle = "create_pass_phrase_set_title"
+            "create_pass_phrase_set_title"
         case .pasteBoard:
-            buttonTitle = "import_key_paste"
+            "import_key_paste"
         case .passPhraseContinue:
-            buttonTitle = "import_key_continue"
+            "import_key_continue"
         case .passPhraseChooseAnother:
-            buttonTitle = "import_key_choose"
+            "import_key_choose"
         case .fileImport:
-            buttonTitle = "import_key_file"
+            "import_key_file"
         }
 
         return buttonTitle

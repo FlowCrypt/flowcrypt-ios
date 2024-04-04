@@ -24,14 +24,13 @@ struct KeyDetailViewDecorator {
     let titleInsets = UIEdgeInsets.deviceSpecificTextInsets(top: 16, bottom: 16)
 
     func attributedTitle(for keyDetailPart: KeyDetailViewController.Part) -> NSAttributedString {
-        let title: String
-        switch keyDetailPart {
-        case .description: title = "key_settings_subtitle".localized
-        case .publicInfo: title = "key_settings_detail_show_public".localized
-        case .copy: title = "key_settings_detail_copy".localized
-        case .keyDetails: title = "key_settings_detail_show_details".localized
-        case .save: title = "key_settings_detail_save".localized
-        case .privateInfo: title = "key_settings_detail_show_private_title".localized
+        let title = switch keyDetailPart {
+        case .description: "key_settings_subtitle".localized
+        case .publicInfo: "key_settings_detail_show_public".localized
+        case .copy: "key_settings_detail_copy".localized
+        case .keyDetails: "key_settings_detail_show_details".localized
+        case .save: "key_settings_detail_save".localized
+        case .privateInfo: "key_settings_detail_show_private_title".localized
         }
 
         if keyDetailPart.isDescription {
