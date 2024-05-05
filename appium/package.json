@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.10",
     "@types/mailparser": "^3.4.4",
-    "@types/node": "^20.11.24",
+    "@types/node": "^20.12.8",
     "@wdio/allure-reporter": "^8.23.1",
     "@wdio/appium-service": "^8.27.0",
     "@wdio/cli": "^8.27.2",
