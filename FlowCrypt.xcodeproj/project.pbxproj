@@ -94,6 +94,7 @@
 		5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5133B6732716E5EA00C95463 /* LabelCellNode.swift */; };
 		5137CB1427F8E0A900AEF895 /* EnterpriseServerApiHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5137CB1327F8E0A900AEF895 /* EnterpriseServerApiHelper.swift */; };
 		513DC088284F161400FAD5F2 /* EmailKeyManagerApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 513DC087284F161400FAD5F2 /* EmailKeyManagerApi.swift */; };
+		51469FFD2BF20D550010AEE9 /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675E270F36A400D27C52 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		514C34DB276CE19C00FCAB79 /* ComposeMessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DA276CE19C00FCAB79 /* ComposeMessageContext.swift */; };
 		514C34DD276CE1C000FCAB79 /* ComposeMessageRecipient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DC276CE1C000FCAB79 /* ComposeMessageRecipient.swift */; };
 		514C34DF276CE20700FCAB79 /* ComposeMessageHelper+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514C34DE276CE20700FCAB79 /* ComposeMessageHelper+State.swift */; };
@@ -133,7 +134,6 @@
 		51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */ = {isa = PBXBuildFile; fileRef = 51E1673C270DAFF900D27C52 /* Localizable.stringsdict */; };
 		51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */; };
 		51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 51E16748270F303100D27C52 /* GoogleSignIn */; };
-		51E1675D270F36A400D27C52 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675C270F36A400D27C52 /* Realm */; };
 		51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 51E1675E270F36A400D27C52 /* RealmSwift */; };
 		51E8181D29081D2B00FD428D /* flowcrypt-ios-prod.js.txt in Resources */ = {isa = PBXBuildFile; fileRef = 51E8181C29081D2B00FD428D /* flowcrypt-ios-prod.js.txt */; };
 		51EBC5702746A06600178DE8 /* TextWithIconNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */; };
@@ -454,6 +454,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				51469FFD2BF20D550010AEE9 /* RealmSwift in Embed Frameworks */,
 				D2CDC3E324052D54002B045F /* FlowCryptCommon.framework in Embed Frameworks */,
 				D2CDC3DE24052D50002B045F /* FlowCryptUI.framework in Embed Frameworks */,
 			);
@@ -894,7 +895,6 @@
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
 				51E16746270F301F00D27C52 /* GoogleAPIClientForREST_Gmail in Frameworks */,
 				51A1A12829070CDF007F1188 /* AsyncDisplayKit in Frameworks */,
-				51E1675D270F36A400D27C52 /* Realm in Frameworks */,
 				51C0C1EF271982A1000C9738 /* MailCore in Frameworks */,
 				040FDF0E27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 in Frameworks */,
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
@@ -2363,7 +2363,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				95D83FBB2A5D4BED006FDC33 /* PBXTargetDependency */,
+				51469FFC2BF20C540010AEE9 /* PBXTargetDependency */,
 				D2CDC3DC24052D0F002B045F /* PBXTargetDependency */,
 				D2CDC3E024052D50002B045F /* PBXTargetDependency */,
 			);
@@ -2371,7 +2371,6 @@
 			packageProductDependencies = (
 				51E16745270F301F00D27C52 /* GoogleAPIClientForREST_Gmail */,
 				51E16748270F303100D27C52 /* GoogleSignIn */,
-				51E1675C270F36A400D27C52 /* Realm */,
 				51E1675E270F36A400D27C52 /* RealmSwift */,
 				512C1413271077F8002DE13F /* GoogleAPIClientForREST_PeopleService */,
 				51C0C1EE271982A1000C9738 /* MailCore */,
@@ -2496,6 +2495,7 @@
 				95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */,
 				952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */,
 				958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				513E8BC22BF20FCA00340F1B /* XCRemoteSwiftPackageReference "GTMAppAuth" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -2980,9 +2980,9 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		95D83FBB2A5D4BED006FDC33 /* PBXTargetDependency */ = {
+		51469FFC2BF20C540010AEE9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 95D83FBA2A5D4BED006FDC33 /* SwiftLintPlugin */;
+			productRef = 51469FFB2BF20C540010AEE9 /* SwiftLintBuildToolPlugin */;
 		};
 		9F2AC5CC267BE99E00F6149B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3860,6 +3860,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		513E8BC22BF20FCA00340F1B /* XCRemoteSwiftPackageReference "GTMAppAuth" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GTMAppAuth";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 		51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/FlowCrypt/Texture/";
@@ -3953,6 +3961,11 @@
 			package = 51E16744270F301F00D27C52 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
 			productName = GoogleAPIClientForREST_PeopleService;
 		};
+		51469FFB2BF20C540010AEE9 /* SwiftLintBuildToolPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */;
+			productName = "plugin:SwiftLintBuildToolPlugin";
+		};
 		51A1A12729070CDF007F1188 /* AsyncDisplayKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */;
@@ -3973,11 +3986,6 @@
 			package = 51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
 		};
-		51E1675C270F36A400D27C52 /* Realm */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
-			productName = Realm;
-		};
 		51E1675E270F36A400D27C52 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */;
@@ -3992,11 +4000,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
-		};
-		95D83FBA2A5D4BED006FDC33 /* SwiftLintPlugin */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */;
-			productName = "plugin:SwiftLintPlugin";
 		};
 		95F55F9E2A7B8A720000E50F /* ProgressHUD */ = {
 			isa = XCSwiftPackageProductDependency;
