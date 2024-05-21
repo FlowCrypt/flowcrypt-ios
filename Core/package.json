@@ -12,7 +12,7 @@
   "devDependencies": {
     "@types/chai": "4.3.16",
     "@types/encoding-japanese": "^2.0.4",
-    "@types/node": "^20.12.11",
+    "@types/node": "^20.12.12",
     "@types/sanitize-html": "^2.9.5",
     "ava": "5.3.1",
     "buffer": "^6.0.3",
