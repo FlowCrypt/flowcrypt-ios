@@ -33,6 +33,7 @@ blocks:
       epilogue:
         always:
           commands:
+            - mkdir -p /var/tmp/derived_data/Build/Products/Debug-iphonesimulator
             - cd /var/tmp/derived_data/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
   - name: TypeScript tests
     dependencies: []
