@@ -11,7 +11,7 @@ platform :ios do
       project: "FlowCrypt.xcodeproj",
       scheme: "Debug FlowCrypt",
       device: "iPhone 15",
-      derived_data_path: "/var/tmp/derived_data",
+      derived_data_path: "~/Library/Developer/Xcode/DerivedData",
       skip_detect_devices: true,
       build_for_testing: true,
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
@@ -25,7 +25,7 @@ platform :ios do
       scheme: "FlowCryptAppTests",
       device: "iPhone 15",
       test_without_building: true,
-      derived_data_path: "/var/tmp/derived_data",
+      derived_data_path: "~/Library/Developer/Xcode/DerivedData",
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
       parallel_testing: false,
       disable_concurrent_testing: true
