@@ -28,10 +28,8 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - xcrun simctl list devices --json | jq '.devices[] | .[] | .name'
-            - bundle install
-            - bundle exec fastlane build
-            - bundle exec fastlane test
+            - fastlane build
+            - fastlane test
       epilogue:
         always:
           commands:
