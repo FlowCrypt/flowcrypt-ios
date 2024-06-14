@@ -45,6 +45,9 @@ export const config: Options.Testrunner = {
     [
       'appium',
       {
+        args: {
+          relaxedSecurity: true,
+        },
         command: './node_modules/.bin/appium',
         logPath: join(process.cwd(), './tmp'),
       },
