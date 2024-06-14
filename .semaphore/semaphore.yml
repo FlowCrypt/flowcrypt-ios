@@ -28,8 +28,9 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - fastlane build
-            - fastlane test
+            - bundle install
+            - bundle exec fastlane build
+            - bundle exec fastlane test
       epilogue:
         always:
           commands:
