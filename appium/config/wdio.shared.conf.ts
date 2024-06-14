@@ -55,7 +55,7 @@ export const config: Options.Testrunner = {
   ],
   port: 4723,
   specFileRetries: 1,
-  specFileRetriesDelay: 30,
+  specFileRetriesDelay: 10,
 
   afterTest: async function (_test, _context, { passed }) {
     if (!passed) {
