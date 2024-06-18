@@ -45,6 +45,9 @@ export const config: Options.Testrunner = {
     [
       'appium',
       {
+        args: {
+          relaxedSecurity: true,
+        },
         command: './node_modules/.bin/appium',
         logPath: join(process.cwd(), './tmp'),
       },
@@ -52,7 +55,7 @@ export const config: Options.Testrunner = {
   ],
   port: 4723,
   specFileRetries: 1,
-  specFileRetriesDelay: 30,
+  specFileRetriesDelay: 10,
 
   afterTest: async function (_test, _context, { passed }) {
     if (!passed) {
