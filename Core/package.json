@@ -18,7 +18,7 @@
     "buffer": "^6.0.3",
     "chai": "4.4.1",
     "eslint-plugin-local-rules": "^2.0.0",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "webpack": "^5.90.3",
     "webpack-cli": "5.1.4",
     "webpack-node-externals": "3.0.0"
