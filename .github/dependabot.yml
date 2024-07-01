@@ -31,7 +31,7 @@ updates:
           - "*"
     ignore:
       - dependency-name: "@openpgp/web-stream-tools"
-        versions: [">= 0.1.0"]
+        versions: [">= 0.0.12"]
       - dependency-name: "ava"
         update-types: ["version-update:semver-major"]
       - dependency-name: "chai"
