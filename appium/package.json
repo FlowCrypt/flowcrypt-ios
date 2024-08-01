@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.10",
     "@types/mailparser": "^3.4.4",
-    "@types/node": "^20.11.24",
+    "@types/node": "^22.0.2",
     "@wdio/allure-reporter": "^8.23.1",
     "@wdio/appium-service": "^8.27.0",
     "@wdio/cli": "^8.27.2",
@@ -32,8 +32,8 @@
     "@wdio/junit-reporter": "^8.27.0",
     "@wdio/local-runner": "^8.27.2",
     "@wdio/spec-reporter": "^8.29.1",
-    "appium": "^2.4.1",
-    "appium-xcuitest-driver": "^7.15.2",
+    "appium": "^2.11.2",
+    "appium-xcuitest-driver": "^7.24.9",
     "dotenv": "^16.4.1",
     "mailparser": "^3.6.6",
     "moment": "^2.29.1",
@@ -42,7 +42,7 @@
     "openpgp": "5.11.2",
     "ts-node": "^10.5.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.3.3",
+    "typescript": "^5.5.4",
     "webdriverio": "^8.18.2"
   }
 }
