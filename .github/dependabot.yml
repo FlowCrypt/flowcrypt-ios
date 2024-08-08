@@ -19,6 +19,10 @@ updates:
         versions: ["2.0.0", "2.0.1"]
       - dependency-name: "eslint"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "@typescript-eslint/eslint-plugin"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@typescript-eslint/parser"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "npm"
     directory: "/Core/"

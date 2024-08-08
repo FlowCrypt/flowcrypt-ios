@@ -14,6 +14,7 @@ public enum TapTicFeedback {
         case .error:
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.error)
+
         case .success:
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
@@ -33,6 +34,7 @@ public enum TapTicFeedback {
         case .heavy:
             let generator = UIImpactFeedbackGenerator(style: .heavy)
             generator.impactOccurred()
+
         case .changed:
             let generator = UISelectionFeedbackGenerator()
             generator.selectionChanged()
