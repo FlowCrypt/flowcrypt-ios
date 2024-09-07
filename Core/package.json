@@ -10,7 +10,7 @@
     "zxcvbn": "4.4.2"
   },
   "devDependencies": {
-    "@types/chai": "4.3.17",
+    "@types/chai": "4.3.19",
     "@types/encoding-japanese": "^2.2.1",
     "@types/node": "^22.5.2",
     "@types/sanitize-html": "^2.13.0",

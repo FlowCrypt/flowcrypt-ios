@@ -9,6 +9,9 @@ execution_time_limit:
 auto_cancel:
   running:
     when: branch != 'master'
+fail_fast:
+  stop:
+    when: branch != 'master'
 blocks:
   - name: Build + Swift Unit Test
     dependencies: []
