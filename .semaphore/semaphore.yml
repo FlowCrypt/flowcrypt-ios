@@ -2,7 +2,7 @@ version: v1.0
 name: FlowCrypt iOS App
 agent:
   machine:
-    type: a1-standard-4
+    type: a2-standard-4
     os_image: macos-xcode16
 execution_time_limit:
   minutes: 120
