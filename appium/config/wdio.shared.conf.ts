@@ -46,6 +46,8 @@ export const config: Options.Testrunner = {
       'appium',
       {
         args: {
+          address: 'localhost',
+          port: 4723,
           relaxedSecurity: true,
         },
         command: './node_modules/.bin/appium',
