@@ -2,15 +2,12 @@ version: v1.0
 name: FlowCrypt iOS App
 agent:
   machine:
-    type: a2-standard-4
-    os_image: macos-xcode16
+    type: a1-standard-4
+    os_image: macos-xcode15
 execution_time_limit:
   minutes: 120
 auto_cancel:
   running:
-    when: branch != 'master'
-fail_fast:
-  stop:
     when: branch != 'master'
 blocks:
   - name: Build + Swift Unit Test
@@ -89,18 +86,22 @@ blocks:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
             - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
       jobs:
-        - name: Run Mock inbox + compose tests
+        - name: Run Mock inbox tests
           commands:
             - npm run-script test.mock.inbox
+        - name: Run Mock compose tests
+          commands:
             - npm run-script test.mock.compose
-        - name: Run Mock setup + live + other test
+        - name: Run Mock setup tests
           commands:
             - npm run-script test.mock.setup
+        - name: Run Mock other tests + Run Live tests
+          commands:
             - npm run-script test.mock.login-settings
             # temporary disabled because of e2e account login issue
             # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             # - unzip flowcrypt-ios-*.zip
-            # - npm run-script test.live.all            
+            # - npm run-script test.live.all
       secrets:
         - name: flowcrypt-ios-ci-secrets
     run:
