@@ -19,7 +19,7 @@ public final class SecurityWarningNode: CellNode {
 
     private lazy var messageNode: ASTextNode2 = {
         let textNode = ASTextNode2()
-        textNode.attributedText = "message_security_warning_message".localized.attributed(.thin(16), color: .black, alignment: .left)
+        textNode.attributedText = "message_security_warning_message".localized.attributed(.regular(15), color: .black, alignment: .left)
         textNode.accessibilityIdentifier = "aid-security-warning-message-node"
         return textNode
     }()
