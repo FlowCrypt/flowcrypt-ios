@@ -26,6 +26,9 @@ config.capabilities = [
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:newCommandTimeout': 240,
     'appium:webviewConnectTimeout': 5000,
+    'appium:reduceMotion': 'true',
+    'appium:showXcodeLog': 'true',
+    'appium:showIOSLog': 'true',
   },
 ];
 
