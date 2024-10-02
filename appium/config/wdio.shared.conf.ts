@@ -12,11 +12,6 @@ process.on('SIGINT', () => {
 });
 
 export const config: Options.Testrunner = {
-  autoCompileOpts: {
-    tsNodeOpts: {
-      project: './tsconfig.json',
-    },
-  },
   runner: 'local',
   framework: 'jasmine',
   jasmineOpts: {
@@ -24,8 +19,8 @@ export const config: Options.Testrunner = {
   },
   logLevel: 'error',
   bail: 0,
-  waitforTimeout: 15000,
-  connectionRetryTimeout: 400000,
+  waitforTimeout: 45000,
+  connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
   maxInstancesPerCapability: 1,
   reporters: [
