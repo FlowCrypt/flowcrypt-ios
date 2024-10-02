@@ -72,6 +72,9 @@
 "message_mark_read_error" = "Could not mark message as read: %@";
 "message_reply_all" = "Reply all";
 "message_not_found_in_folder" = "Message not found in folder: ";
+"message_security_warning_subject" = "Potentially suspicious message";
+"message_security_warning_message" = "It wasn't properly verified by the sender, so its authenticity can't be confirmed.
+Be careful - avoid clicking links and downloading attachments, or sharing personal info.";
 
 // Passphrase Anti BruteForce Protection
 "passphrase_anti_brute_force_protection_hint" = "To protect you and your data, the next attempt will only be possible after the timer below finishes. Please wait until then before trying again.";

@@ -30,4 +30,5 @@ export type GoogleMockMessage =
   | 'Test forward message with attached pub key'
   | 'Encrypted email with public key attached'
   | 'Email with another user public key attached'
-  | 'Test remote images #2414';
+  | 'Test remote images #2414'
+  | 'Test Spoofed email by Mart';

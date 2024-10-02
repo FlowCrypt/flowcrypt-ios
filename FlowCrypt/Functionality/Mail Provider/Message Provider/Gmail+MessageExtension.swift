@@ -44,6 +44,7 @@ extension Message {
         var replyTo: String?
         var inReplyTo: String?
         var rfc822MsgId: String?
+        var isSuspicious = false
 
         for messageHeader in messageHeaders.compactMap({ $0 }) {
             guard let name = messageHeader.name?.lowercased(),
@@ -58,6 +59,7 @@ extension Message {
             case .bcc: bcc = value
             case .replyTo: replyTo = value
             case .inReplyTo: inReplyTo = value
+            case .receivedSPF: isSuspicious = value.contains("softfail")
             case .identifier: rfc822MsgId = value
             default: break
             }
@@ -81,7 +83,8 @@ extension Message {
             cc: cc,
             bcc: bcc,
             replyTo: replyTo,
-            inReplyTo: inReplyTo
+            inReplyTo: inReplyTo,
+            isSuspicious: isSuspicious
         )
     }
 }
