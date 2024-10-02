@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.10",
     "@types/mailparser": "^3.4.4",
-    "@types/node": "^20.11.24",
+    "@types/node": "^22.7.4",
     "@wdio/allure-reporter": "^9.1.2",
     "@wdio/appium-service": "^9.1.2",
     "@wdio/cli": "^9.1.2",
@@ -43,6 +43,6 @@
     "ts-node": "^10.5.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
-    "webdriverio": "^8.18.2"
+    "webdriverio": "^9.1.2"
   }
 }
