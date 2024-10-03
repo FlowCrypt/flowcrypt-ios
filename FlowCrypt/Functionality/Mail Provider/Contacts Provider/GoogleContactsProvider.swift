@@ -18,7 +18,7 @@ enum ContactsProviderError: Error {
 }
 
 class GoogleContactsProvider: ContactsProviderType {
-    var authorization: GTMAppAuthFetcherAuthorization? {
+    var authorization: GTMAppAuth.AuthSession? {
         didSet {
             guard isContactsScopeEnabled else { return }
             runWarmupQuery()
@@ -68,7 +68,7 @@ class GoogleContactsProvider: ContactsProviderType {
         }
     }
 
-    init(authorization: GTMAppAuthFetcherAuthorization?) {
+    init(authorization: GTMAppAuth.AuthSession?) {
         self.authorization = authorization
     }
 
