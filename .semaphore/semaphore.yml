@@ -97,7 +97,6 @@ blocks:
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
           - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
-          - xattr -r -d com.apple.quarantine ./FlowCrypt.app
       epilogue:
         always:
           commands:
