@@ -3883,7 +3883,7 @@
 			repositoryURL = "https://github.com/google/GTMAppAuth";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				minimumVersion = 4.0.0;
 			};
 		};
 		51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */ = {
