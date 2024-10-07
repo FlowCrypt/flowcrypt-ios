@@ -31,7 +31,7 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - killall Simulator
+            - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
             - open -Fn /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app
             - fastlane build
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
