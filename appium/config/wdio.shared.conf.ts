@@ -48,7 +48,7 @@ export const config: Options.Testrunner = {
       },
     ],
   ],
-  port: 4723,
+  // port: 4723,
   specFileRetries: 1,
   specFileRetriesDelay: 10,
 

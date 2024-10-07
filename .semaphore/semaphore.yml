@@ -3,9 +3,9 @@ name: FlowCrypt iOS App
 agent:
   machine:
     type: a2-standard-4
-    os_image: macos-xcode15
+    os_image: macos-xcode16
 execution_time_limit:
-  minutes: 120
+  minutes: 30
 auto_cancel:
   running:
     when: branch != 'master'
@@ -18,7 +18,7 @@ blocks:
     run:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json']})"
     execution_time_limit:
-      minutes: 115
+      minutes: 30
     task:
       env_vars:
         - name: LANG
