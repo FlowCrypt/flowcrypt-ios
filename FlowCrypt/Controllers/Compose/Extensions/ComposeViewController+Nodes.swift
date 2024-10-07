@@ -140,6 +140,11 @@ extension ComposeViewController {
             mutableString.append(styledQuote)
         }
 
+        let sendAs = sendAsList.first(where: { $0.sendAsEmail == contextToSend.sender })
+        if let signature = sendAs?.signature {
+            mutableString.append("\n\n--\n\(signature.removingHtmlTags())".attributed(.regular(17)))
+        }
+
         let height = max(decorator.frame(for: mutableString).height, 40)
 
         composeTextNode = TextViewCellNode(
