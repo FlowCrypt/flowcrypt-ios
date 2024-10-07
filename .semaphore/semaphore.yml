@@ -105,6 +105,10 @@ blocks:
       jobs:
         - name: Run Mock inbox + compose tests
           commands:
+            - xcodebuild -runFirstLaunch
+            - sudo xcodebuild -license accept
+            - xcrun simctl list --json
+            - xcrun simctl boot "iPhone SE (3rd generation)"
             - npm run-script test.mock.inbox
             # - npm run-script test.mock.compose
         # - name: Run Mock setup + live + other test
