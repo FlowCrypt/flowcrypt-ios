@@ -31,7 +31,11 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - open -Fn /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app
+            - cd /Applications
+            - ls
+            - ps aux | grep Simulator
+            - sudo tccutil reset All com.apple.dt.Xcode
+            - open -Fn /Applications/Xcode-16.0.app/Contents/Developer/Applications/Simulator.app
             - fastlane build
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
             # - fastlane test
