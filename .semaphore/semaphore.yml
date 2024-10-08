@@ -31,10 +31,8 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - cd /Applications
-            - ls
             - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
-            - open -a xcode
+            - open /Applications/Xcode-16.0.0.app
             # - xattr -r /Applications/Xcode-16.0.0.app
             # - sudo xattr -dr com.apple.quarantine /Applications/Xcode-16.0.0.app
             - sudo open -a /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app -g
