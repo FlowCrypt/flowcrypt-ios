@@ -34,8 +34,8 @@ blocks:
             - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
             - xattr -r /Applications/Xcode-16.0.0.app
             - sudo xattr -dr com.apple.quarantine /Applications/Xcode-16.0.0.app
-            - sudo open -a Simulator
-            - open -Fn /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app
+            # - sudo open -a Simulator
+            - sudo open -Fn /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app
             # - fastlane build
             # - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
             # - fastlane test
