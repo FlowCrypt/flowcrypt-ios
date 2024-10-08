@@ -39,6 +39,7 @@ private extension SendAsModel {
             displayName: sendAs.displayName ?? "",
             sendAsEmail: sendAsEmail,
             isDefault: sendAs.isDefault?.boolValue ?? false,
+            signature: sendAs.signature ?? "",
             verificationStatus: SendAsVerificationStatus(
                 rawValue: sendAs.verificationStatus ?? "verificationStatusUnspecified"
             ) ?? .verificationStatusUnspecified
