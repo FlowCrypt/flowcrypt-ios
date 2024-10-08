@@ -91,7 +91,7 @@ final class ComposeViewController: TableNodeViewController {
     var popoverVC: ComposeRecipientPopupViewController!
 
     var sectionsList: [Section] = []
-    var composeTextNode: ASCellNode?
+    var composeTextNode: TextViewCellNode?
     var composeSubjectNode: ASCellNode?
     var sendAsList: [SendAsModel] = []
 
@@ -163,7 +163,7 @@ final class ComposeViewController: TableNodeViewController {
             .filter { $0.verificationStatus == .accepted || $0.isDefault }
 
         self.contextToSend = ComposeMessageContext(
-            sender: appContext.user.email,
+            sender: input.sender ?? appContext.user.email,
             subject: input.subject,
             attachments: input.attachments
         )

@@ -117,7 +117,18 @@ extension ComposeViewController {
 
     private func changeSendAs(to email: String) {
         contextToSend.sender = email
+        changeSignature()
         reload(sections: [.recipients(.from)])
+    }
+
+    private func changeSignature() {
+        let pattern = "\\r?\\n\\r?\\n--\\r?\\n[\\s\\S]*"
+        if let message = contextToSend.message, let signature = getSignature(), let regex = try? NSRegularExpression(pattern: pattern) {
+
+            let range = NSRange(location: 0, length: message.utf16.count)
+            let updatedSignature = regex.stringByReplacingMatches(in: message, options: [], range: range, withTemplate: signature)
+            composeTextNode?.setText(text: updatedSignature)
+        }
     }
 
     func messagePasswordNode() -> ASCellNode {
@@ -131,6 +142,14 @@ extension ComposeViewController {
         )
     }
 
+    func getSignature() -> String? {
+        let sendAs = sendAsList.first(where: { $0.sendAsEmail == contextToSend.sender })
+        if let signature = sendAs?.signature {
+            return "\n\n--\n\(signature.removingHtmlTags())"
+        }
+        return nil
+    }
+
     func setupTextNode() {
         let attributedString = decorator.styledMessage(with: contextToSend.message ?? "")
         let styledQuote = decorator.styledQuote(with: input)
@@ -140,9 +159,8 @@ extension ComposeViewController {
             mutableString.append(styledQuote)
         }
 
-        let sendAs = sendAsList.first(where: { $0.sendAsEmail == contextToSend.sender })
-        if let signature = sendAs?.signature {
-            mutableString.append("\n\n--\n\(signature.removingHtmlTags())".attributed(.regular(17)))
+        if let signature = getSignature(), !mutableString.string.replacingOccurrences(of: "\r", with: "").contains(signature) {
+            mutableString.append(signature.attributed(.regular(17)))
         }
 
         let height = max(decorator.frame(for: mutableString).height, 40)
