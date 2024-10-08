@@ -105,7 +105,23 @@ public extension String {
     }
 
     func removingHtmlTags() -> String {
-        replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+        // Replace <br> and <p> tags with newlines
+        var stringWithLineBreaks = self.replacingOccurrences(of: "<br>", with: "\n")
+        stringWithLineBreaks = stringWithLineBreaks.replacingOccurrences(of: "</p>", with: "\n")
+        stringWithLineBreaks = stringWithLineBreaks.replacingOccurrences(of: "<p>", with: "")
+
+        // Convert the HTML string to NSAttributedString
+        if let data = stringWithLineBreaks.data(using: .utf8) {
+            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.html,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            if let attributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) {
+                // Return the plain string from the attributed string
+                return attributedString.string
+            }
+        }
+        return self
     }
 
     func removingMailThreadQuote() -> String {
