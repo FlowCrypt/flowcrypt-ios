@@ -31,7 +31,7 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
+            - sudo xcode-select -s /Applications/Xcode-16.0.0.app
             - open -a Simulator
             - xcrun simctl list devices | grep "iPhone SE (3rd generation)"
             - cd /Applications/Xcode-16.0.0.app/Contents/Developer/Applications
