@@ -32,6 +32,9 @@ blocks:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
+            - open -a Simulator
+            - xcrun simctl list devices | grep "iPhone SE (3rd generation)"
+            - cd /Applications/Xcode-16.0.0.app/Contents/Developer/Applications
             - open -Fn /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app
             - fastlane build
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
