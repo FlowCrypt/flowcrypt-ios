@@ -32,9 +32,9 @@ blocks:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
-            - cd /Applications/Xcode-16.0.0.app
-            - ls
-            - open /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app/
+            - softwareupdate --list
+            - rm -rf ~/Library/Developer/Xcode/DerivedData
+            # - open /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app/
             - xcrun simctl boot "iPhone SE (3rd generation)"
             # - open /Applications/Xcode-16.0.0.app
             # - xattr -r /Applications/Xcode-16.0.0.app
