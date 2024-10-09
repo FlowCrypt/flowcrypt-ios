@@ -31,9 +31,10 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - xcode-select -p
-            - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
-            - chmod +x /Applications/Xcode-16.0.0.app/Contents/MacOS/Xcode
+            # - xcode-select -p
+            # - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
+            - open /Applications/Xcode-16.0.0.app/ || open /Applications/Xcode-16.0.0.app/
+            # - chmod +x /Applications/Xcode-16.0.0.app/Contents/MacOS/Xcode
             # - softwareupdate --list
             # - rm -rf ~/Library/Developer/Xcode/DerivedData
             # - open /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app/
