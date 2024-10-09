@@ -33,8 +33,7 @@ blocks:
           commands:
             - xcode-select -p
             - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
-            - pkgutil --check-signature /Applications/Xcode-16.0.0.app
-            - sudo codesign --force --deep --sign - /Applications/Xcode-16.0.0.app
+            - chmod +x /Applications/Xcode-16.0.0.app/Contents/MacOS/Xcode
             # - softwareupdate --list
             # - rm -rf ~/Library/Developer/Xcode/DerivedData
             # - open /Applications/Xcode-16.0.0.app/Contents/Developer/Applications/Simulator.app/
