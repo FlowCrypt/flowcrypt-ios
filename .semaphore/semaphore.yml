@@ -32,6 +32,7 @@ blocks:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
+            - flutter doctor
             - open /Applications/Xcode-16.0.0.app
             # - xattr -r /Applications/Xcode-16.0.0.app
             # - sudo xattr -dr com.apple.quarantine /Applications/Xcode-16.0.0.app
