@@ -33,7 +33,9 @@ blocks:
           commands:
             # - xcode-select -p
             # - sudo xcode-select -s /Applications/Xcode-16.0.0.app/Contents/Developer
-            - open /Applications/Xcode-16.0.0.app/ || open /Applications/Xcode-16.0.0.app/
+            - cd ~/Applications
+            - ls
+            - open /Applications/Xcode.app/
             # - chmod +x /Applications/Xcode-16.0.0.app/Contents/MacOS/Xcode
             # - softwareupdate --list
             # - rm -rf ~/Library/Developer/Xcode/DerivedData
