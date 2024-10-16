@@ -25,6 +25,9 @@ blocks:
           value: en_US.UTF-8
         - name: SEMAPHORE_GIT_DIR
           value: /Users/semaphore/git/flowcrypt-ios
+      prologue:
+        commands:
+          - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
