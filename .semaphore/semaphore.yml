@@ -71,7 +71,7 @@ blocks:
       jobs:
         - name: Run Mock inbox + compose tests
           commands:
-            - npm run-script test.mock.inbox
+            - npm run-script test.mock "check attachment after forward"
             # - npm run-script test.mock.compose
         # - name: Run Mock setup + live + other test
         #   commands:
