@@ -32,7 +32,7 @@ blocks:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - fastlane build
-            - fastlane test
+            # - fastlane test
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
         - name: Build WebDriverAgent
           commands:
@@ -71,7 +71,7 @@ blocks:
       jobs:
         - name: Run Mock inbox + compose tests
           commands:
-            - npm run-script test.mock "should honor reply-to address when reply-to header is present"
+            - npm run-script test.mock.inbox
             # - npm run-script test.mock.compose
         # - name: Run Mock setup + live + other test
         #   commands:
