@@ -18,6 +18,11 @@ platform :ios do
       # build_for_testing: true,
       skip_codesigning: true,
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
+      export_method: "development",
+      skip_package_ipa: true,
+      skip_archive: true,
+      skip_profile_detection: true,
+      clean: false
     )
   end
 
