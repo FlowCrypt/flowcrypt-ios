@@ -18,7 +18,7 @@ platform :ios do
       # build_for_testing: true,
       sdk: "iphonesimulator", 
       skip_codesigning: true,
-      xcargs: "ARCHS='x86_64 arm64' VALID_ARCHS='x86_64 arm64' -destination 'generic/platform=iOS Simulator' -skipPackagePluginValidation -skipMacroValidation",
+      xcargs: "ARCHS='x86_64' VALID_ARCHS='x86_64' -destination 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=17.4' -skipPackagePluginValidation -skipMacroValidation",
       export_method: "development",
       skip_package_ipa: true,
       skip_archive: true,
