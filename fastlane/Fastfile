@@ -16,7 +16,7 @@ platform :ios do
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       # skip_detect_devices: true,
       # build_for_testing: true,
-      destination: 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=17.4',
+      destination: 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=18.0',
       # sdk: "iphonesimulator", 
       skip_codesigning: true,
       xcargs: "ARCHS='x86_64 arm64' VALID_ARCHS='x86_64 arm64' -skipPackagePluginValidation -skipMacroValidation",
@@ -33,7 +33,7 @@ platform :ios do
     scan(
       project: "FlowCrypt.xcodeproj",
       scheme: "FlowCryptAppTests",
-      device: "iPhone SE (3rd generation) (17.4)",
+      device: "iPhone SE (3rd generation) (18.0)",
       test_without_building: true,
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",

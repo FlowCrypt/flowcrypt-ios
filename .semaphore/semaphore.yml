@@ -49,7 +49,7 @@ blocks:
       agent:
         machine:
           type: a1-standard-4
-          os_image: macos-xcode15
+          os_image: macos-xcode16
       env_vars:
         - name: LANG
           value: en_US.UTF-8

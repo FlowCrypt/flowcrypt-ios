@@ -14,14 +14,13 @@ config.suites = {
 config.capabilities = [
   {
     platformName: 'iOS',
-    'wdio:maxInstances': 1,
     hostname: '127.0.0.1',
     'appium:automationName': 'XCUITest',
     'appium:processArguments': {
       args: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'],
     },
     'appium:deviceName': 'iPhone SE (3rd generation)',
-    'appium:platformVersion': '17.4',
+    'appium:platformVersion': '18.0',
     'appium:orientation': 'PORTRAIT',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:newCommandTimeout': 240,
