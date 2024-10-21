@@ -69,9 +69,9 @@ export class MockApi {
     this._attesterConfig = config;
   }
 
-  public addGoogleAccount(email: GoogleMockAccountEmail, account: GoogleMockAccount = {}) {
+  public addGoogleAccount(email: GoogleMockAccountEmail, account: GoogleMockAccount = {}, signature?: string) {
     if (!this._googleConfig) {
-      this._googleConfig = { accounts: {} };
+      this._googleConfig = { accounts: {}, signature };
     }
 
     this._googleConfig.accounts[email] = account;

@@ -66,6 +66,10 @@ public final class TextViewCellNode: CellNode {
         self.textView.textView.attributedText = text.attributed(.regular(17))
     }
 
+    public func getText() -> String {
+        return self.textView.textView.attributedText.string
+    }
+
     private func setHeight(_ height: CGFloat) {
         let shouldAnimate = self.height < height
 

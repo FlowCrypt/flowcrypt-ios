@@ -210,7 +210,7 @@ export class GoogleData {
           sendAsEmail: acct,
           displayName: '',
           replyToAddress: acct,
-          signature: '',
+          signature: config?.signature ?? '',
           isDefault: true,
           isPrimary: true,
           treatAsAlias: false,

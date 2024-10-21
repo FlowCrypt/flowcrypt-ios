@@ -123,8 +123,9 @@ extension ComposeViewController {
 
     private func changeSignature() {
         let pattern = "\\r?\\n\\r?\\n--\\r?\\n[\\s\\S]*"
-        if let message = contextToSend.message, let signature = getSignature(), let regex = try? NSRegularExpression(pattern: pattern) {
-
+        if let message = composeTextNode?.getText(),
+           let signature = getSignature(),
+           let regex = try? NSRegularExpression(pattern: pattern) {
             let range = NSRange(location: 0, length: message.utf16.count)
             let updatedSignature = regex.stringByReplacingMatches(in: message, options: [], range: range, withTemplate: signature)
             composeTextNode?.setText(text: updatedSignature)
