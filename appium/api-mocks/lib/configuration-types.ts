@@ -52,6 +52,7 @@ export type AttesterConfig = {
 };
 
 export type GoogleConfig = {
+  signature?: string;
   accounts: { [email in GoogleMockAccountEmail]?: GoogleMockAccount };
 };
 
