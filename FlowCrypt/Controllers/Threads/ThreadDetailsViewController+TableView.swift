@@ -27,7 +27,8 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
         let processedMessage = input[section - 1].processedMessage
         let attachmentsCount = processedMessage?.attachments.count ?? 0
         let pubkeysCount = processedMessage?.keyDetails.count ?? 0
-        return Parts.allCases.count + attachmentsCount + pubkeysCount
+        let securityWarningBlockCount = processedMessage?.message.isSuspicious == true ? 1 : 0
+        return Parts.allCases.count + attachmentsCount + pubkeysCount + securityWarningBlockCount
     }
 
     // swiftlint:disable cyclomatic_complexity function_body_length
@@ -65,10 +66,16 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 }
             }
 
+            if message.rawMessage.isSuspicious, row == 1 {
+                return SecurityWarningNode()
+            }
+
             guard message.isExpanded, let processedMessage = message.processedMessage
             else { return self.dividerNode(indexPath: indexPath) }
 
-            guard row > 1 else {
+            let securityWarningBlockCount = message.rawMessage.isSuspicious == true ? 1 : 0
+
+            guard row > 1 + securityWarningBlockCount else {
                 if processedMessage.text.isHTMLString {
                     return ThreadDetailWebNode(
                         input: .init(message: processedMessage.text, quote: processedMessage.quote, index: messageIndex)
@@ -85,7 +92,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             }
 
             let keyCount = processedMessage.keyDetails.count
-            let keyIndex = row - 2
+            let keyIndex = row - 2 - securityWarningBlockCount
             if keyIndex < keyCount {
                 let keyDetails = processedMessage.keyDetails[keyIndex]
                 let node = PublicKeyDetailNode(
@@ -97,7 +104,7 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
                 return node
             }
 
-            let attachmentIndex = row - 2 - keyCount
+            let attachmentIndex = row - 2 - keyCount - securityWarningBlockCount
             if let attachment = processedMessage.attachments[safe: attachmentIndex] {
                 return AttachmentNode(
                     input: .init(
