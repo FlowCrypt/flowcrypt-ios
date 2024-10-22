@@ -12,6 +12,7 @@ struct SendAsModel {
     let displayName: String
     let sendAsEmail: String
     let isDefault: Bool
+    let signature: String
     let verificationStatus: SendAsVerificationStatus
 
     var description: String {
@@ -35,6 +36,7 @@ extension SendAsModel {
             displayName: object.displayName,
             sendAsEmail: object.sendAsEmail,
             isDefault: object.isDefault,
+            signature: object.signature,
             verificationStatus: SendAsVerificationStatus(rawValue: object.verificationStatus) ?? .verificationStatusUnspecified
         )
     }

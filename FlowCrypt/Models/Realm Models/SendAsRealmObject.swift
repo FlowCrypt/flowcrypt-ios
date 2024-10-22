@@ -12,6 +12,7 @@ final class SendAsRealmObject: Object {
     @Persisted(primaryKey: true) var sendAsEmail: String // swiftlint:disable:this attributes
     @Persisted var displayName: String
     @Persisted var verificationStatus: String
+    @Persisted var signature: String
     @Persisted var isDefault: Bool
     @Persisted var user: UserRealmObject?
 }
@@ -23,6 +24,7 @@ extension SendAsRealmObject {
         self.sendAsEmail = sendAs.sendAsEmail
         self.verificationStatus = sendAs.verificationStatus.rawValue
         self.isDefault = sendAs.isDefault
+        self.signature = sendAs.signature
         self.user = UserRealmObject(user)
     }
 }
