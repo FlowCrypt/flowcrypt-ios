@@ -23,6 +23,7 @@ config.capabilities = [
     'appium:platformVersion': '18.0',
     'appium:orientation': 'PORTRAIT',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
+    'appium:simulatorStartupTimeout': 300000,
     'appium:newCommandTimeout': 240,
     'appium:webviewConnectTimeout': 5000,
     'appium:reduceMotion': true,
