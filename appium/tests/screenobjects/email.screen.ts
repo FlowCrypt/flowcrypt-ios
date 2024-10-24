@@ -282,7 +282,6 @@ class EmailScreen extends BaseScreen {
   };
 
   checkAttachment = async (name: string) => {
-    await ElementHelper.waitElementVisible(await this.attachmentCell);
     await ElementHelper.waitForText(await this.attachmentTitle, name);
   };
 
