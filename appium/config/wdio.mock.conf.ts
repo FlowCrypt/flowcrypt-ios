@@ -29,8 +29,8 @@ config.capabilities = [
     'appium:reduceMotion': true,
     'appium:showXcodeLog': true,
     'appium:showIOSLog': true,
-    'appium:usePrebuiltWDA': true,
-    'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
+    // 'appium:usePrebuiltWDA': true,
+    // 'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
   },
 ];
 
