@@ -38,7 +38,7 @@ blocks:
           commands:
             - git clone https://github.com/appium/WebDriverAgent.git
             - cd WebDriverAgent
-            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iOS Simulator,name=iPhone SE (3rd generation)" CODE_SIGNING_ALLOWED=NO
+            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iOS Simulator,name=iPhone SE (3rd generation)" CODE_SIGNING_ALLOWED=NO ARCHS="x86_64 arm64" ONLY_ACTIVE_ARCH=NO
             - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
 
     #           - npm run lint
