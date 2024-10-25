@@ -28,7 +28,9 @@ describe('COMPOSE EMAIL: ', () => {
 
       await MailFolderScreen.clickCreateEmail();
       await NewMessageScreen.setAddRecipient(validRecipient.email);
+      await browser.pause(3000);
       await NewMessageScreen.setAddRecipient(expiredRecipient.email);
+      await browser.pause(2000);
       await NewMessageScreen.setAddRecipient(revokedRecipient.email);
 
       await NewMessageScreen.checkAddedRecipientColor(validRecipient.name, 0, 'green');
