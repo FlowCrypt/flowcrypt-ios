@@ -27,6 +27,7 @@ config.capabilities = [
     'appium:newCommandTimeout': 240,
     'appium:webviewConnectTimeout': 5000,
     'appium:reduceMotion': true,
+    'appium:simulatorLogLevel': 'debug',
     'appium:showXcodeLog': true,
     'appium:showIOSLog': true,
     // 'appium:usePrebuiltWDA': true,
