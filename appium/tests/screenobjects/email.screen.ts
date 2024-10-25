@@ -234,6 +234,12 @@ class EmailScreen extends BaseScreen {
     const element = await $(`~aid-message-${index}-quote-toggle`);
     if (await element.isDisplayed()) {
       await ElementHelper.waitAndClick(element);
+      // Try to click quote toggle button one more time if quote doesn't appear
+      await browser.pause(100);
+      const quoteEl = await this.messageQuote(index);
+      if (!(await quoteEl.isDisplayed())) {
+        await ElementHelper.waitAndClick(element);
+      }
     }
   };
 
