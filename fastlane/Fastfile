@@ -16,7 +16,7 @@ platform :ios do
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       # skip_detect_devices: true,
       # build_for_testing: true,
-      destination: 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=18.0',
+      destination: 'platform=iOS Simulator,name=iPhone SE (3rd generation),OS=18.0,arch=x86_64',
       # sdk: "iphonesimulator", 
       skip_codesigning: true,
       xcargs: "ARCHS='x86_64' VALID_ARCHS='x86_64' ONLY_ACTIVE_ARCH=NO -skipPackagePluginValidation -skipMacroValidation",
