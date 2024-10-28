@@ -58,7 +58,6 @@ extension MessageAttachment {
             // Fetch data synchronously from the URL
             if let urlData = try? Data(contentsOf: url) {
                 self.init(name: attMeta.name, data: urlData, mimeType: attMeta.type, treatAs: "encryptedFile")
-                return
             }
             return nil
         }
