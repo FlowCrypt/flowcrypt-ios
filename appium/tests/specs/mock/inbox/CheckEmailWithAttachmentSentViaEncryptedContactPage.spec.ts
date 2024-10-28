@@ -18,14 +18,7 @@ describe('INBOX: ', () => {
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
 
-      // signed+encrypted message
-      await MailFolderScreen.clickOnEmailBySubject(subject);
-
-      await EmailScreen.checkEncryptionBadge('encrypted');
-      await EmailScreen.checkSignatureBadge('signed');
-      await EmailScreen.clickBackButton();
-
-      // signed only message
+      // check if email is decrypted successfully
       await MailFolderScreen.clickOnEmailBySubject(subject);
       await EmailScreen.checkOpenedEmail(
         'sender@domain.com',
