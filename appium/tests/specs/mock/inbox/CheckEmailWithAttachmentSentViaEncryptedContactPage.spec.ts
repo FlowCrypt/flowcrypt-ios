@@ -27,7 +27,11 @@ describe('INBOX: ', () => {
 
       // signed only message
       await MailFolderScreen.clickOnEmailBySubject(subject);
-      await EmailScreen.checkOpenedEmail('sender@domain.com', subject, 'Test attachment');
+      await EmailScreen.checkOpenedEmail(
+        'sender@domain.com',
+        subject,
+        'Test encrypted attachment sent via encrypted contact page',
+      );
       await EmailScreen.checkAttachment('manifest.json');
     });
   });
