@@ -233,9 +233,10 @@ class EmailScreen extends BaseScreen {
 
   clickToggleQuoteButton = async (index: number) => {
     const element = await $(`~aid-message-${index}-quote-toggle`);
+    await TouchHelper.scrollDown();
     if (await element.isDisplayed()) {
       await ElementHelper.waitAndClick(element);
-      await TouchHelper.scrollDownToElement(element);
+      await TouchHelper.scrollDown();
     }
   };
 
