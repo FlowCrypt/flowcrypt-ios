@@ -2,6 +2,7 @@ import BaseScreen from './base.screen';
 import { CommonData } from '../data';
 import ElementHelper from '../helpers/ElementHelper';
 import WebView from '../helpers/WebView';
+import TouchHelper from 'tests/helpers/TouchHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -233,16 +234,8 @@ class EmailScreen extends BaseScreen {
   clickToggleQuoteButton = async (index: number) => {
     const element = await $(`~aid-message-${index}-quote-toggle`);
     if (await element.isDisplayed()) {
-      try {
-        await ElementHelper.waitAndClick(element);
-      } catch {
-        // Try to click quote toggle button one more time if quote doesn't appear
-        await browser.pause(100);
-        const quoteEl = await this.messageQuote(index);
-        if (!(await quoteEl.isDisplayed())) {
-          await ElementHelper.waitAndClick(element);
-        }
-      }
+      await ElementHelper.waitAndClick(element);
+      await TouchHelper.scrollDownToElement(element);
     }
   };
 

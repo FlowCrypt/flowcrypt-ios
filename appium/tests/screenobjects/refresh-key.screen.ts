@@ -39,7 +39,7 @@ class RefreshKeyScreen extends BaseScreen {
     } catch {
       // For some reason clicking cancel button with aid-cancel-button identifier doesn't work. Try to click with click text identifier
       // https://flowcrypt.semaphoreci.com/jobs/fdde00a1-33b1-4df9-a9b8-49d546c2ef79/summary?report_id=4ae71336-e44b-39bf-b9d2-752e234818a5&test_id=8e5e69c0-6bc7-316b-ab4d-7b75d419353e
-      await ElementHelper.waitAndClick(await $('~Cancel'));
+      await ElementHelper.waitAndClick(await $('//*[@name="Cancel"]'));
     }
   };
 
