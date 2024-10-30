@@ -37,6 +37,7 @@ describe('SETUP: ', () => {
       await RefreshKeyScreen.clickOkButton();
       await BaseScreen.checkModalMessage(CommonData.refreshingKeysFromEkm.wrongPassPhrase);
       await RefreshKeyScreen.clickSystemOkButton();
+      await RefreshKeyScreen.fillPassPhrase('wrong passphrase');
       await RefreshKeyScreen.cancelRefresh();
       await KeysScreen.openScreenFromSideMenu();
       await KeysScreen.checkKeysScreen([ekmKeySamples.key0]);
