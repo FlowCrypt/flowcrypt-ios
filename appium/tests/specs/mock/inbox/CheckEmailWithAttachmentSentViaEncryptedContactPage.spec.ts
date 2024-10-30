@@ -25,7 +25,7 @@ describe('INBOX: ', () => {
         subject,
         'Test encrypted attachment sent via encrypted contact page',
       );
-      await EmailScreen.checkAttachment('manifest.json');
+      await EmailScreen.checkAttachment('manifest.json.pgp');
     });
   });
 });
