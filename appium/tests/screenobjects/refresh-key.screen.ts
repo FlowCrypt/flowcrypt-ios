@@ -34,7 +34,7 @@ class RefreshKeyScreen extends BaseScreen {
   };
 
   cancelRefresh = async () => {
-    await driver.dismissAlert();
+    await ElementHelper.waitAndClick(await this.cancelButton);
   };
 
   clickOkButton = async () => {
