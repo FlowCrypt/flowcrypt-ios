@@ -27,7 +27,7 @@ platform :ios do
       # build_for_testing: true,
       # destination: "generic/platform=iOS Simulator",
       # sdk: "iphonesimulator", 
-      # skip_codesigning: true,
+      skip_codesigning: true,
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
       # export_method: "development",
       skip_package_ipa: true,
