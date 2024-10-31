@@ -42,7 +42,7 @@ platform :ios do
     scan(
       project: "FlowCrypt.xcodeproj",
       scheme: "FlowCryptAppTests",
-      device: "iPhone SE (3rd generation)",
+      device: "iPhone SE (3rd generation) (18.0)",
       test_without_building: true,
       derived_data_path: "/var/tmp/derived_data",
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
