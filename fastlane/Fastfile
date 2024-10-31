@@ -9,14 +9,31 @@ platform :ios do
 
   desc "Build for UI tests"
   lane :build do
-    scan(
+    # scan(
+    #   project: "FlowCrypt.xcodeproj",
+    #   scheme: "Debug FlowCrypt",
+    #   device: "iPhone SE (3rd generation)",
+    #   derived_data_path: "/var/tmp/derived_data",
+    #   skip_detect_devices: true,
+    #   build_for_testing: true,
+    #   xcargs: "-skipPackagePluginValidation -skipMacroValidation",
+    # )
+    gym(
       project: "FlowCrypt.xcodeproj",
       scheme: "Debug FlowCrypt",
       device: "iPhone SE (3rd generation)",
-      derived_data_path: "/var/tmp/derived_data",
+      derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       skip_detect_devices: true,
       build_for_testing: true,
-      xcargs: "-skipPackagePluginValidation -skipMacroValidation",
+      # destination: "generic/platform=iOS Simulator",
+      # sdk: "iphonesimulator", 
+      # skip_codesigning: true,
+      # xcargs: "ARCHS='x86_64' VALID_ARCHS='x86_64' BUILD_LIBRARIES_FOR_DISTRIBUTION=YES ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -skipPackagePluginValidation -skipMacroValidation",
+      # export_method: "development",
+      skip_package_ipa: true,
+      skip_archive: true,
+      skip_profile_detection: true,
+      # clean: false
     )
   end
 
