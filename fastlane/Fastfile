@@ -28,7 +28,7 @@ platform :ios do
       # destination: "generic/platform=iOS Simulator",
       # sdk: "iphonesimulator", 
       # skip_codesigning: true,
-      # xcargs: "ARCHS='x86_64' VALID_ARCHS='x86_64' BUILD_LIBRARIES_FOR_DISTRIBUTION=YES ONLY_ACTIVE_ARCH=NO CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO -skipPackagePluginValidation -skipMacroValidation",
+      xcargs: "-skipPackagePluginValidation -skipMacroValidation",
       # export_method: "development",
       skip_package_ipa: true,
       skip_archive: true,
