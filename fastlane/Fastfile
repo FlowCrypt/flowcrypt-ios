@@ -21,10 +21,10 @@ platform :ios do
     gym(
       project: "FlowCrypt.xcodeproj",
       scheme: "Debug FlowCrypt",
-      device: "iPhone SE (3rd generation)",
+      # device: "iPhone SE (3rd generation)",
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
-      skip_detect_devices: true,
-      build_for_testing: true,
+      # skip_detect_devices: true,
+      # build_for_testing: true,
       # destination: "generic/platform=iOS Simulator",
       # sdk: "iphonesimulator", 
       # skip_codesigning: true,
