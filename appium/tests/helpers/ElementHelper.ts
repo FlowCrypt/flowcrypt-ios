@@ -106,9 +106,24 @@ class ElementHelper {
   static async waitAndPasteString(element: WebdriverIO.Element, text: string) {
     await ElementHelper.copyStringIntoClipboard(text);
     await browser.pause(100);
-    await ElementHelper.waitAndClick(element);
+    await this.clickPasteButtonWithRetries(element);
+  }
+
+  static async clickPasteButtonWithRetries(element: WebdriverIO.Element, maxRetries = 10) {
     const pasteEl = await $('~Paste');
-    await ElementHelper.waitAndClick(pasteEl);
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      await ElementHelper.waitAndClick(element);
+
+      if (await pasteEl.isDisplayed()) {
+        await ElementHelper.waitAndClick(pasteEl);
+        return; // Successfully clicked the paste button
+      }
+
+      await browser.pause(300); // Pause before retrying
+    }
+
+    throw new Error(`Failed to click the Paste button after ${maxRetries} attempts`);
   }
 
   static waitClickAndType = async (element: WebdriverIO.Element, text: string) => {
