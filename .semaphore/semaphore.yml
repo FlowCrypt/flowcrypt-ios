@@ -13,9 +13,9 @@ blocks:
   - name: Build + Swift Unit Test
     dependencies: []
     run:
-      when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json']})"
+      when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/.github/dependabot.yml']})"
     execution_time_limit:
-      minutes: 115
+      minutes: 60
     task:
       env_vars:
         - name: LANG
@@ -28,8 +28,9 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - fastlane build
-            - fastlane test
+            - bundle install
+            - bundle exec fastlane build
+            - bundle exec fastlane test
       epilogue:
         always:
           commands:
@@ -37,9 +38,9 @@ blocks:
   - name: TypeScript tests
     dependencies: []
     run:
-      when: "change_in('/', {exclude: ['/appium/package.json', '/appium/package-lock.json']})"
+      when: "change_in('/', {exclude: ['/appium/package.json', '/appium/package-lock.json', '/.github/dependabot.yml']})"
     execution_time_limit:
-      minutes: 45
+      minutes: 5
     task:
       agent:
         machine:
@@ -67,6 +68,10 @@ blocks:
   - name: UI Tests
     dependencies:
       - Build + Swift Unit Test
+    run:
+      when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/Gemfile', '/Gemfile.lock', '/.github/dependabot.yml', '/.semaphore/semaphore.yml', '/package.json', '/package-lock.json']})"
+    execution_time_limit:
+      minutes: 80
     task:
       env_vars:
         - name: LANG
@@ -104,8 +109,6 @@ blocks:
             # - npm run-script test.live.all
       secrets:
         - name: flowcrypt-ios-ci-secrets
-    run:
-      when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json']})"
 after_pipeline:
   task:
     jobs:
