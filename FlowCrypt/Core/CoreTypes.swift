@@ -215,9 +215,10 @@ struct MsgBlock: Decodable {
 
     struct AttMeta: Decodable {
         let name: String
-        let data: String
+        let data: String?
         let type: String
         let length: Int
+        let url: String?
         let treatAs: String?
     }
 
