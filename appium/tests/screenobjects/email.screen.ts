@@ -2,6 +2,7 @@ import BaseScreen from './base.screen';
 import { CommonData } from '../data';
 import ElementHelper from '../helpers/ElementHelper';
 import WebView from '../helpers/WebView';
+import TouchHelper from 'tests/helpers/TouchHelper';
 
 const SELECTORS = {
   BACK_BTN: '~aid-back-button',
@@ -252,8 +253,10 @@ class EmailScreen extends BaseScreen {
 
   clickToggleQuoteButton = async (index: number) => {
     const element = await $(`~aid-message-${index}-quote-toggle`);
+    await TouchHelper.scrollDown();
     if (await element.isDisplayed()) {
       await ElementHelper.waitAndClick(element);
+      await TouchHelper.scrollDown();
     }
   };
 
@@ -302,7 +305,6 @@ class EmailScreen extends BaseScreen {
   };
 
   checkAttachment = async (name: string) => {
-    await ElementHelper.waitElementVisible(await this.attachmentCell);
     await ElementHelper.waitForText(await this.attachmentTitle, name);
   };
 

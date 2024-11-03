@@ -20,7 +20,7 @@ config.capabilities = [
     'appium:processArguments': {
       args: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'],
     },
-    'appium:deviceName': 'iPhone 15',
+    'appium:deviceName': 'iPhone SE (3rd generation)',
     'appium:platformVersion': '17.4',
     'appium:orientation': 'PORTRAIT',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
