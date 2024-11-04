@@ -39,7 +39,7 @@ enum GoogleAuthManagerError: Error, CustomStringConvertible {
 }
 
 protocol GoogleAuthManagerType {
-    func authorization(for email: String?) -> GTMAppAuthFetcherAuthorization?
+    func authorization(for email: String?) throws -> GTMAppAuth.AuthSession?
 }
 
 // this is here so that we don't have to include AppDelegate in test target
@@ -64,16 +64,17 @@ final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
 
     lazy var logger = Logger.nested(in: Self.self, with: .userAppStart)
 
-    private func idToken(for email: String?) -> String? {
-        return authorization(for: email)?.authState.lastTokenResponse?.idToken
+    private func idToken(for email: String?) throws -> String? {
+        return try authorization(for: email)?.authState.lastTokenResponse?.idToken
     }
 
-    func authorization(for email: String?) -> GTMAppAuthFetcherAuthorization? {
+    func authorization(for email: String?) throws -> GTMAppAuth.AuthSession? {
         guard let email else {
             return nil
         }
+        let keychainStore = GTMAppAuth.KeychainStore(itemName: Constants.index + email)
         // get authorization from keychain
-        return GTMAppAuthFetcherAuthorization(fromKeychainForName: Constants.index + email)
+        return try keychainStore.retrieveAuthSession()
     }
 
     private var authorizationConfiguration: OIDServiceConfiguration {
@@ -83,7 +84,7 @@ final class GoogleAuthManager: NSObject, GoogleAuthManagerType {
                 tokenEndpoint: URL(string: "\(GeneralConstants.Mock.backendUrl)/token")!
             )
         } else {
-            return GTMAppAuthFetcherAuthorization.configurationForGoogle()
+            return GTMAppAuth.AuthSession.configurationForGoogle()
         }
     }
 }
@@ -129,7 +130,8 @@ extension GoogleAuthManager {
     func signOut(user email: String) {
         DispatchQueue.main.async {
             self.appDelegateGoogleSessionContainer?.googleAuthSession = nil
-            GTMAppAuthFetcherAuthorization.removeFromKeychain(forName: Constants.index + email)
+            let keychainStore = GTMAppAuth.KeychainStore(itemName: Constants.index + email)
+            try? keychainStore.removeAuthSession()
         }
     }
 
@@ -163,7 +165,7 @@ extension GoogleAuthManager {
         scopes: [GoogleScope],
         userEmail: String?
     ) async throws -> SessionType {
-        let authorization = GTMAppAuthFetcherAuthorization(authState: authState)
+        let authorization = GTMAppAuth.AuthSession(authState: authState)
 
         guard let email = authorization.userEmail else {
             throw GoogleAuthManagerError.inconsistentState("Missing email")
@@ -178,7 +180,7 @@ extension GoogleAuthManager {
                 email: authorization.userEmail
             )
         }
-        saveAuth(state: authState, for: email)
+        try saveAuth(state: authState, for: email)
         guard let token = authState.lastTokenResponse?.accessToken else {
             throw GoogleAuthManagerError.inconsistentState("Missing token")
         }
@@ -210,14 +212,16 @@ extension GoogleAuthManager {
     }
 
     // save auth session to keychain
-    private func saveAuth(state: OIDAuthState, for email: String) {
+    private func saveAuth(state: OIDAuthState, for email: String) throws {
         state.stateChangeDelegate = self
-        let authorization = GTMAppAuthFetcherAuthorization(authState: state)
-        GTMAppAuthFetcherAuthorization.save(authorization, toKeychainForName: Constants.index + email)
+        let authorization = GTMAppAuth.AuthSession(authState: state)
+        let keychainStore = GTMAppAuth.KeychainStore(itemName: Constants.index + email)
+
+        try keychainStore.save(authSession: authorization)
     }
 
     private func fetchGoogleUser(
-        with authorization: GTMAppAuthFetcherAuthorization
+        with authorization: GTMAppAuth.AuthSession
     ) async throws -> GTLROauth2_Userinfo {
         return try await withCheckedThrowingContinuation { continuation in
             let query = GTLROauth2Query_UserinfoGet.query()
@@ -249,7 +253,7 @@ extension GoogleAuthManager {
 // MARK: - Tokens
 extension GoogleAuthManager {
     func getCachedOrRefreshedIdToken(minExpiryDuration: Double = 0, email: String?) async throws -> String {
-        guard let idToken = idToken(for: email) else { throw (IdTokenError.missingToken) }
+        guard let idToken = try idToken(for: email) else { throw (IdTokenError.missingToken) }
 
         let decodedToken = try decode(idToken: idToken)
 
@@ -282,7 +286,7 @@ extension GoogleAuthManager {
 
     private func performTokenRefresh(email: String?) async throws -> (accessToken: String, idToken: String) {
         return try await withCheckedThrowingContinuation { continuation in
-            let authorization = authorization(for: email)
+            let authorization = try? authorization(for: email)
             authorization?.authState.setNeedsTokenRefresh()
             authorization?.authState.performAction { accessToken, idToken, error in
                 guard let accessToken, let idToken else {
@@ -299,10 +303,10 @@ extension GoogleAuthManager {
 // MARK: - OIDAuthStateChangeDelegate
 extension GoogleAuthManager: OIDAuthStateChangeDelegate {
     func didChange(_ state: OIDAuthState) {
-        let authorization = GTMAppAuthFetcherAuthorization(authState: state)
+        let authorization = GTMAppAuth.AuthSession(authState: state)
         guard let email = authorization.userEmail else {
             return
         }
-        saveAuth(state: state, for: email)
+        try? saveAuth(state: state, for: email)
     }
 }
