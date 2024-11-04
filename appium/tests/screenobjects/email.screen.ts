@@ -38,6 +38,8 @@ const SELECTORS = {
   TOGGLE_PUBLIC_KEY_NODE: '~aid-toggle-public-key-node',
   PUBLIC_KEY_VALUE: '~aid-public-key-value',
   IMPORT_PUBLIC_KEY_BUTTON: '~aid-import-key-button',
+  SECURITY_WARNING_SUBJECT: '~aid-security-warning-subject-node',
+  SECURITY_WARNING_MESSSAGE: '~aid-security-warning-message-node',
 };
 
 class EmailScreen extends BaseScreen {
@@ -173,6 +175,14 @@ class EmailScreen extends BaseScreen {
     return $(SELECTORS.ATTACHMENT_TEXT_VIEW);
   }
 
+  get securityWarningSubjectLabel() {
+    return $(SELECTORS.SECURITY_WARNING_SUBJECT);
+  }
+
+  get securityWarningMessageLabel() {
+    return $(SELECTORS.SECURITY_WARNING_MESSSAGE);
+  }
+
   checkEmailSender = async (sender: string, index = 0) => {
     const element = await this.senderEmail(index);
     await ElementHelper.waitElementVisible(element);
@@ -202,6 +212,16 @@ class EmailScreen extends BaseScreen {
     } else {
       expect(messageElValue).toBeNull();
     }
+  };
+
+  checkSecurityWarningBlock = async () => {
+    await ElementHelper.waitForText(await this.securityWarningSubjectLabel, 'Potentially suspicious message');
+    await ElementHelper.waitForText(
+      await this.securityWarningMessageLabel,
+      "It wasn't properly verified by the sender, so its authenticity can't be confirmed.",
+      15000,
+      true,
+    );
   };
 
   checkOpenedEmail = async (email: string, subject: string, text: string, isHtml = false) => {

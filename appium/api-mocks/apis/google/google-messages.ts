@@ -31,4 +31,5 @@ export type GoogleMockMessage =
   | 'Encrypted email with public key attached'
   | 'Email with another user public key attached'
   | 'Test remote images #2414'
+  | 'Test Spoofed email by Mart'
   | 'Test encrypted message sent via encrypted contact page with attachment';
