@@ -54,10 +54,17 @@ extension MessageAttachment {
     }
 
     init?(attMeta: MsgBlock.AttMeta) {
-        guard let data = Data(base64Encoded: attMeta.data.data()) else {
+        if let urlString = attMeta.url, let url = URL(string: urlString) {
+            // Fetch data synchronously from the URL
+            if let urlData = try? Data(contentsOf: url) {
+                self.init(name: attMeta.name, data: urlData, mimeType: attMeta.type, treatAs: "encryptedFile")
+                return
+            }
             return nil
         }
-
+        guard let attData = attMeta.data, let data = Data(base64Encoded: attData.data()) else {
+            return nil
+        }
         self.init(name: attMeta.name, data: data, mimeType: attMeta.type, treatAs: attMeta.treatAs)
     }
 }
