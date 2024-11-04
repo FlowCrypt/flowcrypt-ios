@@ -106,9 +106,22 @@ class SplashScreen extends BaseScreen {
     await ElementHelper.waitAndClick(await this.otherEmailProviderButton);
   };
 
-  clickContinueBtn = async () => {
-    await browser.pause(2000);
-    await browser.acceptAlert();
+  clickContinueBtn = async (maxRetries = 5) => {
+    let retries = 0;
+    while (retries < maxRetries) {
+      try {
+        await browser.pause(2000);
+        await browser.acceptAlert();
+        break; // Exit loop if alert is successfully accepted
+      } catch (err) {
+        retries += 1;
+        console.log(`Attempt ${retries} failed: ${err}`);
+        if (retries >= maxRetries) {
+          console.log('Max retries reached. Could not accept alert.');
+          throw err; // Rethrow error if max retries exceeded
+        }
+      }
+    }
   };
 
   clickCancelButton = async () => {

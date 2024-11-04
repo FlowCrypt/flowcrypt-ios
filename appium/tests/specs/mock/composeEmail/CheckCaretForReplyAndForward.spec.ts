@@ -26,6 +26,7 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.clickOnEmailBySubject(subject);
 
       // check message text field focus for reply message
+      await browser.pause(1000);
       await EmailScreen.clickReplyButton();
       await NewMessageScreen.checkMessageFieldFocus();
       await NewMessageScreen.clickBackButton();

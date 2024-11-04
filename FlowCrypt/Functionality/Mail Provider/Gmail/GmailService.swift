@@ -29,7 +29,7 @@ class GmailService: MailServiceProvider {
             self?.progressHandler?(progress)
         }
 
-        guard let authorization = googleAuthManager.authorization(for: currentUserEmail) else {
+        guard let authorization = try? googleAuthManager.authorization(for: currentUserEmail) else {
             logger.logWarning("authorization for current user is nil")
             return service
         }
@@ -60,5 +60,6 @@ extension String {
     static let bcc = "bcc"
     static let replyTo = "reply-to"
     static let inReplyTo = "in-reply-to"
+    static let receivedSPF = "received-spf"
     static let identifier = "message-id"
 }
