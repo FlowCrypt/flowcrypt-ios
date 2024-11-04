@@ -10,7 +10,7 @@ import Foundation
 import GTMAppAuth
 
 protocol ContactsProviderType {
-    var authorization: GTMAppAuthFetcherAuthorization? { get set }
+    var authorization: GTMAppAuth.AuthSession? { get set }
     var isContactsScopeEnabled: Bool { get }
     func searchContacts(query: String) async throws -> [Recipient]
 }
