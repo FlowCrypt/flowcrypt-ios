@@ -420,6 +420,7 @@
 		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
 		D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
+		D741F9B22CA5661C00E1CAFF /* SecurityWarningNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D741F9B12CA5661400E1CAFF /* SecurityWarningNode.swift */; };
 		F191F621272511790053833E /* BlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F191F620272511790053833E /* BlurViewController.swift */; };
 		F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678DCB2722143300BB1710 /* GmailService+draft.swift */; };
 		F8A72FA12729F82800E4BCAB /* DraftGatewayMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A72FA02729F82800E4BCAB /* DraftGatewayMock.swift */; };
@@ -886,6 +887,7 @@
 		D2FD0F682453245E00259FF0 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* SetupImapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewDecorator.swift; sourceTree = "<group>"; };
+		D741F9B12CA5661400E1CAFF /* SecurityWarningNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityWarningNode.swift; sourceTree = "<group>"; };
 		E26D5E20275AA417007B8802 /* BundleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtensions.swift; sourceTree = "<group>"; };
 		F191F620272511790053833E /* BlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurViewController.swift; sourceTree = "<group>"; };
 		F8678DCB2722143300BB1710 /* GmailService+draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GmailService+draft.swift"; sourceTree = "<group>"; };
@@ -2212,6 +2214,7 @@
 		D2A1D3D123FD9A9E00D626D6 /* Cell Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				D741F9B12CA5661400E1CAFF /* SecurityWarningNode.swift */,
 				9F8D5E61236B04E300186E43 /* CellNode.swift */,
 				9F1797652368EE50002BF770 /* SetupTitleNode.swift */,
 				5A39F433239EC61C001F4607 /* TitleCellNode.swift */,
@@ -2904,6 +2907,7 @@
 				D2CDC3D72404704D002B045F /* RecipientEmailsCellNode.swift in Sources */,
 				5165ABCC27B526D100CCC379 /* RecipientEmailTextFieldNode.swift in Sources */,
 				51C56BE82901867D00610D12 /* ENSideMenu.swift in Sources */,
+				D741F9B22CA5661C00E1CAFF /* SecurityWarningNode.swift in Sources */,
 				955475FB2B0650AC00F52076 /* WebNode.swift in Sources */,
 				D2717752242567EB00BDA9A9 /* KeyTextCellNode.swift in Sources */,
 				511D07E12769FBBA0050417B /* MessageActionCellNode.swift in Sources */,
@@ -3883,7 +3887,7 @@
 			repositoryURL = "https://github.com/google/GTMAppAuth";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
+				minimumVersion = 4.0.0;
 			};
 		};
 		51A1A12629070CDF007F1188 /* XCRemoteSwiftPackageReference "Texture" */ = {
