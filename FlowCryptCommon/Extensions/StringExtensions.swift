@@ -105,23 +105,26 @@ public extension String {
     }
 
     func removingHtmlTags() -> String {
-        // Replace <br> and <p> tags with newlines
-        var stringWithLineBreaks = self.replacingOccurrences(of: "<br>", with: "\n")
-        stringWithLineBreaks = stringWithLineBreaks.replacingOccurrences(of: "</p>", with: "\n")
-        stringWithLineBreaks = stringWithLineBreaks.replacingOccurrences(of: "<p>", with: "")
+        // Pre-process: Temporarily replace existing line breaks with a unique placeholder
+        // Because \n line breaks are removed when converting html to plain text
+        let lineBreakPlaceholder = "###LINE_BREAK###"
+        let processedString = self
+            .replacingOccurrences(of: "\n", with: lineBreakPlaceholder)
+            .replacingOccurrences(of: "<br>", with: lineBreakPlaceholder)
+            .replacingOccurrences(of: "</p>", with: lineBreakPlaceholder)
+            .replacingOccurrences(of: "<p>", with: "")
 
-        // Convert the HTML string to NSAttributedString
-        if let data = stringWithLineBreaks.data(using: .utf8) {
-            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-                .documentType: NSAttributedString.DocumentType.html,
-                .characterEncoding: String.Encoding.utf8.rawValue
-            ]
-            if let attributedString = try? NSAttributedString(data: data, options: options, documentAttributes: nil) {
-                // Return the plain string from the attributed string
-                return attributedString.string
-            }
+        // Convert HTML to plain text using NSAttributedString
+        guard let data = processedString.data(using: .utf8),
+              let attributedString = try? NSAttributedString(data: data, options: [
+                  .documentType: NSAttributedString.DocumentType.html,
+                  .characterEncoding: String.Encoding.utf8.rawValue
+              ], documentAttributes: nil) else {
+            return self // Fallback to the original if conversion fails
         }
-        return self
+
+        // Restore line breaks from placeholders
+        return attributedString.string.replacingOccurrences(of: lineBreakPlaceholder, with: "\n")
     }
 
     func removingMailThreadQuote() -> String {

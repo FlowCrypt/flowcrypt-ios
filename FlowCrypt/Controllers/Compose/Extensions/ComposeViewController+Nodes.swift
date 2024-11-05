@@ -145,7 +145,7 @@ extension ComposeViewController {
 
     func getSignature() -> String? {
         let sendAs = sendAsList.first(where: { $0.sendAsEmail == contextToSend.sender })
-        if let signature = sendAs?.signature {
+        if let signature = sendAs?.signature, signature.isNotEmpty {
             return "\n\n--\n\(signature.removingHtmlTags())"
         }
         return nil
