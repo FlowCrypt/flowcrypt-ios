@@ -15,6 +15,7 @@ platform :ios do
       device: "iPhone SE (3rd generation)",
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       build_for_testing: true,
+      skip_detect_devices: true,
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
     )
   end
