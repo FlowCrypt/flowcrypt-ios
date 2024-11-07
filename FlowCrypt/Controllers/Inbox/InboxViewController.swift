@@ -90,6 +90,16 @@ class InboxViewController: ViewController {
             setupUI()
             setupNavigationBar()
         }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reloadThreadList),
+            name: .reloadThreadList,
+            object: nil
+        )
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -125,6 +135,11 @@ class InboxViewController: ViewController {
 
 // MARK: - UI
 extension InboxViewController {
+    @objc func reloadThreadList() {
+        showSpinner()
+        refresh()
+    }
+
     private func setupUI() {
         title = inboxTitle
 
@@ -243,11 +258,16 @@ extension InboxViewController {
 // MARK: - Functionality
 extension InboxViewController {
     private func getSearchQuery() -> String? {
-        guard searchedExpression.isNotEmpty else { return nil }
+        let showOnlyPgp = UserDefaults.standard.bool(forKey: "SHOW_PGP_ONLY_FLAG")
+        let pgpPattern = """
+            ("-----BEGIN PGP MESSAGE-----" AND "-----END PGP MESSAGE-----") OR \
+            ("-----BEGIN PGP SIGNED MESSAGE-----") OR \
+            filename:({asc pgp gpg key})
+        """
+        let baseQuery = showOnlyPgp ? "\(pgpPattern) AND \(searchedExpression)" : searchedExpression
+        guard baseQuery.isNotEmpty else { return nil }
 
-        guard !searchedExpression.hasPrefix("subject:") else { return searchedExpression }
-
-        return "\(searchedExpression) OR subject:\(searchedExpression)"
+        return baseQuery.hasPrefix("subject:") ? baseQuery : "\(baseQuery) OR subject:\(searchedExpression)"
     }
 
     func fetchAndRenderEmails(_ batchContext: ASBatchContext?) {
@@ -270,6 +290,10 @@ extension InboxViewController {
                 )
                 state = .refresh
                 handleEndFetching(with: context, context: batchContext)
+                // Hide spinner after 0.5 seconds as it takes a while to reload view
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.hideSpinner()
+                }
             } catch {
                 handle(error: error)
             }
