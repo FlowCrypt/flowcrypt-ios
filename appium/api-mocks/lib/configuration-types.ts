@@ -52,13 +52,13 @@ export type AttesterConfig = {
 };
 
 export type GoogleConfig = {
-  signature?: string;
   accounts: { [email in GoogleMockAccountEmail]?: GoogleMockAccount };
 };
 
 export type GoogleMockAccount = {
   aliases?: MockUserAlias[];
   contacts?: MockUser[];
+  signature?: string;
   messages?: GoogleMockMessage[];
 };
 

@@ -12,24 +12,21 @@ describe('SETUP: ', () => {
     const aliasEmail = 'test@gmail.com';
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
-    mockApi.addGoogleAccount(
-      'e2e.enterprise.test@flowcrypt.com',
-      {
-        aliases: [
-          {
-            sendAsEmail: aliasEmail,
-            displayName: 'Demo Alias',
-            replyToAddress: aliasEmail,
-            signature: 'Test alias signature',
-            isDefault: false,
-            isPrimary: false,
-            treatAsAlias: false,
-            verificationStatus: 'accepted',
-          },
-        ],
-      },
-      'Test primary signature',
-    );
+    mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
+      signature: 'Test primary signature',
+      aliases: [
+        {
+          sendAsEmail: aliasEmail,
+          displayName: 'Demo Alias',
+          replyToAddress: aliasEmail,
+          signature: 'Test alias signature',
+          isDefault: false,
+          isPrimary: false,
+          treatAsAlias: false,
+          verificationStatus: 'accepted',
+        },
+      ],
+    });
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
