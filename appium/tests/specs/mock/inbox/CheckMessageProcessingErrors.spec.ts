@@ -29,6 +29,7 @@ describe('INBOX: ', () => {
     const notIntegrityProtectedSender = CommonData.notIntegrityProtected.senderName;
     const notIntegrityProtectedText = CommonData.notIntegrityProtected.message;
 
+    const spoofedEmailSubject = 'Test Spoofed email by Mart';
     const keyMismatchSubject = CommonData.keyMismatch.subject;
     const keyMismatchName = CommonData.keyMismatch.senderName;
     const keyMismatchText = CommonData.keyMismatch.message;
@@ -49,6 +50,7 @@ describe('INBOX: ', () => {
         'wrong checksum',
         'not integrity protected - should show a warning and not decrypt automatically',
         'key mismatch unexpectedly produces a modal',
+        spoofedEmailSubject,
       ],
     });
     mockApi.attesterConfig = {
@@ -82,6 +84,11 @@ describe('INBOX: ', () => {
 
       await EmailScreen.clickBackButton();
       await MailFolderScreen.checkInboxScreen();
+
+      // Check spoofed email to see if security warning block exists
+      await MailFolderScreen.clickOnEmailBySubject(spoofedEmailSubject);
+      await EmailScreen.checkSecurityWarningBlock();
+      await EmailScreen.clickBackButton();
 
       // Checking error for wrong checksum message
       await MailFolderScreen.clickOnEmailBySubject(wrongChecksumSubject);

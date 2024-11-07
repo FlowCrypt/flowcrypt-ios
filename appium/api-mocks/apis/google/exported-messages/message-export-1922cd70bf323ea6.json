@@ -1,0 +1,74 @@
+{
+  "acctEmail": "e2e.enterprise.test@flowcrypt.com",
+  "full": {
+    "id": "1922cd70bf323ea6",
+    "threadId": "1922cd70bf323ea6",
+    "labelIds": ["CATEGORY_PERSONAL", "INBOX"],
+    "snippet": "test -Mart at FlowCrypt",
+    "payload": {
+      "partId": "",
+      "mimeType": "text/plain",
+      "filename": "",
+      "headers": [
+        {
+          "name": "To",
+          "value": "flowcrypt.compatibility@gmail.com"
+        },
+        {
+          "name": "Subject",
+          "value": "Test Spoofed email by Mart"
+        },
+        {
+          "name": "From",
+          "value": "sender@domain.com"
+        },
+        {
+          "name": "X-Priority",
+          "value": "3 (Normal)"
+        },
+        {
+          "name": "Importance",
+          "value": "Normal"
+        },
+        {
+          "name": "Received-SPF",
+          "value": "softfail (google.com: domain of transitioning hacker@gmail.com does not designate 0.0.0.0 as permitted sender) client-ip=0.0.0.0;"
+        },
+        {
+          "name": "Errors-To",
+          "value": "hacker@gmail.com"
+        },
+        {
+          "name": "Reply-To",
+          "value": "hacker@gmail.com"
+        },
+        {
+          "name": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "name": "Date",
+          "value": "Thu, 26 Sep 2024 07:39:02 +0200 (CEST)"
+        }
+      ],
+      "body": {
+        "size": 28,
+        "data": "dGVzdA0KDQotTWFydCBhdCBGbG93Q3J5cHQNCg=="
+      }
+    },
+    "sizeEstimate": 3183,
+    "historyId": "298166",
+    "internalDate": "1727329142000"
+  },
+  "attachments": {},
+  "raw": {
+    "id": "1922cd70bf323ea6",
+    "threadId": "1922cd70bf323ea6",
+    "labelIds": ["CATEGORY_PERSONAL", "SPAM"],
+    "snippet": "test -Mart at FlowCrypt",
+    "sizeEstimate": 3183,
+    "raw": "RGVsaXZlcmVkLVRvOiBpb2FuQGZsb3djcnlwdC5jb20NClJlY2VpdmVkOiBieSAyMDAyOmEwNTo2MzU5OjQ1OWE6YjA6MWJlOmI4N2E6NDZhNCB3aXRoIFNNVFAgaWQgbm8yNmNzcDE1MDk5MXJ3YjsNCiAgICAgICAgV2VkLCAyNSBTZXAgMjAyNCAyMjozOTowMyAtMDcwMCAoUERUKQ0KWC1Hb29nbGUtU210cC1Tb3VyY2U6IEFHSFQrSUhocFVnem42dE4ycnAyUDc0NkNKQ1JDZ1NXZXEyYndWdVFDNWFpcXFFSThOdGhhSTlER0JJb2V5V3VRTWFQeXVCOUV2WmoNClgtUmVjZWl2ZWQ6IGJ5IDIwMDI6YTE3OjkwYjozMTQ0OmIwOjJkODo3N2NjOjg1ZSB3aXRoIFNNVFAgaWQgOThlNjdlZDU5ZTFkMS0yZTA2YWZlYjc4ZW1yNjMzMTEzMGE5MS4zNy4xNzI3MzI5MTQzNTQ1Ow0KICAgICAgICBXZWQsIDI1IFNlcCAyMDI0IDIyOjM5OjAzIC0wNzAwIChQRFQpDQpBUkMtU2VhbDogaT0xOyBhPXJzYS1zaGEyNTY7IHQ9MTcyNzMyOTE0MzsgY3Y9bm9uZTsNCiAgICAgICAgZD1nb29nbGUuY29tOyBzPWFyYy0yMDI0MDYwNTsNCiAgICAgICAgYj1TOVRyZzluaUsyQURsQWQrWnYwZE9CbnhBVStvYlN5RkUyUkgvVFFucS9ZL2M2VmNCd3pkcmM4d3A4Y3BJL1ZUUWsNCiAgICAgICAgIDJjc3F6TEIzczRCQjBTMFB0U0pFd0VJTUUvd2J1SWtTUWl5RkpjOURsY3R2VFBST1RhSmNHc0xKTmQvWlBvRzhMQTJCDQogICAgICAgICBpZVJ6YlpsbWs2TmpKMFFPVURNZlVzYU8reXp0dzcwSmU1OWgwbjZQVUoyWTloNW5UdXFpYzFzbmpqZVc5b0dPcDF3Mg0KICAgICAgICAgWWJGQzFrK09GbjkyZElxeFZkNHZsNnp5blBrZytxSFoyQi9HSTE1ZHRjaFIyZFpXOEJlcWh3cU00TXIvdFFpVE9TQmgNCiAgICAgICAgIDRSdjBzTm1yam5LSVJCR2JPRWVBMHNMTndWam5kTWJjaDMwVGdIb1Y1NEoxakcyQVZnY1F0aDFTTjVuc0ovOVJoL0d3DQogICAgICAgICB6VWp3PT0NCkFSQy1NZXNzYWdlLVNpZ25hdHVyZTogaT0xOyBhPXJzYS1zaGEyNTY7IGM9cmVsYXhlZC9yZWxheGVkOyBkPWdvb2dsZS5jb207IHM9YXJjLTIwMjQwNjA1Ow0KICAgICAgICBoPWRhdGU6bWVzc2FnZS1pZDpyZXBseS10bzplcnJvcnMtdG86aW1wb3J0YW5jZTpmcm9tOnN1YmplY3Q6dG87DQogICAgICAgIGJoPWNXY3VTNmxuVTE4VTU4YTUwT3dqelFzMGEwK3FsNGxZbnBDSEZoZ3Yxalk9Ow0KICAgICAgICBmaD1yVjZaTXJhY21nOVg1TUdtam9YdVJ6YmZ4dGpEUldSZkEzWkZLQTNRZC9jPTsNCiAgICAgICAgYj1MaTRxMjRuNXUxajFPWEFqUG1JN0RDNlFXOVJTd2tSOUFjaHd6bEJkb0ZLbXYwdmpXclo3dVFQS2UyMUVGZnlJUVQNCiAgICAgICAgIFk5M3pQbWg5U1RacVFaV3FGTS9SaXJGTFlRRjV2UGpZTzdVRWpiSkoyS05lYlFtS3lNT1ZDN2UydlNxdzRsWVQ1bUh6DQogICAgICAgICAwUEpmbzNUK2cvWUE2UU0zbldmbjIzU1pONHRTS3hIU1c2VXh6N3F0S3FCNXFtQjJSalFrUFZod0FGMEw3SFEva0RWNA0KICAgICAgICAgWk1QaDVuMUR2SHdqWDlxRURWUmk1d3NQdGg4Y1NRbEY2dnFSdXZjZzhyVjdGajZnRzA1QVFyeFp2bTQ2TVVMU0t0ckINCiAgICAgICAgIG5NYjhQYmpreEdJUHdBQ1gyODNzbDRKWEh3Q1ZiTVdYRHEzeDZPck01a2tKdmxJcGdLd2l6UEhOOGs2cW9Ud1pmbHV2DQogICAgICAgICBvMjNnPT07DQogICAgICAgIGRhcmE9Z29vZ2xlLmNvbQ0KQVJDLUF1dGhlbnRpY2F0aW9uLVJlc3VsdHM6IGk9MTsgbXguZ29vZ2xlLmNvbTsNCiAgICAgICBzcGY9c29mdGZhaWwgKGdvb2dsZS5jb206IGRvbWFpbiBvZiB0cmFuc2l0aW9uaW5nIGhhY2tlckBnbWFpbC5jb20gZG9lcyBub3QgZGVzaWduYXRlIDExNC4yOS4yMzYuMjQ3IGFzIHBlcm1pdHRlZCBzZW5kZXIpIHNtdHAubWFpbGZyb209aGFja2VyQGdtYWlsLmNvbTsNCiAgICAgICBkbWFyYz1mYWlsIChwPU5PTkUgc3A9UVVBUkFOVElORSBkaXM9Tk9ORSkgaGVhZGVyLmZyb209Z21haWwuY29tDQpSZXR1cm4tUGF0aDogPGhhY2tlckBnbWFpbC5jb20-DQpSZWNlaXZlZDogZnJvbSBlbWtlaS5jeiAoZW1rZWkuY3ouIFsxMTQuMjkuMjM2LjI0N10pDQogICAgICAgIGJ5IG14Lmdvb2dsZS5jb20gd2l0aCBFU01UUFMgaWQgOThlNjdlZDU5ZTFkMS0yZTA2ZTJmMjQ2Y3NpMzAzNTc1NWE5MS4xNTkuMjAyNC4wOS4yNS4yMi4zOS4wMw0KICAgICAgICBmb3IgPGlvYW5AZmxvd2NyeXB0LmNvbT4NCiAgICAgICAgKHZlcnNpb249VExTMV8zIGNpcGhlcj1UTFNfQUVTXzI1Nl9HQ01fU0hBMzg0IGJpdHM9MjU2LzI1Nik7DQogICAgICAgIFdlZCwgMjUgU2VwIDIwMjQgMjI6Mzk6MDMgLTA3MDAgKFBEVCkNClJlY2VpdmVkLVNQRjogc29mdGZhaWwgKGdvb2dsZS5jb206IGRvbWFpbiBvZiB0cmFuc2l0aW9uaW5nIGhhY2tlckBnbWFpbC5jb20gZG9lcyBub3QgZGVzaWduYXRlIDExNC4yOS4yMzYuMjQ3IGFzIHBlcm1pdHRlZCBzZW5kZXIpIGNsaWVudC1pcD0xMTQuMjkuMjM2LjI0NzsNCkF1dGhlbnRpY2F0aW9uLVJlc3VsdHM6IG14Lmdvb2dsZS5jb207DQogICAgICAgc3BmPXNvZnRmYWlsIChnb29nbGUuY29tOiBkb21haW4gb2YgdHJhbnNpdGlvbmluZyBoYWNrZXJAZ21haWwuY29tIGRvZXMgbm90IGRlc2lnbmF0ZSAxMTQuMjkuMjM2LjI0NyBhcyBwZXJtaXR0ZWQgc2VuZGVyKSBzbXRwLm1haWxmcm9tPWhhY2tlckBnbWFpbC5jb207DQogICAgICAgZG1hcmM9ZmFpbCAocD1OT05FIHNwPVFVQVJBTlRJTkUgZGlzPU5PTkUpIGhlYWRlci5mcm9tPWdtYWlsLmNvbQ0KUmVjZWl2ZWQ6IGJ5IGVta2VpLmN6IChQb3N0Zml4LCBmcm9tIHVzZXJpZCAzMykNCglpZCA0NzU5QzFGMDk7IFRodSwgMjYgU2VwIDIwMjQgMDc6Mzk6MDIgKzAyMDAgKENFU1QpDQpUbzogaW9hbkBmbG93Y3J5cHQuY29tDQpTdWJqZWN0OiBUZXN0IFNwb29mZWQgZW1haWwgYnkgTWFydA0KRnJvbTogIkFkbWluaXN0cmF0b3IiIDxoYWNrZXJAZ21haWwuY29tPg0KWC1Qcmlvcml0eTogMyAoTm9ybWFsKQ0KSW1wb3J0YW5jZTogTm9ybWFsDQpFcnJvcnMtVG86IGhhY2tlckBnbWFpbC5jb20NClJlcGx5LVRvOiBoYWNrZXJAZ21haWwuY29tDQpDb250ZW50LVR5cGU6IHRleHQvcGxhaW47IGNoYXJzZXQ9dXRmLTgNCk1lc3NhZ2UtSWQ6IDwyMDI0MDkyNjA1MzkwMi40NzU5QzFGMDlAZW1rZWkuY3o-DQpEYXRlOiBUaHUsIDI2IFNlcCAyMDI0IDA3OjM5OjAyICswMjAwIChDRVNUKQ0KDQp0ZXN0DQoNCi1NYXJ0IGF0IEZsb3dDcnlwdA0K",
+    "historyId": "298166",
+    "internalDate": "1727329142000"
+  }
+}
