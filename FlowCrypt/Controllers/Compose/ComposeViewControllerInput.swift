@@ -42,6 +42,10 @@ struct ComposeMessageInput: Equatable {
         type.info?.subject
     }
 
+    var sender: String? {
+        type.info?.sender?.email
+    }
+
     var text: String? {
         type.info?.text
     }
