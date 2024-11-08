@@ -15,8 +15,8 @@ public final class PgpOnlySwitchNode: CellNode {
 
     private lazy var imageNode: ASImageNode = {
         let node = ASImageNode()
-        node.image = UIImage(systemName: "lock.shield")?.tinted(.main)
-        node.style.preferredSize = CGSize(width: 30, height: 30)
+        let imageConfiguration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 24, weight: .light))
+        node.image = UIImage(systemName: "lock.shield", withConfiguration: imageConfiguration)?.tinted(.main)
         return node
     }()
 
@@ -46,7 +46,7 @@ public final class PgpOnlySwitchNode: CellNode {
         return ASInsetLayoutSpec(
             insets: .deviceSpecificTextInsets(top: 16, bottom: 16),
             child: ASStackLayoutSpec.horizontal().then {
-                $0.spacing = 10
+                $0.spacing = 6
                 $0.alignItems = .center
                 $0.justifyContent = .spaceBetween
                 $0.children = [imageNode, toggleNode]

@@ -315,6 +315,7 @@ extension InboxViewController {
                     using: FetchMessageContext(
                         folderPath: viewModel.path,
                         count: messagesToLoad(),
+                        searchQuery: getSearchQuery(),
                         pagination: pagination
                     )
                 )
