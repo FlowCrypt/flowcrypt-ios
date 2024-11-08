@@ -449,3 +449,5 @@ Be careful - avoid clicking links and downloading attachments, or sharing person
 "load_from_file" = "Load from a file";
 "no_pubkeys_found" = "No public keys found";
 "load_from_clipboard" = "Load from clipboard";
+
+"show_only_pgp_messages" = "Show only PGP messages";
