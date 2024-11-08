@@ -58,6 +58,7 @@ export type GoogleConfig = {
 export type GoogleMockAccount = {
   aliases?: MockUserAlias[];
   contacts?: MockUser[];
+  signature?: string;
   messages?: GoogleMockMessage[];
 };
 

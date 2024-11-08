@@ -420,6 +420,8 @@
 		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
 		D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
+		D73F7D9D2CD46AE900955806 /* PgpOnlySwitchNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73F7D9C2CD46AE700955806 /* PgpOnlySwitchNode.swift */; };
+		D73F7D9F2CD4922500955806 /* NotificationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73F7D9E2CD4922100955806 /* NotificationExtension.swift */; };
 		D741F9B22CA5661C00E1CAFF /* SecurityWarningNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D741F9B12CA5661400E1CAFF /* SecurityWarningNode.swift */; };
 		F191F621272511790053833E /* BlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F191F620272511790053833E /* BlurViewController.swift */; };
 		F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678DCB2722143300BB1710 /* GmailService+draft.swift */; };
@@ -887,6 +889,8 @@
 		D2FD0F682453245E00259FF0 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* SetupImapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewDecorator.swift; sourceTree = "<group>"; };
+		D73F7D9C2CD46AE700955806 /* PgpOnlySwitchNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpOnlySwitchNode.swift; sourceTree = "<group>"; };
+		D73F7D9E2CD4922100955806 /* NotificationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtension.swift; sourceTree = "<group>"; };
 		D741F9B12CA5661400E1CAFF /* SecurityWarningNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityWarningNode.swift; sourceTree = "<group>"; };
 		E26D5E20275AA417007B8802 /* BundleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtensions.swift; sourceTree = "<group>"; };
 		F191F620272511790053833E /* BlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurViewController.swift; sourceTree = "<group>"; };
@@ -2090,6 +2094,7 @@
 		D254AA5F24092A9E0041CAE0 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				D73F7D9E2CD4922100955806 /* NotificationExtension.swift */,
 				21F836B42652A25D00B2448C /* Data */,
 				E26D5E20275AA417007B8802 /* BundleExtensions.swift */,
 				21C7DEFB26669A3700C44800 /* CalendarExtensions.swift */,
@@ -2256,6 +2261,7 @@
 		D2A1D3D223FD9AE600D626D6 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				D73F7D9C2CD46AE700955806 /* PgpOnlySwitchNode.swift */,
 				9F7ECCA6272C3FB4008A1770 /* TextImageNode.swift */,
 				51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */,
 				511D07E2276A2DF80050417B /* ButtonWithPaddingNode.swift */,
@@ -2891,6 +2897,7 @@
 				D2A9CA3A2426198600E1D898 /* SignInDescriptionNode.swift in Sources */,
 				5133B6742716E5EA00C95463 /* LabelCellNode.swift in Sources */,
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
+				D73F7D9D2CD46AE900955806 /* PgpOnlySwitchNode.swift in Sources */,
 				9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */,
 				51DAD9BD273E7DD20076CBA7 /* BadgeNode.swift in Sources */,
 				51DE2FEE2714DA0400916222 /* ContactKeyCellNode.swift in Sources */,
@@ -2960,6 +2967,7 @@
 				9F44971626430710003A9FE9 /* Trace.swift in Sources */,
 				9F67998D277B3E4D00AFE5BE /* (null) in Sources */,
 				9F67998C277B3E4000AFE5BE /* BundleExtensions.swift in Sources */,
+				D73F7D9F2CD4922500955806 /* NotificationExtension.swift in Sources */,
 				9FD5052B278B2C8600FAA82F /* UIPopoverPresentationControllerExtensions.swift in Sources */,
 				D2CDC3CD2402CCD7002B045F /* UIImageExtensions.swift in Sources */,
 				95473C1B297E61DE006C8957 /* SequenceExtension.swift in Sources */,

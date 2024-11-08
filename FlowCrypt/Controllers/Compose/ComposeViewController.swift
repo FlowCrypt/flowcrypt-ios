@@ -91,7 +91,7 @@ final class ComposeViewController: TableNodeViewController {
     var popoverVC: ComposeRecipientPopupViewController!
 
     var sectionsList: [Section] = []
-    var composeTextNode: ASCellNode?
+    var composeTextNode: TextViewCellNode?
     var composeSubjectNode: ASCellNode?
     var sendAsList: [SendAsModel] = []
 
@@ -162,8 +162,14 @@ final class ComposeViewController: TableNodeViewController {
             .fetchList(isForceReload: false, for: appContext.user)
             .filter { $0.verificationStatus == .accepted || $0.isDefault }
 
+        // Sender might be user's alias email, so we need to check if the sender is user's email address
+        // and set sender as email alias if applicable
+        var sender = appContext.user.email
+        if let inputSender = input.sender, sendAsList.contains(where: { $0.sendAsEmail == inputSender }) {
+            sender = inputSender
+        }
         self.contextToSend = ComposeMessageContext(
-            sender: appContext.user.email,
+            sender: sender,
             subject: input.subject,
             attachments: input.attachments
         )

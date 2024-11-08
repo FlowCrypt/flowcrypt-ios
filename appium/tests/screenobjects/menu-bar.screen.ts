@@ -11,6 +11,7 @@ const SELECTORS = {
   TRASH_BTN: '~aid-menu-bar-item-trash',
   DRAFTS_BTN: '~aid-menu-bar-item-drafts',
   ALL_MAIL_BTN: '~aid-menu-bar-item-all-mail',
+  SHOW_ONLY_ENCRYPTED_EMAILS_TOGGLE: '~aid-toggle-pgp-only-node',
   ADD_ACCOUNT_BUTTON: '~aid-add-account-btn',
 };
 
@@ -49,6 +50,10 @@ class MenuBarScreen extends BaseScreen {
 
   get allMailButton() {
     return $(SELECTORS.ALL_MAIL_BTN);
+  }
+
+  get showOnlyEncryptedEmailsToggle() {
+    return $(SELECTORS.SHOW_ONLY_ENCRYPTED_EMAILS_TOGGLE);
   }
 
   get addAccountButton() {
@@ -108,6 +113,10 @@ class MenuBarScreen extends BaseScreen {
 
   clickAllMailButton = async () => {
     await ElementHelper.waitAndClick(await this.allMailButton);
+  };
+
+  clickShowOnlyEncryptedEmailsToggle = async () => {
+    await ElementHelper.waitAndClick(await this.showOnlyEncryptedEmailsToggle);
   };
 
   checkMenuBarItem = async (menuItem: string) => {

@@ -56,6 +56,7 @@ public final class SwitchCellNode: CellNode {
 
         super.init()
         self.textNode.attributedText = input?.attributedText
+        self.textNode.truncationMode = .byWordWrapping
         self.automaticallyManagesSubnodes = true
 
         if let backgroundColor = input?.backgroundColor {
@@ -68,17 +69,16 @@ public final class SwitchCellNode: CellNode {
     }
 
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        switchNode.style.preferredSize = CGSize(width: 100, height: 30)
+        switchNode.style.preferredSize = CGSize(width: 55, height: 30)
+        textNode.style.flexGrow = 1.0
+        textNode.style.flexShrink = 1.0
         return ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 8,
-            justifyContent: input?.switchJustifyContent ?? .start,
+            justifyContent: input?.switchJustifyContent ?? .spaceBetween,
             alignItems: .center,
             children: [
-                ASInsetLayoutSpec(
-                    insets: UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 24),
-                    child: textNode
-                ),
+                textNode,
                 switchNode
             ]
         )

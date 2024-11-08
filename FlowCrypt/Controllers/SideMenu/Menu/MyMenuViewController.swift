@@ -21,7 +21,7 @@ final class MyMenuViewController: ViewController {
     }
 
     private enum Sections: Int, CaseIterable {
-        case header = 0, main, additional
+        case header = 0, pgpOnlySwitch = 1, main, additional
     }
 
     private enum State {
@@ -117,6 +117,7 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
         guard let sections = Sections(rawValue: section) else { return 0 }
 
         switch (sections, state) {
+        case (.pgpOnlySwitch, _): return 1
         case (.header, _): return 1
         case (.main, .accountAdding): return accounts.count
         case (.main, .folders): return folders.count
@@ -138,6 +139,8 @@ extension MyMenuViewController: ASTableDataSource, ASTableDelegate {
         guard let sections = Sections(rawValue: indexPath.section) else { return }
 
         switch (sections, state) {
+        case (.pgpOnlySwitch, _):
+            return
         case (.header, _):
             guard let header = tableNode.nodeForRow(at: indexPath) as? TextImageNode else {
                 return
@@ -258,6 +261,8 @@ extension MyMenuViewController {
 
     private func node(for section: Sections, row: Int) -> ASCellNode {
         switch (section, state) {
+        case (.pgpOnlySwitch, _):
+            return PgpOnlySwitchNode()
         case (.header, _):
             let headerInput = decorator.header(for: appContext.user, image: state.arrowImage)
             return TextImageNode(input: headerInput) { [weak self] node in
