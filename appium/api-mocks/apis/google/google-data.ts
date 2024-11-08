@@ -87,6 +87,7 @@ export class GmailMsg {
     this.draftId = msg.draftId;
     this.labelIds = msg.labelIds;
     this.raw = msg.raw;
+    this.snippet = msg.mimeMsg.text;
     this.sizeEstimate = Buffer.byteLength(msg.raw, 'utf-8');
 
     const dateHeader = msg.mimeMsg.headers.get('date')! as Date;
@@ -488,6 +489,7 @@ export class GoogleData {
 
   public getThreads = (labelIds: string[] = [], query?: string) => {
     const subject = (query?.match(/subject: '([^"]+)'/) || [])[1]?.trim().toLowerCase();
+    const pgpFlag = query?.includes('-----BEGIN PGP MESSAGE-----');
     const threads: GmailThread[] = [];
 
     const filteredThreads = this.getMessagesAndDrafts()
@@ -504,6 +506,15 @@ export class GoogleData {
         }
       })
       .filter(m => (subject ? GoogleData.msgSubject(m).toLowerCase().includes(subject) : true))
+      .filter(m => {
+        if (pgpFlag) {
+          return (
+            m.snippet?.includes('-----BEGIN PGP MESSAGE-----') ||
+            m.snippet?.includes('-----BEGIN PGP SIGNED MESSAGE-----')
+          );
+        }
+        return true;
+      })
       .map(m => ({ historyId: m.historyId, id: m.threadId!, snippet: `MOCK SNIPPET: ${GoogleData.msgSubject(m)}` }));
 
     for (const thread of filteredThreads) {
