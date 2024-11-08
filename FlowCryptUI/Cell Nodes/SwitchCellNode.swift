@@ -69,7 +69,7 @@ public final class SwitchCellNode: CellNode {
     }
 
     override public func layoutSpecThatFits(_ constrainedSize: ASSizeRange) -> ASLayoutSpec {
-        switchNode.style.preferredSize = CGSize(width: 50, height: 30)
+        switchNode.style.preferredSize = CGSize(width: 55, height: 30)
         textNode.style.flexGrow = 1.0
         textNode.style.flexShrink = 1.0
         return ASStackLayoutSpec(
