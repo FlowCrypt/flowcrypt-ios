@@ -36,7 +36,7 @@ blocks:
             # - cd appium
             # - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
             - git clone https://github.com/appium/WebDriverAgent.git
-            - open -a "Simulator"
+            - open -a Simulator
             - xcrun simctl boot "iPhone SE (3rd generation)"
             - cd WebDriverAgent
             - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=17.4,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
