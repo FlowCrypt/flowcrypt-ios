@@ -118,9 +118,10 @@ blocks:
           - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - xcrun simctl list devices --json | jq '.devices[] | .[] | .name'
           - xcrun simctl boot "iPhone SE (3rd generation)"
-          - cache restore appium-npm && npm i
+          - cache restore appium-npm
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
           - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
+          - npm i
   #         - git clone https://github.com/appium/WebDriverAgent.git
   #         - cd WebDriverAgent
   #         - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=17.4,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
