@@ -33,7 +33,8 @@ blocks:
           commands:
             - bundle install
             - bundle exec fastlane build
-            # - cd appium
+            - cd appium
+            - npm i && cache store appium-npm node_modules
             # - mv /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator/FlowCrypt.app ./FlowCrypt.app
             - git clone https://github.com/appium/WebDriverAgent.git
             - cd WebDriverAgent
@@ -115,8 +116,8 @@ blocks:
           - xcrun simctl boot "iPhone SE (3rd generation)"
           - checkout && cd ~/git/flowcrypt-ios/
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
-          - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
-          - cd appium
+          - cd ./appium
+          - cache restore appium-npm && npm i
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
           - cache restore WebDriverAgent-Runner-$SEMAPHORE_GIT_SHA.app
           - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
