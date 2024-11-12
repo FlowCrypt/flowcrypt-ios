@@ -114,7 +114,7 @@ blocks:
           - checkout && cd ~/git/flowcrypt-ios/
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
           - cd ./appium
-          - cache restore WebDriverAgent-Runner-$SEMAPHORE_GIT_SHA.app
+          - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
           - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - xcrun simctl list devices --json | jq '.devices[] | .[] | .name'
           - xcrun simctl boot "iPhone SE (3rd generation)"
