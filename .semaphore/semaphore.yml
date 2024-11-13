@@ -35,33 +35,7 @@ blocks:
             - bundle exec fastlane build
             - cd appium
             - npm i && cache store appium-npm node_modules
-            # - mv /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator/FlowCrypt.app ./FlowCrypt.app
-            # - git clone https://github.com/appium/WebDriverAgent.git
-            # - cd WebDriverAgent
-            # - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.0,name=iPhone SE (3rd generation)" -derivedDataPath /var/tmp/derived_data/WebDriverAgent CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO EXCLUDED_ARCHS="arm64"
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-            # - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
-            # - cd ..
-            # - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
-            # - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
-            # - npm run-script test.mock "check attachment after forward"
-      # secrets:
-      #   - name: flowcrypt-ios-ci-secrets
-            # - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner 
-            # - bundle install
-            # - bundle exec fastlane build
-            # - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-            # - bundle exec fastlane test
-        # - name: Build WebDriverAgent
-        #   commands:
-        #     - git clone https://github.com/appium/WebDriverAgent.git
-        #     - cd WebDriverAgent
-        #     - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "generic/platform=iOS Simulator" CODE_SIGNING_ALLOWED=NO
-        #     - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
-      # epilogue:
-      #   always:
-      #     commands:
-      #       - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
   # - name: TypeScript tests
   #   dependencies: []
   #   run:
@@ -102,11 +76,13 @@ blocks:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/Gemfile', '/Gemfile.lock', '/.github/dependabot.yml', '/.semaphore/semaphore.yml', '/package.json', '/package-lock.json']})"
     execution_time_limit:
       minutes: 30
-    commands:
-      - git clone https://github.com/appium/WebDriverAgent.git
-      - cd WebDriverAgent
-      - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.0,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
-      - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
+    jobs:
+      - name: Build WebDriverAgent
+        commands:
+          - git clone https://github.com/appium/WebDriverAgent.git
+          - cd WebDriverAgent
+          - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.0,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
   - name: UI Tests
     dependencies:
       - Build + Swift Unit Test
@@ -138,12 +114,6 @@ blocks:
           - cache restore appium-npm
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
           - npm i
-  #         - git clone https://github.com/appium/WebDriverAgent.git
-  #         - cd WebDriverAgent
-  #         - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=17.4,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
-  #         - cd ..
-  #         - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
-  #         # - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
       epilogue:
         always:
           commands:
