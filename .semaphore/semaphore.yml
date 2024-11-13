@@ -38,7 +38,7 @@ blocks:
             # - mv /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator/FlowCrypt.app ./FlowCrypt.app
             - git clone https://github.com/appium/WebDriverAgent.git
             - cd WebDriverAgent
-            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.0,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.0,name=iPhone SE (3rd generation)" -derivedDataPath /var/tmp/derived_data/WebDriverAgent CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO EXCLUDED_ARCHS="arm64"
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
             - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
             # - cd ..
@@ -118,9 +118,9 @@ blocks:
           - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - xcrun simctl list devices --json | jq '.devices[] | .[] | .name'
           - xcrun simctl boot "iPhone SE (3rd generation)"
+          - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
           - cache restore appium-npm
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
-          - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
           - npm i
   #         - git clone https://github.com/appium/WebDriverAgent.git
   #         - cd WebDriverAgent
