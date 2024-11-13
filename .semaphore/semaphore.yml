@@ -27,6 +27,7 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
+          - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
@@ -110,6 +111,7 @@ blocks:
           - git clone https://github.com/appium/WebDriverAgent.git
           - cd WebDriverAgent
           - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.0,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          - cd ..
           - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
           - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           # - xcrun simctl list devices --json | jq '.devices[] | .[] | .name'
