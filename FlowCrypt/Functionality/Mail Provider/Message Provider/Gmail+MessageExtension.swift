@@ -102,7 +102,7 @@ private extension GTLRGmail_Message {
     }
 
     var attachmentParts: [GTLRGmail_MessagePart] {
-        payload?.parts?.filter { !$0.filename.isEmptyOrNil } ?? []
+        payload?.parts ?? []
     }
 
     func parseMessageBody() -> MessageBody {
@@ -148,12 +148,12 @@ private extension GTLRGmail_Message {
 
     func parseAttachments() -> [MessageAttachment] {
         attachmentParts.compactMap {
-            guard let body = $0.body, let id = body.attachmentId, let name = $0.filename
+            guard let body = $0.body, let id = body.attachmentId
             else { return nil }
 
             return MessageAttachment(
                 id: Identifier(stringId: id),
-                name: name,
+                name: $0.filename ?? "noname",
                 estimatedSize: body.size?.intValue,
                 mimeType: $0.mimeType,
                 data: body.data?.data()
