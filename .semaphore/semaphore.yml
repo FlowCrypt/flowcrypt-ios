@@ -27,7 +27,6 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
-          - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
