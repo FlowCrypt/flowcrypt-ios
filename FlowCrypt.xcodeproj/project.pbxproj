@@ -3927,7 +3927,7 @@
 			repositoryURL = "https://github.com/google/google-api-objectivec-client-for-rest";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.1.0;
+				minimumVersion = 4.0.0;
 			};
 		};
 		51E16747270F303100D27C52 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
@@ -3935,7 +3935,7 @@
 			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
+				minimumVersion = 8.0.0;
 			};
 		};
 		51E1675B270F36A400D27C52 /* XCRemoteSwiftPackageReference "realm-cocoa" */ = {
@@ -3943,7 +3943,7 @@
 			repositoryURL = "https://github.com/realm/realm-cocoa";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 10.0.0;
+				minimumVersion = 20.0.0;
 			};
 		};
 		952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */ = {
@@ -3967,7 +3967,7 @@
 			repositoryURL = "https://github.com/realm/SwiftLint";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.52.4;
+				minimumVersion = 0.57.0;
 			};
 		};
 		95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {
