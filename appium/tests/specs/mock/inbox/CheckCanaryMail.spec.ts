@@ -3,7 +3,7 @@ import { MockApiConfig } from 'api-mocks/mock-config';
 import { EmailScreen, MailFolderScreen, SetupKeyScreen, SplashScreen } from '../../../screenobjects/all-screens';
 
 describe('INBOX: ', () => {
-  it('user is able to view correct signature badge for all cases', async () => {
+  it('check if canary email is decrypted successfully', async () => {
     const mockApi = new MockApi();
     const subject = 'Canary Mail PGP encrypted emails cannot be read by Flowcrypt recipient';
 
