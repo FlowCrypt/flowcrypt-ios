@@ -32,4 +32,5 @@ export type GoogleMockMessage =
   | 'Email with another user public key attached'
   | 'Test remote images #2414'
   | 'Test Spoofed email by Mart'
-  | 'Test encrypted message sent via encrypted contact page with attachment';
+  | 'Test encrypted message sent via encrypted contact page with attachment'
+  | 'Canary Mail PGP encrypted emails cannot be read by Flowcrypt recipient';
