@@ -16,7 +16,7 @@ platform :ios do
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       build_for_testing: true,
       skip_detect_devices: true,
-      xcargs: "CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO EXCLUDED_ARCHS=\"arm64\" -skipPackagePluginValidation -skipMacroValidation",
+      xcargs: "-skipPackagePluginValidation -skipMacroValidation",
     )
   end
 
