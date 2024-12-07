@@ -30,7 +30,7 @@ config.capabilities = [
     'appium:reduceMotion': true,
     'appium:simulatorLogLevel': 'debug',
     // 'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
-    'appium:usePreinstalledWDA': true,
+    // 'appium:usePreinstalledWDA': true,
   },
 ];
 
