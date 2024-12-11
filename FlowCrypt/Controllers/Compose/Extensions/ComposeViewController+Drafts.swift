@@ -71,6 +71,7 @@ extension ComposeViewController {
                     contextToSend.hasRecipientsWithActivePubKey
 
                 let sendableMsg = try await composeMessageHelper.createSendableMsg(
+                    clientConfiguration: clientConfiguration,
                     input: draft.input,
                     contextToSend: draft.contextToSend,
                     shouldValidate: false,

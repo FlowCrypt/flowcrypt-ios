@@ -40,6 +40,8 @@ struct RawClientConfiguration: Codable, Equatable {
     let disallowAttesterSearchForDomains: [String]?
     let enforceKeygenAlgo: String?
     let enforceKeygenExpireMonths: Int?
+    let disallowPasswordMessagesForTerms: [String]?
+    let disallowPasswordMessagesErrorText: String?
 
     init(
         flags: [ClientConfigurationFlag]? = nil,
@@ -50,7 +52,9 @@ struct RawClientConfiguration: Codable, Equatable {
         allowAttesterSearchOnlyForDomains: [String]? = nil,
         disallowAttesterSearchForDomains: [String]? = nil,
         enforceKeygenAlgo: String? = nil,
-        enforceKeygenExpireMonths: Int? = nil
+        enforceKeygenExpireMonths: Int? = nil,
+        disallowPasswordMessagesForTerms: [String]? = nil,
+        disallowPasswordMessagesErrorText: String? = nil
     ) {
         self.flags = flags
         self.customKeyserverUrl = customKeyserverUrl
@@ -61,6 +65,8 @@ struct RawClientConfiguration: Codable, Equatable {
         self.disallowAttesterSearchForDomains = disallowAttesterSearchForDomains
         self.enforceKeygenAlgo = enforceKeygenAlgo
         self.enforceKeygenExpireMonths = enforceKeygenExpireMonths
+        self.disallowPasswordMessagesForTerms = disallowPasswordMessagesForTerms
+        self.disallowPasswordMessagesErrorText = disallowPasswordMessagesErrorText
     }
 }
 
@@ -96,7 +102,11 @@ extension RawClientConfiguration {
                 try JSONDecoder().decode([String].self, from: $0)
             },
             enforceKeygenAlgo: unwrappedObject.enforceKeygenAlgo,
-            enforceKeygenExpireMonths: unwrappedObject.enforceKeygenExpireMonths
+            enforceKeygenExpireMonths: unwrappedObject.enforceKeygenExpireMonths,
+            disallowPasswordMessagesForTerms: try? object?.disallowPasswordMessagesForTerms.ifNotNil {
+                try JSONDecoder().decode([String].self, from: $0)
+            },
+            disallowPasswordMessagesErrorText: unwrappedObject.disallowPasswordMessagesErrorText
         )
     }
 }
