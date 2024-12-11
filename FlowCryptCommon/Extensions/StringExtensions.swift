@@ -158,4 +158,30 @@ public extension String {
         guard parts.count == 2 else { return nil }
         return (String(parts[0]), String(parts[1]))
     }
+
+    func isPasswordMessageEnabled(disallowTerms: [String]) -> Bool {
+        // Allow by default if subject is nil, disallowTerms is empty, or no terms are specified
+        guard disallowTerms.isNotEmpty else {
+            return true
+        }
+
+        // Normalize subject for case-insensitive comparison
+        let lowerCaseSubject = self.lowercased()
+
+        // Check if any disallow term exists as an exact match in the subject
+        for term in disallowTerms {
+            let lowerCaseTerm = term.lowercased()
+
+            // Check for exact matches (full-term match within the subject)
+            if lowerCaseSubject.contains(lowerCaseTerm),
+               lowerCaseSubject == lowerCaseTerm ||
+               lowerCaseSubject.hasPrefix(lowerCaseTerm + " ") ||
+               lowerCaseSubject.hasSuffix(" " + lowerCaseTerm) ||
+               lowerCaseSubject.contains(" " + lowerCaseTerm + " ") {
+                return false
+            }
+        }
+
+        return true // Allow if no matches are found
+    }
 }

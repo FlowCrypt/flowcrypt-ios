@@ -56,7 +56,7 @@ final class ComposeViewController: TableNodeViewController {
     let photosManager: PhotosManagerType
     let router: GlobalRouterType
 
-    private let clientConfiguration: ClientConfiguration
+    let clientConfiguration: ClientConfiguration
     var isMessagePasswordSupported: Bool { clientConfiguration.isUsingFes }
 
     let search = PassthroughSubject<String, Never>()
