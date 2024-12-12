@@ -68,6 +68,15 @@ public final class CustomAlertNode: CoreAlertNode, ASTextNodeDelegate {
             child: separatorNode
         )
 
+        let contentStack = ASStackLayoutSpec(
+            direction: .vertical,
+            spacing: 10,
+            justifyContent: .center,
+            alignItems: .center,
+            children: [titleLabel, messageLabel]
+        )
+        contentStack.style.flexGrow = 1.0
+
         let buttonStack = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 0,
@@ -82,7 +91,7 @@ public final class CustomAlertNode: CoreAlertNode, ASTextNodeDelegate {
             spacing: 10,
             justifyContent: .center,
             alignItems: .stretch,
-            children: [titleLabel, messageLabel, separatorInsetSpec, buttonStack]
+            children: [contentStack, separatorInsetSpec, buttonStack]
         )
 
         let contentLayout = ASInsetLayoutSpec(

@@ -66,6 +66,8 @@ public class CoreAlertNode: ASDisplayNode {
                 for match in matches {
                     if let url = match.url, let range = Range(match.range, in: text) {
                         attributedString.addAttribute(.link, value: url, range: NSRange(range, in: text))
+                        attributedString.addAttribute(.underlineColor, value: UIColor.clear, range: NSRange(range, in: text))
+                        attributedString.addAttribute(.foregroundColor, value: UIColor.blue, range: NSRange(range, in: text))
                     }
                 }
             }

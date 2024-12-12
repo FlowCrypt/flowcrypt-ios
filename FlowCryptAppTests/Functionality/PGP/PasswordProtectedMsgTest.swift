@@ -12,7 +12,7 @@ import XCTest
 class PasswordProtectedMsgTest: XCTestCase {
 
     func testPasswordProtectedMessageCompliance() {
-        let disallowTerms = ["[Classification: Data Control: Internal Data Control]", "droid"]
+        let disallowTerms = ["[Classification: Data Control: Internal Data Control]", "droid", "forbidden data"]
 
         let subjectsToTest: [String: Bool] = [
             "[Classification: Data Control: Internal Data Control] Quarter results": false,
@@ -21,7 +21,8 @@ class PasswordProtectedMsgTest: XCTestCase {
             "Internal Data Control - Finance monitoring": true,
             "Android phone update": true,
             "droid phone": false,
-            "DROiD phone": false
+            "DROiD phone": false,
+            "[forbidden data] year results": false,
         ]
 
         for (subject, expectedValue) in subjectsToTest {

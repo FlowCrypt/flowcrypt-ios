@@ -214,9 +214,8 @@ class NewMessageScreen extends BaseScreen {
   };
 
   checkCustomAlertMessage = async (content: string) => {
-    console.log(content);
     const customAlertMessageLabel = await this.customAlertMessageLabel;
-    console.log(await customAlertMessageLabel.getText());
+    expect(await customAlertMessageLabel.getText()).toContain(content);
   };
   changeFromEmail = async (email: string) => {
     await this.showRecipientInputIfNeeded();

@@ -165,23 +165,25 @@ public extension String {
             return true
         }
 
-        // Normalize subject for case-insensitive comparison
-        let lowerCaseSubject = self.lowercased()
+        let lowerSubject = self.lowercased()
 
-        // Check if any disallow term exists as an exact match in the subject
         for term in disallowTerms {
-            let lowerCaseTerm = term.lowercased()
+            // Escape special regex characters
+            let escapedTerm = NSRegularExpression.escapedPattern(for: term)
 
-            // Check for exact matches (full-term match within the subject)
-            if lowerCaseSubject.contains(lowerCaseTerm),
-               lowerCaseSubject == lowerCaseTerm ||
-               lowerCaseSubject.hasPrefix(lowerCaseTerm + " ") ||
-               lowerCaseSubject.hasSuffix(" " + lowerCaseTerm) ||
-               lowerCaseSubject.contains(" " + lowerCaseTerm + " ") {
+            // Create regex pattern to ensure term appears as a separate token
+            let pattern = #"(^|\W)\#(escapedTerm)(\W|$)"#
+
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else {
+                continue
+            }
+
+            let range = NSRange(lowerSubject.startIndex..., in: lowerSubject)
+            if regex.firstMatch(in: lowerSubject, range: range) != nil {
+                // Found a disallowed term as a separate token
                 return false
             }
         }
-
         return true // Allow if no matches are found
     }
 }
