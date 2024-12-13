@@ -99,8 +99,10 @@ final class ComposeMessageHelper {
     // MARK: - Validation
     // swiftlint:disable:next function_body_length
     func createSendableMsg(
+        clientConfiguration: ClientConfiguration,
         input: ComposeMessageInput,
         contextToSend: ComposeMessageContext,
+        shouldSendPlainMessage: Bool = true,
         shouldValidate: Bool = true,
         shouldSign: Bool = true,
         withPubKeys: Bool = true
@@ -134,6 +136,14 @@ final class ComposeMessageHelper {
 
             guard hasText || hasAttachments else {
                 throw MessageValidationError.emptyMessage
+            }
+
+            if !shouldSendPlainMessage,
+               contextToSend.hasRecipientsWithoutPubKey,
+               let termsToDisallow = clientConfiguration.disallowPasswordMessagesForTerms,
+               let errorText = clientConfiguration.disallowPasswordMessagesErrorText,
+               !subject.isPasswordMessageEnabled(disallowTerms: termsToDisallow) {
+                throw MessageValidationError.messagePasswordDisallowed(errorText)
             }
 
             if let password = contextToSend.messagePassword, password.isNotEmpty {

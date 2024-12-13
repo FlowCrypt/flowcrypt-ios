@@ -64,6 +64,16 @@ class ClientConfiguration {
         raw.enforceKeygenAlgo
     }
 
+    /// An array of strings to check against the subject of the composed password-protected message. If any string in this array is found in the subject, an error alert must be displayed
+    var disallowPasswordMessagesForTerms: [String]? {
+        raw.disallowPasswordMessagesForTerms
+    }
+
+    /// The text to be displayed in the password protected message compliance error alert.
+    var disallowPasswordMessagesErrorText: String? {
+        raw.disallowPasswordMessagesErrorText
+    }
+
     /// Some orgs want to have newly generated keys include self-signatures that expire some time in the future.
     var getEnforcedKeygenExpirationMonths: Int? {
         raw.enforceKeygenExpireMonths

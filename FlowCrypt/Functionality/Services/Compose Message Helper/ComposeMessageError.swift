@@ -21,6 +21,7 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
     case expiredKeyRecipients
     case notUsableForEncryptionKeyRecipients
     case invalidEmailRecipient
+    case messagePasswordDisallowed(String)
     case internalError(String)
 
     var description: String {
@@ -49,6 +50,8 @@ enum MessageValidationError: Error, CustomStringConvertible, Equatable {
             return "compose_recipient_unusuable_for_encryption".localized
         case .invalidEmailRecipient:
             return "compose_recipient_invalid_email".localized
+        case let .messagePasswordDisallowed(message):
+            return message
         case let .internalError(message):
             return message
         }

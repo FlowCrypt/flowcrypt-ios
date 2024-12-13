@@ -55,8 +55,10 @@ extension ComposeViewController {
 
     private func sendMessage(isPlain: Bool) async throws -> MessageIdentifier {
         let sendableMsg = try await composeMessageHelper.createSendableMsg(
+            clientConfiguration: clientConfiguration,
             input: input,
             contextToSend: contextToSend,
+            shouldSendPlainMessage: isPlain,
             shouldSign: !isPlain,
             withPubKeys: !isPlain
         )
