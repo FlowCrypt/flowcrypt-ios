@@ -122,7 +122,7 @@ blocks:
       jobs:
         - name: Run Mock inbox tests
           commands:
-            - npm run-script test.mock "check attachment after forward"
+            - npm run-script test.mock.login
   #           # - echo success
   #           # - npm run-script test.mock.inbox
   #       - name: Run Mock compose tests
