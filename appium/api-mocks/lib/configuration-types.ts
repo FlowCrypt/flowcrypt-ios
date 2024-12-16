@@ -29,6 +29,8 @@ type Fes$ClientConfiguration = {
   allow_attester_search_only_for_domains?: string[];
   disallow_attester_search_for_domains?: string[];
   enforce_keygen_algo?: string;
+  disallow_password_messages_for_terms?: string[];
+  disallow_password_messages_error_text?: string;
   enforce_keygen_expire_months?: number;
 };
 

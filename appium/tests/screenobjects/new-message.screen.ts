@@ -21,6 +21,8 @@ const SELECTORS = {
   DELETE_BUTTON: '~aid-compose-delete',
   SEND_BUTTON: '~aid-compose-send',
   SEND_PLAIN_MESSAGE_BUTTON: '~aid-compose-send-plain',
+  SEND_MESSAGE_PASSWORD_BUTTON: '~aid-compose-send-message-password',
+  CUSTOM_ALERT_MESSAGE_LABEL: '~aid-custom-alert-message',
   CONFIRM_DELETING: '~aid-confirm-button',
   MESSAGE_PASSWORD_TEXTFIELD: '~aid-message-password-textfield',
   ALERT: "-ios predicate string:type == 'XCUIElementTypeAlert'",
@@ -96,6 +98,14 @@ class NewMessageScreen extends BaseScreen {
 
   get sendPlainMessageButton() {
     return $(SELECTORS.SEND_PLAIN_MESSAGE_BUTTON);
+  }
+
+  get sendMessagePasswordButton() {
+    return $(SELECTORS.SEND_MESSAGE_PASSWORD_BUTTON);
+  }
+
+  get customAlertMessageLabel() {
+    return $(SELECTORS.CUSTOM_ALERT_MESSAGE_LABEL);
   }
 
   get confirmDeletingButton() {
@@ -203,6 +213,10 @@ class NewMessageScreen extends BaseScreen {
     await this.setSubject(subject);
   };
 
+  checkCustomAlertMessage = async (content: string) => {
+    const customAlertMessageLabel = await this.customAlertMessageLabel;
+    expect(await customAlertMessageLabel.getText()).toContain(content);
+  };
   changeFromEmail = async (email: string) => {
     await this.showRecipientInputIfNeeded();
     await ElementHelper.waitAndClick(await this.toggleFromButton);
@@ -405,6 +419,10 @@ class NewMessageScreen extends BaseScreen {
 
   clickSendPlainMessageButton = async () => {
     await ElementHelper.waitAndClick(await this.sendPlainMessageButton);
+  };
+
+  clickSendMessagePasswordButton = async () => {
+    await ElementHelper.waitAndClick(await this.sendMessagePasswordButton);
   };
 
   confirmDelete = async () => {

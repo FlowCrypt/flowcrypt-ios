@@ -79,6 +79,8 @@ extension ComposeViewController {
             } else {
                 refreshEKMAndProceed(error: error)
             }
+        case let MessageValidationError.messagePasswordDisallowed(error):
+            alertsFactory.makeCustomAlert(viewController: self, message: error)
         case MessageValidationError.notUniquePassword,
              MessageValidationError.subjectContainsPassword,
              MessageValidationError.weakPassword:

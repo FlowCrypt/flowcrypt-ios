@@ -19,6 +19,8 @@ final class ClientConfigurationRealmObject: Object {
     @Persisted var disallowAttesterSearchForDomains: Data?
     @Persisted var enforceKeygenAlgo: String?
     @Persisted var enforceKeygenExpireMonths: Int
+    @Persisted var disallowPasswordMessagesForTerms: Data?
+    @Persisted var disallowPasswordMessagesErrorText: String?
 
     convenience init(
         flags: [String]?,
@@ -30,6 +32,8 @@ final class ClientConfigurationRealmObject: Object {
         disallowAttesterSearchForDomains: [String]?,
         enforceKeygenAlgo: String?,
         enforceKeygenExpireMonths: Int?,
+        disallowPasswordMessagesForTerms: [String]?,
+        disallowPasswordMessagesErrorText: String?,
         email: String
     ) {
         self.init()
@@ -44,6 +48,8 @@ final class ClientConfigurationRealmObject: Object {
         self.disallowAttesterSearchForDomains = try? disallowAttesterSearchForDomains.ifNotNil { try JSONEncoder().encode($0) }
         self.enforceKeygenAlgo = enforceKeygenAlgo
         self.enforceKeygenExpireMonths = enforceKeygenExpireMonths ?? -1
+        self.disallowPasswordMessagesForTerms = try? disallowPasswordMessagesForTerms.ifNotNil { try JSONEncoder().encode($0) }
+        self.disallowPasswordMessagesErrorText = disallowPasswordMessagesErrorText
         self.userEmail = email
     }
 }
@@ -60,6 +66,8 @@ extension ClientConfigurationRealmObject {
             disallowAttesterSearchForDomains: configuration.disallowAttesterSearchForDomains,
             enforceKeygenAlgo: configuration.enforceKeygenAlgo,
             enforceKeygenExpireMonths: configuration.enforceKeygenExpireMonths,
+            disallowPasswordMessagesForTerms: configuration.disallowPasswordMessagesForTerms,
+            disallowPasswordMessagesErrorText: configuration.disallowPasswordMessagesErrorText,
             email: email
         )
     }

@@ -420,9 +420,12 @@
 		D2FD0F692453245E00259FF0 /* Either.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD0F682453245E00259FF0 /* Either.swift */; };
 		D2FF6966243115EC007182F0 /* SetupImapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6965243115EC007182F0 /* SetupImapViewController.swift */; };
 		D2FF6968243115F9007182F0 /* SetupImapViewDecorator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */; };
+		D717EC262D06B37E00AE7BFF /* CustomAlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D717EC252D06B37900AE7BFF /* CustomAlertNode.swift */; };
 		D73F7D9D2CD46AE900955806 /* PgpOnlySwitchNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73F7D9C2CD46AE700955806 /* PgpOnlySwitchNode.swift */; };
 		D73F7D9F2CD4922500955806 /* NotificationExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D73F7D9E2CD4922100955806 /* NotificationExtension.swift */; };
 		D741F9B22CA5661C00E1CAFF /* SecurityWarningNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D741F9B12CA5661400E1CAFF /* SecurityWarningNode.swift */; };
+		D7478BDE2D09113100D42659 /* PasswordProtectedMsgTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7478BDD2D09112500D42659 /* PasswordProtectedMsgTest.swift */; };
+		D7478BE02D0912E600D42659 /* CoreAlertNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7478BDF2D0912E200D42659 /* CoreAlertNode.swift */; };
 		F191F621272511790053833E /* BlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F191F620272511790053833E /* BlurViewController.swift */; };
 		F8678DCC2722143300BB1710 /* GmailService+draft.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8678DCB2722143300BB1710 /* GmailService+draft.swift */; };
 		F8A72FA12729F82800E4BCAB /* DraftGatewayMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A72FA02729F82800E4BCAB /* DraftGatewayMock.swift */; };
@@ -889,9 +892,12 @@
 		D2FD0F682453245E00259FF0 /* Either.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Either.swift; sourceTree = "<group>"; };
 		D2FF6965243115EC007182F0 /* SetupImapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewController.swift; sourceTree = "<group>"; };
 		D2FF6967243115F9007182F0 /* SetupImapViewDecorator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupImapViewDecorator.swift; sourceTree = "<group>"; };
+		D717EC252D06B37900AE7BFF /* CustomAlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAlertNode.swift; sourceTree = "<group>"; };
 		D73F7D9C2CD46AE700955806 /* PgpOnlySwitchNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PgpOnlySwitchNode.swift; sourceTree = "<group>"; };
 		D73F7D9E2CD4922100955806 /* NotificationExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtension.swift; sourceTree = "<group>"; };
 		D741F9B12CA5661400E1CAFF /* SecurityWarningNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecurityWarningNode.swift; sourceTree = "<group>"; };
+		D7478BDD2D09112500D42659 /* PasswordProtectedMsgTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordProtectedMsgTest.swift; sourceTree = "<group>"; };
+		D7478BDF2D0912E200D42659 /* CoreAlertNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreAlertNode.swift; sourceTree = "<group>"; };
 		E26D5E20275AA417007B8802 /* BundleExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleExtensions.swift; sourceTree = "<group>"; };
 		F191F620272511790053833E /* BlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurViewController.swift; sourceTree = "<group>"; };
 		F8678DCB2722143300BB1710 /* GmailService+draft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GmailService+draft.swift"; sourceTree = "<group>"; };
@@ -1502,6 +1508,7 @@
 		9F4164162665757700106194 /* PGP */ = {
 			isa = PBXGroup;
 			children = (
+				D7478BDD2D09112500D42659 /* PasswordProtectedMsgTest.swift */,
 				9FA0157926565B7800CBBA05 /* KeyMethodsTest.swift */,
 			);
 			path = PGP;
@@ -2261,6 +2268,7 @@
 		D2A1D3D223FD9AE600D626D6 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
+				D7478BDF2D0912E200D42659 /* CoreAlertNode.swift */,
 				D73F7D9C2CD46AE700955806 /* PgpOnlySwitchNode.swift */,
 				9F7ECCA6272C3FB4008A1770 /* TextImageNode.swift */,
 				51EBC56F2746A06600178DE8 /* TextWithIconNode.swift */,
@@ -2282,6 +2290,7 @@
 				51DAD9BC273E7DD20076CBA7 /* BadgeNode.swift */,
 				51B9EE6E27567B520080B2D5 /* MessageRecipientsNode.swift */,
 				9547EF202A5F106E00A048FF /* PassPhraseAlertNode.swift */,
+				D717EC252D06B37900AE7BFF /* CustomAlertNode.swift */,
 				95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */,
 				9577CEDC2AA7A4A40084AC62 /* PublicKeyDetailNode.swift */,
 				955475FA2B0650AC00F52076 /* WebNode.swift */,
@@ -2618,6 +2627,7 @@
 				9F5F504A26FA6C8F00294FA2 /* ClientConfigurationProviderMock.swift in Sources */,
 				9FC4117D268118AE004C0A69 /* PassPhraseStorageMock.swift in Sources */,
 				9F97650E267E16620058419D /* WKDURLsConstructorTests.swift in Sources */,
+				D7478BDE2D09113100D42659 /* PasswordProtectedMsgTest.swift in Sources */,
 				9F976585267E194F0058419D /* FlowCryptCoreTests.swift in Sources */,
 				9F6F3C3C26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift in Sources */,
 				9FC4116B2681186D004C0A69 /* KeyMethodsTest.swift in Sources */,
@@ -2899,11 +2909,13 @@
 				D211CE7123FC35AC00D1CE38 /* TextFieldCellNode.swift in Sources */,
 				D73F7D9D2CD46AE900955806 /* PgpOnlySwitchNode.swift in Sources */,
 				9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */,
+				D717EC262D06B37E00AE7BFF /* CustomAlertNode.swift in Sources */,
 				51DAD9BD273E7DD20076CBA7 /* BadgeNode.swift in Sources */,
 				51DE2FEE2714DA0400916222 /* ContactKeyCellNode.swift in Sources */,
 				9547EF242A5FBA2B00A048FF /* MenuSeparatorCellNode.swift in Sources */,
 				D2A9CA432426210200E1D898 /* SetupTitleNode.swift in Sources */,
 				D2F6D12F24324ACC00DB4065 /* SwitchCellNode.swift in Sources */,
+				D7478BE02D0912E600D42659 /* CoreAlertNode.swift in Sources */,
 				51EBC5702746A06600178DE8 /* TextWithIconNode.swift in Sources */,
 				5180CB97273724E9001FC7EF /* ThreadMessageInfoCellNode.swift in Sources */,
 				D2E26F6824F169E300612AF1 /* ContactCellNode.swift in Sources */,

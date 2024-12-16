@@ -158,4 +158,32 @@ public extension String {
         guard parts.count == 2 else { return nil }
         return (String(parts[0]), String(parts[1]))
     }
+
+    func isPasswordMessageEnabled(disallowTerms: [String]) -> Bool {
+        // Allow by default if subject is nil, disallowTerms is empty, or no terms are specified
+        guard disallowTerms.isNotEmpty else {
+            return true
+        }
+
+        let lowerSubject = self.lowercased()
+
+        for term in disallowTerms {
+            // Escape special regex characters
+            let escapedTerm = NSRegularExpression.escapedPattern(for: term)
+
+            // Create regex pattern to ensure term appears as a separate token
+            let pattern = #"(^|\W)\#(escapedTerm)(\W|$)"#
+
+            guard let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive]) else {
+                continue
+            }
+
+            let range = NSRange(lowerSubject.startIndex..., in: lowerSubject)
+            if regex.firstMatch(in: lowerSubject, range: range) != nil {
+                // Found a disallowed term as a separate token
+                return false
+            }
+        }
+        return true // Allow if no matches are found
+    }
 }

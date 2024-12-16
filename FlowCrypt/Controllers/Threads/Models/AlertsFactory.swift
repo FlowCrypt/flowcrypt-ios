@@ -79,6 +79,25 @@ class AlertsFactory {
 
         viewController.present(alertViewController, animated: true, completion: nil)
     }
+
+    func makeCustomAlert(
+        viewController: UIViewController,
+        title: String = "error".localized,
+        message: String
+    ) {
+        let alertNode = CustomAlertNode(
+            title: title,
+            message: message
+        )
+        alertNode.onOkay = {
+            viewController.dismiss(animated: true)
+        }
+        let alertViewController = ASDKViewController(node: alertNode)
+        alertViewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+        alertViewController.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+
+        viewController.present(alertViewController, animated: true, completion: nil)
+    }
 }
 
 class SubmitOnPasteTextFieldDelegate: NSObject, UITextFieldDelegate {
