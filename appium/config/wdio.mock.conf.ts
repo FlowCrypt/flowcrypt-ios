@@ -21,7 +21,7 @@ config.capabilities = [
       args: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'],
     },
     'appium:deviceName': 'iPhone SE (3rd generation)',
-    'appium:platformVersion': process.env.SEMAPHORE === 'true' ? '18.0' : '18.2',
+    'appium:platformVersion': '18.2',
     'appium:orientation': 'PORTRAIT',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:simulatorStartupTimeout': 300000,
