@@ -24,9 +24,9 @@ export const config: Options.Testrunner = {
   },
   logLevel: 'debug',
   bail: 1,
-  waitforTimeout: 15000,
-  connectionRetryTimeout: 400000,
-  connectionRetryCount: 1,
+  waitforTimeout: 45000,
+  connectionRetryTimeout: 120000,
+  connectionRetryCount: 2,
   maxInstancesPerCapability: 1,
   reporters: [
     'spec',

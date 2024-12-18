@@ -14,7 +14,8 @@ config.suites = {
 config.capabilities = [
   {
     platformName: 'iOS',
-    maxInstances: 1,
+    'wdio:maxInstances': 1,
+    // maxInstances: 1,
     hostname: '127.0.0.1',
     'appium:automationName': 'XCUITest',
     'appium:processArguments': {

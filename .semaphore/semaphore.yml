@@ -32,12 +32,24 @@ blocks:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - ls /Applications | grep Xcode
-            - xcrun simctl list devices --json | jq '.devices[] | .[]
-            # - bundle install
-            # - bundle exec fastlane build
-            # - cd appium
-            # - npm i && cache store appium-npm node_modules
-            # - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
+            - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+            # - xcrun simctl list devices --json | jq '.devices[] | .[]
+            - cd appium
+            - git clone https://github.com/appium/WebDriverAgent.git
+            - cd WebDriverAgent
+            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.0,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+            - cd ..
+            - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
+            - xcrun simctl list devices --json | jq '.devices[] | .[] | .name'
+            - xcrun simctl boot "iPhone SE (3rd generation)"
+            - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
+            - cd ..
+            - bundle install
+            - bundle exec fastlane build
+            - cd appium
+            - npm i && cache store appium-npm node_modules
+            - mv /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator/FlowCrypt-$SEMAPHORE_GIT_SHA.app ./FlowCrypt.app
+            - npm run-script test.mock.login
   # - name: TypeScript tests
   #   dependencies: []
   #   run:
