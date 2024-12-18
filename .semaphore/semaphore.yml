@@ -39,8 +39,6 @@ blocks:
             - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.2,name=iPhone SE (3rd generation)" CODE_SIGN_IDENTITY="" CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
             - cd ..
             - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
-            - xcrun simctl list devices --json | jq '.devices[] | .[] | .name'
-            - xcrun simctl boot "iPhone SE (3rd generation)"
             - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
             - cd ..
             - bundle install
