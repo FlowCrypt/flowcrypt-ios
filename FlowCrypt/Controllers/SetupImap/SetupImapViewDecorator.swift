@@ -128,6 +128,7 @@ struct SetupImapViewDecorator {
             case .title:
                 placeholder = nil
             }
+
         case .connect:
             return nil
         }

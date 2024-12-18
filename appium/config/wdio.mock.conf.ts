@@ -21,7 +21,7 @@ config.capabilities = [
       args: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'],
     },
     'appium:deviceName': 'iPhone SE (3rd generation)',
-    'appium:platformVersion': '17.4',
+    'appium:platformVersion': '18.2',
     'appium:orientation': 'PORTRAIT',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:newCommandTimeout': 240,
