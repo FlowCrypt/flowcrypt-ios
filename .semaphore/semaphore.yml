@@ -2,10 +2,10 @@ version: v1.0
 name: FlowCrypt iOS App
 agent:
   machine:
-    type: a1-standard-4
-    os_image: macos-xcode15
+    type: a2-standard-4
+    os_image: macos-xcode16
 execution_time_limit:
-  minutes: 120
+  minutes: 40
 auto_cancel:
   running:
     when: branch != 'master'
@@ -15,7 +15,7 @@ blocks:
     run:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/.github/dependabot.yml']})"
     execution_time_limit:
-      minutes: 60
+      minutes: 20
     task:
       env_vars:
         - name: LANG
@@ -71,7 +71,7 @@ blocks:
     run:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/Gemfile', '/Gemfile.lock', '/.github/dependabot.yml', '/.semaphore/semaphore.yml', '/package.json', '/package-lock.json']})"
     execution_time_limit:
-      minutes: 80
+      minutes: 20
     task:
       env_vars:
         - name: LANG
