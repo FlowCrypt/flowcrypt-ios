@@ -26,7 +26,7 @@ export const config: Options.Testrunner = {
   bail: 0,
   waitforTimeout: 15000,
   connectionRetryTimeout: 400000,
-  connectionRetryCount: 3,
+  connectionRetryCount: 2,
   maxInstancesPerCapability: 1,
   reporters: [
     'spec',
