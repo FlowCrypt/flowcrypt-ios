@@ -28,6 +28,7 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
+            - sudo xcode-select -s /Applications/Xcode-16.2.0.app/Contents/Developer/
             - bundle install
             - bundle exec fastlane build
             - git clone https://github.com/appium/WebDriverAgent.git
@@ -109,6 +110,7 @@ blocks:
         #     # - npm run-script test.mock.setup
         - name: Run Mock other tests + Run Live tests
           commands:
+            - sudo xcode-select -s /Applications/Xcode-16.2.0.app/Contents/Developer/
             - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
             - xcrun simctl boot "iPhone SE (3rd generation)"
             - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app

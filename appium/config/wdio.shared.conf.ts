@@ -23,7 +23,7 @@ export const config: Options.Testrunner = {
     defaultTimeoutInterval: 600000,
   },
   logLevel: 'debug',
-  bail: 0,
+  bail: 1,
   waitforTimeout: 15000,
   connectionRetryTimeout: 400000,
   connectionRetryCount: 2,
