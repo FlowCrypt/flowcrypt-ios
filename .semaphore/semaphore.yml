@@ -36,8 +36,8 @@ blocks:
       epilogue:
         always:
           commands:
-            - cd /var/tmp/derived_data/Build/Products/Debug-iphonesimulator/FlowCrypt && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-            - cd /var/tmp/derived_data/Build/Products/Debug-iphonesimulator/WebDriverAgent && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
+            - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
+            - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
   # - name: TypeScript tests
   #   dependencies: []
   #   run:
