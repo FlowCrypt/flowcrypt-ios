@@ -109,6 +109,9 @@ blocks:
         #     # - npm run-script test.mock.setup
         - name: Run Mock other tests + Run Live tests
           commands:
+            - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+            - xcrun simctl boot "iPhone SE (3rd generation)"
+            - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
             - npm run-script test.mock.login
             # - echo success
             # - npm run-script test.mock.login-settings
