@@ -23,6 +23,7 @@ config.capabilities = [
     'appium:deviceName': 'iPhone SE (3rd generation)',
     'appium:platformVersion': '18.2',
     'appium:orientation': 'PORTRAIT',
+    'appium:noReset': true,
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:simulatorStartupTimeout': 300000,
     'appium:newCommandTimeout': 240,
