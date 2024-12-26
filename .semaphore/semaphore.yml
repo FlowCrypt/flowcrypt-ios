@@ -28,12 +28,13 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
+            - sudo xcode-select -s /Applications/Xcode-16.2.0.app/Contents/Developer/
+            - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+            - xcrun simctl boot "iPhone SE (3rd generation)"
             - git clone https://github.com/appium/WebDriverAgent.git
             - cd WebDriverAgent
             - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.2,name=iPhone SE (3rd generation)"
             - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
-            - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
-            - xcrun simctl boot "iPhone SE (3rd generation)"
             - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
             - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
             # - bundle install
