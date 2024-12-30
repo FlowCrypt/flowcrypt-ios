@@ -33,14 +33,14 @@ blocks:
             - xcrun simctl boot "iPhone SE (3rd generation)"
             - bundle install
             - bundle exec fastlane build
-            - git clone https://github.com/appium/WebDriverAgent.git
-            - cd WebDriverAgent
-            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.2,name=iPhone SE (3rd generation)"
+            # - git clone https://github.com/appium/WebDriverAgent.git
+            # - cd WebDriverAgent
+            # - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.2,name=iPhone SE (3rd generation)"
       epilogue:
         always:
           commands:
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-            - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
+            # - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
   # - name: TypeScript tests
   #   dependencies: []
   #   run:
@@ -91,7 +91,7 @@ blocks:
           - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
-          - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
+          # - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
       epilogue:
         always:
           commands:
@@ -119,8 +119,8 @@ blocks:
             # - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
             - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
             - xcrun simctl boot "iPhone SE (3rd generation)"
-            - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
-            - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
+            # - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
+            # - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
             - npm run-script test.mock.login
             # - echo success
             # - npm run-script test.mock.login-settings
