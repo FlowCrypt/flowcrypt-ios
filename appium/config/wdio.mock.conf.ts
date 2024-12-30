@@ -28,6 +28,8 @@ config.capabilities = [
     'appium:simulatorStartupTimeout': 300000,
     'appium:newCommandTimeout': 240,
     'appium:webviewConnectTimeout': 5000,
+    'appium:wdaLaunchTimeout': 300000,
+    'appium:wdaStartupRetryInterval': 30000,
     'appium:reduceMotion': true,
     'appium:simulatorLogLevel': 'debug',
     // 'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
