@@ -32,6 +32,7 @@ config.capabilities = [
     'appium:simulatorLogLevel': 'debug',
     'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
     'appium:usePreinstalledWDA': true,
+    'appium:showXcodeLog': true,
   },
 ];
 
