@@ -30,8 +30,8 @@ config.capabilities = [
     'appium:webviewConnectTimeout': 5000,
     'appium:reduceMotion': true,
     'appium:simulatorLogLevel': 'debug',
-    'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
-    'appium:usePreinstalledWDA': true,
+    // 'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
+    // 'appium:usePreinstalledWDA': true,
     'appium:showXcodeLog': true,
   },
 ];
