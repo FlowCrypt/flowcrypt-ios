@@ -91,8 +91,6 @@ blocks:
           - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
-          - nvm install 22
-          - nvm use 22
           # - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
       epilogue:
         always:
