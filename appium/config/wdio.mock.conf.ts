@@ -14,7 +14,7 @@ config.suites = {
 config.capabilities = [
   {
     platformName: 'iOS',
-    'wdio:maxInstances': 1,
+    maxInstances: 1,
     hostname: '127.0.0.1',
     'appium:automationName': 'XCUITest',
     'appium:processArguments': {
@@ -26,14 +26,14 @@ config.capabilities = [
     'appium:noReset': true,
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:simulatorStartupTimeout': 300000,
-    'appium:newCommandTimeout': 240,
+    'appium:newCommandTimeout': 1200,
     'appium:webviewConnectTimeout': 5000,
     'appium:wdaLaunchTimeout': 300000,
     'appium:wdaStartupRetryInterval': 30000,
     'appium:reduceMotion': true,
     'appium:simulatorLogLevel': 'debug',
     // 'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
-    // 'appium:usePreinstalledWDA': true,
+    'appium:usePreinstalledWDA': true,
     'appium:showXcodeLog': true,
   },
 ];
