@@ -296,9 +296,6 @@ extension ComposeViewController {
             }
             return isValid
         }
-        .onShouldEndEditing { [weak self] textField in
-            return self?.showAlertIfTextFieldNotValidEmail(textField: textField) ?? true
-        }
         .onShouldChangeCharacters { [weak self] textField, character in
             self?.shouldChange(with: textField, and: character, for: type) ?? true
         }
