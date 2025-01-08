@@ -5,7 +5,7 @@ agent:
     type: a2-standard-4
     os_image: macos-xcode16
 execution_time_limit:
-  minutes: 40
+  minutes: 45
 auto_cancel:
   running:
     when: branch != 'master'
@@ -15,7 +15,7 @@ blocks:
     run:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/.github/dependabot.yml']})"
     execution_time_limit:
-      minutes: 20
+      minutes: 15
     task:
       env_vars:
         - name: LANG
@@ -77,7 +77,7 @@ blocks:
     run:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/Gemfile', '/Gemfile.lock', '/.github/dependabot.yml', '/.semaphore/semaphore.yml', '/package.json', '/package-lock.json']})"
     execution_time_limit:
-      minutes: 20
+      minutes: 30
     task:
       env_vars:
         - name: LANG
@@ -121,7 +121,7 @@ blocks:
             - cd ..
             - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
             - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
-            # - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
+            - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
             - npm run-script test.mock.login
             # - echo success
             # - npm run-script test.mock.login-settings
