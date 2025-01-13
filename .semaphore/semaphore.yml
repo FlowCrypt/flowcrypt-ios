@@ -122,6 +122,7 @@ blocks:
             - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
             - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
             - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
+            - appium driver doctor xcuitest
             - npm run-script test.mock.login
             # - echo success
             # - npm run-script test.mock.login-settings

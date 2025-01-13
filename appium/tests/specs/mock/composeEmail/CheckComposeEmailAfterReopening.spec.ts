@@ -58,7 +58,7 @@ describe('COMPOSE EMAIL: ', () => {
         bcc: [bccRecipient.name],
       });
 
-      await driver.background(3);
+      await driver.execute('mobile: backgroundApp', { seconds: 3 });
 
       await NewMessageScreen.checkFilledComposeEmailInfo({
         recipients: [recipient.name],
