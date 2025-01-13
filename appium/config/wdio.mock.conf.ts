@@ -25,7 +25,7 @@ config.capabilities = [
     'appium:orientation': 'PORTRAIT',
     // 'appium:noReset': true,
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
-    // 'appium:simulatorStartupTimeout': 300000,
+    'appium:simulatorStartupTimeout': 600000,
     // 'appium:webviewConnectTimeout': 5000,
     'appium:wdaLaunchTimeout': 600000,
     'appium:wdaConnectionTimeout': 600000,

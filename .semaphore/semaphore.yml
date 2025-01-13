@@ -88,6 +88,7 @@ blocks:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
+          - npm i -g appium
           - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
@@ -121,9 +122,9 @@ blocks:
             - cd ..
             - mv /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator/WebDriverAgentRunner-Runner.app ./WebDriverAgentRunner-Runner.app
             - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
-            - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
-            - npm i -g appium
-            - npm i
+            - killall Simulator
+            - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+            # - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
             - appium driver doctor xcuitest
             - npm run-script test.mock.login
             # - echo success
