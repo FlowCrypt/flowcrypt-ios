@@ -12,6 +12,7 @@ config.suites = {
   failed: [
     '../tests/specs/mock/composeEmail/CheckDraftsFunctionality.spec.ts',
     '../tests/specs/mock/composeEmail/CheckRecipientPopup.spec.ts',
+    '../tests/specs/mock/inbox/CheckRichTextEmailRendering.spec.ts',
   ],
 };
 
