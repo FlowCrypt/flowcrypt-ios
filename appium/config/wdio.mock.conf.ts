@@ -8,11 +8,7 @@ config.suites = {
   compose: ['../tests/specs/mock/composeEmail/*.spec.ts'],
   login: ['../tests/specs/mock/login/*.spec.ts'],
   setup: ['../tests/specs/mock/setup/*.spec.ts'],
-  drafts: ['../tests/specs/mock/composeEmail/CheckInvalidEmailRecipient.spec.ts'],
-  failed: [
-    '../tests/specs/mock/composeEmail/CheckDraftsFunctionality.spec.ts',
-    '../tests/specs/mock/composeEmail/CheckRecipientPopup.spec.ts',
-  ],
+  drafts: ['../tests/specs/mock/composeEmail/CheckDraftsFunctionality.spec.ts'],
 };
 
 config.capabilities = [

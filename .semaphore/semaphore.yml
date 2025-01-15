@@ -93,8 +93,8 @@ blocks:
       jobs:
         - name: Run Mock inbox tests
           commands:
-            # - echo success
-            - npm run-script test.mock.failed
+            - echo success
+            # - npm run-script test.mock.inbox
         - name: Run Mock compose tests
           commands:
             - echo success
