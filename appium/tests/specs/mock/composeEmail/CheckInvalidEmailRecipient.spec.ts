@@ -24,6 +24,7 @@ describe('COMPOSE EMAIL: ', () => {
     };
 
     const invalidRecipientError = CommonData.errors.invalidRecipient;
+    const oneOrMoreInvalidRecipientError = CommonData.errors.oneOrMoreInvalidRecipient;
 
     await mockApi.withMockedApis(async () => {
       await SplashScreen.mockLogin();
@@ -42,7 +43,7 @@ describe('COMPOSE EMAIL: ', () => {
       await BaseScreen.clickOkButtonOnError();
 
       await NewMessageScreen.clickSendButton();
-      await BaseScreen.checkModalMessage(invalidRecipientError);
+      await BaseScreen.checkModalMessage(oneOrMoreInvalidRecipientError);
       await BaseScreen.clickOkButtonOnError();
     });
   });
