@@ -63,19 +63,7 @@ class TouchHelper {
   };
 
   static tapScreenAt = async ({ x, y }: { x: number; y: number }) => {
-    await driver.performActions([
-      {
-        id: 'tapScreenAt',
-        type: 'pointer',
-        parameters: { pointerType: 'touch' },
-        actions: [
-          { duration: 0, x, y, type: 'pointerMove', origin: 'viewport' },
-          { button: 0, type: 'pointerDown' },
-          { type: 'pause', duration: 100 },
-          { button: 0, type: 'pointerUp' },
-        ],
-      },
-    ]);
+    await driver.execute('mobile: tap', { x, y });
     await browser.pause(100);
   };
 

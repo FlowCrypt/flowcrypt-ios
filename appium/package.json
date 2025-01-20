@@ -33,7 +33,7 @@
     "@wdio/local-runner": "^9.4.5",
     "@wdio/spec-reporter": "^9.4.4",
     "appium": "^2.4.1",
-    "appium-xcuitest-driver": "^7.15.2",
+    "appium-xcuitest-driver": "^8.0.0",
     "dotenv": "^16.4.1",
     "mailparser": "^3.6.6",
     "moment": "^2.29.1",
