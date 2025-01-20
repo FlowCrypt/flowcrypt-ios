@@ -30,7 +30,7 @@
     });
   } else if (typeof exports === 'object' && typeof navigator !== 'undefined') {
     // common.js for browser
-    encoding = require('emailjs-stringencoding');
+    encoding = require('./emailjs-stringencoding');
     module.exports = factory(encoding.TextEncoder, encoding.TextDecoder, root.btoa);
   } else if (typeof exports === 'object') {
     // common.js for node.js
