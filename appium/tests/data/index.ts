@@ -238,6 +238,7 @@ export const CommonData = {
       '\n' +
       'This will likely download a corrupted file. Download anyway?',
     invalidRecipient: 'Invalid recipient\nPlease enter a valid email address.',
+    oneOrMoreInvalidRecipient: 'One or more of your recipients have invalid email address (marked in red)',
     decryptMessageWithNoKeys:
       'Error\n' +
       'Could not open message\n\n' +
