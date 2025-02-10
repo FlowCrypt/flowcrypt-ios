@@ -96,7 +96,11 @@ test('generateKey', async t => {
   expect(isFullyEncrypted(key)).to.be.true;
   expect(isFullyDecrypted(key)).to.be.false;
   /* eslint-enable @typescript-eslint/no-unused-expressions */
-  expect((json.key as { algo: string }).algo).to.deep.equal({ algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 });
+  expect((json.key as { algo: string }).algo).to.deep.equal({
+    algorithm: 'eddsaLegacy',
+    curve: 'ed25519Legacy',
+    algorithmId: 22,
+  });
   expectNoData(data);
   t.pass();
 });
@@ -662,7 +666,7 @@ test.serial('parseKeys - revoked', async t => {
             keywords: 'GALLERY PROTECT TIME CANDY BLEAK ACCESS',
           },
         ],
-        algo: { algorithm: 'eddsa', curve: 'ed25519', algorithmId: 22 },
+        algo: { algorithm: 'eddsaLegacy', curve: 'ed25519Legacy', algorithmId: 22 },
         created: 1634664782,
         lastModified: 1634664811,
         revoked: true,

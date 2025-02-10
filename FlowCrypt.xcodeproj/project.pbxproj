@@ -185,6 +185,8 @@
 		958A45A32B10E77F00FFBA56 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 958A45A22B10E77F00FFBA56 /* SwiftSoup */; };
 		95E014CF2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */; };
 		95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 95F55F9E2A7B8A720000E50F /* ProgressHUD */; };
+		97C4F3AC2D5354230022AEE6 /* Telegraph in Frameworks */ = {isa = PBXBuildFile; productRef = 97C4F3AB2D5354230022AEE6 /* Telegraph */; };
+		97C4F3AE2D5354350022AEE6 /* WebServerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97C4F3AD2D5354340022AEE6 /* WebServerManager.swift */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */; };
@@ -666,6 +668,7 @@
 		9582BC592A782DA700439728 /* pass_phrase_hint.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = pass_phrase_hint.html; sourceTree = "<group>"; };
 		958566B82A612822001C84D3 /* ASButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASButtonNode.swift; sourceTree = "<group>"; };
 		95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCheckboxNode.swift; sourceTree = "<group>"; };
+		97C4F3AD2D5354340022AEE6 /* WebServerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebServerManager.swift; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
@@ -926,6 +929,7 @@
 				51E1675F270F36A400D27C52 /* RealmSwift in Frameworks */,
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
+				97C4F3AC2D5354230022AEE6 /* Telegraph in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1137,6 +1141,7 @@
 		32DCA376D595968F13A3347A /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				97C4F3AD2D5354340022AEE6 /* WebServerManager.swift */,
 				D212D36224C1AC1900035991 /* Models */,
 				32DCAC732B988D9704658812 /* CoreTypes.swift */,
 				32DCA0C3D34A69851A238E87 /* Core.swift */,
@@ -2412,6 +2417,7 @@
 				51C0C1EE271982A1000C9738 /* MailCore */,
 				040FDF0D27EDA70700CB936A /* GoogleAPIClientForREST_Oauth2 */,
 				51A1A12729070CDF007F1188 /* AsyncDisplayKit */,
+				97C4F3AB2D5354230022AEE6 /* Telegraph */,
 			);
 			productName = FlowCrypt;
 			productReference = C132B9B01EC2DBD800763715 /* FlowCrypt.app */;
@@ -2532,6 +2538,7 @@
 				952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */,
 				958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				513E8BC22BF20FCA00340F1B /* XCRemoteSwiftPackageReference "GTMAppAuth" */,
+				97C4F3AA2D5354170022AEE6 /* XCRemoteSwiftPackageReference "Telegraph" */,
 			);
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
@@ -2813,6 +2820,7 @@
 				9F41FA28253B75F4003B970D /* BackupSelectKeyViewController.swift in Sources */,
 				2133D51826A1E45400CC686F /* DecryptedPrivateKey.swift in Sources */,
 				D2F6D1402435008500DB4065 /* SessionCredentialsProvider.swift in Sources */,
+				97C4F3AE2D5354350022AEE6 /* WebServerManager.swift in Sources */,
 				9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */,
 				9F883916272709E200669B56 /* MessagesThreadApiClient.swift in Sources */,
 				9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */,
@@ -3990,6 +3998,14 @@
 				minimumVersion = 14.1.1;
 			};
 		};
+		97C4F3AA2D5354170022AEE6 /* XCRemoteSwiftPackageReference "Telegraph" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Building42/Telegraph.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.40.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -4052,6 +4068,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */;
 			productName = ProgressHUD;
+		};
+		97C4F3AB2D5354230022AEE6 /* Telegraph */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 97C4F3AA2D5354170022AEE6 /* XCRemoteSwiftPackageReference "Telegraph" */;
+			productName = Telegraph;
 		};
 		9FBD69F9277B1E6C002FC602 /* Toast */ = {
 			isa = XCSwiftPackageProductDependency;
