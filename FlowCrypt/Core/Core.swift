@@ -352,10 +352,10 @@ class CoreMessageHandler: NSObject, WKScriptMessageHandler, WKNavigationDelegate
         return try? String(contentsOfFile: jsFile)
     }
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-            guard let jsFileSrc = self.getCoreJsFile() else { return }
-            let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
-            webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
-        }
+        guard let jsFileSrc = self.getCoreJsFile() else { return }
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
+        webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
+    }
 
 }
 
