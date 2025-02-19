@@ -48,7 +48,6 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
 
     private init() {
         Task {
-            WebServerManager.shared.startServer()
             await setupWebView()
         }
     }
@@ -64,10 +63,13 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         self.webView = WKWebView(frame: .zero, configuration: configuration)
         self.webView.navigationDelegate = self.coreMessageHandler
 
-        let url = URL(string: "http://localhost")!
+        // Load a simple HTML file in the web view and run the `flowcrypt-ios-prod.js.txt` code.
+        // This mechanism is used because the SubtleCrypto API is only available in secure contexts,
+        // and `file://` URLs are considered secure.
+        // More info: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+
+        let url = Bundle.main.url(forResource: "simple_webview_file", withExtension: "html")!
         webView.load(URLRequest(url: url))
-
-
     }
 
     // MARK: - Config

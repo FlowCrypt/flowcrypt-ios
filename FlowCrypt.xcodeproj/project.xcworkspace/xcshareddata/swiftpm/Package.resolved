@@ -1,5 +1,5 @@
 {
-  "originHash" : "c75a4799d1bfbbb39b1f636aa6616ddb5a8ada3db3974414b893cdd655dd5204",
+  "originHash" : "05430bf1fc71f707204c86e319466dfc225d7e8224d4328e53f7059acda7dbd3",
   "pins" : [
     {
       "identity" : "app-check",
@@ -17,15 +17,6 @@
       "state" : {
         "revision" : "c89ed571ae140f8eb1142735e6e23d7bb8c34cb2",
         "version" : "1.7.5"
-      }
-    },
-    {
-      "identity" : "cocoaasyncsocket",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/robbiehanson/CocoaAsyncSocket.git",
-      "state" : {
-        "revision" : "dbdc00669c1ced63b27c3c5f052ee4d28f10150c",
-        "version" : "7.6.5"
       }
     },
     {
@@ -89,15 +80,6 @@
       "state" : {
         "revision" : "5d7d66f647400952b1758b230e019b07c0b4b22a",
         "version" : "4.1.1"
-      }
-    },
-    {
-      "identity" : "httpparserc",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Building42/HTTPParserC.git",
-      "state" : {
-        "revision" : "a32b391977a17c30fceec0f38933a359dfdaf112",
-        "version" : "9.2.0"
       }
     },
     {
@@ -215,15 +197,6 @@
       "state" : {
         "revision" : "a853604c9e9a83ad9954c7e3d2a565273982471f",
         "version" : "7.0.2"
-      }
-    },
-    {
-      "identity" : "telegraph",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Building42/Telegraph.git",
-      "state" : {
-        "revision" : "f56b6726195e271fea397b7dd11c4adc36d5a32d",
-        "version" : "0.40.0"
       }
     },
     {
