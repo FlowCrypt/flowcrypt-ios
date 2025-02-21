@@ -185,6 +185,7 @@
 		958A45A32B10E77F00FFBA56 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 958A45A22B10E77F00FFBA56 /* SwiftSoup */; };
 		95E014CF2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */; };
 		95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = 95F55F9E2A7B8A720000E50F /* ProgressHUD */; };
+		97FB28CB2D64945E000B8F67 /* simple_webview_file.html in Resources */ = {isa = PBXBuildFile; fileRef = 97FB28CA2D64945E000B8F67 /* simple_webview_file.html */; };
 		9F003D6125E1B4ED00EB38C0 /* TrashFolderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */; };
 		9F003D6D25EA8F3200EB38C0 /* SessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */; };
 		9F0C3C102316DD5B00299985 /* GoogleAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F0C3C0F2316DD5B00299985 /* GoogleAuthManager.swift */; };
@@ -666,6 +667,7 @@
 		9582BC592A782DA700439728 /* pass_phrase_hint.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = pass_phrase_hint.html; sourceTree = "<group>"; };
 		958566B82A612822001C84D3 /* ASButtonNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASButtonNode.swift; sourceTree = "<group>"; };
 		95E014CE2A8BF27C00D4B4F5 /* AvatarCheckboxNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCheckboxNode.swift; sourceTree = "<group>"; };
+		97FB28CA2D64945E000B8F67 /* simple_webview_file.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = simple_webview_file.html; sourceTree = "<group>"; };
 		9F003D6025E1B4ED00EB38C0 /* TrashFolderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrashFolderProvider.swift; sourceTree = "<group>"; };
 		9F003D6C25EA8F3200EB38C0 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		9F003D9D25EA910B00EB38C0 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
@@ -1908,6 +1910,7 @@
 				51E8181B29081D2B00FD428D /* generated */,
 				C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */,
 				A33BAA8322EA4B4F00CC1B5C /* flowcrypt-ios-icon.png */,
+				97FB28CA2D64945E000B8F67 /* simple_webview_file.html */,
 				9582BC592A782DA700439728 /* pass_phrase_hint.html */,
 				51E1673C270DAFF900D27C52 /* Localizable.stringsdict */,
 				9F71630A234FC73E0031645E /* Localizable.strings */,
@@ -2567,6 +2570,7 @@
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				51E8181D29081D2B00FD428D /* flowcrypt-ios-prod.js.txt in Resources */,
 				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
+				97FB28CB2D64945E000B8F67 /* simple_webview_file.html in Resources */,
 				C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */,
 				9F5EF7012753DA7000CC3F88 /* UI Guidance.md in Resources */,
 				9582BC5A2A782DA700439728 /* pass_phrase_hint.html in Resources */,

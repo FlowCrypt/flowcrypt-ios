@@ -31,6 +31,7 @@ module.exports = {
   resolve: {
     alias: {
       openpgp: path.resolve(__dirname, './node_modules/openpgp/dist/openpgp.mjs'),
+      '@openpgp/web-stream-tools': path.resolve(__dirname, './node_modules/@openpgp/web-stream-tools/lib/index.js'),
     },
     fallback: {
       stream: false,
