@@ -28,7 +28,7 @@ import {
   UserID,
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
-import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
+import { requireStreamReadToEnd } from '../platform/require';
 import { Str } from './common';
 
 export interface PrvKeyInfo {
@@ -95,7 +95,7 @@ export class PgpKey {
       userIDs: userIds,
       passphrase,
       format: 'armored',
-      curve: variant === 'curve25519' ? 'curve25519' : undefined,
+      curve: variant === 'curve25519' ? 'curve25519Legacy' : undefined,
       rsaBits: variant === 'curve25519' ? undefined : variant === 'rsa2048' ? 2048 : 4096,
     });
     return { public: k.publicKey, private: k.privateKey, revCert: k.revocationCertificate };
@@ -442,7 +442,7 @@ export class PgpKey {
       const readToEnd = await requireStreamReadToEnd();
       return {
         key,
-        revocationCertificate: await readToEnd(certificate as MaybeStream<string>),
+        revocationCertificate: await readToEnd(certificate as unknown as string),
       };
     }
   };

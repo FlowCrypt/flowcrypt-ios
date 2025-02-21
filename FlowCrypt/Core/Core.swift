@@ -59,19 +59,17 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         userController.add(self.coreMessageHandler, name: "coreHost")
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = userController
+        configuration.defaultWebpagePreferences.allowsContentJavaScript = true
         self.webView = WKWebView(frame: .zero, configuration: configuration)
+        self.webView.navigationDelegate = self.coreMessageHandler
 
-        guard let jsFileSrc = self.getCoreJsFile() else { return }
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
-        self.webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
-    }
+        // Load a simple HTML file in the web view and run the `flowcrypt-ios-prod.js.txt` code.
+        // This mechanism is used because the SubtleCrypto API is only available in secure contexts,
+        // and `file://` URLs are considered secure.
+        // More info: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
 
-    private func getCoreJsFile() -> String? {
-        guard let jsFile = Bundle(for: Self.self).path(
-            forResource: "flowcrypt-ios-prod.js.txt",
-            ofType: nil
-        ) else { return nil }
-        return try? String(contentsOfFile: jsFile)
+        let url = Bundle.main.url(forResource: "simple_webview_file", withExtension: "html")!
+        webView.load(URLRequest(url: url))
     }
 
     // MARK: - Config
@@ -264,6 +262,22 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
+    private func waitUntilJavascirptReady(timeout: TimeInterval = 1) async throws {
+        let functionName = "handleRequestFromHost"
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if await (try? webView.callAsyncJavaScript(
+                "return typeof \(functionName) === 'function';",
+                arguments: [:],
+                contentWorld: .page
+            )) as? Bool == true {
+                return
+            }
+            try await Task.sleep(nanoseconds: 100_000_000) // 100ms
+        }
+        throw CoreError.value("JavaScript function \(functionName) is not available within \(timeout) seconds.")
+    }
+
     // MARK: Private calls
     @discardableResult
     private func call(_ endpoint: String, params: [String: Any?] = [:], data: Data = Data(), retryAttempt: Int = 0) async throws -> RawRes {
@@ -271,6 +285,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let requestData = [UInt8](data)
 
         do {
+            try await waitUntilJavascirptReady()
             let response = try await webView.callAsyncJavaScript(
                 "return handleRequestFromHost(\"\(endpoint)\", \(paramsData), \(requestData))",
                 arguments: [:],
@@ -315,7 +330,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
     }
 }
 
-class CoreMessageHandler: NSObject, WKScriptMessageHandler {
+class CoreMessageHandler: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
     private lazy var logger = Logger.nested("Core")
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -326,6 +341,20 @@ class CoreMessageHandler: NSObject, WKScriptMessageHandler {
         if messageName == "log", let logMessage = messageDict["message"] as? String {
             logger.logDebug(logMessage)
         }
+    }
+
+    private func getCoreJsFile() -> String? {
+        guard let jsFile = Bundle(for: Self.self).path(
+            forResource: "flowcrypt-ios-prod.js.txt",
+            ofType: nil
+        ) else { return nil }
+        return try? String(contentsOfFile: jsFile)
+    }
+
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        guard let jsFileSrc = self.getCoreJsFile() else { return }
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
+        webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
     }
 }
 
