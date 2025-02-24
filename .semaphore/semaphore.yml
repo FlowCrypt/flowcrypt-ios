@@ -108,21 +108,22 @@ blocks:
       jobs:
         - name: Run Mock inbox tests
           commands:
-            # - npm run-script test.mock.inbox
-            - echo success
+            - npm run-script test.mock.inbox
+            # - echo success
         - name: Run Mock compose tests
           commands:
-            # - npm run-script test.mock.compose
-            - echo success
+            - npm run-script test.mock.compose
+            # - echo success
         - name: Run Mock setup tests
           commands:
-            - npm run-script test.mock.setup
+            - echo success
+            # - npm run-script test.mock.setup
         - name: Run Mock other tests + Run Live tests
           commands:
             # - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
             # - appium driver doctor xcuitest
-            # - npm run-script test.mock.login
-            - echo success
+            - npm run-script test.mock.login-settings
+            # - echo success
             # - npm run-script test.mock.compose
             # temporary disabled because of e2e account login issue
             # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
