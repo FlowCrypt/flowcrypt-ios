@@ -20,7 +20,7 @@ config.capabilities = [
     'appium:processArguments': {
       args: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'],
     },
-    'appium:deviceName': 'iPhone SE (3rd generation)',
+    'appium:deviceName': 'iPhone 16',
     'appium:platformVersion': '18.2',
     'appium:orientation': 'PORTRAIT',
     // 'appium:noReset': true,
