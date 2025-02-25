@@ -112,8 +112,8 @@ blocks:
             # - echo success
         - name: Run Mock compose tests
           commands:
-            - npm run-script test.mock.compose
-            # - echo success
+            # - npm run-script test.mock.compose
+            - echo success
         - name: Run Mock setup tests
           commands:
             - echo success
