@@ -22,11 +22,11 @@ export const config: Options.Testrunner = {
   jasmineOpts: {
     defaultTimeoutInterval: 600000,
   },
-  logLevel: 'debug',
-  bail: 1,
+  logLevel: 'error',
+  bail: 0,
   waitforTimeout: 15000,
   connectionRetryTimeout: 400000,
-  connectionRetryCount: 2,
+  connectionRetryCount: 3,
   maxInstancesPerCapability: 1,
   reporters: [
     'spec',

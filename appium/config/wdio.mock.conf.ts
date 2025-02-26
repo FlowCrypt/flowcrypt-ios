@@ -23,18 +23,14 @@ config.capabilities = [
     'appium:deviceName': 'iPhone 16',
     'appium:platformVersion': '18.2',
     'appium:orientation': 'PORTRAIT',
-    // 'appium:noReset': true,
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:simulatorStartupTimeout': 600000,
-    // 'appium:webviewConnectTimeout': 5000,
     'appium:wdaLaunchTimeout': 600000,
     'appium:wdaConnectionTimeout': 600000,
     'appium:wdaStartupRetryInterval': 120000,
     'appium:reduceMotion': true,
-    'appium:simulatorLogLevel': 'debug',
     'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
     'appium:usePreinstalledWDA': true,
-    'appium:showXcodeLog': true,
   },
 ];
 
