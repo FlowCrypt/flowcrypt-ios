@@ -28,9 +28,6 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            # - sudo xcode-select -s /Applications/Xcode-16.2.0.app/Contents/Developer/
-            # - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
-            # - xcrun simctl boot "iPhone 16"
             - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
@@ -89,17 +86,13 @@ blocks:
         commands:
           - checkout && cd ~/git/flowcrypt-ios/
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
-          # - npm i -g appium
           - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
           - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
-          # - sudo xcode-select -s /Applications/Xcode-16.2.0.app/Contents/Developer/
           - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - xcrun simctl boot "iPhone 16"
           - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
-          # - killall Simulator
-          # - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
       epilogue:
         always:
           commands:
@@ -109,22 +102,15 @@ blocks:
         - name: Run Mock inbox tests
           commands:
             - npm run-script test.mock.inbox
-            # - echo success
         - name: Run Mock compose tests
           commands:
-            # - npm run-script test.mock.compose
-            - echo success
+            - npm run-script test.mock.compose
         - name: Run Mock setup tests
           commands:
-            - echo success
-            # - npm run-script test.mock.setup
+            - npm run-script test.mock.setup
         - name: Run Mock other tests + Run Live tests
           commands:
-            # - xcrun simctl launch booted com.facebook.WebDriverAgentRunner.xctrunner
-            # - appium driver doctor xcuitest
-            # - npm run-script test.mock.login-settings
-            - echo success
-            # - npm run-script test.mock.compose
+            - npm run-script test.mock.login-settings
             # temporary disabled because of e2e account login issue
             # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             # - unzip flowcrypt-ios-*.zip
