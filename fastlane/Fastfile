@@ -12,8 +12,8 @@ platform :ios do
     scan(
       project: "FlowCrypt.xcodeproj",
       scheme: "Debug FlowCrypt",
-      device: "iPhone SE (3rd generation)",
-      derived_data_path: "/var/tmp/derived_data",
+      device: "iPhone 16",
+      derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       skip_detect_devices: true,
       build_for_testing: true,
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
@@ -25,9 +25,9 @@ platform :ios do
     scan(
       project: "FlowCrypt.xcodeproj",
       scheme: "FlowCryptAppTests",
-      device: "iPhone SE (3rd generation)",
+      device: "iPhone 16",
       test_without_building: true,
-      derived_data_path: "/var/tmp/derived_data",
+      derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
       parallel_testing: false,
       disable_concurrent_testing: true

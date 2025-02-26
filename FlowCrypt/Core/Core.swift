@@ -266,7 +266,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let functionName = "handleRequestFromHost"
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
-            if (try? await webView.callAsyncJavaScript(
+            if await (try? webView.callAsyncJavaScript(
                 "return typeof \(functionName) === 'function';",
                 arguments: [:],
                 contentWorld: .page
@@ -342,7 +342,6 @@ class CoreMessageHandler: NSObject, WKScriptMessageHandler, WKNavigationDelegate
             logger.logDebug(logMessage)
         }
     }
-    
 
     private func getCoreJsFile() -> String? {
         guard let jsFile = Bundle(for: Self.self).path(
@@ -351,12 +350,12 @@ class CoreMessageHandler: NSObject, WKScriptMessageHandler, WKNavigationDelegate
         ) else { return nil }
         return try? String(contentsOfFile: jsFile)
     }
+
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         guard let jsFileSrc = self.getCoreJsFile() else { return }
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "[unknown version]"
         webView.evaluateJavaScript("const APP_VERSION = 'iOS \(appVersion)';\(jsFileSrc)") { _, _ in }
     }
-
 }
 
 private extension Encodable {

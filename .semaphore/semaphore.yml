@@ -5,7 +5,7 @@ agent:
     type: a2-standard-4
     os_image: macos-xcode16
 execution_time_limit:
-  minutes: 40
+  minutes: 90
 auto_cancel:
   running:
     when: branch != 'master'
@@ -15,7 +15,7 @@ blocks:
     run:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/.github/dependabot.yml']})"
     execution_time_limit:
-      minutes: 20
+      minutes: 15
     task:
       env_vars:
         - name: LANG
@@ -31,10 +31,14 @@ blocks:
             - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
+            - git clone https://github.com/appium/WebDriverAgent.git
+            - cd WebDriverAgent
+            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.2,name=iPhone 16"
       epilogue:
         always:
           commands:
-            - cd /var/tmp/derived_data/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
+            - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
+            - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
   - name: TypeScript tests
     dependencies: []
     run:
@@ -71,7 +75,7 @@ blocks:
     run:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/Gemfile', '/Gemfile.lock', '/.github/dependabot.yml', '/.semaphore/semaphore.yml', '/package.json', '/package-lock.json']})"
     execution_time_limit:
-      minutes: 20
+      minutes: 90
     task:
       env_vars:
         - name: LANG
@@ -85,6 +89,10 @@ blocks:
           - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
+          - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
+          - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+          - xcrun simctl boot "iPhone 16"
+          - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
       epilogue:
         always:
           commands:
@@ -93,20 +101,16 @@ blocks:
       jobs:
         - name: Run Mock inbox tests
           commands:
-            - echo success
-            # - npm run-script test.mock.inbox
+            - npm run-script test.mock.inbox
         - name: Run Mock compose tests
           commands:
-            - echo success
-            # - npm run-script test.mock.compose
+            - npm run-script test.mock.compose
         - name: Run Mock setup tests
           commands:
-            - echo success
-            # - npm run-script test.mock.setup
+            - npm run-script test.mock.setup
         - name: Run Mock other tests + Run Live tests
           commands:
-            - echo success
-            # - npm run-script test.mock.login-settings
+            - npm run-script test.mock.login-settings
             # temporary disabled because of e2e account login issue
             # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             # - unzip flowcrypt-ios-*.zip

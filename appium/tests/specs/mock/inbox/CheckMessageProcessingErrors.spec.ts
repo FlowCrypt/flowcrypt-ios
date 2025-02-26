@@ -21,9 +21,9 @@ describe('INBOX: ', () => {
     const encryptedForAnotherPublicKeyText = CommonData.encryptedForAnotherPublicKeyEmail.message;
 
     // Const for encrypted for a wrong checksum message
-    const wrongChecksumSubject = CommonData.wrongChecksumEmail.subject;
-    const wrongChecksumName = CommonData.wrongChecksumEmail.senderName;
-    const wrongChecksumText = CommonData.wrongChecksumEmail.message;
+    // const wrongChecksumSubject = CommonData.wrongChecksumEmail.subject;
+    // const wrongChecksumName = CommonData.wrongChecksumEmail.senderName;
+    // const wrongChecksumText = CommonData.wrongChecksumEmail.message;
 
     const notIntegrityProtectedSubject = CommonData.notIntegrityProtected.subject;
     const notIntegrityProtectedSender = CommonData.notIntegrityProtected.senderName;
@@ -90,13 +90,15 @@ describe('INBOX: ', () => {
       await EmailScreen.checkSecurityWarningBlock();
       await EmailScreen.clickBackButton();
 
+      // temporarily disabled as openpgp v6 doesn't throw on incorrect message checksum
+      // https://github.com/openpgpjs/openpgpjs/issues/1810
       // Checking error for wrong checksum message
-      await MailFolderScreen.clickOnEmailBySubject(wrongChecksumSubject);
-      await EmailScreen.checkOpenedEmail(wrongChecksumName, wrongChecksumSubject, wrongChecksumText);
-      await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
+      // await MailFolderScreen.clickOnEmailBySubject(wrongChecksumSubject);
+      // await EmailScreen.checkOpenedEmail(wrongChecksumName, wrongChecksumSubject, wrongChecksumText);
+      // await EmailScreen.checkEncryptionBadge(decryptErrorBadgeText);
 
-      await EmailScreen.clickBackButton();
-      await MailFolderScreen.checkInboxScreen();
+      // await EmailScreen.clickBackButton();
+      // await MailFolderScreen.checkInboxScreen();
 
       // Checking error for integrity protected message
       await MailFolderScreen.clickOnEmailBySubject(notIntegrityProtectedSubject);
