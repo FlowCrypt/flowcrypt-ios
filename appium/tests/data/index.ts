@@ -45,8 +45,8 @@ export const CommonData = {
   },
   plainQuoteMessage: {
     subject: 'plain message quote rendering',
-    message: '',
-    quote: '',
+    message: 'Some reply',
+    quote: 'Some text',
   },
   draft: {
     subject1: 'Draft subject',
