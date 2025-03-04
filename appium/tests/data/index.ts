@@ -43,6 +43,11 @@ export const CommonData = {
     secondDate: 'Feb 07, 2022',
     thirdDate: 'Feb 08, 2022',
   },
+  plainQuoteMessage: {
+    subject: 'plain message quote rendering',
+    message: '',
+    quote: '',
+  },
   draft: {
     subject1: 'Draft subject',
     subject2: 'Subject for another draft',

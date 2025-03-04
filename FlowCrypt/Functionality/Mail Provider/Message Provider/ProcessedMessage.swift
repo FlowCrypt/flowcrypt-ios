@@ -115,7 +115,8 @@ extension ProcessedMessage {
             let (text, quote) = Self.parseHtmlQuote(from: html)
             self.text = try await Core.shared.sanitizeHtml(html: text)
             if let quote {
-                self.quote = try await Core.shared.sanitizeHtml(html: quote)
+                // SanitizeHtml replaces > with &gt; so need to convert it back
+                self.quote = (try await Core.shared.sanitizeHtml(html: quote)).replacingOccurrences(of: "&gt;", with: ">")
             } else {
                 self.quote = nil
             }
@@ -129,6 +130,34 @@ extension ProcessedMessage {
 }
 
 extension ProcessedMessage {
+    private static func parsePlainHtmlQuote(from html: String) -> (String, String?) {
+        // Detect something like: "On ... wrote:"
+        let markerRegex = try? NSRegularExpression(
+            pattern: "^On .+ wrote:"
+        )
+
+        // Split into lines
+        let lines = html.components(separatedBy: .newlines)
+        // Find the index of the "On ... wrote:" marker
+        let markerIndex = lines.firstIndex { line in
+            let range = NSRange(location: 0, length: line.utf16.count)
+            return markerRegex?.firstMatch(in: line, options: [], range: range) != nil
+        }
+
+        // If no marker found, everything is main content
+        guard let idx = markerIndex else {
+            return (html, nil)
+        }
+
+        // Main content is everything before the marker
+        let mainContent = lines[..<idx].joined(separator: "\r\n")
+
+        // Quoted content is everything from the marker onward
+        let quotedContent = lines[idx...].joined(separator: "\r\n")
+
+        return (mainContent, quotedContent)
+    }
+
     private static func parseHtmlQuote(from html: String) -> (String, String?) {
         do {
             let doc = try SwiftSoup.parse(html)
@@ -141,6 +170,9 @@ extension ProcessedMessage {
                 let quoteContent = try firstQuote.outerHtml()
                 return (mainContent, quoteContent)
             }
+            // Try to extract quote from text which is written in gmail plain mode
+            // https://github.com/FlowCrypt/flowcrypt-ios/issues/2656
+            return Self.parsePlainHtmlQuote(from: html)
         } catch {
             Logger.nested("ProceessedMessage").logError("Failed to parse HTML with SwiftSoup: \(error.localizedDescription)")
         }
