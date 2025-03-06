@@ -131,29 +131,44 @@ extension ProcessedMessage {
 
 extension ProcessedMessage {
     private static func parsePlainHtmlQuote(from html: String) -> (String, String?) {
-        // Detect something like: "On ... wrote:"
-        let markerRegex = try? NSRegularExpression(
-            pattern: "^On .+ wrote:"
-        )
+        // This pattern accounts for:
+        // - 1 or 2 occurrences of \r\n or \n before "On"
+        // - "On ... wrote:" across multiple lines
+        // - 1 or 2 occurrences of \r\n or \n after "wrote:"
+        //
+        // Explanation of groups:
+        //   (?:\r?\n){1,2}   : "either \n or \r\n" repeated 1 or 2 times, non-capturing group
+        //   [\s\S]+?         : any characters, non-greedy
+        //   dotMatchesLineSeparators so "." can include newlines
+        //
+        let pattern = #"(?:\r?\n){1,2}On[\s\S]+?wrote:(?:\r?\n){1,2}"#
+        // Allow . to match across line breaks, case-insensitive
+        let options: NSRegularExpression.Options = [.caseInsensitive, .dotMatchesLineSeparators]
 
-        // Split into lines
-        let lines = html.components(separatedBy: .newlines)
-        // Find the index of the "On ... wrote:" marker
-        let markerIndex = lines.firstIndex { line in
-            let range = NSRange(location: 0, length: line.utf16.count)
-            return markerRegex?.firstMatch(in: line, options: [], range: range) != nil
-        }
-
-        // If no marker found, everything is main content
-        guard let idx = markerIndex else {
+        guard let markerRegex = try? NSRegularExpression(pattern: pattern, options: options) else {
             return (html, nil)
         }
 
-        // Main content is everything before the marker
-        let mainContent = lines[..<idx].joined(separator: "\r\n")
+        let fullRange = NSRange(location: 0, length: html.utf16.count)
+        // Find first match of the above pattern
+        guard let match = markerRegex.firstMatch(in: html, options: [], range: fullRange) else {
+            // No match -> everything is main content
+            return (html, nil)
+        }
 
-        // Quoted content is everything from the marker onward
-        let quotedContent = lines[idx...].joined(separator: "\r\n")
+        // MAIN CONTENT is everything before the matched pattern
+        let mainRange = NSRange(location: 0, length: match.range.location)
+        guard let swiftMainRange = Range(mainRange, in: html) else {
+            return (html, nil)
+        }
+        let mainContent = String(html[swiftMainRange])
+
+        // QUOTED CONTENT is everything from the match onward
+        let quoteRange = NSRange(location: match.range.location, length: html.utf16.count - match.range.location)
+        guard let swiftQuoteRange = Range(quoteRange, in: html) else {
+            return (mainContent, nil)
+        }
+        let quotedContent = String(html[swiftQuoteRange])
 
         return (mainContent, quotedContent)
     }
