@@ -115,7 +115,8 @@ extension ProcessedMessage {
             let (text, quote) = Self.parseHtmlQuote(from: html)
             self.text = try await Core.shared.sanitizeHtml(html: text)
             if let quote {
-                self.quote = try await Core.shared.sanitizeHtml(html: quote)
+                // SanitizeHtml replaces > with &gt; so need to convert it back
+                self.quote = (try await Core.shared.sanitizeHtml(html: quote)).replacingOccurrences(of: "&gt;", with: ">")
             } else {
                 self.quote = nil
             }
@@ -129,6 +130,49 @@ extension ProcessedMessage {
 }
 
 extension ProcessedMessage {
+    private static func parsePlainHtmlQuote(from html: String) -> (String, String?) {
+        // This pattern accounts for:
+        // - 1 or 2 occurrences of \r\n or \n before "On"
+        // - "On ... wrote:" across multiple lines
+        // - 1 or 2 occurrences of \r\n or \n after "wrote:"
+        //
+        // Explanation of groups:
+        //   (?:\r?\n){1,2}   : "either \n or \r\n" repeated 1 or 2 times, non-capturing group
+        //   [\s\S]+?         : any characters, non-greedy
+        //   dotMatchesLineSeparators so "." can include newlines
+        //
+        let pattern = #"(?:\r?\n){1,2}On[\s\S]+?wrote:(?:\r?\n){1,2}"#
+        // Allow . to match across line breaks, case-insensitive
+        let options: NSRegularExpression.Options = [.caseInsensitive, .dotMatchesLineSeparators]
+
+        guard let markerRegex = try? NSRegularExpression(pattern: pattern, options: options) else {
+            return (html, nil)
+        }
+
+        let fullRange = NSRange(location: 0, length: html.utf16.count)
+        // Find first match of the above pattern
+        guard let match = markerRegex.firstMatch(in: html, options: [], range: fullRange) else {
+            // No match -> everything is main content
+            return (html, nil)
+        }
+
+        // MAIN CONTENT is everything before the matched pattern
+        let mainRange = NSRange(location: 0, length: match.range.location)
+        guard let swiftMainRange = Range(mainRange, in: html) else {
+            return (html, nil)
+        }
+        let mainContent = String(html[swiftMainRange])
+
+        // QUOTED CONTENT is everything from the match onward
+        let quoteRange = NSRange(location: match.range.location, length: html.utf16.count - match.range.location)
+        guard let swiftQuoteRange = Range(quoteRange, in: html) else {
+            return (mainContent, nil)
+        }
+        let quotedContent = String(html[swiftQuoteRange])
+
+        return (mainContent, quotedContent)
+    }
+
     private static func parseHtmlQuote(from html: String) -> (String, String?) {
         do {
             let doc = try SwiftSoup.parse(html)
@@ -141,6 +185,9 @@ extension ProcessedMessage {
                 let quoteContent = try firstQuote.outerHtml()
                 return (mainContent, quoteContent)
             }
+            // Try to extract quote from text which is written in gmail plain mode
+            // https://github.com/FlowCrypt/flowcrypt-ios/issues/2656
+            return Self.parsePlainHtmlQuote(from: html)
         } catch {
             Logger.nested("ProceessedMessage").logError("Failed to parse HTML with SwiftSoup: \(error.localizedDescription)")
         }
