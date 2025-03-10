@@ -10,6 +10,7 @@ import FlowCryptCommon
 
 protocol ClientConfigurationProviderType {
     var configuration: ClientConfiguration { get async throws }
+    func fetchLatest() async throws -> ClientConfiguration
 }
 
 final class ClientConfigurationProvider: ClientConfigurationProviderType {
@@ -43,7 +44,7 @@ final class ClientConfigurationProvider: ClientConfigurationProviderType {
         return ClientConfiguration(raw: raw)
     }
 
-    private func fetchLatest() async throws -> ClientConfiguration {
+    func fetchLatest() async throws -> ClientConfiguration {
         do {
             try await fetch()
             return try loadSaved()

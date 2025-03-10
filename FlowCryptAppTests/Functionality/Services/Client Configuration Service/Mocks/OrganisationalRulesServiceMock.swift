@@ -34,4 +34,13 @@ final class OrganisationalRulesServiceMock: ClientConfigurationProviderType {
     func getSaved(for user: String) -> ClientConfiguration {
         getSavedOrganisationalRulesForCurrentUserResult
     }
+
+    func fetchLatest() async throws -> ClientConfiguration {
+        switch fetchOrganisationalRulesForCurrentUserResult {
+        case let .success(result):
+            return result
+        case let .failure(error):
+            throw error
+        }
+    }
 }

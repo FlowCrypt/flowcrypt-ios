@@ -50,6 +50,7 @@ appium/node_modules
 appium/tmp
 appium/.env
 appium/FlowCrypt.app
+appium/WebDriverAgentRunner-Runner.app
 appium/FlowCryptOld.app
 appium/video
 
