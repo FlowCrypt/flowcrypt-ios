@@ -16,8 +16,6 @@ describe('SETUP: ', () => {
     mockApi.fesConfig = {
       clientConfiguration: {
         ...MockApiConfig.defaultEnterpriseFesConfiguration.clientConfiguration,
-        disallow_password_messages_for_terms: ['forbidden', 'test'],
-        disallow_password_messages_error_text: disallowedPasswordMessageErrorText,
       },
     };
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
@@ -35,6 +33,14 @@ describe('SETUP: ', () => {
 
       await NewMessageScreen.clickSendMessagePasswordButton();
       await NewMessageScreen.setMessagePassword(emailPassword);
+      // Try to check if app re-fetches latest client configuration before sending password protected message
+      mockApi.fesConfig = {
+        clientConfiguration: {
+          ...MockApiConfig.defaultEnterpriseFesConfiguration.clientConfiguration,
+          disallow_password_messages_for_terms: ['forbidden', 'test'],
+          disallow_password_messages_error_text: disallowedPasswordMessageErrorText,
+        },
+      };
       await NewMessageScreen.clickSendButton();
 
       await NewMessageScreen.checkCustomAlertMessage(disallowedPasswordMessageErrorText);
