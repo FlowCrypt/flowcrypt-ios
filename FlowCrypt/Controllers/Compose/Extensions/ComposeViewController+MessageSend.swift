@@ -56,10 +56,10 @@ extension ComposeViewController {
     private func sendMessage(isPlain: Bool) async throws -> MessageIdentifier {
         // Refetch client configuration before sending password protected message
         // https://github.com/FlowCrypt/flowcrypt-ios/issues/2658
-        let latestClientConfiguration = (!isPlain && contextToSend.hasRecipientsWithoutPubKey)
+        let latestClientConfiguration = (!isPlain && contextToSend.hasRecipientsWithoutPubKey && Bundle.isEnterprise)
             ? try await appContext.clientConfigurationProvider.fetchLatest()
             : clientConfiguration
-        
+
         let sendableMsg = try await composeMessageHelper.createSendableMsg(
             clientConfiguration: latestClientConfiguration,
             input: input,
