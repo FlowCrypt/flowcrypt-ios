@@ -5,6 +5,7 @@ import MailFolderScreen from '../../../screenobjects/mail-folder.screen';
 import NewMessageScreen from '../../../screenobjects/new-message.screen';
 import SetupKeyScreen from '../../../screenobjects/setup-key.screen';
 import { CommonData } from 'tests/data';
+import AppiumHelper from 'tests/helpers/AppiumHelper';
 
 describe('SETUP: ', () => {
   it('check password message compliance', async () => {
@@ -12,12 +13,11 @@ describe('SETUP: ', () => {
     const disallowedPasswordMessageErrorText =
       'Password-protected messages are disabled. Please check https://test.com';
     const emailPassword = CommonData.recipientWithoutPublicKey.password;
+    const enterpriseProcessArgs = [...CommonData.mockProcessArgs, ...['--enterprise']];
 
     mockApi.fesConfig = {
       clientConfiguration: {
         ...MockApiConfig.defaultEnterpriseFesConfiguration.clientConfiguration,
-        disallow_password_messages_for_terms: ['forbidden', 'test'],
-        disallow_password_messages_error_text: disallowedPasswordMessageErrorText,
       },
     };
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
@@ -26,6 +26,8 @@ describe('SETUP: ', () => {
     };
 
     await mockApi.withMockedApis(async () => {
+      // Run enterprise build
+      await AppiumHelper.restartApp(enterpriseProcessArgs);
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
@@ -35,6 +37,14 @@ describe('SETUP: ', () => {
 
       await NewMessageScreen.clickSendMessagePasswordButton();
       await NewMessageScreen.setMessagePassword(emailPassword);
+      // Try to check if app re-fetches latest client configuration before sending password protected message
+      mockApi.fesConfig = {
+        clientConfiguration: {
+          ...MockApiConfig.defaultEnterpriseFesConfiguration.clientConfiguration,
+          disallow_password_messages_for_terms: ['forbidden', 'test'],
+          disallow_password_messages_error_text: disallowedPasswordMessageErrorText,
+        },
+      };
       await NewMessageScreen.clickSendButton();
 
       await NewMessageScreen.checkCustomAlertMessage(disallowedPasswordMessageErrorText);
