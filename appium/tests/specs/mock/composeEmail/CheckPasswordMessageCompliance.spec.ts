@@ -5,6 +5,7 @@ import MailFolderScreen from '../../../screenobjects/mail-folder.screen';
 import NewMessageScreen from '../../../screenobjects/new-message.screen';
 import SetupKeyScreen from '../../../screenobjects/setup-key.screen';
 import { CommonData } from 'tests/data';
+import AppiumHelper from 'tests/helpers/AppiumHelper';
 
 describe('SETUP: ', () => {
   it('check password message compliance', async () => {
@@ -12,6 +13,7 @@ describe('SETUP: ', () => {
     const disallowedPasswordMessageErrorText =
       'Password-protected messages are disabled. Please check https://test.com';
     const emailPassword = CommonData.recipientWithoutPublicKey.password;
+    const enterpriseProcessArgs = [...CommonData.mockProcessArgs, ...['--enterprise']];
 
     mockApi.fesConfig = {
       clientConfiguration: {
@@ -24,6 +26,8 @@ describe('SETUP: ', () => {
     };
 
     await mockApi.withMockedApis(async () => {
+      // Run enterprise build
+      await AppiumHelper.restartApp(enterpriseProcessArgs);
       await SplashScreen.mockLogin();
       await SetupKeyScreen.setPassPhrase();
       await MailFolderScreen.checkInboxScreen();
