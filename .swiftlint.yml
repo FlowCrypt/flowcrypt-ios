@@ -93,12 +93,12 @@ attributes:
   always_on_same_line:
     ["@objc"]
 file_length:
-  warning: 550
+  warning: 500
 line_length:
   warning: 150
   ignores_urls: true
   ignores_comments: true
-function_body_length: 55
+function_body_length: 50
 
 type_body_length:
   - 500 # Warning
