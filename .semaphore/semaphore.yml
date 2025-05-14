@@ -32,13 +32,13 @@ blocks:
             - xcrun simctl list runtimes
             - xcrun simctl list devices
             - xcrun simctl list devices available
-            - xcrun simctl boot "iPhone 16 (18.3.1)"
+            - xcrun simctl boot "iPhone 16 (18.3)"
             - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
             - git clone https://github.com/appium/WebDriverAgent.git
             - cd WebDriverAgent
-            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.3.1,name=iPhone 16"
+            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.3,name=iPhone 16"
       epilogue:
         always:
           commands:
