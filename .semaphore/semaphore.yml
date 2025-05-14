@@ -35,15 +35,31 @@ blocks:
             - |
                 set -euo pipefail
 
-                DEVICE_UUID=$(xcrun simctl list devices available | \
-                  awk '/iPhone 16 \(/ && /18\.3/ && /\(Shutdown\)/ { print $(NF-1); exit }' | tr -d '()')
+                echo "🔍 Locating iOS 18.3 runtime..."
+                RUNTIME_ID=$(xcrun simctl list -j runtimes | \
+                  plutil -extract runtimes json -o - - | \
+                  jq -r '.[] | select(.name == "iOS 18.3") | .identifier' | head -n1)
 
-                if [[ -z "$DEVICE_UUID" ]]; then
-                  echo "❌ No matching iPhone 16 (iOS 18.3) simulator found."
+                if [[ -z "$RUNTIME_ID" ]]; then
+                  echo "❌ iOS 18.3 runtime not found."
                   exit 1
                 fi
 
-                echo "✅ Found iPhone 16 (iOS 18.3) simulator: $DEVICE_UUID"
+                echo "✅ Found runtime: $RUNTIME_ID"
+
+                echo "🔍 Searching for iPhone 16 with iOS 18.3..."
+                DEVICE_UUID=$(xcrun simctl list -j devices | \
+                  jq -r --arg rt "$RUNTIME_ID" '
+                    .devices[$rt] // [] |
+                    map(select(.name == "iPhone 16" and .isAvailable == true and .state == "Shutdown")) |
+                    .[0].udid')
+
+                if [[ -z "$DEVICE_UUID" ]]; then
+                  echo "❌ No available iPhone 16 simulator with iOS 18.3 found."
+                  exit 1
+                fi
+
+                echo "✅ Found iPhone 16 (iOS 18.3): $DEVICE_UUID"
                 xcrun simctl boot "$DEVICE_UUID"
             - bundle install
             - bundle exec fastlane build
