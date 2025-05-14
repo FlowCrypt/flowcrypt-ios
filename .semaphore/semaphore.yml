@@ -32,7 +32,19 @@ blocks:
             - xcrun simctl list runtimes
             - xcrun simctl list devices
             - xcrun simctl list devices available
-            - xcrun simctl boot "iPhone 16 (18.3)"
+            - |
+                set -euo pipefail
+
+                DEVICE_UUID=$(xcrun simctl list devices available | \
+                  awk '/iPhone 16 \(/ && /18\.3/ && /\(Shutdown\)/ { print $(NF-1); exit }' | tr -d '()')
+
+                if [[ -z "$DEVICE_UUID" ]]; then
+                  echo "❌ No matching iPhone 16 (iOS 18.3) simulator found."
+                  exit 1
+                fi
+
+                echo "✅ Found iPhone 16 (iOS 18.3) simulator: $DEVICE_UUID"
+                xcrun simctl boot "$DEVICE_UUID"
             - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
