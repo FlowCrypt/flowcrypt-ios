@@ -29,6 +29,9 @@ blocks:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+            - xcrun simctl list runtimes
+            - xcrun simctl list devices
+            - xcrun simctl list devices available
             - xcrun simctl boot "iPhone 16 (18.3.1)"
             - bundle install
             - bundle exec fastlane build
