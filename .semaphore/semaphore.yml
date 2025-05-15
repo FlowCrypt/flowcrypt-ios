@@ -28,8 +28,9 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - gem install xcode-install
-            - xcversion installed
+            - bundle install
+            # - gem install xcode-install
+            # - xcversion installed
             - sudo xcode-select -s /Applications/Xcode-16.2.0.app
             - sudo xcodebuild -license accept
             - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
@@ -63,7 +64,6 @@ blocks:
 
                 echo "✅ Found iPhone 16 (iOS 18.2): $DEVICE_UUID"
                 xcrun simctl boot "$DEVICE_UUID"
-            - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
             - git clone https://github.com/appium/WebDriverAgent.git
