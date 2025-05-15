@@ -28,6 +28,7 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
+            - mdfind "kMDItemCFBundleIdentifier == 'com.apple.dt.Xcode'"
             - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
             - xcrun simctl list runtimes
             - xcrun simctl list devices
