@@ -30,26 +30,26 @@ blocks:
           commands:
             - gem install xcode-install
             - xcversion installed
+            - xcode-select -s /Applications/Xcode-16.2.0.app
+            - xcodebuild -license accept
             - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
-            - xcrun simctl list runtimes
-            - xcrun simctl list devices
             - xcrun simctl list devices available
             - |
                 set -euo pipefail
 
-                echo "🔍 Locating iOS 18.3 runtime..."
+                echo "🔍 Locating iOS 18.2 runtime..."
                 RUNTIME_ID=$(xcrun simctl list -j runtimes | \
                   plutil -extract runtimes json -o - - | \
-                  jq -r '.[] | select(.name == "iOS 18.3") | .identifier' | head -n1)
+                  jq -r '.[] | select(.name == "iOS 18.2") | .identifier' | head -n1)
 
                 if [[ -z "$RUNTIME_ID" ]]; then
-                  echo "❌ iOS 18.3 runtime not found."
+                  echo "❌ iOS 18.2 runtime not found."
                   exit 1
                 fi
 
                 echo "✅ Found runtime: $RUNTIME_ID"
 
-                echo "🔍 Searching for iPhone 16 with iOS 18.3..."
+                echo "🔍 Searching for iPhone 16 with iOS 18.2..."
                 DEVICE_UUID=$(xcrun simctl list -j devices | \
                   jq -r --arg rt "$RUNTIME_ID" '
                     .devices[$rt] // [] |
@@ -57,18 +57,18 @@ blocks:
                     .[0].udid')
 
                 if [[ -z "$DEVICE_UUID" ]]; then
-                  echo "❌ No available iPhone 16 simulator with iOS 18.3 found."
+                  echo "❌ No available iPhone 16 simulator with iOS 18.2 found."
                   exit 1
                 fi
 
-                echo "✅ Found iPhone 16 (iOS 18.3): $DEVICE_UUID"
+                echo "✅ Found iPhone 16 (iOS 18.2): $DEVICE_UUID"
                 xcrun simctl boot "$DEVICE_UUID"
             - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
             - git clone https://github.com/appium/WebDriverAgent.git
             - cd WebDriverAgent
-            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.3,name=iPhone 16"
+            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.2,name=iPhone 16"
       epilogue:
         always:
           commands:
