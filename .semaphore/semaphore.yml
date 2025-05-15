@@ -30,8 +30,8 @@ blocks:
           commands:
             - gem install xcode-install
             - xcversion installed
-            - xcode-select -s /Applications/Xcode-16.2.0.app
-            - xcodebuild -license accept
+            - sudo xcode-select -s /Applications/Xcode-16.2.0.app
+            - sudo xcodebuild -license accept
             - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
             - xcrun simctl list devices available
             - |
