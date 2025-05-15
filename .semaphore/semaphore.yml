@@ -29,41 +29,39 @@ blocks:
         - name: Build Xcode Project + Swift Unit Test
           commands:
             - bundle install
-            # - gem install xcode-install
-            # - xcversion installed
             - sudo xcode-select -s /Applications/Xcode-16.2.0.app
-            - sudo xcodebuild -license accept
-            - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
-            - xcrun simctl list devices available
-            - |
-                set -euo pipefail
+            # - sudo xcodebuild -license accept
+            # - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+            # - xcrun simctl list devices available
+            # - |
+            #     set -euo pipefail
 
-                echo "🔍 Locating iOS 18.2 runtime..."
-                RUNTIME_ID=$(xcrun simctl list -j runtimes | \
-                  plutil -extract runtimes json -o - - | \
-                  jq -r '.[] | select(.name == "iOS 18.2") | .identifier' | head -n1)
+            #     echo "🔍 Locating iOS 18.2 runtime..."
+            #     RUNTIME_ID=$(xcrun simctl list -j runtimes | \
+            #       plutil -extract runtimes json -o - - | \
+            #       jq -r '.[] | select(.name == "iOS 18.2") | .identifier' | head -n1)
 
-                if [[ -z "$RUNTIME_ID" ]]; then
-                  echo "❌ iOS 18.2 runtime not found."
-                  exit 1
-                fi
+            #     if [[ -z "$RUNTIME_ID" ]]; then
+            #       echo "❌ iOS 18.2 runtime not found."
+            #       exit 1
+            #     fi
 
-                echo "✅ Found runtime: $RUNTIME_ID"
+            #     echo "✅ Found runtime: $RUNTIME_ID"
 
-                echo "🔍 Searching for iPhone 16 with iOS 18.2..."
-                DEVICE_UUID=$(xcrun simctl list -j devices | \
-                  jq -r --arg rt "$RUNTIME_ID" '
-                    .devices[$rt] // [] |
-                    map(select(.name == "iPhone 16" and .isAvailable == true and .state == "Shutdown")) |
-                    .[0].udid')
+            #     echo "🔍 Searching for iPhone 16 with iOS 18.2..."
+            #     DEVICE_UUID=$(xcrun simctl list -j devices | \
+            #       jq -r --arg rt "$RUNTIME_ID" '
+            #         .devices[$rt] // [] |
+            #         map(select(.name == "iPhone 16" and .isAvailable == true and .state == "Shutdown")) |
+            #         .[0].udid')
 
-                if [[ -z "$DEVICE_UUID" ]]; then
-                  echo "❌ No available iPhone 16 simulator with iOS 18.2 found."
-                  exit 1
-                fi
+            #     if [[ -z "$DEVICE_UUID" ]]; then
+            #       echo "❌ No available iPhone 16 simulator with iOS 18.2 found."
+            #       exit 1
+            #     fi
 
-                echo "✅ Found iPhone 16 (iOS 18.2): $DEVICE_UUID"
-                xcrun simctl boot "$DEVICE_UUID"
+            #     echo "✅ Found iPhone 16 (iOS 18.2): $DEVICE_UUID"
+            #     xcrun simctl boot "$DEVICE_UUID"
             - bundle exec fastlane build
             - bundle exec fastlane test
             - git clone https://github.com/appium/WebDriverAgent.git
