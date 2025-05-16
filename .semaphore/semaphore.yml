@@ -117,6 +117,7 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
+          - sudo xcode-select -s /Applications/Xcode-16.2.0.app
           - checkout && cd ~/git/flowcrypt-ios/
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
           - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
