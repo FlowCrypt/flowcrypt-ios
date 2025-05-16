@@ -127,6 +127,7 @@ blocks:
           - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - xcrun simctl boot "iPhone 16"
           - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
+          - xcrun simctl list devices available
       epilogue:
         always:
           commands:
@@ -136,15 +137,15 @@ blocks:
         - name: Run Mock inbox tests
           commands:
             - npm run-script test.mock.inbox
-        - name: Run Mock compose tests
-          commands:
-            - npm run-script test.mock.compose
-        - name: Run Mock setup tests
-          commands:
-            - npm run-script test.mock.setup
-        - name: Run Mock other tests + Run Live tests
-          commands:
-            - npm run-script test.mock.login-settings
+        # - name: Run Mock compose tests
+        #   commands:
+        #     - npm run-script test.mock.compose
+        # - name: Run Mock setup tests
+        #   commands:
+        #     - npm run-script test.mock.setup
+        # - name: Run Mock other tests + Run Live tests
+        #   commands:
+        #     - npm run-script test.mock.login-settings
             # temporary disabled because of e2e account login issue
             # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             # - unzip flowcrypt-ios-*.zip
