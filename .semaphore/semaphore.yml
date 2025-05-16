@@ -99,6 +99,18 @@ blocks:
           - |
               set -euo pipefail
 
+              echo "🔍 Locating iOS 18.2 runtime..."
+              RUNTIME_ID=$(xcrun simctl list -j runtimes | \
+                plutil -extract runtimes json -o - - | \
+                jq -r '.[] | select(.name == "iOS 18.2") | .identifier' | head -n1)
+
+              if [[ -z "$RUNTIME_ID" ]]; then
+                echo "❌ iOS 18.2 runtime not found."
+                exit 1
+              fi
+
+              echo "✅ Found runtime: $RUNTIME_ID"
+
               echo "🔍 Searching for iPhone 16 with iOS 18.2..."
               DEVICE_UUID=$(xcrun simctl list -j devices | \
                 jq -r --arg rt "$RUNTIME_ID" '
