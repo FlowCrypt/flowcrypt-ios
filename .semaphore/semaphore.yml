@@ -79,7 +79,7 @@ blocks:
     run:
       when: "change_in('/', {exclude: ['/Core/package.json', '/Core/package-lock.json', '/Gemfile', '/Gemfile.lock', '/.github/dependabot.yml', '/.semaphore/semaphore.yml', '/package.json', '/package-lock.json']})"
     execution_time_limit:
-      minutes: 65
+      minutes: 70
     task:
       env_vars:
         - name: LANG
@@ -136,15 +136,15 @@ blocks:
         - name: Run Mock inbox tests
           commands:
             - npm run-script test.mock.inbox
-        # - name: Run Mock compose tests
-        #   commands:
-        #     - npm run-script test.mock.compose
-        # - name: Run Mock setup tests
-        #   commands:
-        #     - npm run-script test.mock.setup
-        # - name: Run Mock other tests + Run Live tests
-        #   commands:
-        #     - npm run-script test.mock.login-settings
+        - name: Run Mock compose tests
+          commands:
+            - npm run-script test.mock.compose
+        - name: Run Mock setup tests
+          commands:
+            - npm run-script test.mock.setup
+        - name: Run Mock other tests + Run Live tests
+          commands:
+            - npm run-script test.mock.login-settings
             # temporary disabled because of e2e account login issue
             # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             # - unzip flowcrypt-ios-*.zip
