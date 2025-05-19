@@ -30,9 +30,6 @@ blocks:
           commands:
             - bundle install
             - sudo xcode-select -s /Applications/Xcode-16.2.0.app
-            # - sudo xcodebuild -license accept
-            # - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
-            # - xcrun simctl list devices available
             - bundle exec fastlane build
             - bundle exec fastlane test
             - git clone https://github.com/appium/WebDriverAgent.git
