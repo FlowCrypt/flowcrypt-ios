@@ -122,8 +122,7 @@ blocks:
 
               echo "✅ Found iPhone 16 (iOS 18.2): $DEVICE_UUID"
               xcrun simctl boot "$DEVICE_UUID"
-          - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
-          - xcrun simctl list devices available
+              xcrun simctl install "$DEVICE_UUID" ./WebDriverAgentRunner-Runner.app
       epilogue:
         always:
           commands:
