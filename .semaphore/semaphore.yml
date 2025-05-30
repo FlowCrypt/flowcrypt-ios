@@ -85,6 +85,7 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
+          - ls /Applications | grep Xcode
           - sudo xcode-select -s /Applications/Xcode-16.2.0.app
           - checkout && cd ~/git/flowcrypt-ios/
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
