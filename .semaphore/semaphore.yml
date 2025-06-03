@@ -91,8 +91,34 @@ blocks:
           - mv ~/appium-env ~/git/flowcrypt-ios/appium/.env
           - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
-          - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
-          - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
+          - |
+            # Retry cache restore up to 3 times if it fails
+            for i in 1 2 3; do
+              echo "Attempt $i: Restoring cache..."
+              if cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app; then
+                echo "Cache restored successfully."
+                break
+              elif [ $i -lt 3 ]; then
+                echo "Cache restore failed. Retrying in 5 seconds..."
+                sleep 5
+              else
+                echo "Cache restore failed after 3 attempts. Proceeding without cache."
+              fi
+            done
+          - |
+            # Retry cache restore up to 3 times if it fails
+            for i in 1 2 3; do
+              echo "Attempt $i: Restoring cache..."
+              if cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app; then
+                echo "Cache restored successfully."
+                break
+              elif [ $i -lt 3 ]; then
+                echo "Cache restore failed. Retrying in 5 seconds..."
+                sleep 5
+              else
+                echo "Cache restore failed after 3 attempts. Proceeding without cache."
+              fi
+            done
           - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - |
               set -euo pipefail
@@ -130,18 +156,18 @@ blocks:
             - artifact push job ~/git/flowcrypt-ios/appium/tmp
             - test-results publish ~/git/flowcrypt-ios/appium/tmp/test-results
       jobs:
-        - name: Run Mock inbox tests
+        - name: Run Mock inbox and setup tests
           commands:
-            - npm run-script test.mock.inbox
-        - name: Run Mock compose tests
+            - npm run-script test.mock.inbox-setup
+        - name: Run Mock compose + login + settings tests
           commands:
-            - npm run-script test.mock.compose
-        - name: Run Mock setup tests
-          commands:
-            - npm run-script test.mock.setup
-        - name: Run Mock other tests + Run Live tests
-          commands:
-            - npm run-script test.mock.login-settings
+            - npm run-script test.mock.compose-login-settings
+        # - name: Run Mock setup tests
+        #   commands:
+        #     - npm run-script test.mock.setup
+        # - name: Run Mock other tests + Run Live tests
+        #   commands:
+        #     - npm run-script test.mock.login-settings
             # temporary disabled because of e2e account login issue
             # - 'wget https://flowcrypt.s3.eu-central-1.amazonaws.com/release/flowcrypt-ios-old-version-for-ci-storage-compatibility-2022-05-09.zip -P ~/git/flowcrypt-ios/appium'
             # - unzip flowcrypt-ios-*.zip
