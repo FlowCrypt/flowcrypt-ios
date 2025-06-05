@@ -24,6 +24,7 @@ blocks:
           value: /Users/semaphore/git/flowcrypt-ios
       prologue:
         commands:
+          - sem-version ruby 3.3.1
           - checkout && cd ~/git/flowcrypt-ios/
       jobs:
         - name: Build Xcode Project + Swift Unit Test
@@ -57,6 +58,7 @@ blocks:
           value: /home/semaphore/git/flowcrypt-ios
       prologue:
         commands:
+          - sem-version ruby 3.3.1
           - checkout && cd ~/git/flowcrypt-ios/
           - ( cache restore common-npm && npm install && cache store common-npm node_modules )
           - ( cd Core && cache restore core-npm && npm install && cache store core-npm node_modules )
