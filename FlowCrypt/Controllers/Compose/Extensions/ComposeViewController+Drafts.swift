@@ -47,6 +47,7 @@ extension ComposeViewController {
         return newDraft != existingDraft ? newDraft : nil
     }
 
+    // swiftlint:disable:next function_body_length
     func saveDraftIfNeeded(handler: ((DraftSaveState) -> Void)? = nil, forceCreate: Bool = false) {
         if draftSaveRetryCount > 1, !shouldSaveCurrentDraft {
             // shouldSaveCurrentDraft is used for exponential backoff.

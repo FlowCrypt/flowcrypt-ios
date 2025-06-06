@@ -6,6 +6,8 @@ import AsyncDisplayKit
 import FlowCryptCommon
 import FlowCryptUI
 
+// swiftlint:disable file_length
+
 @MainActor
 class InboxViewController: ViewController {
     lazy var logger = Logger.nested(Self.self)
