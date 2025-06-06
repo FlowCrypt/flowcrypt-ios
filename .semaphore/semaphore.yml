@@ -28,7 +28,6 @@ blocks:
       jobs:
         - name: Build Xcode Project + Swift Unit Test
           commands:
-            - xcrun simctl list runtimes -v
             - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
