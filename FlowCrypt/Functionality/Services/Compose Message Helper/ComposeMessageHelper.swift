@@ -109,6 +109,7 @@ final class ComposeMessageHelper {
     ) async throws -> SendableMsg {
         let subject = contextToSend.subject ?? ""
 
+        var messageContent = contextToSend.message
         if shouldValidate {
             onStateChanged?(.validatingMessage)
 
@@ -131,10 +132,14 @@ final class ComposeMessageHelper {
                 throw MessageValidationError.emptySubject
             }
 
-            let hasText = contextToSend.message?.hasContent ?? false
+            // Allow message forward without any added text
+            if !(contextToSend.message?.hasContent ?? false) && input.type.isForward {
+                messageContent = input.quotedText
+            }
+            let hasText = messageContent?.hasContent ?? false
             let hasAttachments = !contextToSend.attachments.isEmpty
 
-            guard hasText || hasAttachments else {
+            guard hasText || input.type.isForward || hasAttachments else {
                 throw MessageValidationError.emptyMessage
             }
 
@@ -171,7 +176,7 @@ final class ComposeMessageHelper {
         let signingPrv = shouldSign ? try await prepareSigningKey(senderEmail: contextToSend.sender) : nil
 
         return SendableMsg(
-            text: contextToSend.message ?? "",
+            text: messageContent ?? "",
             html: nil,
             to: contextToSend.recipientEmails(type: .to),
             cc: contextToSend.recipientEmails(type: .cc),

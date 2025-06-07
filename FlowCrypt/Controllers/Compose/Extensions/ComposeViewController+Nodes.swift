@@ -153,7 +153,7 @@ extension ComposeViewController {
 
     func setupTextNode() {
         let attributedString = decorator.styledMessage(with: contextToSend.message ?? "")
-        let styledQuote = decorator.styledQuote(with: input)
+        let styledQuote = input.quotedText.attributed(.regular(17))
 
         let mutableString = NSMutableAttributedString(attributedString: attributedString)
         if input.isQuote, !mutableString.string.contains(styledQuote.string) {

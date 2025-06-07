@@ -34,6 +34,11 @@ struct ComposeMessageInput: Equatable {
         case reply(MessageQuoteInfo)
         case forward(MessageQuoteInfo)
         case draft(MessageQuoteInfo)
+
+        var isForward: Bool {
+            if case .forward = self { return true }
+            return false
+        }
     }
 
     let type: InputType
@@ -68,6 +73,30 @@ struct ComposeMessageInput: Equatable {
 
     var attachments: [MessageAttachment] {
         type.info?.attachments ?? []
+    }
+    
+    var quotedText: String {
+        guard let info = self.type.info else { return "" }
+
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+
+        let date = dateFormatter.string(from: info.sentDate)
+
+        dateFormatter.dateStyle = .none
+        dateFormatter.timeStyle = .short
+        let time = dateFormatter.string(from: info.sentDate)
+
+        let from = info.sender?.formatted ?? "unknown sender"
+
+        let text = "\n\n"
+            + "compose_quote_from".localizeWithArguments(date, time, from)
+            + "\n"
+
+        let message = " > " + info.text.replacingOccurrences(of: "\n", with: "\n > ")
+
+        return text + message
     }
 }
 
