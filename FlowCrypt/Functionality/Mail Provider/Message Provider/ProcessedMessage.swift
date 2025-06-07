@@ -116,7 +116,7 @@ extension ProcessedMessage {
             self.text = try await Core.shared.sanitizeHtml(html: text)
             if let quote {
                 // SanitizeHtml replaces > with &gt; so need to convert it back
-                self.quote = (try await Core.shared.sanitizeHtml(html: quote)).replacingOccurrences(of: "&gt;", with: ">")
+                self.quote = try await (Core.shared.sanitizeHtml(html: quote)).replacingOccurrences(of: "&gt;", with: ">")
             } else {
                 self.quote = nil
             }
