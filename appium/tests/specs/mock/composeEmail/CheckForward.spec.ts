@@ -10,14 +10,16 @@ import {
 } from '../../../screenobjects/all-screens';
 
 describe('COMPOSE EMAIL: ', () => {
-  it('user is able to foward message without any added text', async () => {
+  it('check forward', async () => {
     const mockApi = new MockApi();
-    const subject = 'Test 1';
+    const subject = 'email with text attachment';
+    const subject2 = 'Test forward message with attached pub key';
+    const subject3 = 'Test 1';
 
     mockApi.fesConfig = MockApiConfig.defaultEnterpriseFesConfiguration;
     mockApi.ekmConfig = MockApiConfig.defaultEnterpriseEkmConfiguration;
     mockApi.addGoogleAccount('e2e.enterprise.test@flowcrypt.com', {
-      messages: [subject],
+      messages: [subject, subject2, subject3],
     });
 
     await mockApi.withMockedApis(async () => {
@@ -26,6 +28,27 @@ describe('COMPOSE EMAIL: ', () => {
       await MailFolderScreen.checkInboxScreen();
       await MailFolderScreen.clickOnEmailBySubject(subject);
 
+      // check attachment after forward
+      await EmailScreen.clickMenuButton();
+      await EmailScreen.clickForwardButton();
+      await EmailScreen.checkAttachment('test.txt');
+      await EmailScreen.clickOnAttachmentCell();
+      await EmailScreen.checkAttachmentTextView('email with text attachment');
+
+      await NewMessageScreen.clickBackButton();
+      await NewMessageScreen.clickBackButton();
+      await EmailScreen.clickBackButton();
+      // check forward message with attached pub key
+      await MailFolderScreen.clickOnEmailBySubject(subject2);
+      await browser.pause(1000);
+      await EmailScreen.clickMenuButton();
+      await EmailScreen.clickForwardButton();
+      await NewMessageScreen.checkSubject(`Fwd: ${subject2}`);
+
+      // Check forward without any added text
+      await NewMessageScreen.clickBackButton();
+      await EmailScreen.clickBackButton();
+      await MailFolderScreen.clickOnEmailBySubject(subject3);
       await EmailScreen.clickMenuButton();
       await EmailScreen.clickForwardButton();
       await NewMessageScreen.setAddRecipient('demo@flowcrypt.com');
@@ -37,7 +60,7 @@ describe('COMPOSE EMAIL: ', () => {
       await MenuBarScreen.clickMenuBtn();
       await MenuBarScreen.clickSentButton();
       await MailFolderScreen.checkSentScreen();
-      await MailFolderScreen.clickOnEmailBySubject(`Fwd: ${subject}`);
+      await MailFolderScreen.clickOnEmailBySubject(`Fwd: ${subject3}`);
     });
   });
 });
