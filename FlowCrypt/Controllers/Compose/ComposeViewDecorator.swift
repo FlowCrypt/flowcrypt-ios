@@ -104,30 +104,6 @@ struct ComposeViewDecorator {
         text.attributed(.regular(17))
     }
 
-    func styledQuote(with input: ComposeMessageInput) -> NSAttributedString {
-        guard let info = input.type.info else { return NSAttributedString(string: "") }
-
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .none
-
-        let date = dateFormatter.string(from: info.sentDate)
-
-        dateFormatter.dateStyle = .none
-        dateFormatter.timeStyle = .short
-        let time = dateFormatter.string(from: info.sentDate)
-
-        let from = info.sender?.formatted ?? "unknown sender"
-
-        let text = "\n\n"
-            + "compose_quote_from".localizeWithArguments(date, time, from)
-            + "\n"
-
-        let message = " > " + info.text.replacingOccurrences(of: "\n", with: "\n > ")
-
-        return (text + message).attributed(.regular(17))
-    }
-
     func styledEmptyMessagePasswordInput() -> MessageActionCellNode.Input {
         messageActionInput(
             text: "compose_password_placeholder".localized,
