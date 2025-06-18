@@ -127,12 +127,12 @@ blocks:
       jobs:
         - name: Run Mock inbox and setup tests
           commands:
-            - echo success
-            # - npm run-script test.mock.inbox-setup
+            # - echo success
+            - npm run-script test.mock.inbox-setup
         - name: Run Mock compose + login + settings tests
           commands:
-            - echo success
-            # - npm run-script test.mock.compose-login-settings
+            # - echo success
+            - npm run-script test.mock.compose-login-settings
         # - name: Run Live tests
         #   commands:
             # temporary disabled because of e2e account login issue
