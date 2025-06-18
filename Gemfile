@@ -6,4 +6,4 @@ gem "abbrev"
 gem "mutex_m"
 gem "ostruct"
 
-gem "fastlane", "2.227.2"
+gem "fastlane", "2.228.0"
