@@ -13,11 +13,13 @@ public final class ThreadDetailWebNode: CellNode {
         let message: String?
         let quote: String?
         let index: Int
+        let isEncrypted: Bool
 
-        public init(message: String?, quote: String?, index: Int) {
+        public init(message: String?, quote: String?, index: Int, isEncrypted: Bool) {
             self.message = message
             self.quote = quote
             self.index = index
+            self.isEncrypted = isEncrypted
         }
     }
 
@@ -50,7 +52,7 @@ public final class ThreadDetailWebNode: CellNode {
         self.input = input
 
         super.init()
-        addLeftBorder(width: .threadLeftBorderWidth, color: .plainTextBorder)
+        addLeftBorder(width: .threadLeftBorderWidth, color: input.isEncrypted ? .main : .plainTextBorder)
     }
 
     private func getFormattedHtml(html: String?) -> String {
