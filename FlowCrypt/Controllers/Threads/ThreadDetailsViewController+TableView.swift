@@ -78,7 +78,12 @@ extension ThreadDetailsViewController: ASTableDelegate, ASTableDataSource {
             guard row > 1 + securityWarningBlockCount else {
                 if processedMessage.text.isHTMLString {
                     return ThreadDetailWebNode(
-                        input: .init(message: processedMessage.text, quote: processedMessage.quote, index: messageIndex)
+                        input: .init(
+                            message: processedMessage.text,
+                            quote: processedMessage.quote,
+                            index: messageIndex,
+                            isEncrypted: processedMessage.type == .encrypted
+                        )
                     )
                 }
                 return MessageTextSubjectNode(

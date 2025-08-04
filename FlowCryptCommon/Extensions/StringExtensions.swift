@@ -93,15 +93,35 @@ public extension String {
             return "tag.fill"
         }
     }
-
+    
+    /// A regex that finds an opening HTML tag and captures its name.
+    private static let htmlTagRegex: NSRegularExpression? = {
+        try? NSRegularExpression(
+            pattern: "<([A-Za-z][A-Za-z0-9]*)\\b[^>]*>",
+            options: .caseInsensitive
+        )
+    }()
+  
+    /// Returns `true` if this string contains at least one full HTML element
+    /// (an opening `<tag…>` **and** a matching `</tag>`).
+    /// Email‑style `<…@…>` or other angle‑bracketed text won’t count.
     var isHTMLString: Bool {
-        do {
-            let regex = try NSRegularExpression(pattern: "<[a-z][\\s\\S]*>", options: .caseInsensitive)
-            let range = NSRange(startIndex..., in: self)
-            return regex.firstMatch(in: self, options: [], range: range) != nil
-        } catch {
-            return false
-        }
+       guard
+           let regex = Self.htmlTagRegex,
+           let match = regex.firstMatch(
+               in: self,
+               options: [],
+               range: NSRange(startIndex..<endIndex, in: self)
+           ),
+           match.numberOfRanges > 1,
+           let nameRange = Range(match.range(at: 1), in: self)
+       else {
+           return false
+       }
+
+       // Extract the tag name and look for its closing tag
+       let tagName = String(self[nameRange])
+       return range(of: "</\(tagName)>", options: .caseInsensitive) != nil
     }
 
     func removingHtmlTags() -> String {
