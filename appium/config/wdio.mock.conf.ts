@@ -29,8 +29,8 @@ config.capabilities = [
     'appium:wdaConnectionTimeout': 600000,
     'appium:wdaStartupRetryInterval': 120000,
     'appium:reduceMotion': true,
-    // 'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
-    // 'appium:usePreinstalledWDA': true,
+    'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
+    'appium:usePreinstalledWDA': true,
   },
 ];
 

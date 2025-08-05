@@ -32,14 +32,14 @@ blocks:
             - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
-            # - git clone https://github.com/appium/WebDriverAgent.git
-            # - cd WebDriverAgent
-            # - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.5,name=iPhone 16"
+            - git clone https://github.com/appium/WebDriverAgent.git
+            - cd WebDriverAgent
+            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=18.5,name=iPhone 16"
       epilogue:
         always:
           commands:
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-            # - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
+            - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
   - name: TypeScript tests
     dependencies: []
     run:
@@ -103,23 +103,23 @@ blocks:
                 echo "Cache restore failed after 3 attempts. Proceeding without cache."
               fi
             done
-          # - |
-          #   # Retry cache restore up to 3 times if it fails
-          #   for i in 1 2 3; do
-          #     echo "Attempt $i: Restoring cache..."
-          #     if cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app; then
-          #       echo "Cache restored successfully."
-          #       break
-          #     elif [ $i -lt 3 ]; then
-          #       echo "Cache restore failed. Retrying in 5 seconds..."
-          #       sleep 5
-          #     else
-          #       echo "Cache restore failed after 3 attempts. Proceeding without cache."
-          #     fi
-          #   done
-          # - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
-          # - xcrun simctl boot "iPhone 16"
-          # - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
+          - |
+            # Retry cache restore up to 3 times if it fails
+            for i in 1 2 3; do
+              echo "Attempt $i: Restoring cache..."
+              if cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app; then
+                echo "Cache restored successfully."
+                break
+              elif [ $i -lt 3 ]; then
+                echo "Cache restore failed. Retrying in 5 seconds..."
+                sleep 5
+              else
+                echo "Cache restore failed after 3 attempts. Proceeding without cache."
+              fi
+            done
+          - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+          - xcrun simctl boot "iPhone 16"
+          - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
       epilogue:
         always:
           commands:
