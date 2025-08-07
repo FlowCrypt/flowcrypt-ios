@@ -5,11 +5,12 @@
 import { Buf } from './buf';
 import { ReplaceableMsgBlockType } from './msg-block';
 import { Str } from './common';
-import { CleartextMessage, Data, Message, readCleartextMessage, readMessage } from 'openpgp';
+import { CleartextMessage, Message, readCleartextMessage, readMessage } from 'openpgp';
+import { OpenPGPDataType } from './openpgpjs-custom';
 
 export type PreparedForDecrypt =
   | { isArmored: boolean; isCleartext: true; message: CleartextMessage }
-  | { isArmored: boolean; isCleartext: false; message: Message<Data> };
+  | { isArmored: boolean; isCleartext: false; message: Message<OpenPGPDataType> };
 
 type CryptoArmorHeaderDefinitions = {
   readonly [type in ReplaceableMsgBlockType | 'null' | 'signature']: CryptoArmorHeaderDefinition;

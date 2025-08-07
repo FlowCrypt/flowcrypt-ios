@@ -15,7 +15,6 @@ import {
   CleartextMessage,
   createCleartextMessage,
   createMessage,
-  Data,
   encrypt,
   enums,
   Key,
@@ -24,10 +23,10 @@ import {
   PrivateKey,
   readKeys,
   sign,
-  VerificationResult,
 } from 'openpgp';
 import { isFullyDecrypted, isFullyEncrypted, isPacketDecrypted } from './pgp';
 import { MaybeStream, requireStreamReadToEnd } from '../platform/require';
+import { OpenPGPDataType, VerificationResult } from './openpgpjs-custom';
 
 export namespace PgpMsgMethod {
   export namespace Arg {
@@ -52,7 +51,7 @@ export namespace PgpMsgMethod {
   export type VerifyDetached = (arg: Arg.VerifyDetached) => Promise<VerifyRes>;
   export type Decrypt = (arg: Arg.Decrypt) => Promise<DecryptSuccess | DecryptError>;
   export type Type = (arg: Arg.Type) => Promise<PgpMsgTypeResult>;
-  export type Encrypt = (arg: Arg.Encrypt) => Promise<Data>;
+  export type Encrypt = (arg: Arg.Encrypt) => Promise<OpenPGPDataType>;
 }
 
 type SortedKeysForDecrypt = {
@@ -74,13 +73,13 @@ export type DecryptError = {
   longids: DecryptError$longids;
   content?: Buf;
   isEncrypted?: boolean;
-  message?: Message<Data> | CleartextMessage;
+  message?: Message<OpenPGPDataType> | CleartextMessage;
 };
 type PreparedForDecrypt =
   | { isArmored: boolean; isCleartext: true; message: CleartextMessage }
-  | { isArmored: boolean; isCleartext: false; message: Message<Data> };
+  | { isArmored: boolean; isCleartext: false; message: Message<OpenPGPDataType> };
 
-type OpenpgpMsgOrCleartext = Message<Data> | CleartextMessage;
+type OpenpgpMsgOrCleartext = Message<OpenPGPDataType> | CleartextMessage;
 
 export type VerifyRes = {
   signer?: string;
@@ -265,7 +264,7 @@ export class PgpMsg {
       };
     }
     try {
-      const packets = (prepared.message as Message<Data>).packets;
+      const packets = (prepared.message as Message<OpenPGPDataType>).packets;
       const isSymEncrypted = packets.filterByTag(enums.packet.symEncryptedSessionKey).length > 0;
       const isPubEncrypted = packets.filterByTag(enums.packet.publicKeyEncryptedSessionKey).length > 0;
       if (isSymEncrypted && !isPubEncrypted && !msgPwd) {
@@ -279,7 +278,7 @@ export class PgpMsg {
       const passwords = msgPwd ? [msgPwd] : undefined;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const privateKeys = keys.prvForDecryptDecrypted.map(ki => ki.decrypted!);
-      const decrypted = await (prepared.message as Message<Data>).decrypt(privateKeys, passwords);
+      const decrypted = await (prepared.message as Message<OpenPGPDataType>).decrypt(privateKeys, passwords);
       // we can only figure out who signed the msg once it's decrypted
       await PgpMsg.cryptoMsgGetSignedBy(decrypted, keys);
       await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
@@ -292,7 +291,8 @@ export class PgpMsg {
       const signature = verifyResults ? await PgpMsg.verify(verifyResults, []) : undefined;
       if (
         !prepared.isCleartext &&
-        (prepared.message as Message<Data>).packets.filterByTag(enums.packet.symmetricallyEncryptedData).length
+        (prepared.message as Message<OpenPGPDataType>).packets.filterByTag(enums.packet.symmetricallyEncryptedData)
+          .length
       ) {
         const noMdc =
           'Security threat!\n\nMessage is missing integrity checks (MDC). ' +
@@ -429,7 +429,7 @@ export class PgpMsg {
       prvForDecryptDecrypted: [],
       prvForDecryptWithoutPassphrases: [],
     };
-    const encryptedForKeyids = msg instanceof Message ? (msg as Message<Data>).getEncryptionKeyIDs() : [];
+    const encryptedForKeyids = msg instanceof Message ? (msg as Message<OpenPGPDataType>).getEncryptionKeyIDs() : [];
     keys.encryptedFor = await PgpKey.longids(encryptedForKeyids);
     await PgpMsg.cryptoMsgGetSignedBy(msg, keys);
     await PgpMsg.populateKeysForVerification(keys, verificationPubkeys);
