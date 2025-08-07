@@ -8,7 +8,6 @@ import { Store } from '../platform/store';
 import { mnemonic } from './mnemonic';
 import { getKeyExpirationTimeForCapabilities, strToHex } from '../platform/util';
 import {
-  AllowedKeyPackets,
   AnyKeyPacket,
   encryptKey,
   enums,
@@ -30,6 +29,7 @@ import {
 import { isFullyDecrypted, isFullyEncrypted } from './pgp';
 import { requireStreamReadToEnd } from '../platform/require';
 import { Str } from './common';
+import { AllowedKeyPackets } from './openpgpjs-custom';
 
 export interface PrvKeyInfo {
   private: string;

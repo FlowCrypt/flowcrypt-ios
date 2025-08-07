@@ -21,7 +21,10 @@ extension GmailService: MessageProvider {
 
         let query = createMessageQuery(identifier: identifier, format: kGTLRGmailFormatFull)
         return try await withCheckedThrowingContinuation { continuation in
-            self.gmailService.executeQuery(query) { _, data, error in
+            self.gmailService.executeQuery(query) {
+                _,
+                    data,
+                    error in
                 if let error {
                     return continuation.resume(throwing: GmailApiError.providerError(error))
                 }
