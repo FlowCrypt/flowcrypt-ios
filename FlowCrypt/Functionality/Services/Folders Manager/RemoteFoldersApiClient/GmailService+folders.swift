@@ -44,6 +44,7 @@ extension GmailService: RemoteFoldersApiClient {
                         return label
                     }
                     .compactMap(Folder.init)
+                    .filter { $0.name != "YELLOW_STAR" }
 
                 return continuation.resume(returning: folders + [Constants.allMailFolder])
             }
