@@ -31,11 +31,12 @@ extension GmailService: RemoteFoldersApiClient {
                 guard let labels = listLabels.labels else {
                     return continuation.resume(throwing: GmailApiError.failedToParseData(data))
                 }
+                // Exculde star labels
+                // https://github.com/FlowCrypt/flowcrypt-ios/pull/2682#discussion_r2273028511
                 let excludedStarLabels: Set<String> = [
                     "BLUE_STAR", "GREEN_STAR", "ORANGE_STAR", "PURPLE_STAR", "RED_STAR", "YELLOW_STAR",
                     "BLUE_CIRCLE", "GREEN_CIRCLE", "ORANGE_CIRCLE", "PURPLE_CIRCLE", "RED_CIRCLE", "YELLOW_CIRCLE"
                 ]
-                // https://github.com/FlowCrypt/flowcrypt-ios/pull/2682#discussion_r2273028511
                 let folders = labels
                     .compactMap { [weak self] label -> GTLRGmail_Label? in
                         guard let identifier = label.identifier, identifier.isNotEmpty else {
