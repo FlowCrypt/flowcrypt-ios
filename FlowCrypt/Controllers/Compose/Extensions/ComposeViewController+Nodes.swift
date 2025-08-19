@@ -169,7 +169,7 @@ extension ComposeViewController {
                 .trimmingCharacters(in: .whitespacesAndNewlines)
             let alreadyEndsWithSig = body.contains(signature)
             if (!alreadyEndsWithSig) {
-                mutableString.append(signature.attributed(.regular(17)))
+                mutableString.append(signatureRaw.attributed(.regular(17)))
             }
         }
 
