@@ -160,8 +160,17 @@ extension ComposeViewController {
             mutableString.append(styledQuote)
         }
 
-        if let signature = getSignature(), !mutableString.string.replacingOccurrences(of: "\r", with: "").contains(signature) {
-            mutableString.append(signature.attributed(.regular(17)))
+        if let signatureRaw = getSignature() {
+            let body = mutableString.string.replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let signature = signatureRaw.replacingOccurrences(of: "\r\n", with: "\n")
+                .replacingOccurrences(of: "\r", with: "\n")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let alreadyEndsWithSig = body.contains(signature)
+            if (!alreadyEndsWithSig) {
+                mutableString.append(signature.attributed(.regular(17)))
+            }
         }
 
         let height = max(decorator.frame(for: mutableString).height, 40)
