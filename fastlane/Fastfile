@@ -16,7 +16,8 @@ platform :ios do
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       skip_detect_devices: true,
       build_for_testing: true,
-      xcargs: "-skipPackagePluginValidation -skipMacroValidation -allowProvisioningUpdates",
+      # IPHONEOS_DEPLOYMENT_TARGET=18.4 for fixing crash on 18.5 simulator
+      xcargs: "IPHONEOS_DEPLOYMENT_TARGET=18.4 -skipPackagePluginValidation -skipMacroValidation -allowProvisioningUpdates",
     )
   end
 
