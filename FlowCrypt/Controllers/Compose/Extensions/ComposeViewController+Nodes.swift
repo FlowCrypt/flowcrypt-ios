@@ -156,9 +156,6 @@ extension ComposeViewController {
         let styledQuote = input.quotedText.attributed(.regular(17))
 
         let mutableString = NSMutableAttributedString(attributedString: attributedString)
-        if input.isQuote, !mutableString.string.contains(styledQuote.string) {
-            mutableString.append(styledQuote)
-        }
 
         if let signatureRaw = getSignature() {
             func normalize(_ s: String) -> String {
@@ -176,6 +173,10 @@ extension ComposeViewController {
             if !alreadyHasSig {
                 mutableString.append(signatureRaw.attributed(.regular(17)))
             }
+        }
+
+        if input.isQuote, !mutableString.string.contains(styledQuote.string) {
+            mutableString.append(styledQuote)
         }
 
         let height = max(decorator.frame(for: mutableString).height, 40)
