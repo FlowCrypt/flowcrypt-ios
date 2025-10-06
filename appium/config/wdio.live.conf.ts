@@ -10,8 +10,8 @@ config.capabilities = [
     platformName: 'iOS',
     hostname: '127.0.0.1',
     'appium:automationName': 'XCUITest',
-    'appium:deviceName': 'iPhone 16',
-    'appium:platformVersion': '18.5',
+    'appium:deviceName': 'iPhone 17',
+    'appium:platformVersion': '26.0',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
   },
 ];
