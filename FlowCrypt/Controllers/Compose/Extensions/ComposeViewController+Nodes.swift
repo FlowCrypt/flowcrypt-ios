@@ -156,12 +156,27 @@ extension ComposeViewController {
         let styledQuote = input.quotedText.attributed(.regular(17))
 
         let mutableString = NSMutableAttributedString(attributedString: attributedString)
-        if input.isQuote, !mutableString.string.contains(styledQuote.string) {
-            mutableString.append(styledQuote)
+
+        if let signatureRaw = getSignature() {
+            func normalize(_ s: String) -> String {
+                return s
+                    .replacingOccurrences(of: "\r\n", with: "\n")
+                    .replacingOccurrences(of: "\r", with: "\n")
+                    // fix html signature duplicate issue
+                    // https://github.com/FlowCrypt/flowcrypt-ios/pull/2684#discussion_r2318361291
+                    .replacingOccurrences(of: "\u{00A0}", with: " ")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            let body = normalize(mutableString.string)
+            let signature = normalize(signatureRaw)
+            let alreadyHasSig = body.contains(signature)
+            if !alreadyHasSig {
+                mutableString.append(signatureRaw.attributed(.regular(17)))
+            }
         }
 
-        if let signature = getSignature(), !mutableString.string.replacingOccurrences(of: "\r", with: "").contains(signature) {
-            mutableString.append(signature.attributed(.regular(17)))
+        if input.isQuote, !mutableString.string.contains(styledQuote.string) {
+            mutableString.append(styledQuote)
         }
 
         let height = max(decorator.frame(for: mutableString).height, 40)

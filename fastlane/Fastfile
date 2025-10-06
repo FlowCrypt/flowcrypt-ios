@@ -12,7 +12,7 @@ platform :ios do
     scan(
       project: "FlowCrypt.xcodeproj",
       scheme: "Debug FlowCrypt",
-      device: "iPhone 16 (18.5)",
+      device: "iPhone 17 (26.0)",
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       skip_detect_devices: true,
       build_for_testing: true,
@@ -26,7 +26,7 @@ platform :ios do
     scan(
       project: "FlowCrypt.xcodeproj",
       scheme: "FlowCryptAppTests",
-      device: "iPhone 16 (18.5)",
+      device: "iPhone 17 (26.0)",
       test_without_building: true,
       derived_data_path: "/var/tmp/derived_data/FlowCrypt",
       xcargs: "-skipPackagePluginValidation -skipMacroValidation",
