@@ -69,12 +69,32 @@ export const getMockFesEndpoints = (mockConfig: MockConfig, fesConfig: FesConfig
       // body is a mime-multipart string, we're doing a few smoke checks here without parsing it
       if (req.method === 'POST') {
         expectContains(body, '-----BEGIN PGP MESSAGE-----');
-        const match = String(body).match(/Content-Type: application\/json\s*\n\s*(\{.*\})/);
 
-        if (!match) {
-          throw new FesHttpErr('Bad request', Status.BAD_REQUEST);
+        // Extract JSON from request body
+        const bodyStr = String(body);
+        let messageData;
+
+        // Try different parsing strategies
+
+        // 1. Try embedded JSON after Content-Type header (original format)
+        const embeddedJsonMatch = bodyStr.match(/Content-Type:\s*application\/json\s*\r?\n\s*(\{.*?\})/s);
+
+        // 2. Try to find any JSON object containing associateReplyToken
+        const jsonObjectMatch = bodyStr.match(/\{[^{}]*"associateReplyToken"[^{}]*\}/);
+
+        if (embeddedJsonMatch) {
+          messageData = JSON.parse(embeddedJsonMatch[1]);
+        } else if (jsonObjectMatch) {
+          messageData = JSON.parse(jsonObjectMatch[0]);
+        } else {
+          // Last resort: try to parse the entire body as JSON
+          try {
+            messageData = JSON.parse(bodyStr);
+          } catch {
+            throw new FesHttpErr('Bad request - could not extract JSON from request body', Status.BAD_REQUEST);
+          }
         }
-        const messageData = JSON.parse(match[0]);
+
         const { associateReplyToken, to, cc, bcc } = messageData;
 
         expect(associateReplyToken).toBe('mock-fes-reply-token');

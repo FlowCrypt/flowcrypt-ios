@@ -38,6 +38,13 @@ extension ComposeViewController {
                 handler: { [weak self] _ in self?.selectFromFilesApp() }
             )
         )
+        let publicKeyAction = UIAlertAction(
+            title: "files_picking_public_key".localized,
+            style: .default,
+            handler: { [weak self] _ in self?.attachPublicKey() }
+        )
+        publicKeyAction.accessibilityIdentifier = "aid-attach-public-key"
+        alert.addAction(publicKeyAction)
         alert.addAction(UIAlertAction(title: "cancel".localized, style: .cancel))
         present(alert, animated: true, completion: nil)
     }
@@ -73,5 +80,46 @@ extension ComposeViewController {
                 UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
             }
         )
+    }
+
+    private func attachPublicKey() {
+        Task {
+            do {
+                // Get the current user's keypair
+                let keypair = try await getUserKeypair()
+
+                // Get the public key data
+                let publicKeyArmored = keypair.public
+                guard let publicKeyData = publicKeyArmored.data(using: String.Encoding.utf8) else {
+                    throw AppErr.general("Failed to convert public key to data")
+                }
+
+                // Create a MessageAttachment from the public key data with longid-based filename
+                let attachment = MessageAttachment(
+                    name: "0x\(keypair.primaryLongid).asc",
+                    data: publicKeyData,
+                    mimeType: "application/pgp-keys"
+                )
+                appendAttachmentIfAllowed(attachment)
+                reload(sections: [.attachments])
+            } catch {
+                showAlert(message: "Failed to retrieve public key: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private func getUserKeypair() async throws -> Keypair {
+        // Get the user's email to retrieve their key
+        let userEmail = contextToSend.sender
+
+        // Get all keypairs for the user
+        let keypairs = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
+
+        // Get the first available keypair
+        guard let firstKeypair = keypairs.first else {
+            throw AppErr.general("No keypair found for \(userEmail)")
+        }
+
+        return firstKeypair
     }
 }
