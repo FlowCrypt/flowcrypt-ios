@@ -85,21 +85,18 @@ extension ComposeViewController {
     private func attachPublicKey() {
         Task {
             do {
-                // Get the current user's keypair
-                let keypair = try await getUserKeypair()
+                let (publicKey, longid) = try await getLatestUsablePublicKey()
 
-                // Get the public key data
-                let publicKeyArmored = keypair.public
-                guard let publicKeyData = publicKeyArmored.data(using: String.Encoding.utf8) else {
+                guard let publicKeyData = publicKey.data(using: .utf8) else {
                     throw AppErr.general("Failed to convert public key to data")
                 }
 
-                // Create a MessageAttachment from the public key data with longid-based filename
                 let attachment = MessageAttachment(
-                    name: "0x\(keypair.primaryLongid).asc",
+                    name: "0x\(longid).asc",
                     data: publicKeyData,
                     mimeType: "application/pgp-keys"
                 )
+
                 appendAttachmentIfAllowed(attachment)
                 reload(sections: [.attachments])
             } catch {
@@ -108,18 +105,28 @@ extension ComposeViewController {
         }
     }
 
-    private func getUserKeypair() async throws -> Keypair {
-        // Get the user's email to retrieve their key
+    private func getLatestUsablePublicKey() async throws -> (publicKey: String, longid: String) {
         let userEmail = contextToSend.sender
-
-        // Get all keypairs for the user
         let keypairs = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
 
-        // Get the first available keypair
-        guard let firstKeypair = keypairs.first else {
+        guard keypairs.isNotEmpty else {
             throw AppErr.general("No keypair found for \(userEmail)")
         }
 
-        return firstKeypair
+        let keyDetailsList = try await KeyMethods().parseKeys(
+            armored: keypairs.map(\.public)
+        )
+
+        let selectedKey = keyDetailsList
+            .sorted { $0.created > $1.created }
+            .first { $0.usableForEncryption && !$0.revoked && $0.isNotExpired }
+            ?? keyDetailsList.max { $0.created < $1.created }
+
+        guard let keyDetails = selectedKey,
+              let keypair = keypairs.first(where: { $0.primaryFingerprint == (try? keyDetails.primaryFingerprint) }) else {
+            throw AppErr.general("No valid keypair found for \(userEmail)")
+        }
+
+        return (keyDetails.public, keypair.primaryLongid)
     }
 }

@@ -72,7 +72,8 @@ public final class SwitchCellNode: CellNode {
         switchNode.style.preferredSize = CGSize(width: 55, height: 30)
         textNode.style.flexGrow = 1.0
         textNode.style.flexShrink = 1.0
-        return ASStackLayoutSpec(
+        
+        let stack = ASStackLayoutSpec(
             direction: .horizontal,
             spacing: 8,
             justifyContent: input?.switchJustifyContent ?? .spaceBetween,
@@ -81,6 +82,11 @@ public final class SwitchCellNode: CellNode {
                 textNode,
                 switchNode
             ]
+        )
+        
+        return ASInsetLayoutSpec(
+            insets: input?.insets ?? UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16),
+            child: stack
         )
     }
 }
