@@ -109,24 +109,10 @@ extension ComposeViewController {
         let userEmail = contextToSend.sender
         let keypairs = try await appContext.keyAndPassPhraseStorage.getKeypairsWithPassPhrases(email: userEmail)
 
-        guard keypairs.isNotEmpty else {
-            throw AppErr.general("No keypair found for \(userEmail)")
-        }
-
-        let keyDetailsList = try await KeyMethods().parseKeys(
-            armored: keypairs.map(\.public)
-        )
-
-        let selectedKey = keyDetailsList
-            .sorted { $0.created > $1.created }
-            .first { $0.usableForEncryption && !$0.revoked && $0.isNotExpired }
-            ?? keyDetailsList.max { $0.created < $1.created }
-
-        guard let keyDetails = selectedKey,
-              let keypair = keypairs.first(where: { $0.primaryFingerprint == (try? keyDetails.primaryFingerprint) }) else {
+        let senderKeys = try await KeyMethods().chooseSenderKeys(for: .encryption, keys: keypairs, senderEmail: userEmail)
+        guard let selectedKey = senderKeys.first else {
             throw AppErr.general("No valid keypair found for \(userEmail)")
         }
-
-        return (keyDetails.public, keypair.primaryLongid)
+        return (selectedKey.public, selectedKey.primaryLongid)
     }
 }
