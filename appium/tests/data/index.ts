@@ -112,6 +112,10 @@ export const CommonData = {
     publicKeyEmail: 'flowcrypt.compatibility@gmail.com',
     publicKeyFingerPrint: 'E8F0 517B A6D7 DAB6 081C 96E4 ADAC 279C 9509 3207',
   },
+  inlinePublicKeyAttachment: {
+    publicKeyEmail: 'ioan@flowcrypt.com',
+    publicKeyFingerPrint: '9659 6BE8 3860 14BD F456 AA20 29FF FFBB FC22 ED7B',
+  },
   emailWithAnotherUserPublicKey: {
     subject: 'Email with another user public key attached',
     publicKeyEmail: 'demo@flowcrypt.com',

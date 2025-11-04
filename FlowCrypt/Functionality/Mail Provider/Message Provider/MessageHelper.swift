@@ -275,12 +275,17 @@ final class MessageHelper {
 
         let keyDetails: [KeyDetails] = try await getKeyDetailsFromAttachment(attachments: &attachments, messageId: message.identifier)
 
+        // Also extract keyDetails from publicKey blocks (for encrypted messages)
+        let publicKeyBlockDetails: [KeyDetails] = decrypted.blocks
+            .filter { $0.type == .publicKey }
+            .compactMap { $0.keyDetails }
+
         return ProcessedMessage(
             message: message,
             text: text,
             type: messageType,
             attachments: attachments,
-            keyDetails: keyDetails,
+            keyDetails: keyDetails + publicKeyBlockDetails,
             signature: signature
         )
     }
