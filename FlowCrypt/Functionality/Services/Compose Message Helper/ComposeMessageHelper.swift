@@ -396,17 +396,24 @@ extension ComposeMessageHelper {
         for attachment in message.atts {
             guard let data = Data(base64Encoded: attachment.base64) else { continue }
 
-            let encryptedFile = try await core.encrypt(
-                file: data,
-                name: attachment.name,
-                pubKeys: message.pubKeys
-            )
-            let encryptedAttachment = SendableMsg.Attachment(
-                name: "\(attachment.name).pgp",
-                type: "application/pgp-encrypted",
-                base64: encryptedFile.base64EncodedString()
-            )
-            encryptedAttachments.append(encryptedAttachment)
+            // Skip encryption for public key attachments
+            if attachment.type == "application/pgp-keys" {
+                // Add public key attachment as-is without encryption
+                encryptedAttachments.append(attachment)
+            } else {
+                // Encrypt all other attachments
+                let encryptedFile = try await core.encrypt(
+                    file: data,
+                    name: attachment.name,
+                    pubKeys: message.pubKeys
+                )
+                let encryptedAttachment = SendableMsg.Attachment(
+                    name: "\(attachment.name).pgp",
+                    type: "application/pgp-encrypted",	
+                    base64: encryptedFile.base64EncodedString()
+                )
+                encryptedAttachments.append(encryptedAttachment)
+            }
         }
 
         return encryptedAttachments

@@ -19,6 +19,8 @@ const SELECTORS = {
   CANCEL_BUTTON: '~aid-cancel-button',
   BACK_BUTTON: '~aid-back-button',
   DELETE_BUTTON: '~aid-compose-delete',
+  ATTACH_BUTTON: '~aid-compose-attach',
+  ATTACH_PUBLIC_KEY_BUTTON: '~aid-attach-public-key',
   SEND_BUTTON: '~aid-compose-send',
   SEND_PLAIN_MESSAGE_BUTTON: '~aid-compose-send-plain',
   SEND_MESSAGE_PASSWORD_BUTTON: '~aid-compose-send-message-password',
@@ -90,6 +92,14 @@ class NewMessageScreen extends BaseScreen {
 
   get deleteButton() {
     return $(SELECTORS.DELETE_BUTTON);
+  }
+
+  get attachButton() {
+    return $(SELECTORS.ATTACH_BUTTON);
+  }
+
+  get attachPublicKeyButton() {
+    return $(SELECTORS.ATTACH_PUBLIC_KEY_BUTTON);
   }
 
   get sendButton() {
@@ -411,6 +421,14 @@ class NewMessageScreen extends BaseScreen {
 
   clickSendButton = async () => {
     await ElementHelper.waitAndClick(await this.sendButton);
+  };
+
+  clickAttachButton = async () => {
+    await ElementHelper.waitAndClick(await this.attachButton);
+  };
+
+  clickAttachPublicKeyButton = async () => {
+    await ElementHelper.waitAndClick(await this.attachPublicKeyButton);
   };
 
   checkSendPlainMessageButtonNotPresent = async () => {
