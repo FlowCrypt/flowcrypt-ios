@@ -34,7 +34,7 @@ extension ComposeViewController: UIImagePickerControllerDelegate, UINavigationCo
         reload(sections: [.attachments])
     }
 
-    private func appendAttachmentIfAllowed(_ attachment: MessageAttachment) {
+    internal func appendAttachmentIfAllowed(_ attachment: MessageAttachment) {
         let totalSize = contextToSend.attachments.map(\.size).reduce(0, +) + attachment.size
         if totalSize > GeneralConstants.Global.attachmentSizeLimit {
             showToast("files_picking_size_error_message".localized)

@@ -24,7 +24,8 @@ extension ComposeViewController {
             self?.handleInfoTap()
         }
         let attachmentButton = NavigationBarItemsView.Input(
-            image: UIImage(systemName: "paperclip")
+            image: UIImage(systemName: "paperclip"),
+            accessibilityId: "aid-compose-attach"
         ) { [weak self] in
             self?.handleAttachTap()
         }
