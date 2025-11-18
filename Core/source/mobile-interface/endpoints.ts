@@ -69,19 +69,30 @@ export class Endpoints {
     } else if (req.format === 'encryptInline') {
       const encryptedAtts: Att[] = [];
       for (const att of req.atts || []) {
-        const encryptedAtt = (await PgpMsg.encrypt({
-          pubkeys: req.pubKeys,
-          data: Buf.fromBase64Str(att.base64),
-          filename: att.name,
-          armor: false,
-        })) as Uint8Array;
-        encryptedAtts.push(
-          new Att({
-            name: `${att.name}.pgp`,
-            type: 'application/pgp-encrypted',
-            data: encryptedAtt,
-          }),
-        );
+        // Skip encryption for public key attachments
+        if (att.type === 'application/pgp-keys') {
+          encryptedAtts.push(
+            new Att({
+              name: att.name,
+              type: att.type,
+              data: Buf.fromBase64Str(att.base64),
+            }),
+          );
+        } else {
+          const encryptedAtt = (await PgpMsg.encrypt({
+            pubkeys: req.pubKeys,
+            data: Buf.fromBase64Str(att.base64),
+            filename: att.name,
+            armor: false,
+          })) as Uint8Array;
+          encryptedAtts.push(
+            new Att({
+              name: `${att.name}.pgp`,
+              type: 'application/pgp-encrypted',
+              data: encryptedAtt,
+            }),
+          );
+        }
       }
 
       const signingPrv = await getSigningPrv(req);
@@ -199,7 +210,7 @@ export class Endpoints {
             type: 'decryptErr',
             content:
               decryptRes.error.type === DecryptErrTypes.noMdc
-                ? decryptRes.content?.toUtfStr() ?? ''
+                ? (decryptRes.content?.toUtfStr() ?? '')
                 : rawBlock.content.toString(),
             decryptErr: decryptRes,
             complete: true,
