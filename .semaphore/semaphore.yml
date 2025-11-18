@@ -33,7 +33,7 @@ blocks:
             - bundle exec fastlane test
             - git clone https://github.com/appium/WebDriverAgent.git
             - cd WebDriverAgent
-            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=26.0,name=iPhone 17"
+            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=26.1,name=iPhone 17"
       epilogue:
         always:
           commands:
