@@ -31,14 +31,14 @@ blocks:
             - bundle install
             - bundle exec fastlane build
             - bundle exec fastlane test
-            - git clone https://github.com/appium/WebDriverAgent.git
-            - cd WebDriverAgent
-            - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=26.1,name=iPhone 17"
+            # - git clone https://github.com/appium/WebDriverAgent.git
+            # - cd WebDriverAgent
+            # - xcodebuild build-for-testing -project WebDriverAgent.xcodeproj -derivedDataPath /var/tmp/derived_data/WebDriverAgent -scheme WebDriverAgentRunner -destination "platform=iphonesimulator,OS=26.1,name=iPhone 17"
       epilogue:
         always:
           commands:
             - cd /var/tmp/derived_data/FlowCrypt/Build/Products/Debug-iphonesimulator && cache store FlowCrypt-$SEMAPHORE_GIT_SHA.app FlowCrypt.app
-            - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
+            # - cd /var/tmp/derived_data/WebDriverAgent/Build/Products/Debug-iphonesimulator && cache store WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app WebDriverAgentRunner-Runner.app
   - name: TypeScript tests
     dependencies: []
     run:
@@ -89,10 +89,10 @@ blocks:
           - cache restore appium-npm && cd ./appium && npm i && cd .. && cache store appium-npm appium/node_modules
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
-          - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
+          # - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
           - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
           - xcrun simctl boot "iPhone 17"
-          - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
+          # - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
       epilogue:
         always:
           commands:
