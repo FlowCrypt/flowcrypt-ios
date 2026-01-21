@@ -43,12 +43,17 @@ public final class NavigationBarItemsView: UIBarButtonItem {
 
         let buttons = input.enumerated()
             .map { value in
-                UIButton(type: .system).then {
+                UIButton(configuration: .plain()).then {
                     $0.tag = value.offset
+                    $0.configuration?.image = value.element.image
+                    $0.configuration?.title = value.element.title
+                    $0.configuration?.baseForegroundColor = .white
+                    $0.configuration?.contentInsets = .zero
+                    
                     $0.frame.size = Constants.buttonSize
-                    $0.imageView?.frame.size = Constants.buttonSize
-                    $0.setImage(value.element.image, for: .normal)
-                    $0.setTitle(value.element.title, for: .normal)
+                    // Ensure image scales correctly within the configuration
+                    $0.imageView?.contentMode = .scaleAspectFit
+                    
                     $0.accessibilityIdentifier = value.element.accessibilityId
                     $0.isAccessibilityElement = true
                     $0.addTarget(self, action: #selector(self.handleTap(with:)), for: .touchUpInside)
