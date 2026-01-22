@@ -395,6 +395,7 @@ Be careful - avoid clicking links and downloading attachments, or sharing person
 "files_picking_camera_input_source" = "Camera";
 "files_picking_photo_library_source" = "Photo Library";
 "files_picking_files_source" = "Files";
+"files_picking_public_key" = "Public Key";
 "files_picking_no_library_access_error_title" = "No access to library";
 "files_picking_no_library_access_error_message" = "You may open Settings and give the full access to photo library";
 "files_picking_no_camera_access_error_title" = "No access to camera";

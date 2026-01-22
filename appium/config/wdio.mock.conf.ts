@@ -20,8 +20,8 @@ config.capabilities = [
     'appium:processArguments': {
       args: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'],
     },
-    'appium:deviceName': 'iPhone 16',
-    'appium:platformVersion': '18.5',
+    'appium:deviceName': 'iPhone 17',
+    'appium:platformVersion': '26.1',
     'appium:orientation': 'PORTRAIT',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:simulatorStartupTimeout': 600000,
@@ -29,8 +29,8 @@ config.capabilities = [
     'appium:wdaConnectionTimeout': 600000,
     'appium:wdaStartupRetryInterval': 120000,
     'appium:reduceMotion': true,
-    'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
-    'appium:usePreinstalledWDA': true,
+    // 'appium:prebuiltWDAPath': join(process.cwd(), './WebDriverAgentRunner-Runner.app'),
+    // 'appium:usePreinstalledWDA': true,
   },
 ];
 
