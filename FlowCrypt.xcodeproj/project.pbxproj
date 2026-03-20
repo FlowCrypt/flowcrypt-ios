@@ -3947,7 +3947,7 @@
 			repositoryURL = "https://github.com/realm/realm-cocoa";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 20.0.3;
+				minimumVersion = 20.0.4;
 			};
 		};
 		952687412A8A21060005694B /* XCRemoteSwiftPackageReference "LetterAvatarKit" */ = {
