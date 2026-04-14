@@ -16,11 +16,16 @@ public final class NavigationBarActionButton: UIBarButtonItem {
     private var onAction: (() -> Void)?
 
     public convenience init(imageSystemName: String, action: (() -> Void)?, accessibilityIdentifier: String? = nil) {
-        self.init(image: UIImage(systemName: imageSystemName), style: .plain, target: nil, action: nil)
-        self.target = self
-        self.action = #selector(tap)
-        self.accessibilityIdentifier = accessibilityIdentifier
-        self.onAction = action
+        self.init()
+        onAction = action
+        customView = UIButton(type: .system).with {
+            $0.contentHorizontalAlignment = .left
+            $0.setImage(UIImage(systemName: imageSystemName), for: .normal)
+            $0.frame.size = Constants.buttonSize
+            $0.addTarget(self, action: #selector(tap), for: .touchUpInside)
+            $0.accessibilityIdentifier = accessibilityIdentifier
+            $0.isAccessibilityElement = true
+        }
     }
 
     @objc private func tap() {

@@ -38,8 +38,7 @@ class SearchViewController: InboxViewController {
 
     override func setupNavigationBar() {
         title = "search_title".localized
-        navigationItem.searchController = searchController
-        navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.titleView = searchController.searchBar
         navigationItem.rightBarButtonItems = nil
         navigationItem.leftBarButtonItem = .defaultBackButton {
             self.navigationController?.popViewController(animated: true)
