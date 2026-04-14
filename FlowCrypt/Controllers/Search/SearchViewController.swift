@@ -38,10 +38,16 @@ class SearchViewController: InboxViewController {
 
     override func setupNavigationBar() {
         title = "search_title".localized
-        navigationItem.titleView = searchController.searchBar
         navigationItem.rightBarButtonItems = nil
         navigationItem.leftBarButtonItem = .defaultBackButton {
             self.navigationController?.popViewController(animated: true)
+        }
+
+        if #available(iOS 26.0, *) {
+            navigationItem.searchController = searchController
+            navigationItem.hidesSearchBarWhenScrolling = false
+        } else {
+            navigationItem.titleView = searchController.searchBar
         }
     }
 
@@ -50,22 +56,33 @@ class SearchViewController: InboxViewController {
             $0.delegate = self
             $0.searchResultsUpdater = self
             $0.hidesNavigationBarDuringPresentation = false
-            $0.searchBar.tintColor = .white
             $0.searchBar.delegate = self
         }
+
+        if #unavailable(iOS 26.0) {
+            searchController.do {
+                $0.searchBar.tintColor = .white
+                $0.searchBar.setImage(UIImage(systemName: "magnifyingglass")?.tinted(.white), for: .search, state: .normal)
+                $0.searchBar.setImage(UIImage(systemName: "xmark")?.tinted(.white), for: .clear, state: .normal)
+                $0.searchBar.searchTextField.textColor = .white
+            }
+        }
+
         update(searchController: searchController)
         definesPresentationContext = true
     }
 
     private func update(searchController: UISearchController) {
-        searchController.searchBar.searchTextField.attributedPlaceholder = "search_placeholder"
-            .localized
-            .attributed(
-                .regular(14),
-                color: UIColor.white.withAlphaComponent(0.7),
-                alignment: .left
-            )
-        searchController.searchBar.searchTextField.textColor = .white
+        if #unavailable(iOS 26.0) {
+            searchController.searchBar.searchTextField.attributedPlaceholder = "search_placeholder"
+                .localized
+                .attributed(
+                    .regular(14),
+                    color: UIColor.white.withAlphaComponent(0.7),
+                    alignment: .left
+                )
+            searchController.searchBar.searchTextField.textColor = .white
+        }
         searchController.searchBar.searchTextField.accessibilityIdentifier = "aid-search-all-emails-field"
     }
 }
