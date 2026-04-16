@@ -60,7 +60,6 @@ final class SetupManuallyImportKeyViewController: TableNodeViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        navigationController?.navigationBar.barStyle = .black
     }
 
     override func viewDidAppear(_ animated: Bool) {

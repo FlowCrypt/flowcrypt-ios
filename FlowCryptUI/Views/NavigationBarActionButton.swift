@@ -18,13 +18,22 @@ public final class NavigationBarActionButton: UIBarButtonItem {
     public convenience init(imageSystemName: String, action: (() -> Void)?, accessibilityIdentifier: String? = nil) {
         self.init()
         onAction = action
-        customView = UIButton(type: .system).with {
-            $0.contentHorizontalAlignment = .left
-            $0.setImage(UIImage(systemName: imageSystemName), for: .normal)
-            $0.frame.size = Constants.buttonSize
-            $0.addTarget(self, action: #selector(tap), for: .touchUpInside)
-            $0.accessibilityIdentifier = accessibilityIdentifier
-            $0.isAccessibilityElement = true
+        if #available(iOS 26.0, *) {
+            image = UIImage(systemName: imageSystemName)
+            tintColor = .main
+            target = self
+            self.action = #selector(tap)
+            self.accessibilityIdentifier = accessibilityIdentifier
+            isAccessibilityElement = true
+        } else {
+            customView = UIButton(type: .system).with {
+                $0.contentHorizontalAlignment = .left
+                $0.setImage(UIImage(systemName: imageSystemName), for: .normal)
+                $0.frame.size = Constants.buttonSize
+                $0.addTarget(self, action: #selector(tap), for: .touchUpInside)
+                $0.accessibilityIdentifier = accessibilityIdentifier
+                $0.isAccessibilityElement = true
+            }
         }
     }
 

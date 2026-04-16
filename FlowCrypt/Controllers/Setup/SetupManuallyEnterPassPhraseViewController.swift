@@ -68,7 +68,6 @@ final class SetupManuallyEnterPassPhraseViewController: TableNodeViewController,
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        navigationController?.navigationBar.barStyle = .black
     }
 
     private func setupUI() {

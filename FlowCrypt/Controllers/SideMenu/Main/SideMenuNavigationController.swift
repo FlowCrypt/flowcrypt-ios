@@ -24,7 +24,10 @@ final class SideMenuNavigationController: ENSideMenuNavigationController {
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        .lightContent
+        if #available(iOS 26.0, *) {
+            return .default
+        }
+        return .lightContent
     }
 
     override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
