@@ -42,8 +42,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/google-api-objectivec-client-for-rest",
       "state" : {
-        "revision" : "3981beeb0ece282c6ed8e965cbb5b1bccfbe1543",
-        "version" : "5.0.0"
+        "revision" : "499087368ae106b7e00cd8cbb82fdd78257dfbc7",
+        "version" : "5.2.0"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleSignIn-iOS",
       "state" : {
-        "revision" : "3996d908c7b3ce8a87d39c808f9a6b2a08fbe043",
-        "version" : "9.0.0"
+        "revision" : "913b4005ea26aebe1c97d54e35ad82a515924c71",
+        "version" : "9.1.0"
       }
     },
     {
@@ -141,8 +141,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jpsim/SourceKitten.git",
       "state" : {
-        "revision" : "453f75b8a3bb2c3596c0d2dd422c289788233a22",
-        "version" : "0.37.1"
+        "revision" : "6529c17fe80dd94843a3df7ed3e6a239790d5c91",
+        "version" : "0.37.3"
       }
     },
     {
@@ -150,8 +150,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-argument-parser.git",
       "state" : {
-        "revision" : "309a47b2b1d9b5e991f36961c983ecec72275be3",
-        "version" : "1.6.1"
+        "revision" : "626b5b7b2f45e1b0b1c6f4a309296d1d21d7311b",
+        "version" : "1.7.1"
+      }
+    },
+    {
+      "identity" : "swift-filename-matcher",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ileitch/swift-filename-matcher",
+      "state" : {
+        "revision" : "eef5ac0b6b3cdc64b3039b037bed2def8a1edaeb",
+        "version" : "2.0.1"
       }
     },
     {
@@ -159,8 +168,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "revision" : "1103c45ece4f7fe160b8f75b4ea1ee2e5fac1841",
-        "version" : "601.0.0"
+        "revision" : "65b02a90ad2cc213e09309faeb7f6909e0a8577a",
+        "version" : "604.0.0-prerelease-2026-01-20"
       }
     },
     {
@@ -168,8 +177,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/SwiftLint",
       "state" : {
-        "revision" : "625792423014cc49b0a1e5a1a5c0d6b8b3de10f9",
-        "version" : "0.59.1"
+        "revision" : "88952528a590ed366c6f76f6bfb980b5ebdcefc1",
+        "version" : "0.63.2"
       }
     },
     {
@@ -177,8 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/scinfu/SwiftSoup.git",
       "state" : {
-        "revision" : "04a5da442816f764b2a8513c38420b4e6605145b",
-        "version" : "2.10.1"
+        "revision" : "6c7915e16f729857aec3e99068c361e58a00ed68",
+        "version" : "2.13.4"
       }
     },
     {
@@ -222,8 +231,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jpsim/Yams.git",
       "state" : {
-        "revision" : "3d6871d5b4a5cd519adf233fbb576e0a2af71c17",
-        "version" : "5.4.0"
+        "revision" : "deaf82e867fa2cbd3cd865978b079bfcf384ac28",
+        "version" : "6.2.1"
       }
     }
   ],

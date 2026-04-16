@@ -52,10 +52,16 @@ open class TableNodeViewController: ASDKViewController<TableNode> {
 
 public extension UINavigationItem {
     func setAccessibility(id: String?) {
+        let titleColor: UIColor
+        if #available(iOS 26.0, *) {
+            titleColor = .main
+        } else {
+            titleColor = .white
+        }
         let titleLabel = UILabel()
         titleLabel.attributedText = id?.attributed(
             .medium(16),
-            color: .white,
+            color: titleColor,
             alignment: .center
         )
         titleLabel.sizeToFit()
