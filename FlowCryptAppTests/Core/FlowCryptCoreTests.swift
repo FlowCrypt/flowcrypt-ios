@@ -301,6 +301,63 @@ final class FlowCryptCoreTests: XCTestCase {
         XCTAssertNotNil(b.content.range(of: text)) // original text contained within the formatted html block
     }
 
+    // Regression test for https://github.com/FlowCrypt/flowcrypt-ios/issues/630
+    // Verifies that emoji / non-BMP Unicode scalars survive the full
+    // compose -> encrypt -> parseDecryptMsg round-trip through the JS core
+    // (WKWebView bridge). If this passes, any user-visible emoji rendering
+    // issue is located above the Core layer (i.e. in ThreadDetailWebNode /
+    // WKWebView HTML rendering).
+    func testEndToEndWithEmoji() async throws {
+        let passphrase = "some pass phrase test"
+        let email = "e2e-emoji@domain.com"
+        // Mix BMP emoji, supplementary-plane emoji (surrogate pair in UTF-16),
+        // ZWJ sequence, combining mark, and Chinese character.
+        let text = "Hello 😀 🙂 🔐 👩‍💻 é 汉"
+        let generateKeyRes = try await core.generateKey(
+            passphrase: passphrase,
+            variant: KeyVariant.curve25519,
+            userIds: [UserId(email: email, name: "End to end emoji")]
+        )
+        let msg = SendableMsg(
+            text: text,
+            html: text,
+            to: [email],
+            cc: [],
+            bcc: [],
+            from: email,
+            subject: "emoji subj 😀",
+            replyToMsgId: nil,
+            inReplyTo: nil,
+            atts: [],
+            pubKeys: [generateKeyRes.key.public],
+            signingPrv: nil,
+            password: nil
+        )
+        let mime = try await core.composeEmail(msg: msg, fmt: .encryptInline)
+        let keys = try [Keypair(generateKeyRes.key, passPhrase: passphrase, source: "test")]
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: mime.mimeEncoded,
+            keys: keys,
+            msgPwd: nil,
+            isMime: true,
+            verificationPubKeys: []
+        )
+        XCTAssertEqual(decrypted.replyType, ReplyType.encrypted)
+        // The plain text field must match byte-for-byte after round-trip.
+        XCTAssertEqual(decrypted.text, text)
+        XCTAssertEqual(decrypted.blocks.count, 1)
+        let b = decrypted.blocks[0]
+        XCTAssertEqual(b.type, MsgBlock.BlockType.plainHtml)
+        XCTAssertNil(b.decryptErr)
+        // Each emoji/unicode scalar must appear intact inside the rendered html block.
+        for scalar in ["😀", "🙂", "🔐", "👩‍💻", "é", "汉"] {
+            XCTAssertNotNil(
+                b.content.range(of: scalar),
+                "expected \(scalar) to survive round-trip inside rendered html block"
+            )
+        }
+    }
+
     func testDecryptErrMismatch() async throws {
         let key = TestData.k0
         let r = try await core.parseDecryptMsg(encrypted: TestData.mismatchEncryptedMsg.data(using: .utf8)!, keys: [key], msgPwd: nil, isMime: false, verificationPubKeys: [])
