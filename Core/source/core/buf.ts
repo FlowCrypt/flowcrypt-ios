@@ -166,7 +166,18 @@ export class Buf extends Uint8Array {
           bytesLeftInChar--;
         }
         if (binaryChar && !bytesLeftInChar) {
-          stringArray[i] = String.fromCharCode(parseInt(binaryChar, 2));
+          const cp = parseInt(binaryChar, 2);
+          // Valid Unicode range (0..0x10FFFF): use fromCodePoint so
+          // supplementary-plane code points (e.g. emoji such as 😀 /
+          // U+1F600, encoded as 4-byte UTF-8 sequences) round-trip
+          // correctly; fromCharCode alone would silently truncate the high
+          // bits and turn them into Private Use Area characters (which is
+          // what caused https://github.com/FlowCrypt/flowcrypt-ios/issues/630).
+          // For out-of-range code points produced by the legacy 5- and
+          // 6-byte UTF-8 branches above (only reachable when non-UTF-8
+          // binary data is fed through toUtfStr) fall back to fromCharCode
+          // to preserve historical byte-compat behavior.
+          stringArray[i] = cp <= 0x10ffff ? String.fromCodePoint(cp) : String.fromCharCode(cp);
           binaryChar = '';
         }
       }

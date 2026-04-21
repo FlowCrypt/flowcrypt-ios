@@ -282,6 +282,23 @@ test('parseDecryptMsg unescaped special characters in encrypted text', async t =
   t.pass();
 });
 
+// Regression test for https://github.com/FlowCrypt/flowcrypt-ios/issues/630
+// Ensures emoji / supplementary-plane Unicode scalars survive the full
+// encryptMsg -> parseDecryptMsg round-trip at the Core (JS) layer.
+// If this passes, any user-visible "emoji not rendered" issue lives outside
+// of Core (i.e. in the iOS bridge or the WKWebView HTML renderer).
+test('encryptMsg -> parseDecryptMsg preserves emoji / non-BMP unicode', async t => {
+  const emojiText = 'Hello 😀 🙂 🔐 👩‍💻 é 汉';
+  const expectedHtml = Xss.escape(emojiText).replace(/\n/g, '<br />');
+  const { pubKeys, keys } = getKeypairs('rsa1');
+  const { data: encryptedMsg } = await endpoints.encryptMsg({ pubKeys }, [Buffer.from(emojiText, 'utf8')]);
+  expectData(encryptedMsg, 'armoredMsg');
+  const { data: blocks, json: decryptJson } = await endpoints.parseDecryptMsg({ keys }, [encryptedMsg]);
+  expect(decryptJson).to.deep.equal({ text: emojiText, replyType: 'encrypted' });
+  expectData(blocks, 'msgBlocks', [{ rendered: true, frameColor: 'green', htmlContent: expectedHtml }]);
+  t.pass();
+});
+
 test('parseDecryptMsg - plain inline img', async t => {
   const mime = `MIME-Version: 1.0
 Date: Sat, 10 Aug 2019 10:45:56 +0000
