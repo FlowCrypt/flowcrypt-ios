@@ -67,7 +67,7 @@ extension MessageActionsHandler where Self: UIViewController {
         }
 
         let items = [helpButton] + actions.map { createNavigationBarButton(action: $0) }
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
+        navigationItem.setRightNavigationBarItems(with: items)
     }
 
     private func createNavigationBarButton(action: MessageAction) -> NavigationBarItemsView.Input {

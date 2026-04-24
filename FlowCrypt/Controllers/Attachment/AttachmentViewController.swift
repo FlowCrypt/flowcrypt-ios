@@ -116,7 +116,7 @@ final class AttachmentViewController: UIViewController {
         let imageConfiguration = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 24, weight: .light))
         let image = UIImage(systemName: "square.and.arrow.down", withConfiguration: imageConfiguration)
 
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(
+        navigationItem.setRightNavigationBarItems(
             with: [
                 NavigationBarItemsView.Input(
                     image: image?.tinted(.gray),

@@ -41,6 +41,11 @@ public final class NavigationBarItemsView: UIBarButtonItem {
         self.input = input
         super.init()
 
+        if #available(iOS 26.0, *), input.count == 1 {
+            configureNativeBarButtonItem(with: input[0])
+            return
+        }
+
         let buttons = input.enumerated()
             .map { value in
                 UIButton(type: .system).then {
@@ -77,5 +82,31 @@ public final class NavigationBarItemsView: UIBarButtonItem {
 
     @objc private func handleTap(with button: UIButton) {
         input[button.tag].onTap?()
+    }
+
+    @objc private func handleNativeTap() {
+        input.first?.onTap?()
+    }
+
+    @available(iOS 26.0, *)
+    private func configureNativeBarButtonItem(with input: Input) {
+        image = input.image
+        title = input.title
+        accessibilityIdentifier = input.accessibilityId
+        isAccessibilityElement = true
+        target = self
+        action = #selector(handleNativeTap)
+    }
+}
+
+public extension UINavigationItem {
+    func setRightNavigationBarItems(with input: [NavigationBarItemsView.Input]) {
+        if #available(iOS 26.0, *) {
+            rightBarButtonItems = input
+                .reversed()
+                .map { NavigationBarItemsView(with: [$0]) }
+        } else {
+            rightBarButtonItem = NavigationBarItemsView(with: input)
+        }
     }
 }

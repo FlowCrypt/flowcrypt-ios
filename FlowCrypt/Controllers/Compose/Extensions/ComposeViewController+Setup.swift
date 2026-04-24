@@ -35,7 +35,7 @@ extension ComposeViewController {
         ) { [weak self] in
             self?.handleSendTap()
         }
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(
+        navigationItem.setRightNavigationBarItems(
             with: [deleteButton, helpButton, attachmentButton, sendButton]
         )
     }
