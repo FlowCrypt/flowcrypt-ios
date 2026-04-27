@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 100;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -106,6 +106,7 @@
 		5165ABCC27B526D100CCC379 /* RecipientEmailTextFieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */; };
 		51689F3F2795C1D90050A9B8 /* ProcessedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */; };
 		5168FB0B274F94D300131072 /* MessageAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5168FB0A274F94D300131072 /* MessageAttachment.swift */; };
+		516ADDD02F9B8FC900C0933F /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 516ADDCF2F9B8FC900C0933F /* AppIcon.icon */; };
 		517C2E302779F90700FECF32 /* MultipartDataRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517C2E2F2779F90700FECF32 /* MultipartDataRequest.swift */; };
 		517C2E33277A0C6300FECF32 /* EnterpriseServerApiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517C2E32277A0C6300FECF32 /* EnterpriseServerApiError.swift */; };
 		517D7B7D294D0A490001CA81 /* InboxViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517D7B7C294D0A490001CA81 /* InboxViewController+TableView.swift */; };
@@ -459,27 +460,23 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		518257842BF2249C00B9ED06 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolder = Frameworks;
 			files = (
 				518257832BF2249C00B9ED06 /* RealmSwift in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2CDC3E124052D50002B045F /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolder = Frameworks;
 			files = (
 				518257802BF2232200B9ED06 /* RealmSwift in Embed Frameworks */,
 				D2CDC3E324052D54002B045F /* FlowCryptCommon.framework in Embed Frameworks */,
 				D2CDC3DE24052D50002B045F /* FlowCryptUI.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -596,6 +593,7 @@
 		5165ABCB27B526D100CCC379 /* RecipientEmailTextFieldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientEmailTextFieldNode.swift; sourceTree = "<group>"; };
 		51689F3E2795C1D90050A9B8 /* ProcessedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProcessedMessage.swift; sourceTree = "<group>"; };
 		5168FB0A274F94D300131072 /* MessageAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAttachment.swift; sourceTree = "<group>"; };
+		516ADDCF2F9B8FC900C0933F /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		517C2E2F2779F90700FECF32 /* MultipartDataRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartDataRequest.swift; sourceTree = "<group>"; };
 		517C2E32277A0C6300FECF32 /* EnterpriseServerApiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterpriseServerApiError.swift; sourceTree = "<group>"; };
 		517D7B7C294D0A490001CA81 /* InboxViewController+TableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InboxViewController+TableView.swift"; sourceTree = "<group>"; };
@@ -909,15 +907,12 @@
 /* Begin PBXFrameworksBuildPhase section */
 		9F2AC5C3267BE99E00F6149B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				518257822BF2249C00B9ED06 /* RealmSwift in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C132B9AD1EC2DBD800763715 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D2CDC3E224052D54002B045F /* FlowCryptCommon.framework in Frameworks */,
 				D2CDC3DD24052D50002B045F /* FlowCryptUI.framework in Frameworks */,
@@ -929,35 +924,28 @@
 				512C1414271077F8002DE13F /* GoogleAPIClientForREST_PeopleService in Frameworks */,
 				51E16749270F303100D27C52 /* GoogleSignIn in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D204DB9B23FB35700083B9D6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				952687452A8A24C60005694B /* LetterAvatarKit in Frameworks */,
 				D28655982424D1BD0066F52E /* FlowCryptCommon.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2531F2823FEEF52007E5198 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				9FBD69FA277B1E6C002FC602 /* Toast in Frameworks */,
 				95F55F9F2A7B8A720000E50F /* ProgressHUD in Frameworks */,
 				958A45A32B10E77F00FFBA56 /* SwiftSoup in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2A1D3B423FD64AB00D626D6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D28655992424D1EB0066F52E /* FlowCryptCommon.framework in Frameworks */,
 				D286559A2424D1EB0066F52E /* FlowCryptUI.framework in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -1951,6 +1939,7 @@
 			children = (
 				9F8220D32633661C004B2009 /* App */,
 				C132B9BA1EC2DBD800763715 /* Assets.xcassets */,
+				516ADDCF2F9B8FC900C0933F /* AppIcon.icon */,
 				949ED9412303E3B400530579 /* Colors.xcassets */,
 				9FD22A1D230FEEC8005067A6 /* Common UI */,
 				C132B9C51EC2DCAB00763715 /* Controllers */,
@@ -2351,19 +2340,15 @@
 /* Begin PBXHeadersBuildPhase section */
 		D204DB9923FB35700083B9D6 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D204DBA223FB35700083B9D6 /* FlowCryptUI.h in Headers */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2531F2623FEEF52007E5198 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D2531F2F23FEEF52007E5198 /* FlowCryptCommon.h in Headers */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
@@ -2431,8 +2416,6 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			name = FlowCryptUI;
 			packageProductDependencies = (
 				952687442A8A24C60005694B /* LetterAvatarKit */,
@@ -2451,8 +2434,6 @@
 				D2531F2923FEEF52007E5198 /* Resources */,
 			);
 			buildRules = (
-			);
-			dependencies = (
 			);
 			name = FlowCryptCommon;
 			packageProductDependencies = (
@@ -2473,8 +2454,6 @@
 				D2A1D3B523FD64AB00D626D6 /* Resources */,
 			);
 			buildRules = (
-			);
-			dependencies = (
 			);
 			name = FlowCryptUIApplication;
 			productName = FlowCryptUIApplication;
@@ -2514,7 +2493,6 @@
 				};
 			};
 			buildConfigurationList = C132B9AB1EC2DBD800763715 /* Build configuration list for PBXProject "FlowCrypt" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -2536,6 +2514,7 @@
 				958A45A12B10E76E00FFBA56 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
 				513E8BC22BF20FCA00340F1B /* XCRemoteSwiftPackageReference "GTMAppAuth" */,
 			);
+			preferredProjectObjectVersion = 100;
 			productRefGroup = C132B9B11EC2DBD800763715 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -2552,7 +2531,6 @@
 /* Begin PBXResourcesBuildPhase section */
 		9F2AC5C4267BE99E00F6149B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				9F976569267E18F30058419D /* client_configuraion.json in Resources */,
 				9F976576267E18F90058419D /* client_configuraion_partly_empty.json in Resources */,
@@ -2560,13 +2538,12 @@
 				215002A32690B1DD00980DDD /* client_configuraion_with_unknown_flag.json in Resources */,
 				21594C9626F1DBA900BE654C /* data.txt in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C132B9AE1EC2DBD800763715 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D2324CB32471E60300FD1C6F /* .swiftlint.yml in Resources */,
+				516ADDD02F9B8FC900C0933F /* AppIcon.icon in Resources */,
 				C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */,
 				51E8181D29081D2B00FD428D /* flowcrypt-ios-prod.js.txt in Resources */,
 				51E1673D270DAFF900D27C52 /* Localizable.stringsdict in Resources */,
@@ -2579,40 +2556,32 @@
 				A33BAA8422EA4B4F00CC1B5C /* flowcrypt-ios-icon.png in Resources */,
 				949ED9422303E3B400530579 /* Colors.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D204DB9C23FB35700083B9D6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D2CCD1F9247C50D600D21F9C /* Colors.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2531F2923FEEF52007E5198 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2A1D3B523FD64AB00D626D6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D2F6D12A24311E5300DB4065 /* Colors.xcassets in Resources */,
 				D28325DD24895F5700D311BD /* Colors.xcassets in Resources */,
 				D2A1D3C623FD64AD00D626D6 /* LaunchScreen.storyboard in Resources */,
 				D2A1D3C323FD64AD00D626D6 /* Assets.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		9F2AC5C2267BE99E00F6149B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				9FC41090268100B6004C0A69 /* CoreTypesTest.swift in Sources */,
 				9F976584267E194F0058419D /* TestData.swift in Sources */,
@@ -2651,11 +2620,9 @@
 				51DA5BDA2722C82E001C4359 /* RecipientTests.swift in Sources */,
 				9FC41171268118A7004C0A69 /* PassPhraseStorageTests.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C132B9AC1EC2DBD800763715 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				516481B329410F5700A96095 /* GoogleContactsProvider.swift in Sources */,
 				D2A9CA3D242619EC00E1D898 /* SignInViewDecorator.swift in Sources */,
@@ -2892,11 +2859,9 @@
 				32DCA00224982EDA88D69C6E /* AppErr.swift in Sources */,
 				9F6EE17B2598F9FA0059BA51 /* Gmail+Backup.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D204DB9A23FB35700083B9D6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				9F525991278E091B005940D2 /* ViewController.swift in Sources */,
 				511D07E3276A2DF80050417B /* ButtonWithPaddingNode.swift in Sources */,
@@ -2971,11 +2936,9 @@
 				D2A9CA392426197400E1D898 /* SigninButtonNode.swift in Sources */,
 				D211CE7423FC35AC00D1CE38 /* ButtonCellNode.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2531F2723FEEF52007E5198 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				D2531F462402C62D007E5198 /* CollectionExtensions.swift in Sources */,
 				D254AA6124092AC70041CAE0 /* LocalizationExtensions.swift in Sources */,
@@ -3012,16 +2975,13 @@
 				D2CDC3D32402D4FE002B045F /* DataExtensions.swift in Sources */,
 				759739BE2833E986004867CD /* Task+Retry.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2A1D3B323FD64AB00D626D6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				759739C02833E9E7004867CD /* AppDelegate.swift in Sources */,
 				D2A1D3BE23FD64AB00D626D6 /* ViewController.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -3077,7 +3037,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		9F1C904F26F1F38C0046E7D7 /* Enterprise */ = {
+		9F1C904F26F1F38C0046E7D7 /* Enterprise configuration for PBXProject "FlowCrypt" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -3142,7 +3102,7 @@
 			};
 			name = Enterprise;
 		};
-		9F1C905026F1F38C0046E7D7 /* Enterprise */ = {
+		9F1C905026F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCrypt" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Enterprise";
@@ -3194,7 +3154,7 @@
 			};
 			name = Enterprise;
 		};
-		9F1C905226F1F38C0046E7D7 /* Enterprise */ = {
+		9F1C905226F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCryptUI" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3236,7 +3196,7 @@
 			};
 			name = Enterprise;
 		};
-		9F1C905326F1F38C0046E7D7 /* Enterprise */ = {
+		9F1C905326F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCryptUIApplication" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -3262,7 +3222,7 @@
 			};
 			name = Enterprise;
 		};
-		9F1C905426F1F38C0046E7D7 /* Enterprise */ = {
+		9F1C905426F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCryptCommon" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3302,7 +3262,7 @@
 			};
 			name = Enterprise;
 		};
-		9F1C905526F1F38C0046E7D7 /* Enterprise */ = {
+		9F1C905526F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCryptAppTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -3331,7 +3291,7 @@
 			};
 			name = Enterprise;
 		};
-		9F2AC5CE267BE99E00F6149B /* Debug */ = {
+		9F2AC5CE267BE99E00F6149B /* Debug configuration for PBXNativeTarget "FlowCryptAppTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -3365,7 +3325,7 @@
 			};
 			name = Debug;
 		};
-		9F2AC5CF267BE99E00F6149B /* Release */ = {
+		9F2AC5CF267BE99E00F6149B /* Release configuration for PBXNativeTarget "FlowCryptAppTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -3393,7 +3353,7 @@
 			};
 			name = Release;
 		};
-		C132B9C01EC2DBD800763715 /* Debug */ = {
+		C132B9C01EC2DBD800763715 /* Debug configuration for PBXProject "FlowCrypt" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -3458,7 +3418,7 @@
 			};
 			name = Debug;
 		};
-		C132B9C11EC2DBD800763715 /* Release */ = {
+		C132B9C11EC2DBD800763715 /* Release configuration for PBXProject "FlowCrypt" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -3517,7 +3477,7 @@
 			};
 			name = Release;
 		};
-		C132B9C31EC2DBD800763715 /* Debug */ = {
+		C132B9C31EC2DBD800763715 /* Debug configuration for PBXNativeTarget "FlowCrypt" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-Debug";
@@ -3568,7 +3528,7 @@
 			};
 			name = Debug;
 		};
-		C132B9C41EC2DBD800763715 /* Release */ = {
+		C132B9C41EC2DBD800763715 /* Release configuration for PBXNativeTarget "FlowCrypt" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -3616,7 +3576,7 @@
 			};
 			name = Release;
 		};
-		D204DBA323FB35700083B9D6 /* Debug */ = {
+		D204DBA323FB35700083B9D6 /* Debug configuration for PBXNativeTarget "FlowCryptUI" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3658,7 +3618,7 @@
 			};
 			name = Debug;
 		};
-		D204DBA423FB35700083B9D6 /* Release */ = {
+		D204DBA423FB35700083B9D6 /* Release configuration for PBXNativeTarget "FlowCryptUI" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3698,7 +3658,7 @@
 			};
 			name = Release;
 		};
-		D2531F3023FEEF52007E5198 /* Debug */ = {
+		D2531F3023FEEF52007E5198 /* Debug configuration for PBXNativeTarget "FlowCryptCommon" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3738,7 +3698,7 @@
 			};
 			name = Debug;
 		};
-		D2531F3123FEEF52007E5198 /* Release */ = {
+		D2531F3123FEEF52007E5198 /* Release configuration for PBXNativeTarget "FlowCryptCommon" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -3777,7 +3737,7 @@
 			};
 			name = Release;
 		};
-		D2A1D3C923FD64AD00D626D6 /* Debug */ = {
+		D2A1D3C923FD64AD00D626D6 /* Debug configuration for PBXNativeTarget "FlowCryptUIApplication" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -3803,7 +3763,7 @@
 			};
 			name = Debug;
 		};
-		D2A1D3CA23FD64AD00D626D6 /* Release */ = {
+		D2A1D3CA23FD64AD00D626D6 /* Release configuration for PBXNativeTarget "FlowCryptUIApplication" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -3834,61 +3794,55 @@
 		9F2AC5CD267BE99E00F6149B /* Build configuration list for PBXNativeTarget "FlowCryptAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9F2AC5CE267BE99E00F6149B /* Debug */,
-				9F1C905526F1F38C0046E7D7 /* Enterprise */,
-				9F2AC5CF267BE99E00F6149B /* Release */,
+				9F2AC5CE267BE99E00F6149B /* Debug configuration for PBXNativeTarget "FlowCryptAppTests" */,
+				9F1C905526F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCryptAppTests" */,
+				9F2AC5CF267BE99E00F6149B /* Release configuration for PBXNativeTarget "FlowCryptAppTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		C132B9AB1EC2DBD800763715 /* Build configuration list for PBXProject "FlowCrypt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C132B9C01EC2DBD800763715 /* Debug */,
-				9F1C904F26F1F38C0046E7D7 /* Enterprise */,
-				C132B9C11EC2DBD800763715 /* Release */,
+				C132B9C01EC2DBD800763715 /* Debug configuration for PBXProject "FlowCrypt" */,
+				9F1C904F26F1F38C0046E7D7 /* Enterprise configuration for PBXProject "FlowCrypt" */,
+				C132B9C11EC2DBD800763715 /* Release configuration for PBXProject "FlowCrypt" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		C132B9C21EC2DBD800763715 /* Build configuration list for PBXNativeTarget "FlowCrypt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C132B9C31EC2DBD800763715 /* Debug */,
-				9F1C905026F1F38C0046E7D7 /* Enterprise */,
-				C132B9C41EC2DBD800763715 /* Release */,
+				C132B9C31EC2DBD800763715 /* Debug configuration for PBXNativeTarget "FlowCrypt" */,
+				9F1C905026F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCrypt" */,
+				C132B9C41EC2DBD800763715 /* Release configuration for PBXNativeTarget "FlowCrypt" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		D204DBA623FB35700083B9D6 /* Build configuration list for PBXNativeTarget "FlowCryptUI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D204DBA323FB35700083B9D6 /* Debug */,
-				9F1C905226F1F38C0046E7D7 /* Enterprise */,
-				D204DBA423FB35700083B9D6 /* Release */,
+				D204DBA323FB35700083B9D6 /* Debug configuration for PBXNativeTarget "FlowCryptUI" */,
+				9F1C905226F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCryptUI" */,
+				D204DBA423FB35700083B9D6 /* Release configuration for PBXNativeTarget "FlowCryptUI" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		D2531F3323FEEF52007E5198 /* Build configuration list for PBXNativeTarget "FlowCryptCommon" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D2531F3023FEEF52007E5198 /* Debug */,
-				9F1C905426F1F38C0046E7D7 /* Enterprise */,
-				D2531F3123FEEF52007E5198 /* Release */,
+				D2531F3023FEEF52007E5198 /* Debug configuration for PBXNativeTarget "FlowCryptCommon" */,
+				9F1C905426F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCryptCommon" */,
+				D2531F3123FEEF52007E5198 /* Release configuration for PBXNativeTarget "FlowCryptCommon" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		D2A1D3C823FD64AD00D626D6 /* Build configuration list for PBXNativeTarget "FlowCryptUIApplication" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				D2A1D3C923FD64AD00D626D6 /* Debug */,
-				9F1C905326F1F38C0046E7D7 /* Enterprise */,
-				D2A1D3CA23FD64AD00D626D6 /* Release */,
+				D2A1D3C923FD64AD00D626D6 /* Debug configuration for PBXNativeTarget "FlowCryptUIApplication" */,
+				9F1C905326F1F38C0046E7D7 /* Enterprise configuration for PBXNativeTarget "FlowCryptUIApplication" */,
+				D2A1D3CA23FD64AD00D626D6 /* Release configuration for PBXNativeTarget "FlowCryptUIApplication" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */

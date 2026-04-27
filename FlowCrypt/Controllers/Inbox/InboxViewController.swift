@@ -42,7 +42,9 @@ class InboxViewController: ViewController {
         inboxInput.isNotEmpty && (["SPAM", "TRASH"].contains(viewModel.path))
     }
 
-    var path: String { viewModel.path }
+    var path: String {
+        viewModel.path
+    }
 
     // Search related variables
     private var isSearch = false
@@ -161,9 +163,9 @@ extension InboxViewController {
         }
     }
 
-    @objc public func setupNavigationBar() {
+    @objc func setupNavigationBar() {
         navigationItem.setAccessibility(id: inboxTitle)
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(
+        navigationItem.setRightNavigationBarItems(
             with: [
                 NavigationBarItemsView.Input(
                     image: UIImage(systemName: "questionmark.circle"),
@@ -194,7 +196,7 @@ extension InboxViewController {
         actions.append(selectedUnread ? .markAsRead : .markAsUnread)
 
         let items = actions.map { createNavigationBarButton(action: $0) }
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(with: items)
+        navigationItem.setRightNavigationBarItems(with: items)
         navigationItem.leftBarButtonItem = .defaultBackButton { [weak self] in
             guard let self else { return }
             resetSelectedThreads()

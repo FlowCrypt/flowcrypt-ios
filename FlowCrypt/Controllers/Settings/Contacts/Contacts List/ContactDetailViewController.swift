@@ -57,7 +57,7 @@ final class ContactDetailViewController: TableNodeViewController {
     }
 
     private func setupNavigationBarItems() {
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(
+        navigationItem.setRightNavigationBarItems(
             with: [
                 .init(
                     image: UIImage(systemName: "trash"),

@@ -7,22 +7,64 @@
 //
 
 import AsyncDisplayKit
+import UIKit
 
 public final class AddButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
+    private var identifier: String?
+
+    override public init() {
+        super.init()
+        setViewBlock { UIButton(type: .system) }
+    }
 
     public init(identifier: String, _ action: (() -> Void)?) {
+        self.identifier = identifier
         super.init()
+
+        setViewBlock { UIButton(type: .system) }
         onTap = action
-        backgroundColor = .main
-        accessibilityIdentifier = identifier
-        setTitle("+", with: .boldSystemFont(ofSize: 30), with: .white, for: .normal)
-        addTarget(self, action: #selector(onButtonTap), forControlEvents: .touchUpInside)
         frame.size = CGSize(width: .addButtonSize, height: .addButtonSize)
-        cornerRadius = .addButtonSize / 2
+    }
+
+    override public func didLoad() {
+        super.didLoad()
+
+        guard let button = view as? UIButton else { return }
+        button.accessibilityIdentifier = identifier
+        button.isAccessibilityElement = true
+        button.addTarget(self, action: #selector(onButtonTap), for: .touchUpInside)
+
+        if #available(iOS 26.0, *) {
+            configureGlassButton(button)
+        } else {
+            configureLegacyButton(button)
+        }
     }
 
     @objc private func onButtonTap() {
         onTap?()
+    }
+
+    @available(iOS 26.0, *)
+    private func configureGlassButton(_ button: UIButton) {
+        var configuration = UIButton.Configuration.glass()
+        configuration.buttonSize = .medium
+        configuration.cornerStyle = .capsule
+        configuration.image = UIImage(systemName: "plus")
+        configuration.preferredSymbolConfigurationForImage = .init(
+            pointSize: 24,
+            weight: .semibold
+        )
+
+        button.configuration = configuration
+    }
+
+    private func configureLegacyButton(_ button: UIButton) {
+        button.backgroundColor = .main
+        button.layer.cornerRadius = .addButtonSize / 2
+        button.setTitle("+", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.titleLabel?.font = .boldSystemFont(ofSize: 30)
     }
 }

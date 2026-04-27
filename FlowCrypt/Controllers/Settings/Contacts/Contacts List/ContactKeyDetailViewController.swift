@@ -54,7 +54,7 @@ final class ContactKeyDetailViewController: TableNodeViewController {
     }
 
     private func setupNavigationBarItems() {
-        navigationItem.rightBarButtonItem = NavigationBarItemsView(
+        navigationItem.setRightNavigationBarItems(
             with: [
                 .init(
                     image: UIImage(named: "share"), accessibilityId: "aid-share-btn"

@@ -11,6 +11,8 @@ import FlowCryptCommon
 
 @MainActor
 open class TableNodeViewController: ASDKViewController<TableNode> {
+    private var renderedViewSize: CGSize = .zero
+
     override public var title: String? {
         didSet {
             navigationItem.setAccessibility(id: title)
@@ -19,12 +21,41 @@ open class TableNodeViewController: ASDKViewController<TableNode> {
 
     override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
+        guard
+            let previousTraitCollection,
+            isViewLoaded,
+            view.window != nil
+        else {
+            return
+        }
+
+        let needsReload =
+            traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)
+                || traitCollection.preferredContentSizeCategory != previousTraitCollection.preferredContentSizeCategory
+                || traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass
+                || traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass
+
+        guard needsReload else { return }
+
         node.reloadData()
     }
 
     override open func viewDidLoad() {
         super.viewDidLoad()
         Logger.nested(Self.self).logDebug("View did load")
+    }
+
+    override open func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard isViewLoaded, view.window != nil else { return }
+
+        let currentSize = view.bounds.size
+        defer { renderedViewSize = currentSize }
+
+        guard renderedViewSize != .zero, renderedViewSize != currentSize else { return }
+
+        node.reloadData()
     }
 
     // MARK: - Keyboard
@@ -52,11 +83,10 @@ open class TableNodeViewController: ASDKViewController<TableNode> {
 
 public extension UINavigationItem {
     func setAccessibility(id: String?) {
-        let titleColor: UIColor
-        if #available(iOS 26.0, *) {
-            titleColor = .main
+        let titleColor: UIColor = if #available(iOS 26.0, *) {
+            .main
         } else {
-            titleColor = .white
+            .white
         }
         let titleLabel = UILabel()
         titleLabel.attributedText = id?.attributed(
