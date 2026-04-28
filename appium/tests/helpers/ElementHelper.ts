@@ -99,8 +99,7 @@ class ElementHelper {
   };
 
   static async copyStringIntoClipboard(text: string) {
-    const base64Encoded = Buffer.from(text).toString('base64');
-    await driver.setClipboard(base64Encoded);
+    await driver.setClipboard(Buffer.from(text, 'utf8').toString('base64'), 'plaintext');
   }
 
   static async waitAndPasteString(element: WebdriverIO.Element, text: string) {
