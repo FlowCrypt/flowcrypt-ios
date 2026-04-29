@@ -210,7 +210,7 @@ class EmailScreen extends BaseScreen {
     if (text.length > 0) {
       expect(messageElValue).toContain(text);
     } else {
-      expect(messageElValue).toBeNull();
+      expect(messageElValue).toEqual('');
     }
   };
 
