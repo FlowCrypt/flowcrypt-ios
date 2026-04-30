@@ -20,6 +20,7 @@ config.capabilities = [
     'appium:processArguments': {
       args: ['--mock-fes-api', '--mock-attester-api', '--mock-gmail-api'],
     },
+    'appium:locale': 'en_US',
     'appium:deviceName': 'iPhone 17',
     'appium:platformVersion': '26.4',
     'appium:orientation': 'PORTRAIT',

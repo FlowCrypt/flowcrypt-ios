@@ -12,27 +12,36 @@ import UIKit
 public final class AddButtonNode: ASButtonNode {
     private var onTap: (() -> Void)?
     private var identifier: String?
+    private let buttonSize = CGSize(width: .addButtonSize, height: .addButtonSize)
 
     override public init() {
         super.init()
-        setViewBlock { UIButton(type: .system) }
+        setupNode()
     }
 
     public init(identifier: String, _ action: (() -> Void)?) {
         self.identifier = identifier
         super.init()
 
-        setViewBlock { UIButton(type: .system) }
+        setupNode()
         onTap = action
-        frame.size = CGSize(width: .addButtonSize, height: .addButtonSize)
+    }
+
+    override public var frame: CGRect {
+        didSet {
+            guard oldValue.size != frame.size else { return }
+            updateButtonFrame()
+        }
     }
 
     override public func didLoad() {
         super.didLoad()
 
         guard let button = view as? UIButton else { return }
+        updateButtonFrame()
         button.accessibilityIdentifier = identifier
         button.isAccessibilityElement = true
+        button.accessibilityLabel = "Add"
         button.addTarget(self, action: #selector(onButtonTap), for: .touchUpInside)
 
         if #available(iOS 26.0, *) {
@@ -40,6 +49,23 @@ public final class AddButtonNode: ASButtonNode {
         } else {
             configureLegacyButton(button)
         }
+    }
+
+    override public func calculateSizeThatFits(_ constrainedSize: CGSize) -> CGSize {
+        buttonSize
+    }
+
+    private func setupNode() {
+        setViewBlock { UIButton(type: .system) }
+        style.preferredSize = buttonSize
+        frame.size = buttonSize
+        isUserInteractionEnabled = true
+    }
+
+    private func updateButtonFrame() {
+        guard isNodeLoaded else { return }
+        view.frame = CGRect(origin: view.frame.origin, size: buttonSize)
+        view.bounds = CGRect(origin: .zero, size: buttonSize)
     }
 
     @objc private func onButtonTap() {
