@@ -175,7 +175,7 @@ class TouchHelper {
             type: 'pointerMove',
             origin: 'viewport',
           },
-          { button: 1, type: 'pointerDown' },
+          { button: 0, type: 'pointerDown' },
           { duration: 600, type: 'pause' },
           {
             duration: 600,
@@ -184,7 +184,7 @@ class TouchHelper {
             type: 'pointerMove',
             origin: 'viewport',
           },
-          { button: 1, type: 'pointerUp' },
+          { button: 0, type: 'pointerUp' },
         ],
       },
     ]);
@@ -195,7 +195,8 @@ class TouchHelper {
     const location = await element.getLocation();
     const size = await element.getSize();
 
-    const x = side === 'leading' ? 0 : window.width - 50;
+    const actionTapInset = Math.min(50, size.width / 4);
+    const x = side === 'leading' ? actionTapInset : window.width - actionTapInset;
     const y = location.y + size.height / 2;
 
     await driver.performActions([
