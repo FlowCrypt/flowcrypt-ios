@@ -46,7 +46,7 @@ extension KeyDetails {
     }
 
     var pgpUserEmails: [String] {
-        users.map { MCOAddress(nonEncodedRFC822String: $0).mailbox }
+        users.compactMap { MCOAddress(nonEncodedRFC822String: $0)?.mailbox }
     }
 
     var pgpUserEmailsLowercased: [String] {
@@ -72,7 +72,7 @@ extension KeyDetails: CustomStringConvertible {
 
 // MARK: - Other
 extension [KeyDetails] {
-    // concatenated private keys, joined with a newline
+    /// concatenated private keys, joined with a newline
     var joinedPrivateKey: String {
         compactMap(\.private).joined(separator: "\n")
     }

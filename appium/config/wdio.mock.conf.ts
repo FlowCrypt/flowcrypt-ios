@@ -22,7 +22,7 @@ config.capabilities = [
     },
     'appium:locale': 'en_US',
     'appium:deviceName': 'iPhone 17',
-    'appium:platformVersion': '26.4',
+    'appium:platformVersion': '26.5',
     'appium:orientation': 'PORTRAIT',
     'appium:app': join(process.cwd(), './FlowCrypt.app'),
     'appium:simulatorStartupTimeout': 600000,
