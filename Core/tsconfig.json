@@ -15,13 +15,15 @@
     "strictFunctionTypes": false,
     "sourceMap": false,
     "checkJs": false,
+    "rootDir": "./source",
     "outDir": "./build/ts",
-    "baseUrl": "./",
     "paths": {
-      "@openpgp/web-stream-tools": ["node_modules/@openpgp/web-stream-tools/lib/types/v4.7-v5.4/index.d.ts"]
+      "@openpgp/web-stream-tools": ["./node_modules/@openpgp/web-stream-tools/lib/types/index.d.ts"],
+      "source/*": ["./source/*"]
     },
     "traceResolution": false,
-    "typeRoots": ["./source/core/types/", "./node_modules/@types/"]
+    "typeRoots": ["./source/core/types/", "./node_modules/@types/"],
+    "types": ["node"]
   },
   "include": ["./source/**/*.ts"],
   "exclude": ["**/build/**", "**/node_modules/**"]
