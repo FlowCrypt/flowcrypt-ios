@@ -17,6 +17,9 @@
     "checkJs": false,
     "outDir": "./build/ts",
     "baseUrl": "./",
+    "paths": {
+      "@openpgp/web-stream-tools": ["node_modules/@openpgp/web-stream-tools/lib/types/v4.7-v5.4/index.d.ts"]
+    },
     "traceResolution": false,
     "typeRoots": ["./source/core/types/", "./node_modules/@types/"]
   },
