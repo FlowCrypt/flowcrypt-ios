@@ -121,4 +121,48 @@ class KeyDetailsTests: XCTestCase {
 
         XCTAssertTrue(key.user?.email == "email")
     }
+
+    func testPgpUserEmailsSkipsInvalidRFC822UserIds() {
+        let keyDetail = KeyDetails(
+            public: "public",
+            private: nil,
+            isFullyDecrypted: nil,
+            isFullyEncrypted: nil,
+            usableForEncryption: true,
+            usableForSigning: true,
+            ids: [
+                KeyId(longid: "longId", fingerprint: "fingerprint")
+            ],
+            created: 1_231_244,
+            lastModified: nil,
+            expiration: nil,
+            users: ["("],
+            algo: nil,
+            revoked: false
+        )
+
+        XCTAssertEqual(keyDetail.pgpUserEmails, [])
+    }
+
+    func testPgpUserEmailsExtractsMailboxFromValidUserIds() {
+        let keyDetail = KeyDetails(
+            public: "public",
+            private: nil,
+            isFullyDecrypted: nil,
+            isFullyEncrypted: nil,
+            usableForEncryption: true,
+            usableForSigning: true,
+            ids: [
+                KeyId(longid: "longId", fingerprint: "fingerprint")
+            ],
+            created: 1_231_244,
+            lastModified: nil,
+            expiration: nil,
+            users: ["User Name <user@example.com>"],
+            algo: nil,
+            revoked: false
+        )
+
+        XCTAssertEqual(keyDetail.pgpUserEmails, ["user@example.com"])
+    }
 }

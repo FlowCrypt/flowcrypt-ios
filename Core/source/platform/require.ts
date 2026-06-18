@@ -36,7 +36,7 @@ type ReadToEndFn = <T extends Uint8Array | string>(input: MaybeStream<T>, concat
 export const requireStreamReadToEnd = async (): Promise<ReadToEndFn> => {
   const runtime = globalThis.process?.release?.name || 'not node';
   return runtime === 'not node'
-    ? (await import('@openpgp/web-stream-tools')).readToEnd
+    ? ((await import('@openpgp/web-stream-tools')).readToEnd as ReadToEndFn)
     : require('../../bundles/raw/web-stream-tools').readToEnd;
 };
 
