@@ -86,8 +86,8 @@ blocks:
           - cd appium
           - cache restore FlowCrypt-$SEMAPHORE_GIT_SHA.app
           # - cache restore WebDriverAgentRunner-Runner-$SEMAPHORE_GIT_SHA.app
-          - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
-          - xcrun simctl boot "iPhone 17"
+          # - open -Fn "$(xcode-select -p)/Applications/Simulator.app"
+          # - xcrun simctl boot "iPhone 17"
           # - xcrun simctl install booted ./WebDriverAgentRunner-Runner.app
       epilogue:
         always:
