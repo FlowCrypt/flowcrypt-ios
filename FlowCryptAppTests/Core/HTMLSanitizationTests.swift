@@ -36,7 +36,7 @@ class HTMLSanitizationTests: XCTestCase {
             encrypted: encrypted,
             keys: [key],
             msgPwd: nil,
-            isMime: true,
+            isMime: false,
             verificationPubKeys: []
         )
 
@@ -74,7 +74,7 @@ class HTMLSanitizationTests: XCTestCase {
             encrypted: encrypted,
             keys: [key],
             msgPwd: nil,
-            isMime: true,
+            isMime: false,
             verificationPubKeys: []
         )
         let sanitized = try await core.sanitizeHtml(html: decrypted.text)
