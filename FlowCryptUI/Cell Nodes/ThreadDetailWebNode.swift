@@ -60,6 +60,7 @@ public final class ThreadDetailWebNode: CellNode {
         return """
             <header>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+                <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:;">
                 <style>
                     * { font-family: -apple-system, "Helvetica Neue", sans-serif; }
                     :root { color-scheme: light dark; supported-color-schemes: light dark; }
