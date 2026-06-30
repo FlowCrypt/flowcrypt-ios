@@ -271,6 +271,7 @@
 		9F97657D267E18FE0058419D /* client_configuraion_empty.json in Resources */ = {isa = PBXBuildFile; fileRef = 21EA3B3526565B8100691848 /* client_configuraion_empty.json */; };
 		9F976584267E194F0058419D /* TestData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD60722E4588800F2C4CD /* TestData.swift */; };
 		9F976585267E194F0058419D /* FlowCryptCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */; };
+		AEC30B9A2DAF433A8783F432 /* HTMLSanitizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDC7CECAFB84E949FB2DAC2 /* HTMLSanitizationTests.swift */; };
 		9F9AAFFD2383E216000A00F1 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9AAFFC2383E216000A00F1 /* Document.swift */; };
 		9F9ABC8723AC1EAA00D560E3 /* MessageContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F9ABC8623AC1EAA00D560E3 /* MessageContext.swift */; };
 		9FA19890253C841F008C9CF2 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA1988F253C841F008C9CF2 /* TableViewController.swift */; };
@@ -816,6 +817,7 @@
 		A3B7C31623E437370022D628 /* FlowCryptRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FlowCryptRelease.entitlements; sourceTree = "<group>"; };
 		A3B7C31823F576BA0022D628 /* AppStartup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStartup.swift; sourceTree = "<group>"; };
 		A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCryptCoreTests.swift; sourceTree = "<group>"; };
+3BDC7CECAFB84E949FB2DAC2 /* HTMLSanitizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLSanitizationTests.swift; sourceTree = "<group>"; };
 		A3DAD60722E4588800F2C4CD /* TestData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestData.swift; sourceTree = "<group>"; };
 		C132B9B01EC2DBD800763715 /* FlowCrypt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlowCrypt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C132B9B31EC2DBD800763715 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -1666,6 +1668,7 @@
 				9F7E902D26A1AD4C0021C07F /* Models */,
 				D254733324C597CD00DEE698 /* CoreTypesTest.swift */,
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
+				3BDC7CECAFB84E949FB2DAC2 /* HTMLSanitizationTests.swift */,
 				21594C9526F1DBA900BE654C /* data.txt */,
 			);
 			path = Core;
@@ -2601,6 +2604,7 @@
 				9FC4117D268118AE004C0A69 /* PassPhraseStorageMock.swift in Sources */,
 				9F97650E267E16620058419D /* WKDURLsConstructorTests.swift in Sources */,
 				D7478BDE2D09113100D42659 /* PasswordProtectedMsgTest.swift in Sources */,
+				AEC30B9A2DAF433A8783F432 /* HTMLSanitizationTests.swift in Sources */,
 				9F976585267E194F0058419D /* FlowCryptCoreTests.swift in Sources */,
 				9F6F3C3C26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift in Sources */,
 				9FC4116B2681186D004C0A69 /* KeyMethodsTest.swift in Sources */,
