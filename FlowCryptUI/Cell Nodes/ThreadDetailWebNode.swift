@@ -58,7 +58,7 @@ public final class ThreadDetailWebNode: CellNode {
     private func getFormattedHtml(html: String?) -> String {
         // swiftlint:disable line_length
         return """
-            <header>
+            <head>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
                 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:;">
                 <style>
@@ -75,7 +75,7 @@ public final class ThreadDetailWebNode: CellNode {
                     }
                     html, body { padding: 0 !important; margin: 0 !important; }
                 </style>
-            </header>
+            </head>
             \(html ?? "")
         """
         // swiftlint:enable line_length
