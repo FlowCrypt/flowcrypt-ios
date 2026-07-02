@@ -260,7 +260,7 @@ final class MessageHelper {
             signature = nil
         } else {
             // decrypt / process success
-            text = decrypted.text
+            text = try await Core.shared.sanitizeHtml(html: decrypted.text)
             messageType = decrypted.replyType == ReplyType.encrypted ? .encrypted : .plain
             signature = await evaluateSignatureVerificationResult(
                 signature: decrypted.blocks.first?.verifyRes
