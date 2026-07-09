@@ -113,10 +113,14 @@ extension ProcessedMessage {
         self.type = .plain
         if let html = message.body.html {
             let (text, quote) = Self.parseHtmlQuote(from: html)
-            self.text = try await Core.shared.sanitizeHtml(html: text)
+            self.text = try await (Core.shared.sanitizeHtml(html: text))
+                .replacingOccurrences(of: "&gt;", with: ">")
+                .replacingOccurrences(of: "&lt;", with: "<")
             if let quote {
-                // SanitizeHtml replaces > with &gt; so need to convert it back
-                self.quote = try await (Core.shared.sanitizeHtml(html: quote)).replacingOccurrences(of: "&gt;", with: ">")
+                // SanitizeHtml replaces > with &gt; and < with &lt; so need to convert them back
+                self.quote = try await (Core.shared.sanitizeHtml(html: quote))
+                    .replacingOccurrences(of: "&gt;", with: ">")
+                    .replacingOccurrences(of: "&lt;", with: "<")
             } else {
                 self.quote = nil
             }

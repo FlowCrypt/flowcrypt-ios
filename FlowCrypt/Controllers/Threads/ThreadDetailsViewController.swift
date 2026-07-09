@@ -266,7 +266,9 @@ final class ThreadDetailsViewController: TableNodeViewController {
                     isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                 )
 
-                let sanitizedText = try await Core.shared.sanitizeHtml(html: decryptedText)
+                let sanitizedText = try await (Core.shared.sanitizeHtml(html: decryptedText))
+                    .replacingOccurrences(of: "&gt;", with: ">")
+                    .replacingOccurrences(of: "&lt;", with: "<")
 
                 let processedMessage = ProcessedMessage(
                     message: data.rawMessage,
