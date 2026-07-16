@@ -11,6 +11,11 @@ import XCTest
 class HTMLSanitizationTests: XCTestCase {
     let core: Core = .shared
 
+    override func setUp() async throws {
+        try await super.setUp()
+        try await core.waitUntilJavaScriptReady(timeout: 10)
+    }
+
     // MARK: - End-to-end: decrypt a PGP-encrypted XSS payload, then verify sanitization
 
     func testDecryptedXssPayloadIsStrippedAfterFullRoundtrip() async throws {
@@ -59,6 +64,63 @@ class HTMLSanitizationTests: XCTestCase {
             sanitized.contains("example.com"),
             "example URLs must be removed"
         )
+    }
+
+    func testDecryptedEntityEncodedXssIsSanitizedByMessageHelper() async throws {
+        let key = TestData.k0
+        let encodedHtml = """
+        <div>FC_ENTITY_ENCODED_XSS_POC</div>
+        &lt;script&gt;
+        fetch('https://example.com/entity-xss-callback')
+        &lt;/script&gt;
+        """
+        let encodedPayload = """
+        MIME-Version: 1.0
+        Content-Type: text/html; charset=UTF-8
+
+        \(encodedHtml)
+        """
+        let encrypted = try await core.encrypt(
+            data: encodedPayload.data(),
+            pubKeys: [key.public],
+            password: nil
+        )
+        let decrypted = try await core.parseDecryptMsg(
+            encrypted: encrypted,
+            keys: [key],
+            msgPwd: nil,
+            isMime: false,
+            verificationPubKeys: []
+        )
+
+        XCTAssertTrue(
+            decrypted.text.contains("<script>"),
+            "Core must reproduce the report's entity-decoding precondition"
+        )
+
+        let message = Message(
+            identifier: .random,
+            date: .now,
+            sender: nil,
+            subject: nil,
+            size: nil,
+            labels: [],
+            attachmentIds: [],
+            body: MessageBody(text: encodedHtml, html: nil, attachment: nil)
+        )
+        let processedMessage = try await MessageHelper.makeProcessedMessage(
+            message: message,
+            decrypted: decrypted,
+            attachments: [],
+            keyDetails: []
+        )
+
+        XCTAssertTrue(processedMessage.text.contains("FC_ENTITY_ENCODED_XSS_POC"))
+        XCTAssertFalse(processedMessage.text.contains("<script"))
+        XCTAssertFalse(processedMessage.text.contains("fetch("))
+        XCTAssertFalse(processedMessage.text.contains("example.com"))
+        XCTAssertFalse(processedMessage.text.isHTMLString)
+        XCTAssertFalse(processedMessage.attributedMessage.string.contains("<script"))
     }
 
     func testDecryptedHtmlWithoutTagsPassesThrough() async throws {
@@ -120,6 +182,85 @@ class HTMLSanitizationTests: XCTestCase {
         let sanitized = try await core.sanitizeHtml(html: input)
         XCTAssertNotNil(sanitized.range(of: "bold"))
         XCTAssertNotNil(sanitized.range(of: "italic"))
+    }
+
+    func testProcessedMessageDoesNotDecodeEscapedForbiddenMarkup() async throws {
+        let input = "<div>Safe content</div>&lt;style&gt;body { display: none; }&lt;/style&gt;"
+        let message = Message(
+            identifier: .random,
+            date: .now,
+            sender: nil,
+            subject: nil,
+            size: nil,
+            labels: [],
+            attachmentIds: [],
+            body: MessageBody(text: "", html: input, attachment: nil)
+        )
+
+        let processedMessage = try await ProcessedMessage(message: message)
+
+        XCTAssertTrue(processedMessage.text.contains("<div>Safe content</div>"))
+        XCTAssertTrue(processedMessage.text.contains("&lt;style&gt;"))
+        XCTAssertFalse(processedMessage.text.contains("<style>"))
+    }
+
+    func testSanitizedPlainTextQuoteRemainsHiddenAndDisplaysQuoteMarker() async throws {
+        let input = """
+        New reply
+
+        On Tue, Alice wrote:
+        > quoted line
+        > second quoted line
+        """
+        let sanitized = try await core.sanitizeHtml(html: input)
+        let message = Message(
+            identifier: .random,
+            date: .now,
+            sender: nil,
+            subject: nil,
+            size: nil,
+            labels: [],
+            attachmentIds: [],
+            body: MessageBody(text: input, html: nil, attachment: nil)
+        )
+
+        let processedMessage = ProcessedMessage(message: message, text: sanitized, type: .encrypted)
+
+        XCTAssertEqual(processedMessage.text, "New reply")
+        XCTAssertEqual(
+            processedMessage.quote,
+            "On Tue, Alice wrote:\n&gt; quoted line\n&gt; second quoted line"
+        )
+        XCTAssertEqual(
+            processedMessage.attributedQuote?.string,
+            "On Tue, Alice wrote:\n> quoted line\n> second quoted line"
+        )
+    }
+
+    func testSanitizedPlainTextEntitiesDisplayNormallyInNativeText() async throws {
+        let input = "Math: 1 < 2 & 3 > 2; &quot;hello&quot; and &#39;bye&#39;"
+        let sanitized = try await core.sanitizeHtml(html: input)
+        let message = Message(
+            identifier: .random,
+            date: .now,
+            sender: nil,
+            subject: nil,
+            size: nil,
+            labels: [],
+            attachmentIds: [],
+            body: MessageBody(text: input, html: nil, attachment: nil)
+        )
+
+        let processedMessage = ProcessedMessage(message: message, text: sanitized, type: .encrypted)
+
+        XCTAssertEqual(
+            processedMessage.text,
+            "Math: 1 &lt; 2 &amp; 3 &gt; 2; \"hello\" and 'bye'"
+        )
+        XCTAssertEqual(
+            processedMessage.attributedMessage.string,
+            "Math: 1 < 2 & 3 > 2; \"hello\" and 'bye'"
+        )
     }
 
     // MARK: - isHTMLString (decrypted-content routing detection)

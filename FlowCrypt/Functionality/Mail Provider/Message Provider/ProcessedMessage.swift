@@ -113,14 +113,9 @@ extension ProcessedMessage {
         self.type = .plain
         if let html = message.body.html {
             let (text, quote) = Self.parseHtmlQuote(from: html)
-            self.text = try await (Core.shared.sanitizeHtml(html: text))
-                .replacingOccurrences(of: "&gt;", with: ">")
-                .replacingOccurrences(of: "&lt;", with: "<")
+            self.text = try await Core.shared.sanitizeHtml(html: text)
             if let quote {
-                // SanitizeHtml replaces > with &gt; and < with &lt; so need to convert them back
-                self.quote = try await (Core.shared.sanitizeHtml(html: quote))
-                    .replacingOccurrences(of: "&gt;", with: ">")
-                    .replacingOccurrences(of: "&lt;", with: "<")
+                self.quote = try await Core.shared.sanitizeHtml(html: quote)
             } else {
                 self.quote = nil
             }
@@ -205,7 +200,7 @@ extension ProcessedMessage {
             guard let lastLine = lines.popLast() else { break }
 
             let trimmedLine = lastLine.trimmingCharacters(in: .whitespaces)
-            if trimmedLine.isEmpty || trimmedLine.hasPrefix(">") {
+            if trimmedLine.isEmpty || trimmedLine.hasPrefix(">") || trimmedLine.hasPrefix("&gt;") {
                 quoteLines.insert(lastLine, at: 0)
             } else {
                 if trimmedLine.hasPrefix("On "), trimmedLine.hasSuffix(" wrote:") {
@@ -227,11 +222,17 @@ extension ProcessedMessage {
     }
 
     var attributedMessage: NSAttributedString {
-        String(text.prefix(maxLength)).attributed(color: type.textColor)
+        Self.decodeHTMLEntities(in: String(text.prefix(maxLength)))
+            .attributed(color: type.textColor)
     }
 
     var attributedQuote: NSAttributedString? {
         guard let quote else { return nil }
-        return String(quote.prefix(maxLength)).attributed(color: type.textColor.withAlphaComponent(0.8))
+        return Self.decodeHTMLEntities(in: String(quote.prefix(maxLength)))
+            .attributed(color: type.textColor.withAlphaComponent(0.8))
+    }
+
+    private static func decodeHTMLEntities(in text: String) -> String {
+        (try? Entities.unescape(text)) ?? text
     }
 }

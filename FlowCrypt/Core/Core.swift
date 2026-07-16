@@ -262,11 +262,11 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         return try r.json.decodeJson(as: CoreRes.ZxcvbnStrengthBar.self)
     }
 
-    private func waitUntilJavascirptReady(timeout: TimeInterval = 1) async throws {
+    func waitUntilJavaScriptReady(timeout: TimeInterval = 1) async throws {
         let functionName = "handleRequestFromHost"
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
-            if await (try? webView.callAsyncJavaScript(
+            if let webView, await (try? webView.callAsyncJavaScript(
                 "return typeof \(functionName) === 'function';",
                 arguments: [:],
                 contentWorld: .page
@@ -285,7 +285,7 @@ class Core: KeyDecrypter, KeyParser, CoreComposeMessageType {
         let requestData = [UInt8](data)
 
         do {
-            try await waitUntilJavascirptReady()
+            try await waitUntilJavaScriptReady()
             let response = try await webView.callAsyncJavaScript(
                 "return handleRequestFromHost(\"\(endpoint)\", \(paramsData), \(requestData))",
                 arguments: [:],
