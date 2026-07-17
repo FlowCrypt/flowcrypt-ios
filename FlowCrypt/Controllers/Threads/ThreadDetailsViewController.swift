@@ -44,7 +44,9 @@ final class ThreadDetailsViewController: TableNodeViewController {
         }
     }
 
-    var currentFolderPath: String { inboxItem.folderPath }
+    var currentFolderPath: String {
+        inboxItem.folderPath
+    }
 
     let onComposeMessageAction: ((ComposeMessageAction) -> Void)?
     let onComplete: MessageActionCompletion
@@ -266,9 +268,11 @@ final class ThreadDetailsViewController: TableNodeViewController {
                     isUsingKeyManager: appContext.clientConfigurationProvider.configuration.isUsingKeyManager
                 )
 
+                let sanitizedText = try await Core.shared.sanitizeHtml(html: decryptedText)
+
                 let processedMessage = ProcessedMessage(
                     message: data.rawMessage,
-                    text: decryptedText,
+                    text: sanitizedText,
                     type: .plain
                 )
                 handle(processedMessage: processedMessage, at: indexPath)

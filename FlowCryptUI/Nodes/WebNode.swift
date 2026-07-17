@@ -13,14 +13,20 @@ class CustomWebViewNode: ASDisplayNode {
     private let webViewNode: ASDisplayNode
 
     override init() {
-        // Create a display node for the WKWebView
         webViewNode = ASDisplayNode { () -> UIView in
+            let makeWebView = {
+                let preferences = WKWebpagePreferences()
+                preferences.allowsContentJavaScript = false
+                let config = WKWebViewConfiguration()
+                config.defaultWebpagePreferences = preferences
+                return WKWebView(frame: .zero, configuration: config)
+            }
             if Thread.isMainThread {
-                return WKWebView()
+                return makeWebView()
             } else {
                 var webView: WKWebView?
                 DispatchQueue.main.sync {
-                    webView = WKWebView()
+                    webView = makeWebView()
                 }
                 return webView ?? UIView()
             }

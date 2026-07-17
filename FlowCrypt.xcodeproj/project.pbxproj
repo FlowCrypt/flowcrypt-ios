@@ -317,6 +317,7 @@
 		A34D222A27294C67004E0220 /* PubLookupTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A34D222827294C67004E0220 /* PubLookupTest.swift */; };
 		A36108E9273C7A2E00A90E34 /* MockError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A36108E8273C7A2E00A90E34 /* MockError.swift */; };
 		A3B7C31923F576BA0022D628 /* AppStartup.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3B7C31823F576BA0022D628 /* AppStartup.swift */; };
+		AEC30B9A2DAF433A8783F432 /* HTMLSanitizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDC7CECAFB84E949FB2DAC2 /* HTMLSanitizationTests.swift */; };
 		C132B9B41EC2DBD800763715 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132B9B31EC2DBD800763715 /* AppDelegate.swift */; };
 		C132B9BB1EC2DBD800763715 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C132B9BA1EC2DBD800763715 /* Assets.xcassets */; };
 		C132B9BE1EC2DBD800763715 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C132B9BC1EC2DBD800763715 /* LaunchScreen.storyboard */; };
@@ -566,6 +567,7 @@
 		32DCAC9C0512037018F434A1 /* BackendApi.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackendApi.swift; sourceTree = "<group>"; };
 		32DCAEFF16F5D91A35791730 /* DataExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataExtensions.swift; sourceTree = "<group>"; };
 		32DCAF8424D0185FAA9401A7 /* Imap+send.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Imap+send.swift"; sourceTree = "<group>"; };
+		3BDC7CECAFB84E949FB2DAC2 /* HTMLSanitizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLSanitizationTests.swift; sourceTree = "<group>"; };
 		50531BE32629B9A80039BAE9 /* AttachmentNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentNode.swift; sourceTree = "<group>"; };
 		5109A77B272153B400D2CEB9 /* LeftAlignedCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeftAlignedCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		510BB63427BE92CC00B1011F /* RecipientBase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientBase.swift; sourceTree = "<group>"; };
@@ -1666,6 +1668,7 @@
 				9F7E902D26A1AD4C0021C07F /* Models */,
 				D254733324C597CD00DEE698 /* CoreTypesTest.swift */,
 				A3DAD5FD22E4574B00F2C4CD /* FlowCryptCoreTests.swift */,
+				3BDC7CECAFB84E949FB2DAC2 /* HTMLSanitizationTests.swift */,
 				21594C9526F1DBA900BE654C /* data.txt */,
 			);
 			path = Core;
@@ -2601,6 +2604,7 @@
 				9FC4117D268118AE004C0A69 /* PassPhraseStorageMock.swift in Sources */,
 				9F97650E267E16620058419D /* WKDURLsConstructorTests.swift in Sources */,
 				D7478BDE2D09113100D42659 /* PasswordProtectedMsgTest.swift in Sources */,
+				AEC30B9A2DAF433A8783F432 /* HTMLSanitizationTests.swift in Sources */,
 				9F976585267E194F0058419D /* FlowCryptCoreTests.swift in Sources */,
 				9F6F3C3C26ADFBC7005BD9C6 /* CoreComposeMessageMock.swift in Sources */,
 				9FC4116B2681186D004C0A69 /* KeyMethodsTest.swift in Sources */,
@@ -3917,7 +3921,7 @@
 			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.13.5;
+				minimumVersion = 2.13.6;
 			};
 		};
 		95D83FB82A5D46C3006FDC33 /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
@@ -3925,7 +3929,7 @@
 			repositoryURL = "https://github.com/realm/SwiftLint";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.63.3;
+				minimumVersion = 0.65.0;
 			};
 		};
 		95F55F982A7B89260000E50F /* XCRemoteSwiftPackageReference "ProgressHUD" */ = {

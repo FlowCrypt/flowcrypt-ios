@@ -130,7 +130,9 @@ final class MessageHelper {
     }
 
     private func fetchOrDownloadData(for attachment: MessageAttachment, messageId: Identifier) async throws -> Data {
-        if let data = attachment.data { return data }
+        if let data = attachment.data {
+            return data
+        }
         return try await download(attachment: attachment, messageId: messageId, progressHandler: nil)
     }
 
@@ -233,6 +235,31 @@ final class MessageHelper {
         message: Message,
         with decrypted: CoreRes.ParseDecryptMsg
     ) async throws -> ProcessedMessage {
+        var attachments: [MessageAttachment] = if message.raw != nil || message.attachments.isEmpty {
+            decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
+        } else {
+            message.attachments
+        }
+
+        let keyDetails = try await getKeyDetailsFromAttachment(
+            attachments: &attachments,
+            messageId: message.identifier
+        )
+
+        return try await Self.makeProcessedMessage(
+            message: message,
+            decrypted: decrypted,
+            attachments: attachments,
+            keyDetails: keyDetails
+        )
+    }
+
+    static func makeProcessedMessage(
+        message: Message,
+        decrypted: CoreRes.ParseDecryptMsg,
+        attachments: [MessageAttachment],
+        keyDetails: [KeyDetails]
+    ) async throws -> ProcessedMessage {
         let firstBlockParseErr = decrypted.blocks.first { $0.type == .blockParseErr }
         let firstDecryptErrBlock = decrypted.blocks.first { $0.type == .decryptErr }
         let messageType: ProcessedMessage.MessageType
@@ -260,25 +287,17 @@ final class MessageHelper {
             signature = nil
         } else {
             // decrypt / process success
-            text = decrypted.text
+            text = try await Core.shared.sanitizeHtml(html: decrypted.text)
             messageType = decrypted.replyType == ReplyType.encrypted ? .encrypted : .plain
-            signature = await evaluateSignatureVerificationResult(
+            signature = evaluateSignatureVerificationResult(
                 signature: decrypted.blocks.first?.verifyRes
             )
         }
 
-        var attachments: [MessageAttachment] = if message.raw != nil || message.attachments.isEmpty {
-            decrypted.blocks.compactMap(\.attMeta).compactMap(MessageAttachment.init)
-        } else {
-            message.attachments
-        }
-
-        let keyDetails: [KeyDetails] = try await getKeyDetailsFromAttachment(attachments: &attachments, messageId: message.identifier)
-
         // Also extract keyDetails from publicKey blocks (for encrypted messages)
         let publicKeyBlockDetails: [KeyDetails] = decrypted.blocks
             .filter { $0.type == .publicKey }
-            .compactMap { $0.keyDetails }
+            .compactMap(\.keyDetails)
 
         return ProcessedMessage(
             message: message,
@@ -343,7 +362,9 @@ extension MessageHelper {
         guard let sender else { return [] }
 
         let pubKeys = try localContactsProvider.retrievePubKeys(for: sender.email, shouldUpdateLastUsed: false).map(\.armored)
-        if pubKeys.isNotEmpty || onlyLocal { return pubKeys }
+        if pubKeys.isNotEmpty || onlyLocal {
+            return pubKeys
+        }
 
         // try? because we may ignore update remote result
         try? await pubLookup.fetchRemoteUpdateLocal(with: sender)
@@ -353,9 +374,9 @@ extension MessageHelper {
         return contact.pubKeys.map(\.armored)
     }
 
-    private func evaluateSignatureVerificationResult(
+    private static func evaluateSignatureVerificationResult(
         signature: MsgBlock.VerifyRes?
-    ) async -> ProcessedMessage.MessageSignature {
+    ) -> ProcessedMessage.MessageSignature {
         guard let signature else { return .unsigned }
 
         if let error = signature.error {

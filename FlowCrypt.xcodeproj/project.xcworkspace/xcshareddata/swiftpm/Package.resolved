@@ -177,8 +177,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "revision" : "51c8c237beea1baa9cac64ef83cec68c6790506c",
-        "version" : "604.0.0-prerelease-2026-04-21"
+        "revision" : "a8b1c535647243d603b6772e7e8306c993a0c188",
+        "version" : "605.0.0-prerelease-2026-06-26"
       }
     },
     {
@@ -186,8 +186,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/realm/SwiftLint",
       "state" : {
-        "revision" : "70a5f3225d940d4573d3d2ffcf85b07ab2a6c5de",
-        "version" : "0.63.3"
+        "revision" : "fd768ba9a0e8a4f96d550d98de6c4cf2af565cf1",
+        "version" : "0.65.0"
       }
     },
     {
@@ -195,8 +195,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/scinfu/SwiftSoup.git",
       "state" : {
-        "revision" : "49dcadd93161f4a44b4994d3a3e8de9f085aface",
-        "version" : "2.13.5"
+        "revision" : "ead56133a693d0184d8c2db1a6d6394410cacfd6",
+        "version" : "2.13.6"
       }
     },
     {
