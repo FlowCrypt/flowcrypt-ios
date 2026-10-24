@@ -37,7 +37,7 @@
     "appium": "^3.8.0",
     "appium-xcuitest-driver": "12.1.0",
     "dotenv": "^16.4.1",
-    "mailparser": "^3.9.31",
+    "mailparser": "^3.12.4",
     "moment": "^2.31.0",
     "node-forge": "1.4.0",
     "node-gyp": "^11.0.0",
