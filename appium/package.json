@@ -39,7 +39,7 @@
     "dotenv": "^16.4.1",
     "mailparser": "^3.12.4",
     "moment": "^2.31.0",
-    "node-forge": "1.4.1",
+    "node-forge": "1.4.3",
     "node-gyp": "^11.0.0",
     "openpgp": "5.11.3",
     "ts-node": "^10.5.0",
